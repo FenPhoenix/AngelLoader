@@ -314,18 +314,5 @@ namespace AngelLoader
 
             return ScanFMs(fmsToScan, FMScanner.ScanOptions.FalseDefault(scanGameType: true), scanFullIfNew: true);
         }
-
-        internal static async Task ScanAndFind(List<FanMission> fms, FMScanner.ScanOptions scanOptions)
-        {
-            if (fms.Count == 0) return;
-
-            await ScanFMs(fms, scanOptions);
-            // Doing a find after a scan. I forgot exactly why. Reasons I thought of:
-            // -I might be doing it to get rid of any duplicates or bad data that may have been imported?
-            // -2020-02-14: I'm also doing this to properly update the tags. Without this the imported tags
-            //  wouldn't work because they're only in TagsString and blah blah blah.
-            //  -But couldn't I just call the tag list updater?
-            FindFMs.Find();
-        }
     }
 }

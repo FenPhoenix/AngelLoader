@@ -2180,17 +2180,14 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal async void ImportMenuItems_Click(object sender, EventArgs e)
         {
-            if (sender.EqualsIfNotNull(ImportFromLLMenu.ImportFromDarkLoaderMenuItem))
-            {
-                await Import.ImportFromDarkLoader();
-            }
-            else if (sender.EqualsIfNotNull(ImportFromLLMenu.ImportFromFMSelMenuItem) ||
-                     sender.EqualsIfNotNull(ImportFromLLMenu.ImportFromNewDarkLoaderMenuItem))
-            {
-                await Import.ImportFromNDLOrFMSel(sender == ImportFromLLMenu.ImportFromFMSelMenuItem
-                    ? ImportType.FMSel
-                    : ImportType.NewDarkLoader);
-            }
+            ImportType importType =
+                  sender == ImportFromLLMenu.ImportFromDarkLoaderMenuItem
+                ? ImportType.DarkLoader
+                : sender == ImportFromLLMenu.ImportFromFMSelMenuItem
+                ? ImportType.FMSel
+                : ImportType.NewDarkLoader;
+
+            await Import.ImportFrom(importType);
         }
 
         private async void SettingsButton_Click(object sender, EventArgs e)

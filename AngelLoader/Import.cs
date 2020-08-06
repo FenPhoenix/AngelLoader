@@ -32,121 +32,123 @@ namespace AngelLoader
 
         #region Importing
 
-        internal static async Task ImportFromDarkLoader()
+        internal static async Task ImportFrom(ImportType importType)
         {
-            string iniFile;
-            bool importFMData,
-                importSaves,
-                importTitle,
-                importSize,
-                importComment,
-                importReleaseDate,
-                importLastPlayed,
-                importFinishedOn;
+            bool importFMData = false;
+            bool importSaves = false;
 
-            using (var f = new ImportFromDarkLoaderForm())
-            {
-                if (f.ShowDialog() != DialogResult.OK) return;
-                iniFile = f.DarkLoaderIniFile;
-                importFMData = f.ImportFMData;
-                importTitle = f.ImportTitle;
-                importSize = f.ImportSize;
-                importComment = f.ImportComment;
-                importReleaseDate = f.ImportReleaseDate;
-                importLastPlayed = f.ImportLastPlayed;
-                importFinishedOn = f.ImportFinishedOn;
-                importSaves = f.ImportSaves;
-            }
+            FieldsToImport fields;
 
-            if (!importFMData && !importSaves)
-            {
-                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
-                return;
-            }
-
-            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
-            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
-            // change of the list (not really bad but unprofessional looking))
-            Core.View.SetRowCount(0);
-
-            var fields = new FieldsToImport
-            {
-                Title = importTitle,
-                ReleaseDate = importReleaseDate,
-                LastPlayed = importLastPlayed,
-                Size = importSize,
-                Comment = importComment,
-                FinishedOn = importFinishedOn
-            };
-
-            await ImportInternal(ImportType.DarkLoader, iniFile, importFMData, importSaves, fields);
-
-            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            await Core.View.SortAndSetFilter(forceDisplayFM: true);
-        }
-
-        internal static async Task ImportFromNDLOrFMSel(ImportType importType)
-        {
             List<string> iniFiles = new List<string>();
-            bool importTitle,
-                importReleaseDate,
-                importLastPlayed,
-                importComment,
-                importRating,
-                importDisabledMods,
-                importTags,
-                importSelectedReadme,
-                importFinishedOn,
-                importSize;
 
-            using (var f = new ImportFromMultipleInisForm(importType))
+            if (importType == ImportType.DarkLoader)
             {
-                if (f.ShowDialog() != DialogResult.OK) return;
-                foreach (string file in f.IniFiles) iniFiles.Add(file);
-                importTitle = f.ImportTitle;
-                importReleaseDate = f.ImportReleaseDate;
-                importLastPlayed = f.ImportLastPlayed;
-                importComment = f.ImportComment;
-                importRating = f.ImportRating;
-                importDisabledMods = f.ImportDisabledMods;
-                importTags = f.ImportTags;
-                importSelectedReadme = f.ImportSelectedReadme;
-                importFinishedOn = f.ImportFinishedOn;
-                importSize = f.ImportSize;
+                bool importTitle,
+                    importReleaseDate,
+                    importLastPlayed,
+                    importComment,
+                    importFinishedOn,
+                    importSize;
+
+                string iniFile;
+
+                using (var f = new ImportFromDarkLoaderForm())
+                {
+                    if (f.ShowDialog() != DialogResult.OK) return;
+                    iniFile = f.DarkLoaderIniFile;
+                    importFMData = f.ImportFMData;
+                    importTitle = f.ImportTitle;
+                    importSize = f.ImportSize;
+                    importComment = f.ImportComment;
+                    importReleaseDate = f.ImportReleaseDate;
+                    importLastPlayed = f.ImportLastPlayed;
+                    importFinishedOn = f.ImportFinishedOn;
+                    importSaves = f.ImportSaves;
+                }
+
+                if (!importFMData && !importSaves)
+                {
+                    MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                    return;
+                }
+
+                iniFiles.Add(iniFile);
+
+                fields = new FieldsToImport
+                {
+                    Title = importTitle,
+                    ReleaseDate = importReleaseDate,
+                    LastPlayed = importLastPlayed,
+                    Size = importSize,
+                    Comment = importComment,
+                    FinishedOn = importFinishedOn
+                };
             }
-
-            if (iniFiles.All(x => x.IsWhiteSpace()))
+            else
             {
-                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
-                return;
+                bool importTitle,
+                    importReleaseDate,
+                    importLastPlayed,
+                    importComment,
+                    importRating,
+                    importDisabledMods,
+                    importTags,
+                    importSelectedReadme,
+                    importFinishedOn,
+                    importSize;
+
+                using (var f = new ImportFromMultipleInisForm(importType))
+                {
+                    if (f.ShowDialog() != DialogResult.OK) return;
+                    foreach (string file in f.IniFiles) iniFiles.Add(file);
+                    importTitle = f.ImportTitle;
+                    importReleaseDate = f.ImportReleaseDate;
+                    importLastPlayed = f.ImportLastPlayed;
+                    importComment = f.ImportComment;
+                    importRating = f.ImportRating;
+                    importDisabledMods = f.ImportDisabledMods;
+                    importTags = f.ImportTags;
+                    importSelectedReadme = f.ImportSelectedReadme;
+                    importFinishedOn = f.ImportFinishedOn;
+                    importSize = f.ImportSize;
+                }
+
+                if (iniFiles.All(x => x.IsWhiteSpace()))
+                {
+                    MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                    return;
+                }
+
+                fields = new FieldsToImport
+                {
+                    Title = importTitle,
+                    ReleaseDate = importReleaseDate,
+                    LastPlayed = importLastPlayed,
+                    Comment = importComment,
+                    Rating = importRating,
+                    DisabledMods = importDisabledMods,
+                    Tags = importTags,
+                    SelectedReadme = importSelectedReadme,
+                    FinishedOn = importFinishedOn,
+                    Size = importSize
+                };
             }
 
             // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
-            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
-            // change of the list (not really bad but unprofessional looking))
-            // We're modifying the data that FMsDGV pulls from when it redraws. This will at least prevent a
-            // selection changed event from firing while we do it, as that could be really bad potentially.
+            // list when it's in an indeterminate state, which can cause a selection change (bad) and/or a visible
+            // change of the list (not really bad but unprofessional looking).
             Core.View.SetRowCount(0);
 
-            var fields = new FieldsToImport
-            {
-                Title = importTitle,
-                ReleaseDate = importReleaseDate,
-                LastPlayed = importLastPlayed,
-                Comment = importComment,
-                Rating = importRating,
-                DisabledMods = importDisabledMods,
-                Tags = importTags,
-                SelectedReadme = importSelectedReadme,
-                FinishedOn = importFinishedOn,
-                Size = importSize
-            };
-
+            // For DarkLoader this will be only one file, so it works out.
+            // This is so we can keep just the one await call.
             foreach (string file in iniFiles)
             {
                 if (file.IsWhiteSpace()) continue;
 
-                await ImportInternal(importType, file, false, false, fields);
+                await ImportInternal(importType, file, importFMData, importSaves, fields);
+
+                // Just to be explicit
+                if (importType == ImportType.DarkLoader) break;
             }
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
@@ -155,7 +157,7 @@ namespace AngelLoader
 
         #endregion
 
-        #region Import internal
+        #region Private methods
 
         private static async Task<bool>
         ImportInternal(ImportType importType, string iniFile, bool dl_ImportFMData, bool dl_ImportSaves, FieldsToImport fields)
@@ -198,12 +200,21 @@ namespace AngelLoader
                     return false;
                 }
 
-                var scanOptions = importType == ImportType.FMSel
-                    ? ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true)
-                    // NewDarkLoader and DarkLoader both take this one
-                    : ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
+                if (fmsToScan.Count > 0)
+                {
+                    var scanOptions = importType == ImportType.FMSel
+                        ? ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true)
+                        // NewDarkLoader and DarkLoader both take this one
+                        : ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
 
-                await FMScan.ScanAndFind(fmsToScan, scanOptions);
+                    await FMScan.ScanFMs(fmsToScan, scanOptions);
+                    // Doing a find after a scan. I forgot exactly why. Reasons I thought of:
+                    // -I might be doing it to get rid of any duplicates or bad data that may have been imported?
+                    // -2020-02-14: I'm also doing this to properly update the tags. Without this the imported
+                    //  tags wouldn't work because they're only in TagsString and blah blah blah.
+                    //  -But couldn't I just call the tag list updater?
+                    FindFMs.Find();
+                }
             }
             catch (Exception ex)
             {
