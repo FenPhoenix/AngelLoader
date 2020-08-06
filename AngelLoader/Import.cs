@@ -139,13 +139,81 @@ namespace AngelLoader
             // change of the list (not really bad but unprofessional looking).
             Core.View.SetRowCount(0);
 
+            // ReSharper disable once ConvertToConstant.Local
+            string dlErrorMessage = "An error occurred with DarkLoader importing. See the log file for details. Aborting import operation.";
+
             // For DarkLoader this will be only one file, so it works out.
             // This is so we can keep just the one await call.
-            foreach (string file in iniFiles)
+            foreach (string iniFile in iniFiles)
             {
-                if (file.IsWhiteSpace()) continue;
+                if (iniFile.IsWhiteSpace()) continue;
 
-                await ImportInternal(importType, file, importFMData, importSaves, fields);
+                // Shove it all in here to avoid extra awaits
+                #region Import
+
+                try
+                {
+                    Core.View.ShowProgressBox(importType switch
+                    {
+                        ImportType.DarkLoader => ProgressTasks.ImportFromDarkLoader,
+                        ImportType.FMSel => ProgressTasks.ImportFromFMSel,
+                        _ => ProgressTasks.ImportFromNDL
+                    });
+
+                    var (error, fmsToScan) = await (importType switch
+                    {
+                        ImportType.DarkLoader => ImportDarkLoaderInternal(iniFile, importFMData, importSaves, fields),
+                        ImportType.FMSel => ImportFMSelInternal(iniFile, fields: fields),
+                        _ => ImportNDLInternal(iniFile, fields: fields)
+                    });
+
+                    if (error != ImportError.None)
+                    {
+                        Log("ImportError: " + error, stackTrace: true);
+
+                        if (importType == ImportType.DarkLoader)
+                        {
+                            (string message, string title) = error == ImportError.NoArchiveDirsFound
+                                ? (LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert)
+                                : (dlErrorMessage, LText.AlertMessages.Error);
+
+                            Core.View.ShowAlert(message, title);
+                        }
+                    }
+                    else // No error
+                    {
+                        if (fmsToScan.Count > 0)
+                        {
+                            var scanOptions = importType == ImportType.FMSel
+                                ? ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true)
+                                // NewDarkLoader and DarkLoader both take this one
+                                : ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
+
+                            await FMScan.ScanFMs(fmsToScan, scanOptions);
+                            // Doing a find after a scan. I forgot exactly why. Reasons I thought of:
+                            // -I might be doing it to get rid of any duplicates or bad data that may have been imported?
+                            // -2020-02-14: I'm also doing this to properly update the tags. Without this the imported
+                            //  tags wouldn't work because they're only in TagsString and blah blah blah.
+                            //  -But couldn't I just call the tag list updater?
+                            FindFMs.Find();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception in " + importType + " import", ex);
+
+                    if (importType == ImportType.DarkLoader)
+                    {
+                        Core.View.ShowAlert(dlErrorMessage, LText.AlertMessages.Error);
+                    }
+                }
+                finally
+                {
+                    Core.View.HideProgressBox();
+                }
+
+                #endregion
 
                 // Just to be explicit
                 if (importType == ImportType.DarkLoader) break;
@@ -158,84 +226,6 @@ namespace AngelLoader
         #endregion
 
         #region Private methods
-
-        private static async Task<bool>
-        ImportInternal(ImportType importType, string iniFile, bool dl_ImportFMData, bool dl_ImportSaves, FieldsToImport fields)
-        {
-            ProgressTasks progressTask = importType switch
-            {
-                ImportType.DarkLoader => ProgressTasks.ImportFromDarkLoader,
-                ImportType.FMSel => ProgressTasks.ImportFromFMSel,
-                _ => ProgressTasks.ImportFromNDL
-            };
-
-            Core.View.ShowProgressBox(progressTask);
-            try
-            {
-                var (error, fmsToScan) = await (
-                    importType == ImportType.DarkLoader
-                    ? ImportDarkLoaderInternal(iniFile, dl_ImportFMData, dl_ImportSaves, fields)
-                    : importType == ImportType.FMSel
-                    ? ImportFMSelInternal(iniFile, fields: fields)
-                    : ImportNDLInternal(iniFile, fields: fields));
-
-                if (error != ImportError.None)
-                {
-                    Log("ImportError: " + error, stackTrace: true);
-
-                    if (importType == ImportType.DarkLoader)
-                    {
-                        if (error == ImportError.NoArchiveDirsFound)
-                        {
-                            Core.View.ShowAlert(LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert);
-                        }
-                        else
-                        {
-                            Core.View.ShowAlert(
-                                "An error occurred with DarkLoader importing. See the log file for details. " +
-                                "Aborting import operation.", LText.AlertMessages.Error);
-                        }
-                    }
-
-                    return false;
-                }
-
-                if (fmsToScan.Count > 0)
-                {
-                    var scanOptions = importType == ImportType.FMSel
-                        ? ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true)
-                        // NewDarkLoader and DarkLoader both take this one
-                        : ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
-
-                    await FMScan.ScanFMs(fmsToScan, scanOptions);
-                    // Doing a find after a scan. I forgot exactly why. Reasons I thought of:
-                    // -I might be doing it to get rid of any duplicates or bad data that may have been imported?
-                    // -2020-02-14: I'm also doing this to properly update the tags. Without this the imported
-                    //  tags wouldn't work because they're only in TagsString and blah blah blah.
-                    //  -But couldn't I just call the tag list updater?
-                    FindFMs.Find();
-                }
-            }
-            catch (Exception ex)
-            {
-                Log("Exception in " + importType + " import", ex);
-
-                if (importType == ImportType.DarkLoader)
-                {
-                    Core.View.ShowAlert(
-                        "An error occurred with DarkLoader importing. See the log file for details. " +
-                        "Aborting import operation.", LText.AlertMessages.Error);
-                }
-
-                return false;
-            }
-            finally
-            {
-                Core.View.HideProgressBox();
-            }
-
-            return true;
-        }
 
         private static async Task<(ImportError Error, List<FanMission> FMs)>
         ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
