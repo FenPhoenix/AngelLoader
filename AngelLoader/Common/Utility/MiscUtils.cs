@@ -139,7 +139,7 @@ namespace AngelLoader
             {
                 path = Path.Combine(instPath, fm.InstalledDir);
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }

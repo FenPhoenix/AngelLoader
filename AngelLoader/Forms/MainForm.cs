@@ -90,7 +90,7 @@ namespace AngelLoader.Forms
         #region Invoke
 
         public object InvokeSync(Delegate method) => Invoke(method);
-        public object InvokeSync(Delegate method, params object[] args) => Invoke(method, args);
+        //public object InvokeSync(Delegate method, params object[] args) => Invoke(method, args);
 
         #endregion
 

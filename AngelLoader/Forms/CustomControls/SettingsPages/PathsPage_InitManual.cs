@@ -391,7 +391,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             // 
             // Thief1ExePathBrowseButton
             // 
-            Thief1ExePathBrowseButton.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            Thief1ExePathBrowseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             Thief1ExePathBrowseButton.AutoSize = true;
             Thief1ExePathBrowseButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Thief1ExePathBrowseButton.MinimumSize = new Size(75, 23);

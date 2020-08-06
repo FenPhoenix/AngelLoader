@@ -140,7 +140,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (suspendResume) this.SuspendDrawing();
                 SplitterPercent = percent;
             }
-            catch (Exception)
+            catch
             {
                 // Leave it at the default
             }

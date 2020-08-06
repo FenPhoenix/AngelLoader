@@ -83,8 +83,8 @@ namespace AngelLoader.DataClasses
         private static readonly KeyValuePair<string, string[]>[]
         _presetTags =
         {
-            new KeyValuePair<string, string[]>("author", new string[0]),
-            new KeyValuePair<string, string[]>("contest", new string[0]),
+            new KeyValuePair<string, string[]>("author", Array.Empty<string>()),
+            new KeyValuePair<string, string[]>("contest", Array.Empty<string>()),
             new KeyValuePair<string, string[]>("genre", new[]
             {
                 "action",
@@ -107,7 +107,7 @@ namespace AngelLoader.DataClasses
                 "Russian",
                 "Spanish"
             }),
-            new KeyValuePair<string, string[]>("series", new string[0]),
+            new KeyValuePair<string, string[]>("series", Array.Empty<string>()),
             new KeyValuePair<string, string[]>("misc", new[]
             {
                 "campaign",

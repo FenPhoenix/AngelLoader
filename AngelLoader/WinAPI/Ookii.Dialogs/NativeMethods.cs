@@ -14,11 +14,15 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern IntPtr GetActiveWindow();
 
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern int GetCurrentThreadId();
+
+#endif
 
         [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist"), DllImport("comctl32.dll", PreserveSig = false)]
         public static extern void TaskDialogIndirect([In] ref TASKDIALOGCONFIG pTaskConfig, out int pnButton, out int pnRadioButton, [MarshalAs(UnmanagedType.Bool)] out bool pfVerificationFlagChecked);
