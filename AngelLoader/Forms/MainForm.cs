@@ -1722,7 +1722,7 @@ namespace AngelLoader.Forms
         /// <param name="keepSelection"></param>
         /// <param name="gameTabSwitch"></param>
         /// <returns></returns>
-        public async Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
+        public Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
             bool keepSelection = true, bool gameTabSwitch = false)
         {
             bool selFMWasPassedIn = selectedFM != null;
@@ -1765,9 +1765,11 @@ namespace AngelLoader.Forms
                     // Fix: when resetting release date filter the readme wouldn't load for the selected FM
                     oldSelectedFM == null)
                 {
-                    await DisplaySelectedFM();
+                    return DisplaySelectedFM();
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         #region FMsDGV event handlers

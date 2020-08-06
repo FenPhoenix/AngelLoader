@@ -55,7 +55,7 @@ namespace AngelLoader
 
         // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
         // a button, so don't worry about it
-        internal static async Task<CacheData> GetCacheableData(FanMission fm, bool refreshCache)
+        internal static Task<CacheData> GetCacheableData(FanMission fm, bool refreshCache)
         {
             #region Local functions
 
@@ -113,7 +113,7 @@ namespace AngelLoader
             if (fm.Game == Game.Unsupported)
             {
                 if (!fm.InstalledDir.IsEmpty()) ClearCacheDir(fm);
-                return new CacheData();
+                return Task.FromResult(new CacheData());
             }
 
             try
@@ -121,7 +121,7 @@ namespace AngelLoader
                 if (FMIsReallyInstalled(fm))
                 {
                     string fmReadmesBasePath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
-                    return new CacheData(GetValidReadmes(fmReadmesBasePath));
+                    return Task.FromResult(new CacheData(GetValidReadmes(fmReadmesBasePath)));
                 }
                 else
                 {
@@ -134,10 +134,10 @@ namespace AngelLoader
                         if (Directory.Exists(fmCachePath))
                         {
                             readmes = GetValidReadmes(fmCachePath);
-                            if (readmes.Count > 0) return new CacheData(readmes);
+                            if (readmes.Count > 0) return Task.FromResult(new CacheData(readmes));
                         }
 
-                        if (fm.NoReadmes) return new CacheData();
+                        if (fm.NoReadmes) return Task.FromResult(new CacheData());
                     }
 
                     #region Refresh cache from archive
@@ -150,7 +150,7 @@ namespace AngelLoader
                     string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
 
                     // In weird situations this could be true, so just say none and at least don't crash
-                    if (fmArchivePath.IsEmpty()) return new CacheData();
+                    if (fmArchivePath.IsEmpty()) return Task.FromResult(new CacheData());
 
                     if (fm.Archive.ExtIsZip())
                     {
@@ -187,20 +187,20 @@ namespace AngelLoader
                     }
                     else
                     {
-                        await Task.Run(() => SevenZipExtract(fmArchivePath, fmCachePath, readmes));
+                        return Task.Run(() => SevenZipExtract(fmArchivePath, fmCachePath));
                     }
 
                     fm.NoReadmes = readmes.Count == 0;
 
                     #endregion
 
-                    return new CacheData(readmes);
+                    return Task.FromResult(new CacheData(readmes));
                 }
             }
             catch (Exception ex)
             {
                 Log(ex: ex);
-                return new CacheData();
+                return Task.FromResult(new CacheData());
             }
         }
 
@@ -344,8 +344,10 @@ namespace AngelLoader
             }
         }
 
-        private static void SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
+        private static CacheData SevenZipExtract(string fmArchivePath, string fmCachePath)
         {
+            var readmes = new List<string>();
+
             try
             {
                 // Critical
@@ -377,7 +379,7 @@ namespace AngelLoader
                     }
                 }
 
-                if (indexesList.Count == 0) return;
+                if (indexesList.Count == 0) return new CacheData(readmes);
 
                 extractor.FileExtractionFinished += (sender, e) =>
                 {
@@ -409,6 +411,8 @@ namespace AngelLoader
             {
                 Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
             }
+
+            return new CacheData(readmes);
         }
 
         #endregion
