@@ -160,11 +160,11 @@ namespace AngelLoader
                         _ => ProgressTasks.ImportFromNDL
                     });
 
-                    var (error, fmsToScan) = await (importType switch
+                    var (error, fmsToScan) = await Task.Run(() => importType switch
                     {
                         ImportType.DarkLoader => ImportDarkLoaderInternal(iniFile, importFMData, importSaves, fields),
-                        ImportType.FMSel => ImportFMSelInternal(iniFile, fields: fields),
-                        _ => ImportNDLInternal(iniFile, fields: fields)
+                        ImportType.FMSel => ImportFMSelInternal(iniFile, fields),
+                        _ => ImportNDLInternal(iniFile, fields)
                     });
 
                     if (error != ImportError.None)
@@ -227,7 +227,7 @@ namespace AngelLoader
 
         #region Private methods
 
-        private static async Task<(ImportError Error, List<FanMission> FMs)>
+        private static (ImportError Error, List<FanMission> FMs)
         ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
         {
             #region Local functions
@@ -275,7 +275,7 @@ namespace AngelLoader
             bool missionDirsRead = false;
             var archiveDirs = new List<string>();
 
-            var error = await Task.Run(() =>
+            ImportError DoImport()
             {
                 try
                 {
@@ -464,9 +464,16 @@ namespace AngelLoader
                 }
                 finally
                 {
+                    // IMPORTANT! This MUST be invoked back to the UI thread because this method will be called
+                    // from inside an await Task.Run()!
+                    // TODO: ImportDarkLoaderInternal: Invoke: We don't really need this here; we already close later
+                    // This just lets us close before putting up a possible error dialog, but other than that is
+                    // unnecessary.
                     Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
                 }
-            });
+            }
+
+            var error = DoImport();
 
             if (error != ImportError.None) return (error, fms);
 
@@ -552,13 +559,13 @@ namespace AngelLoader
             return true;
         }
 
-        private static async Task<(ImportError Error, List<FanMission> FMs)>
-        ImportFMSelInternal(string iniFile, bool returnUnmergedFMsList = false, FieldsToImport? fields = null)
+        private static (ImportError Error, List<FanMission> FMs)
+        ImportFMSelInternal(string iniFile, FieldsToImport fields)
         {
-            string[] lines = await Task.Run(() => File.ReadAllLines(iniFile));
+            string[] lines = File.ReadAllLines(iniFile);
             var fms = new List<FanMission>();
 
-            await Task.Run(() =>
+            static void DoImport(string[] lines, List<FanMission> fms)
             {
                 for (int i = 0; i < lines.Length; i++)
                 {
@@ -635,22 +642,22 @@ namespace AngelLoader
                         fms.Add(fm);
                     }
                 }
-            });
+            }
 
-            var importedFMs = returnUnmergedFMsList
-                ? fms
-                : MergeImportedFMData(ImportType.FMSel, fms, fields);
+            DoImport(lines, fms);
+
+            var importedFMs = MergeImportedFMData(ImportType.FMSel, fms, fields);
 
             return (ImportError.None, importedFMs);
         }
 
-        private static async Task<(ImportError Error, List<FanMission> FMs)>
-        ImportNDLInternal(string iniFile, bool returnUnmergedFMsList = false, FieldsToImport? fields = null)
+        private static (ImportError Error, List<FanMission> FMs)
+        ImportNDLInternal(string iniFile, FieldsToImport fields)
         {
-            string[] lines = await Task.Run(() => File.ReadAllLines(iniFile));
+            string[] lines = File.ReadAllLines(iniFile);
             var fms = new List<FanMission>();
 
-            ImportError error = await Task.Run(() =>
+            static ImportError DoImport(string[] lines, List<FanMission> fms)
             {
                 bool archiveDirRead = false;
                 string archiveDir = "";
@@ -796,13 +803,13 @@ namespace AngelLoader
                 }
 
                 return ImportError.None;
-            });
+            }
+
+            var error = DoImport(lines, fms);
 
             if (error != ImportError.None) return (error, fms);
 
-            var importedFMs = returnUnmergedFMsList
-                ? fms
-                : MergeImportedFMData(ImportType.NewDarkLoader, fms, fields);
+            var importedFMs = MergeImportedFMData(ImportType.NewDarkLoader, fms, fields);
 
             return (ImportError.None, importedFMs);
         }
@@ -810,22 +817,8 @@ namespace AngelLoader
         #endregion
 
         private static List<FanMission>
-        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport? fields = null)
+        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport fields)
         {
-            fields ??= new FieldsToImport
-            {
-                Title = true,
-                ReleaseDate = true,
-                LastPlayed = true,
-                FinishedOn = true,
-                Comment = true,
-                Rating = true,
-                DisabledMods = true,
-                Tags = true,
-                SelectedReadme = true,
-                Size = true
-            };
-
             // Perf
             int initCount = FMDataIniList.Count;
             bool[] checkedArray = new bool[initCount];
