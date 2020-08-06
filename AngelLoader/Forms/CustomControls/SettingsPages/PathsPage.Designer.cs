@@ -20,6 +20,7 @@
             base.Dispose(disposing);
         }
 
+#if DEBUG
         #region Component Designer generated code
 
         /// <summary> 
@@ -587,6 +588,7 @@
         }
 
         #endregion
+#endif
 
         internal System.Windows.Forms.Panel PagePanel;
         internal System.Windows.Forms.GroupBox OtherGroupBox;

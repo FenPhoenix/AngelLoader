@@ -8,7 +8,14 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
     {
         public bool IsVisible { get => Visible; set => Visible = value; }
 
-        public OtherPage() => InitializeComponent();
+        public OtherPage()
+        {
+#if DEBUG
+            InitializeComponent();
+#else
+            InitComponentManual();
+#endif
+        }
 
         public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);
 

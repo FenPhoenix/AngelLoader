@@ -20,6 +20,7 @@
             base.Dispose(disposing);
         }
 
+#if DEBUG
         #region Component Designer generated code
 
         /// <summary> 
@@ -461,6 +462,7 @@
         }
 
         #endregion
+#endif
 
         internal System.Windows.Forms.GroupBox RatingDisplayStyleGroupBox;
         internal System.Windows.Forms.CheckBox RatingUseStarsCheckBox;

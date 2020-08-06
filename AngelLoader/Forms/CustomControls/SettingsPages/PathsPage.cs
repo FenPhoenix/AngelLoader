@@ -14,7 +14,14 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
         /// </summary>
         public bool DoLayout;
 
-        public PathsPage() => InitializeComponent();
+        public PathsPage()
+        {
+#if DEBUG
+            InitializeComponent();
+#else
+            InitComponentManual();
+#endif
+        }
 
         public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);
 
