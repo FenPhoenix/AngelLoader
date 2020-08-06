@@ -1,0 +1,1016 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using AngelLoader.DataClasses;
+using AngelLoader.Forms;
+using AngelLoader.WinAPI;
+using FMScanner;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
+
+namespace AngelLoader
+{
+    internal static class Import
+    {
+        private sealed class FieldsToImport
+        {
+            internal bool Title;
+            internal bool ReleaseDate;
+            internal bool LastPlayed;
+            internal bool FinishedOn;
+            internal bool Comment;
+            internal bool Rating;
+            internal bool DisabledMods;
+            internal bool Tags;
+            internal bool SelectedReadme;
+            internal bool Size;
+        }
+
+        #region Importing
+
+        internal static async Task ImportFromDarkLoader()
+        {
+            string iniFile;
+            bool importFMData,
+                importSaves,
+                importTitle,
+                importSize,
+                importComment,
+                importReleaseDate,
+                importLastPlayed,
+                importFinishedOn;
+
+            using (var f = new ImportFromDarkLoaderForm())
+            {
+                if (f.ShowDialog() != DialogResult.OK) return;
+                iniFile = f.DarkLoaderIniFile;
+                importFMData = f.ImportFMData;
+                importTitle = f.ImportTitle;
+                importSize = f.ImportSize;
+                importComment = f.ImportComment;
+                importReleaseDate = f.ImportReleaseDate;
+                importLastPlayed = f.ImportLastPlayed;
+                importFinishedOn = f.ImportFinishedOn;
+                importSaves = f.ImportSaves;
+            }
+
+            if (!importFMData && !importSaves)
+            {
+                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                return;
+            }
+
+            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
+            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
+            // change of the list (not really bad but unprofessional looking))
+            Core.View.SetRowCount(0);
+
+            var fields = new FieldsToImport
+            {
+                Title = importTitle,
+                ReleaseDate = importReleaseDate,
+                LastPlayed = importLastPlayed,
+                Size = importSize,
+                Comment = importComment,
+                FinishedOn = importFinishedOn
+            };
+
+            await ImportInternal(ImportType.DarkLoader, iniFile, importFMData, importSaves, fields);
+
+            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
+            await Core.View.SortAndSetFilter(forceDisplayFM: true);
+        }
+
+        internal static async Task ImportFromNDLOrFMSel(ImportType importType)
+        {
+            List<string> iniFiles = new List<string>();
+            bool importTitle,
+                importReleaseDate,
+                importLastPlayed,
+                importComment,
+                importRating,
+                importDisabledMods,
+                importTags,
+                importSelectedReadme,
+                importFinishedOn,
+                importSize;
+
+            using (var f = new ImportFromMultipleInisForm(importType))
+            {
+                if (f.ShowDialog() != DialogResult.OK) return;
+                foreach (string file in f.IniFiles) iniFiles.Add(file);
+                importTitle = f.ImportTitle;
+                importReleaseDate = f.ImportReleaseDate;
+                importLastPlayed = f.ImportLastPlayed;
+                importComment = f.ImportComment;
+                importRating = f.ImportRating;
+                importDisabledMods = f.ImportDisabledMods;
+                importTags = f.ImportTags;
+                importSelectedReadme = f.ImportSelectedReadme;
+                importFinishedOn = f.ImportFinishedOn;
+                importSize = f.ImportSize;
+            }
+
+            if (iniFiles.All(x => x.IsWhiteSpace()))
+            {
+                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                return;
+            }
+
+            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
+            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
+            // change of the list (not really bad but unprofessional looking))
+            // We're modifying the data that FMsDGV pulls from when it redraws. This will at least prevent a
+            // selection changed event from firing while we do it, as that could be really bad potentially.
+            Core.View.SetRowCount(0);
+
+            var fields = new FieldsToImport
+            {
+                Title = importTitle,
+                ReleaseDate = importReleaseDate,
+                LastPlayed = importLastPlayed,
+                Comment = importComment,
+                Rating = importRating,
+                DisabledMods = importDisabledMods,
+                Tags = importTags,
+                SelectedReadme = importSelectedReadme,
+                FinishedOn = importFinishedOn,
+                Size = importSize
+            };
+
+            foreach (string file in iniFiles)
+            {
+                if (file.IsWhiteSpace()) continue;
+
+                await ImportInternal(importType, file, false, false, fields);
+            }
+
+            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
+            await Core.View.SortAndSetFilter(forceDisplayFM: true);
+        }
+
+        #endregion
+
+        #region Import internal
+
+        private static async Task<bool>
+        ImportInternal(ImportType importType, string iniFile, bool dl_ImportFMData, bool dl_ImportSaves, FieldsToImport fields)
+        {
+            ProgressTasks progressTask = importType switch
+            {
+                ImportType.DarkLoader => ProgressTasks.ImportFromDarkLoader,
+                ImportType.FMSel => ProgressTasks.ImportFromFMSel,
+                _ => ProgressTasks.ImportFromNDL
+            };
+
+            Core.View.ShowProgressBox(progressTask);
+            try
+            {
+                var (error, fmsToScan) = await (
+                    importType == ImportType.DarkLoader
+                    ? ImportDarkLoaderInternal(iniFile, dl_ImportFMData, dl_ImportSaves, fields)
+                    : importType == ImportType.FMSel
+                    ? ImportFMSelInternal(iniFile, fields: fields)
+                    : ImportNDLInternal(iniFile, fields: fields));
+
+                if (error != ImportError.None)
+                {
+                    Log("ImportError: " + error, stackTrace: true);
+
+                    if (importType == ImportType.DarkLoader)
+                    {
+                        if (error == ImportError.NoArchiveDirsFound)
+                        {
+                            Core.View.ShowAlert(LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert);
+                        }
+                        else
+                        {
+                            Core.View.ShowAlert(
+                                "An error occurred with DarkLoader importing. See the log file for details. " +
+                                "Aborting import operation.", LText.AlertMessages.Error);
+                        }
+                    }
+
+                    return false;
+                }
+
+                var scanOptions = importType == ImportType.FMSel
+                    ? ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true)
+                    // NewDarkLoader and DarkLoader both take this one
+                    : ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
+
+                await FMScan.ScanAndFind(fmsToScan, scanOptions);
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in " + importType + " import", ex);
+
+                if (importType == ImportType.DarkLoader)
+                {
+                    Core.View.ShowAlert(
+                        "An error occurred with DarkLoader importing. See the log file for details. " +
+                        "Aborting import operation.", LText.AlertMessages.Error);
+                }
+
+                return false;
+            }
+            finally
+            {
+                Core.View.HideProgressBox();
+            }
+
+            return true;
+        }
+
+        private static async Task<(ImportError Error, List<FanMission> FMs)>
+        ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
+        {
+            #region Local functions
+
+            static string RemoveDLArchiveBadChars(string archive)
+            {
+                foreach (string s in new[] { "]", "\u0009", "\u000A", "\u000D" }) archive = archive.Replace(s, "");
+                return archive;
+            }
+
+            // Don't replace \r\n or \\ escapes because we use those in the exact same way so no conversion needed
+            static string DLUnescapeChars(string str) => str.Replace(@"\t", "\u0009").Replace(@"\""", "\"");
+
+            #endregion
+
+            #region Data
+
+            string[] _nonFMHeaders =
+            {
+                "[options]",
+                "[window]",
+                "[mission directories]",
+                "[Thief 1]",
+                "[Thief 2]",
+                "[Thief2x]",
+                "[SShock 2]"
+            };
+
+            // Not used - we scan for game types ourselves currently
+            //private enum DLGame
+            //{
+            //    darkGameUnknown = 0, // <- if it hasn't been scanned, it will be this
+            //    darkGameThief = 1,
+            //    darkGameThief2 = 2,
+            //    darkGameT2x = 3,
+            //    darkGameSS2 = 4
+            //}
+
+            Regex _darkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
+
+            #endregion
+
+            var fms = new List<FanMission>();
+
+            bool missionDirsRead = false;
+            var archiveDirs = new List<string>();
+
+            var error = await Task.Run(() =>
+            {
+                try
+                {
+                    string[] lines = File.ReadAllLines(iniFile);
+
+                    if (importFMData)
+                    {
+                        for (int i = 0; i < lines.Length; i++)
+                        {
+                            string line = lines[i];
+                            string lineTS = line.TrimStart();
+                            string lineTB = lineTS.TrimEnd();
+
+                            #region Read archive directories
+
+                            // We need to know the archive dirs before doing anything, because we may need to
+                            // recreate some lossy names (if any bad chars have been removed by DarkLoader).
+                            if (!missionDirsRead && lineTB == "[mission directories]")
+                            {
+                                while (i < lines.Length - 1)
+                                {
+                                    string lt = lines[i + 1].Trim();
+                                    if (!lt.IsEmpty() && lt[0] != '[' && lt.EndsWith("=1"))
+                                    {
+                                        archiveDirs.Add(lt.Substring(0, lt.Length - 2));
+                                    }
+                                    else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                                    {
+                                        break;
+                                    }
+                                    i++;
+                                }
+
+                                if (archiveDirs.Count == 0 || archiveDirs.All(x => x.IsWhiteSpace()))
+                                {
+                                    return ImportError.NoArchiveDirsFound;
+                                }
+
+                                // Restart from the beginning of the file, this time skipping anything that isn't
+                                // an FM entry
+                                i = -1;
+                                missionDirsRead = true;
+                                continue;
+                            }
+
+                            #endregion
+
+                            #region Read FM entries
+
+                            // MUST CHECK missionDirsRead OR IT ADDS EVERY FM TWICE!
+                            if (missionDirsRead &&
+                                !_nonFMHeaders.Contains(lineTB) && lineTB.Length > 0 && lineTB[0] == '[' &&
+                                lineTB[lineTB.Length - 1] == ']' && lineTB.Contains('.') &&
+                                _darkLoaderFMRegex.Match(lineTB).Success)
+                            {
+                                int lastIndexDot = lineTB.LastIndexOf('.');
+                                string archive = lineTB.Substring(1, lastIndexDot - 1);
+                                string size = lineTB.Substring(lastIndexDot + 1, lineTB.Length - lastIndexDot - 2);
+
+                                foreach (string dir in archiveDirs)
+                                {
+                                    if (!Directory.Exists(dir)) continue;
+                                    try
+                                    {
+                                        // DarkLoader only does zip format
+                                        foreach (string f in FastIO.GetFilesTopOnly(dir, "*.zip"))
+                                        {
+                                            string fnNoExt = Path.GetFileNameWithoutExtension(f);
+                                            if (RemoveDLArchiveBadChars(fnNoExt).EqualsI(archive))
+                                            {
+                                                archive = fnNoExt;
+                                                goto breakout;
+                                            }
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log("Exception in DarkLoader archive dir file enumeration", ex);
+                                    }
+                                }
+
+                                breakout:
+
+                                archive += ".zip";
+
+                                ulong.TryParse(size, out ulong sizeBytes);
+                                var fm = new FanMission
+                                {
+                                    Archive = archive,
+                                    InstalledDir = archive.ToInstDirNameFMSel(),
+                                    SizeBytes = sizeBytes
+                                };
+
+                                // We don't import game type, because DarkLoader by default gets it wrong for
+                                // NewDark FMs (the user could have changed it manually in the ini file, and in
+                                // fact it's somewhat likely they would have done so, but still, better to just
+                                // scan for it ourselves later)
+
+                                while (i < lines.Length - 1)
+                                {
+                                    string lts = lines[i + 1].TrimStart();
+                                    string ltb = lts.TrimEnd();
+
+                                    if (lts.StartsWith("comment=\""))
+                                    {
+                                        string comment = ltb.Substring(9);
+                                        if (comment.Length >= 2 && comment[comment.Length - 1] == '\"')
+                                        {
+                                            comment = comment.Substring(0, comment.Length - 1);
+                                            fm.Comment = DLUnescapeChars(comment);
+                                        }
+                                    }
+                                    else if (lts.StartsWith("title=\""))
+                                    {
+                                        string title = ltb.Substring(7);
+                                        if (title.Length >= 2 && title[title.Length - 1] == '\"')
+                                        {
+                                            title = title.Substring(0, title.Length - 1);
+                                            fm.Title = DLUnescapeChars(title);
+                                        }
+                                    }
+                                    else if (lts.StartsWith("misdate="))
+                                    {
+                                        ulong.TryParse(ltb.Substring(8), out ulong result);
+                                        try
+                                        {
+                                            var date = new DateTime(1899, 12, 30).AddDays(result);
+                                            fm.ReleaseDate.DateTime = date.Year > 1998 ? date : (DateTime?)null;
+                                        }
+                                        catch (ArgumentOutOfRangeException)
+                                        {
+                                            fm.ReleaseDate.DateTime = null;
+                                        }
+                                    }
+                                    else if (lts.StartsWith("date="))
+                                    {
+                                        ulong.TryParse(ltb.Substring(5), out ulong result);
+                                        try
+                                        {
+                                            var date = new DateTime(1899, 12, 30).AddDays(result);
+                                            fm.LastPlayed.DateTime = date.Year > 1998 ? date : (DateTime?)null;
+                                        }
+                                        catch (ArgumentOutOfRangeException)
+                                        {
+                                            fm.LastPlayed.DateTime = null;
+                                        }
+                                    }
+                                    else if (lts.StartsWith("finished="))
+                                    {
+                                        uint.TryParse(ltb.Substring(9), out uint result);
+                                        // result will be 0 on fail, which is the empty value so it's fine
+                                        fm.FinishedOn = result;
+                                    }
+                                    else if (!ltb.IsEmpty() && ltb[0] == '[' && ltb[ltb.Length - 1] == ']')
+                                    {
+                                        break;
+                                    }
+                                    i++;
+                                }
+
+                                fms.Add(fm);
+                            }
+
+                            #endregion
+                        }
+                    }
+
+                    if (importSaves)
+                    {
+                        try
+                        {
+                            ImportDarkLoaderSaves(lines);
+                        }
+                        catch
+                        {
+                            // ignore - keeping same behavior
+                        }
+                    }
+
+                    return ImportError.None;
+                }
+                catch (Exception ex)
+                {
+                    Log(ex: ex);
+                    return ImportError.Unknown;
+                }
+                finally
+                {
+                    Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
+                }
+            });
+
+            if (error != ImportError.None) return (error, fms);
+
+            var importedFMs = MergeImportedFMData(ImportType.DarkLoader, fms, fields);
+
+            return (ImportError.None, importedFMs);
+        }
+
+        private static bool
+        ImportDarkLoaderSaves(string[] lines)
+        {
+            // We DON'T use game generalization here, because DarkLoader only supports T1/T2/SS2 and will never
+            // change (it's not updated anymore). So it's okay that we code those games in manually here.
+
+            string t1Dir = "";
+            string t2Dir = "";
+            string ss2Dir = "";
+            bool t1DirRead = false;
+            bool t2DirRead = false;
+            bool ss2DirRead = false;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                string lineTS = line.TrimStart();
+                string lineTB = lineTS.TrimEnd();
+
+                if (lineTB == "[options]")
+                {
+                    while (i < lines.Length - 1)
+                    {
+                        string lt = lines[i + 1].Trim();
+                        if (lt.StartsWithI("thief1dir="))
+                        {
+                            t1Dir = lt.Substring(10).Trim();
+                            t1DirRead = true;
+                        }
+                        else if (lt.StartsWithI("thief2dir="))
+                        {
+                            t2Dir = lt.Substring(10).Trim();
+                            t2DirRead = true;
+                        }
+                        else if (lt.StartsWithI("shock2dir="))
+                        {
+                            ss2Dir = lt.Substring(10).Trim();
+                            ss2DirRead = true;
+                        }
+                        else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
+                            break;
+                        }
+                        if (t1DirRead && t2DirRead && ss2DirRead) goto breakout;
+                        i++;
+                    }
+                }
+            }
+
+            breakout:
+
+            if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace() && ss2Dir.IsWhiteSpace()) return true;
+
+            for (int i = 0; i < 3; i++)
+            {
+                if (i == 0 && t1Dir.IsEmpty()) continue;
+                if (i == 1 && t2Dir.IsEmpty()) continue;
+                if (i == 2 && ss2Dir.IsEmpty()) continue;
+
+                string savesPath = Path.Combine(i switch { 0 => t1Dir, 1 => t2Dir, _ => ss2Dir }, "allsaves");
+                if (!Directory.Exists(savesPath)) continue;
+
+                string convertedPath = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
+                Directory.CreateDirectory(convertedPath);
+
+                // Converting takes too long, so just copy them to our backup folder and they'll be handled
+                // appropriately next time the user installs an FM
+                foreach (string f in FastIO.GetFilesTopOnly(savesPath, "*.zip"))
+                {
+                    string dest = Path.Combine(convertedPath, f.GetFileNameFast());
+                    File.Copy(f, dest, overwrite: true);
+                }
+            }
+
+            return true;
+        }
+
+        private static async Task<(ImportError Error, List<FanMission> FMs)>
+        ImportFMSelInternal(string iniFile, bool returnUnmergedFMsList = false, FieldsToImport? fields = null)
+        {
+            string[] lines = await Task.Run(() => File.ReadAllLines(iniFile));
+            var fms = new List<FanMission>();
+
+            await Task.Run(() =>
+            {
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+
+                    if (line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
+                    {
+                        string instName = line.Substring(4, line.Length - 5);
+
+                        var fm = new FanMission { InstalledDir = instName };
+
+                        while (i < lines.Length - 1)
+                        {
+                            string lineFM = lines[i + 1];
+                            if (lineFM.StartsWithFast_NoNullChecks("NiceName="))
+                            {
+                                fm.Title = lineFM.Substring(9);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Archive="))
+                            {
+                                fm.Archive = lineFM.Substring(8);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("ReleaseDate="))
+                            {
+                                fm.ReleaseDate.UnixDateString = lineFM.Substring(12);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("LastStarted="))
+                            {
+                                fm.LastPlayed.UnixDateString = lineFM.Substring(12);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Completed="))
+                            {
+                                int.TryParse(lineFM.Substring(10), out int result);
+                                // Unfortunately FMSel doesn't let you choose the difficulty you finished on, so
+                                // we have to have this fallback value as a best-effort thing.
+                                if (result > 0) fm.FinishedOnUnknown = true;
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Rating="))
+                            {
+                                fm.Rating = int.TryParse(lineFM.Substring(7), out int result) ? result : -1;
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Notes="))
+                            {
+                                fm.Comment = lineFM.Substring(6).Replace(@"\n", @"\r\n");
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
+                            {
+                                string val = lineFM.Substring(11);
+                                if (val == "*")
+                                {
+                                    fm.DisableAllMods = true;
+                                }
+                                else
+                                {
+                                    fm.DisabledMods = val;
+                                }
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
+                            {
+                                fm.TagsString = lineFM.Substring(5);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("InfoFile="))
+                            {
+                                fm.SelectedReadme = lineFM.Substring(9);
+                            }
+                            else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[lineFM.Length - 1] == ']')
+                            {
+                                break;
+                            }
+                            i++;
+
+                        }
+
+                        fms.Add(fm);
+                    }
+                }
+            });
+
+            var importedFMs = returnUnmergedFMsList
+                ? fms
+                : MergeImportedFMData(ImportType.FMSel, fms, fields);
+
+            return (ImportError.None, importedFMs);
+        }
+
+        private static async Task<(ImportError Error, List<FanMission> FMs)>
+        ImportNDLInternal(string iniFile, bool returnUnmergedFMsList = false, FieldsToImport? fields = null)
+        {
+            string[] lines = await Task.Run(() => File.ReadAllLines(iniFile));
+            var fms = new List<FanMission>();
+
+            ImportError error = await Task.Run(() =>
+            {
+                bool archiveDirRead = false;
+                string archiveDir = "";
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+
+                    #region Read archive directory
+
+                    if (!archiveDirRead && line == "[Config]")
+                    {
+                        while (i < lines.Length - 1)
+                        {
+                            string lc = lines[i + 1];
+                            if (lc.StartsWithFast_NoNullChecks("ArchiveRoot="))
+                            {
+                                archiveDir = lc.Substring(12).Trim();
+                                break;
+                            }
+                            else if (!lc.IsEmpty() && lc[0] == '[' && lc[lc.Length - 1] == ']')
+                            {
+                                break;
+                            }
+                            i++;
+                        }
+
+                        if (archiveDir.IsEmpty()) return ImportError.NoArchiveDirsFound;
+
+                        i = -1;
+                        archiveDirRead = true;
+                        continue;
+                    }
+
+                    #endregion
+
+                    #region Read FM entries
+
+                    // MUST CHECK archiveDirRead OR IT ADDS EVERY FM TWICE!
+                    if (archiveDirRead &&
+                        line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
+                    {
+                        // NOTE: There can be a problem like:
+                        // installed name is CoolMission[1]
+                        // it gets written like [FM=CoolMission[1]]
+                        // it gets read and all [ and ] chars are removed
+                        // it gets written back out like [FM=CoolMission1]
+                        // Rare I guess, so just ignore?
+                        string instName = line.Substring(4, line.Length - 5);
+
+                        var fm = new FanMission { InstalledDir = instName };
+
+                        // Unfortunately NDL doesn't store its archive names, so we have to do a file search
+                        // similar to DarkLoader
+                        try
+                        {
+                            // NDL always searches subdirectories as well
+                            foreach (string f in Directory.EnumerateFiles(archiveDir, "*", SearchOption.AllDirectories))
+                            {
+                                // @DIRSEP: '/' conversion due to string.ContainsI()
+                                if (!f.ToForwardSlashes().ContainsI("/.fix/"))
+                                {
+                                    string fn = Path.GetFileNameWithoutExtension(f);
+                                    if (fn.ToInstDirNameNDL().EqualsI(instName) || fn.EqualsI(instName))
+                                    {
+                                        fm.Archive = Path.GetFileName(f);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Exception in NewDarkLoader archive dir file enumeration", ex);
+                        }
+
+                        while (i < lines.Length - 1)
+                        {
+                            string lineFM = lines[i + 1];
+                            if (lineFM.StartsWithFast_NoNullChecks("NiceName="))
+                            {
+                                fm.Title = lineFM.Substring(9);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("ReleaseDate="))
+                            {
+                                fm.ReleaseDate.UnixDateString = lineFM.Substring(12);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("LastCompleted="))
+                            {
+                                fm.LastPlayed.UnixDateString = lineFM.Substring(14);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Finished="))
+                            {
+                                uint.TryParse(lineFM.Substring(9), out uint result);
+                                // result will be 0 on fail, which is the empty value so it's fine
+                                fm.FinishedOn = result;
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Rating="))
+                            {
+                                fm.Rating = int.TryParse(lineFM.Substring(7), out int result) ? result : -1;
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Comment="))
+                            {
+                                fm.Comment = lineFM.Substring(8);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
+                            {
+                                string val = lineFM.Substring(11);
+                                if (val == "*")
+                                {
+                                    fm.DisableAllMods = true;
+                                }
+                                else
+                                {
+                                    fm.DisabledMods = val;
+                                }
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
+                            {
+                                string val = lineFM.Substring(5);
+                                if (!val.IsEmpty() && val != "[none]") fm.TagsString = val;
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("InfoFile="))
+                            {
+                                fm.SelectedReadme = lineFM.Substring(9);
+                            }
+                            else if (lineFM.StartsWithFast_NoNullChecks("FMSize="))
+                            {
+                                ulong.TryParse(lineFM.Substring(7), out ulong result);
+                                fm.SizeBytes = result;
+                            }
+                            else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[lineFM.Length - 1] == ']')
+                            {
+                                break;
+                            }
+                            i++;
+                        }
+
+                        fms.Add(fm);
+                    }
+
+                    #endregion
+                }
+
+                return ImportError.None;
+            });
+
+            if (error != ImportError.None) return (error, fms);
+
+            var importedFMs = returnUnmergedFMsList
+                ? fms
+                : MergeImportedFMData(ImportType.NewDarkLoader, fms, fields);
+
+            return (ImportError.None, importedFMs);
+        }
+
+        #endregion
+
+        private static List<FanMission>
+        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport? fields = null)
+        {
+            fields ??= new FieldsToImport
+            {
+                Title = true,
+                ReleaseDate = true,
+                LastPlayed = true,
+                FinishedOn = true,
+                Comment = true,
+                Rating = true,
+                DisabledMods = true,
+                Tags = true,
+                SelectedReadme = true,
+                Size = true
+            };
+
+            // Perf
+            int initCount = FMDataIniList.Count;
+            bool[] checkedArray = new bool[initCount];
+
+            // We can't just send back the list we got in, because we will have deep-copied them to the main list
+            var importedFMsInMainList = new List<FanMission>();
+
+            for (int impFMi = 0; impFMi < importedFMs.Count; impFMi++)
+            {
+                var importedFM = importedFMs[impFMi];
+
+                bool existingFound = false;
+                for (int mainFMi = 0; mainFMi < initCount; mainFMi++)
+                {
+                    var mainFM = FMDataIniList[mainFMi];
+
+                    if (!checkedArray[mainFMi] &&
+                        (importType == ImportType.DarkLoader &&
+                         mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                        (importType == ImportType.FMSel &&
+                         (!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                          importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)) ||
+                        (importType == ImportType.NewDarkLoader &&
+                         mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
+                    {
+                        var priorityFMData = new FanMission();
+
+                        if (fields.Title && !importedFM.Title.IsEmpty())
+                        {
+                            mainFM.Title = importedFM.Title;
+                            priorityFMData.Title = importedFM.Title;
+                        }
+                        if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
+                        {
+                            mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                            priorityFMData.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                        }
+                        if (fields.LastPlayed)
+                        {
+                            mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                            priorityFMData.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                        }
+                        if (fields.FinishedOn)
+                        {
+                            mainFM.FinishedOn = importedFM.FinishedOn;
+                            priorityFMData.FinishedOn = importedFM.FinishedOn;
+                            if (importType != ImportType.FMSel)
+                            {
+                                mainFM.FinishedOnUnknown = false;
+                                priorityFMData.FinishedOnUnknown = false;
+                            }
+                        }
+                        if (fields.Comment)
+                        {
+                            mainFM.Comment = importedFM.Comment;
+                            priorityFMData.Comment = importedFM.Comment;
+                        }
+
+                        if (importType == ImportType.NewDarkLoader ||
+                            importType == ImportType.FMSel)
+                        {
+                            if (fields.Rating)
+                            {
+                                mainFM.Rating = importedFM.Rating;
+                                priorityFMData.Rating = importedFM.Rating;
+                            }
+                            if (fields.DisabledMods)
+                            {
+                                mainFM.DisabledMods = importedFM.DisabledMods;
+                                priorityFMData.DisabledMods = importedFM.DisabledMods;
+                                mainFM.DisableAllMods = importedFM.DisableAllMods;
+                                priorityFMData.DisableAllMods = importedFM.DisableAllMods;
+                            }
+                            if (fields.Tags)
+                            {
+                                mainFM.TagsString = importedFM.TagsString;
+                                priorityFMData.TagsString = importedFM.TagsString;
+                            }
+                            if (fields.SelectedReadme)
+                            {
+                                mainFM.SelectedReadme = importedFM.SelectedReadme;
+                                priorityFMData.SelectedReadme = importedFM.SelectedReadme;
+                            }
+                        }
+                        if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
+                        {
+                            if (fields.Size && mainFM.SizeBytes == 0)
+                            {
+                                mainFM.SizeBytes = importedFM.SizeBytes;
+                                priorityFMData.SizeBytes = importedFM.SizeBytes;
+                            }
+                        }
+                        else if (importType == ImportType.FMSel && mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
+                        {
+                            if (fields.FinishedOn)
+                            {
+                                mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
+                                priorityFMData.FinishedOnUnknown = importedFM.FinishedOnUnknown;
+                            }
+                        }
+
+                        mainFM.MarkedScanned = true;
+
+                        checkedArray[mainFMi] = true;
+
+                        importedFMsInMainList.Add(mainFM);
+
+                        existingFound = true;
+                        break;
+                    }
+                }
+                if (!existingFound)
+                {
+                    var newFM = new FanMission
+                    {
+                        Archive = importedFM.Archive,
+                        InstalledDir = importedFM.InstalledDir
+                    };
+
+                    if (fields.Title)
+                    {
+                        newFM.Title = !importedFM.Title.IsEmpty() ? importedFM.Title :
+                            !importedFM.Archive.IsEmpty() ? importedFM.Archive.RemoveExtension() :
+                            importedFM.InstalledDir;
+                    }
+                    if (fields.ReleaseDate)
+                    {
+                        newFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                    }
+                    if (fields.LastPlayed)
+                    {
+                        newFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                    }
+                    if (fields.Comment)
+                    {
+                        newFM.Comment = importedFM.Comment;
+                    }
+
+                    if (importType == ImportType.NewDarkLoader ||
+                        importType == ImportType.FMSel)
+                    {
+                        if (fields.Rating)
+                        {
+                            newFM.Rating = importedFM.Rating;
+                        }
+                        if (fields.DisabledMods)
+                        {
+                            newFM.DisabledMods = importedFM.DisabledMods;
+                            newFM.DisableAllMods = importedFM.DisableAllMods;
+                        }
+                        if (fields.Tags)
+                        {
+                            newFM.TagsString = importedFM.TagsString;
+                        }
+                        if (fields.SelectedReadme)
+                        {
+                            newFM.SelectedReadme = importedFM.SelectedReadme;
+                        }
+                    }
+                    if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
+                    {
+                        if (fields.Size)
+                        {
+                            newFM.SizeBytes = importedFM.SizeBytes;
+                        }
+                        if (fields.FinishedOn)
+                        {
+                            newFM.FinishedOn = importedFM.FinishedOn;
+                        }
+                    }
+                    else if (importType == ImportType.FMSel)
+                    {
+                        if (fields.FinishedOn)
+                        {
+                            newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
+                        }
+                    }
+
+                    newFM.MarkedScanned = true;
+
+                    FMDataIniList.Add(newFM);
+                    importedFMsInMainList.Add(newFM);
+                }
+            }
+
+            return importedFMsInMainList;
+        }
+    }
+}

@@ -45,7 +45,6 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
-using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
@@ -2183,12 +2182,12 @@ namespace AngelLoader.Forms
         {
             if (sender.EqualsIfNotNull(ImportFromLLMenu.ImportFromDarkLoaderMenuItem))
             {
-                await ImportCommon.ImportFromDarkLoader();
+                await Import.ImportFromDarkLoader();
             }
             else if (sender.EqualsIfNotNull(ImportFromLLMenu.ImportFromFMSelMenuItem) ||
                      sender.EqualsIfNotNull(ImportFromLLMenu.ImportFromNewDarkLoaderMenuItem))
             {
-                await ImportCommon.ImportFromNDLOrFMSel(sender == ImportFromLLMenu.ImportFromFMSelMenuItem
+                await Import.ImportFromNDLOrFMSel(sender == ImportFromLLMenu.ImportFromFMSelMenuItem
                     ? ImportType.FMSel
                     : ImportType.NewDarkLoader);
             }

@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.Forms.Import
+﻿namespace AngelLoader.Forms
 {
     sealed partial class ImportFromDarkLoaderForm
     {
@@ -40,7 +40,7 @@
             this.ImportTitleCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportFMDataCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportSavesCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportControls = new AngelLoader.Forms.Import.User_DL_ImportControls();
+            this.ImportControls = new User_DL_ImportControls();
             this.OKCancelFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 

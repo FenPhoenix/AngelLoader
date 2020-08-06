@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.Forms.Import
+﻿namespace AngelLoader.Forms
 {
     sealed partial class User_FMSel_NDL_ImportControls
     {

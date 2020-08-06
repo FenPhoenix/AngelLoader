@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.Import
+namespace AngelLoader.Forms
 {
     public sealed partial class User_DL_ImportControls : UserControl
     {

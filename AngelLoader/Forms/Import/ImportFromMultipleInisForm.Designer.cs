@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.Forms.Import
+﻿namespace AngelLoader.Forms
 {
     sealed partial class ImportFromMultipleInisForm
     {
@@ -32,7 +32,7 @@
             this.OKButton = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.ImportControls = new AngelLoader.Forms.Import.User_FMSel_NDL_ImportControls();
+            this.ImportControls = new User_FMSel_NDL_ImportControls();
             this.ImportSizeCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportFinishedOnCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportSelectedReadmeCheckBox = new System.Windows.Forms.CheckBox();

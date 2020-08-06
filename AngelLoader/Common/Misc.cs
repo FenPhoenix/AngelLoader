@@ -65,6 +65,14 @@ namespace AngelLoader
             DeleteFMArchive
         }
 
+        // Has to be public so it can be passed to a public constructor on a form
+        public enum ImportType
+        {
+            DarkLoader,
+            FMSel,
+            NewDarkLoader
+        }
+
         public enum Direction { Left, Right, Up, Down }
 
         internal enum ReadmeType { PlainText, RichText, HTML, GLML }

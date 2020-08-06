@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace AngelLoader.Forms.Import
+namespace AngelLoader.Forms
 {
     public sealed partial class ImportFromDarkLoaderForm
     {
