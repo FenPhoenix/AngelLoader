@@ -56,7 +56,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    const string message = "Failed to create required application directories on startup.";
+                    string message = "Failed to create required application directories on startup.";
                     Log(message, ex);
                     MessageBox.Show(message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Environment.Exit(1);
@@ -1386,7 +1386,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in " + nameof(GetReadmeFileFullPath), ex);
+                Log(ex: ex);
                 return;
             }
 

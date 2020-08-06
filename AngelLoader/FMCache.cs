@@ -181,7 +181,7 @@ namespace AngelLoader
                             }
                             catch (Exception ex)
                             {
-                                Log("Exception in " + nameof(ExtractHTMLRefFiles), ex);
+                                Log(ex: ex);
                             }
                         }
                     }
@@ -199,7 +199,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in GetCacheableData", ex);
+                Log(ex: ex);
                 return new CacheData();
             }
         }

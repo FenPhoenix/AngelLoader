@@ -106,7 +106,11 @@ namespace AngelLoader
         }
 
         // TODO: Consider how to make the log not clear every startup and still have it be feasible for people to "post their log"
-        internal static void Log(string message, Exception? ex = null, bool stackTrace = false, bool methodName = true,
+        internal static void Log(
+            string message = "",
+            Exception? ex = null,
+            bool stackTrace = false,
+            bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
         {
             try

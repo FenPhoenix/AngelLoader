@@ -281,7 +281,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in ScanFMs", ex);
+                Log(ex: ex);
                 string message = scanningOne
                     ? LText.AlertMessages.Scan_ExceptionInScanOne
                     : LText.AlertMessages.Scan_ExceptionInScanMultiple;

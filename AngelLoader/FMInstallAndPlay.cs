@@ -569,7 +569,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in " + nameof(RestoreFM), ex);
+                Log(ex: ex);
             }
             finally
             {

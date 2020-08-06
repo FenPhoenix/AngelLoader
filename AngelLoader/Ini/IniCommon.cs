@@ -88,7 +88,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception exiting " + nameof(_fmDataIniRWLock) + " in " + nameof(WriteFullFMDataIni), ex);
+                    Log("Exception exiting " + nameof(_fmDataIniRWLock), ex);
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception exiting " + nameof(_configIniRWLock) + " in " + nameof(WriteConfigIni), ex);
+                    Log("Exception exiting " + nameof(_configIniRWLock), ex);
                 }
             }
         }

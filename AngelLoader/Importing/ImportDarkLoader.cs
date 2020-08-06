@@ -292,7 +292,7 @@ namespace AngelLoader.Importing
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception in " + nameof(ImportDarkLoader) + "." + nameof(ImportInternal), ex);
+                    Log(ex: ex);
                     return ImportError.Unknown;
                 }
                 finally
