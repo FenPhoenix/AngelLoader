@@ -31,5 +31,14 @@ namespace AngelLoader.Forms.CustomControls
             e.Graphics.FillRectangle(_transparentBrush, ClientRectangle);
             base.OnPaint(e);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _transparentBrush.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

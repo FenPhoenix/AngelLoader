@@ -359,7 +359,10 @@ namespace AngelLoader.Forms
                         _ratingExample_FMSel_Stars = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
                         using var g = Graphics.FromImage(_ratingExample_FMSel_Stars);
                         g.FillRectangle(Brushes.White, 1, 1, 77, 21);
-                        g.DrawRectangle(new Pen(Color.FromArgb(160, 160, 160)), 0, 0, 78, 22);
+                        using (var pen = new Pen(Color.FromArgb(160, 160, 160)))
+                        {
+                            g.DrawRectangle(pen, 0, 0, 78, 22);
+                        }
                         g.SmoothingMode = SmoothingMode.AntiAlias;
 
                         float x = 4;
