@@ -1756,23 +1756,25 @@ namespace FMScanner
                 {
                     if (_fmIsZip)
                     {
-                        // TODO: Currently still copying the entire readme stream.
-                        // We're approximately the same memory use as before (very slightly more), and this is
-                        // still the fastest thing we can do.
-                        // However, reading directly out of the archive with a buffer saves a substantial amount
-                        // of memory and is only modestly slower, and still way faster than before.
-                        // But, if we do that, then we have to open the zip stream twice (once to check for the
-                        // {\rtf1 header and then once again to restart from the beginning because we can't seek.
-                        // However, it seems entry.Open() seeks through the zip file every time you call it, so
-                        // when the cache is cold, we lose all the time we gained by opening it twice.
-                        // TODO: I could probably cache the entries' position in the zip file to prevent this.
-                        // Then we could do the slightly-slower-but-way-less-memory-use method.
-                        // Alternatively, we could do some kind of ugly hack in the reader so that it acts like
-                        // it's read "{\rtf1" already and then goes from there.
-                        readmeStream = new MemoryStream(readmeFileLen);
-                        using (var es = readmeEntry!.Open()) es.CopyTo(readmeStream);
+                        /*
+                         NOTE: We used to copy the entire stream into memory here first, because we needed to
+                         seek. With the new custom RTF converter, we don't need to seek anymore.
 
-                        readmeStream.Position = 0;
+                         With the new converter, copying the stream to memory first results in the fastest
+                         performance, but slightly more memory use than the old RichTextBox method.
+
+                         We've instead chosen to go with the buffered read here, which is slightly slower - but
+                         still 66% faster than the old RichTextBox-based converter - and saves a substantial
+                         amount of memory. Any other time I would choose ultimate speed, but RTF files can be
+                         extremely large (due to often containing images), so I'm erring on the side of caution.
+
+                         With this new buffered read method, we're guaranteed to only ever use:
+                         (rtf length) + (buffer length)
+
+                         Whereas with the old one, it was more like:
+                         (rtf length * 2) + (image-stripped rtf length) + (unpacked rtf data inside RichTextBox length)
+                        */
+                        readmeStream = readmeEntry!.Open();
                     }
 
                     // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
@@ -1787,14 +1789,16 @@ namespace FMScanner
                             ? br.ReadBytes(RtfTags_HeaderBytesLength)
                             : null;
                     }
-                    if (_fmIsZip) readmeStream!.Position = 0;
 
+                    // file is rtf
                     if (rtfHeader != null && rtfHeader.SequenceEqual(RtfTags_HeaderBytes))
                     {
                         bool success;
                         string text;
                         if (_fmIsZip)
                         {
+                            readmeStream?.Dispose();
+                            readmeStream = readmeEntry!.Open();
                             (success, text) = rtfConverter.Convert(readmeStream!, readmeFileLen);
                         }
                         else
@@ -1810,8 +1814,16 @@ namespace FMScanner
                             last.Text = text;
                         }
                     }
-                    else
+                    else // file is plain text
                     {
+                        if (_fmIsZip)
+                        {
+                            // Plain text, so load the whole thing in one go
+                            readmeStream?.Dispose();
+                            readmeStream = new MemoryStream(readmeFileLen);
+                            using (var es = readmeEntry!.Open()) es.CopyTo(readmeStream);
+                        }
+
                         ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
                         last.Lines.ClearAndAdd(_fmIsZip
                             ? ReadAllLinesE(readmeStream!, readmeFileLen, streamIsSeekable: true)

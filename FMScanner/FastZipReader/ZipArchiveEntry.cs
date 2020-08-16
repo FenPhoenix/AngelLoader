@@ -202,6 +202,11 @@ namespace FMScanner.FastZipReader
 
         private bool IsOpenable(out string message)
         {
+            if (_storedOffsetOfCompressedData != null)
+            {
+                Archive.ArchiveStream.Seek((long)_storedOffsetOfCompressedData, SeekOrigin.Begin);
+            }
+
             message = "";
 
             if (_compressionMethod != CompressionMethodValues.Stored &&
