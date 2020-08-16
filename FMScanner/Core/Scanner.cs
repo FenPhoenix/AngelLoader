@@ -255,9 +255,9 @@ namespace FMScanner
 
             var scannedFMDataList = new List<ScannedFMData?>();
 
-            // Init and dispose rtfBox here to avoid cross-thread exceptions.
-            // For performance, we only have one instance and we just change its content as needed.
-            using var rtfBox = new RichTextBox();
+            // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
+            // fields as much as possible for performance.
+            var rtfConverter = new RtfToTextConverter();
 
             ProgressReport progressReport = new ProgressReport();
 
@@ -340,7 +340,7 @@ namespace FMScanner
                         }
                         try
                         {
-                            scannedFM = ScanCurrentFM(rtfBox);
+                            scannedFM = ScanCurrentFM(rtfConverter);
                         }
                         catch (Exception ex)
                         {
@@ -369,7 +369,7 @@ namespace FMScanner
             return scannedFMDataList;
         }
 
-        private ScannedFMData? ScanCurrentFM(RichTextBox rtfBox)
+        private ScannedFMData? ScanCurrentFM(RtfToTextConverter rtfConverter)
         {
 #if DEBUG
             _overallTimer.Restart();
@@ -646,7 +646,7 @@ namespace FMScanner
 
             if (fmIsT3) foreach (NameAndIndex f in t3FMExtrasDirFiles) readmeDirFiles.Add(f);
 
-            ReadAndCacheReadmeFiles(readmeDirFiles, rtfBox);
+            ReadAndCacheReadmeFiles(readmeDirFiles, rtfConverter);
 
             #endregion
 
@@ -1681,76 +1681,7 @@ namespace FMScanner
 
         #endregion
 
-        // Because RTF files can have embedded images, their size can far exceed that normally expected of a
-        // readme. To save time and memory, this method strips out such large data blocks before passing the
-        // result to a WinForms RichTextBox for final conversion to plain text.
-        private bool GetRtfFileLinesAndText(Stream stream, int streamLength, RichTextBox rtfBox)
-        {
-            static bool ByteArrayStartsWith(byte[] first, byte[] second)
-            {
-                for (int i = 0; i < second.Length; i++) if (first[i] != second[i]) return false;
-                return true;
-            }
-
-            if (stream.Position > 0) stream.Position = 0;
-
-            // Don't parse files small enough to be unlikely to have embedded images; otherwise we're just parsing
-            // it twice for nothing
-            if (streamLength < ByteSize.KB * 256)
-            {
-                rtfBox.LoadFile(stream, RichTextBoxStreamType.RichText);
-                stream.Position = 0;
-                return true;
-            }
-
-            var byteList = new List<byte>();
-            byte stack = 0;
-            for (long i = 0; i < streamLength; i++)
-            {
-                // Just in case there's a malformed file or something
-                if (stack > 100)
-                {
-                    stream.Position = 0;
-                    return false;
-                }
-
-                int b = stream.ReadByte();
-                if (b == '{')
-                {
-                    if (i < streamLength - 11)
-                    {
-                        stream.Read(RtfTags_Bytes11, 0, RtfTags_Bytes11.Length);
-
-                        if (ByteArrayStartsWith(RtfTags_Bytes11, RtfTags_shppict) ||
-                           ByteArrayStartsWith(RtfTags_Bytes11, RtfTags_objdata) ||
-                           ByteArrayStartsWith(RtfTags_Bytes11, RtfTags_nonshppict) ||
-                           ByteArrayStartsWith(RtfTags_Bytes11, RtfTags_pict))
-                        {
-                            stack++;
-                            stream.Position -= RtfTags_Bytes11.Length;
-                            continue;
-                        }
-
-                        if (stack > 0) stack++;
-                        stream.Position -= RtfTags_Bytes11.Length;
-                    }
-                }
-                else if (b == '}' && stack > 0)
-                {
-                    stack--;
-                    continue;
-                }
-
-                if (stack == 0) byteList.Add((byte)b);
-            }
-
-            using var trimmedMemStream = new MemoryStream(byteList.ToArray());
-            rtfBox.LoadFile(trimmedMemStream, RichTextBoxStreamType.RichText);
-            stream.Position = 0;
-            return true;
-        }
-
-        private void ReadAndCacheReadmeFiles(List<NameAndIndex> readmeDirFiles, RichTextBox rtfBox)
+        private void ReadAndCacheReadmeFiles(List<NameAndIndex> readmeDirFiles, RtfToTextConverter rtfConverter)
         {
             // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
             // Treat 'em like plaintext and see how it goes.
@@ -1825,6 +1756,19 @@ namespace FMScanner
                 {
                     if (_fmIsZip)
                     {
+                        // TODO: Currently still copying the entire readme stream.
+                        // We're approximately the same memory use as before (very slightly more), and this is
+                        // still the fastest thing we can do.
+                        // However, reading directly out of the archive with a buffer saves a substantial amount
+                        // of memory and is only modestly slower, and still way faster than before.
+                        // But, if we do that, then we have to open the zip stream twice (once to check for the
+                        // {\rtf1 header and then once again to restart from the beginning because we can't seek.
+                        // However, it seems entry.Open() seeks through the zip file every time you call it, so
+                        // when the cache is cold, we lose all the time we gained by opening it twice.
+                        // TODO: I could probably cache the entries' position in the zip file to prevent this.
+                        // Then we could do the slightly-slower-but-way-less-memory-use method.
+                        // Alternatively, we could do some kind of ugly hack in the reader so that it acts like
+                        // it's read "{\rtf1" already and then goes from there.
                         readmeStream = new MemoryStream(readmeFileLen);
                         using (var es = readmeEntry!.Open()) es.CopyTo(readmeStream);
 
@@ -1839,7 +1783,7 @@ namespace FMScanner
                         : new BinaryReader(new FileStream(readmeFileOnDisk, FileMode.Open, FileAccess.Read), Encoding.ASCII, leaveOpen: false))
                     {
                         // Null is a stupid micro-optimization so we don't waste a 6-byte alloc.
-                        rtfHeader = br.BaseStream.Length >= RtfTags_HeaderBytesLength
+                        rtfHeader = readmeFileLen >= RtfTags_HeaderBytesLength
                             ? br.ReadBytes(RtfTags_HeaderBytesLength)
                             : null;
                     }
@@ -1848,21 +1792,22 @@ namespace FMScanner
                     if (rtfHeader != null && rtfHeader.SequenceEqual(RtfTags_HeaderBytes))
                     {
                         bool success;
+                        string text;
                         if (_fmIsZip)
                         {
-                            success = GetRtfFileLinesAndText(readmeStream!, readmeFileLen, rtfBox);
+                            (success, text) = rtfConverter.Convert(readmeStream!, readmeFileLen);
                         }
                         else
                         {
                             using var fs = new FileStream(readmeFileOnDisk, FileMode.Open, FileAccess.Read);
-                            success = GetRtfFileLinesAndText(fs, readmeFileLen, rtfBox);
+                            (success, text) = rtfConverter.Convert(fs, readmeFileLen);
                         }
 
                         if (success)
                         {
                             ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
-                            last.Lines.ClearAndAdd(rtfBox.Lines);
-                            last.Text = rtfBox.Text;
+                            last.Lines.ClearAndAdd(text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
+                            last.Text = text;
                         }
                     }
                     else
