@@ -1,5 +1,4 @@
-﻿#define BUFFERED_STREAM
-//#define CROSS_PLATFORM
+﻿//#define CROSS_PLATFORM
 
 // This is a fast, no-frills, platform-agnostic RTF-to-text converter. It can be used in place of RichTextBox
 // when you simply want to convert RTF to plaintext without being tied to Windows.
@@ -27,8 +26,6 @@ Perf:
 
 Memory:
 -Check if any resettables' capacity gets too large and if so, Capacity = 0 (deallocate) them.
-
-Check we're to spec on these:
 
 Other:
 -Really implement a proper Peek() function for the stream. I know it's possible, and having to use UnGetChar() is
@@ -63,7 +60,8 @@ namespace FMScanner
             #region Private fields
 
             private Stream _stream = null!;
-            // Cached for perf
+            // We can't actually get the length of some kinds of streams (zip entry streams), so we take the
+            // length as a param and store it.
             private long _length;
 
             private long _currentPos = -1;
@@ -366,14 +364,14 @@ namespace FMScanner
         _charSetToCodePage = new Dictionary<int, int>
         {
             { 0, _windows1252 },    // "ANSI" (1252)
-            
+
             // TODO: Code page 0 ("Default") is variable... should we force it to 1252?
             // "The system default Windows ANSI code page" says the doc page.
             // Terrible. Fortunately only two known FMs define it in a font entry, and neither one actually uses
             // said font entry. Still, maybe this should be 1252 as well, since we're rolling dice anyway we may
             // as well go with the statistically likeliest?
             { 1, 0 },               // Default
-            
+
             { 2, 42 },              // Symbol
             { 77, 10000 },          // Mac Roman
             { 78, 10001 },          // Mac Shift Jis
@@ -1070,13 +1068,13 @@ namespace FMScanner
         private static readonly Dictionary<string, Symbol> _symbolTable = new Dictionary<string, Symbol>
         {
             #region Code pages / charsets / fonts
-            
+
             // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
             // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
             {"ansi",      new Symbol(_windows1252,   true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
 
             {"pc",        new Symbol(437,            true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-            
+
             // The spec calls this "Apple Macintosh" but again says nothing about what codepage that is. I'll
             // assume 10000 ("Mac Roman")
             {"mac",       new Symbol(10000,          true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
@@ -1108,12 +1106,6 @@ namespace FMScanner
 
             {"par",       new Symbol(0,              false,     KeywordType.Character,      '\n')},
             {"line",      new Symbol(0,              false,     KeywordType.Character,      '\n')},
-
-            // Note: The C example had these "\0x0a", "\0x0d" things. That means a null char and then literal
-            // "x0a" or "x0d" strings. Did they mean to encode a char in the string ("\x0a")? Or did they mean
-            // to say "\\0x0a" (a literal backslash)...? Does C do something different with "\0x" in strings?!
-            {"\r",        new Symbol(0,              false,     KeywordType.Character,      '\n')},
-            {"\n",        new Symbol(0,              false,     KeywordType.Character,      '\n')},
             {"softline",  new Symbol(0,              false,     KeywordType.Character,      '\n')},
 
             #endregion
@@ -1192,7 +1184,7 @@ namespace FMScanner
             {"title",     new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
             {"txe",       new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
             {"xe",        new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-    
+
             #endregion
 
             #region RTF reserved character escapes
@@ -1208,6 +1200,8 @@ namespace FMScanner
 
         #region Preallocated arrays
 
+        // This "SYMBOL" and the below "Symbol" are unrelated. "SYMBOL" is a fldinst keyword, while "Symbol" is
+        // the name of a font.
         private char[]? _SYMBOLChars;
         private char[] SYMBOLChars => _SYMBOLChars ??= new[] { 'S', 'Y', 'M', 'B', 'O', 'L' };
 
@@ -2246,7 +2240,8 @@ namespace FMScanner
 
                 if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
 
-                // Interprets text in field-argument as the value of an ANSI character.
+                // From the spec:
+                // "Interprets text in field-argument as the value of an ANSI character."
                 if (ch == 'a')
                 {
                     finalChar = GetCharFromCodePage(_windows1252);

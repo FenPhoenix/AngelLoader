@@ -174,15 +174,6 @@ namespace FMScanner
 
         private readonly byte[] RtfTags_HeaderBytes = Encoding.ASCII.GetBytes(@"{\rtf1");
         private const int RtfTags_HeaderBytesLength = 6; // stupid micro-optimization
-        // ReSharper disable IdentifierTypo
-        // ReSharper disable StringLiteralTypo
-        private readonly byte[] RtfTags_shppict = Encoding.ASCII.GetBytes(@"\*\shppict");
-        private readonly byte[] RtfTags_objdata = Encoding.ASCII.GetBytes(@"\*\objdata");
-        private readonly byte[] RtfTags_nonshppict = Encoding.ASCII.GetBytes(@"\nonshppict");
-        // ReSharper restore StringLiteralTypo
-        // ReSharper restore IdentifierTypo
-        private readonly byte[] RtfTags_pict = Encoding.ASCII.GetBytes(@"\pict");
-        private readonly byte[] RtfTags_Bytes11 = new byte[11];
 
         #endregion
 
