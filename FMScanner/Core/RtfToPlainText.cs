@@ -83,7 +83,7 @@ namespace FMScanner
             support a rudimentary form of peek-and-rewind without ever actually seeking backwards in the stream.
             This is required to support zip entry streams which are unseekable. If we required a seekable stream,
             we would have to copy the entire, potentially very large, zip entry stream to memory first and then
-            read it, which would be massively slow and memory-hungry.
+            read it, which is possibly unnecessarily memory-hungry.
 
             2020-08-15:
             We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
