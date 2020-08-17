@@ -38,6 +38,9 @@ Other:
  _webdingsFontToUnicode.Count: 223
  _symbolFontToUnicode.Count: 188
  That might claw back some file size.
+ NOTES: Symbol has a gap of undefined chars from 7F-9F and one more at FF. Webdings has one undefined char at 7F.
+        If I do array indexing, I can just fill these in with Unicode ? chars or something.
+ TODO: Add the space char to the conversion lists, as it's not there right now.
 */
 using System;
 using System.Collections.Generic;
