@@ -33,6 +33,11 @@ Other:
 -Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and even
  imperfect text may be useful. We extract a relatively very small portion of text from the file, so statistically
  it's likely we may not even hit broken text even if it exists.
+-Conversion dicts could probably just be arrays and we index them by char-0x21 (they start at 0x21)
+ _wingdingsFontToUnicode.Count: 223
+ _webdingsFontToUnicode.Count: 223
+ _symbolFontToUnicode.Count: 188
+ That might claw back some file size.
 */
 using System;
 using System.Collections.Generic;
