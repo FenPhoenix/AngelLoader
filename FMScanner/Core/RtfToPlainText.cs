@@ -27,6 +27,13 @@ Perf:
 Memory:
 -Check if any resettables' capacity gets too large and if so, Capacity = 0 (deallocate) them.
 
+CORRECTNESS:
+-Unicode chars >65535 are represented with two chars, and each of them has its own skip char after it, like this:
+ \u-10179?\u-9169?
+
+Check we're to spec on these:
+-Should multi-byte hex \'hh\'hh chars be considered one char for skipping, or n?
+
 Other:
 -Really implement a proper Peek() function for the stream. I know it's possible, and having to use UnGetChar() is
  getting really nasty and error-prone.
