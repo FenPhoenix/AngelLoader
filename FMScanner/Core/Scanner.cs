@@ -1767,12 +1767,6 @@ namespace FMScanner
                          still 66% faster than the old RichTextBox-based converter - and saves a substantial
                          amount of memory. Any other time I would choose ultimate speed, but RTF files can be
                          extremely large (due to often containing images), so I'm erring on the side of caution.
-
-                         With this new buffered read method, we're guaranteed to only ever use:
-                         (rtf length) + (buffer length)
-
-                         Whereas with the old one, it was more like:
-                         (rtf length * 2) + (image-stripped rtf length) + (unpacked rtf data inside RichTextBox length)
                         */
                         readmeStream = readmeEntry!.Open();
                     }
