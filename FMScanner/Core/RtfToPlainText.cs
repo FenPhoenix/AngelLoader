@@ -1580,7 +1580,7 @@ namespace FMScanner
 
                 }
 
-                _returnSB.Append(finalChar);
+                PutChar(finalChar);
             }
 
             return ResetBufferAndStateAndReturn();
@@ -1764,8 +1764,8 @@ namespace FMScanner
             // Small enough not to even bother caching it
             return new string(new[]
             {
-                (char) (utf32 / 1024 + 55296),
-                (char) (utf32 % 1024 + 56320)
+                (char)(utf32 / 1024 + 55296),
+                (char)(utf32 % 1024 + 56320)
             });
         }
 
@@ -1779,8 +1779,7 @@ namespace FMScanner
         {
             int result = sb[0] - '0';
 
-            int len = sb.Length;
-            for (int i = 1; i < len; i++)
+            for (int i = 1; i < sb.Length; i++)
             {
                 result *= 10;
                 result += sb[i] - '0';
