@@ -63,6 +63,8 @@ namespace FMScanner
 
         private const int _windows1252 = 1252;
         private const int _shiftJisWin = 932;
+        private const char _unicodeUnknown_Char = '\u25A1';
+        private const string _unicodeUnknown_String = "\u25A1";
 
         #endregion
 
@@ -626,8 +628,8 @@ namespace FMScanner
             { 0xEE, 0x23A9 },
             { 0xEF, 0x23AA },
 
-            // Apple logo or 0x25A1 (unknown)
-            { 0xF0, 0x25A1 },
+            // Apple logo or unknown
+            { 0xF0, _unicodeUnknown_Char },
 
             { 0xF1, 0x232A },
             { 0xF2, 0x222B },
@@ -645,7 +647,7 @@ namespace FMScanner
             { 0xFE, 0x23AD },
 
             // Undefined
-            { 0xFF, 0x25A1 }
+            { 0xFF, _unicodeUnknown_Char }
         };
 
         // Up to here
@@ -1585,7 +1587,7 @@ namespace FMScanner
                 string finalChar;
                 if (!success)
                 {
-                    finalChar = "?";
+                    finalChar = _unicodeUnknown_String;
                 }
                 else
                 {
@@ -1598,7 +1600,7 @@ namespace FMScanner
                         if (fontEntry == null)
                         {
                             GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChar);
-                            if (finalChar == "") finalChar = "?";
+                            if (finalChar == "") finalChar = _unicodeUnknown_String;
                         }
                         else
                         {
@@ -1618,11 +1620,11 @@ namespace FMScanner
                             {
                                 try
                                 {
-                                    finalChar = enc?.GetString(hexBufferArray) ?? "?";
+                                    finalChar = enc?.GetString(hexBufferArray) ?? _unicodeUnknown_String;
                                 }
                                 catch
                                 {
-                                    finalChar = "?";
+                                    finalChar = _unicodeUnknown_String;
                                 }
                             }
                         }
@@ -1631,11 +1633,11 @@ namespace FMScanner
                     {
                         try
                         {
-                            finalChar = enc?.GetString(_hexBuffer.ToArray()) ?? "?";
+                            finalChar = enc?.GetString(_hexBuffer.ToArray()) ?? _unicodeUnknown_String;
                         }
                         catch
                         {
-                            finalChar = "?";
+                            finalChar = _unicodeUnknown_String;
                         }
                     }
 
@@ -1760,7 +1762,7 @@ namespace FMScanner
             if (_fontDict.TryGetValue(codePoint, out int result))
             {
                 codePoint = result;
-                _finalChar = ConvertFromUtf32(codePoint) ?? "?";
+                _finalChar = ConvertFromUtf32(codePoint) ?? _unicodeUnknown_String;
             }
             else
             {
@@ -1775,7 +1777,7 @@ namespace FMScanner
                 }
                 catch
                 {
-                    _finalChar = "?";
+                    _finalChar = _unicodeUnknown_String;
                 }
             }
 
@@ -2028,7 +2030,7 @@ namespace FMScanner
                     {
                         // Don't even instantiate our StringBuilder unless there's a problem
                         sb ??= new StringBuilder(str);
-                        sb[i] = '?';
+                        sb[i] = _unicodeUnknown_Char;
                     }
 
                     // This won't throw because str is not null and index is within it
@@ -2239,12 +2241,12 @@ namespace FMScanner
                     else
                     {
                         (bool success, _, Encoding? enc, _) = GetCurrentEncoding();
-                        return success && enc != null ? enc.GetString(bytes) : "?";
+                        return success && enc != null ? enc.GetString(bytes) : _unicodeUnknown_String;
                     }
                 }
                 catch
                 {
-                    return "?";
+                    return _unicodeUnknown_String;
                 }
             }
 
@@ -2408,7 +2410,7 @@ namespace FMScanner
                 }
                 else if (ch == 'u')
                 {
-                    finalChar = ConvertFromUtf32(codePoint) ?? "?";
+                    finalChar = ConvertFromUtf32(codePoint) ?? _unicodeUnknown_String;
                     break;
                 }
                 /*
