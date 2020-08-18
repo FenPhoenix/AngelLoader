@@ -48,7 +48,7 @@ Other:
 */
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -68,6 +68,80 @@ namespace FMScanner
         #endregion
 
         #region Classes
+
+        // How many times have you thought, "Gee, I wish I could just reach in and grab that backing array from
+        // that List, instead of taking the senseless performance hit of having it copied to a newly allocated
+        // array all the time in a ToArray() call"? Hooray!
+        private sealed class ListWithExposedArray<T>
+        {
+            internal T[] ItemsArray;
+            private int _itemsArrayLength;
+            private const int _defaultCapacity = 4;
+#pragma warning disable IDE0032
+            private int _size;
+
+            [SuppressMessage("ReSharper", "ConvertToAutoPropertyWithPrivateSetter")]
+            internal int Count => _size;
+#pragma warning restore IDE0032
+
+            internal ListWithExposedArray()
+            {
+                ItemsArray = new T[_defaultCapacity];
+                _itemsArrayLength = _defaultCapacity;
+            }
+
+            internal ListWithExposedArray(int capacity)
+            {
+                ItemsArray = new T[capacity];
+                _itemsArrayLength = capacity;
+            }
+
+            internal void Add(T item)
+            {
+                if (_size == _itemsArrayLength) EnsureCapacity(_size + 1);
+                ItemsArray[_size++] = item;
+            }
+
+            public void Clear()
+            {
+                if (_size > 0)
+                {
+                    Array.Clear(ItemsArray, 0, _size);
+                    _size = 0;
+                }
+            }
+
+            [PublicAPI]
+            internal int Capacity
+            {
+                get => _itemsArrayLength;
+                set
+                {
+                    if (value == _itemsArrayLength) return;
+                    if (value > 0)
+                    {
+                        T[] objArray = new T[value];
+                        if (_size > 0) Array.Copy(ItemsArray, 0, objArray, 0, _size);
+                        ItemsArray = objArray;
+                        _itemsArrayLength = value;
+                    }
+                    else
+                    {
+                        ItemsArray = Array.Empty<T>();
+                        _itemsArrayLength = 0;
+                    }
+                }
+            }
+
+            internal void EnsureCapacity(int min)
+            {
+                if (_itemsArrayLength >= min) return;
+                int num = _itemsArrayLength == 0 ? 4 : _itemsArrayLength * 2;
+                if ((uint)num > 2146435071U) num = 2146435071;
+                if (num < min) num = min;
+                Capacity = num;
+            }
+        }
 
         private sealed class RTFStream
         {
@@ -1341,10 +1415,13 @@ namespace FMScanner
         private readonly StringBuilder _fldinstSymbolFontNameSB = new StringBuilder(_fldinstSymbolFontNameMaxLen, _fldinstSymbolFontNameMaxLen);
 
         // Highest measured was 17
-        private readonly List<byte> _hexBuffer = new List<byte>(20);
+        private readonly ListWithExposedArray<byte> _hexBuffer = new ListWithExposedArray<byte>(20);
 
-        // TODO: Find the best starting capacity
-        private readonly List<int> _unicodeBuffer = new List<int>();
+        // Highest measured was 13
+        private readonly List<int> _unicodeBuffer = new List<int>(20);
+
+        // Highest measured was 13
+        private readonly ListWithExposedArray<char> _unicodeCharsTemp = new ListWithExposedArray<char>(20);
 
         #endregion
 
@@ -1430,6 +1507,7 @@ namespace FMScanner
             // Deallocate these if they get too big
             _hexBuffer.Clear();
             _unicodeBuffer.Clear();
+            _unicodeCharsTemp.Clear();
             _fontEntries.Clear();
             _scopeStack.Clear();
             _returnSB.Clear();
@@ -1638,8 +1716,7 @@ namespace FMScanner
 
                     if (codePageWas42 && _hexBuffer.Count == 1)
                     {
-                        byte[] hexBufferArray = _hexBuffer.ToArray();
-                        int codePoint = hexBufferArray[0];
+                        int codePoint = _hexBuffer.ItemsArray[0];
 
                         if (fontEntry == null)
                         {
@@ -1664,7 +1741,7 @@ namespace FMScanner
                             {
                                 try
                                 {
-                                    finalChar = enc?.GetString(hexBufferArray) ?? _unicodeUnknown_String;
+                                    finalChar = enc?.GetString(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknown_String;
                                 }
                                 catch
                                 {
@@ -1677,7 +1754,7 @@ namespace FMScanner
                     {
                         try
                         {
-                            finalChar = enc?.GetString(_hexBuffer.ToArray()) ?? _unicodeUnknown_String;
+                            finalChar = enc?.GetString(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknown_String;
                         }
                         catch
                         {
@@ -2095,18 +2172,19 @@ namespace FMScanner
              would then have to be converted into an array anyway to pass to the string constructor below, so
              there's nothing we can really do here.
             */
-            char[] chars = new char[_unicodeBuffer.Count];
+            _unicodeCharsTemp.EnsureCapacity(_unicodeBuffer.Count);
+            _unicodeCharsTemp.Clear();
 
             for (int i = 0; i < _unicodeBuffer.Count; i++)
             {
                 byte[] temp = BitConverter.GetBytes(_unicodeBuffer[i]);
                 // This won't throw because temp is not null and index is within range and is not the last index
-                chars[i] = BitConverter.ToChar(temp, 0);
+                _unicodeCharsTemp.Add(BitConverter.ToChar(temp, 0));
             }
 
             _unicodeBuffer.Clear();
 
-            string finalString = new string(chars);
+            string finalString = new string(_unicodeCharsTemp.ItemsArray, 0, _unicodeCharsTemp.Count);
 
             FixUpBadUnicode(ref finalString);
 
