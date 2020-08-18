@@ -1,5 +1,4 @@
 ﻿//#define CROSS_PLATFORM
-#define TEST
 
 // This is a fast, no-frills, platform-agnostic RTF-to-text converter. It can be used in place of RichTextBox
 // when you simply want to convert RTF to plaintext without being tied to Windows.
@@ -1387,7 +1386,7 @@ namespace FMScanner
         public (bool Success, string Text) Convert(Stream stream, long streamLength)
         {
             Reset(stream, streamLength);
-#if TEST
+#if ReleaseTestMode || DebugTestMode
 
             Error error = ParseRtf();
             return error == Error.OK ? (true, _returnSB.ToString()) : (false, "");
