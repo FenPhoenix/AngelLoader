@@ -34,11 +34,10 @@ CORRECTNESS:
  if there's a space between them (\u-10179? \u-9169?) then it breaks the sequence; they count as separate.
 
 Check we're to spec on these:
--Confirmed: hex chars always count as one char for skipping, regardless if multiple end up combining into one
- visual character or not.
- Make sure we conform to this (can't remember if we do, have to test).
 -"As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters) that is not
  counted in the characters to skip."
+
+ Test hex that combines into an actual valid character: \'81\'63
 
 Other:
 -Really implement a proper Peek() function for the stream. I know it's possible, and having to use UnGetChar() is
@@ -171,6 +170,10 @@ namespace FMScanner
                 else
                 {
                     ch = _unGetBuffer.Count > 0 ? _unGetBuffer.Pop() : (char)StreamReadByte();
+                    if (_unGetBuffer.Count == 0)
+                    {
+                        Trace.Write(ch.ToString());
+                    }
                     return true;
                 }
             }
@@ -318,6 +321,10 @@ namespace FMScanner
             /// Invalid hexadecimal character found while parsing \'hh character(s).
             /// </summary>
             InvalidHex,
+            /// <summary>
+            /// A \uN keyword's parameter was out of range.
+            /// </summary>
+            InvalidUnicode,
             /// <summary>
             /// A symbol table entry was malformed. Possibly one of its enum values was out of range.
             /// </summary>
@@ -1301,6 +1308,10 @@ namespace FMScanner
         // Highest measured was 17
         private readonly List<byte> _hexBuffer = new List<byte>(20);
 
+        // TODO: Find the best starting capacity
+        private readonly List<(int Value, bool HasSpace)> _unicodeBuffer = new List<(int Value, bool HasSpace)>();
+        private bool _inUnicodeChain;
+
         #endregion
 
         #region Cached encodings
@@ -1375,6 +1386,7 @@ namespace FMScanner
             _binaryCharsLeftToSkip = 0;
             _unicodeCharsLeftToSkip = 0;
             _skipDestinationIfUnknown = false;
+            _inUnicodeChain = false;
 
             // Types that contain only flat primitives
             _header.Reset();
@@ -1384,6 +1396,7 @@ namespace FMScanner
 
             // Deallocate these if they get too big
             _hexBuffer.Clear();
+            _unicodeBuffer.Clear();
             _fontEntries.Clear();
             _scopeStack.Clear();
             _returnSB.Clear();
@@ -1776,13 +1789,14 @@ namespace FMScanner
             return true;
         }
 
-        private static int NormalizeUnicodePoint(int codePoint)
+        private static Error NormalizeUnicodePoint(ref int codePoint)
         {
             // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
             // correct value.
             if (codePoint < 0)
             {
                 codePoint += 65536;
+                if (codePoint < 0 || codePoint > ushort.MaxValue) return Error.InvalidUnicode;
             }
             /*
              From the spec:
@@ -1796,7 +1810,7 @@ namespace FMScanner
                 codePoint -= 0xf000; // 61440
             }
 
-            return codePoint;
+            return Error.OK;
         }
 
         /// <summary>
@@ -1898,12 +1912,14 @@ namespace FMScanner
                 if (negateParam) param = -param;
             }
 
-            if (ch != ' ') _rtfStream.UnGetChar(ch);
+            bool charIsSpace = ch == ' ';
 
-            return DispatchKeyword(param, hasParam);
+            if (!charIsSpace) _rtfStream.UnGetChar(ch);
+
+            return DispatchKeyword(param, hasParam, charIsSpace: true);
         }
 
-        private Error DispatchKeyword(int param, bool hasParam)
+        private Error DispatchKeyword(int param, bool hasParam, bool charIsSpace = false)
         {
             // ALLOC: _keywordSB.ToString()
             /*
@@ -1953,6 +1969,97 @@ namespace FMScanner
                 return Error.OK;
             }
 
+            // TODO: Use the HasSpace property and use the HasSpace of the one before because we break at the end
+
+            if ((!_inUnicodeChain || symbol.Index != (int)SpecialType.UnicodeChar) &&
+                _unicodeBuffer.Count > 0)
+            {
+                //if (charIsSpace)
+                //{
+                //    _unicodeBuffer.Clear();
+                //    //goto breakout;
+                //    return Error.OK;
+                //}
+
+                //var chars=Encoding.UTF32.get
+                //byte[] bytes = new byte[_unicodeBuffer.Count * 2];
+                char[] chars = new char[_unicodeBuffer.Count];
+
+                //for (int i = 0; i < _unicodeBuffer.Count; i++)
+                //{
+                //    int item = _unicodeBuffer[i];
+                //    byte[] temp = BitConverter.GetBytes(item);
+                //    Trace.WriteLine(temp[0]);
+                //    Trace.WriteLine(temp[1]);
+                //}
+
+                //Trace.WriteLine("------------");
+
+                //string tiger = "\ud83d\udc2f";
+                //Trace.WriteLine(tiger);
+
+                //byte[] first_two_bytes = BitConverter.GetBytes(tiger[0]);
+                //byte[] second_two_bytes = BitConverter.GetBytes(tiger[1]);
+
+                //foreach (byte b in first_two_bytes)
+                //{
+                //    Trace.WriteLine(b.ToString());
+                //}
+
+                //foreach (byte b in second_two_bytes)
+                //{
+                //    Trace.WriteLine(b.ToString());
+                //}
+
+                for (int i = 0; i < _unicodeBuffer.Count; i++)
+                {
+                    int item = _unicodeBuffer[i].Value;
+
+                    byte[] temp = BitConverter.GetBytes(item);
+                    try
+                    {
+                        char ch0 = BitConverter.ToChar(temp, 0);
+                        if (ch0 == 0xd83d)
+                        {
+                            Debugger.Break();
+                        }
+
+                        var uc = char.GetUnicodeCategory(ch0);
+                        if (uc == UnicodeCategory.Surrogate || uc == UnicodeCategory.OtherNotAssigned)
+                        {
+                            Trace.WriteLine("invalid?");
+                            chars[i] = '?';
+                        }
+                        else
+                        {
+                            // TODO: IMPORTANT: We can get invalid chars here which won't be caught until we write them to a file!
+                            // We need to figure out the way to detect this!
+
+                            chars[i] = ch0;
+                        }
+                    }
+                    catch
+                    {
+                        chars[i] = '?';
+                    }
+                    //bytes[i + 1] = temp[1];
+                }
+
+                string tiger_r = new string(chars);
+                //Trace.WriteLine("tiger_r: " + tiger_r);
+
+                //string blah = Encoding.Unicode.GetString(bytes);
+                //Trace.WriteLine(tiger_r);
+
+                // end
+                _unicodeBuffer.Clear();
+
+                return PutChar(tiger_r);
+                //PutChar(tiger_r);
+            }
+
+            breakout:
+
             _skipDestinationIfUnknown = false;
             switch (symbol.KeywordType)
             {
@@ -1964,13 +2071,13 @@ namespace FMScanner
                 case KeywordType.Destination:
                     return ChangeDestination((DestinationType)symbol.Index);
                 case KeywordType.Special:
-                    return DispatchSpecialKeyword((SpecialType)symbol.Index, param);
+                    return DispatchSpecialKeyword((SpecialType)symbol.Index, param, charIsSpace);
                 default:
                     return Error.InvalidSymbolTableEntry;
             }
         }
 
-        private Error DispatchSpecialKeyword(SpecialType specialType, int param)
+        private Error DispatchSpecialKeyword(SpecialType specialType, int param, bool charIsSpace = false)
         {
             if (_currentScope.RtfDestinationState == RtfDestinationState.Skip && specialType != SpecialType.Bin)
             {
@@ -1995,10 +2102,16 @@ namespace FMScanner
                 case SpecialType.UnicodeChar:
                     _unicodeCharsLeftToSkip = _currentScope.Properties[(int)Property.UnicodeCharSkipCount];
 
-                    param = NormalizeUnicodePoint(param);
+                    Error error;
+                    if ((error = NormalizeUnicodePoint(ref param)) != Error.OK) return error;
 
-                    string? result = ConvertFromUtf32(param);
-                    if (result != null) return PutChar(result);
+                    _inUnicodeChain = !charIsSpace;
+
+                    _unicodeBuffer.Add((param, charIsSpace));
+
+                    //Trace.WriteLine(param);
+                    //string? result = ConvertFromUtf32(param);
+                    //if (result != null) return PutChar(result);
                     break;
                 case SpecialType.HeaderCodePage:
                     _header.CodePage = param >= 0 ? param : _windows1252;
@@ -2273,7 +2386,8 @@ namespace FMScanner
 
             if (negateNum) codePoint = -codePoint;
 
-            codePoint = NormalizeUnicodePoint(codePoint);
+            Error error;
+            if ((error = NormalizeUnicodePoint(ref codePoint)) != Error.OK) return error;
 
             if (ch != ' ') return RewindAndSkipGroup();
 
