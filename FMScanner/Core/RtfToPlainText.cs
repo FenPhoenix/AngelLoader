@@ -64,7 +64,7 @@ using JetBrains.Annotations;
 
 namespace FMScanner
 {
-    internal sealed class RtfToTextConverter
+    public sealed class RtfToTextConverter
     {
         #region Constants
 
