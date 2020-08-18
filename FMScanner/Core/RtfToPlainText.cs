@@ -30,9 +30,14 @@ Memory:
 CORRECTNESS:
 -Unicode chars >65535 are represented with two chars, and each of them has its own skip char after it, like this:
  \u-10179?\u-9169?
+ if there's a space between them (\u-10179? \u-9169?) then it breaks the sequence; they count as separate.
 
 Check we're to spec on these:
--Should multi-byte hex \'hh\'hh chars be considered one char for skipping, or n?
+-Confirmed: hex chars always count as one char for skipping, regardless if multiple end up combining into one
+ visual character or not.
+ Make sure we conform to this (can't remember if we do, have to test).
+-"As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters) that is not
+ counted in the characters to skip."
 
 Other:
 -Really implement a proper Peek() function for the stream. I know it's possible, and having to use UnGetChar() is
