@@ -20,6 +20,10 @@ The goals of this RTF-to-text converter are:
 */
 
 /* TODO:
+Notes and miscellaneous:
+-Test hex that combines into an actual valid character: \'81\'63
+-Tiger face: \u-9169?\u-10179?
+
 Perf:
 -All StringBuilders that don't need to be ToString()'d should be changed to byte/char lists.
 -We could collapse fonts if we find multiple ones with the same name and charset but different numbers.
@@ -27,17 +31,6 @@ Perf:
 
 Memory:
 -Check if any resettables' capacity gets too large and if so, Capacity = 0 (deallocate) them.
-
-CORRECTNESS:
--Unicode chars >65535 are represented with two chars, and each of them has its own skip char after it, like this:
- \u-10179?\u-9169?
- if there's a space between them (\u-10179? \u-9169?) then it breaks the sequence; they count as separate.
-
-Check we're to spec on these:
--"As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters) that is not
- counted in the characters to skip."
-
- Test hex that combines into an actual valid character: \'81\'63
 
 Other:
 -Really implement a proper Peek() function for the stream. I know it's possible, and having to use UnGetChar() is
@@ -170,10 +163,6 @@ namespace FMScanner
                 else
                 {
                     ch = _unGetBuffer.Count > 0 ? _unGetBuffer.Pop() : (char)StreamReadByte();
-                    if (_unGetBuffer.Count == 0)
-                    {
-                        Trace.Write(ch.ToString());
-                    }
                     return true;
                 }
             }
@@ -1309,8 +1298,7 @@ namespace FMScanner
         private readonly List<byte> _hexBuffer = new List<byte>(20);
 
         // TODO: Find the best starting capacity
-        private readonly List<(int Value, bool HasSpace)> _unicodeBuffer = new List<(int Value, bool HasSpace)>();
-        private bool _inUnicodeChain;
+        private readonly List<int> _unicodeBuffer = new List<int>();
 
         #endregion
 
@@ -1386,7 +1374,6 @@ namespace FMScanner
             _binaryCharsLeftToSkip = 0;
             _unicodeCharsLeftToSkip = 0;
             _skipDestinationIfUnknown = false;
-            _inUnicodeChain = false;
 
             // Types that contain only flat primitives
             _header.Reset();
@@ -1432,20 +1419,26 @@ namespace FMScanner
                     case '{':
                         // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
                         if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
+                        ParseUnicodeIfAnyInBuffer();
                         if ((ec = PushScope()) != Error.OK) return ec;
                         break;
                     case '}':
                         // ditto the above
                         if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
+                        ParseUnicodeIfAnyInBuffer();
                         if ((ec = PopScope()) != Error.OK) return ec;
                         break;
                     case '\\':
+                        // We have to check what the keyword is before deciding whether to parse the Unicode.
                         if ((ec = ParseKeyword()) != Error.OK) return ec;
                         break;
                     case '\r':
                     case '\n':
+                        // These DON'T count as Unicode barriers, so don't parse the Unicode here!
                         break;
                     default:
+                        // It's a Unicode barrier, so parse the Unicode here.
+                        ParseUnicodeIfAnyInBuffer();
                         switch (_currentScope.RtfInternalState)
                         {
                             case RtfInternalState.Normal:
@@ -1912,14 +1905,18 @@ namespace FMScanner
                 if (negateParam) param = -param;
             }
 
-            bool charIsSpace = ch == ' ';
+            /* From the spec:
+             "As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters)
+             that is not counted in the characters to skip."
+             This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
+             the space from the skip-chars to count.
+            */
+            if (ch != ' ') _rtfStream.UnGetChar(ch);
 
-            if (!charIsSpace) _rtfStream.UnGetChar(ch);
-
-            return DispatchKeyword(param, hasParam, charIsSpace: true);
+            return DispatchKeyword(param, hasParam);
         }
 
-        private Error DispatchKeyword(int param, bool hasParam, bool charIsSpace = false)
+        private Error DispatchKeyword(int param, bool hasParam)
         {
             // ALLOC: _keywordSB.ToString()
             /*
@@ -1951,9 +1948,11 @@ namespace FMScanner
             if (symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
             {
                 // Rather than literally counting it as one character for skipping purposes, we just increment
-                // the chars left to skip count by the specified length of the binary run plus one for the space,
-                // which accomplishes the same thing and is the easiest option.
-                if (param >= 0) _unicodeCharsLeftToSkip += param + 1;
+                // the chars left to skip count by the specified length of the binary run, which accomplishes
+                // the same thing and is the easiest option.
+                // Note: It seems like we should have to add 1 for the space after \binN, but it looks like the
+                // numbers somehow work out that we don't have to and it's already implicitly counted. Shrug.
+                if (param >= 0) _unicodeCharsLeftToSkip += param;
             }
 
             // From the spec:
@@ -1969,94 +1968,10 @@ namespace FMScanner
                 return Error.OK;
             }
 
-            if ((!_inUnicodeChain || symbol.Index != (int)SpecialType.UnicodeChar) &&
-                _unicodeBuffer.Count > 0)
+            if (symbol.Index != (int)SpecialType.UnicodeChar)
             {
-                //if (charIsSpace)
-                //{
-                //    _unicodeBuffer.Clear();
-                //    //goto breakout;
-                //    return Error.OK;
-                //}
-
-                //var chars=Encoding.UTF32.get
-                //byte[] bytes = new byte[_unicodeBuffer.Count * 2];
-                char[] chars = new char[_unicodeBuffer.Count];
-
-                //for (int i = 0; i < _unicodeBuffer.Count; i++)
-                //{
-                //    int item = _unicodeBuffer[i];
-                //    byte[] temp = BitConverter.GetBytes(item);
-                //    Trace.WriteLine(temp[0]);
-                //    Trace.WriteLine(temp[1]);
-                //}
-
-                //Trace.WriteLine("------------");
-
-                //string tiger = "\ud83d\udc2f";
-                //Trace.WriteLine(tiger);
-
-                //byte[] first_two_bytes = BitConverter.GetBytes(tiger[0]);
-                //byte[] second_two_bytes = BitConverter.GetBytes(tiger[1]);
-
-                //foreach (byte b in first_two_bytes)
-                //{
-                //    Trace.WriteLine(b.ToString());
-                //}
-
-                //foreach (byte b in second_two_bytes)
-                //{
-                //    Trace.WriteLine(b.ToString());
-                //}
-
-                for (int i = 0; i < _unicodeBuffer.Count; i++)
-                {
-                    int item = _unicodeBuffer[i].Value;
-
-                    byte[] temp = BitConverter.GetBytes(item);
-                    try
-                    {
-                        char ch0 = BitConverter.ToChar(temp, 0);
-                        if (ch0 == 0xd83d)
-                        {
-                            Debugger.Break();
-                        }
-
-                        var uc = char.GetUnicodeCategory(ch0);
-                        if (uc == UnicodeCategory.Surrogate || uc == UnicodeCategory.OtherNotAssigned)
-                        {
-                            Trace.WriteLine("invalid?");
-                            chars[i] = '?';
-                        }
-                        else
-                        {
-                            // TODO: IMPORTANT: We can get invalid chars here which won't be caught until we write them to a file!
-                            // We need to figure out the way to detect this!
-
-                            chars[i] = ch0;
-                        }
-                    }
-                    catch
-                    {
-                        chars[i] = '?';
-                    }
-                    //bytes[i + 1] = temp[1];
-                }
-
-                string tiger_r = new string(chars);
-                //Trace.WriteLine("tiger_r: " + tiger_r);
-
-                //string blah = Encoding.Unicode.GetString(bytes);
-                //Trace.WriteLine(tiger_r);
-
-                // end
-                _unicodeBuffer.Clear();
-
-                return PutChar(tiger_r);
-                //PutChar(tiger_r);
+                ParseUnicodeIfAnyInBuffer();
             }
-
-            breakout:
 
             _skipDestinationIfUnknown = false;
             switch (symbol.KeywordType)
@@ -2069,13 +1984,86 @@ namespace FMScanner
                 case KeywordType.Destination:
                     return ChangeDestination((DestinationType)symbol.Index);
                 case KeywordType.Special:
-                    return DispatchSpecialKeyword((SpecialType)symbol.Index, param, charIsSpace);
+                    return DispatchSpecialKeyword((SpecialType)symbol.Index, param);
                 default:
                     return Error.InvalidSymbolTableEntry;
             }
         }
 
-        private Error DispatchSpecialKeyword(SpecialType specialType, int param, bool charIsSpace = false)
+        /*
+        Unlike the hex parser, we can't just cordon this off in its own little world. The reason is that we need
+        to skip characters if necessary, and a "character" could mean any of the following:
+        -An actual single character
+        -A hex-encoded character (\'hh)
+        -An entire control word
+        -A \binN word, the space after it, and all of its binary data
+
+        If we wanted to handle all that, we would have to pretty much duplicate the entire RTF parser just in
+        here. So we mix this in with the regular parser and just accept the less followable logic as a lesser
+        cost than the alternative.
+        */
+        private void ParseUnicodeIfAnyInBuffer()
+        {
+            #region Local functions
+
+            // We can't just pass a char array, because then the validation won't work. We have to convert to
+            // string first. Fortunately, this loses no time because we have to do the conversion anyway, and we
+            // don't even touch the string unless there's a problem, which means no extra allocations if everything
+            // is valid.
+            static void FixUpBadUnicode(ref string str)
+            {
+                StringBuilder? sb = null;
+
+                for (int i = 0; i < str.Length; i++)
+                {
+                    // We need to use (str, i) instead of (str[i]) because the validation check doesn't work if
+                    // we do the latter. Unfortunately we need to take some boneheaded pointless null and length
+                    // checks, because we can't pull this method out and customize it, because it calls a goddamn
+                    // internal method. Access levels... hooray, you're slow and you can't do crap about it.
+
+                    // This won't throw because str is not null and index is within it
+                    UnicodeCategory uc = char.GetUnicodeCategory(str, i);
+
+                    if (uc == UnicodeCategory.Surrogate || uc == UnicodeCategory.OtherNotAssigned)
+                    {
+                        // Don't even instantiate our StringBuilder unless there's a problem
+                        sb ??= new StringBuilder(str);
+                        sb[i] = '?';
+                    }
+
+                    // This won't throw because str is not null and index is within it
+                    if (char.IsHighSurrogate(str, i)) i++;
+                }
+
+                // Likewise, don't even change the string at all unless we have to
+                if (sb != null) str = sb.ToString();
+            }
+
+            #endregion
+
+            if (_unicodeBuffer.Count == 0 || _unicodeCharsLeftToSkip > 0) return;
+
+            // A char is 2 bytes wide, which is the same width as a \uN character is allowed to be, so they match
+            // 1-to-1
+            char[] chars = new char[_unicodeBuffer.Count];
+
+            for (int i = 0; i < _unicodeBuffer.Count; i++)
+            {
+                byte[] temp = BitConverter.GetBytes(_unicodeBuffer[i]);
+                // This won't throw because temp is not null and index is within range and is not the last index
+                chars[i] = BitConverter.ToChar(temp, 0);
+            }
+
+            _unicodeBuffer.Clear();
+
+            string finalString = new string(chars);
+
+            FixUpBadUnicode(ref finalString);
+
+            PutChar(finalString);
+        }
+
+        private Error DispatchSpecialKeyword(SpecialType specialType, int param)
         {
             if (_currentScope.RtfDestinationState == RtfDestinationState.Skip && specialType != SpecialType.Bin)
             {
@@ -2101,17 +2089,9 @@ namespace FMScanner
                     _unicodeCharsLeftToSkip = _currentScope.Properties[(int)Property.UnicodeCharSkipCount];
 
                     Error error;
+                    // Make sure the code point is normalized before adding it to the buffer!
                     if ((error = NormalizeUnicodePoint(ref param)) != Error.OK) return error;
-
-                    // TODO: I know why this isn't working, it's because the space has to be detected AFTER the skip chars!
-
-                    _inUnicodeChain = !charIsSpace;
-
-                    _unicodeBuffer.Add((param, charIsSpace));
-
-                    //Trace.WriteLine(param);
-                    //string? result = ConvertFromUtf32(param);
-                    //if (result != null) return PutChar(result);
+                    _unicodeBuffer.Add(param);
                     break;
                 case SpecialType.HeaderCodePage:
                     _header.CodePage = param >= 0 ? param : _windows1252;
