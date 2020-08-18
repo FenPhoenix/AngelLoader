@@ -2076,8 +2076,8 @@ namespace FMScanner
                         sb[i] = _unicodeUnknown_Char;
                     }
 
-                    // This won't throw because str is not null and index is within it
-                    if (char.IsHighSurrogate(str, i)) i++;
+                    // We can do (str[i]) here because (str, i) is literally just a wrapper that can throw.
+                    if (char.IsHighSurrogate(str[i])) i++;
                 }
 
                 // Likewise, don't even change the string at all unless we have to
@@ -2088,8 +2088,13 @@ namespace FMScanner
 
             if (_unicodeBuffer.Count == 0 || _unicodeCharsLeftToSkip > 0) return;
 
-            // A char is 2 bytes wide, which is the same width as a \uN character is allowed to be, so they match
-            // 1-to-1
+            /*
+             A char is 2 bytes wide, which is the same width as a \uN character is allowed to be, so they match
+             1-to-1.
+             It's tempting to make this a list and only reallocate if we need to increase capacity, but this
+             would then have to be converted into an array anyway to pass to the string constructor below, so
+             there's nothing we can really do here.
+            */
             char[] chars = new char[_unicodeBuffer.Count];
 
             for (int i = 0; i < _unicodeBuffer.Count; i++)
