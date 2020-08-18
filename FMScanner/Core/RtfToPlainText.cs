@@ -498,17 +498,26 @@ namespace FMScanner
             { 0x5D, 0x005D },
             { 0x5E, 0x22A5 },
             { 0x5F, 0x005F },
+
+            // Supposed to be " ‾" but closest Unicode char is "‾" (0x203E)
             { 0x60, 0x203E },
+
             { 0x61, 0x03B1 },
             { 0x62, 0x03B2 },
             { 0x63, 0x03C7 },
             { 0x64, 0x03B4 },
             { 0x65, 0x03B5 },
+
+            // Lowercase phi, but capital phi in Windows Symbol
             { 0x66, 0x03C6 },
+
             { 0x67, 0x03B3 },
             { 0x68, 0x03B7 },
             { 0x69, 0x03B9 },
+
+            // Capital phi, but lowercase phi in Windows Symbol
             { 0x6A, 0x03D5 },
+
             { 0x6B, 0x03BA },
             { 0x6C, 0x03BB },
             { 0x6D, 0x03BC },
@@ -529,6 +538,11 @@ namespace FMScanner
             { 0x7C, 0x007C },
             { 0x7D, 0x007D },
             { 0x7E, 0x223C },
+
+            // 7F - 9F are undefined
+
+            { 0xA0, 0x20AC }, // Euro sign, but undefined in Win10 Symbol font at least
+
             { 0xA1, 0x03D2 },
             { 0xA2, 0x2032 },
             { 0xA3, 0x2264 },
@@ -578,9 +592,12 @@ namespace FMScanner
             { 0xCF, 0x2209 },
             { 0xD0, 0x2220 },
             { 0xD1, 0x2207 },
+
+            // First set of (R), (TM), (C) (nominally serif)
             { 0xD2, 0x00AE },
             { 0xD3, 0x00A9 },
             { 0xD4, 0x2122 },
+
             { 0xD5, 0x220F },
             { 0xD6, 0x221A },
             { 0xD7, 0x22C5 },
@@ -594,9 +611,12 @@ namespace FMScanner
             { 0xDF, 0x21D3 },
             { 0xE0, 0x25CA },
             { 0xE1, 0x2329 },
+
+            // Second set of (R), (TM), (C) (nominally sans-serif)
             { 0xE2, 0x00AE },
             { 0xE3, 0x00A9 },
             { 0xE4, 0x2122 },
+
             { 0xE5, 0x2211 },
             { 0xE6, 0x239B },
             { 0xE7, 0x239C },
@@ -608,7 +628,10 @@ namespace FMScanner
             { 0xED, 0x23A8 },
             { 0xEE, 0x23A9 },
             { 0xEF, 0x23AA },
-            { 0xF0, 0x20AC },
+
+            // Apple logo or 0x25A1 (unknown)
+            { 0xF0, 0x25A1 },
+
             { 0xF1, 0x232A },
             { 0xF2, 0x222B },
             { 0xF3, 0x2320 },
@@ -622,8 +645,13 @@ namespace FMScanner
             { 0xFB, 0x23A6 },
             { 0xFC, 0x23AB },
             { 0xFD, 0x23AC },
-            { 0xFE, 0x23AD }
+            { 0xFE, 0x23AD },
+
+            // Undefined
+            { 0xFF, 0x25A1 }
         };
+
+        // Up to here
 
         private readonly Dictionary<int, int>
         _wingdingsFontToUnicode = new Dictionary<int, int>
