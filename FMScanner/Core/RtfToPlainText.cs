@@ -1969,8 +1969,6 @@ namespace FMScanner
                 return Error.OK;
             }
 
-            // TODO: Use the HasSpace property and use the HasSpace of the one before because we break at the end
-
             if ((!_inUnicodeChain || symbol.Index != (int)SpecialType.UnicodeChar) &&
                 _unicodeBuffer.Count > 0)
             {
@@ -2104,6 +2102,8 @@ namespace FMScanner
 
                     Error error;
                     if ((error = NormalizeUnicodePoint(ref param)) != Error.OK) return error;
+
+                    // TODO: I know why this isn't working, it's because the space has to be detected AFTER the skip chars!
 
                     _inUnicodeChain = !charIsSpace;
 
