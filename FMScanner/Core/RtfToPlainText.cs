@@ -1915,6 +1915,8 @@ namespace FMScanner
             {
                 codePoint += 65536;
                 if (codePoint < 0 || codePoint > ushort.MaxValue) return Error.InvalidUnicode;
+                // PERF_TODO: This line might be faster, but we don't seem to be bottlenecking here(?)
+                //if ((uint)codePoint > ushort.MaxValue) return Error.InvalidUnicode;
             }
             /*
              From the spec:
@@ -2249,6 +2251,7 @@ namespace FMScanner
         {
             if (_currentScope.RtfDestinationState == RtfDestinationState.Normal)
             {
+                // PERF_TODO: This line is taking the majority of the ~150ms of this method.
                 if (_currentScope.InFontTable) _fontEntries[_fontEntries.Count - 1].AppendNameChar(ch);
 
                 // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
