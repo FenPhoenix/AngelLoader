@@ -2157,7 +2157,6 @@ namespace FMScanner
 
             if (_unicodeBuffer.Count == 0 || _unicodeCharsLeftToSkip > 0) return;
 
-
             // A char is 2 bytes wide, which is the same width as a \uN character is allowed to be, so they match
             // 1-to-1.
             _unicodeCharsTemp.EnsureCapacity(_unicodeBuffer.Count);
@@ -2165,9 +2164,9 @@ namespace FMScanner
 
             for (int i = 0; i < _unicodeBuffer.Count; i++)
             {
-                // PERF_TODO: It looks like this call may be really slow. Look into doing this manually.
                 byte[] temp = BitConverter.GetBytes(_unicodeBuffer[i]);
                 // This won't throw because temp is not null and index is within range and is not the last index
+                // PERF_TODO: This is the slow call... might not be able to do much about it
                 _unicodeCharsTemp.Add(BitConverter.ToChar(temp, 0));
             }
 
