@@ -1,9 +1,9 @@
 ﻿//#define CROSS_PLATFORM
 
-// This is a fast, no-frills, platform-agnostic RTF-to-text converter. It can be used in place of RichTextBox
-// when you simply want to convert RTF to plaintext without being tied to Windows.
-
 /*
+This is a fast, no-frills, platform-agnostic RTF-to-text converter. It can be used in place of RichTextBox when
+you simply want to convert RTF to plaintext without being tied to Windows.
+
 The goals of this RTF-to-text converter are:
 -It should be platform-agnostic and have no dependencies on Windows.
 -It should be as accurate as possible with regard to character encodings.
@@ -16,11 +16,13 @@ The goals of this RTF-to-text converter are:
 -We're mindful of our allocations and minimize them wherever possible.
 -We use the System.Text.Encoding.CodePages package to get all Windows-supported codepages on all platforms
  (only if CROSS_PLATFORM is defined).
-*/
 
-/* TODO:
+-Note that we don't check for {\rtf1 at the start of the file to validate, as in FMScanner that will have been
+ done already.
+
+TODO:
 Notes and miscellaneous:
--Test hex that combines into an actual valid character: \'81\'63
+-Hex that combines into an actual valid character: \'81\'63
 -Tiger face: \u-9169?\u-10179?
 
 Perf:
@@ -64,7 +66,7 @@ namespace FMScanner
         // How many times have you thought, "Gee, I wish I could just reach in and grab that backing array from
         // that List, instead of taking the senseless performance hit of having it copied to a newly allocated
         // array all the time in a ToArray() call"? Hooray!
-        private sealed class ListWithExposedArray<T>
+        private sealed class ListFast<T>
         {
             internal T[] ItemsArray;
             private int _itemsArrayLength;
@@ -76,13 +78,13 @@ namespace FMScanner
             internal int Count => _size;
 #pragma warning restore IDE0032
 
-            internal ListWithExposedArray()
+            internal ListFast()
             {
                 ItemsArray = new T[_defaultCapacity];
                 _itemsArrayLength = _defaultCapacity;
             }
 
-            internal ListWithExposedArray(int capacity)
+            internal ListFast(int capacity)
             {
                 ItemsArray = new T[capacity];
                 _itemsArrayLength = capacity;
@@ -117,7 +119,7 @@ namespace FMScanner
             /// <summary>
             /// Just sets <see cref="Count"/> to 0. Doesn't zero out the array or do anything else whatsoever.
             /// </summary>
-            public void ClearFast() => _size = 0;
+            internal void ClearFast() => _size = 0;
 
             [PublicAPI]
             internal int Capacity
@@ -141,7 +143,7 @@ namespace FMScanner
                 }
             }
 
-            internal void EnsureCapacity(int min)
+            private void EnsureCapacity(int min)
             {
                 if (_itemsArrayLength >= min) return;
                 int num = _itemsArrayLength == 0 ? 4 : _itemsArrayLength * 2;
@@ -1423,10 +1425,10 @@ namespace FMScanner
         private readonly StringBuilder _fldinstSymbolFontNameSB = new StringBuilder(_fldinstSymbolFontNameMaxLen, _fldinstSymbolFontNameMaxLen);
 
         // Highest measured was 17
-        private readonly ListWithExposedArray<byte> _hexBuffer = new ListWithExposedArray<byte>(20);
+        private readonly ListFast<byte> _hexBuffer = new ListFast<byte>(20);
 
         // Highest measured was 13
-        private readonly ListWithExposedArray<char> _unicodeBuffer = new ListWithExposedArray<char>(20);
+        private readonly ListFast<char> _unicodeBuffer = new ListFast<char>(20);
 
         #endregion
 
