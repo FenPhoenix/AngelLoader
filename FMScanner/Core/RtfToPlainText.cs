@@ -2165,6 +2165,7 @@ namespace FMScanner
 
             for (int i = 0; i < _unicodeBuffer.Count; i++)
             {
+                // PERF_TODO: It looks like this call may be really slow. Look into doing this manually.
                 byte[] temp = BitConverter.GetBytes(_unicodeBuffer[i]);
                 // This won't throw because temp is not null and index is within range and is not the last index
                 _unicodeCharsTemp.Add(BitConverter.ToChar(temp, 0));
