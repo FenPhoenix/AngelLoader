@@ -84,10 +84,13 @@ namespace FMScanner
             return FirstFileExists(FastIOSearchOption.AllDirectories, path, searchPatterns);
         }
 
+        // Disabled until needed
+        /*
         internal static bool FilesExistSearchAllSkipTop(string path, params string[] searchPatterns)
         {
             return FirstFileExists(FastIOSearchOption.AllDirectoriesSkipTop, path, searchPatterns);
         }
+        */
 
         private static void ThrowException(string[] searchPatterns, int err, string path, string pattern, int loop)
         {

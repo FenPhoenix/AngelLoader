@@ -1870,26 +1870,26 @@ namespace FMScanner
             return (true, false, enc, fontEntry);
         }
 
-        private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out string _finalChar)
+        private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out string finalChar)
         {
             if (codePoint >= 0x20 && codePoint <= 0xFF)
             {
-                _finalChar = ConvertFromUtf32(_fontTable[codePoint - 0x20]) ?? _unicodeUnknown_String;
+                finalChar = ConvertFromUtf32(_fontTable[codePoint - 0x20]) ?? _unicodeUnknown_String;
             }
             else
             {
                 if (codePoint > 255)
                 {
-                    _finalChar = "";
+                    finalChar = "";
                     return false;
                 }
                 try
                 {
-                    _finalChar = GetEncodingFromCachedList(_windows1252).GetString(new[] { (byte)codePoint });
+                    finalChar = GetEncodingFromCachedList(_windows1252).GetString(new[] { (byte)codePoint });
                 }
                 catch
                 {
-                    _finalChar = _unicodeUnknown_String;
+                    finalChar = _unicodeUnknown_String;
                 }
             }
 
@@ -2157,13 +2157,9 @@ namespace FMScanner
 
             if (_unicodeBuffer.Count == 0 || _unicodeCharsLeftToSkip > 0) return;
 
-            /*
-             A char is 2 bytes wide, which is the same width as a \uN character is allowed to be, so they match
-             1-to-1.
-             It's tempting to make this a list and only reallocate if we need to increase capacity, but this
-             would then have to be converted into an array anyway to pass to the string constructor below, so
-             there's nothing we can really do here.
-            */
+
+            // A char is 2 bytes wide, which is the same width as a \uN character is allowed to be, so they match
+            // 1-to-1.
             _unicodeCharsTemp.EnsureCapacity(_unicodeBuffer.Count);
             _unicodeCharsTemp.Clear();
 

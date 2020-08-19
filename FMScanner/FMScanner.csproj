@@ -32,8 +32,4 @@
     <PackageReference Include="Ude.NetStandard" Version="1.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-
 </Project>

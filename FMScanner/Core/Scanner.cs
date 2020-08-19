@@ -18,7 +18,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Xml;
 using FMScanner.FastZipReader;
 using FMScanner.SimpleHelpers;
@@ -195,33 +194,33 @@ namespace FMScanner
         #region Scan asynchronous
 
         [PublicAPI]
-        public async Task<List<ScannedFMData?>>
+        public Task<List<ScannedFMData?>>
         ScanAsync(List<FMToScan> missions, string tempPath)
         {
-            return await Task.Run(() => ScanMany(missions, tempPath, _scanOptions, null, CancellationToken.None));
+            return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, null, CancellationToken.None));
         }
 
         [PublicAPI]
-        public async Task<List<ScannedFMData?>>
+        public Task<List<ScannedFMData?>>
         ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
         {
-            return await Task.Run(() => ScanMany(missions, tempPath, scanOptions, null, CancellationToken.None));
+            return Task.Run(() => ScanMany(missions, tempPath, scanOptions, null, CancellationToken.None));
         }
 
         [PublicAPI]
-        public async Task<List<ScannedFMData?>>
+        public Task<List<ScannedFMData?>>
         ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
                   CancellationToken cancellationToken)
         {
-            return await Task.Run(() => ScanMany(missions, tempPath, _scanOptions, progress, cancellationToken));
+            return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, progress, cancellationToken));
         }
 
         [PublicAPI]
-        public async Task<List<ScannedFMData?>>
+        public Task<List<ScannedFMData?>>
         ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
                   IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
-            return await Task.Run(() => ScanMany(missions, tempPath, scanOptions, progress, cancellationToken));
+            return Task.Run(() => ScanMany(missions, tempPath, scanOptions, progress, cancellationToken));
         }
 
         #endregion
@@ -344,6 +343,7 @@ namespace FMScanner
                         }
                         catch (Exception ex)
                         {
+                            // TODO: Uh... we're swallowing all exceptions and not even logging them(!)
                             Log(LogFile, "Exception in FM scan", ex);
                         }
                         scannedFMDataList.Add(scannedFM);
@@ -413,7 +413,7 @@ namespace FMScanner
                     sevenZipSize = (ulong)sze.PackedSize;
                     sze.ExtractArchive(_fmWorkingPath);
                 }
-                catch (Exception)
+                catch
                 {
                     // Third party thing, doesn't tell you what exceptions it can throw, whatever
                     DeleteFMWorkingPath(_fmWorkingPath);
@@ -440,7 +440,7 @@ namespace FMScanner
                         // thrown while loading them. If this passes, we're definitely good.
                         if (_archive.Entries.Count == 0) return UnsupportedZip(_archivePath);
                     }
-                    catch (Exception)
+                    catch
                     {
                         // Invalid zip file, whatever, move on
                         return UnsupportedZip(_archivePath);
@@ -3186,7 +3186,7 @@ namespace FMScanner
 
                 Directory.Delete(fmWorkingPath, recursive: true);
             }
-            catch (Exception)
+            catch
             {
                 // Don't care
             }

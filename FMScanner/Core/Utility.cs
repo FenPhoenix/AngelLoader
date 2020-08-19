@@ -762,11 +762,14 @@ namespace FMScanner
 
         #region Clear and add
 
+        // Disabled until needed
+        /*
         internal static void ClearAndAdd<T>(this List<T> list, T item)
         {
             list.Clear();
             list.Add(item);
         }
+        */
 
         internal static void ClearAndAdd<T>(this List<T> list, List<T> items)
         {
