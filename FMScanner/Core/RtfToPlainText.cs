@@ -94,6 +94,16 @@ namespace FMScanner
                 ItemsArray[_size++] = item;
             }
 
+            /*
+            Honestly, for fixed-size value types, doing the array clear is completely unnecessary. For reference
+            types, you definitely want to clear it to get rid of all the references, but for ints or chars etc.,
+            all a clear does is set a bunch of fixed-width values to other fixed-width values. You don't save
+            space and you don't get rid of loose references, all you do is waste an alarming amount of time. We
+            drop fully 200ms from the Unicode parser just by using the fast clear!
+            And of course, if you don't need to clear the array, then all that's needed to "clear" the list is
+            literally just setting _size to 0. Instant.
+            */
+            /*
             public void Clear()
             {
                 if (_size > 0)
@@ -102,6 +112,12 @@ namespace FMScanner
                     _size = 0;
                 }
             }
+            */
+
+            /// <summary>
+            /// Just sets <see cref="Count"/> to 0. Doesn't zero out the array or do anything else whatsoever.
+            /// </summary>
+            public void ClearFast() => _size = 0;
 
             [PublicAPI]
             internal int Capacity
@@ -1410,10 +1426,7 @@ namespace FMScanner
         private readonly ListWithExposedArray<byte> _hexBuffer = new ListWithExposedArray<byte>(20);
 
         // Highest measured was 13
-        private readonly List<int> _unicodeBuffer = new List<int>(20);
-
-        // Highest measured was 13
-        private readonly ListWithExposedArray<char> _unicodeCharsTemp = new ListWithExposedArray<char>(20);
+        private readonly ListWithExposedArray<char> _unicodeBuffer = new ListWithExposedArray<char>(20);
 
         #endregion
 
@@ -1497,9 +1510,8 @@ namespace FMScanner
             #endregion
 
             // Deallocate these if they get too big
-            _hexBuffer.Clear();
-            _unicodeBuffer.Clear();
-            _unicodeCharsTemp.Clear();
+            _hexBuffer.ClearFast();
+            _unicodeBuffer.ClearFast();
             _fontEntries.Clear();
             _scopeStack.Clear();
             _returnSB.Clear();
@@ -1507,7 +1519,6 @@ namespace FMScanner
             // This one has the seek-back buffer (a Stack<char>) which is technically eligible for deallocation,
             // even though in practice I think it's guaranteed never to have more than like 5 chars in it maybe?
             _rtfStream.Reset(stream, streamLength);
-
         }
 
         private Error ParseRtf()
@@ -1591,7 +1602,7 @@ namespace FMScanner
 
             Error ResetBufferAndStateAndReturn()
             {
-                _hexBuffer.Clear();
+                _hexBuffer.ClearFast();
                 _currentScope.RtfInternalState = RtfInternalState.Normal;
                 return Error.OK;
             }
@@ -1603,7 +1614,7 @@ namespace FMScanner
             // this, we have to put all contiguous hex chars into a buffer and when the run ends, we just pass
             // the buffer to the current encoding's byte-to-string decoder and get our correct result.
 
-            _hexBuffer.Clear();
+            _hexBuffer.ClearFast();
 
             // Quick-n-dirty goto for now. TODO: Make this better or something
             restartButDontClearBuffer:
@@ -2157,22 +2168,9 @@ namespace FMScanner
 
             if (_unicodeBuffer.Count == 0 || _unicodeCharsLeftToSkip > 0) return;
 
-            // A char is 2 bytes wide, which is the same width as a \uN character is allowed to be, so they match
-            // 1-to-1.
-            _unicodeCharsTemp.EnsureCapacity(_unicodeBuffer.Count);
-            _unicodeCharsTemp.Clear();
+            string finalString = new string(_unicodeBuffer.ItemsArray, 0, _unicodeBuffer.Count);
 
-            for (int i = 0; i < _unicodeBuffer.Count; i++)
-            {
-                byte[] temp = BitConverter.GetBytes(_unicodeBuffer[i]);
-                // This won't throw because temp is not null and index is within range and is not the last index
-                // PERF_TODO: This is the slow call... might not be able to do much about it
-                _unicodeCharsTemp.Add(BitConverter.ToChar(temp, 0));
-            }
-
-            _unicodeBuffer.Clear();
-
-            string finalString = new string(_unicodeCharsTemp.ItemsArray, 0, _unicodeCharsTemp.Count);
+            _unicodeBuffer.ClearFast();
 
             FixUpBadUnicode(ref finalString);
 
@@ -2207,7 +2205,8 @@ namespace FMScanner
                     Error error;
                     // Make sure the code point is normalized before adding it to the buffer!
                     if ((error = NormalizeUnicodePoint(ref param)) != Error.OK) return error;
-                    _unicodeBuffer.Add(param);
+                    // At this point, param is guaranteed to fit into a char
+                    _unicodeBuffer.Add((char)param);
                     break;
                 case SpecialType.HeaderCodePage:
                     _header.CodePage = param >= 0 ? param : _windows1252;
