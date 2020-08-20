@@ -1473,7 +1473,7 @@ namespace FMScanner
 #if ReleaseTestMode || DebugTestMode
 
             Error error = ParseRtf();
-            return error == Error.OK ? (true, _returnSB.ToString()) : (false, "");
+            return error == Error.OK ? (true, _returnSB.ToString()) : throw new Exception("RTF converter error: " + error);
 #else
             try
             {
