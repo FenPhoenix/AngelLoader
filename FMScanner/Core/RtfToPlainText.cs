@@ -349,7 +349,7 @@ namespace FMScanner
             }
         }
 
-        private readonly struct Symbol
+        private sealed class Symbol
         {
             internal readonly int DefaultParam;
             internal readonly bool UseDefaultParam;
@@ -1248,136 +1248,7 @@ namespace FMScanner
 
         #endregion
 
-        private readonly Dictionary<string, Symbol> _symbolTable = new Dictionary<string, Symbol>
-        {
-            #region Code pages / charsets / fonts
-
-            // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
-            // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
-            {"ansi",      new Symbol(_windows1252,   true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-
-            {"pc",        new Symbol(437,            true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-
-            // The spec calls this "Apple Macintosh" but again says nothing about what codepage that is. I'll
-            // assume 10000 ("Mac Roman")
-            {"mac",       new Symbol(10000,          true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-
-            {"pca",       new Symbol(850,            true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-            {"ansicpg",   new Symbol(_windows1252,   false,     KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-
-            {"deff",      new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.DefaultFont)},
-
-            {"fonttbl",   new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.FontTable)},
-            {"f",         new Symbol(0,              false,     KeywordType.Property,       (int)Property.FontNum)},
-            {"fcharset",  new Symbol(-1,             false,     KeywordType.Special,        (int)SpecialType.Charset)},
-            {"cpg",       new Symbol(-1,             false,     KeywordType.Special,        (int)SpecialType.CodePage)},
-
-            #endregion
-
-            #region Encoded characters
-
-            {"uc",        new Symbol(1,              false,     KeywordType.Property,       (int)Property.UnicodeCharSkipCount)},
-            {"'",         new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.HexEncodedChar)},
-            {"u",         new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.UnicodeChar)},
-
-            #endregion
-
-            // \v to make all plain text hidden (not output to the conversion stream)}, \v0 to make it shown again
-            {"v",         new Symbol(1,              false,     KeywordType.Property,       (int)Property.Hidden)},
-
-            #region Newlines
-
-            {"par",       new Symbol(0,              false,     KeywordType.Character,      '\n')},
-            {"line",      new Symbol(0,              false,     KeywordType.Character,      '\n')},
-            {"softline",  new Symbol(0,              false,     KeywordType.Character,      '\n')},
-
-            #endregion
-
-            #region Control words that map to a single character
-
-            {"tab",       new Symbol(0,              false,     KeywordType.Character,      '\t')},
-
-            // Just convert these to regular spaces because we're just trying to scan for strings in readmes
-            // without weird crap tripping us up
-            {"bullet",    new Symbol(0,              false,     KeywordType.Character,      '\x2022')},
-            {"emspace",   new Symbol(0,              false,     KeywordType.Character,      ' ')},
-            {"enspace",   new Symbol(0,              false,     KeywordType.Character,      ' ')},
-            {"qmspace",   new Symbol(0,              false,     KeywordType.Character,      ' ')},
-            {"~",         new Symbol(0,              false,     KeywordType.Character,      ' ')},
-            // TODO: Maybe just convert these all to ASCII equivalents as well?
-            {"emdash",    new Symbol(0,              false,     KeywordType.Character,      '\x2014')},
-            {"endash",    new Symbol(0,              false,     KeywordType.Character,      '\x2013')},
-            {"lquote",    new Symbol(0,              false,     KeywordType.Character,      '\x2018')},
-            {"rquote",    new Symbol(0,              false,     KeywordType.Character,      '\x2019')},
-            {"ldblquote", new Symbol(0,              false,     KeywordType.Character,      '\x201C')},
-            {"rdblquote", new Symbol(0,              false,     KeywordType.Character,      '\x201D')},
-
-            #endregion
-
-            {"bin",       new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.Bin)},
-            {"*",         new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.SkipDest)},
-
-            // We need to do stuff with this (SYMBOL instruction)
-            {"fldinst",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.FieldInstruction)}, 
-
-            // Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.
-            {"cs",        new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.IgnoreButDontSkipGroup)},
-            {"ds",        new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.IgnoreButDontSkipGroup)},
-            {"ts",        new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.IgnoreButDontSkipGroup)},
-
-            #region Custom skip-destinations
-
-            // Ignore list item bullets and numeric prefixes etc. We don't need them.
-            {"listtext",  new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"pntext",    new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-
-            #endregion
-
-            #region Required skip-destinations
-
-            {"author",    new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"buptim",    new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"colortbl",  new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"comment",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"creatim",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"doccomm",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"footer",    new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"footerf",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"footerl",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"footerr",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"footnote",  new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"ftncn",     new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"ftnsep",    new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"ftnsepc",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"header",    new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"headerf",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"headerl",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"headerr",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"info",      new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"keywords",  new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"operator",  new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"pict",      new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"printim",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"private1",  new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"revtim",    new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"rxe",       new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"stylesheet",new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"subject",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"tc",        new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"title",     new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"txe",       new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-            {"xe",        new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.Skip)},
-
-            #endregion
-
-            #region RTF reserved character escapes
-
-            {"{",         new Symbol(0,              false,     KeywordType.Character,      '{')},
-            {"}",         new Symbol(0,              false,     KeywordType.Character,      '}')},
-            {"\\",        new Symbol(0,              false,     KeywordType.Character,      '\\')}
-
-            #endregion
-        };
+        private readonly Dictionary<string, Symbol> _symbolTable;
 
         #endregion
 
@@ -1467,12 +1338,153 @@ namespace FMScanner
         // Windows does. To get access to them, we need to take a dependency on the ~700k System.Text.Encoding.CodePages
         // NuGet package and then call this RegisterProvider method like this. But we don't want to carry around
         // the extra package until we actually need it, so it's disabled for now.
-#if CROSS_PLATFORM
         public RtfToTextConverter()
         {
+#if CROSS_PLATFORM
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        }
 #endif
+
+            #region Symbol table
+
+            Symbol destSkipSymbol = new Symbol(0, false, KeywordType.Destination, (int)DestinationType.Skip);
+            Symbol destIgnoreButDontSkipGroupSymbol = new Symbol(0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup);
+            Symbol newLineSymbol = new Symbol(0, false, KeywordType.Character, '\n');
+            Symbol spaceSymbol = new Symbol(0, false, KeywordType.Character, ' ');
+
+            _symbolTable = new Dictionary<string, Symbol>
+            {
+                #region Code pages / charsets / fonts
+
+                // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
+                // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
+                {"ansi",      new Symbol(_windows1252,   true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
+
+                {"pc",        new Symbol(437,            true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
+
+                // The spec calls this "Apple Macintosh" but again says nothing about what codepage that is. I'll
+                // assume 10000 ("Mac Roman")
+                {"mac",       new Symbol(10000,          true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
+
+                {"pca",       new Symbol(850,            true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
+                {"ansicpg",   new Symbol(_windows1252,   false,     KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
+
+                {"deff",      new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.DefaultFont)},
+
+                {"fonttbl",   new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.FontTable)},
+                {"f",         new Symbol(0,              false,     KeywordType.Property,       (int)Property.FontNum)},
+                {"fcharset",  new Symbol(-1,             false,     KeywordType.Special,        (int)SpecialType.Charset)},
+                {"cpg",       new Symbol(-1,             false,     KeywordType.Special,        (int)SpecialType.CodePage)},
+
+                #endregion
+
+                #region Encoded characters
+
+                {"uc",        new Symbol(1,              false,     KeywordType.Property,       (int)Property.UnicodeCharSkipCount)},
+                {"'",         new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.HexEncodedChar)},
+                {"u",         new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.UnicodeChar)},
+
+                #endregion
+
+                // \v to make all plain text hidden (not output to the conversion stream)}, \v0 to make it shown again
+                {"v",         new Symbol(1,              false,     KeywordType.Property,       (int)Property.Hidden)},
+
+                #region Newlines
+
+                {"par",       newLineSymbol},
+                {"line",      newLineSymbol},
+                {"softline",  newLineSymbol},
+
+                #endregion
+
+                #region Control words that map to a single character
+
+                {"tab",       new Symbol(0,              false,     KeywordType.Character,      '\t')},
+
+                {"bullet",    new Symbol(0,              false,     KeywordType.Character,      '\x2022')},
+
+                // Just convert these to regular spaces because we're just trying to scan for strings in readmes
+                // without weird crap tripping us up
+                {"emspace",   spaceSymbol},
+                {"enspace",   spaceSymbol},
+                {"qmspace",   spaceSymbol},
+                {"~",         spaceSymbol},
+                // TODO: Maybe just convert these all to ASCII equivalents as well?
+                {"emdash",    new Symbol(0,              false,     KeywordType.Character,      '\x2014')},
+                {"endash",    new Symbol(0,              false,     KeywordType.Character,      '\x2013')},
+                {"lquote",    new Symbol(0,              false,     KeywordType.Character,      '\x2018')},
+                {"rquote",    new Symbol(0,              false,     KeywordType.Character,      '\x2019')},
+                {"ldblquote", new Symbol(0,              false,     KeywordType.Character,      '\x201C')},
+                {"rdblquote", new Symbol(0,              false,     KeywordType.Character,      '\x201D')},
+
+                #endregion
+
+                {"bin",       new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.Bin)},
+                {"*",         new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.SkipDest)},
+
+                // We need to do stuff with this (SYMBOL instruction)
+                {"fldinst",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.FieldInstruction)}, 
+
+                // Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.
+                {"cs",        destIgnoreButDontSkipGroupSymbol},
+                {"ds",        destIgnoreButDontSkipGroupSymbol},
+                {"ts",        destIgnoreButDontSkipGroupSymbol},
+
+                #region Custom skip-destinations
+
+                // Ignore list item bullets and numeric prefixes etc. We don't need them.
+                {"listtext",  destSkipSymbol},
+                {"pntext",    destSkipSymbol},
+
+                #endregion
+
+                #region Required skip-destinations
+
+                {"author",    destSkipSymbol},
+                {"buptim",    destSkipSymbol},
+                {"colortbl",  destSkipSymbol},
+                {"comment",   destSkipSymbol},
+                {"creatim",   destSkipSymbol},
+                {"doccomm",   destSkipSymbol},
+                {"footer",    destSkipSymbol},
+                {"footerf",   destSkipSymbol},
+                {"footerl",   destSkipSymbol},
+                {"footerr",   destSkipSymbol},
+                {"footnote",  destSkipSymbol},
+                {"ftncn",     destSkipSymbol},
+                {"ftnsep",    destSkipSymbol},
+                {"ftnsepc",   destSkipSymbol},
+                {"header",    destSkipSymbol},
+                {"headerf",   destSkipSymbol},
+                {"headerl",   destSkipSymbol},
+                {"headerr",   destSkipSymbol},
+                {"info",      destSkipSymbol},
+                {"keywords",  destSkipSymbol},
+                {"operator",  destSkipSymbol},
+                {"pict",      destSkipSymbol},
+                {"printim",   destSkipSymbol},
+                {"private1",  destSkipSymbol},
+                {"revtim",    destSkipSymbol},
+                {"rxe",       destSkipSymbol},
+                {"stylesheet",destSkipSymbol},
+                {"subject",   destSkipSymbol},
+                {"tc",        destSkipSymbol},
+                {"title",     destSkipSymbol},
+                {"txe",       destSkipSymbol},
+                {"xe",        destSkipSymbol},
+
+                #endregion
+
+                #region RTF reserved character escapes
+
+                {"{",         new Symbol(0,              false,     KeywordType.Character,      '{')},
+                {"}",         new Symbol(0,              false,     KeywordType.Character,      '}')},
+                {"\\",        new Symbol(0,              false,     KeywordType.Character,      '\\')}
+
+                #endregion
+            };
+
+            #endregion
+        }
 
         [PublicAPI]
         public (bool Success, string Text) Convert(Stream stream, long streamLength)
@@ -1530,7 +1542,8 @@ namespace FMScanner
             if (_unicodeBuffer.Capacity > ByteSize.MB) _unicodeBuffer.Capacity = 0;
             if (_fontEntries.Capacity > 500) _fontEntries.Capacity = 0;
             // For the scope stack, we can't check its capacity because Stacks don't have a Capacity property(?!?),
-            // but we're guaranteed not to exceed 100 because of a check in the only place where we push to it.
+            // but we're guaranteed not to exceed 100 (or 128 I guess) because of a check in the only place where
+            // we push to it.
             if (_returnSB.Capacity > ByteSize.MB) _returnSB.Capacity = 0;
 
             // This one has the seek-back buffer (a Stack<char>) which is technically eligible for deallocation,
