@@ -4,7 +4,7 @@
 Perf as of 2020-08-19: Reading the 1098 set and pulling from zipped files with the disk cache warm:
 ~88.2 MB/s average
 Honestly don't know how tf people get "796 MB/s" with character scanners when even a totally empty loop that just
-reads bytes straight out of an in-memory stream and does nothing else still only gets 272 MB/s for me. But what
+reads bytes straight out of an in-memory stream and does nothing else still only gets 225 MB/s for me. But what
 do I know. :(
 
 Note to self:
@@ -19,17 +19,20 @@ This is a fast, no-frills, platform-agnostic RTF-to-text converter. It can be us
 you simply want to convert RTF to plaintext without being tied to Windows.
 
 The goals of this RTF-to-text converter are:
--It should be platform-agnostic and have no dependencies on Windows.
--It should be as accurate as possible with regard to character encodings.
--It should work with unseekable streams, that is, streams that can only be read forward.
--It should be fast and have reasonable memory usage.
+1. It should be platform-agnostic and have no dependencies on Windows.
+2. It should correctly preserve all characters - ASCII or otherwise - as they would appear in rich text.
+3. It should work with unseekable streams, that is, streams that can only be read forward.
+4. It should be faster and use less memory than the RichTextBox-with-prepass-for-image-strip method.
  
--We support forward-only streams so we can read straight out of a compressed zip file entry with no copying.
--We go to great lengths to detect character encoding accurately, even converting symbol fonts to their Unicode
- equivalents. We surpass even RichEdit in this respect.
--We're mindful of our allocations and minimize them wherever possible.
--We use the System.Text.Encoding.CodePages package to get all Windows-supported codepages on all platforms
- (only if CROSS_PLATFORM is defined).
+To that end:
+1. We use the System.Text.Encoding.CodePages package to get all Windows-supported codepages on all platforms
+   (only if CROSS_PLATFORM is defined). We don't use RichTextBox or RichEdit.
+2. We go to great lengths to detect character encoding accurately, even converting symbol fonts to their Unicode
+   equivalents. We surpass even RichEdit in this respect.
+3. We support forward-only streams so we can read straight out of a compressed zip file entry with no copying.
+4. We're mindful of our allocations and minimize them wherever possible. We do absolutely nothing other than convert
+   to plaintext, simply skipping over anything that can't be converted. We thereby avoid the substantial overhead
+   of a full parser.
 
 -Note that we don't check for {\rtf1 at the start of the file to validate, as in FMScanner that will have been
  done already.
@@ -37,7 +40,7 @@ The goals of this RTF-to-text converter are:
 TODO:
 Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
--Tiger face: \u-9169?\u-10179?
+-Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
 
 Perf:
 -All StringBuilders that don't need to be ToString()'d should be changed to byte/char lists.
@@ -50,9 +53,9 @@ Memory:
 Other:
 -Really implement a proper Peek() function for the stream. I know it's possible, and having to use UnGetChar() is
  getting really nasty and error-prone.
--Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and even
- imperfect text may be useful. We extract a relatively very small portion of text from the file, so statistically
- it's likely we may not even hit broken text even if it exists.
+-Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and
+ even imperfect text may be useful. FMScanner extracts a relatively very small portion of text from the file,
+ so statistically it's likely it may not even hit broken text even if it exists.
 */
 using System;
 using System.Collections.Generic;
@@ -80,23 +83,33 @@ namespace FMScanner
         // How many times have you thought, "Gee, I wish I could just reach in and grab that backing array from
         // that List, instead of taking the senseless performance hit of having it copied to a newly allocated
         // array all the time in a ToArray() call"? Hooray!
+        /// <summary>
+        /// Because this list exposes its internal array and also doesn't clear said array on <see cref="ClearFast"/>,
+        /// it must be used with care.
+        /// <para>
+        /// -Only use this with value types. Reference types will be left hanging around in the array.
+        /// </para>
+        /// <para>
+        /// -The internal array is there so you can get at it without incurring an allocation+copy.
+        ///  It can very easily become desynced with the <see cref="ListFast{T}"/> if you modify it.
+        /// </para>
+        /// <para>
+        /// -Only use the internal array in conjunction with the <see cref="Count"/> property.
+        ///  Using the <see cref="ItemsArray.Length"/> value may cause catastrophe.
+        /// </para>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         private sealed class ListFast<T>
         {
             internal T[] ItemsArray;
             private int _itemsArrayLength;
-            private const int _defaultCapacity = 4;
+
 #pragma warning disable IDE0032
             private int _size;
 
             [SuppressMessage("ReSharper", "ConvertToAutoPropertyWithPrivateSetter")]
             internal int Count => _size;
 #pragma warning restore IDE0032
-
-            internal ListFast()
-            {
-                ItemsArray = new T[_defaultCapacity];
-                _itemsArrayLength = _defaultCapacity;
-            }
 
             internal ListFast(int capacity)
             {
@@ -111,25 +124,12 @@ namespace FMScanner
             }
 
             /*
-            Honestly, for fixed-size value types, doing the array clear is completely unnecessary. For reference
+            Honestly, for fixed-size value types, doing an Array.Clear() is completely unnecessary. For reference
             types, you definitely want to clear it to get rid of all the references, but for ints or chars etc.,
             all a clear does is set a bunch of fixed-width values to other fixed-width values. You don't save
             space and you don't get rid of loose references, all you do is waste an alarming amount of time. We
             drop fully 200ms from the Unicode parser just by using the fast clear!
-            And of course, if you don't need to clear the array, then all that's needed to "clear" the list is
-            literally just setting _size to 0. Instant.
             */
-            /*
-            public void Clear()
-            {
-                if (_size > 0)
-                {
-                    Array.Clear(ItemsArray, 0, _size);
-                    _size = 0;
-                }
-            }
-            */
-
             /// <summary>
             /// Just sets <see cref="Count"/> to 0. Doesn't zero out the array or do anything else whatsoever.
             /// </summary>
@@ -1258,7 +1258,7 @@ namespace FMScanner
 
         #endregion
 
-        #region Preallocated arrays
+        #region Preallocated char arrays
 
         // This "SYMBOL" and the below "Symbol" are unrelated. "SYMBOL" is a fldinst keyword, while "Symbol" is
         // the name of a font.
@@ -1340,12 +1340,13 @@ namespace FMScanner
 
         #region Public API
 
-        // If we're on something other than Windows, we don't normally have access to most of the codepages that
-        // Windows does. To get access to them, we need to take a dependency on the ~700k System.Text.Encoding.CodePages
-        // NuGet package and then call this RegisterProvider method like this. But we don't want to carry around
-        // the extra package until we actually need it, so it's disabled for now.
         public RtfToTextConverter()
         {
+            // If we're on something other than Windows, we don't normally have access to most of the
+            // codepages that Windows does. To get access to them, we need to take a dependency on the
+            // ~700k System.Text.Encoding.CodePages NuGet package and then call this RegisterProvider
+            // method like this. But we don't want to carry around the extra package until we actually
+            // need it, so it's disabled for now.
 #if CROSS_PLATFORM
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
@@ -1496,6 +1497,7 @@ namespace FMScanner
         public (bool Success, string Text) Convert(Stream stream, long streamLength)
         {
             Reset(stream, streamLength);
+
 #if ReleaseTestMode || DebugTestMode
 
             Error error = ParseRtf();
@@ -1525,13 +1527,13 @@ namespace FMScanner
             _fldinstSymbolNumberSB.Clear();
             _fldinstSymbolFontNameSB.Clear();
 
-            // Flat primitives
+            // Fixed-size value types
             _groupCount = 0;
             _binaryCharsLeftToSkip = 0;
             _unicodeCharsLeftToSkip = 0;
             _skipDestinationIfUnknown = false;
 
-            // Types that contain only flat primitives
+            // Types that contain only fixed-size value types
             _header.Reset();
             _currentScope.Reset();
 
@@ -1596,6 +1598,8 @@ namespace FMScanner
                         break;
                     case '\\':
                         // We have to check what the keyword is before deciding whether to parse the Unicode.
+                        // If it's another \uN keyword, then obviously we don't want to parse yet because the
+                        // run isn't finished.
                         if ((ec = ParseKeyword()) != Error.OK) return ec;
                         break;
                     case '\r':
@@ -1870,6 +1874,8 @@ namespace FMScanner
                     }
                     else
                     {
+                        // NOTE: This can throw, but all calls to this are wrapped in try-catch blocks.
+                        // TODO: But weird that we don't put the try-catch here and just return null...?
                         Encoding enc = Encoding.GetEncoding(codePage);
                         _encodings.Add(codePage, enc);
                         return enc;
