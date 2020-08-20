@@ -62,6 +62,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
 
@@ -174,14 +175,20 @@ namespace FMScanner
             private Stream _stream = null!;
             // We can't actually get the length of some kinds of streams (zip entry streams), so we take the
             // length as a param and store it.
-            private long _length;
+            /// <summary>
+            /// Do not modify!
+            /// </summary>
+            internal long Length;
 
-            private long _currentPos = -1;
+            /// <summary>
+            /// Do not modify!
+            /// </summary>
+            internal long CurrentPos;
 
             private const int _bufferLen = 81920;
             private readonly byte[] _buffer = new byte[_bufferLen];
             // Start it ready to roll over to 0 so we don't need extra logic for the first get
-            private int _bufferPos = _bufferLen;
+            private int _bufferPos = _bufferLen - 1;
 
             /*
             We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
@@ -197,20 +204,25 @@ namespace FMScanner
             rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
             */
             private readonly Stack<char> _unGetBuffer = new Stack<char>(5);
+            private bool _unGetBufferEmpty = true;
 
             #endregion
 
+            // PERF: Everything in here is inlined. This gives a shockingly massive speedup.
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal void Reset(Stream stream, long streamLength)
             {
                 _stream = stream;
-                _length = streamLength;
+                Length = streamLength;
 
-                _currentPos = -1;
+                CurrentPos = 0;
 
                 // Don't clear the buffer; we don't need to and it wastes time
-                _bufferPos = _bufferLen;
+                _bufferPos = _bufferLen - 1;
 
                 _unGetBuffer.Clear();
+                _unGetBufferEmpty = true;
             }
 
             /// <summary>
@@ -220,17 +232,22 @@ namespace FMScanner
             /// </summary>
             /// <param name="c"></param>
             /// <returns></returns>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal void UnGetChar(char c)
             {
-                if (_currentPos < 0) return;
-                _unGetBuffer.Push(c);
-                _currentPos--;
+                if (CurrentPos < 0) return;
+                {
+                    _unGetBuffer.Push(c);
+                    _unGetBufferEmpty = false;
+                    if (CurrentPos > 0) CurrentPos--;
+                }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private byte StreamReadByte()
             {
                 _bufferPos++;
-                if (_bufferPos > _bufferLen - 1)
+                if (_bufferPos == _bufferLen)
                 {
                     _bufferPos = 0;
                     _stream.Read(_buffer, 0, _bufferLen);
@@ -242,28 +259,49 @@ namespace FMScanner
             /// Returns false if the end of the stream has been reached.
             /// </summary>
             /// <returns></returns>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal bool GetNextChar(out char ch)
             {
-                _currentPos++;
-                if (_currentPos > _length - 1)
+                if (CurrentPos == Length)
                 {
-                    // Even if we're on the last char, we still want to read from the buffer first
-                    if (_unGetBuffer.Count > 0)
-                    {
-                        ch = _unGetBuffer.Pop();
-                        return true;
-                    }
-                    else
-                    {
-                        ch = '\0';
-                        return false;
-                    }
+                    ch = '\0';
+                    return false;
+                }
+
+                if (!_unGetBufferEmpty)
+                {
+                    ch = _unGetBuffer.Pop();
+                    _unGetBufferEmpty = _unGetBuffer.Count == 0;
                 }
                 else
                 {
-                    ch = _unGetBuffer.Count > 0 ? _unGetBuffer.Pop() : (char)StreamReadByte();
-                    return true;
+                    ch = (char)StreamReadByte();
                 }
+                CurrentPos++;
+
+                return true;
+            }
+
+            /// <summary>
+            /// For use in loops that already check the stream position against the end as a loop condition
+            /// </summary>
+            /// <returns></returns>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal char GetNextCharFast()
+            {
+                char ch;
+                if (!_unGetBufferEmpty)
+                {
+                    ch = _unGetBuffer.Pop();
+                    _unGetBufferEmpty = _unGetBuffer.Count == 0;
+                }
+                else
+                {
+                    ch = (char)StreamReadByte();
+                }
+                CurrentPos++;
+
+                return ch;
             }
         }
 
@@ -1568,8 +1606,11 @@ namespace FMScanner
             int nibbleCount = 0;
             byte b = 0;
 
-            while (_rtfStream.GetNextChar(out char ch))
+            char ch;
+            while (_rtfStream.CurrentPos < _rtfStream.Length)
             {
+                ch = _rtfStream.GetNextCharFast();
+
                 if (_groupCount < 0) return Error.StackUnderflow;
 
                 if (_currentScope.RtfInternalState == RtfInternalState.Binary)
@@ -1587,13 +1628,13 @@ namespace FMScanner
                     case '{':
                         // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
                         if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
-                        ParseUnicodeIfAnyInBuffer();
+                        if (_unicodeBuffer.Count > 0) ParseUnicodeIfAnyInBuffer();
                         if ((ec = PushScope()) != Error.OK) return ec;
                         break;
                     case '}':
                         // ditto the above
                         if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
-                        ParseUnicodeIfAnyInBuffer();
+                        if (_unicodeBuffer.Count > 0) ParseUnicodeIfAnyInBuffer();
                         if ((ec = PopScope()) != Error.OK) return ec;
                         break;
                     case '\\':
@@ -1608,11 +1649,17 @@ namespace FMScanner
                         break;
                     default:
                         // It's a Unicode barrier, so parse the Unicode here.
-                        ParseUnicodeIfAnyInBuffer();
+                        if (_unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
+                        {
+                            ParseUnicodeIfAnyInBuffer();
+                        }
                         switch (_currentScope.RtfInternalState)
                         {
                             case RtfInternalState.Normal:
-                                if ((ec = ParseChar(ch)) != Error.OK) return ec;
+                                if (_currentScope.RtfDestinationState == RtfDestinationState.Normal)
+                                {
+                                    if ((ec = ParseChar(ch)) != Error.OK) return ec;
+                                }
                                 break;
                             case RtfInternalState.HexEncodedChar:
                                 if ((ec = ParseHex(ref nibbleCount, ref ch, ref b)) != Error.OK) return ec;
@@ -1625,23 +1672,24 @@ namespace FMScanner
             return _groupCount < 0 ? Error.StackUnderflow : _groupCount > 0 ? Error.UnmatchedBrace : Error.OK;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CharSeqEqualUpTo(char[] array1, int len1, char[] array2)
+        {
+            int array2Len = array2.Length;
+            if (len1 < array2Len) return false;
+
+            for (int i0 = 0; i0 < array2Len; i0++)
+            {
+                if (array1[i0] != array2[i0]) return false;
+            }
+
+            return true;
+        }
+
         // It's ugly, but it's gotta be done...
         private Error ParseHex(ref int nibbleCount, ref char ch, ref byte b)
         {
             #region Local functions
-
-            static bool CharSeqEqualUpTo(char[] array1, int len1, char[] array2)
-            {
-                int array2Len = array2.Length;
-                if (len1 < array2Len) return false;
-
-                for (int i0 = 0; i0 < array2Len; i0++)
-                {
-                    if (array1[i0] != array2[i0]) return false;
-                }
-
-                return true;
-            }
 
             Error ResetBufferAndStateAndReturn()
             {
@@ -1668,18 +1716,17 @@ namespace FMScanner
             {
                 b += (byte)(ch - '0');
             }
+            else if (ch >= 'a' && ch <= 'f')
+            {
+                b += (byte)(ch - 'a' + 10);
+            }
+            else if (ch >= 'A' && ch <= 'F')
+            {
+                b += (byte)(ch - 'A' + 10);
+            }
             else
             {
-                if (IsAsciiLower(ch))
-                {
-                    if (ch < 'a' || ch > 'f') return Error.InvalidHex;
-                    b += (byte)(ch - 'a' + 10);
-                }
-                else
-                {
-                    if (ch < 'A' || ch > 'F') return Error.InvalidHex;
-                    b += (byte)(ch - 'A' + 10);
-                }
+                return Error.InvalidHex;
             }
 
             nibbleCount++;
@@ -1816,6 +1863,7 @@ namespace FMScanner
             return ResetBufferAndStateAndReturn();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error PushScope()
         {
             // Don't wait for out-of-memory; just put a sane cap on it.
@@ -1831,6 +1879,7 @@ namespace FMScanner
             return Error.OK;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error PopScope()
         {
             if (_scopeStack.Count == 0) return Error.StackUnderflow;
@@ -1843,9 +1892,13 @@ namespace FMScanner
 
         #region Helpers
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsAsciiAlpha(char ch) => IsAsciiUpper(ch) || IsAsciiLower(ch);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsAsciiUpper(char ch) => ch >= 'A' && ch <= 'Z';
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsAsciiLower(char ch) => ch >= 'a' && ch <= 'z';
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsAsciiDigit(char ch) => ch >= '0' && ch <= '9';
 
         /// <summary>
@@ -1855,6 +1908,7 @@ namespace FMScanner
         /// </summary>
         /// <param name="codePage"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Encoding GetEncodingFromCachedList(int codePage)
         {
             switch (codePage)
@@ -1952,6 +2006,7 @@ namespace FMScanner
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Error NormalizeUnicodePoint(ref int codePoint)
         {
             // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
@@ -1981,6 +2036,7 @@ namespace FMScanner
         /// <summary>
         /// Copy of framework version but with a fast null return on fail instead of the infernal exception-throwing.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string? ConvertFromUtf32(int utf32)
         {
             if (utf32 < 0 || utf32 > 1114111 || utf32 >= 55296 && utf32 <= 57343)
@@ -2009,6 +2065,7 @@ namespace FMScanner
         /// </summary>
         /// <param name="sb"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int ParseIntFast(StringBuilder sb)
         {
             int result = sb[0] - '0';
@@ -2140,7 +2197,8 @@ namespace FMScanner
                 return Error.OK;
             }
 
-            if (symbol.Index != (int)SpecialType.UnicodeChar)
+            if (symbol.Index != (int)SpecialType.UnicodeChar &&
+                _unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
             {
                 ParseUnicodeIfAnyInBuffer();
             }
@@ -2152,7 +2210,9 @@ namespace FMScanner
                     if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
                     return ChangeProperty((Property)symbol.Index, param);
                 case KeywordType.Character:
-                    return ParseChar((char)symbol.Index);
+                    return _currentScope.RtfDestinationState == RtfDestinationState.Normal
+                        ? ParseChar((char)symbol.Index)
+                        : Error.OK;
                 case KeywordType.Destination:
                     return ChangeDestination((DestinationType)symbol.Index);
                 case KeywordType.Special:
@@ -2212,8 +2272,6 @@ namespace FMScanner
             }
 
             #endregion
-
-            if (_unicodeBuffer.Count == 0 || _unicodeCharsLeftToSkip > 0) return;
 
             string finalString = new string(_unicodeBuffer.ItemsArray, 0, _unicodeBuffer.Count);
 
@@ -2292,22 +2350,17 @@ namespace FMScanner
             return Error.OK;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error ParseChar(char ch)
         {
-            if (_currentScope.RtfDestinationState == RtfDestinationState.Normal)
-            {
-                // PERF_TODO: This line is taking the majority of the ~150ms of this method.
-                if (_currentScope.InFontTable) _fontEntries[_fontEntries.Count - 1].AppendNameChar(ch);
+            if (_currentScope.InFontTable) _fontEntries[_fontEntries.Count - 1].AppendNameChar(ch);
 
-                // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
-                // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
-                Error error = _unicodeCharsLeftToSkip == 0 ? PutChar(ch) : Error.OK;
+            // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
+            // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
+            Error error = _unicodeCharsLeftToSkip == 0 ? PutChar(ch) : Error.OK;
 
-                if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
-                return error;
-            }
-
-            return Error.OK;
+            if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
+            return error;
         }
 
         private Error ChangeProperty(Property propertyTableIndex, int val)
