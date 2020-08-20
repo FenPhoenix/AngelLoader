@@ -1,6 +1,14 @@
 ﻿//#define CROSS_PLATFORM
 
 /*
+Perf as of 2020-08-19: Reading the 1098 set and pulling from zipped files with the disk cache warm:
+~88.2 MB/s average
+Honestly don't know how tf people get "796 MB/s" with character scanners when even a totally empty loop that just
+reads bytes straight out of an in-memory stream and does nothing else still only gets 272 MB/s for me. But what
+do I know. :(
+
+---
+
 This is a fast, no-frills, platform-agnostic RTF-to-text converter. It can be used in place of RichTextBox when
 you simply want to convert RTF to plaintext without being tied to Windows.
 
@@ -31,7 +39,7 @@ Perf:
  I mean it looks like we're plenty fast and memory-reasonable without doing so, but you know, idea.
 
 Memory:
--Check if any resettables' capacity gets too large and if so, Capacity = 0 (deallocate) them.
+-n/a at the moment
 
 Other:
 -Really implement a proper Peek() function for the stream. I know it's possible, and having to use UnGetChar() is
@@ -193,7 +201,7 @@ namespace FMScanner
 
                 _currentPos = -1;
 
-                Array.Clear(_buffer, 0, _bufferLen);
+                // Don't clear the buffer; we don't need to and it wastes time
                 _bufferPos = _bufferLen;
 
                 _unGetBuffer.Clear();
@@ -1511,15 +1519,25 @@ namespace FMScanner
 
             #endregion
 
-            // Deallocate these if they get too big
             _hexBuffer.ClearFast();
             _unicodeBuffer.ClearFast();
             _fontEntries.Clear();
             _scopeStack.Clear();
             _returnSB.Clear();
 
+            // Extremely unlikely we'll hit any of these, but just for safety
+            if (_hexBuffer.Capacity > ByteSize.MB) _hexBuffer.Capacity = 0;
+            if (_unicodeBuffer.Capacity > ByteSize.MB) _unicodeBuffer.Capacity = 0;
+            if (_fontEntries.Capacity > 500) _fontEntries.Capacity = 0;
+            // For the scope stack, we can't check its capacity because Stacks don't have a Capacity property(?!?),
+            // but we're guaranteed not to exceed 100 because of a check in the only place where we push to it.
+            if (_returnSB.Capacity > ByteSize.MB) _returnSB.Capacity = 0;
+
             // This one has the seek-back buffer (a Stack<char>) which is technically eligible for deallocation,
             // even though in practice I think it's guaranteed never to have more than like 5 chars in it maybe?
+            // Again, it's a stack so we can't check its capacity. But... meh. See above.
+            // Not way into the idea of making another custom type where the only difference is we can access a
+            // frigging internal variable, gonna be honest.
             _rtfStream.Reset(stream, streamLength);
         }
 
