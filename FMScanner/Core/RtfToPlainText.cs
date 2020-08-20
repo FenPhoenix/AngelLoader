@@ -1240,7 +1240,7 @@ namespace FMScanner
 
         #endregion
 
-        private static readonly Dictionary<string, Symbol> _symbolTable = new Dictionary<string, Symbol>
+        private readonly Dictionary<string, Symbol> _symbolTable = new Dictionary<string, Symbol>
         {
             #region Code pages / charsets / fonts
 
