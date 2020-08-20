@@ -7,6 +7,12 @@ Honestly don't know how tf people get "796 MB/s" with character scanners when ev
 reads bytes straight out of an in-memory stream and does nothing else still only gets 272 MB/s for me. But what
 do I know. :(
 
+Note to self:
+RTFs in 1098 set, base dirs only:
+count: 280
+total size: 88,714,908
+84.6 MB
+
 ---
 
 This is a fast, no-frills, platform-agnostic RTF-to-text converter. It can be used in place of RichTextBox when
