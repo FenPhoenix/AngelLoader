@@ -1764,7 +1764,7 @@ namespace FMScanner
                          performance, but slightly more memory use than the old RichTextBox method.
 
                          We've instead chosen to go with the buffered read here, which is slightly slower - but
-                         still 66% faster than the old RichTextBox-based converter - and saves a substantial
+                         still vastly faster than the old RichTextBox-based converter - and saves a substantial
                          amount of memory. Any other time I would choose ultimate speed, but RTF files can be
                          extremely large (due to often containing images), so I'm erring on the side of caution.
                         */
