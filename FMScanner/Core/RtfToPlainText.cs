@@ -1340,12 +1340,17 @@ namespace FMScanner
         private bool _skipDestinationIfUnknown;
 
         private readonly StringBuilder _returnSB = new StringBuilder();
-        private const int _keywordMaxLen = 30;
-        private const int _paramMaxLen = 20;
+
+        private const int _keywordMaxLen = 32;
         private readonly StringBuilder _keywordSB = new StringBuilder(_keywordMaxLen, _keywordMaxLen);
+
+        // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
+        private const int _paramMaxLen = 10;
         private readonly StringBuilder _parameterSB = new StringBuilder(_paramMaxLen, _paramMaxLen);
+
         private const int _fldinstSymbolNumberMaxLen = 10;
         private readonly StringBuilder _fldinstSymbolNumberSB = new StringBuilder(_fldinstSymbolNumberMaxLen, _fldinstSymbolNumberMaxLen);
+
         private const int _fldinstSymbolFontNameMaxLen = 9;
         private readonly StringBuilder _fldinstSymbolFontNameSB = new StringBuilder(_fldinstSymbolFontNameMaxLen, _fldinstSymbolFontNameMaxLen);
 
@@ -2113,7 +2118,7 @@ namespace FMScanner
                 if (eof) return Error.EndOfFile;
                 _keywordSB.Append(ch);
             }
-            if (i >= _keywordMaxLen) return Error.KeywordTooLong;
+            if (i > _keywordMaxLen) return Error.KeywordTooLong;
 
             if (ch == '-')
             {
@@ -2130,7 +2135,7 @@ namespace FMScanner
                     if (eof) return Error.EndOfFile;
                     _parameterSB.Append(ch);
                 }
-                if (i >= _paramMaxLen) return Error.ParameterTooLong;
+                if (i > _paramMaxLen) return Error.ParameterTooLong;
 
                 param = ParseIntFast(_parameterSB);
                 if (negateParam) param = -param;
@@ -2744,6 +2749,7 @@ namespace FMScanner
             return RewindAndSkipGroup();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error PutChar(char ch)
         {
             //Trace.Write(ch.ToString());
@@ -2756,6 +2762,7 @@ namespace FMScanner
             return Error.OK;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error PutChar(string ch)
         {
             //Trace.Write(ch);
