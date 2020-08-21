@@ -2256,6 +2256,7 @@ namespace FMScanner
 
             #endregion
 
+            // Eat the space
             if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
 
             #region Check for SYMBOL instruction
@@ -2273,7 +2274,6 @@ namespace FMScanner
 
             #endregion
 
-            // Eat the space
             if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
 
             bool numIsHex = false;
