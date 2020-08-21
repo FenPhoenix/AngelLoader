@@ -98,7 +98,7 @@ namespace FMScanner
         /// </para>
         /// <para>
         /// -Only use the internal array in conjunction with the <see cref="Count"/> property.
-        ///  Using the <see cref="ItemsArray.Length"/> value may cause catastrophe.
+        ///  Using the <see cref="ItemsArray.Length"/> value will lead to catastrophe.
         /// </para>
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -1538,30 +1538,6 @@ namespace FMScanner
             #endregion
         }
 
-        [PublicAPI]
-        public (bool Success, string Text) Convert(Stream stream, long streamLength)
-        {
-            Reset(stream, streamLength);
-
-#if ReleaseTestMode || DebugTestMode
-
-            Error error = ParseRtf();
-            return error == Error.OK ? (true, _returnSB.ToString()) : throw new Exception("RTF converter error: " + error);
-#else
-            try
-            {
-                Error error = ParseRtf();
-                return error == Error.OK ? (true, _returnSB.ToString()) : (false, "");
-            }
-            catch
-            {
-                return (false, "");
-            }
-#endif
-        }
-
-        #endregion
-
         private void Reset(Stream stream, long streamLength)
         {
             #region Fixed-size fields
@@ -1606,6 +1582,30 @@ namespace FMScanner
             // frigging internal variable, gonna be honest.
             _rtfStream.Reset(stream, streamLength);
         }
+
+        [PublicAPI]
+        public (bool Success, string Text) Convert(Stream stream, long streamLength)
+        {
+            Reset(stream, streamLength);
+
+#if ReleaseTestMode || DebugTestMode
+
+            Error error = ParseRtf();
+            return error == Error.OK ? (true, _returnSB.ToString()) : throw new Exception("RTF converter error: " + error);
+#else
+            try
+            {
+                Error error = ParseRtf();
+                return error == Error.OK ? (true, _returnSB.ToString()) : (false, "");
+            }
+            catch
+            {
+                return (false, "");
+            }
+#endif
+        }
+
+        #endregion
 
         private Error ParseRtf()
         {
@@ -1679,21 +1679,273 @@ namespace FMScanner
             return _groupCount < 0 ? Error.StackUnderflow : _groupCount > 0 ? Error.UnmatchedBrace : Error.OK;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool CharSeqEqualUpTo(char[] array1, int len1, char[] array2)
+        private Error ParseKeyword()
         {
-            int array2Len = array2.Length;
-            if (len1 < array2Len) return false;
+            _keywordSB.Clear();
+            _parameterSB.Clear();
 
-            for (int i0 = 0; i0 < array2Len; i0++)
+            bool hasParam = false;
+            bool negateParam = false;
+            int param = 0;
+
+            if (!_rtfStream.GetNextChar(out char ch)) return Error.EndOfFile;
+
+            if (!IsAsciiAlpha(ch))
             {
-                if (array1[i0] != array2[i0]) return false;
+                /* From the spec:
+                 "A control symbol consists of a backslash followed by a single, non-alphabetical character.
+                 For example, \~ (backslash tilde) represents a non-breaking space. Control symbols do not have
+                 delimiters, i.e., a space following a control symbol is treated as text, not a delimiter."
+
+                 So just go straight to dispatching without looking for a param and without eating the space.
+                */
+                _keywordSB.Append(ch);
+                return DispatchKeyword(0, false);
             }
 
-            return true;
+            int i;
+            bool eof = false;
+            for (i = 0; i < _keywordMaxLen && IsAsciiAlpha(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
+            {
+                if (eof) return Error.EndOfFile;
+                _keywordSB.Append(ch);
+            }
+            if (i > _keywordMaxLen) return Error.KeywordTooLong;
+
+            if (ch == '-')
+            {
+                negateParam = true;
+                if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
+            }
+
+            if (IsAsciiDigit(ch))
+            {
+                hasParam = true;
+
+                for (i = 0; i < _paramMaxLen && IsAsciiDigit(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
+                {
+                    if (eof) return Error.EndOfFile;
+                    _parameterSB.Append(ch);
+                }
+                if (i > _paramMaxLen) return Error.ParameterTooLong;
+
+                param = ParseIntFast(_parameterSB);
+                if (negateParam) param = -param;
+            }
+
+            /* From the spec:
+             "As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters)
+             that is not counted in the characters to skip."
+             This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
+             the space from the skip-chars to count.
+            */
+            if (ch != ' ') _rtfStream.UnGetChar(ch);
+
+            return DispatchKeyword(param, hasParam);
         }
 
-        // It's ugly, but it's gotta be done...
+        #region Act on keywords
+
+        private Error DispatchKeyword(int param, bool hasParam)
+        {
+            // ALLOC: _keywordSB.ToString()
+            /*
+            ToString() is run on every single keyword, which makes me wince.
+            I'd like to get rid of it, but I haven't found any faster way.
+            I use a dictionary to look up the string currently.
+            If I switch to a list and iterate with compare, it's way slower (Equals is the killer).
+            I even tried using wrapped char arrays with custom Equals and GetHashCode as the keys in the dict,
+            and that was still about 7% slower. So even though this is allocation-heavy (1.2 million calls over
+            the 496-file test set), it's still really fast and is just not that big of a deal (low double-digit
+            milliseconds over the aforementioned set on my 3950x, which is ~2% of execution time).
+            */
+            string keywordStr = _keywordSB.ToString();
+
+            if (!_symbolTable.TryGetValue(keywordStr, out Symbol symbol))
+            {
+                // If this is a new destination
+                if (_skipDestinationIfUnknown)
+                {
+                    _currentScope.RtfDestinationState = RtfDestinationState.Skip;
+                }
+                _skipDestinationIfUnknown = false;
+                return Error.OK;
+            }
+
+            // From the spec:
+            // "While this is not likely to occur (or recommended), a \binN keyword, its argument, and the binary
+            // data that follows are considered one character for skipping purposes."
+            if (symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
+            {
+                // Rather than literally counting it as one character for skipping purposes, we just increment
+                // the chars left to skip count by the specified length of the binary run, which accomplishes
+                // the same thing and is the easiest option.
+                // Note: It seems like we should have to add 1 for the space after \binN, but it looks like the
+                // numbers somehow work out that we don't have to and it's already implicitly counted. Shrug.
+                if (param >= 0) _unicodeCharsLeftToSkip += param;
+            }
+
+            // From the spec:
+            // "Any RTF control word or symbol is considered a single character for the purposes of counting
+            // skippable characters."
+            // But don't do it if it's a hex char, because we handle it elsewhere in that case.
+            if (symbol.Index != (int)SpecialType.HexEncodedChar &&
+                _currentScope.RtfInternalState != RtfInternalState.Binary &&
+                _unicodeCharsLeftToSkip > 0)
+            {
+                if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
+                return Error.OK;
+            }
+
+            if (symbol.Index != (int)SpecialType.UnicodeChar &&
+                _unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
+            {
+                ParseUnicodeIfAnyInBuffer();
+            }
+
+            _skipDestinationIfUnknown = false;
+            switch (symbol.KeywordType)
+            {
+                case KeywordType.Property:
+                    if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
+                    return _currentScope.RtfDestinationState == RtfDestinationState.Normal
+                        ? ChangeProperty((Property)symbol.Index, param)
+                        : Error.OK;
+                case KeywordType.Character:
+                    return _currentScope.RtfDestinationState == RtfDestinationState.Normal
+                        ? ParseChar((char)symbol.Index)
+                        : Error.OK;
+                case KeywordType.Destination:
+                    return _currentScope.RtfDestinationState == RtfDestinationState.Normal
+                        ? ChangeDestination((DestinationType)symbol.Index)
+                        : Error.OK;
+                case KeywordType.Special:
+                    var specialType = (SpecialType)symbol.Index;
+                    return _currentScope.RtfDestinationState == RtfDestinationState.Normal ||
+                           specialType == SpecialType.Bin
+                        ? DispatchSpecialKeyword(specialType, param)
+                        : Error.OK;
+                default:
+                    return Error.InvalidSymbolTableEntry;
+            }
+        }
+
+        private Error DispatchSpecialKeyword(SpecialType specialType, int param)
+        {
+            switch (specialType)
+            {
+                case SpecialType.Bin:
+                    if (param > 0)
+                    {
+                        _currentScope.RtfInternalState = RtfInternalState.Binary;
+                        _binaryCharsLeftToSkip = param;
+                    }
+                    break;
+                case SpecialType.HexEncodedChar:
+                    _currentScope.RtfInternalState = RtfInternalState.HexEncodedChar;
+                    break;
+                case SpecialType.SkipDest:
+                    _skipDestinationIfUnknown = true;
+                    break;
+                case SpecialType.UnicodeChar:
+                    _unicodeCharsLeftToSkip = _currentScope.Properties[(int)Property.UnicodeCharSkipCount];
+
+                    // Make sure the code point is normalized before adding it to the buffer!
+                    Error error = NormalizeUnicodePoint(ref param);
+                    if (error != Error.OK) return error;
+
+                    // At this point, param is guaranteed to fit into a char
+                    _unicodeBuffer.Add((char)param);
+                    break;
+                case SpecialType.HeaderCodePage:
+                    _header.CodePage = param >= 0 ? param : _windows1252;
+                    break;
+                case SpecialType.FontTable:
+                    _currentScope.InFontTable = true;
+                    break;
+                case SpecialType.DefaultFont:
+                    // Only set the first one... not likely to be any others anyway, but still
+                    if (!_header.DefaultFontSet)
+                    {
+                        _header.DefaultFontNum = param;
+                        _header.DefaultFontSet = true;
+                    }
+                    break;
+                case SpecialType.Charset:
+                    // Reject negative codepage values as invalid and just use the header default in that case
+                    // (which is guaranteed not to be negative)
+                    if (_fontEntries.Count > 0)
+                    {
+                        _fontEntries[_fontEntries.Count - 1].CodePage = param >= 0 && _charSetToCodePage.TryGetValue(param, out int codePage)
+                            ? codePage
+                            : _header.CodePage;
+                    }
+                    break;
+                case SpecialType.CodePage:
+                    if (_fontEntries.Count > 0)
+                    {
+                        _fontEntries[_fontEntries.Count - 1].CodePage = param >= 0 ? param : _header.CodePage;
+                    }
+                    break;
+                default:
+                    return Error.InvalidSymbolTableEntry;
+            }
+
+            return Error.OK;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Error ChangeProperty(Property propertyTableIndex, int val)
+        {
+            if (propertyTableIndex == Property.FontNum && _currentScope.InFontTable)
+            {
+                _fontEntries.Add(new FontEntry { Num = val });
+            }
+            else
+            {
+                _currentScope.Properties[(int)propertyTableIndex] = val;
+            }
+
+            return Error.OK;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Error ChangeDestination(DestinationType destinationType)
+        {
+            switch (destinationType)
+            {
+                case DestinationType.IgnoreButDontSkipGroup:
+                    // The group this destination is in may contain text we want to extract, so parse it as normal.
+                    // We will still skip over the next nested destination group we find, if any, unless it too is
+                    // marked as ignore-but-don't-skip.
+                    return Error.OK;
+                case DestinationType.FieldInstruction:
+                    return HandleFieldInstruction();
+                case DestinationType.Skip:
+                    _currentScope.RtfDestinationState = RtfDestinationState.Skip;
+                    return Error.OK;
+                default:
+                    return Error.InvalidSymbolTableEntry;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Error ParseChar(char ch)
+        {
+            if (_currentScope.InFontTable) _fontEntries[_fontEntries.Count - 1].AppendNameChar(ch);
+
+            // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
+            // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
+            Error error = _unicodeCharsLeftToSkip == 0 ? PutChar(ch) : Error.OK;
+
+            if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
+            return error;
+        }
+
+        #endregion
+
+        #region Handle specially encoded characters
+
         private Error ParseHex(ref int nibbleCount, ref char ch, ref byte b)
         {
             #region Local functions
@@ -1870,365 +2122,6 @@ namespace FMScanner
             return ResetBufferAndStateAndReturn();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Error PushScope()
-        {
-            // Don't wait for out-of-memory; just put a sane cap on it.
-            if (_scopeStack.Count > 100) return Error.StackOverflow;
-
-            var newScope = new Scope(_currentScope);
-
-            _currentScope.RtfInternalState = RtfInternalState.Normal;
-
-            _scopeStack.Push(newScope);
-            _groupCount++;
-
-            return Error.OK;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Error PopScope()
-        {
-            if (_scopeStack.Count == 0) return Error.StackUnderflow;
-
-            _scopeStack.Pop().DeepCopyTo(_currentScope);
-            _groupCount--;
-
-            return Error.OK;
-        }
-
-        #region Helpers
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiAlpha(char ch) => IsAsciiUpper(ch) || IsAsciiLower(ch);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiUpper(char ch) => ch >= 'A' && ch <= 'Z';
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiLower(char ch) => ch >= 'a' && ch <= 'z';
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiDigit(char ch) => ch >= '0' && ch <= '9';
-
-        /// <summary>
-        /// If <paramref name="codePage"/> is in the cached list, returns the Encoding associated with it;
-        /// otherwise, gets the Encoding for <paramref name="codePage"/> and places it in the cached list
-        /// for next time.
-        /// </summary>
-        /// <param name="codePage"></param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Encoding GetEncodingFromCachedList(int codePage)
-        {
-            switch (codePage)
-            {
-                case _windows1252:
-                    return Windows1252Encoding;
-                case 1250:
-                    return Windows1250Encoding;
-                case 1251:
-                    return Windows1251Encoding;
-                case _shiftJisWin:
-                    return ShiftJisWinEncoding;
-                default:
-                    if (_encodings.TryGetValue(codePage, out Encoding result))
-                    {
-                        return result;
-                    }
-                    else
-                    {
-                        // NOTE: This can throw, but all calls to this are wrapped in try-catch blocks.
-                        // TODO: But weird that we don't put the try-catch here and just return null...?
-                        Encoding enc = Encoding.GetEncoding(codePage);
-                        _encodings.Add(codePage, enc);
-                        return enc;
-                    }
-            }
-        }
-
-        private (bool Success, bool CodePageWas42, Encoding? Encoding, FontEntry? FontEntry)
-        GetCurrentEncoding()
-        {
-            int scopeFontNum = _currentScope.Properties[(int)Property.FontNum];
-            FontEntry? fontEntry = null;
-
-            if (scopeFontNum == -1) scopeFontNum = _header.DefaultFontNum;
-
-            for (int i = 0; i < _fontEntries.Count; i++)
-            {
-                var item = _fontEntries[i];
-                if (item.Num == scopeFontNum)
-                {
-                    fontEntry = _fontEntries[i];
-                    break;
-                }
-            }
-
-            int codePage = fontEntry?.CodePage ?? _header.CodePage;
-
-            if (codePage == 42) return (true, true, null, fontEntry);
-
-            // Awful, but we're based on nice, relaxing error returns, so we don't want to throw exceptions. Ever.
-            Encoding enc;
-            try
-            {
-                enc = GetEncodingFromCachedList(codePage);
-            }
-            catch
-            {
-                try
-                {
-                    enc = GetEncodingFromCachedList(_windows1252);
-                }
-                catch
-                {
-                    return (false, false, null, null);
-                }
-            }
-
-            return (true, false, enc, fontEntry);
-        }
-
-        private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out string finalChar)
-        {
-            if (codePoint >= 0x20 && codePoint <= 0xFF)
-            {
-                finalChar = ConvertFromUtf32(_fontTable[codePoint - 0x20]) ?? _unicodeUnknown_String;
-            }
-            else
-            {
-                if (codePoint > 255)
-                {
-                    finalChar = "";
-                    return false;
-                }
-                try
-                {
-                    finalChar = GetEncodingFromCachedList(_windows1252).GetString(new[] { (byte)codePoint });
-                }
-                catch
-                {
-                    finalChar = _unicodeUnknown_String;
-                }
-            }
-
-            return true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Error NormalizeUnicodePoint(ref int codePoint)
-        {
-            // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
-            // correct value.
-            if (codePoint < 0)
-            {
-                codePoint += 65536;
-                if (codePoint < 0 || codePoint > ushort.MaxValue) return Error.InvalidUnicode;
-                // PERF_TODO: This line might be faster, but we don't seem to be bottlenecking here(?)
-                //if ((uint)codePoint > ushort.MaxValue) return Error.InvalidUnicode;
-            }
-            /*
-             From the spec:
-             "Occasionally Word writes SYMBOL_CHARSET (nonUnicode) characters in the range  U+F020..U+F0FF
-             instead of U+0020..U+00FF. Internally Word uses the values U+F020..U+F0FF for these characters so
-             that plain-text searches don't mistakenly match SYMBOL_CHARSET characters when searching for Unicode
-             characters in the range U+0020..U+00FF."
-             */
-            else if (codePoint >= 0xf020 && codePoint <= 0xf0ff)
-            {
-                codePoint -= 0xf000; // 61440
-            }
-
-            return Error.OK;
-        }
-
-        /// <summary>
-        /// Copy of framework version but with a fast null return on fail instead of the infernal exception-throwing.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string? ConvertFromUtf32(int utf32)
-        {
-            if (utf32 < 0 || utf32 > 1114111 || utf32 >= 55296 && utf32 <= 57343)
-            {
-                return null;
-            }
-
-            // ALLOC: ConvertFromUtf32: char.ToString()
-            // This one needs to happen sooner or later anyway, and it's only max 2 chars
-            if (utf32 < 65536) return char.ToString((char)utf32);
-
-            utf32 -= 65536;
-
-            // ALLOC: ConvertFromUtf32: return new string(new char[2])
-            // Small enough not to even bother caching it
-            return new string(new[]
-            {
-                (char)(utf32 / 1024 + 55296),
-                (char)(utf32 % 1024 + 56320)
-            });
-        }
-
-        /// <summary>
-        /// Only call this if <paramref name="sb"/>'s length is > 0 and consists solely of the characters '0' through '9'.
-        /// It does no checks at all and will throw if either of these things is false.
-        /// </summary>
-        /// <param name="sb"></param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int ParseIntFast(StringBuilder sb)
-        {
-            int result = sb[0] - '0';
-
-            for (int i = 1; i < sb.Length; i++)
-            {
-                result *= 10;
-                result += sb[i] - '0';
-            }
-            return result;
-        }
-
-        #endregion
-
-        private Error ParseKeyword()
-        {
-            _keywordSB.Clear();
-            _parameterSB.Clear();
-
-            bool hasParam = false;
-            bool negateParam = false;
-            int param = 0;
-
-            if (!_rtfStream.GetNextChar(out char ch)) return Error.EndOfFile;
-
-            if (!IsAsciiAlpha(ch))
-            {
-                /* From the spec:
-                 "A control symbol consists of a backslash followed by a single, non-alphabetical character.
-                 For example, \~ (backslash tilde) represents a non-breaking space. Control symbols do not have
-                 delimiters, i.e., a space following a control symbol is treated as text, not a delimiter."
-
-                 So just go straight to dispatching without looking for a param and without eating the space.
-                */
-                _keywordSB.Append(ch);
-                return DispatchKeyword(0, false);
-            }
-
-            int i;
-            bool eof = false;
-            for (i = 0; i < _keywordMaxLen && IsAsciiAlpha(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
-            {
-                if (eof) return Error.EndOfFile;
-                _keywordSB.Append(ch);
-            }
-            if (i > _keywordMaxLen) return Error.KeywordTooLong;
-
-            if (ch == '-')
-            {
-                negateParam = true;
-                if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
-            }
-
-            if (IsAsciiDigit(ch))
-            {
-                hasParam = true;
-
-                for (i = 0; i < _paramMaxLen && IsAsciiDigit(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
-                {
-                    if (eof) return Error.EndOfFile;
-                    _parameterSB.Append(ch);
-                }
-                if (i > _paramMaxLen) return Error.ParameterTooLong;
-
-                param = ParseIntFast(_parameterSB);
-                if (negateParam) param = -param;
-            }
-
-            /* From the spec:
-             "As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters)
-             that is not counted in the characters to skip."
-             This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
-             the space from the skip-chars to count.
-            */
-            if (ch != ' ') _rtfStream.UnGetChar(ch);
-
-            return DispatchKeyword(param, hasParam);
-        }
-
-        private Error DispatchKeyword(int param, bool hasParam)
-        {
-            // ALLOC: _keywordSB.ToString()
-            /*
-            ToString() is run on every single keyword, which makes me wince.
-            I'd like to get rid of it, but I haven't found any faster way.
-            I use a dictionary to look up the string currently.
-            If I switch to a list and iterate with compare, it's way slower (Equals is the killer).
-            I even tried using wrapped char arrays with custom Equals and GetHashCode as the keys in the dict,
-            and that was still about 7% slower. So even though this is allocation-heavy (1.2 million calls over
-            the 496-file test set), it's still really fast and is just not that big of a deal (low double-digit
-            milliseconds over the aforementioned set on my 3950x, which is ~2% of execution time).
-            */
-            string keywordStr = _keywordSB.ToString();
-
-            if (!_symbolTable.TryGetValue(keywordStr, out Symbol symbol))
-            {
-                // If this is a new destination
-                if (_skipDestinationIfUnknown)
-                {
-                    _currentScope.RtfDestinationState = RtfDestinationState.Skip;
-                }
-                _skipDestinationIfUnknown = false;
-                return Error.OK;
-            }
-
-            // From the spec:
-            // "While this is not likely to occur (or recommended), a \binN keyword, its argument, and the binary
-            // data that follows are considered one character for skipping purposes."
-            if (symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
-            {
-                // Rather than literally counting it as one character for skipping purposes, we just increment
-                // the chars left to skip count by the specified length of the binary run, which accomplishes
-                // the same thing and is the easiest option.
-                // Note: It seems like we should have to add 1 for the space after \binN, but it looks like the
-                // numbers somehow work out that we don't have to and it's already implicitly counted. Shrug.
-                if (param >= 0) _unicodeCharsLeftToSkip += param;
-            }
-
-            // From the spec:
-            // "Any RTF control word or symbol is considered a single character for the purposes of counting
-            // skippable characters."
-            // But don't do it if it's a hex char, because we handle it elsewhere in that case.
-            if (symbol.Index != (int)SpecialType.HexEncodedChar &&
-                _currentScope.RtfInternalState != RtfInternalState.Binary &&
-                _unicodeCharsLeftToSkip > 0)
-            {
-                _unicodeCharsLeftToSkip--;
-                if (_unicodeCharsLeftToSkip < 0) _unicodeCharsLeftToSkip = 0;
-                return Error.OK;
-            }
-
-            if (symbol.Index != (int)SpecialType.UnicodeChar &&
-                _unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
-            {
-                ParseUnicodeIfAnyInBuffer();
-            }
-
-            _skipDestinationIfUnknown = false;
-            switch (symbol.KeywordType)
-            {
-                case KeywordType.Property:
-                    if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                    return ChangeProperty((Property)symbol.Index, param);
-                case KeywordType.Character:
-                    return _currentScope.RtfDestinationState == RtfDestinationState.Normal
-                        ? ParseChar((char)symbol.Index)
-                        : Error.OK;
-                case KeywordType.Destination:
-                    return ChangeDestination((DestinationType)symbol.Index);
-                case KeywordType.Special:
-                    return DispatchSpecialKeyword((SpecialType)symbol.Index, param);
-                default:
-                    return Error.InvalidSymbolTableEntry;
-            }
-        }
-
         /*
         Unlike the hex parser, we can't just cordon this off in its own little world. The reason is that we need
         to skip characters if necessary, and a "character" could mean any of the following:
@@ -2287,134 +2180,6 @@ namespace FMScanner
             FixUpBadUnicode(ref finalString);
 
             PutChar(finalString);
-        }
-
-        private Error DispatchSpecialKeyword(SpecialType specialType, int param)
-        {
-            if (_currentScope.RtfDestinationState == RtfDestinationState.Skip && specialType != SpecialType.Bin)
-            {
-                return Error.OK;
-            }
-
-            switch (specialType)
-            {
-                case SpecialType.Bin:
-                    if (param > 0)
-                    {
-                        _currentScope.RtfInternalState = RtfInternalState.Binary;
-                        _binaryCharsLeftToSkip = param;
-                    }
-                    break;
-                case SpecialType.HexEncodedChar:
-                    _currentScope.RtfInternalState = RtfInternalState.HexEncodedChar;
-                    break;
-                case SpecialType.SkipDest:
-                    _skipDestinationIfUnknown = true;
-                    break;
-                case SpecialType.UnicodeChar:
-                    _unicodeCharsLeftToSkip = _currentScope.Properties[(int)Property.UnicodeCharSkipCount];
-
-                    Error error;
-                    // Make sure the code point is normalized before adding it to the buffer!
-                    if ((error = NormalizeUnicodePoint(ref param)) != Error.OK) return error;
-                    // At this point, param is guaranteed to fit into a char
-                    _unicodeBuffer.Add((char)param);
-                    break;
-                case SpecialType.HeaderCodePage:
-                    _header.CodePage = param >= 0 ? param : _windows1252;
-                    break;
-                case SpecialType.FontTable:
-                    _currentScope.InFontTable = true;
-                    break;
-                case SpecialType.DefaultFont:
-                    // Only set the first one... not likely to be any others anyway, but still
-                    if (!_header.DefaultFontSet)
-                    {
-                        _header.DefaultFontNum = param;
-                        _header.DefaultFontSet = true;
-                    }
-                    break;
-                case SpecialType.Charset:
-                    // Reject negative codepage values as invalid and just use the header default in that case
-                    // (which is guaranteed not to be negative)
-                    if (_fontEntries.Count > 0)
-                    {
-                        _fontEntries[_fontEntries.Count - 1].CodePage = param >= 0 && _charSetToCodePage.TryGetValue(param, out int codePage)
-                            ? codePage
-                            : _header.CodePage;
-                    }
-                    break;
-                case SpecialType.CodePage:
-                    if (_fontEntries.Count > 0)
-                    {
-                        _fontEntries[_fontEntries.Count - 1].CodePage = param >= 0 ? param : _header.CodePage;
-                    }
-                    break;
-                default:
-                    return Error.InvalidSymbolTableEntry;
-            }
-
-            return Error.OK;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Error ParseChar(char ch)
-        {
-            if (_currentScope.InFontTable) _fontEntries[_fontEntries.Count - 1].AppendNameChar(ch);
-
-            // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
-            // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
-            Error error = _unicodeCharsLeftToSkip == 0 ? PutChar(ch) : Error.OK;
-
-            if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
-            return error;
-        }
-
-        private Error ChangeProperty(Property propertyTableIndex, int val)
-        {
-            if (_currentScope.RtfDestinationState == RtfDestinationState.Skip)
-            {
-                return Error.OK;
-            }
-            else if (propertyTableIndex == Property.FontNum && _currentScope.InFontTable)
-            {
-                _fontEntries.Add(new FontEntry { Num = val });
-            }
-            else if ((int)propertyTableIndex > _propertiesLen - 1)
-            {
-                return Error.InvalidSymbolTableEntry;
-            }
-            else
-            {
-                _currentScope.Properties[(int)propertyTableIndex] = val;
-            }
-
-            return Error.OK;
-        }
-
-        private Error ChangeDestination(DestinationType destinationType)
-        {
-            if (_currentScope.RtfDestinationState == RtfDestinationState.Skip)
-            {
-                return Error.OK;
-            }
-
-            switch (destinationType)
-            {
-                case DestinationType.IgnoreButDontSkipGroup:
-                    // The group this destination is in may contain text we want to extract, so parse it as normal.
-                    // We will still skip over the next nested destination group we find, if any, unless it too is
-                    // marked as ignore-but-don't-skip.
-                    break;
-                case DestinationType.FieldInstruction:
-                    return HandleFieldInstruction();
-                case DestinationType.Skip:
-                    _currentScope.RtfDestinationState = RtfDestinationState.Skip;
-                    break;
-                default:
-                    return Error.InvalidSymbolTableEntry;
-            }
-            return Error.OK;
         }
 
         /*
@@ -2749,6 +2514,10 @@ namespace FMScanner
             return RewindAndSkipGroup();
         }
 
+        #endregion
+
+        #region PutChar
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error PutChar(char ch)
         {
@@ -2774,5 +2543,242 @@ namespace FMScanner
             }
             return Error.OK;
         }
+
+        #endregion
+
+        #region Scope push/pop
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Error PushScope()
+        {
+            // Don't wait for out-of-memory; just put a sane cap on it.
+            if (_scopeStack.Count > 100) return Error.StackOverflow;
+
+            var newScope = new Scope(_currentScope);
+
+            _currentScope.RtfInternalState = RtfInternalState.Normal;
+
+            _scopeStack.Push(newScope);
+            _groupCount++;
+
+            return Error.OK;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Error PopScope()
+        {
+            if (_scopeStack.Count == 0) return Error.StackUnderflow;
+
+            _scopeStack.Pop().DeepCopyTo(_currentScope);
+            _groupCount--;
+
+            return Error.OK;
+        }
+
+        #endregion
+
+        #region Helpers
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsAsciiAlpha(char ch) => IsAsciiUpper(ch) || IsAsciiLower(ch);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsAsciiUpper(char ch) => ch >= 'A' && ch <= 'Z';
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsAsciiLower(char ch) => ch >= 'a' && ch <= 'z';
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsAsciiDigit(char ch) => ch >= '0' && ch <= '9';
+
+        /// <summary>
+        /// If <paramref name="codePage"/> is in the cached list, returns the Encoding associated with it;
+        /// otherwise, gets the Encoding for <paramref name="codePage"/> and places it in the cached list
+        /// for next time.
+        /// </summary>
+        /// <param name="codePage"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Encoding GetEncodingFromCachedList(int codePage)
+        {
+            switch (codePage)
+            {
+                case _windows1252:
+                    return Windows1252Encoding;
+                case 1250:
+                    return Windows1250Encoding;
+                case 1251:
+                    return Windows1251Encoding;
+                case _shiftJisWin:
+                    return ShiftJisWinEncoding;
+                default:
+                    if (_encodings.TryGetValue(codePage, out Encoding result))
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        // NOTE: This can throw, but all calls to this are wrapped in try-catch blocks.
+                        // TODO: But weird that we don't put the try-catch here and just return null...?
+                        Encoding enc = Encoding.GetEncoding(codePage);
+                        _encodings.Add(codePage, enc);
+                        return enc;
+                    }
+            }
+        }
+
+        private (bool Success, bool CodePageWas42, Encoding? Encoding, FontEntry? FontEntry)
+        GetCurrentEncoding()
+        {
+            int scopeFontNum = _currentScope.Properties[(int)Property.FontNum];
+            FontEntry? fontEntry = null;
+
+            if (scopeFontNum == -1) scopeFontNum = _header.DefaultFontNum;
+
+            for (int i = 0; i < _fontEntries.Count; i++)
+            {
+                var item = _fontEntries[i];
+                if (item.Num == scopeFontNum)
+                {
+                    fontEntry = _fontEntries[i];
+                    break;
+                }
+            }
+
+            int codePage = fontEntry?.CodePage ?? _header.CodePage;
+
+            if (codePage == 42) return (true, true, null, fontEntry);
+
+            // Awful, but we're based on nice, relaxing error returns, so we don't want to throw exceptions. Ever.
+            Encoding enc;
+            try
+            {
+                enc = GetEncodingFromCachedList(codePage);
+            }
+            catch
+            {
+                try
+                {
+                    enc = GetEncodingFromCachedList(_windows1252);
+                }
+                catch
+                {
+                    return (false, false, null, null);
+                }
+            }
+
+            return (true, false, enc, fontEntry);
+        }
+
+        private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out string finalChar)
+        {
+            if (codePoint >= 0x20 && codePoint <= 0xFF)
+            {
+                finalChar = ConvertFromUtf32(_fontTable[codePoint - 0x20]) ?? _unicodeUnknown_String;
+            }
+            else
+            {
+                if (codePoint > 255)
+                {
+                    finalChar = "";
+                    return false;
+                }
+                try
+                {
+                    finalChar = GetEncodingFromCachedList(_windows1252).GetString(new[] { (byte)codePoint });
+                }
+                catch
+                {
+                    finalChar = _unicodeUnknown_String;
+                }
+            }
+
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Error NormalizeUnicodePoint(ref int codePoint)
+        {
+            // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
+            // correct value.
+            if (codePoint < 0)
+            {
+                codePoint += 65536;
+                if (codePoint < 0 || codePoint > ushort.MaxValue) return Error.InvalidUnicode;
+                // PERF_TODO: This line might be faster, but we don't seem to be bottlenecking here(?)
+                //if ((uint)codePoint > ushort.MaxValue) return Error.InvalidUnicode;
+            }
+            /*
+             From the spec:
+             "Occasionally Word writes SYMBOL_CHARSET (nonUnicode) characters in the range  U+F020..U+F0FF
+             instead of U+0020..U+00FF. Internally Word uses the values U+F020..U+F0FF for these characters so
+             that plain-text searches don't mistakenly match SYMBOL_CHARSET characters when searching for Unicode
+             characters in the range U+0020..U+00FF."
+             */
+            else if (codePoint >= 0xf020 && codePoint <= 0xf0ff)
+            {
+                codePoint -= 0xf000; // 61440
+            }
+
+            return Error.OK;
+        }
+
+        /// <summary>
+        /// Copy of framework version but with a fast null return on fail instead of the infernal exception-throwing.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string? ConvertFromUtf32(int utf32)
+        {
+            if (utf32 < 0 || utf32 > 1114111 || utf32 >= 55296 && utf32 <= 57343)
+            {
+                return null;
+            }
+
+            // ALLOC: ConvertFromUtf32: char.ToString()
+            // This one needs to happen sooner or later anyway, and it's only max 2 chars
+            if (utf32 < 65536) return char.ToString((char)utf32);
+
+            utf32 -= 65536;
+
+            // ALLOC: ConvertFromUtf32: return new string(new char[2])
+            // Small enough not to even bother caching it
+            return new string(new[]
+            {
+                (char)(utf32 / 1024 + 55296),
+                (char)(utf32 % 1024 + 56320)
+            });
+        }
+
+        /// <summary>
+        /// Only call this if <paramref name="sb"/>'s length is > 0 and consists solely of the characters '0' through '9'.
+        /// It does no checks at all and will throw if either of these things is false.
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int ParseIntFast(StringBuilder sb)
+        {
+            int result = sb[0] - '0';
+
+            for (int i = 1; i < sb.Length; i++)
+            {
+                result *= 10;
+                result += sb[i] - '0';
+            }
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CharSeqEqualUpTo(char[] array1, int len1, char[] array2)
+        {
+            int array2Len = array2.Length;
+            if (len1 < array2Len) return false;
+
+            for (int i0 = 0; i0 < array2Len; i0++)
+            {
+                if (array1[i0] != array2[i0]) return false;
+            }
+
+            return true;
+        }
+
+        #endregion
     }
 }
