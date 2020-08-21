@@ -1,11 +1,13 @@
 ﻿//#define CROSS_PLATFORM
 
 /*
-Perf as of 2020-08-19: Reading the 1098 set and pulling from zipped files with the disk cache warm:
-~88.2 MB/s average
-Honestly don't know how tf people get "796 MB/s" with character scanners when even a totally empty loop that just
-reads bytes straight out of an in-memory stream and does nothing else still only gets 225 MB/s for me. But what
-do I know. :(
+Perf log:
+
+             FMInfoGen | RTF_ToPlainTextTest
+2020-08-20:  157MB/s     211MB/s
+2020-08-19:  88.2 MB/s   97MB/s
+
+---
 
 Note to self:
 RTFs in 1098 set, base dirs only:
