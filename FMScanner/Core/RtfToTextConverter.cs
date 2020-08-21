@@ -1584,7 +1584,8 @@ namespace FMScanner
         }
 
         [PublicAPI]
-        public (bool Success, string Text) Convert(Stream stream, long streamLength)
+        public (bool Success, string Text)
+        Convert(Stream stream, long streamLength)
         {
             Reset(stream, streamLength);
 
@@ -1660,6 +1661,7 @@ namespace FMScanner
                         {
                             ParseUnicodeIfAnyInBuffer();
                         }
+
                         switch (_currentScope.RtfInternalState)
                         {
                             case RtfInternalState.Normal:
@@ -2554,7 +2556,7 @@ namespace FMScanner
             // Don't wait for out-of-memory; just put a sane cap on it.
             if (_scopeStack.Count > 100) return Error.StackOverflow;
 
-            var newScope = new Scope(_currentScope);
+            Scope newScope = new Scope(_currentScope);
 
             _currentScope.RtfInternalState = RtfInternalState.Normal;
 
@@ -2702,19 +2704,17 @@ namespace FMScanner
             {
                 codePoint += 65536;
                 if (codePoint < 0 || codePoint > ushort.MaxValue) return Error.InvalidUnicode;
-                // PERF_TODO: This line might be faster, but we don't seem to be bottlenecking here(?)
-                //if ((uint)codePoint > ushort.MaxValue) return Error.InvalidUnicode;
             }
             /*
              From the spec:
-             "Occasionally Word writes SYMBOL_CHARSET (nonUnicode) characters in the range  U+F020..U+F0FF
+             "Occasionally Word writes SYMBOL_CHARSET (nonUnicode) characters in the range U+F020..U+F0FF
              instead of U+0020..U+00FF. Internally Word uses the values U+F020..U+F0FF for these characters so
              that plain-text searches don't mistakenly match SYMBOL_CHARSET characters when searching for Unicode
              characters in the range U+0020..U+00FF."
              */
-            else if (codePoint >= 0xf020 && codePoint <= 0xf0ff)
+            else if (codePoint >= 0xF020 && codePoint <= 0xF0FF)
             {
-                codePoint -= 0xf000; // 61440
+                codePoint -= 0xF000;
             }
 
             return Error.OK;
