@@ -2067,7 +2067,6 @@ namespace FMScanner
                 }
                 else
                 {
-
                     if (codePageWas42 && _hexBuffer.Count == 1)
                     {
                         int codePoint = _hexBuffer.ItemsArray[0];
@@ -2627,7 +2626,7 @@ namespace FMScanner
         }
 
         private (bool Success, bool CodePageWas42, Encoding? Encoding, FontEntry? FontEntry)
-        GetCurrentEncoding()
+        GetCurrentEncoding(bool skipEncodingDetection = false)
         {
             int scopeFontNum = _currentScope.Properties[(int)Property.FontNum];
             FontEntry? fontEntry = null;
@@ -2647,6 +2646,8 @@ namespace FMScanner
             int codePage = fontEntry?.CodePage ?? _header.CodePage;
 
             if (codePage == 42) return (true, true, null, fontEntry);
+
+            if (skipEncodingDetection) return (true, false, null, fontEntry);
 
             // Awful, but we're based on nice, relaxing error returns, so we don't want to throw exceptions. Ever.
             Encoding enc;
@@ -2696,7 +2697,7 @@ namespace FMScanner
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Error NormalizeUnicodePoint(ref int codePoint)
+        private Error NormalizeUnicodePoint(ref int codePoint)
         {
             // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
             // correct value.
@@ -2706,15 +2707,46 @@ namespace FMScanner
                 if (codePoint < 0 || codePoint > ushort.MaxValue) return Error.InvalidUnicode;
             }
             /*
-             From the spec:
-             "Occasionally Word writes SYMBOL_CHARSET (nonUnicode) characters in the range U+F020..U+F0FF
-             instead of U+0020..U+00FF. Internally Word uses the values U+F020..U+F0FF for these characters so
-             that plain-text searches don't mistakenly match SYMBOL_CHARSET characters when searching for Unicode
-             characters in the range U+0020..U+00FF."
-             */
+            From the spec:
+            "Occasionally Word writes SYMBOL_CHARSET (nonUnicode) characters in the range U+F020..U+F0FF instead
+            of U+0020..U+00FF. Internally Word uses the values U+F020..U+F0FF for these characters so that plain-
+            ext searches don't mistakenly match SYMBOL_CHARSET characters when searching for Unicode characters
+            in the range U+0020..U+00FF. To find out the correct symbol font to use, e.g., Wingdings, Symbol,
+            etc., find the last SYMBOL_CHARSET font control word \fN used, look up font N in the font table and
+            find the face name. The charset is specified by the \fcharsetN control word and SYMBOL_CHARSET is for
+            N = 2. This corresponds to codepage 42."
+
+            TODO: It sounds like it might mean "find the last font used that specifically has \fcharset2"?
+            As in, if the current scope's \fN is not an \fcharset2 font, we would have to somehow search the
+            scope stack all the way back till we find one...?!
+            TODO: Test this against the official readers to make sure we're correct here!
+            */
             else if (codePoint >= 0xF020 && codePoint <= 0xF0FF)
             {
                 codePoint -= 0xF000;
+                var (_, codePageWas42, _, fontEntry) = GetCurrentEncoding(skipEncodingDetection: true);
+
+                // We already know our code point is within bounds of the array, because the arrays also go from
+                // 0x20 - 0xFF, so no need to check
+                if (codePageWas42)
+                {
+                    codePoint = _symbolFontToUnicode[codePoint - 0x20];
+                }
+                else if (fontEntry != null)
+                {
+                    if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, WingdingsChars))
+                    {
+                        codePoint = _wingdingsFontToUnicode[codePoint - 0x20];
+                    }
+                    else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, WebdingsChars))
+                    {
+                        codePoint = _webdingsFontToUnicode[codePoint - 0x20];
+                    }
+                    else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, SymbolChars))
+                    {
+                        codePoint = _symbolFontToUnicode[codePoint - 0x20];
+                    }
+                }
             }
 
             return Error.OK;
