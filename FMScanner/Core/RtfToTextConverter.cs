@@ -2670,7 +2670,7 @@ namespace FMScanner
                         // NOTE: This can throw, but all calls to this are wrapped in try-catch blocks.
                         // TODO: But weird that we don't put the try-catch here and just return null...?
                         Encoding enc = Encoding.GetEncoding(codePage);
-                        _encodings.Add(codePage, enc);
+                        _encodings[codePage] = enc;
                         return enc;
                     }
             }
