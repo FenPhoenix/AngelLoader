@@ -170,15 +170,15 @@ namespace FMScanner
             }
         }
 
-        private sealed class DictWithHead<TKey, TValue> : Dictionary<TKey, TValue>
+        private sealed class DictWithTopItem<TKey, TValue> : Dictionary<TKey, TValue>
         {
-            internal TValue Head = default!;
+            internal TValue Top = default!;
 
-            internal DictWithHead(int capacity) : base(capacity) { }
+            internal DictWithTopItem(int capacity) : base(capacity) { }
 
             internal new void Add(TKey key, TValue value)
             {
-                Head = value;
+                Top = value;
                 base[key] = value;
             }
         }
@@ -1337,7 +1337,7 @@ namespace FMScanner
 
         // FMs can have 100+ of these...
         // Highest measured was 131
-        private readonly DictWithHead<int, FontEntry> _fontEntries = new DictWithHead<int, FontEntry>(150);
+        private readonly DictWithTopItem<int, FontEntry> _fontEntries = new DictWithTopItem<int, FontEntry>(150);
         /*
         Per spec, if we see a \uN keyword whose N falls within the range of 0xF020 to 0xF0FF, we're supposed to
         subtract 0xF000 and then find the last used font whose charset is 2 (codepage 42) and use its symbol font
@@ -1917,7 +1917,7 @@ namespace FMScanner
                     // (which is guaranteed not to be negative)
                     if (_fontEntries.Count > 0 && _currentScope.InFontTable)
                     {
-                        _fontEntries.Head.CodePage = param >= 0 && _charSetToCodePage.TryGetValue(param, out int codePage)
+                        _fontEntries.Top.CodePage = param >= 0 && _charSetToCodePage.TryGetValue(param, out int codePage)
                             ? codePage
                             : _header.CodePage;
                     }
@@ -1925,7 +1925,7 @@ namespace FMScanner
                 case SpecialType.CodePage:
                     if (_fontEntries.Count > 0 && _currentScope.InFontTable)
                     {
-                        _fontEntries.Head.CodePage = param >= 0 ? param : _header.CodePage;
+                        _fontEntries.Top.CodePage = param >= 0 ? param : _header.CodePage;
                     }
                     break;
                 default:
@@ -1983,7 +1983,7 @@ namespace FMScanner
         {
             if (_currentScope.InFontTable && _fontEntries.Count > 0)
             {
-                _fontEntries.Head.AppendNameChar(ch);
+                _fontEntries.Top.AppendNameChar(ch);
             }
 
             // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
