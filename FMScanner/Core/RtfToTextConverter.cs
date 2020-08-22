@@ -2716,10 +2716,10 @@ namespace FMScanner
             find the face name. The charset is specified by the \fcharsetN control word and SYMBOL_CHARSET is for
             N = 2. This corresponds to codepage 42."
 
-            TODO: It sounds like it might mean "find the last font used that specifically has \fcharset2"?
-            As in, if the current scope's \fN is not an \fcharset2 font, we would have to somehow search the
-            scope stack all the way back till we find one...?!
-            TODO: Test this against the official readers to make sure we're correct here!
+            TODO: Verified, this does in fact mean "find the last font used that specifically has \fcharset2".
+            As in, if the current scope's \fN is not an \fcharset2 font, we would have to search the scope stack
+            all the way back till we find one. That's an excuse to make a custom Stack class, so now I can also
+            reset the capacity. So there's that.
             */
             else if (codePoint >= 0xF020 && codePoint <= 0xF0FF)
             {
