@@ -2677,7 +2677,7 @@ namespace FMScanner
         }
 
         private (bool Success, bool CodePageWas42, Encoding? Encoding, FontEntry? FontEntry)
-        GetCurrentEncoding(bool skipEncodingDetection = false)
+        GetCurrentEncoding()
         {
             int scopeFontNum = _currentScope.Properties[(int)Property.FontNum];
 
@@ -2688,8 +2688,6 @@ namespace FMScanner
             int codePage = fontEntry?.CodePage ?? _header.CodePage;
 
             if (codePage == 42) return (true, true, null, fontEntry);
-
-            if (skipEncodingDetection) return (true, false, null, fontEntry);
 
             // Awful, but we're based on nice, relaxing error returns, so we don't want to throw exceptions. Ever.
             Encoding enc;
@@ -2748,6 +2746,7 @@ namespace FMScanner
                 codePoint += 65536;
                 if (codePoint < 0 || codePoint > ushort.MaxValue) return Error.InvalidUnicode;
             }
+
             /*
             From the spec:
             "Occasionally Word writes SYMBOL_CHARSET (nonUnicode) characters in the range U+F020..U+F0FF instead
@@ -2761,8 +2760,12 @@ namespace FMScanner
             Verified, this does in fact mean "find the last used font that specifically has \fcharset2" (or \cpg42).
             And, yes, that's last used, period, regardless of scope. So we track it globally. That's the official
             behavior, don't ask me.
+
+            NOTE: Verified, these 0xF020-0xF0FF chars can be represented either as negatives or as >32767 positives
+            (despite the spec saying that \uN must be signed int16). So we need to fall through to this section
+            even if we did the above, because by adding 65536 we might now be in the 0xF020-0xF0FF range.
             */
-            else if (handleSymbolCharRange && codePoint >= 0xF020 && codePoint <= 0xF0FF)
+            if (handleSymbolCharRange && codePoint >= 0xF020 && codePoint <= 0xF0FF)
             {
                 codePoint -= 0xF000;
 
