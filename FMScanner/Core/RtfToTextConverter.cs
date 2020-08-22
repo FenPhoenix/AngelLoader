@@ -170,6 +170,19 @@ namespace FMScanner
             }
         }
 
+        private sealed class DictWithHead<TKey, TValue> : Dictionary<TKey, TValue>
+        {
+            internal TValue Head = default!;
+
+            internal DictWithHead(int capacity) : base(capacity) { }
+
+            internal new void Add(TKey key, TValue value)
+            {
+                Head = value;
+                base[key] = value;
+            }
+        }
+
         private sealed class RTFStream
         {
             #region Private fields
@@ -1324,7 +1337,16 @@ namespace FMScanner
 
         // FMs can have 100+ of these...
         // Highest measured was 131
-        private readonly List<FontEntry> _fontEntries = new List<FontEntry>(150);
+        private readonly DictWithHead<int, FontEntry> _fontEntries = new DictWithHead<int, FontEntry>(150);
+        /*
+        Per spec, if we see a \uN keyword whose N falls within the range of 0xF020 to 0xF0FF, we're supposed to
+        subtract 0xF000 and then find the last used font whose charset is 2 (codepage 42) and use its symbol font
+        to convert the char. However, when the spec says "last used" it REALLY means last used. Period. Regardless
+        of scope. Even if the font was used in a scope above us that we should have no knowledge of, it still
+        counts as the last used one. Also, we need the last used font WHOSE CODEPAGE IS 42, not the last used font
+        period. So we have to track only the charset 2/codepage 42 ones. Globally. Truly bizarre.
+        */
+        private int LastUsedFontWithCodePage42 = -1;
 
         // Highest measured was 10
         private readonly Stack<Scope> _scopeStack = new Stack<Scope>(15);
@@ -1569,7 +1591,7 @@ namespace FMScanner
             // Extremely unlikely we'll hit any of these, but just for safety
             if (_hexBuffer.Capacity > ByteSize.MB) _hexBuffer.Capacity = 0;
             if (_unicodeBuffer.Capacity > ByteSize.MB) _unicodeBuffer.Capacity = 0;
-            if (_fontEntries.Capacity > 500) _fontEntries.Capacity = 0;
+            // For the font entries, we can't check a Dictionary's capacity nor set it, so... oh well.
             // For the scope stack, we can't check its capacity because Stacks don't have a Capacity property(?!?),
             // but we're guaranteed not to exceed 100 (or 128 I guess) because of a check in the only place where
             // we push to it.
@@ -1853,11 +1875,28 @@ namespace FMScanner
                     _unicodeCharsLeftToSkip = _currentScope.Properties[(int)Property.UnicodeCharSkipCount];
 
                     // Make sure the code point is normalized before adding it to the buffer!
-                    Error error = NormalizeUnicodePoint(ref param);
+                    Error error = NormalizeUnicodePoint(ref param, handleSymbolCharRange: true);
                     if (error != Error.OK) return error;
 
-                    // At this point, param is guaranteed to fit into a char
-                    _unicodeBuffer.Add((char)param);
+                    // If our code point has been through a font translation table, it may be longer than 2 bytes.
+                    if (param > 0xFFFF)
+                    {
+                        string? str2 = ConvertFromUtf32(param);
+                        if (str2 == null)
+                        {
+                            _unicodeBuffer.Add(_unicodeUnknown_Char);
+                        }
+                        else
+                        {
+                            _unicodeBuffer.Add(str2[0]);
+                            _unicodeBuffer.Add(str2[1]);
+                        }
+                    }
+                    else
+                    {
+                        // At this point, param is guaranteed to fit into a char
+                        _unicodeBuffer.Add((char)param);
+                    }
                     break;
                 case SpecialType.HeaderCodePage:
                     _header.CodePage = param >= 0 ? param : _windows1252;
@@ -1876,17 +1915,17 @@ namespace FMScanner
                 case SpecialType.Charset:
                     // Reject negative codepage values as invalid and just use the header default in that case
                     // (which is guaranteed not to be negative)
-                    if (_fontEntries.Count > 0)
+                    if (_fontEntries.Count > 0 && _currentScope.InFontTable)
                     {
-                        _fontEntries[_fontEntries.Count - 1].CodePage = param >= 0 && _charSetToCodePage.TryGetValue(param, out int codePage)
+                        _fontEntries.Head.CodePage = param >= 0 && _charSetToCodePage.TryGetValue(param, out int codePage)
                             ? codePage
                             : _header.CodePage;
                     }
                     break;
                 case SpecialType.CodePage:
-                    if (_fontEntries.Count > 0)
+                    if (_fontEntries.Count > 0 && _currentScope.InFontTable)
                     {
-                        _fontEntries[_fontEntries.Count - 1].CodePage = param >= 0 ? param : _header.CodePage;
+                        _fontEntries.Head.CodePage = param >= 0 ? param : _header.CodePage;
                     }
                     break;
                 default:
@@ -1899,9 +1938,22 @@ namespace FMScanner
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error ChangeProperty(Property propertyTableIndex, int val)
         {
-            if (propertyTableIndex == Property.FontNum && _currentScope.InFontTable)
+            if (propertyTableIndex == Property.FontNum)
             {
-                _fontEntries.Add(new FontEntry { Num = val });
+                if (_currentScope.InFontTable)
+                {
+                    _fontEntries.Add(val, new FontEntry { Num = val });
+                }
+                else
+                {
+                    _currentScope.Properties[(int)propertyTableIndex] = val;
+                    if (_fontEntries.TryGetValue(val, out FontEntry? fontEntry) &&
+                        fontEntry.CodePage == 42)
+                    {
+                        // We have to track this globally, per behavior of RichEdit and implied by the spec.
+                        LastUsedFontWithCodePage42 = val;
+                    }
+                }
             }
             else
             {
@@ -1934,7 +1986,10 @@ namespace FMScanner
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error ParseChar(char ch)
         {
-            if (_currentScope.InFontTable) _fontEntries[_fontEntries.Count - 1].AppendNameChar(ch);
+            if (_currentScope.InFontTable && _fontEntries.Count > 0)
+            {
+                _fontEntries.Head.AppendNameChar(ch);
+            }
 
             // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
             // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
@@ -2355,8 +2410,9 @@ namespace FMScanner
 
             if (negateNum) codePoint = -codePoint;
 
-            Error error;
-            if ((error = NormalizeUnicodePoint(ref codePoint)) != Error.OK) return error;
+            // TODO: Do we need to handle 0xF020-0xF0FF type stuff and negative values for field instructions?
+            Error error = NormalizeUnicodePoint(ref codePoint, handleSymbolCharRange: false);
+            if (error != Error.OK) return error;
 
             if (ch != ' ') return RewindAndSkipGroup();
 
@@ -2629,19 +2685,10 @@ namespace FMScanner
         GetCurrentEncoding(bool skipEncodingDetection = false)
         {
             int scopeFontNum = _currentScope.Properties[(int)Property.FontNum];
-            FontEntry? fontEntry = null;
 
             if (scopeFontNum == -1) scopeFontNum = _header.DefaultFontNum;
 
-            for (int i = 0; i < _fontEntries.Count; i++)
-            {
-                var item = _fontEntries[i];
-                if (item.Num == scopeFontNum)
-                {
-                    fontEntry = _fontEntries[i];
-                    break;
-                }
-            }
+            _fontEntries.TryGetValue(scopeFontNum, out FontEntry? fontEntry);
 
             int codePage = fontEntry?.CodePage ?? _header.CodePage;
 
@@ -2697,7 +2744,7 @@ namespace FMScanner
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Error NormalizeUnicodePoint(ref int codePoint)
+        private Error NormalizeUnicodePoint(ref int codePoint, bool handleSymbolCharRange)
         {
             // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
             // correct value.
@@ -2721,18 +2768,25 @@ namespace FMScanner
             all the way back till we find one. That's an excuse to make a custom Stack class, so now I can also
             reset the capacity. So there's that.
             */
-            else if (codePoint >= 0xF020 && codePoint <= 0xF0FF)
+            else if (handleSymbolCharRange && codePoint >= 0xF020 && codePoint <= 0xF0FF)
             {
                 codePoint -= 0xF000;
-                var (_, codePageWas42, _, fontEntry) = GetCurrentEncoding(skipEncodingDetection: true);
+
+                int fontNum = LastUsedFontWithCodePage42;
+                if (fontNum == -1)
+                {
+                    fontNum = _header.CodePage;
+                    if (fontNum != 42) return Error.OK;
+                }
+
+                if (!_fontEntries.TryGetValue(fontNum, out var fontEntry))
+                {
+                    return Error.OK;
+                }
 
                 // We already know our code point is within bounds of the array, because the arrays also go from
                 // 0x20 - 0xFF, so no need to check
-                if (codePageWas42)
-                {
-                    codePoint = _symbolFontToUnicode[codePoint - 0x20];
-                }
-                else if (fontEntry != null)
+                if (fontEntry != null)
                 {
                     if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, WingdingsChars))
                     {
