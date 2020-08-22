@@ -1346,7 +1346,7 @@ namespace FMScanner
         counts as the last used one. Also, we need the last used font WHOSE CODEPAGE IS 42, not the last used font
         period. So we have to track only the charset 2/codepage 42 ones. Globally. Truly bizarre.
         */
-        private int LastUsedFontWithCodePage42 = -1;
+        private int _lastUsedFontWithCodePage42 = -1;
 
         // Highest measured was 10
         private readonly Stack<Scope> _scopeStack = new Stack<Scope>(15);
@@ -1575,6 +1575,7 @@ namespace FMScanner
             _binaryCharsLeftToSkip = 0;
             _unicodeCharsLeftToSkip = 0;
             _skipDestinationIfUnknown = false;
+            _lastUsedFontWithCodePage42 = -1;
 
             // Types that contain only fixed-size value types
             _header.Reset();
@@ -1949,7 +1950,7 @@ namespace FMScanner
                       fontEntry.CodePage == 42)
                 {
                     // We have to track this globally, per behavior of RichEdit and implied by the spec.
-                    LastUsedFontWithCodePage42 = val;
+                    _lastUsedFontWithCodePage42 = val;
                 }
             }
 
@@ -2769,7 +2770,7 @@ namespace FMScanner
             {
                 codePoint -= 0xF000;
 
-                int fontNum = LastUsedFontWithCodePage42;
+                int fontNum = _lastUsedFontWithCodePage42;
                 if (fontNum == -1)
                 {
                     fontNum = _header.CodePage;
