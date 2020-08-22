@@ -1881,15 +1881,15 @@ namespace FMScanner
                     // If our code point has been through a font translation table, it may be longer than 2 bytes.
                     if (param > 0xFFFF)
                     {
-                        string? str2 = ConvertFromUtf32(param);
-                        if (str2 == null)
+                        string? charsAsStr = ConvertFromUtf32(param);
+                        if (charsAsStr == null)
                         {
                             _unicodeBuffer.Add(_unicodeUnknown_Char);
                         }
                         else
                         {
-                            _unicodeBuffer.Add(str2[0]);
-                            _unicodeBuffer.Add(str2[1]);
+                            _unicodeBuffer.Add(charsAsStr[0]);
+                            _unicodeBuffer.Add(charsAsStr[1]);
                         }
                     }
                     else
@@ -1943,22 +1943,17 @@ namespace FMScanner
                 if (_currentScope.InFontTable)
                 {
                     _fontEntries.Add(val, new FontEntry { Num = val });
+                    return Error.OK;
                 }
-                else
+                else if (_fontEntries.TryGetValue(val, out FontEntry? fontEntry) &&
+                      fontEntry.CodePage == 42)
                 {
-                    _currentScope.Properties[(int)propertyTableIndex] = val;
-                    if (_fontEntries.TryGetValue(val, out FontEntry? fontEntry) &&
-                        fontEntry.CodePage == 42)
-                    {
-                        // We have to track this globally, per behavior of RichEdit and implied by the spec.
-                        LastUsedFontWithCodePage42 = val;
-                    }
+                    // We have to track this globally, per behavior of RichEdit and implied by the spec.
+                    LastUsedFontWithCodePage42 = val;
                 }
             }
-            else
-            {
-                _currentScope.Properties[(int)propertyTableIndex] = val;
-            }
+
+            _currentScope.Properties[(int)propertyTableIndex] = val;
 
             return Error.OK;
         }
@@ -2763,10 +2758,9 @@ namespace FMScanner
             find the face name. The charset is specified by the \fcharsetN control word and SYMBOL_CHARSET is for
             N = 2. This corresponds to codepage 42."
 
-            TODO: Verified, this does in fact mean "find the last font used that specifically has \fcharset2".
-            As in, if the current scope's \fN is not an \fcharset2 font, we would have to search the scope stack
-            all the way back till we find one. That's an excuse to make a custom Stack class, so now I can also
-            reset the capacity. So there's that.
+            Verified, this does in fact mean "find the last used font that specifically has \fcharset2" (or \cpg42).
+            And, yes, that's last used, period, regardless of scope. So we track it globally. That's the official
+            behavior, don't ask me.
             */
             else if (handleSymbolCharRange && codePoint >= 0xF020 && codePoint <= 0xF0FF)
             {
@@ -2785,7 +2779,7 @@ namespace FMScanner
                 }
 
                 // We already know our code point is within bounds of the array, because the arrays also go from
-                // 0x20 - 0xFF, so no need to check
+                // 0x20 - 0xFF, so no need to check.
                 if (fontEntry != null)
                 {
                     if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, WingdingsChars))
