@@ -68,63 +68,63 @@ namespace FMScanner
         /// <summary>
         /// <see langword="true"/> to detect the mission's title.
         /// </summary>
-        public bool ScanTitle { get; set; } = true;
+        public bool ScanTitle = true;
         /// <summary>
         /// <see langword="true"/> to detect the titles of individual campaign missions.
         /// If the mission is not a campaign, this option has no effect.
         /// If the mission is for Thief: Deadly Shadows, this option has no effect.
         /// </summary>
-        public bool ScanCampaignMissionNames { get; set; } = true;
+        public bool ScanCampaignMissionNames = true;
         /// <summary>
         /// <see langword="true"/> to detect the mission's author.
         /// </summary>
-        public bool ScanAuthor { get; set; } = true;
+        public bool ScanAuthor = true;
         /// <summary>
         /// <see langword="true"/> to detect the mission's version.
         /// </summary>
-        public bool ScanVersion { get; set; } = true;
+        public bool ScanVersion = true;
         /// <summary>
         /// <see langword="true"/> to detect the languages the mission supports.
         /// If the mission is for Thief: Deadly Shadows, this option has no effect.
         /// </summary>
-        public bool ScanLanguages { get; set; } = true;
+        public bool ScanLanguages = true;
         /// <summary>
         /// <see langword="true"/> to detect which game the mission is for (Thief 1, Thief 2, Thief 3, or System Shock 2).
         /// </summary>
-        public bool ScanGameType { get; set; } = true;
+        public bool ScanGameType = true;
         /// <summary>
         /// <see langword="true"/> to detect whether the mission requires NewDark.
         /// If the mission is for Thief: Deadly Shadows, this option has no effect.
         /// </summary>
-        public bool ScanNewDarkRequired { get; set; } = true;
+        public bool ScanNewDarkRequired = true;
         /// <summary>
         /// <see langword="true"/> to detect the minimum NewDark version the mission requires.
         /// If ScanNewDarkRequired is false, this option has no effect.
         /// If the mission is for Thief: Deadly Shadows, this option has no effect.
         /// </summary>
-        public bool ScanNewDarkMinimumVersion { get; set; } = true;
+        public bool ScanNewDarkMinimumVersion = true;
         /// <summary>
         /// <see langword="true"/> to detect whether the mission contains custom resources.
         /// If the mission is for Thief: Deadly Shadows, this option has no effect.
         /// </summary>
-        public bool ScanCustomResources { get; set; } = true;
+        public bool ScanCustomResources = true;
         /// <summary>
         /// <see langword="true"/> to detect the size of the mission. This will differ depending on whether the
         /// mission is a compressed archive or an uncompressed directory.
         /// </summary>
-        public bool ScanSize { get; set; } = true;
+        public bool ScanSize = true;
         /// <summary>
         /// <see langword="true"/> to detect the mission's release date.
         /// </summary>
-        public bool ScanReleaseDate { get; set; } = true;
+        public bool ScanReleaseDate = true;
         /// <summary>
         /// <see langword="true"/> to detect the mission's tags.
         /// </summary>
-        public bool ScanTags { get; set; } = true;
+        public bool ScanTags = true;
         /// <summary>
         /// <see langword="true"/> to detect the mission's fm.ini description field.
         /// </summary>
-        public bool ScanDescription { get; set; } = true;
+        public bool ScanDescription = true;
     }
 
     [PublicAPI]
@@ -178,22 +178,23 @@ namespace FMScanner
     [PublicAPI]
     public sealed class ScannedFMData
     {
-        public string ArchiveName { get; internal set; } = "";
-        public ulong? Size { get; internal set; }
-        public string Title { get; internal set; } = "";
-        public string[] AlternateTitles { get; internal set; } = Array.Empty<string>();
-        public string Author { get; internal set; } = "";
-        public FMType Type { get; internal set; }
-        public string[] IncludedMissions { get; internal set; } = Array.Empty<string>();
-        public Game Game { get; internal set; }
-        public string[] Languages { get; internal set; } = Array.Empty<string>();
-        public string Version { get; internal set; } = "";
-        public bool? NewDarkRequired { get; internal set; }
-        public string NewDarkMinRequiredVersion { get; internal set; } = "";
+        public string ArchiveName = "";
+        public ulong? Size;
+        public string Title = "";
+        public string[] AlternateTitles = Array.Empty<string>();
+        public string Author = "";
+        public FMType Type;
+        public string[] IncludedMissions = Array.Empty<string>();
+        public Game Game;
+        public string[] Languages = Array.Empty<string>();
+        public string Version = "";
+        public bool? NewDarkRequired;
+        public string NewDarkMinRequiredVersion = "";
+
         /// <summary>
         /// Deprecated and will always be blank. Use <see cref="LastUpdateDate"/> instead.
         /// </summary>
-        public DateTime? OriginalReleaseDate { get; internal set; }
+        public DateTime? OriginalReleaseDate;
 
         private DateTime? _lastUpdateDate;
         public DateTime? LastUpdateDate
@@ -203,10 +204,10 @@ namespace FMScanner
             internal set => _lastUpdateDate = value != null && ((DateTime)value).Year > DateTime.Now.Year ? null : value;
         }
 
-        public string Description { get; internal set; } = "";
-        public string TagsString { get; internal set; } = "";
+        public string Description = "";
+        public string TagsString = "";
 
-        public bool? HasMap { get; internal set; }
+        public bool? HasMap;
 
         private bool? _hasAutomap;
         public bool? HasAutomap
@@ -230,13 +231,13 @@ namespace FMScanner
             }
         }
 
-        public bool? HasCustomCreatures { get; internal set; }
-        public bool? HasCustomMotions { get; internal set; }
-        public bool? HasMovies { get; internal set; }
-        public bool? HasCustomObjects { get; internal set; }
-        public bool? HasCustomScripts { get; internal set; }
-        public bool? HasCustomSounds { get; internal set; }
-        public bool? HasCustomSubtitles { get; internal set; }
-        public bool? HasCustomTextures { get; internal set; }
+        public bool? HasCustomCreatures;
+        public bool? HasCustomMotions;
+        public bool? HasMovies;
+        public bool? HasCustomObjects;
+        public bool? HasCustomScripts;
+        public bool? HasCustomSounds;
+        public bool? HasCustomSubtitles;
+        public bool? HasCustomTextures;
     }
 }

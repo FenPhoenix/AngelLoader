@@ -98,7 +98,7 @@ namespace FMScanner
         /// </para>
         /// <para>
         /// -Only use the internal array in conjunction with the <see cref="Count"/> property.
-        ///  Using the <see cref="ItemsArray.Length"/> value will lead to catastrophe.
+        ///  Using the <see cref="ItemsArray"/>.Length value will lead to catastrophe.
         /// </para>
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -251,7 +251,7 @@ namespace FMScanner
             internal void UnGetChar(char c)
             {
                 if (CurrentPos < 0) return;
-                
+
                 _unGetBuffer.Push(c);
                 _unGetBufferEmpty = false;
                 if (CurrentPos > 0) CurrentPos--;
@@ -341,9 +341,6 @@ namespace FMScanner
             // Use only as many chars as we need - "Wingdings" is 9 chars and is the longest we need
             private const int NameMaxLength = 9;
 
-            // Fonts can specify themselves as whatever number they want, so we can't just count by index
-            // eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
-            internal int Num;
             internal int? CodePage;
 
             // We need to store names in case we get codepage 42 nonsense, we need to know which font to translate
@@ -1336,6 +1333,8 @@ namespace FMScanner
 
         // FMs can have 100+ of these...
         // Highest measured was 131
+        // Fonts can specify themselves as whatever number they want, so we can't just count by index
+        // eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
         private readonly DictWithTopItem<int, FontEntry> _fontEntries = new DictWithTopItem<int, FontEntry>(150);
         /*
         Per spec, if we see a \uN keyword whose N falls within the range of 0xF020 to 0xF0FF, we're supposed to
@@ -1942,7 +1941,7 @@ namespace FMScanner
             {
                 if (_currentScope.InFontTable)
                 {
-                    _fontEntries.Add(val, new FontEntry { Num = val });
+                    _fontEntries.Add(val, new FontEntry());
                     return Error.OK;
                 }
                 else if (_fontEntries.TryGetValue(val, out FontEntry? fontEntry) &&

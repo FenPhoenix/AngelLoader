@@ -12,7 +12,7 @@ namespace FMScanner.FastZipReader.Deflate64Managed
 {
     internal sealed class Deflate64ManagedStream : Stream
     {
-        internal const int DefaultBufferSize = 8192;
+        private const int DefaultBufferSize = 8192;
 
         private Stream _stream;
         private bool _leaveOpen;
@@ -37,7 +37,7 @@ namespace FMScanner.FastZipReader.Deflate64Managed
         /// <summary>
         /// Sets up this DeflateManagedStream to be used for Inflation/Decompression
         /// </summary>
-        internal void InitializeInflater(Stream stream)
+        private void InitializeInflater(Stream stream)
         {
             Debug.Assert(stream != null);
             if (!stream.CanRead) throw new ArgumentException(SR.NotSupported_UnreadableStream, nameof(stream));

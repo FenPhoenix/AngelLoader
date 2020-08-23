@@ -11,8 +11,7 @@ namespace FMScanner.FastZipReader
     // TODO: This duplicate-but-internal thing is silly, make it better
     internal static class ZipHelpers
     {
-        internal const int ValidZipDate_YearMin = 1980;
-        internal const int ValidZipDate_YearMax = 2107;
+        private const int ValidZipDate_YearMin = 1980;
 
         /// <summary>
         /// Converts a Zip timestamp to a DateTime object. If <paramref name="zipDateTime"/> is not a
@@ -64,7 +63,7 @@ namespace FMScanner.FastZipReader
         /// <summary>
         /// Reads exactly bytesToRead out of stream, unless it is out of bytes
         /// </summary>
-        internal static void ReadBytes(Stream stream, byte[] buffer, int bytesToRead)
+        private static void ReadBytes(Stream stream, byte[] buffer, int bytesToRead)
         {
             int bytesLeftToRead = bytesToRead;
 

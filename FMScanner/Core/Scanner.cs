@@ -46,17 +46,17 @@ namespace FMScanner
         /// later). Default: <see cref="Encoding.UTF8"/>
         /// </summary>
         [PublicAPI]
-        public Encoding ZipEntryNameEncoding { get; set; } = Encoding.UTF8;
+        public Encoding ZipEntryNameEncoding = Encoding.UTF8;
 
         [PublicAPI]
-        public string LogFile { get; set; } = "";
+        public string LogFile = "";
 
         /// <summary>
         /// Hack to support scanning two different sets of fields depending on a bool, you pass in "full" scan
         /// fields here and "non-full" fields in the Scan* methods, and mark each passed FM with a bool.
         /// </summary>
         [PublicAPI]
-        public ScanOptions FullScanOptions { get; set; } = new ScanOptions();
+        public ScanOptions FullScanOptions = new ScanOptions();
 
         #endregion
 
@@ -688,7 +688,7 @@ namespace FMScanner
 
                     if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Count > 0)
                     {
-                        for (int i = 0; i < cNames.Count; i++) cNames[i] = CleanupTitle(cNames[i]) ?? "";
+                        for (int i = 0; i < cNames.Count; i++) cNames[i] = CleanupTitle(cNames[i]);
                         fmData.IncludedMissions = cNames.ToArray();
                     }
                 }
@@ -2172,7 +2172,7 @@ namespace FMScanner
         {
             if (intrfaceDirFiles.Count == 0) return "";
 
-            NameAndIndex newGameStrFile =
+            NameAndIndex? newGameStrFile =
                 intrfaceDirFiles.FirstOrDefault(x =>
                     x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStrS))
                 ?? intrfaceDirFiles.FirstOrDefault(x =>
@@ -2316,7 +2316,7 @@ namespace FMScanner
 
             foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
             {
-                NameAndIndex titlesFile = _fmIsZip
+                NameAndIndex? titlesFile = _fmIsZip
                     ? stringsDirFiles.FirstOrDefault(x => x.Name.PathEqualsI(titlesFileLocation))
                     : new NameAndIndex(Path.Combine(_fmWorkingPath, titlesFileLocation));
 
@@ -2797,12 +2797,9 @@ namespace FMScanner
             #region Choose smallest .gam file
 
             NameAndIndex[] gamFiles = baseDirFiles.Where(x => x.Name.ExtIsGam()).ToArray();
-            bool gamFileExists = gamFiles.Length > 0;
+            NameAndIndex? smallestGamFile = null;
 
-            var gamSizeList = new List<(string Name, int Index, long Size)>(gamFiles.Length);
-            NameAndIndex? smallestGamFile = null!;
-
-            if (gamFileExists)
+            if (gamFiles.Length > 0)
             {
                 if (gamFiles.Length == 1)
                 {
@@ -2810,6 +2807,7 @@ namespace FMScanner
                 }
                 else
                 {
+                    var gamSizeList = new List<(string Name, int Index, long Size)>(gamFiles.Length);
                     foreach (NameAndIndex gam in gamFiles)
                     {
                         long length;
@@ -2820,7 +2818,7 @@ namespace FMScanner
                         else
                         {
                             string? gamFullPath = null;
-                            FileInfo gamFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
+                            FileInfo? gamFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
                             length = gamFI?.Length ?? new FileInfo(gamFullPath ?? Path.Combine(_fmWorkingPath, gam.Name)).Length;
                         }
                         gamSizeList.Add((gam.Name, gam.Index, length));
@@ -2842,7 +2840,9 @@ namespace FMScanner
             {
                 smallestUsedMisFile = usedMisFiles[0];
             }
-            else if (usedMisFiles.Count > 1)
+            // We know usedMisFiles can never be empty at this point because we early-return way before this if
+            // it is
+            else // usedMisFiles.Count > 1
             {
                 foreach (NameAndIndex mis in usedMisFiles)
                 {
@@ -2854,7 +2854,7 @@ namespace FMScanner
                     else
                     {
                         string? misFullPath = null;
-                        FileInfo misFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
+                        FileInfo? misFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
                     }
                     misSizeList.Add((mis.Name, mis.Index, length));
@@ -2862,13 +2862,6 @@ namespace FMScanner
 
                 var misToUse = misSizeList.OrderBy(x => x.Size).First();
                 smallestUsedMisFile = new NameAndIndex(misToUse.Name, misToUse.Index);
-            }
-            else
-            {
-                // We know usedMisFiles can never be empty at this point because we early-return way before this
-                // if it is, but the code analysis doesn't know that, so we put this in to prevent a couple of
-                // null-reference warnings.
-                throw new Exception(nameof(usedMisFiles) + ".Count is 0");
             }
 
             #endregion
@@ -2882,7 +2875,7 @@ namespace FMScanner
 
             if (_fmIsZip)
             {
-                if (gamFileExists) gamFileZipEntry = _archive.Entries[smallestGamFile.Index];
+                if (smallestGamFile != null) gamFileZipEntry = _archive.Entries[smallestGamFile.Index];
                 misFileZipEntry = _archive.Entries[smallestUsedMisFile.Index];
             }
             else
@@ -3066,7 +3059,7 @@ namespace FMScanner
             {
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
-                Stream stream = gamFileExists ? gamFileZipEntry!.Open() : misFileZipEntry!.Open();
+                Stream stream = smallestGamFile != null ? gamFileZipEntry!.Open() : misFileZipEntry!.Open();
                 ret.Game = StreamContainsIdentString(stream, Thief2UniqueString)
                     ? Game.Thief2
                     : Game.Thief1;
@@ -3240,7 +3233,7 @@ namespace FMScanner
 
                 // Code page 1252 = Western European (using instead of Encoding.Default)
                 using var sr = new StreamReader(stream, enc ?? Encoding.GetEncoding(1252), false, 1024, leaveOpen: true);
-                string line;
+                string? line;
                 while ((line = sr.ReadLine()) != null) lines.Add(line);
             }
             else
@@ -3255,7 +3248,7 @@ namespace FMScanner
                 memStream.Position = 0;
 
                 using var sr = new StreamReader(memStream, enc ?? Encoding.GetEncoding(1252), false);
-                string line;
+                string? line;
                 while ((line = sr.ReadLine()) != null) lines.Add(line);
             }
 
@@ -3267,7 +3260,7 @@ namespace FMScanner
             var lines = new List<string>();
 
             using var sr = new StreamReader(stream, encoding ?? Encoding.GetEncoding(1252), false);
-            string line;
+            string? line;
             while ((line = sr.ReadLine()) != null) lines.Add(line);
 
             return lines;
@@ -3278,7 +3271,7 @@ namespace FMScanner
             var lines = new List<string>();
 
             using var sr = new StreamReader(file, encoding, false);
-            string line;
+            string? line;
             while ((line = sr.ReadLine()) != null) lines.Add(line);
 
             return lines;
@@ -3296,7 +3289,7 @@ namespace FMScanner
 
             var lines = new List<string>();
             using StreamReader streamReader = new StreamReader(file, enc ?? Encoding.GetEncoding(1252));
-            string line;
+            string? line;
             while ((line = streamReader.ReadLine()) != null) lines.Add(line);
             return lines;
         }

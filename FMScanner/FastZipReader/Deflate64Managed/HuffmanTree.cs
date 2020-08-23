@@ -38,9 +38,9 @@ namespace FMScanner.FastZipReader.Deflate64Managed
         private readonly int _tableMask;
 
         // huffman tree for static block
-        internal static HuffmanTree StaticLiteralLengthTree { get; } = new HuffmanTree(GetStaticLiteralTreeLength());
+        internal static readonly HuffmanTree StaticLiteralLengthTree = new HuffmanTree(GetStaticLiteralTreeLength());
 
-        internal static HuffmanTree StaticDistanceTree { get; } = new HuffmanTree(GetStaticDistanceTreeLength());
+        internal static readonly HuffmanTree StaticDistanceTree = new HuffmanTree(GetStaticDistanceTreeLength());
 
         internal HuffmanTree(byte[] codeLengths)
         {
@@ -137,7 +137,7 @@ namespace FMScanner.FastZipReader.Deflate64Managed
         }
 
         // Reverse 'length' of the bits in code
-        internal static uint BitReverse(uint code, int length)
+        private static uint BitReverse(uint code, int length)
         {
             uint newCode = 0;
 

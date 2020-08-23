@@ -25,7 +25,7 @@ namespace FMScanner.FastZipReader.Deflate64Managed
         private uint _bitBuffer;          // store the bits here, we can quickly shift in this buffer
 
         /// <summary>Total bits available in the input buffer.</summary>
-        internal int AvailableBits { get; private set; }
+        internal int AvailableBits;
 
         /// <summary>Total bytes available in the input buffer.</summary>
         internal int AvailableBytes => (_end - _start) + (AvailableBits / 8);
@@ -98,7 +98,7 @@ namespace FMScanner.FastZipReader.Deflate64Managed
             return _bitBuffer;
         }
 
-        private uint GetBitMask(int count) => ((uint)1 << count) - 1;
+        private static uint GetBitMask(int count) => ((uint)1 << count) - 1;
 
         /// <summary>Gets count bits from the input buffer. Returns -1 if not enough bits available.</summary>
         internal int GetBits(int count)

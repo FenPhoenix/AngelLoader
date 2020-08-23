@@ -13,10 +13,10 @@ namespace FMScanner.FastZipReader
 
     internal struct ZipGenericExtraField
     {
-        internal ushort Tag { get; private set; }
+        internal ushort Tag;
         // returns size of data, not of the entire block
-        internal ushort Size { get; private set; }
-        internal byte[] Data { get; private set; }
+        internal ushort Size;
+        internal byte[] Data;
 
         // shouldn't ever read the byte at position endExtraField
         // assumes we are positioned at the beginning of an extra field subfield
@@ -47,38 +47,14 @@ namespace FMScanner.FastZipReader
         private const ushort TagConstant = 1;
 
         private ushort _size;
-        private long? _uncompressedSize;
-        private long? _compressedSize;
-        private long? _localHeaderOffset;
 
-        internal long? UncompressedSize
-        {
-            get => _uncompressedSize;
-            set { _uncompressedSize = value; UpdateSize(); }
-        }
+        internal long? UncompressedSize;
 
-        internal long? CompressedSize
-        {
-            get => _compressedSize;
-            set { _compressedSize = value; UpdateSize(); }
-        }
+        internal long? CompressedSize;
 
-        internal long? LocalHeaderOffset
-        {
-            get => _localHeaderOffset;
-            set { _localHeaderOffset = value; UpdateSize(); }
-        }
+        internal long? LocalHeaderOffset;
 
-        internal int? StartDiskNumber { get; private set; }
-
-        private void UpdateSize()
-        {
-            _size = 0;
-            if (_uncompressedSize != null) _size += 8;
-            if (_compressedSize != null) _size += 8;
-            if (_localHeaderOffset != null) _size += 8;
-            if (StartDiskNumber != null) _size += 4;
-        }
+        internal int? StartDiskNumber;
 
         // There is a small chance that something very weird could happen here. The code calling into this function
         // will ask for a value from the extra field if the field was masked with FF's. It's theoretically possible
@@ -116,9 +92,9 @@ namespace FMScanner.FastZipReader
 
             zip64Field = new Zip64ExtraField
             {
-                _compressedSize = null,
-                _uncompressedSize = null,
-                _localHeaderOffset = null,
+                CompressedSize = null,
+                UncompressedSize = null,
+                LocalHeaderOffset = null,
                 StartDiskNumber = null
             };
 
@@ -132,9 +108,9 @@ namespace FMScanner.FastZipReader
         {
             zip64Block = new Zip64ExtraField
             {
-                _compressedSize = null,
-                _uncompressedSize = null,
-                _localHeaderOffset = null,
+                CompressedSize = null,
+                UncompressedSize = null,
+                LocalHeaderOffset = null,
                 StartDiskNumber = null
             };
 
@@ -162,15 +138,15 @@ namespace FMScanner.FastZipReader
                 // if it is not the expected size, perhaps there is another extra field that matches
                 if (expectedSize != zip64Block._size) return false;
 
-                if (readUncompressedSize) zip64Block._uncompressedSize = reader.ReadInt64();
-                if (readCompressedSize) zip64Block._compressedSize = reader.ReadInt64();
-                if (readLocalHeaderOffset) zip64Block._localHeaderOffset = reader.ReadInt64();
+                if (readUncompressedSize) zip64Block.UncompressedSize = reader.ReadInt64();
+                if (readCompressedSize) zip64Block.CompressedSize = reader.ReadInt64();
+                if (readLocalHeaderOffset) zip64Block.LocalHeaderOffset = reader.ReadInt64();
                 if (readStartDiskNumber) zip64Block.StartDiskNumber = reader.ReadInt32();
 
                 // original values are unsigned, so implies value is too big to fit in signed integer
-                if (zip64Block._uncompressedSize < 0) throw new InvalidDataException(SR.FieldTooBigUncompressedSize);
-                if (zip64Block._compressedSize < 0) throw new InvalidDataException(SR.FieldTooBigCompressedSize);
-                if (zip64Block._localHeaderOffset < 0) throw new InvalidDataException(SR.FieldTooBigLocalHeaderOffset);
+                if (zip64Block.UncompressedSize < 0) throw new InvalidDataException(SR.FieldTooBigUncompressedSize);
+                if (zip64Block.CompressedSize < 0) throw new InvalidDataException(SR.FieldTooBigCompressedSize);
+                if (zip64Block.LocalHeaderOffset < 0) throw new InvalidDataException(SR.FieldTooBigLocalHeaderOffset);
                 if (zip64Block.StartDiskNumber < 0) throw new InvalidDataException(SR.FieldTooBigStartDiskNumber);
 
                 return true;
@@ -187,9 +163,7 @@ namespace FMScanner.FastZipReader
         internal const uint SignatureConstant = 0x07064B50;
         internal const int SizeOfBlockWithoutSignature = 16;
 
-        internal uint NumberOfDiskWithZip64EOCD;
         internal ulong OffsetOfZip64EOCD;
-        internal uint TotalNumberOfDisks;
 
         internal static bool TryReadBlock(BinaryReader reader, out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
         {
@@ -197,9 +171,9 @@ namespace FMScanner.FastZipReader
 
             if (reader.ReadUInt32() != SignatureConstant) return false;
 
-            zip64EOCDLocator.NumberOfDiskWithZip64EOCD = reader.ReadUInt32();
+            reader.ReadUInt32(); // NumberOfDiskWithZip64EOCD
             zip64EOCDLocator.OffsetOfZip64EOCD = reader.ReadUInt64();
-            zip64EOCDLocator.TotalNumberOfDisks = reader.ReadUInt32();
+            reader.ReadUInt32(); // TotalNumberOfDisks
             return true;
         }
     }
@@ -207,16 +181,10 @@ namespace FMScanner.FastZipReader
     internal struct Zip64EndOfCentralDirectoryRecord
     {
         private const uint SignatureConstant = 0x06064B50;
-        private const ulong NormalSize = 0x2C; // the size of the data excluding the size/signature fields if no extra data included
 
-        internal ulong SizeOfThisRecord;
-        internal ushort VersionMadeBy;
-        internal ushort VersionNeededToExtract;
         internal uint NumberOfThisDisk;
-        internal uint NumberOfDiskWithStartOfCD;
         internal ulong NumberOfEntriesOnThisDisk;
         internal ulong NumberOfEntriesTotal;
-        internal ulong SizeOfCentralDirectory;
         internal ulong OffsetOfCentralDirectory;
 
         internal static bool TryReadBlock(BinaryReader reader, out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
@@ -225,14 +193,14 @@ namespace FMScanner.FastZipReader
 
             if (reader.ReadUInt32() != SignatureConstant) return false;
 
-            zip64EOCDRecord.SizeOfThisRecord = reader.ReadUInt64();
-            zip64EOCDRecord.VersionMadeBy = reader.ReadUInt16();
-            zip64EOCDRecord.VersionNeededToExtract = reader.ReadUInt16();
+            reader.ReadUInt64(); // SizeOfThisRecord
+            reader.ReadUInt16(); // VersionMadeBy
+            reader.ReadUInt16(); // VersionNeededToExtract
             zip64EOCDRecord.NumberOfThisDisk = reader.ReadUInt32();
-            zip64EOCDRecord.NumberOfDiskWithStartOfCD = reader.ReadUInt32();
+            reader.ReadUInt32(); // NumberOfDiskWithStartOfCD
             zip64EOCDRecord.NumberOfEntriesOnThisDisk = reader.ReadUInt64();
             zip64EOCDRecord.NumberOfEntriesTotal = reader.ReadUInt64();
-            zip64EOCDRecord.SizeOfCentralDirectory = reader.ReadUInt64();
+            reader.ReadUInt64(); // SizeOfCentralDirectory
             zip64EOCDRecord.OffsetOfCentralDirectory = reader.ReadUInt64();
 
             return true;
@@ -241,7 +209,7 @@ namespace FMScanner.FastZipReader
 
     internal readonly struct ZipLocalFileHeader
     {
-        internal const uint SignatureConstant = 0x04034B50;
+        private const uint SignatureConstant = 0x04034B50;
 
         // will not throw end of stream exception
         internal static bool TrySkipBlock(BinaryReader reader)
@@ -269,27 +237,20 @@ namespace FMScanner.FastZipReader
 
     internal struct ZipCentralDirectoryFileHeader
     {
-        internal const uint SignatureConstant = 0x02014B50;
+        private const uint SignatureConstant = 0x02014B50;
         internal byte VersionMadeByCompatibility;
-        internal byte VersionMadeBySpecification;
-        internal ushort VersionNeededToExtract;
         internal ushort GeneralPurposeBitFlag;
         internal ushort CompressionMethod;
         internal uint LastModified;
-        internal uint Crc32;
         internal long CompressedSize;
         internal long UncompressedSize;
-        internal ushort FilenameLength;
-        internal ushort ExtraFieldLength;
-        internal ushort FileCommentLength;
+        private ushort FilenameLength;
+        private ushort ExtraFieldLength;
+        private ushort FileCommentLength;
         internal int DiskNumberStart;
-        internal ushort InternalFileAttributes;
-        internal uint ExternalFileAttributes;
         internal long RelativeOffsetOfLocalHeader;
 
         internal byte[] Filename;
-        internal byte[]? FileComment;
-        internal List<ZipGenericExtraField>? ExtraFields;
 
         // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
         // in either case, the zip64 extra field info will be incorporated into other fields
@@ -299,21 +260,21 @@ namespace FMScanner.FastZipReader
 
             if (reader.ReadUInt32() != SignatureConstant) return false;
 
-            header.VersionMadeBySpecification = reader.ReadByte();
+            reader.ReadByte(); // VersionMadeBySpecification
             header.VersionMadeByCompatibility = reader.ReadByte();
-            header.VersionNeededToExtract = reader.ReadUInt16();
+            reader.ReadUInt16(); // VersionNeededToExtract
             header.GeneralPurposeBitFlag = reader.ReadUInt16();
             header.CompressionMethod = reader.ReadUInt16();
             header.LastModified = reader.ReadUInt32();
-            header.Crc32 = reader.ReadUInt32();
+            reader.ReadUInt32(); // Crc32
             uint compressedSizeSmall = reader.ReadUInt32();
             uint uncompressedSizeSmall = reader.ReadUInt32();
             header.FilenameLength = reader.ReadUInt16();
             header.ExtraFieldLength = reader.ReadUInt16();
             header.FileCommentLength = reader.ReadUInt16();
             ushort diskNumberStartSmall = reader.ReadUInt16();
-            header.InternalFileAttributes = reader.ReadUInt16();
-            header.ExternalFileAttributes = reader.ReadUInt32();
+            reader.ReadUInt16(); // InternalFileAttributes
+            reader.ReadUInt32(); // ExternalFileAttributes
             uint relativeOffsetOfLocalHeaderSmall = reader.ReadUInt32();
 
             header.Filename = reader.ReadBytes(header.FilenameLength);
@@ -328,7 +289,6 @@ namespace FMScanner.FastZipReader
             long endExtraFields = reader.BaseStream.Position + header.ExtraFieldLength;
             using (Stream str = new SubReadStream(reader.BaseStream, reader.BaseStream.Position, header.ExtraFieldLength))
             {
-                header.ExtraFields = null;
                 zip64 = Zip64ExtraField.GetJustZip64Block(str,
                     uncompressedSizeInZip64, compressedSizeInZip64,
                     relativeOffsetInZip64, diskNumberStartInZip64);
@@ -345,8 +305,6 @@ namespace FMScanner.FastZipReader
             // But my results are the same as the old method, so herpaderp.
             reader.BaseStream.AdvanceToPosition(endExtraFields + header.FileCommentLength);
 
-            header.FileComment = null;
-
             header.UncompressedSize = zip64.UncompressedSize ?? uncompressedSizeSmall;
             header.CompressedSize = zip64.CompressedSize ?? compressedSizeSmall;
             header.RelativeOffsetOfLocalHeader = zip64.LocalHeaderOffset ?? relativeOffsetOfLocalHeaderSmall;
@@ -360,30 +318,26 @@ namespace FMScanner.FastZipReader
     {
         internal const uint SignatureConstant = 0x06054B50;
         internal const int SizeOfBlockWithoutSignature = 18;
-        internal uint Signature;
         internal ushort NumberOfThisDisk;
         internal ushort NumberOfTheDiskWithTheStartOfTheCentralDirectory;
         internal ushort NumberOfEntriesInTheCentralDirectoryOnThisDisk;
         internal ushort NumberOfEntriesInTheCentralDirectory;
-        internal uint SizeOfCentralDirectory;
         internal uint OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
-        internal byte[] ArchiveComment;
 
         internal static bool TryReadBlock(BinaryReader reader, out ZipEndOfCentralDirectoryBlock eocdBlock)
         {
             eocdBlock = new ZipEndOfCentralDirectoryBlock();
             if (reader.ReadUInt32() != SignatureConstant) return false;
 
-            eocdBlock.Signature = SignatureConstant;
             eocdBlock.NumberOfThisDisk = reader.ReadUInt16();
             eocdBlock.NumberOfTheDiskWithTheStartOfTheCentralDirectory = reader.ReadUInt16();
             eocdBlock.NumberOfEntriesInTheCentralDirectoryOnThisDisk = reader.ReadUInt16();
             eocdBlock.NumberOfEntriesInTheCentralDirectory = reader.ReadUInt16();
-            eocdBlock.SizeOfCentralDirectory = reader.ReadUInt32();
+            reader.ReadUInt32(); // SizeOfCentralDirectory
             eocdBlock.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = reader.ReadUInt32();
 
             ushort commentLength = reader.ReadUInt16();
-            eocdBlock.ArchiveComment = reader.ReadBytes(commentLength);
+            reader.ReadBytes(commentLength); // ArchiveComment
 
             return true;
         }

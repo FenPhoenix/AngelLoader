@@ -68,36 +68,29 @@ namespace FMScanner.FastZipReader
         /// <summary>
         /// The ZipArchive that this entry belongs to.
         /// </summary>
-        private ZipArchiveFast Archive { get; }
-
-        public uint Crc32 { get; }
+        private readonly ZipArchiveFast Archive;
 
         /// <summary>
         /// The compressed size of the entry.
         /// </summary>
-        public long CompressedLength { get; }
-
-        /// <summary>
-        /// OS and Application specific file attributes.
-        /// </summary>
-        public int ExternalAttributes { get; }
+        public readonly long CompressedLength;
 
         /// <summary>
         /// The last write time of the entry as stored in the Zip archive. To convert to a DateTime object, use
         /// <see cref="ZipHelpers.ZipTimeToDateTime"/>.
         /// </summary>
-        public uint LastWriteTime { get; }
+        public readonly uint LastWriteTime;
 
         /// <summary>
         /// The uncompressed size of the entry.
         /// </summary>
-        public long Length { get; }
+        public readonly long Length;
 
         /// <summary>
         /// The relative path of the entry as stored in the Zip archive. Note that Zip archives allow any string
         /// to be the path of the entry, including invalid and absolute paths.
         /// </summary>
-        public string FullName { get; }
+        public readonly string FullName;
 
         private readonly ZipVersionMadeByPlatform _versionMadeByCompatibility;
         private string? _name;
@@ -123,26 +116,21 @@ namespace FMScanner.FastZipReader
 
             CompressedLength = cd.CompressedSize;
             Length = cd.UncompressedSize;
-            ExternalAttributes = (int)cd.ExternalFileAttributes;
             _offsetOfLocalHeader = cd.RelativeOffsetOfLocalHeader;
 
             // we don't know this yet: should be _offsetOfLocalHeader + 30 + _storedEntryNameBytes.Length + extrafieldlength
             // but entryname/extra length could be different in LH
             _storedOffsetOfCompressedData = null;
 
-            Crc32 = cd.Crc32;
-
             // Sacrifice a slight amount of time for safety. Zips entry names are emphatically NOT supposed to
             // have backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
-            FullName = DecodeEntryName(cd.Filename)?.Replace('\\', '/') ?? throw new ArgumentNullException(nameof(FullName));
+            FullName = DecodeEntryName(cd.Filename).Replace('\\', '/');
             // Lazy-load Name so we don't preemptively do a ton of Substring() calls when we don't need to.
             _versionMadeByCompatibility = (ZipVersionMadeByPlatform)cd.VersionMadeByCompatibility;
         }
 
-        private string? DecodeEntryName(byte[] entryNameBytes)
+        private string DecodeEntryName(byte[] entryNameBytes)
         {
-            Debug.Assert(entryNameBytes != null);
-
             Encoding readEntryNameEncoding;
             if ((_generalPurposeBitFlag & BitFlagValues.UnicodeFileName) == 0)
             {

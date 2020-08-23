@@ -111,7 +111,7 @@ namespace FMScanner.FastZipReader.Deflate64Managed
         internal int FreeBytes => WindowSize - AvailableBytes;
 
         /// <summary>Bytes not consumed in output window.</summary>
-        internal int AvailableBytes { get; private set; }
+        internal int AvailableBytes;
 
         /// <summary>Copy the decompressed bytes to output array.</summary>
         internal int CopyTo(byte[] output, int offset, int length)

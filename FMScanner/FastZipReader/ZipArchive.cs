@@ -27,11 +27,11 @@ namespace FMScanner.FastZipReader
         private readonly Stream? _backingStream;
         private Encoding? _entryNameEncoding;
 
-        internal BinaryReader ArchiveReader { get; }
+        internal readonly BinaryReader ArchiveReader;
 
-        internal Stream ArchiveStream { get; }
+        internal readonly Stream ArchiveStream;
 
-        internal uint NumberOfThisDisk { get; private set; }
+        internal uint NumberOfThisDisk;
 
         internal Encoding? EntryNameEncoding
         {

@@ -257,7 +257,7 @@ namespace FMScanner.SimpleHelpers
             // vote for best encoding
             _encodingName = GetCurrentEncoding();
             // check result
-            return !string.IsNullOrEmpty(_encodingName) ? Encoding.GetEncoding(_encodingName) : null;
+            return !_encodingName.IsEmpty() ? Encoding.GetEncoding(_encodingName) : null;
         }
 
         private void IncrementFrequency(string charset)

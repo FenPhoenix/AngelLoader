@@ -253,7 +253,7 @@ namespace FMScanner
         #region Languages
 
         // NOTE: I think this was for GetLanguages() for the planned accuracy update?
-        //private string[] LanguageDirs { get; } = { FMDirs.Books, FMDirs.Intrface, FMDirs.Strings };
+        //private readonly string[] LanguageDirs = { FMDirs.Books, FMDirs.Intrface, FMDirs.Strings };
 
         // Perf micro-optimization: don't create a new list if we're only returning English
         private readonly List<string> EnglishOnly = new List<string> { "english" };
