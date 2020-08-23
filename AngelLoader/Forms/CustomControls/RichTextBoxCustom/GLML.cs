@@ -63,6 +63,11 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Parse and copy
 
+            // Note about Unicode: The RTF spec seems to imply that \uN words' parameters are int16s, but in fact
+            // int32s work perfectly fine (verified by putting the tiger-face emoji in a .glml file). So we don't
+            // need to translate to negative values and multiple \uN words or anything like that. It just works
+            // as it is now.
+
             // Dunno if this would be considered a "good parser", but it's 20x faster than the regex method and
             // just as accurate, so hey.
 
