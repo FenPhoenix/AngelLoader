@@ -251,11 +251,10 @@ namespace FMScanner
             internal void UnGetChar(char c)
             {
                 if (CurrentPos < 0) return;
-                {
-                    _unGetBuffer.Push(c);
-                    _unGetBufferEmpty = false;
-                    if (CurrentPos > 0) CurrentPos--;
-                }
+                
+                _unGetBuffer.Push(c);
+                _unGetBufferEmpty = false;
+                if (CurrentPos > 0) CurrentPos--;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
