@@ -126,6 +126,8 @@ namespace FMScanner
                 ItemsArray[_size++] = item;
             }
 
+            internal void AddFast(T item) => ItemsArray[_size++] = item;
+
             /*
             Honestly, for fixed-size value types, doing an Array.Clear() is completely unnecessary. For reference
             types, you definitely want to clear it to get rid of all the references, but for ints or chars etc.,
@@ -180,6 +182,337 @@ namespace FMScanner
             {
                 Top = value;
                 base[key] = value;
+            }
+        }
+
+        private sealed class SymbolDict
+        {
+            /* ANSI-C code produced by gperf version 3.1 */
+            /* Command-line: gperf -t 'C:\\keywords.txt'  */
+            /* Computed positions: -k'1-3,$' */
+
+            // Then ported to C# semi-manually. Woe.
+
+            // Two ways we gain perf with this generated perfect hash thing over a standard Dictionary:
+            // First, it's just faster to begin with, and second, it lets us finally ditch the StringBuilders and
+            // ToString()s and just pass in simple char arrays. We are now unmeasurable. Hallelujah!
+
+            //const int TOTAL_KEYWORDS = 72;
+            const int MIN_WORD_LENGTH = 1;
+            const int MAX_WORD_LENGTH = 10;
+            //const int MIN_HASH_VALUE = 1;
+            const int MAX_HASH_VALUE = 241;
+            /* maximum key range = 241, duplicates = 0 */
+
+            private readonly byte[] asso_values =
+            {
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 50,
+                242, 242, 45, 242, 242, 242, 242, 242, 242, 40,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 35, 242, 242, 242, 242, 5, 0, 5,
+                95, 20, 5, 45, 55, 0, 242, 0, 15, 35,
+                0, 5, 10, 0, 20, 0, 0, 120, 0, 242,
+                25, 5, 242, 30, 242, 25, 15, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242, 242, 242, 242, 242,
+                242, 242, 242, 242, 242, 242
+            };
+
+            // For emspace, enspace, qmspace, ~
+            // Just convert these to regular spaces because we're just trying to scan for strings in readmes
+            // without weird crap tripping us up
+
+            // For emdash, endash, lquote, rquote, ldblquote, rdblquote
+            // TODO: Maybe just convert these all to ASCII equivalents as well?
+
+            // For cs, ds, ts
+            // Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.
+
+            // For listtext, pntext
+            // Ignore list item bullets and numeric prefixes etc. We don't need them.
+
+            private readonly Symbol?[] _symbolTable = //new Symbol_Named[72];
+            {
+                null,
+// Entry 16
+                // \v to make all plain text hidden (not output to the conversion stream)}, \v0 to make it shown again
+                new Symbol("v", 1, false, KeywordType.Property, (int)Property.Hidden),
+// Entry 37
+                new Symbol("ts", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
+// Entry 32
+                new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.Bin),
+                null, null, null,
+// Entry 35
+                new Symbol("cs", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
+// Entry 20
+                new Symbol("tab", 0, false, KeywordType.Character, '\t'),
+// Entry 3
+                // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
+                // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
+                new Symbol("ansi", 1252, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+// Entry 51
+                new Symbol("ftncn", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 10
+                new Symbol("f", 0, false, KeywordType.Property, (int)Property.FontNum),
+// Entry 68
+                new Symbol("tc", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null,
+// Entry 58
+                new Symbol("info", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 66
+                new Symbol("stylesheet", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 39
+                new Symbol("pntext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 53
+                new Symbol("ftnsepc", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null,
+// Entry 61
+                new Symbol("pict", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null,
+// Entry 52
+                new Symbol("ftnsep", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 4
+                new Symbol("pc", 437, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+// Entry 38
+                new Symbol("listtext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null,
+// Entry 69
+                new Symbol("title", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null,
+// Entry 47
+                new Symbol("footerf", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 6
+                new Symbol("pca", 850, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+                null, null,
+// Entry 25
+                new Symbol("~", 0, false, KeywordType.Character, ' '),
+// Entry 9
+                new Symbol("fonttbl", 0, false, KeywordType.Special, (int)SpecialType.FontTable),
+// Entry 59
+                new Symbol("keywords", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null, null,
+// Entry 48
+                new Symbol("footerl", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 19
+                new Symbol("softline", 0, false, KeywordType.Character, '\n'),
+// Entry 18
+                new Symbol("line", 0, false, KeywordType.Character, '\n'),
+                null,
+// Entry 46
+                new Symbol("footer", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 49
+                new Symbol("footerr", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 50
+                new Symbol("footnote", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null, null,
+// Entry 23
+                new Symbol("enspace", 0, false, KeywordType.Character, ' '),
+// Entry 42
+                new Symbol("colortbl", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null,
+// Entry 73
+                new Symbol("}", 0, false, KeywordType.Character, '}'),
+// Entry 43
+                new Symbol("comment", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 5
+                // The spec calls this "Apple Macintosh" but again says nothing about what codepage that is. I'll
+                // assume 10000 ("Mac Roman")
+                new Symbol("mac", 10000, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+                null, null, null,
+// Entry 7
+                new Symbol("ansicpg", 1252, false, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+// Entry 17
+                new Symbol("par", 0, false, KeywordType.Character, '\n'),
+                null, null,
+// Entry 72
+                new Symbol("{", 0, false, KeywordType.Character, '{'),
+// Entry 24
+                new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
+// Entry 60
+                new Symbol("operator", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null, null,
+// Entry 71
+                new Symbol("xe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 70
+                new Symbol("txe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null,
+// Entry 74
+                new Symbol("\\", 0, false, KeywordType.Character, '\\'),
+// Entry 62
+                new Symbol("printim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 11
+                new Symbol("fcharset", -1, false, KeywordType.Special, (int)SpecialType.Charset),
+                null, null, null, null,
+// Entry 63
+                new Symbol("private1", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null,
+// Entry 64
+                new Symbol("revtim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 22
+                new Symbol("emspace", 0, false, KeywordType.Character, ' '),
+                null, null, null, null,
+// Entry 44
+                new Symbol("creatim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 65
+                new Symbol("rxe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null,
+// Entry 33
+                new Symbol("*", 0, false, KeywordType.Special, (int)SpecialType.SkipDest),
+// Entry 55
+                new Symbol("headerf", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null, null, null,
+// Entry 36
+                new Symbol("ds", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
+                null, null, null,
+// Entry 14
+                new Symbol("'", 0, false, KeywordType.Special, (int)SpecialType.HexEncodedChar),
+// Entry 56
+                new Symbol("headerl", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null, null,
+// Entry 54
+                new Symbol("header", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 57
+                new Symbol("headerr", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+// Entry 12
+                new Symbol("cpg", -1, false, KeywordType.Special, (int)SpecialType.CodePage),
+                null, null, null, null, null, null, null, null, null,
+                null, null, null, null,
+// Entry 34
+                // We need to do stuff with this (SYMBOL instruction)
+                new Symbol("fldinst", 0, false, KeywordType.Destination, (int)DestinationType.FieldInstruction),
+                null, null, null, null,
+// Entry 67
+                new Symbol("subject", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null,
+// Entry 8
+                new Symbol("deff", 0, false, KeywordType.Special, (int)SpecialType.DefaultFont),
+                null, null,
+// Entry 13
+                new Symbol("uc", 1, false, KeywordType.Property, (int)Property.UnicodeCharSkipCount),
+                null, null, null, null, null, null,
+// Entry 30
+                new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
+                null,
+// Entry 21
+                new Symbol("bullet", 0, false, KeywordType.Character, '\x2022'),
+                null, null,
+// Entry 31
+                new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
+                null, null,
+// Entry 45
+                new Symbol("doccomm", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null, null,
+// Entry 40
+                new Symbol("author", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null, null, null, null, null, null, null, null,
+// Entry 28
+                new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),
+                null, null, null, null,
+// Entry 29
+                new Symbol("rquote", 0, false, KeywordType.Character, '\x2019'),
+                null, null, null, null,
+// Entry 41
+                new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+                null, null, null, null,
+// Entry 27
+                new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
+                null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null,
+// Entry 26
+                new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
+                null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null,
+                null, null,
+// Entry 15
+                new Symbol("u", 0, false, KeywordType.Special, (int)SpecialType.UnicodeChar)
+            };
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private uint Hash(ListFast<char> str, int len)
+            {
+                uint hval = (uint)len;
+
+                // Original C code does a stupid thing where it puts default at the top and falls through and junk,
+                // but we can't do that in C#, so have something clearer/clunkier
+                switch (len)
+                {
+                    case 1:
+                        hval += asso_values[str.ItemsArray[0]];
+                        break;
+                    case 2:
+                        hval += asso_values[str.ItemsArray[1]];
+                        hval += asso_values[str.ItemsArray[0]];
+                        break;
+                    default:
+                        hval += asso_values[str.ItemsArray[2]];
+                        hval += asso_values[str.ItemsArray[1]];
+                        hval += asso_values[str.ItemsArray[0]];
+                        break;
+                }
+                return hval + asso_values[str.ItemsArray[len - 1]];
+            }
+
+            // Not a duplicate: this one needs to take a string instead of char[]...
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static bool SeqEqual(ListFast<char> seq1, string seq2)
+            {
+                int seq1Count = seq1.Count;
+                if (seq1Count != seq2.Length) return false;
+
+                for (int ci = 0; ci < seq1Count; ci++)
+                {
+                    if (seq1.ItemsArray[ci] != seq2[ci]) return false;
+                }
+                return true;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [ContractAnnotation("=> false, result:null; => true, result:notnull")]
+            internal bool TryGetValue(ListFast<char> str, out Symbol? result)
+            {
+                int len = str.Count;
+                if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
+                {
+                    uint key = Hash(str, len);
+
+                    if (key <= MAX_HASH_VALUE)
+                    {
+                        Symbol? symbol = _symbolTable[key];
+                        if (symbol == null)
+                        {
+                            result = null;
+                            return false;
+                        }
+
+                        if (SeqEqual(str, symbol.Keyword))
+                        {
+                            result = symbol;
+                            return true;
+                        }
+                    }
+                }
+
+                result = null;
+                return false;
             }
         }
 
@@ -406,6 +739,7 @@ namespace FMScanner
 
         private sealed class Symbol
         {
+            internal readonly string Keyword;
             internal readonly int DefaultParam;
             internal readonly bool UseDefaultParam;
             internal readonly KeywordType KeywordType;
@@ -414,8 +748,9 @@ namespace FMScanner
             /// </summary>
             internal readonly int Index;
 
-            public Symbol(int defaultParam, bool useDefaultParam, KeywordType keywordType, int index)
+            public Symbol(string keyword, int defaultParam, bool useDefaultParam, KeywordType keywordType, int index)
             {
+                Keyword = keyword;
                 DefaultParam = defaultParam;
                 UseDefaultParam = useDefaultParam;
                 KeywordType = keywordType;
@@ -1303,7 +1638,7 @@ namespace FMScanner
 
         #endregion
 
-        private readonly Dictionary<string, Symbol> _symbolTable;
+        private readonly SymbolDict _symbolTable = new SymbolDict();
 
         #endregion
 
@@ -1362,17 +1697,17 @@ namespace FMScanner
         private readonly StringBuilder _returnSB = new StringBuilder();
 
         private const int _keywordMaxLen = 32;
-        private readonly StringBuilder _keywordSB = new StringBuilder(_keywordMaxLen, _keywordMaxLen);
+        private readonly ListFast<char> _keyword = new ListFast<char>(_keywordMaxLen);
 
         // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
         private const int _paramMaxLen = 10;
-        private readonly StringBuilder _parameterSB = new StringBuilder(_paramMaxLen, _paramMaxLen);
+        private readonly ListFast<char> _parameter = new ListFast<char>(_paramMaxLen);
 
         private const int _fldinstSymbolNumberMaxLen = 10;
-        private readonly StringBuilder _fldinstSymbolNumberSB = new StringBuilder(_fldinstSymbolNumberMaxLen, _fldinstSymbolNumberMaxLen);
+        private readonly ListFast<char> _fldinstSymbolNumber = new ListFast<char>(_fldinstSymbolNumberMaxLen);
 
         private const int _fldinstSymbolFontNameMaxLen = 9;
-        private readonly StringBuilder _fldinstSymbolFontNameSB = new StringBuilder(_fldinstSymbolFontNameMaxLen, _fldinstSymbolFontNameMaxLen);
+        private readonly ListFast<char> _fldinstSymbolFontName = new ListFast<char>(_fldinstSymbolFontNameMaxLen);
 
         // Highest measured was 17
         private readonly ListFast<byte> _hexBuffer = new ListFast<byte>(20);
@@ -1415,158 +1750,17 @@ namespace FMScanner
 #if CROSS_PLATFORM
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
-
-            #region Symbol table
-
-            Symbol destSkipSymbol = new Symbol(0, false, KeywordType.Destination, (int)DestinationType.Skip);
-            Symbol destIgnoreButDontSkipGroupSymbol = new Symbol(0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup);
-            Symbol newLineSymbol = new Symbol(0, false, KeywordType.Character, '\n');
-            Symbol spaceSymbol = new Symbol(0, false, KeywordType.Character, ' ');
-
-            _symbolTable = new Dictionary<string, Symbol>
-            {
-                #region Code pages / charsets / fonts
-
-                // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
-                // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
-                {"ansi",      new Symbol(_windows1252,   true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-
-                {"pc",        new Symbol(437,            true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-
-                // The spec calls this "Apple Macintosh" but again says nothing about what codepage that is. I'll
-                // assume 10000 ("Mac Roman")
-                {"mac",       new Symbol(10000,          true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-
-                {"pca",       new Symbol(850,            true,      KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-                {"ansicpg",   new Symbol(_windows1252,   false,     KeywordType.Special,        (int)SpecialType.HeaderCodePage)},
-
-                {"deff",      new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.DefaultFont)},
-
-                {"fonttbl",   new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.FontTable)},
-                {"f",         new Symbol(0,              false,     KeywordType.Property,       (int)Property.FontNum)},
-                {"fcharset",  new Symbol(-1,             false,     KeywordType.Special,        (int)SpecialType.Charset)},
-                {"cpg",       new Symbol(-1,             false,     KeywordType.Special,        (int)SpecialType.CodePage)},
-
-                #endregion
-
-                #region Encoded characters
-
-                {"uc",        new Symbol(1,              false,     KeywordType.Property,       (int)Property.UnicodeCharSkipCount)},
-                {"'",         new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.HexEncodedChar)},
-                {"u",         new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.UnicodeChar)},
-
-                #endregion
-
-                // \v to make all plain text hidden (not output to the conversion stream)}, \v0 to make it shown again
-                {"v",         new Symbol(1,              false,     KeywordType.Property,       (int)Property.Hidden)},
-
-                #region Newlines
-
-                {"par",       newLineSymbol},
-                {"line",      newLineSymbol},
-                {"softline",  newLineSymbol},
-
-                #endregion
-
-                #region Control words that map to a single character
-
-                {"tab",       new Symbol(0,              false,     KeywordType.Character,      '\t')},
-
-                {"bullet",    new Symbol(0,              false,     KeywordType.Character,      '\x2022')},
-
-                // Just convert these to regular spaces because we're just trying to scan for strings in readmes
-                // without weird crap tripping us up
-                {"emspace",   spaceSymbol},
-                {"enspace",   spaceSymbol},
-                {"qmspace",   spaceSymbol},
-                {"~",         spaceSymbol},
-                // TODO: Maybe just convert these all to ASCII equivalents as well?
-                {"emdash",    new Symbol(0,              false,     KeywordType.Character,      '\x2014')},
-                {"endash",    new Symbol(0,              false,     KeywordType.Character,      '\x2013')},
-                {"lquote",    new Symbol(0,              false,     KeywordType.Character,      '\x2018')},
-                {"rquote",    new Symbol(0,              false,     KeywordType.Character,      '\x2019')},
-                {"ldblquote", new Symbol(0,              false,     KeywordType.Character,      '\x201C')},
-                {"rdblquote", new Symbol(0,              false,     KeywordType.Character,      '\x201D')},
-
-                #endregion
-
-                {"bin",       new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.Bin)},
-                {"*",         new Symbol(0,              false,     KeywordType.Special,        (int)SpecialType.SkipDest)},
-
-                // We need to do stuff with this (SYMBOL instruction)
-                {"fldinst",   new Symbol(0,              false,     KeywordType.Destination,    (int)DestinationType.FieldInstruction)}, 
-
-                // Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.
-                {"cs",        destIgnoreButDontSkipGroupSymbol},
-                {"ds",        destIgnoreButDontSkipGroupSymbol},
-                {"ts",        destIgnoreButDontSkipGroupSymbol},
-
-                #region Custom skip-destinations
-
-                // Ignore list item bullets and numeric prefixes etc. We don't need them.
-                {"listtext",  destSkipSymbol},
-                {"pntext",    destSkipSymbol},
-
-                #endregion
-
-                #region Required skip-destinations
-
-                {"author",    destSkipSymbol},
-                {"buptim",    destSkipSymbol},
-                {"colortbl",  destSkipSymbol},
-                {"comment",   destSkipSymbol},
-                {"creatim",   destSkipSymbol},
-                {"doccomm",   destSkipSymbol},
-                {"footer",    destSkipSymbol},
-                {"footerf",   destSkipSymbol},
-                {"footerl",   destSkipSymbol},
-                {"footerr",   destSkipSymbol},
-                {"footnote",  destSkipSymbol},
-                {"ftncn",     destSkipSymbol},
-                {"ftnsep",    destSkipSymbol},
-                {"ftnsepc",   destSkipSymbol},
-                {"header",    destSkipSymbol},
-                {"headerf",   destSkipSymbol},
-                {"headerl",   destSkipSymbol},
-                {"headerr",   destSkipSymbol},
-                {"info",      destSkipSymbol},
-                {"keywords",  destSkipSymbol},
-                {"operator",  destSkipSymbol},
-                {"pict",      destSkipSymbol},
-                {"printim",   destSkipSymbol},
-                {"private1",  destSkipSymbol},
-                {"revtim",    destSkipSymbol},
-                {"rxe",       destSkipSymbol},
-                {"stylesheet",destSkipSymbol},
-                {"subject",   destSkipSymbol},
-                {"tc",        destSkipSymbol},
-                {"title",     destSkipSymbol},
-                {"txe",       destSkipSymbol},
-                {"xe",        destSkipSymbol},
-
-                #endregion
-
-                #region RTF reserved character escapes
-
-                {"{",         new Symbol(0,              false,     KeywordType.Character,      '{')},
-                {"}",         new Symbol(0,              false,     KeywordType.Character,      '}')},
-                {"\\",        new Symbol(0,              false,     KeywordType.Character,      '\\')}
-
-                #endregion
-            };
-
-            #endregion
         }
 
         private void Reset(Stream stream, long streamLength)
         {
             #region Fixed-size fields
 
-            // Specific capacity and can't grow; no need to deallocate
-            _keywordSB.Clear();
-            _parameterSB.Clear();
-            _fldinstSymbolNumberSB.Clear();
-            _fldinstSymbolFontNameSB.Clear();
+            // Specific capacity and won't grow; no need to deallocate
+            _keyword.ClearFast();
+            _parameter.ClearFast();
+            _fldinstSymbolNumber.ClearFast();
+            _fldinstSymbolFontName.ClearFast();
 
             // Fixed-size value types
             _groupCount = 0;
@@ -1704,8 +1898,8 @@ namespace FMScanner
 
         private Error ParseKeyword()
         {
-            _keywordSB.Clear();
-            _parameterSB.Clear();
+            _keyword.ClearFast();
+            _parameter.ClearFast();
 
             bool hasParam = false;
             bool negateParam = false;
@@ -1722,7 +1916,7 @@ namespace FMScanner
 
                  So just go straight to dispatching without looking for a param and without eating the space.
                 */
-                _keywordSB.Append(ch);
+                _keyword.AddFast(ch);
                 return DispatchKeyword(0, false);
             }
 
@@ -1731,7 +1925,7 @@ namespace FMScanner
             for (i = 0; i < _keywordMaxLen && IsAsciiAlpha(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
-                _keywordSB.Append(ch);
+                _keyword.AddFast(ch);
             }
             if (i > _keywordMaxLen) return Error.KeywordTooLong;
 
@@ -1748,11 +1942,11 @@ namespace FMScanner
                 for (i = 0; i < _paramMaxLen && IsAsciiDigit(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
                 {
                     if (eof) return Error.EndOfFile;
-                    _parameterSB.Append(ch);
+                    _parameter.Add(ch);
                 }
                 if (i > _paramMaxLen) return Error.ParameterTooLong;
 
-                param = ParseIntFast(_parameterSB);
+                param = ParseIntFast(_parameter);
                 if (negateParam) param = -param;
             }
 
@@ -1782,9 +1976,7 @@ namespace FMScanner
             the 496-file test set), it's still really fast and is just not that big of a deal (low double-digit
             milliseconds over the aforementioned set on my 3950x, which is ~2% of execution time).
             */
-            string keywordStr = _keywordSB.ToString();
-
-            if (!_symbolTable.TryGetValue(keywordStr, out Symbol symbol))
+            if (!_symbolTable.TryGetValue(_keyword, out Symbol? symbol))
             {
                 // If this is a new destination
                 if (_skipDestinationIfUnknown)
@@ -1798,7 +1990,7 @@ namespace FMScanner
             // From the spec:
             // "While this is not likely to occur (or recommended), a \binN keyword, its argument, and the binary
             // data that follows are considered one character for skipping purposes."
-            if (symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
+            if (symbol!.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
             {
                 // Rather than literally counting it as one character for skipping purposes, we just increment
                 // the chars left to skip count by the specified length of the binary run, which accomplishes
@@ -2255,8 +2447,8 @@ namespace FMScanner
         */
         private Error HandleFieldInstruction()
         {
-            _fldinstSymbolNumberSB.Clear();
-            _fldinstSymbolFontNameSB.Clear();
+            _fldinstSymbolNumber.ClearFast();
+            _fldinstSymbolFontName.ClearFast();
 
             // Declare these before the functions that use them
             int codePoint;
@@ -2293,15 +2485,6 @@ namespace FMScanner
                 _rtfStream.UnGetChar(ch);
                 _currentScope.RtfDestinationState = RtfDestinationState.Skip;
                 return Error.OK;
-            }
-
-            static bool SeqEqual(StringBuilder sb, char[] chars)
-            {
-                for (int ci = 0; ci < sb.Length; ci++)
-                {
-                    if (sb[ci] != chars[ci]) return false;
-                }
-                return true;
             }
 
             #endregion
@@ -2366,10 +2549,10 @@ namespace FMScanner
 
                 if (alphaFound) alphaCharsFound = true;
 
-                _fldinstSymbolNumberSB.Append(ch);
+                _fldinstSymbolNumber.Add(ch);
             }
 
-            if (_fldinstSymbolNumberSB.Length == 0 ||
+            if (_fldinstSymbolNumber.Count == 0 ||
                 i >= _fldinstSymbolNumberMaxLen ||
                 (!numIsHex && alphaCharsFound))
             {
@@ -2385,7 +2568,8 @@ namespace FMScanner
                 // ALLOC: ToString(): int.TryParse(hex)
                 // We could implement our own hex parser, but this is called so infrequently (actually not at all
                 // in the test set) that it doesn't really matter.
-                if (!int.TryParse(_fldinstSymbolNumberSB.ToString(),
+                // TODO: Make our own parser anyway, because speed in all things
+                if (!int.TryParse(CreateStringFromChars(_fldinstSymbolNumber),
                     NumberStyles.HexNumber,
                     NumberFormatInfo.InvariantInfo,
                     out codePoint))
@@ -2395,7 +2579,7 @@ namespace FMScanner
             }
             else
             {
-                codePoint = ParseIntFast(_fldinstSymbolNumberSB);
+                codePoint = ParseIntFast(_fldinstSymbolNumber);
             }
 
             #endregion
@@ -2499,23 +2683,23 @@ namespace FMScanner
                             {
                                 return RewindAndSkipGroup();
                             }
-                            _fldinstSymbolFontNameSB.Append(ch);
+                            _fldinstSymbolFontName.Add(ch);
                             fontNameCharCount++;
                         }
 
                         // Just hardcoding the three most common fonts here, because there's only so far you
                         // really want to go down this path.
-                        if (SeqEqual(_fldinstSymbolFontNameSB, SymbolChars) &&
+                        if (SeqEqual(_fldinstSymbolFontName, SymbolChars) &&
                             !GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChar))
                         {
                             return RewindAndSkipGroup();
                         }
-                        else if (SeqEqual(_fldinstSymbolFontNameSB, WingdingsChars) &&
+                        else if (SeqEqual(_fldinstSymbolFontName, WingdingsChars) &&
                                  !GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChar))
                         {
                             return RewindAndSkipGroup();
                         }
-                        else if (SeqEqual(_fldinstSymbolFontNameSB, WebdingsChars) &&
+                        else if (SeqEqual(_fldinstSymbolFontName, WebdingsChars) &&
                                  !GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChar))
                         {
                             return RewindAndSkipGroup();
@@ -2629,6 +2813,11 @@ namespace FMScanner
         #endregion
 
         #region Helpers
+
+        private static string CreateStringFromChars(ListFast<char> chars)
+        {
+            return new string(chars.ItemsArray, 0, chars.Count);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsAsciiAlpha(char ch) => IsAsciiUpper(ch) || IsAsciiLower(ch);
@@ -2835,14 +3024,14 @@ namespace FMScanner
         /// <param name="sb"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int ParseIntFast(StringBuilder sb)
+        private static int ParseIntFast(ListFast<char> sb)
         {
-            int result = sb[0] - '0';
+            int result = sb.ItemsArray[0] - '0';
 
-            for (int i = 1; i < sb.Length; i++)
+            for (int i = 1; i < sb.Count; i++)
             {
                 result *= 10;
-                result += sb[i] - '0';
+                result += sb.ItemsArray[i] - '0';
             }
             return result;
         }
@@ -2858,6 +3047,19 @@ namespace FMScanner
                 if (array1[i0] != array2[i0]) return false;
             }
 
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool SeqEqual(ListFast<char> seq1, char[] seq2)
+        {
+            int seq1Count = seq1.Count;
+            if (seq1Count != seq2.Length) return false;
+
+            for (int ci = 0; ci < seq1Count; ci++)
+            {
+                if (seq1.ItemsArray[ci] != seq2[ci]) return false;
+            }
             return true;
         }
 
