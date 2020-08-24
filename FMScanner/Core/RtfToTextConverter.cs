@@ -2367,48 +2367,43 @@ namespace FMScanner
         */
         private void ParseUnicodeIfAnyInBuffer()
         {
-            #region Local functions
+            string finalString = new string(_unicodeBuffer.ItemsArray, 0, _unicodeBuffer.Count);
+
+            _unicodeBuffer.ClearFast();
+
+            #region Fix up bad Unicode
 
             // We can't just pass a char array, because then the validation won't work. We have to convert to
             // string first. Fortunately, this loses no time because we have to do the conversion anyway, and we
             // don't even touch the string unless there's a problem, which means no extra allocations if everything
             // is valid.
-            static void FixUpBadUnicode(ref string str)
+            StringBuilder? sb = null;
+
+            for (int i = 0; i < finalString.Length; i++)
             {
-                StringBuilder? sb = null;
+                // We need to use (str, i) instead of (str[i]) because the validation check doesn't work if
+                // we do the latter. Unfortunately we need to take some boneheaded pointless null and length
+                // checks, because we can't pull this method out and customize it, because it calls a goddamn
+                // internal method. Access levels... hooray, you're slow and you can't do crap about it.
 
-                for (int i = 0; i < str.Length; i++)
+                // This won't throw because str is not null and index is within it
+                UnicodeCategory uc = char.GetUnicodeCategory(finalString, i);
+
+                if (uc == UnicodeCategory.Surrogate || uc == UnicodeCategory.OtherNotAssigned)
                 {
-                    // We need to use (str, i) instead of (str[i]) because the validation check doesn't work if
-                    // we do the latter. Unfortunately we need to take some boneheaded pointless null and length
-                    // checks, because we can't pull this method out and customize it, because it calls a goddamn
-                    // internal method. Access levels... hooray, you're slow and you can't do crap about it.
-
-                    // This won't throw because str is not null and index is within it
-                    UnicodeCategory uc = char.GetUnicodeCategory(str, i);
-
-                    if (uc == UnicodeCategory.Surrogate || uc == UnicodeCategory.OtherNotAssigned)
-                    {
-                        // Don't even instantiate our StringBuilder unless there's a problem
-                        sb ??= new StringBuilder(str);
-                        sb[i] = _unicodeUnknown_Char;
-                    }
-
-                    // We can do (str[i]) here because (str, i) is literally just a wrapper that can throw.
-                    if (char.IsHighSurrogate(str[i])) i++;
+                    // Don't even instantiate our StringBuilder unless there's a problem
+                    sb ??= new StringBuilder(finalString);
+                    sb[i] = _unicodeUnknown_Char;
                 }
 
-                // Likewise, don't even change the string at all unless we have to
-                if (sb != null) str = sb.ToString();
+                // We can do (str[i]) here because (str, i) is literally just a wrapper that can throw.
+                if (char.IsHighSurrogate(finalString[i])) i++;
             }
 
+            // Likewise, don't even change the string at all unless we have to
+            if (sb != null) finalString = sb.ToString();
+
             #endregion
-
-            string finalString = new string(_unicodeBuffer.ItemsArray, 0, _unicodeBuffer.Count);
-
-            _unicodeBuffer.ClearFast();
-
-            FixUpBadUnicode(ref finalString);
 
             PutChar(finalString);
         }
@@ -2442,56 +2437,21 @@ namespace FMScanner
             // Declare these before the functions that use them
             int codePoint;
 
-            #region Local functions
-
-            static bool IsSeparatorChar(char ch) => ch == '\\' || ch == '{' || ch == '}';
-
-            string GetCharFromCodePage(int codePage)
-            {
-                byte[] bytes = BitConverter.GetBytes(codePoint);
-                try
-                {
-                    if (codePage > -1)
-                    {
-                        return GetEncodingFromCachedList(codePage).GetString(bytes);
-                    }
-                    else
-                    {
-                        (bool success, _, Encoding? enc, _) = GetCurrentEncoding();
-                        return success && enc != null ? enc.GetString(bytes) : _unicodeUnknown_String;
-                    }
-                }
-                catch
-                {
-                    return _unicodeUnknown_String;
-                }
-            }
-
-            char ch;
-
-            Error RewindAndSkipGroup()
-            {
-                _rtfStream.UnGetChar(ch);
-                _currentScope.RtfDestinationState = RtfDestinationState.Skip;
-                return Error.OK;
-            }
-
-            #endregion
 
             // Eat the space
-            if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
+            if (!_rtfStream.GetNextChar(out char ch)) return Error.EndOfFile;
 
             #region Check for SYMBOL instruction
 
             // Straight-up just check for S, because SYMBOL is the only word we care about.
-            if (ch != 'S') return RewindAndSkipGroup();
+            if (ch != 'S') return RewindAndSkipGroup(ch);
 
             int i;
             bool eof = false;
             for (i = 0; i < 6; i++, eof = !_rtfStream.GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
-                if (ch != SYMBOLChars[i]) return RewindAndSkipGroup();
+                if (ch != SYMBOLChars[i]) return RewindAndSkipGroup(ch);
             }
 
             #endregion
@@ -2518,7 +2478,7 @@ namespace FMScanner
                 if (ch == '-')
                 {
                     _rtfStream.GetNextChar(out ch);
-                    if (ch != ' ') return RewindAndSkipGroup();
+                    if (ch != ' ') return RewindAndSkipGroup(ch);
                     negateNum = true;
                 }
                 numIsHex = true;
@@ -2545,7 +2505,7 @@ namespace FMScanner
                 i >= _fldinstSymbolNumberMaxLen ||
                 (!numIsHex && alphaCharsFound))
             {
-                return RewindAndSkipGroup();
+                return RewindAndSkipGroup(ch);
             }
 
             #endregion
@@ -2563,7 +2523,7 @@ namespace FMScanner
                     NumberFormatInfo.InvariantInfo,
                     out codePoint))
                 {
-                    return RewindAndSkipGroup();
+                    return RewindAndSkipGroup(ch);
                 }
             }
             else
@@ -2581,7 +2541,7 @@ namespace FMScanner
             Error error = NormalizeUnicodePoint(ref codePoint, handleSymbolCharRange: false);
             if (error != Error.OK) return error;
 
-            if (ch != ' ') return RewindAndSkipGroup();
+            if (ch != ' ') return RewindAndSkipGroup(ch);
 
             const int maxParams = 6;
             const int useCurrentScopeCodePage = -1;
@@ -2604,7 +2564,7 @@ namespace FMScanner
                 // "Interprets text in field-argument as the value of an ANSI character."
                 if (ch == 'a')
                 {
-                    finalChar = GetCharFromCodePage(_windows1252);
+                    finalChar = GetCharFromCodePage(_windows1252, codePoint);
                     break;
                 }
                 /*
@@ -2615,7 +2575,7 @@ namespace FMScanner
                 */
                 else if (ch == 'j')
                 {
-                    finalChar = GetCharFromCodePage(_shiftJisWin);
+                    finalChar = GetCharFromCodePage(_shiftJisWin, codePoint);
                     break;
                 }
                 else if (ch == 'u')
@@ -2649,7 +2609,7 @@ namespace FMScanner
                     }
                     else if (IsSeparatorChar(ch))
                     {
-                        finalChar = GetCharFromCodePage(useCurrentScopeCodePage);
+                        finalChar = GetCharFromCodePage(useCurrentScopeCodePage, codePoint);
                         break;
                     }
                     else if (ch == ' ')
@@ -2660,7 +2620,7 @@ namespace FMScanner
                         }
                         else if (ch != '\"')
                         {
-                            finalChar = GetCharFromCodePage(useCurrentScopeCodePage);
+                            finalChar = GetCharFromCodePage(useCurrentScopeCodePage, codePoint);
                             break;
                         }
 
@@ -2670,7 +2630,7 @@ namespace FMScanner
                         {
                             if (fontNameCharCount >= _fldinstSymbolFontNameMaxLen || IsSeparatorChar(ch))
                             {
-                                return RewindAndSkipGroup();
+                                return RewindAndSkipGroup(ch);
                             }
                             _fldinstSymbolFontName.Add(ch);
                             fontNameCharCount++;
@@ -2681,17 +2641,17 @@ namespace FMScanner
                         if (SeqEqual(_fldinstSymbolFontName, SymbolChars) &&
                             !GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChar))
                         {
-                            return RewindAndSkipGroup();
+                            return RewindAndSkipGroup(ch);
                         }
                         else if (SeqEqual(_fldinstSymbolFontName, WingdingsChars) &&
                                  !GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChar))
                         {
-                            return RewindAndSkipGroup();
+                            return RewindAndSkipGroup(ch);
                         }
                         else if (SeqEqual(_fldinstSymbolFontName, WebdingsChars) &&
                                  !GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChar))
                         {
-                            return RewindAndSkipGroup();
+                            return RewindAndSkipGroup(ch);
                         }
                     }
                 }
@@ -2716,7 +2676,7 @@ namespace FMScanner
                 else if (ch == 's')
                 {
                     if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
-                    if (ch != ' ') return RewindAndSkipGroup();
+                    if (ch != ' ') return RewindAndSkipGroup(ch);
 
                     int numDigitCount = 0;
                     while (_rtfStream.GetNextChar(out ch) && IsAsciiDigit(ch))
@@ -2735,7 +2695,7 @@ namespace FMScanner
 
             if (finalChar != "") PutChar(finalChar);
 
-            return RewindAndSkipGroup();
+            return RewindAndSkipGroup(ch);
         }
 
         #endregion
@@ -2803,6 +2763,44 @@ namespace FMScanner
 
         #region Helpers
 
+        #region Field instruction methods
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsSeparatorChar(char ch) => ch == '\\' || ch == '{' || ch == '}';
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string GetCharFromCodePage(int codePage, int codePoint)
+        {
+            byte[] bytes = BitConverter.GetBytes(codePoint);
+            try
+            {
+                if (codePage > -1)
+                {
+                    return GetEncodingFromCachedList(codePage).GetString(bytes);
+                }
+                else
+                {
+                    (bool success, _, Encoding? enc, _) = GetCurrentEncoding();
+                    return success && enc != null ? enc.GetString(bytes) : _unicodeUnknown_String;
+                }
+            }
+            catch
+            {
+                return _unicodeUnknown_String;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Error RewindAndSkipGroup(char ch)
+        {
+            _rtfStream.UnGetChar(ch);
+            _currentScope.RtfDestinationState = RtfDestinationState.Skip;
+            return Error.OK;
+        }
+
+        #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string CreateStringFromChars(ListFast<char> chars)
         {
             return new string(chars.ItemsArray, 0, chars.Count);
