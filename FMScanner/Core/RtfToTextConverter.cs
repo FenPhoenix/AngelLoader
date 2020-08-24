@@ -1694,7 +1694,8 @@ namespace FMScanner
 
         private bool _skipDestinationIfUnknown;
 
-        private readonly StringBuilder _returnSB = new StringBuilder();
+        // Highest measured was 56192
+        private readonly StringBuilder _returnSB = new StringBuilder(ByteSize.KB * 60);
 
         private const int _keywordMaxLen = 32;
         private readonly ListFast<char> _keyword = new ListFast<char>(_keywordMaxLen);
