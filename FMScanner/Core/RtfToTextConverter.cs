@@ -1965,17 +1965,6 @@ namespace FMScanner
 
         private Error DispatchKeyword(int param, bool hasParam)
         {
-            // ALLOC: _keywordSB.ToString()
-            /*
-            ToString() is run on every single keyword, which makes me wince.
-            I'd like to get rid of it, but I haven't found any faster way.
-            I use a dictionary to look up the string currently.
-            If I switch to a list and iterate with compare, it's way slower (Equals is the killer).
-            I even tried using wrapped char arrays with custom Equals and GetHashCode as the keys in the dict,
-            and that was still about 7% slower. So even though this is allocation-heavy (1.2 million calls over
-            the 496-file test set), it's still really fast and is just not that big of a deal (low double-digit
-            milliseconds over the aforementioned set on my 3950x, which is ~2% of execution time).
-            */
             if (!_symbolTable.TryGetValue(_keyword, out Symbol? symbol))
             {
                 // If this is a new destination
