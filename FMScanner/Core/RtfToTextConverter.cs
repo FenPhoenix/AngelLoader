@@ -120,12 +120,14 @@ namespace FMScanner
                 _itemsArrayLength = capacity;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal void Add(T item)
             {
                 if (_size == _itemsArrayLength) EnsureCapacity(_size + 1);
                 ItemsArray[_size++] = item;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal void AddFast(T item) => ItemsArray[_size++] = item;
 
             /*
@@ -138,6 +140,7 @@ namespace FMScanner
             /// <summary>
             /// Just sets <see cref="Count"/> to 0. Doesn't zero out the array or do anything else whatsoever.
             /// </summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal void ClearFast() => _size = 0;
 
             [PublicAPI]
@@ -162,6 +165,7 @@ namespace FMScanner
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void EnsureCapacity(int min)
             {
                 if (_itemsArrayLength >= min) return;
@@ -178,6 +182,7 @@ namespace FMScanner
 
             internal DictWithTopItem(int capacity) : base(capacity) { }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal new void Add(TKey key, TValue value)
             {
                 Top = value;
@@ -1695,7 +1700,7 @@ namespace FMScanner
         private bool _skipDestinationIfUnknown;
 
         // Highest measured was 56192
-        private readonly StringBuilder _returnSB = new StringBuilder(ByteSize.KB * 60);
+        private readonly ListFast<char> _plainText = new ListFast<char>(ByteSize.KB * 60);
 
         private const int _keywordMaxLen = 32;
         private readonly ListFast<char> _keyword = new ListFast<char>(_keywordMaxLen);
@@ -1780,7 +1785,7 @@ namespace FMScanner
             _unicodeBuffer.ClearFast();
             _fontEntries.Clear();
             _scopeStack.Clear();
-            _returnSB.Clear();
+            _plainText.ClearFast();
 
             // Extremely unlikely we'll hit any of these, but just for safety
             if (_hexBuffer.Capacity > ByteSize.MB) _hexBuffer.Capacity = 0;
@@ -1789,7 +1794,7 @@ namespace FMScanner
             // For the scope stack, we can't check its capacity because Stacks don't have a Capacity property(?!?),
             // but we're guaranteed not to exceed 100 (or 128 I guess) because of a check in the only place where
             // we push to it.
-            if (_returnSB.Capacity > ByteSize.MB) _returnSB.Capacity = 0;
+            if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
 
             // This one has the seek-back buffer (a Stack<char>) which is technically eligible for deallocation,
             // even though in practice I think it's guaranteed never to have more than like 5 chars in it maybe?
@@ -1808,12 +1813,12 @@ namespace FMScanner
 #if ReleaseTestMode || DebugTestMode
 
             Error error = ParseRtf();
-            return error == Error.OK ? (true, _returnSB.ToString()) : throw new Exception("RTF converter error: " + error);
+            return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : throw new Exception("RTF converter error: " + error);
 #else
             try
             {
                 Error error = ParseRtf();
-                return error == Error.OK ? (true, _returnSB.ToString()) : (false, "");
+                return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : (false, "");
             }
             catch
             {
@@ -2435,9 +2440,7 @@ namespace FMScanner
             _fldinstSymbolNumber.ClearFast();
             _fldinstSymbolFontName.ClearFast();
 
-            // Declare these before the functions that use them
             int codePoint;
-
 
             // Eat the space
             if (!_rtfStream.GetNextChar(out char ch)) return Error.EndOfFile;
@@ -2711,7 +2714,7 @@ namespace FMScanner
                 _currentScope.Properties[(int)Property.Hidden] == 0 &&
                 !_currentScope.InFontTable)
             {
-                _returnSB.Append(ch);
+                _plainText.Add(ch);
             }
             return Error.OK;
         }
@@ -2724,7 +2727,10 @@ namespace FMScanner
                 _currentScope.Properties[(int)Property.Hidden] == 0 &&
                 !_currentScope.InFontTable)
             {
-                _returnSB.Append(ch);
+                for (int i = 0; i < ch.Length; i++)
+                {
+                    _plainText.Add(ch[i]);
+                }
             }
             return Error.OK;
         }
@@ -2802,10 +2808,7 @@ namespace FMScanner
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string CreateStringFromChars(ListFast<char> chars)
-        {
-            return new string(chars.ItemsArray, 0, chars.Count);
-        }
+        private static string CreateStringFromChars(ListFast<char> chars) => new string(chars.ItemsArray, 0, chars.Count);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsAsciiAlpha(char ch) => IsAsciiUpper(ch) || IsAsciiLower(ch);
@@ -2852,6 +2855,7 @@ namespace FMScanner
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private (bool Success, bool CodePageWas42, Encoding? Encoding, FontEntry? FontEntry)
         GetCurrentEncoding()
         {
@@ -2886,6 +2890,7 @@ namespace FMScanner
             return (true, false, enc, fontEntry);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out string finalChar)
         {
             if (codePoint >= 0x20 && codePoint <= 0xFF)
