@@ -1729,7 +1729,6 @@ namespace FMScanner
 
         // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
         private const int _paramMaxLen = 10;
-        private readonly ListFast<char> _parameter = new ListFast<char>(_paramMaxLen);
 
         private const int _fldinstSymbolNumberMaxLen = 10;
         private readonly ListFast<char> _fldinstSymbolNumber = new ListFast<char>(_fldinstSymbolNumberMaxLen);
@@ -1782,7 +1781,6 @@ namespace FMScanner
 
             // Specific capacity and won't grow; no need to deallocate
             _keyword.ClearFast();
-            _parameter.ClearFast();
             _fldinstSymbolNumber.ClearFast();
             _fldinstSymbolFontName.ClearFast();
 
@@ -1922,14 +1920,13 @@ namespace FMScanner
 
         private Error ParseKeyword()
         {
-            _keyword.ClearFast();
-            _parameter.ClearFast();
-
             bool hasParam = false;
             bool negateParam = false;
             int param = 0;
 
             if (!_rtfStream.GetNextChar(out char ch)) return Error.EndOfFile;
+
+            _keyword.ClearFast();
 
             if (!IsAsciiAlpha(ch))
             {
@@ -1963,14 +1960,18 @@ namespace FMScanner
             {
                 hasParam = true;
 
+                // Parse param in real-time to avoid doing a second loop over
                 for (i = 0; i < _paramMaxLen && IsAsciiDigit(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
                 {
                     if (eof) return Error.EndOfFile;
-                    _parameter.Add(ch);
+                    param += ch - '0';
+                    param *= 10;
                 }
+                // Undo the last multiply just one time to avoid checking if we should do it every time through
+                // the loop
+                param /= 10;
                 if (i > _paramMaxLen) return Error.ParameterTooLong;
 
-                param = ParseIntFast(_parameter);
                 if (negateParam) param = -param;
             }
 
@@ -3028,20 +3029,20 @@ namespace FMScanner
         }
 
         /// <summary>
-        /// Only call this if <paramref name="sb"/>'s length is > 0 and consists solely of the characters '0' through '9'.
+        /// Only call this if <paramref name="chars"/>'s length is > 0 and consists solely of the characters '0' through '9'.
         /// It does no checks at all and will throw if either of these things is false.
         /// </summary>
-        /// <param name="sb"></param>
+        /// <param name="chars"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int ParseIntFast(ListFast<char> sb)
+        private static int ParseIntFast(ListFast<char> chars)
         {
-            int result = sb.ItemsArray[0] - '0';
+            int result = chars.ItemsArray[0] - '0';
 
-            for (int i = 1; i < sb.Count; i++)
+            for (int i = 1; i < chars.Count; i++)
             {
                 result *= 10;
-                result += sb.ItemsArray[i] - '0';
+                result += chars.ItemsArray[i] - '0';
             }
             return result;
         }
