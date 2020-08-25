@@ -79,6 +79,7 @@ namespace FMScanner
         private const int _shiftJisWin = 932;
         private const char _unicodeUnknown_Char = '\u25A1';
         private const string _unicodeUnknown_String = "\u25A1";
+        private const int _maxScopes = 100;
 
         #endregion
 
@@ -714,32 +715,56 @@ namespace FMScanner
             }
         }
 
-        // Scopes on the stack need not be mutable, and making them structs is faster/smaller/better cache locality/less GC/whatever
-        private readonly struct Scope
+        private sealed class ScopeStack
         {
-            private readonly RtfDestinationState RtfDestinationState;
-            private readonly RtfInternalState RtfInternalState;
-            private readonly bool InFontTable;
+            private readonly Scope[] _scopesArray;
+            internal int Count;
 
-            private readonly int[] Properties;
-
-            public Scope(CurrentScope currentScope)
+            internal ScopeStack()
             {
-                RtfDestinationState = currentScope.RtfDestinationState;
-                RtfInternalState = currentScope.RtfInternalState;
-                InFontTable = currentScope.InFontTable;
-
-                Properties = new int[_propertiesLen];
-                Array.Copy(currentScope.Properties, Properties, _propertiesLen);
+                _scopesArray = new Scope[_maxScopes];
+                for (int i = 0; i < _maxScopes; i++)
+                {
+                    _scopesArray[i] = new Scope();
+                }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal void Push(CurrentScope currentScope)
+            {
+                Scope nextScope = _scopesArray[Count++];
+
+                nextScope.RtfDestinationState = currentScope.RtfDestinationState;
+                nextScope.RtfInternalState = currentScope.RtfInternalState;
+                nextScope.InFontTable = currentScope.InFontTable;
+
+                Array.Copy(currentScope.Properties, 0, nextScope.Properties, 0, _propertiesLen);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal Scope Pop() => _scopesArray[--Count];
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal void ClearFast() => Count = 0;
+        }
+
+        // Scopes on the stack need not be mutable, and making them structs is faster/smaller/better cache locality/less GC/whatever
+        private sealed class Scope
+        {
+            internal RtfDestinationState RtfDestinationState;
+            internal RtfInternalState RtfInternalState;
+            internal bool InFontTable;
+
+            internal readonly int[] Properties = new int[_propertiesLen];
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal void DeepCopyTo(CurrentScope dest)
             {
                 dest.RtfDestinationState = RtfDestinationState;
                 dest.RtfInternalState = RtfInternalState;
                 dest.InFontTable = InFontTable;
 
-                Array.Copy(Properties, dest.Properties, _propertiesLen);
+                Array.Copy(Properties, 0, dest.Properties, 0, _propertiesLen);
             }
         }
 
@@ -1684,7 +1709,7 @@ namespace FMScanner
         private int _lastUsedFontWithCodePage42 = -1;
 
         // Highest measured was 10
-        private readonly Stack<Scope> _scopeStack = new Stack<Scope>(15);
+        private readonly ScopeStack _scopeStack = new ScopeStack();
 
         private readonly CurrentScope _currentScope = new CurrentScope();
 
@@ -1777,7 +1802,7 @@ namespace FMScanner
             _hexBuffer.ClearFast();
             _unicodeBuffer.ClearFast();
             _fontEntries.Clear();
-            _scopeStack.Clear();
+            _scopeStack.ClearFast();
             _plainText.ClearFast();
 
             // Extremely unlikely we'll hit any of these, but just for safety
@@ -2736,13 +2761,12 @@ namespace FMScanner
         private Error PushScope()
         {
             // Don't wait for out-of-memory; just put a sane cap on it.
-            if (_scopeStack.Count > 100) return Error.StackOverflow;
+            if (_scopeStack.Count >= _maxScopes) return Error.StackOverflow;
 
-            Scope newScope = new Scope(_currentScope);
+            _scopeStack.Push(_currentScope);
 
             _currentScope.RtfInternalState = RtfInternalState.Normal;
 
-            _scopeStack.Push(newScope);
             _groupCount++;
 
             return Error.OK;
