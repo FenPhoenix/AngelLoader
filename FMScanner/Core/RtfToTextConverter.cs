@@ -1652,17 +1652,13 @@ namespace FMScanner
 
         // This "SYMBOL" and the below "Symbol" are unrelated. "SYMBOL" is a fldinst keyword, while "Symbol" is
         // the name of a font.
-        private char[]? _SYMBOLChars;
-        private char[] SYMBOLChars => _SYMBOLChars ??= new[] { 'S', 'Y', 'M', 'B', 'O', 'L' };
+        private readonly char[] _SYMBOLChars = new[] { 'S', 'Y', 'M', 'B', 'O', 'L' };
 
-        private char[]? _wingdingsChars;
-        private char[] WingdingsChars => _wingdingsChars ??= new[] { 'W', 'i', 'n', 'g', 'd', 'i', 'n', 'g', 's' };
+        private readonly char[] _wingdingsChars = new[] { 'W', 'i', 'n', 'g', 'd', 'i', 'n', 'g', 's' };
 
-        private char[]? _webdingsChars;
-        private char[] WebdingsChars => _webdingsChars ??= new[] { 'W', 'e', 'b', 'd', 'i', 'n', 'g', 's' };
+        private readonly char[] _webdingsChars = new[] { 'W', 'e', 'b', 'd', 'i', 'n', 'g', 's' };
 
-        private char[]? _symbolChars;
-        private char[] SymbolChars => _symbolChars ??= new[] { 'S', 'y', 'm', 'b', 'o', 'l' };
+        private readonly char[] _symbolChars = new[] { 'S', 'y', 'm', 'b', 'o', 'l' };
 
         #endregion
 
@@ -1731,17 +1727,13 @@ namespace FMScanner
         private readonly Dictionary<int, Encoding> _encodings = new Dictionary<int, Encoding>(31);
 
         // Common ones explicitly stored to avoid even a dictionary lookup. Don't reset these either.
-        private Encoding? _windows1252Encoding;
-        private Encoding Windows1252Encoding => _windows1252Encoding ??= Encoding.GetEncoding(_windows1252);
+        private readonly Encoding _windows1252Encoding = Encoding.GetEncoding(_windows1252);
 
-        private Encoding? _Windows1250Encoding;
-        private Encoding Windows1250Encoding => _Windows1250Encoding ??= Encoding.GetEncoding(1250);
+        private readonly Encoding _windows1250Encoding = Encoding.GetEncoding(1250);
 
-        private Encoding? _windows1251Encoding;
-        private Encoding Windows1251Encoding => _windows1251Encoding ??= Encoding.GetEncoding(1251);
+        private readonly Encoding _windows1251Encoding = Encoding.GetEncoding(1251);
 
-        private Encoding? _shiftJisWinEncoding;
-        private Encoding ShiftJisWinEncoding => _shiftJisWinEncoding ??= Encoding.GetEncoding(_shiftJisWin);
+        private readonly Encoding _shiftJisWinEncoding = Encoding.GetEncoding(_shiftJisWin);
 
         #endregion
 
@@ -2315,15 +2307,15 @@ namespace FMScanner
                         }
                         else
                         {
-                            if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, WingdingsChars))
+                            if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _wingdingsChars))
                             {
                                 GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChar);
                             }
-                            else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, WebdingsChars))
+                            else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _webdingsChars))
                             {
                                 GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChar);
                             }
-                            else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, SymbolChars))
+                            else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _symbolChars))
                             {
                                 GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChar);
                             }
@@ -2456,7 +2448,7 @@ namespace FMScanner
             for (i = 0; i < 6; i++, eof = !_rtfStream.GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
-                if (ch != SYMBOLChars[i]) return RewindAndSkipGroup(ch);
+                if (ch != _SYMBOLChars[i]) return RewindAndSkipGroup(ch);
             }
 
             #endregion
@@ -2643,17 +2635,17 @@ namespace FMScanner
 
                         // Just hardcoding the three most common fonts here, because there's only so far you
                         // really want to go down this path.
-                        if (SeqEqual(_fldinstSymbolFontName, SymbolChars) &&
+                        if (SeqEqual(_fldinstSymbolFontName, _symbolChars) &&
                             !GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChar))
                         {
                             return RewindAndSkipGroup(ch);
                         }
-                        else if (SeqEqual(_fldinstSymbolFontName, WingdingsChars) &&
+                        else if (SeqEqual(_fldinstSymbolFontName, _wingdingsChars) &&
                                  !GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChar))
                         {
                             return RewindAndSkipGroup(ch);
                         }
-                        else if (SeqEqual(_fldinstSymbolFontName, WebdingsChars) &&
+                        else if (SeqEqual(_fldinstSymbolFontName, _webdingsChars) &&
                                  !GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChar))
                         {
                             return RewindAndSkipGroup(ch);
@@ -2833,13 +2825,13 @@ namespace FMScanner
             switch (codePage)
             {
                 case _windows1252:
-                    return Windows1252Encoding;
+                    return _windows1252Encoding;
                 case 1250:
-                    return Windows1250Encoding;
+                    return _windows1250Encoding;
                 case 1251:
-                    return Windows1251Encoding;
+                    return _windows1251Encoding;
                 case _shiftJisWin:
-                    return ShiftJisWinEncoding;
+                    return _shiftJisWinEncoding;
                 default:
                     if (_encodings.TryGetValue(codePage, out Encoding result))
                     {
@@ -2967,15 +2959,15 @@ namespace FMScanner
                 // 0x20 - 0xFF, so no need to check.
                 if (fontEntry != null)
                 {
-                    if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, WingdingsChars))
+                    if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _wingdingsChars))
                     {
                         codePoint = _wingdingsFontToUnicode[codePoint - 0x20];
                     }
-                    else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, WebdingsChars))
+                    else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _webdingsChars))
                     {
                         codePoint = _webdingsFontToUnicode[codePoint - 0x20];
                     }
-                    else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, SymbolChars))
+                    else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _symbolChars))
                     {
                         codePoint = _symbolFontToUnicode[codePoint - 0x20];
                     }
