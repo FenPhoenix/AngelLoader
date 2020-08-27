@@ -32,6 +32,7 @@ FMScanner, which has now been forked to be part of AngelLoader, uses portions of
 - [SimpleHelpers.Net](https://github.com/khalidsalomao/SimpleHelpers.Net)
 - Modified portions of the [.NET Core](https://github.com/dotnet/corefx) System.IO.Compression code (tuned for scanning performance)
 
+<hr>
 <h4 align="center">
 AngelLoader is kindly supported by JetBrains under their Open Source License.
 </h4>
