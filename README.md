@@ -3,6 +3,15 @@ AngelLoader
 </h1>
 <p align="center"><img src="https://fenphoenix.com/github/AngelLoader/main_window_cover_3_600.png" /></p>
 
+
+<hr>
+<h4 align="center">
+AngelLoader is kindly supported by JetBrains under their Open Source License.
+</h4>
+<p align="center">
+<a href="https://www.jetbrains.com/?from=AngelLoader"><img src="https://fenphoenix.com/github/AngelLoader/jetbrains.svg" /></a>
+</p>
+
 ## Description
 AngelLoader is a modern, standalone fan mission loader for Thief 1, Thief 2, Thief 3, and System Shock 2. Current loaders for those games (FMSel, NewDarkLoader) must be attached to each game individually, necessitating multiple installs, multiple setting of config options, the inability to manage all your missions in one place, etc. AngelLoader is a one-stop shop for all your missions: every FM can be viewed, played, edited, installed, and uninstalled from one place.
 
@@ -31,11 +40,3 @@ AngelLoader contains portions of code from the following:
 FMScanner, which has now been forked to be part of AngelLoader, uses portions of code from the following:
 - [SimpleHelpers.Net](https://github.com/khalidsalomao/SimpleHelpers.Net)
 - Modified portions of the [.NET Core](https://github.com/dotnet/corefx) System.IO.Compression code (tuned for scanning performance)
-
-<hr>
-<h4 align="center">
-AngelLoader is kindly supported by JetBrains under their Open Source License.
-</h4>
-<p align="center">
-<a href="https://www.jetbrains.com/?from=AngelLoader"><img src="https://fenphoenix.com/github/AngelLoader/jetbrains.svg" /></a>
-</p>
