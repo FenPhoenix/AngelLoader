@@ -56,6 +56,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
+                    // ReSharper disable once ConvertToConstant.Local
                     string message = "Failed to create required application directories on startup.";
                     Log(message, ex);
                     MessageBox.Show(message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

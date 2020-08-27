@@ -83,7 +83,7 @@ namespace AngelLoader
                         iniGames[i] = iniGames[i].Trim();
                     }
 
-                    string[] gameNames = new string[SupportedGameCount];
+                    string?[] gameNames = new string?[SupportedGameCount];
 
                     for (int i = 0; i < SupportedGameCount; i++)
                     {

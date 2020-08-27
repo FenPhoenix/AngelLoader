@@ -93,7 +93,7 @@ namespace AngelLoader
 
                                     using var sr = new StringReader(e.Data);
 
-                                    string line;
+                                    string? line;
                                     while ((line = sr.ReadLine()) != null)
                                     {
                                         if (line.StartsWithFast_NoNullChecks("bits_per_sample=") &&

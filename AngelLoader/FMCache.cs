@@ -284,7 +284,7 @@ namespace AngelLoader
             {
                 foreach (NameAndIndex f in htmlRefFiles)
                 {
-                    string path = Path.GetDirectoryName(f.Name);
+                    string? path = Path.GetDirectoryName(f.Name);
                     if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
                     archive.Entries[f.Index].ExtractToFile(Path.Combine(fmCachePath, f.Name), overwrite: true);
                 }
