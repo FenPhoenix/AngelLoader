@@ -952,7 +952,7 @@ namespace FMScanner
 
         // ReSharper disable RedundantExplicitArraySize
         private readonly int[] _symbolFontToUnicode = new int[224]
-            {
+        {
             ' ',
             0x0021,
             0x2200,

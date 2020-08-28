@@ -12,7 +12,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields
 
-        private IView _owner;
+        private IView _owner = null!;
 
         #endregion
 
@@ -63,18 +63,8 @@ namespace AngelLoader.Forms.CustomControls
         #region API methods
 
         #region Init
-
-        // @R#_FALSE_POSITIVE: This should surround _owner declaration line, not the ctor
-#pragma warning disable 8618
-        // ReSharper disable once NotNullMemberIsNotInitialized
-        public DataGridViewCustom()
-        {
-            DoubleBuffered = true;
-
-            AssertR(Enum.GetValues(typeof(Column)).Length == ColumnHeaderLLMenu._columnCheckedStates.Length,
-                nameof(Column) + ".Length != " + nameof(ColumnHeaderLLMenu._columnCheckedStates) + ".Length");
-        }
-#pragma warning restore 8618
+       
+        public DataGridViewCustom() => DoubleBuffered = true;
 
         internal void InjectOwner(IView owner) => _owner = owner;
 

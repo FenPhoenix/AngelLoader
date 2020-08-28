@@ -12,14 +12,11 @@ namespace AngelLoader.Forms.CustomControls
             #region Control backing fields
 
             private static bool _constructed;
-            // Internal only because of an assert for length and I don't wanna make a method just for that
-            internal static readonly bool[] _columnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true, true };
+            private static readonly bool[] _columnCheckedStates = InitializedArray(ColumnsCount, true);
 
             #endregion
 
-#pragma warning disable 8618
-            private static DataGridViewCustom _owner;
-#pragma warning restore 8618
+            private static DataGridViewCustom _owner = null!;
 
             private enum ColumnProperties { Visible, DisplayIndex, Width }
 

@@ -122,6 +122,8 @@ namespace AngelLoader
 
         #endregion
 
+        internal static readonly int ColumnsCount = Enum.GetValues(typeof(Column)).Length;
+
         internal static readonly string[] ValidDateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
 
         internal static class Defaults
