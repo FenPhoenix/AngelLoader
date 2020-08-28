@@ -69,7 +69,7 @@ namespace AngelLoader
                  - Comment lines start with ;
                  - No section headers
                 */
-                string line;
+                string? line;
                 while ((line = sr.ReadLine()) != null)
                 {
                     if (line.IsEmpty()) continue;

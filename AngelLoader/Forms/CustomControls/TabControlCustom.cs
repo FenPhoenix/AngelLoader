@@ -88,7 +88,7 @@ namespace AngelLoader.Forms.CustomControls
         public void ShowTab(TabPage tabPage, bool show)
         {
             var (index, bt) = FindBackingTab(tabPage, indexVisibleOnly: true);
-            if (index < 0 || bt == null) return;
+            if (index < 0 || bt == null!) return;
 
             if (show)
             {
@@ -195,7 +195,7 @@ namespace AngelLoader.Forms.CustomControls
                     TabPage tabPage = base.TabPages[i];
                     var (index, backingTab) = FindBackingTab(tabPage);
 
-                    return index == -1 || backingTab == null ? (-1, null) : (index, tabPage);
+                    return index == -1 || backingTab == null! ? (-1, null) : (index, tabPage);
                 }
             }
 

@@ -1098,7 +1098,7 @@ namespace AngelLoader.Forms
             }
 
             var (result, fileName) = BrowseForExeFile(initialPath);
-            if (result == DialogResult.OK) tb.Text = fileName ?? "";
+            if (result == DialogResult.OK) tb.Text = fileName;
 
             ShowPathError(tb, !tb.Text.IsEmpty() && !File.Exists(tb.Text));
         }

@@ -192,6 +192,7 @@ namespace AngelLoader.Forms
             SHSTOCKICONINFO sii = new SHSTOCKICONINFO();
             try
             {
+                // ReSharper disable ConditionIsAlwaysTrueOrFalse
                 SHSTOCKICONID sysIcon =
                       icon == MessageBoxIcon.Error ||
                       icon == MessageBoxIcon.Hand ||
@@ -206,6 +207,7 @@ namespace AngelLoader.Forms
                       icon == MessageBoxIcon.Information
                     ? SHSTOCKICONID.SIID_INFO
                     : throw new ArgumentOutOfRangeException();
+                // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
                 sii.cbSize = (uint)Marshal.SizeOf(typeof(SHSTOCKICONINFO));
 

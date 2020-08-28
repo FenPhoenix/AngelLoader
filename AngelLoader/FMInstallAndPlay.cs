@@ -354,7 +354,10 @@ namespace AngelLoader
                 !GetGameSteamId(game).IsEmpty() && Config.GetUseSteamSwitch(game) &&
                 Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe))
             {
-                string workingPath = Path.GetDirectoryName(Config.SteamExe);
+                string? workingPath = Path.GetDirectoryName(Config.SteamExe);
+
+                if (workingPath.IsEmpty()) return (false, "", "", "");
+                
                 string args = "-applaunch " + GetGameSteamId(game);
 
                 return (true, Config.SteamExe, workingPath, args);
