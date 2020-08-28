@@ -8,12 +8,8 @@
  in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
  Images to switch to drawing:
- -Zoom images
- -Install / uninstall
+  -Install / uninstall
  -Green CheckCircle
- -See if we can draw and/or just make these more efficient:
-  -Rating and finished images (they're a bunch of the same pic just pasted together differently, we should maybe
-   have just one of each unique pic and copy them into bitmaps as needed. That also ties into lazy loading below)
  -Settings (can we do gradients and curved paths?)
  -Import
  -Calendars (can we get detailed enough? The play arrow icon cutting the lines at a diagonal might be an obstacle)
@@ -1788,12 +1784,6 @@ namespace AngelLoader.Forms
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
         {
             if (_cellValueNeededDisabled) return;
-
-            // @LAZYLOAD notes for DGV images:
-            // -If we're going to lazy-load, we should go full-bore and draw the icons onto bitmaps as needed,
-            //  so we can get rid of all the duplicate pre-baked images we have now.
-            // -Until we do that, we should leave this alone. It also might be okay to just keep these like they
-            //  are, being loaded in advance, because then the scrolling is guaranteed not to have any hiccups.
 
             // Lazy-load these in an attempt to save some kind of startup time
             // @LAZYLOAD: Try lazy-loading these at a more granular level
