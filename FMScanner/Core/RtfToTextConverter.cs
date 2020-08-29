@@ -46,7 +46,6 @@ Notes and miscellaneous:
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
 
 Perf:
--All StringBuilders that don't need to be ToString()'d should be changed to byte/char lists.
 -We could collapse fonts if we find multiple ones with the same name and charset but different numbers.
  I mean it looks like we're plenty fast and memory-reasonable without doing so, but you know, idea.
 
