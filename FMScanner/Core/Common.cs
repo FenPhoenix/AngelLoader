@@ -86,9 +86,9 @@ namespace FMScanner
             internal const string SS2Fingerprint3 = "/objlooks.str";
             internal const string SS2Fingerprint4 = "/OBJSHORT.str";
 
-            internal const string IntrfaceEnglishNewGameStrS = "intrface/english/newgame.str";
-            internal const string IntrfaceNewGameStrS = "intrface/newgame.str";
-            internal const string DscNewGameStrS = "/newgame.str";
+            internal const string IntrfaceEnglishNewGameStr = "intrface/english/newgame.str";
+            internal const string IntrfaceNewGameStr = "intrface/newgame.str";
+            internal const string SNewGameStr = "/newgame.str";
 
             internal const string StringsMissFlag = "strings/missflag.str";
             internal const string StringsEnglishMissFlag = "strings/english/missflag.str";
@@ -224,7 +224,9 @@ namespace FMScanner
             "Date of release", "Release Date", "Release date"
         };
 
+#if FMScanner_FullCode
         private readonly string[] SA_VersionDetect = { "Version" };
+#endif
 
         #endregion
 
@@ -417,8 +419,8 @@ namespace FMScanner
 
         #region Regexes
 
-        // PERF: Making regexes compiled increases their performance by a huge amount. And as we know, regexes
-        // need all the performance help they can get.
+        // PERF: Making regexes compiled increases their performance by a huge amount.
+        // And as we know, regexes need all the performance help they can get.
         private readonly Regex GLMLTagRegex =
             new Regex(@"\[/?GL[A-Z]+\]", RegexOptions.Compiled);
 
@@ -436,8 +438,10 @@ namespace FMScanner
             new Regex(@"\d(?<Suffix>(st|nd|rd|th)).+",
                 RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+#if FMScanner_FullCode
         private readonly Regex VersionExclude1Regex =
             new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
+#endif
 
         private readonly Regex TitleAnyConsecutiveLettersRegex =
             new Regex(@"\w\w", RegexOptions.Compiled);
@@ -454,6 +458,7 @@ namespace FMScanner
             new Regex(@"^skip_training\:\s*""(?<Title>.+)""",
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+#if FMScanner_FullCode
         // TODO: This one looks iffy though
         private readonly Regex VersionFirstNumberRegex =
             new Regex(@"[0123456789\.]+", RegexOptions.Compiled);
@@ -495,6 +500,7 @@ namespace FMScanner
             // Original regex for reference - slow!
             // @"((?<Name>(""*New *Dark""*( Version| Patch)*|Dark *Engine|(?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief *2|Thief *II|The Metal Age)) *V?(\.| )*(?<Version>\d\.\d+)|\D(?<Version>\d\.\d+) +(version of |(?!\r\n).?)New *Dark(?! *\d\.\d+)|Thief Gold( Patch)* (?<Version>(?!1\.33|1\.37)\d\.\d+))",
         };
+#endif
 
         private readonly Regex[] AuthorRegexes =
         {

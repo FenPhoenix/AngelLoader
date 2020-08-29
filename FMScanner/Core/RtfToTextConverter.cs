@@ -1825,7 +1825,7 @@ namespace FMScanner
         {
             Reset(stream, streamLength);
 
-#if ReleaseTestMode || DebugTestMode
+#if ReleaseRTFTest || DebugRTFTest
 
             Error error = ParseRtf();
             return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : throw new Exception("RTF converter error: " + error);

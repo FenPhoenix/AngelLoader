@@ -4,21 +4,31 @@
     <TargetFramework>net472</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <Configurations>Debug;Release;DebugTestMode;ReleaseTestMode</Configurations>
+    <Configurations>Debug;Release;DebugRTFTest;ReleaseRTFTest;DebugFullTest;ReleaseFullTest</Configurations>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseTestMode|AnyCPU'">
-    <DefineConstants>TRACE;ReleaseTestMode</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseRTFTest|AnyCPU'">
+    <DefineConstants>TRACE;ReleaseRTFTest</DefineConstants>
     <Optimize>true</Optimize>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTestMode|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE;DebugTestMode</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRTFTest|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;DebugRTFTest</DefineConstants>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugFullTest|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;FMScanner_FullCode</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFullTest|AnyCPU'">
+    <DefineConstants>TRACE;FMScanner_FullCode</DefineConstants>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>

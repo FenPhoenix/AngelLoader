@@ -1,4 +1,7 @@
-﻿// NULL_TODO (Scanner - Main)
+﻿// Enable this (and the one in FMData.cs) to get all features (we use it for testing)
+//#define FMScanner_FullCode
+
+// NULL_TODO (Scanner - Main)
 // -Lists are nullable because we want to avoid allocating new Lists all over the place.
 // -Arrays are non-nullable because assigning them Array.Empty<T> is basically free.
 // -Strings are non-nullable because assigning them the empty string "" is basically free.
@@ -100,7 +103,11 @@ namespace FMScanner
 
         private bool _ss2Fingerprinted;
 
-        private bool SS2FingerprintRequiredAndNotDone() => (_scanOptions.ScanNewDarkRequired || _scanOptions.ScanGameType) && !_ss2Fingerprinted;
+        private bool SS2FingerprintRequiredAndNotDone() => (
+#if FMScanner_FullCode
+            _scanOptions.ScanNewDarkRequired ||
+#endif
+            _scanOptions.ScanGameType) && !_ss2Fingerprinted;
 
         #endregion
 
@@ -161,9 +168,11 @@ namespace FMScanner
         {
             None,
             Title,
+            Author,
+#if FMScanner_FullCode
             Version,
-            NewDarkMinimumVersion,
-            Author
+            NewDarkMinimumVersion
+#endif
         }
 
         #region Scan synchronous
@@ -563,10 +572,16 @@ namespace FMScanner
 
                 #region NewDark/GameType checks
 
-                if (_scanOptions.ScanNewDarkRequired || _scanOptions.ScanGameType)
+                if (
+#if FMScanner_FullCode
+                    _scanOptions.ScanNewDarkRequired ||
+#endif
+                    _scanOptions.ScanGameType)
                 {
                     var (newDarkRequired, game) = GetGameTypeAndEngine(baseDirFiles, usedMisFiles);
+#if FMScanner_FullCode
                     if (_scanOptions.ScanNewDarkRequired) fmData.NewDarkRequired = newDarkRequired;
+#endif
                     if (_scanOptions.ScanGameType)
                     {
                         fmData.Game = game;
@@ -578,6 +593,7 @@ namespace FMScanner
 
                 #endregion
 
+#if FMScanner_FullCode
                 // If we're Thief 3, we just skip figuring this out - I don't know how to detect if a T3 mission
                 // is a campaign, and I'm not even sure any T3 campaigns have been released (not counting ones
                 // that are just a series of separate FMs, of course).
@@ -585,10 +601,14 @@ namespace FMScanner
                 // Until I can figure out how to detect which .mis files are used without there being an actual
                 // list...
                 fmData.Type = fmIsSS2 || usedMisFiles.Count <= 1 ? FMType.FanMission : FMType.Campaign;
+#endif
 
                 #region Check info files
 
-                if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanVersion ||
+                if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor ||
+#if FMScanner_FullCode
+                    _scanOptions.ScanVersion ||
+#endif
                     _scanOptions.ScanReleaseDate || _scanOptions.ScanTags)
                 {
                     for (int i = 0; i < baseDirFiles.Count; i++)
@@ -599,7 +619,9 @@ namespace FMScanner
                             var (title, author, version, releaseDate) = ReadFMInfoXml(f);
                             if (_scanOptions.ScanTitle) SetOrAddTitle(title);
                             if (_scanOptions.ScanAuthor) fmData.Author = author;
+#if FMScanner_FullCode
                             if (_scanOptions.ScanVersion) fmData.Version = version;
+#endif
                             if (_scanOptions.ScanReleaseDate && releaseDate != null) fmData.LastUpdateDate = releaseDate;
                             break;
                         }
@@ -616,7 +638,9 @@ namespace FMScanner
                             var (title, author, description, lastUpdateDate, tags) = ReadFMIni(f);
                             if (_scanOptions.ScanTitle) SetOrAddTitle(title);
                             if (_scanOptions.ScanAuthor && !author.IsEmpty()) fmData.Author = author;
+#if FMScanner_FullCode
                             if (_scanOptions.ScanDescription) fmData.Description = description;
+#endif
                             if (_scanOptions.ScanReleaseDate && lastUpdateDate != null) fmData.LastUpdateDate = lastUpdateDate;
                             if (_scanOptions.ScanTags) fmData.TagsString = tags;
                             break;
@@ -656,6 +680,7 @@ namespace FMScanner
 
             #endregion
 
+#if FMScanner_FullCode
             if (!fmIsT3)
             {
                 // This is here because it needs to come after the readmes are cached
@@ -668,6 +693,7 @@ namespace FMScanner
 
                 #endregion
             }
+#endif
 
             #region Set release date
 
@@ -683,7 +709,11 @@ namespace FMScanner
             // SS2 doesn't have a missions list or a titles list file
             if (!fmIsT3 && !fmIsSS2)
             {
-                if (_scanOptions.ScanTitle || _scanOptions.ScanCampaignMissionNames)
+                if (_scanOptions.ScanTitle
+#if FMScanner_FullCode
+                    || _scanOptions.ScanCampaignMissionNames
+#endif
+                    )
                 {
                     var (titleFrom0, titleFromN, cNames) = GetMissionNames(stringsDirFiles, misFiles, usedMisFiles);
                     if (_scanOptions.ScanTitle)
@@ -691,12 +721,13 @@ namespace FMScanner
                         SetOrAddTitle(titleFrom0);
                         SetOrAddTitle(titleFromN);
                     }
-
+#if FMScanner_FullCode
                     if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Count > 0)
                     {
                         for (int i = 0; i < cNames.Count; i++) cNames[i] = CleanupTitle(cNames[i]);
                         fmData.IncludedMissions = cNames.ToArray();
                     }
+#endif
                 }
             }
 
@@ -747,23 +778,31 @@ namespace FMScanner
 
             #endregion
 
+#if FMScanner_FullCode
             #region Version
 
             if (_scanOptions.ScanVersion && fmData.Version.IsEmpty()) fmData.Version = GetVersion();
 
             #endregion
+#endif
 
             // Again, I don't know enough about Thief 3 to know how to detect its languages
             if (!fmIsT3)
             {
                 #region Languages
 
-                if (_scanOptions.ScanLanguages || _scanOptions.ScanTags)
+                if (
+#if FMScanner_FullCode
+                    _scanOptions.ScanLanguages ||
+#endif
+                    _scanOptions.ScanTags)
                 {
                     var getLangs = GetLanguages(baseDirFiles, booksDirFiles, intrfaceDirFiles, stringsDirFiles);
                     fmData.Languages = getLangs.Langs.ToArray();
                     if (getLangs.Langs.Count > 0) SetLangTags(fmData, getLangs.EnglishIsUncertain);
+#if FMScanner_FullCode
                     if (!_scanOptions.ScanLanguages) fmData.Languages = Array.Empty<string>();
+#endif
                 }
 
                 #endregion
@@ -1420,11 +1459,13 @@ namespace FMScanner
                 if (xAuthor.Count > 0) author = xAuthor[0].InnerText;
             }
 
+#if FMScanner_FullCode
             if (_scanOptions.ScanVersion)
             {
                 var xVersion = fmInfoXml.GetElementsByTagName("version");
                 if (xVersion.Count > 0) version = xVersion[0].InnerText;
             }
+#endif
 
             var xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
             if (xReleaseDate.Count > 0)
@@ -1496,20 +1537,27 @@ namespace FMScanner
                 else if (line.StartsWithI("Descr="))
                 {
                     inDescr = true;
+#if FMScanner_FullCode
                     if (_scanOptions.ScanDescription) fmIni.Descr = line.Substring(6).Trim();
+#endif
                 }
                 else if (inDescr)
                 {
+#if FMScanner_FullCode
                     if (_scanOptions.ScanDescription) fmIni.Descr += "\r\n" + line;
+#endif
                 }
             }
 
+#if FMScanner_FullCode
             if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty()) fmIni.Descr = fmIni.Descr.Trim();
+#endif
 
             #endregion
 
             #endregion
 
+#if FMScanner_FullCode
             #region Fixup description
 
             // Descr can be multiline. You're supposed to use \n for linebreaks. Most of the time people do that.
@@ -1547,6 +1595,7 @@ namespace FMScanner
             }
 
             #endregion
+#endif
 
             #region Get author from tags
 
@@ -1604,7 +1653,9 @@ namespace FMScanner
                 }
             }
 
+#if FMScanner_FullCode
             if (_scanOptions.ScanDescription) ret.Description = fmIni.Descr;
+#endif
 
             /*
                Notes:
@@ -1880,12 +1931,14 @@ namespace FMScanner
             {
                 if (!file.Scan) continue;
 
+#if FMScanner_FullCode
                 if (specialLogic == SpecialLogic.NewDarkMinimumVersion)
                 {
                     string ndv = GetNewDarkVersionFromText(file.Text);
                     if (!ndv.IsEmpty()) return ndv;
                 }
                 else
+#endif
                 {
                     if (specialLogic == SpecialLogic.Author)
                     {
@@ -1993,11 +2046,13 @@ namespace FMScanner
                     case SpecialLogic.Title when
                         lineStartTrimmed.StartsWithI("Title & Description") ||
                         lineStartTrimmed.StartsWithGL("Title screen"):
+#if FMScanner_FullCode
                     case SpecialLogic.Version when
                         lineStartTrimmed.StartsWithI("Version History") ||
                         lineStartTrimmed.ContainsI("NewDark") ||
                         lineStartTrimmed.ContainsI("64 Cubed") ||
                         VersionExclude1Regex.Match(lineStartTrimmed).Success:
+#endif
                     case SpecialLogic.Author when
                         lineStartTrimmed.StartsWithI("Authors note"):
                         continue;
@@ -2044,9 +2099,11 @@ namespace FMScanner
                 }
                 else
                 {
+#if FMScanner_FullCode
                     // Don't detect "Version "; too many false positives
                     // TODO: Can probably remove this check and then just sort out any false positives in GetVersion()
                     if (specialLogic == SpecialLogic.Version) continue;
+#endif
 
                     for (int i = 0; i < keys.Length; i++)
                     {
@@ -2187,12 +2244,12 @@ namespace FMScanner
 
             NameAndIndex? newGameStrFile =
                 intrfaceDirFiles.FirstOrDefault(x =>
-                    x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStrS))
+                    x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
                 ?? intrfaceDirFiles.FirstOrDefault(x =>
-                    x.Name.PathEqualsI(FMFiles.IntrfaceNewGameStrS))
+                    x.Name.PathEqualsI(FMFiles.IntrfaceNewGameStr))
                 ?? intrfaceDirFiles.FirstOrDefault(x =>
                     x.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
-                    x.Name.PathEndsWithI(FMFiles.DscNewGameStrS));
+                    x.Name.PathEndsWithI(FMFiles.SNewGameStr));
 
             if (newGameStrFile == null) return "";
 
@@ -2302,7 +2359,12 @@ namespace FMScanner
                     NameExistsInList(misFiles, missNumMis))
                 {
                     ret.TitleFromN = title;
-                    if (!_scanOptions.ScanCampaignMissionNames) break;
+#if FMScanner_FullCode
+                    if (!_scanOptions.ScanCampaignMissionNames)
+#endif
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -2312,10 +2374,12 @@ namespace FMScanner
                 {
                     ret.TitleFromN = titles[0];
                 }
+#if FMScanner_FullCode
                 else if (_scanOptions.ScanCampaignMissionNames)
                 {
                     ret.CampaignMissionNames = titles;
                 }
+#endif
             }
 
             return ret;
@@ -2643,6 +2707,7 @@ namespace FMScanner
 
         #endregion
 
+#if FMScanner_FullCode
         private string GetVersion()
         {
             string version = GetValueFromReadme(SpecialLogic.Version, null, SA_VersionDetect);
@@ -2694,6 +2759,7 @@ namespace FMScanner
 
             return version;
         }
+#endif
 
         // TODO: Add all missing languages, and implement language detection for non-folder-specified FMs
         private (List<string> Langs, bool EnglishIsUncertain)
@@ -2980,7 +3046,10 @@ namespace FMScanner
             {
                 for (int i = 0; i < locations.Length; i++)
                 {
-                    if (!_scanOptions.ScanNewDarkRequired &&
+                    if (
+#if FMScanner_FullCode
+                        !_scanOptions.ScanNewDarkRequired &&
+#endif
                         (locations[i] == newDarkLoc1 || locations[i] == newDarkLoc2))
                     {
                         break;
@@ -3033,8 +3102,12 @@ namespace FMScanner
 
             if (foundAtOldDarkThief2Location)
             {
-                return (_scanOptions.ScanNewDarkRequired ? (bool?)false : null,
-                        _scanOptions.ScanGameType ? Game.Thief2 : Game.Null);
+                return (
+#if FMScanner_FullCode
+                    _scanOptions.ScanNewDarkRequired ? (bool?)false :
+#endif
+                    null,
+                    _scanOptions.ScanGameType ? Game.Thief2 : Game.Null);
             }
 
             if (!_scanOptions.ScanGameType) return (ret.NewDarkRequired, Game.Null);
@@ -3154,6 +3227,7 @@ namespace FMScanner
             return ret;
         }
 
+#if FMScanner_FullCode
         private string GetNewDarkVersionFromText(string text)
         {
             string version = "";
@@ -3182,6 +3256,7 @@ namespace FMScanner
             float ndvF = float.Parse(ndv);
             return ndvF >= 1.19 && ndvF < 2.0 ? ndv : "";
         }
+#endif
 
         private static void DeleteFMWorkingPath(string fmWorkingPath)
         {

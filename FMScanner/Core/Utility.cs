@@ -168,9 +168,12 @@ namespace FMScanner
 
         [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsDirSep(this char character) => character == '/' || character == '\\';
-
+        
+        // Disabled until needed
+        /*
         [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
+        */
 
         [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();

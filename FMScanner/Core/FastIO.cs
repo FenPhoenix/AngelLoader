@@ -21,19 +21,19 @@ namespace FMScanner
             private static extern bool FindClose(IntPtr hFindFile);
         }
 
-        [PublicAPI]
         private enum FINDEX_INFO_LEVELS
         {
-            FindExInfoStandard = 0,
+            //FindExInfoStandard = 0,
             FindExInfoBasic = 1
         }
 
-        [PublicAPI]
         private enum FINDEX_SEARCH_OPS
         {
             FindExSearchNameMatch = 0,
+            /*
             FindExSearchLimitToDirectories = 1,
             FindExSearchLimitToDevices = 2
+            */
         }
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -72,7 +72,6 @@ namespace FMScanner
         {
             TopDirectoryOnly,
             AllDirectories,
-            AllDirectoriesSkipTop
         }
 
         internal static bool FilesExistSearchTop(string path, params string[] searchPatterns)
@@ -83,14 +82,6 @@ namespace FMScanner
         {
             return FirstFileExists(FastIOSearchOption.AllDirectories, path, searchPatterns);
         }
-
-        // Disabled until needed
-        /*
-        internal static bool FilesExistSearchAllSkipTop(string path, params string[] searchPatterns)
-        {
-            return FirstFileExists(FastIOSearchOption.AllDirectoriesSkipTop, path, searchPatterns);
-        }
-        */
 
         private static void ThrowException(string[] searchPatterns, int err, string path, string pattern, int loop)
         {
@@ -155,39 +146,36 @@ namespace FMScanner
 
             string pathC = @"\\?\" + path + "\\";
 
-            if (searchOption != FastIOSearchOption.AllDirectoriesSkipTop)
+            foreach (string p in searchPatterns)
             {
-                foreach (string p in searchPatterns)
+                using SafeSearchHandle findHandle = FindFirstFileEx(
+                    pathC + p,
+                    FINDEX_INFO_LEVELS.FindExInfoBasic,
+                    out findData,
+                    FINDEX_SEARCH_OPS.FindExSearchNameMatch,
+                    IntPtr.Zero,
+                    0);
+
+                if (findHandle.IsInvalid)
                 {
-                    using SafeSearchHandle findHandle = FindFirstFileEx(
-                        pathC + p,
-                        FINDEX_INFO_LEVELS.FindExInfoBasic,
-                        out findData,
-                        FINDEX_SEARCH_OPS.FindExSearchNameMatch,
-                        IntPtr.Zero,
-                        0);
+                    int err = Marshal.GetLastWin32Error();
+                    if (err == ERROR_FILE_NOT_FOUND) continue;
 
-                    if (findHandle.IsInvalid)
-                    {
-                        int err = Marshal.GetLastWin32Error();
-                        if (err == ERROR_FILE_NOT_FOUND) continue;
-
-                        // Since the framework isn't here to save us, we should blanket-catch and throw on every
-                        // possible error other than file-not-found (as that's an intended scenario, obviously).
-                        // This isn't as nice as you'd get from a framework method call, but it gets the job done.
-                        ThrowException(searchPatterns, err, path, p, 0);
-                    }
-                    do
-                    {
-                        if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY &&
-                            findData.cFileName != "." && findData.cFileName != "..")
-                        {
-                            return true;
-                        }
-                    } while (FindNextFileW(findHandle, out findData));
-
-                    if (searchOption == FastIOSearchOption.TopDirectoryOnly) return false;
+                    // Since the framework isn't here to save us, we should blanket-catch and throw on every
+                    // possible error other than file-not-found (as that's an intended scenario, obviously).
+                    // This isn't as nice as you'd get from a framework method call, but it gets the job done.
+                    ThrowException(searchPatterns, err, path, p, 0);
                 }
+                do
+                {
+                    if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY &&
+                        findData.cFileName != "." && findData.cFileName != "..")
+                    {
+                        return true;
+                    }
+                } while (FindNextFileW(findHandle, out findData));
+
+                if (searchOption == FastIOSearchOption.TopDirectoryOnly) return false;
             }
 
             using (SafeSearchHandle findHandle = FindFirstFileEx(

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Enable this (and the one in Scanner.cs) to get all features (we use it for testing)
+//#define FMScanner_FullCode
+
+using System;
 using JetBrains.Annotations;
 
 namespace FMScanner
@@ -11,58 +14,62 @@ namespace FMScanner
         /// <summary>
         /// Returns a <see cref="ScanOptions"/> object where all fields are set to false except the ones you specify to be true.
         /// </summary>
-        /// <param name="scanTitle"></param>
-        /// <param name="scanCampaignMissionNames"></param>
-        /// <param name="scanAuthor"></param>
-        /// <param name="scanVersion"></param>
-        /// <param name="scanLanguages"></param>
-        /// <param name="scanGameType"></param>
-        /// <param name="scanNewDarkRequired"></param>
-        /// <param name="scanNewDarkMinimumVersion"></param>
-        /// <param name="scanCustomResources"></param>
-        /// <param name="scanSize"></param>
-        /// <param name="scanReleaseDate"></param>
-        /// <param name="scanTags"></param>
-        /// <param name="scanDescription"></param>
-        /// <returns></returns>
-        public static ScanOptions FalseDefault(bool scanTitle = false, bool scanCampaignMissionNames = false,
-            bool scanAuthor = false, bool scanVersion = false, bool scanLanguages = false,
-            bool scanGameType = false, bool scanNewDarkRequired = false, bool scanNewDarkMinimumVersion = false,
-            bool scanCustomResources = false, bool scanSize = false, bool scanReleaseDate = false,
-            bool scanTags = false, bool scanDescription = false) =>
+        public static ScanOptions FalseDefault(
+            bool scanTitle = false,
+            bool scanAuthor = false,
+            bool scanGameType = false,
+            bool scanCustomResources = false,
+            bool scanSize = false,
+            bool scanReleaseDate = false,
+            bool scanTags = false
+
+#if FMScanner_FullCode
+            ,
+            bool scanCampaignMissionNames = false,
+            bool scanVersion = false,
+            bool scanLanguages = false,
+            bool scanNewDarkRequired = false,
+            bool scanNewDarkMinimumVersion = false,
+            bool scanDescription = false
+#endif
+            ) =>
             new ScanOptions
             {
                 ScanTitle = scanTitle,
-                ScanCampaignMissionNames = scanCampaignMissionNames,
                 ScanAuthor = scanAuthor,
-                ScanVersion = scanVersion,
-                ScanLanguages = scanLanguages,
                 ScanGameType = scanGameType,
-                ScanNewDarkRequired = scanNewDarkRequired,
-                ScanNewDarkMinimumVersion = scanNewDarkMinimumVersion,
                 ScanCustomResources = scanCustomResources,
                 ScanSize = scanSize,
                 ScanReleaseDate = scanReleaseDate,
                 ScanTags = scanTags,
+#if FMScanner_FullCode
+                ScanCampaignMissionNames = scanCampaignMissionNames,
+                ScanVersion = scanVersion,
+                ScanLanguages = scanLanguages,
+                ScanNewDarkRequired = scanNewDarkRequired,
+                ScanNewDarkMinimumVersion = scanNewDarkMinimumVersion,
                 ScanDescription = scanDescription
+#endif
             };
 
         internal ScanOptions DeepCopy() =>
             new ScanOptions
             {
                 ScanTitle = ScanTitle,
-                ScanCampaignMissionNames = ScanCampaignMissionNames,
                 ScanAuthor = ScanAuthor,
-                ScanVersion = ScanVersion,
-                ScanLanguages = ScanLanguages,
                 ScanGameType = ScanGameType,
-                ScanNewDarkRequired = ScanNewDarkRequired,
-                ScanNewDarkMinimumVersion = ScanNewDarkMinimumVersion,
                 ScanCustomResources = ScanCustomResources,
                 ScanSize = ScanSize,
                 ScanReleaseDate = ScanReleaseDate,
                 ScanTags = ScanTags,
+#if FMScanner_FullCode
+                ScanCampaignMissionNames = ScanCampaignMissionNames,
+                ScanVersion = ScanVersion,
+                ScanLanguages = ScanLanguages,
+                ScanNewDarkRequired = ScanNewDarkRequired,
+                ScanNewDarkMinimumVersion = ScanNewDarkMinimumVersion,
                 ScanDescription = ScanDescription
+#endif
             };
 
         /// <summary>
@@ -70,39 +77,13 @@ namespace FMScanner
         /// </summary>
         public bool ScanTitle = true;
         /// <summary>
-        /// <see langword="true"/> to detect the titles of individual campaign missions.
-        /// If the mission is not a campaign, this option has no effect.
-        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-        /// </summary>
-        public bool ScanCampaignMissionNames = true;
-        /// <summary>
         /// <see langword="true"/> to detect the mission's author.
         /// </summary>
         public bool ScanAuthor = true;
         /// <summary>
-        /// <see langword="true"/> to detect the mission's version.
-        /// </summary>
-        public bool ScanVersion = true;
-        /// <summary>
-        /// <see langword="true"/> to detect the languages the mission supports.
-        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-        /// </summary>
-        public bool ScanLanguages = true;
-        /// <summary>
         /// <see langword="true"/> to detect which game the mission is for (Thief 1, Thief 2, Thief 3, or System Shock 2).
         /// </summary>
         public bool ScanGameType = true;
-        /// <summary>
-        /// <see langword="true"/> to detect whether the mission requires NewDark.
-        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-        /// </summary>
-        public bool ScanNewDarkRequired = true;
-        /// <summary>
-        /// <see langword="true"/> to detect the minimum NewDark version the mission requires.
-        /// If ScanNewDarkRequired is false, this option has no effect.
-        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-        /// </summary>
-        public bool ScanNewDarkMinimumVersion = true;
         /// <summary>
         /// <see langword="true"/> to detect whether the mission contains custom resources.
         /// If the mission is for Thief: Deadly Shadows, this option has no effect.
@@ -121,10 +102,38 @@ namespace FMScanner
         /// <see langword="true"/> to detect the mission's tags.
         /// </summary>
         public bool ScanTags = true;
+#if FMScanner_FullCode
+        /// <summary>
+        /// <see langword="true"/> to detect the titles of individual campaign missions.
+        /// If the mission is not a campaign, this option has no effect.
+        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
+        /// </summary>
+        public bool ScanCampaignMissionNames = true;
+        /// <summary>
+        /// <see langword="true"/> to detect the mission's version.
+        /// </summary>
+        public bool ScanVersion = true;
+        /// <summary>
+        /// <see langword="true"/> to detect the languages the mission supports.
+        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
+        /// </summary>
+        public bool ScanLanguages = true;
+        /// <summary>
+        /// <see langword="true"/> to detect whether the mission requires NewDark.
+        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
+        /// </summary>
+        public bool ScanNewDarkRequired = true;
+        /// <summary>
+        /// <see langword="true"/> to detect the minimum NewDark version the mission requires.
+        /// If ScanNewDarkRequired is false, this option has no effect.
+        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
+        /// </summary>
+        public bool ScanNewDarkMinimumVersion = true;
         /// <summary>
         /// <see langword="true"/> to detect the mission's fm.ini description field.
         /// </summary>
         public bool ScanDescription = true;
+#endif
     }
 
     [PublicAPI]
@@ -176,6 +185,7 @@ namespace FMScanner
     // Numeric types, bools, DateTime etc.
 
     [PublicAPI]
+    // These properties are kept in this exact order because the test diff writeout depends on it
     public sealed class ScannedFMData
     {
         public string ArchiveName = "";
@@ -184,17 +194,23 @@ namespace FMScanner
         public string[] AlternateTitles = Array.Empty<string>();
         public string Author = "";
         public FMType Type;
+#if FMScanner_FullCode
         public string[] IncludedMissions = Array.Empty<string>();
+#endif
         public Game Game;
         public string[] Languages = Array.Empty<string>();
+#if FMScanner_FullCode
         public string Version = "";
         public bool? NewDarkRequired;
         public string NewDarkMinRequiredVersion = "";
+#endif
 
+#if FMScanner_FullCode
         /// <summary>
         /// Deprecated and will always be blank. Use <see cref="LastUpdateDate"/> instead.
         /// </summary>
         public DateTime? OriginalReleaseDate;
+#endif
 
         private DateTime? _lastUpdateDate;
         public DateTime? LastUpdateDate
@@ -204,7 +220,9 @@ namespace FMScanner
             internal set => _lastUpdateDate = value != null && ((DateTime)value).Year > DateTime.Now.Year ? null : value;
         }
 
+#if FMScanner_FullCode
         public string Description = "";
+#endif
         public string TagsString = "";
 
         public bool? HasMap;
