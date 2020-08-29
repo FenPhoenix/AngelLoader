@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <Platforms>AnyCPU;x86</Platforms>
+    <Platforms>x86</Platforms>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;Release_Beta;Release_Public;Release_Testing;RT_StartupOnly;Release_Testing_NoAsserts</Configurations>
     <StartupObject>AngelLoader.Program</StartupObject>
