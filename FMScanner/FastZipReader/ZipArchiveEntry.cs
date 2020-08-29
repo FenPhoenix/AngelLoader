@@ -178,24 +178,24 @@ namespace FMScanner.FastZipReader
             if (!IsOpenable(out string message)) throw new InvalidDataException(message);
 
             // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
-            Debug.Assert(_storedOffsetOfCompressedData != null, nameof(_storedOffsetOfCompressedData) + " != null");
 
-            Stream compressedStream =
-                new SubReadStream(Archive.ArchiveStream,
-                    (long)_storedOffsetOfCompressedData!,
-                    CompressedLength);
+            Stream compressedStream = new SubReadStream(
+                Archive.ArchiveStream,
+                (long)_storedOffsetOfCompressedData!,
+                CompressedLength);
 
             return GetDataDecompressor(compressedStream);
         }
 
         private bool IsOpenable(out string message)
         {
+            message = "";
+
             if (_storedOffsetOfCompressedData != null)
             {
                 Archive.ArchiveStream.Seek((long)_storedOffsetOfCompressedData, SeekOrigin.Begin);
+                return true;
             }
-
-            message = "";
 
             if (_compressionMethod != CompressionMethodValues.Stored &&
                 _compressionMethod != CompressionMethodValues.Deflate &&
@@ -284,12 +284,10 @@ namespace FMScanner.FastZipReader
         /// the platform-correct file name.
         /// </summary>
         /// <remarks>This method ensures no validation on the paths. Invalid characters are allowed.</remarks>
-        private static string ParseFileName(string path, ZipVersionMadeByPlatform madeByPlatform)
-        {
-            return madeByPlatform == ZipVersionMadeByPlatform.Windows
+        private static string ParseFileName(string path, ZipVersionMadeByPlatform madeByPlatform) =>
+            madeByPlatform == ZipVersionMadeByPlatform.Windows
                 ? GetFileName_Windows(path)
                 : GetFileName_Unix(path);
-        }
 
         /// <summary>
         /// Gets the file name of the path based on Windows path separator characters
@@ -325,11 +323,5 @@ namespace FMScanner.FastZipReader
         }
 
         #endregion
-
-        /// <summary>
-        /// Returns the FullName of the entry.
-        /// </summary>
-        /// <returns>FullName of the entry.</returns>
-        public override string ToString() => FullName;
     }
 }

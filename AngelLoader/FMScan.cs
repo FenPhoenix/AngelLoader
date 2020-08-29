@@ -153,8 +153,7 @@ namespace AngelLoader
                     using var scanner = new FMScanner.Scanner
                     {
                         FullScanOptions = GetDefaultScanOptions(),
-                        LogFile = Paths.ScannerLogFile,
-                        ZipEntryNameEncoding = Encoding.UTF8
+                        LogFile = Paths.ScannerLogFile
                     };
                     fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, _scanCts.Token);
                 }

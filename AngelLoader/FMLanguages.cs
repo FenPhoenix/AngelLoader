@@ -275,7 +275,7 @@ namespace AngelLoader
                 if (fmIsZip)
                 {
                     zipArchive = new FMScanner.FastZipReader.ZipArchiveFast(
-                        new FileStream(archivePath, FileMode.Open, FileAccess.Read), leaveOpen: false);
+                        new FileStream(archivePath, FileMode.Open, FileAccess.Read));
                 }
                 else
                 {

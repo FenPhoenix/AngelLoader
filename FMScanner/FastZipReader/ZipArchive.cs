@@ -18,9 +18,7 @@ namespace FMScanner.FastZipReader
     {
         private readonly List<ZipArchiveEntry> _entries;
         private readonly ReadOnlyCollection<ZipArchiveEntry> _entriesCollection;
-        private readonly Dictionary<string, ZipArchiveEntry> _entriesDictionary;
         private bool _readEntries;
-        private readonly bool _leaveOpen;
         private long _centralDirectoryStart; //only valid after ReadCentralDirectory
         private bool _isDisposed;
         private long _expectedNumberOfEntries;
@@ -73,61 +71,18 @@ namespace FMScanner.FastZipReader
         }
 
         /// <summary>
-        /// Initializes a new instance of ZipArchive on the given stream for reading.
-        /// </summary>
-        /// <exception cref="ArgumentException">The stream is already closed or does not support reading.</exception>
-        /// <exception cref="ArgumentNullException">The stream is null.</exception>
-        /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip archive.</exception>
-        /// <param name="stream">The stream containing the archive to be read.</param>
-        public ZipArchiveFast(Stream stream) : this(stream, leaveOpen: false, entryNameEncoding: null) { }
-
-        /// <summary>
         /// Initializes a new instance of ZipArchive on the given stream, specifying whether to leave the stream open.
         /// </summary>
         /// <exception cref="ArgumentException">The stream is already closed.</exception>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
         /// <param name="stream">The input or output stream.</param>
-        /// <param name="leaveOpen">true to leave the stream open upon disposing the ZipArchive, otherwise false.</param>
-        public ZipArchiveFast(Stream stream, bool leaveOpen) : this(stream, leaveOpen, entryNameEncoding: null) { }
-
-        /// <summary>
-        /// Initializes a new instance of ZipArchive on the given stream, specifying whether to leave the stream open.
-        /// </summary>
-        /// <exception cref="ArgumentException">The stream is already closed.</exception>
-        /// <exception cref="ArgumentNullException">The stream is null.</exception>
-        /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
-        /// <param name="stream">The input or output stream.</param>
-        /// <param name="leaveOpen">true to leave the stream open upon disposing the ZipArchive, otherwise false.</param>
-        /// <param name="entryNameEncoding">The encoding to use when reading or writing entry names in this ZipArchive.
-        ///         ///     <para>NOTE: Specifying this parameter to values other than <c>null</c> is discouraged.
-        ///         However, this may be necessary for interoperability with ZIP archive tools and libraries that do not correctly support
-        ///         UTF-8 encoding for entry names.<br />
-        ///         This value is used as follows:</para>
-        ///     <para><strong>Reading (opening) ZIP archive files:</strong></para>
-        ///     <para>If <c>entryNameEncoding</c> is not specified (<c>== null</c>):</para>
-        ///     <list>
-        ///         <item>For entries where the language encoding flag (EFS) in the general purpose bit flag of the local file header is <em>not</em> set,
-        ///         use the current system default code page (<c>Encoding.Default</c>) in order to decode the entry name.</item>
-        ///         <item>For entries where the language encoding flag (EFS) in the general purpose bit flag of the local file header <em>is</em> set,
-        ///         use UTF-8 (<c>Encoding.UTF8</c>) in order to decode the entry name.</item>
-        ///     </list>
-        ///     <para>If <c>entryNameEncoding</c> is specified (<c>!= null</c>):</para>
-        ///     <list>
-        ///         <item>For entries where the language encoding flag (EFS) in the general purpose bit flag of the local file header is <em>not</em> set,
-        ///         use the specified <c>entryNameEncoding</c> in order to decode the entry name.</item>
-        ///         <item>For entries where the language encoding flag (EFS) in the general purpose bit flag of the local file header <em>is</em> set,
-        ///         use UTF-8 (<c>Encoding.UTF8</c>) in order to decode the entry name.</item>
-        ///     </list>
-        ///     <para>Note that Unicode encodings other than UTF-8 may not be currently used for the <c>entryNameEncoding</c>,
-        ///     otherwise an <see cref="ArgumentException"/> is thrown.</para>
-        /// </param>
-        /// <exception cref="ArgumentException">If a Unicode encoding other than UTF-8 is specified for the <code>entryNameEncoding</code>.</exception>
-        public ZipArchiveFast(Stream stream, bool leaveOpen, Encoding? entryNameEncoding)
+        [PublicAPI]
+        public ZipArchiveFast(Stream stream)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            EntryNameEncoding = entryNameEncoding;
+            EntryNameEncoding = Encoding.UTF8;
 
             // Fen's note: Inlined Init() for nullable detection purposes...
             #region Init
@@ -155,9 +110,7 @@ namespace FMScanner.FastZipReader
                 ArchiveReader = new BinaryReader(ArchiveStream);
                 _entries = new List<ZipArchiveEntry>();
                 _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
-                _entriesDictionary = new Dictionary<string, ZipArchiveEntry>();
                 _readEntries = false;
-                _leaveOpen = leaveOpen;
                 _centralDirectoryStart = 0; // invalid until ReadCentralDirectory
                 _isDisposed = false;
                 NumberOfThisDisk = 0; // invalid until ReadCentralDirectory
@@ -186,48 +139,13 @@ namespace FMScanner.FastZipReader
             {
                 ThrowIfDisposed();
 
-                EnsureCentralDirectoryRead();
+                if (!_readEntries)
+                {
+                    ReadCentralDirectory();
+                    _readEntries = true;
+                }
+
                 return _entriesCollection;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves a wrapper for the file entry in the archive with the specified name. Names are compared using ordinal comparison. If there are multiple entries in the archive with the specified name, the first one found will be returned.
-        /// </summary>
-        /// <exception cref="ArgumentException">entryName is a zero-length string.</exception>
-        /// <exception cref="ArgumentNullException">entryName is null.</exception>
-        /// <exception cref="NotSupportedException">The ZipArchive does not support reading.</exception>
-        /// <exception cref="ObjectDisposedException">The ZipArchive has already been closed.</exception>
-        /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
-        /// <param name="entryName">A path relative to the root of the archive, identifying the desired entry.</param>
-        /// <returns>A wrapper for the file entry in the archive. If no entry in the archive exists with the specified name, null will be returned.</returns>
-        [PublicAPI]
-        public ZipArchiveEntry? GetEntry(string entryName)
-        {
-            if (entryName == null) throw new ArgumentNullException(nameof(entryName));
-
-            EnsureCentralDirectoryRead();
-            _entriesDictionary.TryGetValue(entryName, out ZipArchiveEntry result);
-            return result;
-        }
-
-        private void AddEntry(ZipArchiveEntry entry)
-        {
-            _entries.Add(entry);
-
-            string entryName = entry.FullName;
-            if (!_entriesDictionary.ContainsKey(entryName))
-            {
-                _entriesDictionary.Add(entryName, entry);
-            }
-        }
-
-        private void EnsureCentralDirectoryRead()
-        {
-            if (!_readEntries)
-            {
-                ReadCentralDirectory();
-                _readEntries = true;
             }
         }
 
@@ -244,7 +162,7 @@ namespace FMScanner.FastZipReader
                 //read the central directory
                 while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveReader, out var currentHeader))
                 {
-                    AddEntry(new ZipArchiveEntry(this, currentHeader));
+                    _entries.Add(new ZipArchiveEntry(this, currentHeader));
                     numberOfEntries++;
                 }
 
@@ -366,23 +284,6 @@ namespace FMScanner.FastZipReader
             if (_isDisposed) throw new ObjectDisposedException(GetType().ToString());
         }
 
-        private void CloseStreams()
-        {
-            if (!_leaveOpen)
-            {
-                ArchiveStream.Dispose();
-                _backingStream?.Dispose();
-                ArchiveReader?.Dispose();
-            }
-            else
-            {
-                // if _backingStream isn't null, that means we assigned the original stream they passed
-                // us to _backingStream (which they requested we leave open), and _archiveStream was
-                // the temporary copy that we needed
-                if (_backingStream != null) ArchiveStream.Dispose();
-            }
-        }
-
         /// <summary>
         /// Releases the unmanaged resources used by ZipArchive and optionally finishes writing the archive and releases the managed resources.
         /// </summary>
@@ -391,7 +292,10 @@ namespace FMScanner.FastZipReader
         {
             if (disposing && !_isDisposed)
             {
-                CloseStreams();
+                ArchiveStream.Dispose();
+                _backingStream?.Dispose();
+                ArchiveReader?.Dispose();
+
                 _isDisposed = true;
             }
         }
@@ -399,11 +303,7 @@ namespace FMScanner.FastZipReader
         /// <summary>
         /// Finishes writing the archive and releases all resources used by the ZipArchive object, unless the object was constructed with leaveOpen as true. Any streams from opened entries in the ZipArchive still open will throw exceptions on subsequent writes, as the underlying streams will have been closed.
         /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public void Dispose() => Dispose(true);
 
         #endregion
     }

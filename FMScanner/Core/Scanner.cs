@@ -40,14 +40,6 @@ namespace FMScanner
 
         #region Public properties
 
-        /// <summary>
-        /// The encoding to use when reading entry names in FM archives. Use this when you need absolute
-        /// consistency (like when you're grabbing file names and then looking them back up within the archive
-        /// later). Default: <see cref="Encoding.UTF8"/>
-        /// </summary>
-        [PublicAPI]
-        public Encoding ZipEntryNameEncoding = Encoding.UTF8;
-
         [PublicAPI]
         public string LogFile = "";
 
@@ -124,7 +116,22 @@ namespace FMScanner
             internal string FileName = "";
             internal readonly List<string> Lines = new List<string>();
             internal string Text = "";
-            internal DateTime LastModifiedDate;
+
+            // For zips, we store this simple uint until we need it, only then do we expand it into a full DateTime
+            internal uint? LastModifiedDateRaw;
+            private DateTime? _lastModifiedDate;
+            internal DateTime LastModifiedDate
+            {
+                get
+                {
+                    if (LastModifiedDateRaw != null)
+                    {
+                        _lastModifiedDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime((uint)LastModifiedDateRaw)).DateTime;
+                    }
+                    return (DateTime)_lastModifiedDate!;
+                }
+                set => _lastModifiedDate = value;
+            }
         }
 
         /// <summary>
@@ -433,8 +440,7 @@ namespace FMScanner
                 {
                     try
                     {
-                        _archive = new ZipArchiveFast(new FileStream(_archivePath, FileMode.Open, FileAccess.Read),
-                            leaveOpen: false, ZipEntryNameEncoding);
+                        _archive = new ZipArchiveFast(new FileStream(_archivePath, FileMode.Open, FileAccess.Read));
 
                         // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
                         // thrown while loading them. If this passes, we're definitely good.
@@ -812,67 +818,62 @@ namespace FMScanner
 
         private DateTime? GetReleaseDate(bool fmIsT3, List<NameAndIndex> usedMisFiles)
         {
-            DateTime? ret = null;
-
             // Look in the readme
             string ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
-            if (!ds.IsEmpty() && StringToDate(ds, out DateTime dt))
+            if (!ds.IsEmpty() && StringToDate(ds, out DateTime? dt))
             {
-                ret = dt;
+                return dt;
             }
 
             // Look for the first readme file's last modified date
-            if (ret == null && _readmeFiles.Count > 0 && _readmeFiles[0].LastModifiedDate.Year > 1998)
+            if (_readmeFiles.Count > 0 && _readmeFiles[0].LastModifiedDate.Year > 1998)
             {
-                ret = _readmeFiles[0].LastModifiedDate;
+                return _readmeFiles[0].LastModifiedDate;
             }
 
             // No first used mission file for T3: no idea how to find such a thing
-            if (fmIsT3) return ret;
+            if (fmIsT3) return null;
 
             // Look for the first used .mis file's last modified date
-            if (ret == null)
+            DateTime misFileDate;
+            if (_fmIsZip)
             {
-                DateTime misFileDate;
-                if (_fmIsZip)
+                misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
+                    _archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
+            }
+            else
+            {
+                if (_scanOptions.ScanSize && _fmDirFileInfos.Count > 0)
                 {
-                    misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
-                        _archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
+                    string fn = _fmWorkingPath + usedMisFiles[0].Name;
+                    // This loop is guaranteed to find something, because we will have quit early if we had no
+                    // used .mis files.
+                    FileInfo? misFile = null;
+                    for (int i = 0; i < _fmDirFileInfos.Count; i++)
+                    {
+                        FileInfo f = _fmDirFileInfos[i];
+                        if (f.FullName.PathEqualsI(fn))
+                        {
+                            misFile = f;
+                            break;
+                        }
+                    }
+                    misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
                 }
                 else
                 {
-                    if (_scanOptions.ScanSize && _fmDirFileInfos.Count > 0)
-                    {
-                        string fn = _fmWorkingPath + usedMisFiles[0].Name;
-                        // This loop is guaranteed to find something, because we will have quit early if we had
-                        // no used .mis files.
-                        FileInfo? misFile = null;
-                        for (int i = 0; i < _fmDirFileInfos.Count; i++)
-                        {
-                            FileInfo f = _fmDirFileInfos[i];
-                            if (f.FullName.PathEqualsI(fn))
-                            {
-                                misFile = f;
-                                break;
-                            }
-                        }
-                        misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
-                    }
-                    else
-                    {
-                        var fi = new FileInfo(Path.Combine(_fmWorkingPath, usedMisFiles[0].Name));
-                        misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
-                    }
-                }
-
-                if (misFileDate.Year > 1998)
-                {
-                    ret = misFileDate;
+                    var fi = new FileInfo(Path.Combine(_fmWorkingPath, usedMisFiles[0].Name));
+                    misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
                 }
             }
 
+            if (misFileDate.Year > 1998)
+            {
+                return misFileDate;
+            }
+
             // If we still don't have anything, give up: we've made a good-faith effort.
-            return ret;
+            return null;
         }
 
         #region Set tags
@@ -1429,7 +1430,7 @@ namespace FMScanner
             if (xReleaseDate.Count > 0)
             {
                 string rdString = xReleaseDate[0].InnerText;
-                releaseDate = StringToDate(rdString, out DateTime dt) ? (DateTime?)dt : null;
+                releaseDate = StringToDate(rdString, out DateTime? dt) ? dt : null;
             }
 
             // These files also specify languages and whether the mission has custom stuff, but we're not going
@@ -1599,7 +1600,7 @@ namespace FMScanner
                 }
                 else if (!fmIni.ReleaseDate.IsEmpty())
                 {
-                    ret.LastUpdateDate = StringToDate(fmIni.ReleaseDate, out DateTime dt) ? (DateTime?)dt : null;
+                    ret.LastUpdateDate = StringToDate(fmIni.ReleaseDate, out DateTime? dt) ? dt : null;
                 }
             }
 
@@ -1741,12 +1742,24 @@ namespace FMScanner
 
                 // We still add the readme even if we're not going to store nor scan its contents, because we
                 // still may need to look at its last modified date.
-                _readmeFiles.Add(new ReadmeInternal
+                if (_fmIsZip)
                 {
-                    FileName = fileName,
-                    LastModifiedDate = lastModifiedDate,
-                    Scan = scanThisReadme
-                });
+                    _readmeFiles.Add(new ReadmeInternal
+                    {
+                        FileName = fileName,
+                        LastModifiedDateRaw = readmeEntry!.LastWriteTime,
+                        Scan = scanThisReadme
+                    });
+                }
+                else
+                {
+                    _readmeFiles.Add(new ReadmeInternal
+                    {
+                        FileName = fileName,
+                        LastModifiedDate = lastModifiedDate,
+                        Scan = scanThisReadme
+                    });
+                }
 
                 if (!scanThisReadme) continue;
 
@@ -3296,7 +3309,7 @@ namespace FMScanner
 
         #endregion
 
-        private bool StringToDate(string dateString, out DateTime dateTime)
+        private bool StringToDate(string dateString, out DateTime? dateTime)
         {
             dateString = dateString.Replace(",", " ");
             dateString = Regex.Replace(dateString, @"\s+", @" ");
@@ -3317,7 +3330,7 @@ namespace FMScanner
             // want to fail, and not assume the current year.
             bool success = DateTime.TryParseExact(dateString, DateFormats,
                 DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime result);
-            dateTime = success ? result : new DateTime();
+            dateTime = success ? (DateTime?)result : null;
             return success;
         }
 
