@@ -492,8 +492,7 @@ namespace FMScanner
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [ContractAnnotation("=> false, result:null; => true, result:notnull")]
-            internal bool TryGetValue(ListFast<char> str, out Symbol? result)
+            internal bool TryGetValue(ListFast<char> str, [NotNullWhen(true)] out Symbol? result)
             {
                 int len = str.Count;
                 if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -2003,7 +2002,7 @@ namespace FMScanner
             // From the spec:
             // "While this is not likely to occur (or recommended), a \binN keyword, its argument, and the binary
             // data that follows are considered one character for skipping purposes."
-            if (symbol!.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
+            if (symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
             {
                 // Rather than literally counting it as one character for skipping purposes, we just increment
                 // the chars left to skip count by the specified length of the binary run, which accomplishes
