@@ -11,7 +11,8 @@ echo SolutionDir: %SolutionDir%
 
 rem Autogenerate code
 rem ---
-set FenGen="%SolutionDir%FenGen\bin\Release\net472\FenGen.exe"
+rem batch file hell #21354: vars with spaces in the value must be entirely in quotes
+set "FenGen=%SolutionDir%FenGen\bin\Release\net472\FenGen.exe"
 
 rem Run the resx exclude BEFORE AngelLoader even gets to its build (and AFTER FenGen has already been built).
 rem That way we should end up with a proper project file and no "sometimes works, sometimes doesn't" mess.
