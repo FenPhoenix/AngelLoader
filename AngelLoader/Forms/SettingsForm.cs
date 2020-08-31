@@ -243,6 +243,7 @@ namespace AngelLoader.Forms
                         case SettingsTab.Other:
                             OtherRadioButton.Checked = true;
                             break;
+                        case SettingsTab.Paths:
                         default:
                             PathsRadioButton.Checked = true;
                             break;
@@ -316,6 +317,7 @@ namespace AngelLoader.Forms
                         FMDisplayPage.UseShortGameTabNamesCheckBox.Enabled = true;
                         break;
                     case GameOrganization.OneList:
+                    default:
                         FMDisplayPage.OrganizeGamesInOneListRadioButton.Checked = true;
                         FMDisplayPage.UseShortGameTabNamesCheckBox.Enabled = false;
                         break;
@@ -369,11 +371,6 @@ namespace AngelLoader.Forms
                 // This comes last so that all the custom data is in place for the preview date to use
                 switch (config.DateFormat)
                 {
-                    case DateFormat.CurrentCultureShort:
-                        FMDisplayPage.DateCurrentCultureShortRadioButton.Checked = true;
-                        FMDisplayPage.DateCustomFormatPanel.Enabled = false;
-                        FMDisplayPage.PreviewDateLabel.Text = _exampleDate.ToShortDateString();
-                        break;
                     case DateFormat.CurrentCultureLong:
                         FMDisplayPage.DateCurrentCultureLongRadioButton.Checked = true;
                         FMDisplayPage.DateCustomFormatPanel.Enabled = false;
@@ -383,6 +380,12 @@ namespace AngelLoader.Forms
                         FMDisplayPage.DateCustomRadioButton.Checked = true;
                         FMDisplayPage.DateCustomFormatPanel.Enabled = true;
                         UpdateCustomExampleDate();
+                        break;
+                    case DateFormat.CurrentCultureShort:
+                    default:
+                        FMDisplayPage.DateCurrentCultureShortRadioButton.Checked = true;
+                        FMDisplayPage.DateCustomFormatPanel.Enabled = false;
+                        FMDisplayPage.PreviewDateLabel.Text = _exampleDate.ToShortDateString();
                         break;
                 }
 
@@ -403,6 +406,7 @@ namespace AngelLoader.Forms
                         FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked = true;
                         break;
                     case RatingDisplayStyle.FMSel:
+                    default:
                         FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked = true;
                         break;
                 }
@@ -440,6 +444,7 @@ namespace AngelLoader.Forms
                         OtherPage.BackupSavesAndScreensOnlyRadioButton.Checked = true;
                         break;
                     case BackupFMData.AllChangedFiles:
+                    default:
                         OtherPage.BackupAllChangedDataRadioButton.Checked = true;
                         break;
                 }
@@ -1097,7 +1102,7 @@ namespace AngelLoader.Forms
                 // ignore
             }
 
-            var (result, fileName) = BrowseForExeFile(initialPath);
+            (DialogResult result, string fileName) = BrowseForExeFile(initialPath);
             if (result == DialogResult.OK) tb.Text = fileName;
 
             ShowPathError(tb, !tb.Text.IsEmpty() && !File.Exists(tb.Text));

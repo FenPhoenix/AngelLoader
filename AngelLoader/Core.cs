@@ -895,6 +895,9 @@ namespace AngelLoader
                         {
                             filterShownIndexList.RemoveAt(i);
                             i--;
+                            // Explicit continue for safety in case the order of these gets changed or another
+                            // gets added
+                            // ReSharper disable once RedundantJumpStatement
                             continue;
                         }
                     }

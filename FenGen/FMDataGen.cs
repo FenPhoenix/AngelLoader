@@ -301,7 +301,7 @@ namespace FenGen
 
                                 string val = GetStringValue(attr);
 
-                                FieldInfo enumField = typeof(ListType).GetField(val, _bFlagsEnum);
+                                FieldInfo? enumField = typeof(ListType).GetField(val, _bFlagsEnum);
                                 if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
                                 break;
                             }
@@ -311,7 +311,7 @@ namespace FenGen
 
                                 string val = GetStringValue(attr);
 
-                                FieldInfo enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
+                                FieldInfo? enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
                                 if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
                                 break;
                             }
@@ -326,7 +326,7 @@ namespace FenGen
 
                                 string val = GetStringValue(attr);
 
-                                FieldInfo enumField = typeof(CustomCodeBlockNames).GetField(val, _bFlagsEnum);
+                                FieldInfo? enumField = typeof(CustomCodeBlockNames).GetField(val, _bFlagsEnum);
                                 if (enumField != null) field.CodeBlockToInsertAfter = (CustomCodeBlockNames)enumField.GetValue(null);
                                 break;
                             }

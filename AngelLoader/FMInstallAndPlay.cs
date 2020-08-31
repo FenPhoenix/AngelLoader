@@ -42,8 +42,13 @@ namespace AngelLoader
 
             if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
             {
-                var (cancel, dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Play_ConfirmMessage,
-                    LText.AlertMessages.Confirm, icon: null, showDontAskAgain: true, yes: null, no: null);
+                (bool cancel, bool dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(
+                    LText.AlertMessages.Play_ConfirmMessage,
+                    LText.AlertMessages.Confirm,
+                    icon: null,
+                    showDontAskAgain: true,
+                    yes: null,
+                    no: null);
 
                 if (cancel) return;
 
@@ -54,7 +59,9 @@ namespace AngelLoader
 
             if (playMP && fm.Game == Game.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
-                Core.View.ShowAlert(LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound, LText.AlertMessages.Alert);
+                Core.View.ShowAlert(
+                    LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound,
+                    LText.AlertMessages.Alert);
                 return;
             }
 
@@ -69,7 +76,8 @@ namespace AngelLoader
 
         internal static bool PlayOriginalGame(GameIndex game, bool playMP = false)
         {
-            var (success, gameExe, gamePath) = CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: true, playMP);
+            (bool success, string gameExe, string gamePath) =
+                CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: true, playMP);
             if (!success) return false;
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
@@ -101,7 +109,8 @@ namespace AngelLoader
 
             var game = GameToGameIndex(fm.Game);
 
-            var (success, gameExe, gamePath) = CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: false, playMP);
+            (bool success, string gameExe, string gamePath) =
+                CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: false, playMP);
             if (!success) return false;
 
             // Always do this for robustness, see below
@@ -133,7 +142,7 @@ namespace AngelLoader
             // works and one that doesn't, so I can test both paths.
 
 #if !ReleaseBeta && !ReleasePublic
-            string args = Config.ForceWindowed ? "+force_windowed -fm" : "-fm";
+            string args = !steamArgs.IsEmpty() ? steamArgs : Config.ForceWindowed ? "+force_windowed -fm" : "-fm";
 #else
             string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
 #endif
@@ -357,7 +366,7 @@ namespace AngelLoader
                 string? workingPath = Path.GetDirectoryName(Config.SteamExe);
 
                 if (workingPath.IsEmpty()) return (false, "", "", "");
-                
+
                 string args = "-applaunch " + GetGameSteamId(game);
 
                 return (true, Config.SteamExe, workingPath, args);
@@ -437,7 +446,8 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log(nameof(GenerateMissFlagFileIfRequired) + ": Exception trying to write missflag.str file", ex);
-                return;
+                // ReSharper disable once RedundantJumpStatement
+                return; // Explicit for clarity of intent
             }
         }
 
@@ -715,10 +725,13 @@ namespace AngelLoader
 
             if (Config.ConfirmUninstall)
             {
-                var (cancel, dontAskAgain) =
-                    Core.View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Uninstall_Confirm,
-                        LText.AlertMessages.Confirm, TaskDialogIcon.Warning, showDontAskAgain: true,
-                        LText.AlertMessages.Uninstall, LText.Global.Cancel);
+                (bool cancel, bool dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(
+                        LText.AlertMessages.Uninstall_Confirm,
+                        LText.AlertMessages.Confirm,
+                        TaskDialogIcon.Warning,
+                        showDontAskAgain: true,
+                        LText.AlertMessages.Uninstall,
+                        LText.Global.Cancel);
 
                 if (cancel) return;
 
@@ -730,7 +743,8 @@ namespace AngelLoader
             if (GameIsRunning(gameExe))
             {
                 Core.View.ShowAlert(
-                    gameName + ":\r\n" + LText.AlertMessages.Uninstall_GameIsRunning, LText.AlertMessages.Alert);
+                    gameName + ":\r\n" + LText.AlertMessages.Uninstall_GameIsRunning,
+                    LText.AlertMessages.Alert);
                 return;
             }
 
@@ -757,9 +771,12 @@ namespace AngelLoader
 
                 if (fmArchivePath!.IsEmpty())
                 {
-                    var (cancel, _) = Core.View.AskToContinueYesNoCustomStrings(
-                        LText.AlertMessages.Uninstall_ArchiveNotFound, LText.AlertMessages.Warning,
-                        TaskDialogIcon.Warning, showDontAskAgain: false, LText.AlertMessages.Uninstall,
+                    (bool cancel, _) = Core.View.AskToContinueYesNoCustomStrings(
+                        LText.AlertMessages.Uninstall_ArchiveNotFound,
+                        LText.AlertMessages.Warning,
+                        TaskDialogIcon.Warning,
+                        showDontAskAgain: false,
+                        LText.AlertMessages.Uninstall,
                         LText.Global.Cancel);
 
                     if (cancel) return;
@@ -789,11 +806,15 @@ namespace AngelLoader
                     string message = Config.BackupFMData == BackupFMData.SavesAndScreensOnly
                         ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                         : LText.AlertMessages.Uninstall_BackupAllData;
-                    var (cancel, cont, dontAskAgain) =
+                    (bool cancel, bool cont, bool dontAskAgain) =
                         Core.View.AskToContinueWithCancelCustomStrings(
                             message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
-                            LText.AlertMessages.Confirm, null, showDontAskAgain: true,
-                            LText.AlertMessages.BackUp, LText.AlertMessages.DontBackUp, LText.Global.Cancel);
+                            LText.AlertMessages.Confirm,
+                            null,
+                            showDontAskAgain: true,
+                            LText.AlertMessages.BackUp,
+                            LText.AlertMessages.DontBackUp,
+                            LText.Global.Cancel);
 
                     if (cancel) return;
 

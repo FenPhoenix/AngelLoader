@@ -1829,7 +1829,7 @@ namespace AngelLoader.Forms
             {
                 DateFormat.CurrentCultureShort => dt.ToShortDateString(),
                 DateFormat.CurrentCultureLong => dt.ToLongDateString(),
-                _ => dt.ToString(Config.DateCustomFormatString),
+                _ => dt.ToString(Config.DateCustomFormatString)
             };
 
             static string FormatSize(ulong size) =>
@@ -2683,7 +2683,7 @@ namespace AngelLoader.Forms
                     PatchMainPanel.Show();
                     PatchFMNotInstalledLabel.Hide();
                     PatchDMLsListBox.Items.Clear();
-                    var (success, dmlFiles) = Core.GetDMLFiles(fm);
+                    (bool success, List<string> dmlFiles) = Core.GetDMLFiles(fm);
                     if (success)
                     {
                         foreach (string f in dmlFiles)
@@ -2860,7 +2860,7 @@ namespace AngelLoader.Forms
         {
             try
             {
-                var (path, fileType) = Core.GetReadmeFileAndType(fm);
+                (string path, ReadmeType fileType) = Core.GetReadmeFileAndType(fm);
                 #region Debug
 
                 // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
@@ -3240,6 +3240,8 @@ namespace AngelLoader.Forms
             switch (e.KeyCode)
             {
                 case Keys.Up when box.Items.Count > 0:
+                    // We can't do a switch expression on the second one, so keep them both the same for consistency
+                    // ReSharper disable once ConvertConditionalTernaryExpressionToSwitchExpression
                     box.SelectedIndex =
                         box.SelectedIndex == -1 ? box.Items.Count - 1 :
                         box.SelectedIndex == 0 ? -1 :

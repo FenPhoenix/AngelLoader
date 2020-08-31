@@ -502,7 +502,7 @@ namespace AngelLoader
             string[] lines;
             try
             {
-                lines = File.ReadAllLines(fmselInf);
+                lines = File.ReadAllLines(fmselInf!);
             }
             catch (Exception ex)
             {

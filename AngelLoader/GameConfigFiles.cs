@@ -327,7 +327,8 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception writing " + Paths.CamModIni + " for " + gamePath, ex);
-                return;
+                // ReSharper disable once RedundantJumpStatement
+                return; // Explicit for clarity of intent
             }
         }
 

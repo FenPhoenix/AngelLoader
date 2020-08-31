@@ -315,7 +315,7 @@ namespace FenGen
             {
                 using var sr = new StreamReader(f);
 
-                string line;
+                string? line;
                 while ((line = sr.ReadLine()) != null)
                 {
                     string lts = line.TrimStart();

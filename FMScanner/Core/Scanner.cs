@@ -684,14 +684,14 @@ namespace FMScanner
             if (!fmIsT3)
             {
                 // This is here because it needs to come after the readmes are cached
-                #region NewDark minimum required version
+            #region NewDark minimum required version
 
                 if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
                 {
                     fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion);
                 }
 
-                #endregion
+            #endregion
             }
 #endif
 
@@ -2031,7 +2031,11 @@ namespace FMScanner
             return ret;
         }
 
-        private string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
+        private
+#if !FMScanner_FullCode
+        static
+#endif
+        string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
         {
             for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
             {

@@ -334,10 +334,10 @@ namespace AngelLoader
         // rid of the archive scan fast-paths later and just eat the cost of the dir scan.
         private static List<string> GetFMSupportedLanguages(string archive, string fmInstPath, bool earlyOutOnEnglish)
         {
-            var (Success, Languages) = GetFMSupportedLanguagesFromArchive(archive, earlyOutOnEnglish);
+            (bool success, List<string> languages) = GetFMSupportedLanguagesFromArchive(archive, earlyOutOnEnglish);
             try
             {
-                return Success ? Languages : GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish);
+                return success ? languages : GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish);
             }
             catch (Exception ex)
             {

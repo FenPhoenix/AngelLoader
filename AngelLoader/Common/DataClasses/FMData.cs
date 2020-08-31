@@ -76,6 +76,7 @@ namespace AngelLoader.DataClasses
         internal DateTime? DateAdded = null;
 
         [FenGenIgnore]
+        // ReSharper disable once RedundantDefaultMemberInitializer
         private uint _finishedOn = 0;
         [FenGenNumericEmpty(0)]
         internal uint FinishedOn { get => _finishedOn; set => _finishedOn = value.Clamp(0u, 15u); }

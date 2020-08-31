@@ -331,7 +331,7 @@ namespace AngelLoader
                                 using var eo = fmSelInf.Open();
                                 using var sr = new StreamReader(eo);
 
-                                string line;
+                                string? line;
                                 while ((line = sr.ReadLine()) != null)
                                 {
                                     bool startsWithRemoveFile = line.StartsWithFast_NoNullChecks(_removeFileEq);

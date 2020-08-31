@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
@@ -11,6 +12,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static ToolStripMenuItem ImportFromDarkLoaderMenuItem = null!;
         internal static ToolStripMenuItem ImportFromFMSelMenuItem = null!;
+        [UsedImplicitly]
+        // It's an implicit "else" case, but let's keep it non-private just for consistency
         internal static ToolStripMenuItem ImportFromNewDarkLoaderMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)

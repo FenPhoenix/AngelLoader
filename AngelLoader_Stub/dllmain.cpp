@@ -41,7 +41,7 @@
 #include <fstream>
 #include <filesystem>
 #include <cstdio>
-#include <windows.h>
+#include <Windows.h>
 //#include <shlwapi.h> // add shlwapi.lib to Additional Dependencies
 //#include <tchar.h>
 using std::string;

@@ -204,10 +204,10 @@ namespace FMScanner
             // ToString()s and just pass in simple char arrays. We are now unmeasurable. Hallelujah!
 
             //const int TOTAL_KEYWORDS = 72;
-            const int MIN_WORD_LENGTH = 1;
-            const int MAX_WORD_LENGTH = 10;
+            private const int MIN_WORD_LENGTH = 1;
+            private const int MAX_WORD_LENGTH = 10;
             //const int MIN_HASH_VALUE = 1;
-            const int MAX_HASH_VALUE = 241;
+            private const int MAX_HASH_VALUE = 241;
             /* maximum key range = 241, duplicates = 0 */
 
             private readonly byte[] asso_values =
@@ -1675,13 +1675,13 @@ namespace FMScanner
 
         // This "SYMBOL" and the below "Symbol" are unrelated. "SYMBOL" is a fldinst keyword, while "Symbol" is
         // the name of a font.
-        private readonly char[] _SYMBOLChars = new[] { 'S', 'Y', 'M', 'B', 'O', 'L' };
+        private readonly char[] _SYMBOLChars = { 'S', 'Y', 'M', 'B', 'O', 'L' };
 
-        private readonly char[] _wingdingsChars = new[] { 'W', 'i', 'n', 'g', 'd', 'i', 'n', 'g', 's' };
+        private readonly char[] _wingdingsChars = { 'W', 'i', 'n', 'g', 'd', 'i', 'n', 'g', 's' };
 
-        private readonly char[] _webdingsChars = new[] { 'W', 'e', 'b', 'd', 'i', 'n', 'g', 's' };
+        private readonly char[] _webdingsChars = { 'W', 'e', 'b', 'd', 'i', 'n', 'g', 's' };
 
-        private readonly char[] _symbolChars = new[] { 'S', 'y', 'm', 'b', 'o', 'l' };
+        private readonly char[] _symbolChars = { 'S', 'y', 'm', 'b', 'o', 'l' };
 
         #endregion
 
