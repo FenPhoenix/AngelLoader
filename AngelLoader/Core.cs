@@ -190,21 +190,26 @@ namespace AngelLoader
         public static (bool Canceled, List<int>? FMsViewListUnscanned, bool SortAndSetFilter, bool KeepSel)
         OpenSettings(bool startup = false, bool cleanStart = false)
         {
-            using var sf = new SettingsForm(View, Config, startup, cleanStart);
+            DialogResult result;
+            ConfigData outConfig;
+            using (var sf = new SettingsForm(View, Config, startup, cleanStart))
+            {
+                result = sf.ShowDialog();
+                outConfig = sf.OutConfig;
+            }
 
             // This needs to be separate so the below "always-save" stuff can work
-            var result = sf.ShowDialog();
 
             #region Save window state
 
             // Special case: these are meta, so they should always be set even if the user clicked Cancel
-            Config.SettingsTab = sf.OutConfig.SettingsTab;
-            Config.SettingsWindowSize = sf.OutConfig.SettingsWindowSize;
-            Config.SettingsWindowSplitterDistance = sf.OutConfig.SettingsWindowSplitterDistance;
+            Config.SettingsTab = outConfig.SettingsTab;
+            Config.SettingsWindowSize = outConfig.SettingsWindowSize;
+            Config.SettingsWindowSplitterDistance = outConfig.SettingsWindowSplitterDistance;
 
-            Config.SettingsPathsVScrollPos = sf.OutConfig.SettingsPathsVScrollPos;
-            Config.SettingsFMDisplayVScrollPos = sf.OutConfig.SettingsFMDisplayVScrollPos;
-            Config.SettingsOtherVScrollPos = sf.OutConfig.SettingsOtherVScrollPos;
+            Config.SettingsPathsVScrollPos = outConfig.SettingsPathsVScrollPos;
+            Config.SettingsFMDisplayVScrollPos = outConfig.SettingsFMDisplayVScrollPos;
+            Config.SettingsOtherVScrollPos = outConfig.SettingsOtherVScrollPos;
 
             #endregion
 
@@ -220,12 +225,12 @@ namespace AngelLoader
 
             bool archivePathsChanged =
                 !startup &&
-                (!Config.FMArchivePaths.PathSequenceEqualI_Dir(sf.OutConfig.FMArchivePaths) ||
-                 Config.FMArchivePathsIncludeSubfolders != sf.OutConfig.FMArchivePathsIncludeSubfolders);
+                (!Config.FMArchivePaths.PathSequenceEqualI_Dir(outConfig.FMArchivePaths) ||
+                 Config.FMArchivePathsIncludeSubfolders != outConfig.FMArchivePathsIncludeSubfolders);
 
             bool gamePathsChanged =
                 !startup &&
-                !Config.GameExes.PathSequenceEqualI(sf.OutConfig.GameExes);
+                !Config.GameExes.PathSequenceEqualI(outConfig.GameExes);
 
             // We need these in order to decide which, if any, startup config infos to re-read
             bool[] individualGamePathsChanged = new bool[SupportedGameCount];
@@ -235,39 +240,39 @@ namespace AngelLoader
                 GameIndex gameIndex = (GameIndex)i;
                 individualGamePathsChanged[i] =
                     !startup &&
-                    !Config.GetGameExe(gameIndex).PathEqualsI(sf.OutConfig.GetGameExe(gameIndex));
+                    !Config.GetGameExe(gameIndex).PathEqualsI(outConfig.GetGameExe(gameIndex));
             }
 
             bool gameOrganizationChanged =
-                !startup && Config.GameOrganization != sf.OutConfig.GameOrganization;
+                !startup && Config.GameOrganization != outConfig.GameOrganization;
 
             bool useShortGameTabNamesChanged =
-                !startup && Config.UseShortGameTabNames != sf.OutConfig.UseShortGameTabNames;
+                !startup && Config.UseShortGameTabNames != outConfig.UseShortGameTabNames;
 
             bool articlesChanged =
                 !startup &&
-                (Config.EnableArticles != sf.OutConfig.EnableArticles ||
-                 !Config.Articles.SequenceEqual(sf.OutConfig.Articles, StringComparer.InvariantCultureIgnoreCase) ||
-                 Config.MoveArticlesToEnd != sf.OutConfig.MoveArticlesToEnd);
+                (Config.EnableArticles != outConfig.EnableArticles ||
+                 !Config.Articles.SequenceEqual(outConfig.Articles, StringComparer.InvariantCultureIgnoreCase) ||
+                 Config.MoveArticlesToEnd != outConfig.MoveArticlesToEnd);
 
             bool ratingDisplayStyleChanged =
                 !startup &&
-                (Config.RatingDisplayStyle != sf.OutConfig.RatingDisplayStyle ||
-                 Config.RatingUseStars != sf.OutConfig.RatingUseStars);
+                (Config.RatingDisplayStyle != outConfig.RatingDisplayStyle ||
+                 Config.RatingUseStars != outConfig.RatingUseStars);
 
             bool dateFormatChanged =
                 !startup &&
-                (Config.DateFormat != sf.OutConfig.DateFormat ||
-                 Config.DateCustomFormatString != sf.OutConfig.DateCustomFormatString);
+                (Config.DateFormat != outConfig.DateFormat ||
+                 Config.DateCustomFormatString != outConfig.DateCustomFormatString);
 
             bool daysRecentChanged =
-                !startup && Config.DaysRecent != sf.OutConfig.DaysRecent;
+                !startup && Config.DaysRecent != outConfig.DaysRecent;
 
             bool languageChanged =
-                !startup && !Config.Language.EqualsI(sf.OutConfig.Language);
+                !startup && !Config.Language.EqualsI(outConfig.Language);
 
             bool useFixedFontChanged =
-                !startup && Config.ReadmeUseFixedWidthFont != sf.OutConfig.ReadmeUseFixedWidthFont;
+                !startup && Config.ReadmeUseFixedWidthFont != outConfig.ReadmeUseFixedWidthFont;
 
             #endregion
 
@@ -289,24 +294,24 @@ namespace AngelLoader
                 GameIndex gameIndex = (GameIndex)i;
 
                 // This must be done first!
-                Config.SetGameExe(gameIndex, sf.OutConfig.GetGameExe(gameIndex));
+                Config.SetGameExe(gameIndex, outConfig.GetGameExe(gameIndex));
 
                 // Set it regardless of game existing, because we want to blank the data
                 SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
 
-                Config.SetUseSteamSwitch(gameIndex, sf.OutConfig.GetUseSteamSwitch(gameIndex));
+                Config.SetUseSteamSwitch(gameIndex, outConfig.GetUseSteamSwitch(gameIndex));
             }
 
             #endregion
 
-            Config.SteamExe = sf.OutConfig.SteamExe;
-            Config.LaunchGamesWithSteam = sf.OutConfig.LaunchGamesWithSteam;
+            Config.SteamExe = outConfig.SteamExe;
+            Config.LaunchGamesWithSteam = outConfig.LaunchGamesWithSteam;
 
-            Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
+            Config.FMsBackupPath = outConfig.FMsBackupPath;
 
-            Config.FMArchivePaths.ClearAndAdd(sf.OutConfig.FMArchivePaths);
+            Config.FMArchivePaths.ClearAndAdd(outConfig.FMArchivePaths);
 
-            Config.FMArchivePathsIncludeSubfolders = sf.OutConfig.FMArchivePathsIncludeSubfolders;
+            Config.FMArchivePathsIncludeSubfolders = outConfig.FMArchivePathsIncludeSubfolders;
 
             #endregion
 
@@ -314,7 +319,7 @@ namespace AngelLoader
 
             if (startup)
             {
-                Config.Language = sf.OutConfig.Language;
+                Config.Language = outConfig.Language;
 
                 // We don't need to set the paths again, because we've already done so above
 
@@ -341,51 +346,51 @@ namespace AngelLoader
 
             #region FM Display tab
 
-            Config.GameOrganization = sf.OutConfig.GameOrganization;
-            Config.UseShortGameTabNames = sf.OutConfig.UseShortGameTabNames;
+            Config.GameOrganization = outConfig.GameOrganization;
+            Config.UseShortGameTabNames = outConfig.UseShortGameTabNames;
 
-            Config.EnableArticles = sf.OutConfig.EnableArticles;
-            Config.Articles.ClearAndAdd(sf.OutConfig.Articles);
+            Config.EnableArticles = outConfig.EnableArticles;
+            Config.Articles.ClearAndAdd(outConfig.Articles);
 
-            Config.MoveArticlesToEnd = sf.OutConfig.MoveArticlesToEnd;
+            Config.MoveArticlesToEnd = outConfig.MoveArticlesToEnd;
 
-            Config.RatingDisplayStyle = sf.OutConfig.RatingDisplayStyle;
-            Config.RatingUseStars = sf.OutConfig.RatingUseStars;
+            Config.RatingDisplayStyle = outConfig.RatingDisplayStyle;
+            Config.RatingUseStars = outConfig.RatingUseStars;
 
-            Config.DateFormat = sf.OutConfig.DateFormat;
-            Config.DateCustomFormat1 = sf.OutConfig.DateCustomFormat1;
-            Config.DateCustomSeparator1 = sf.OutConfig.DateCustomSeparator1;
-            Config.DateCustomFormat2 = sf.OutConfig.DateCustomFormat2;
-            Config.DateCustomSeparator2 = sf.OutConfig.DateCustomSeparator2;
-            Config.DateCustomFormat3 = sf.OutConfig.DateCustomFormat3;
-            Config.DateCustomSeparator3 = sf.OutConfig.DateCustomSeparator3;
-            Config.DateCustomFormat4 = sf.OutConfig.DateCustomFormat4;
-            Config.DateCustomFormatString = sf.OutConfig.DateCustomFormatString;
+            Config.DateFormat = outConfig.DateFormat;
+            Config.DateCustomFormat1 = outConfig.DateCustomFormat1;
+            Config.DateCustomSeparator1 = outConfig.DateCustomSeparator1;
+            Config.DateCustomFormat2 = outConfig.DateCustomFormat2;
+            Config.DateCustomSeparator2 = outConfig.DateCustomSeparator2;
+            Config.DateCustomFormat3 = outConfig.DateCustomFormat3;
+            Config.DateCustomSeparator3 = outConfig.DateCustomSeparator3;
+            Config.DateCustomFormat4 = outConfig.DateCustomFormat4;
+            Config.DateCustomFormatString = outConfig.DateCustomFormatString;
 
-            Config.DaysRecent = sf.OutConfig.DaysRecent;
+            Config.DaysRecent = outConfig.DaysRecent;
 
             #endregion
 
             #region Other tab
 
-            Config.ConvertWAVsTo16BitOnInstall = sf.OutConfig.ConvertWAVsTo16BitOnInstall;
-            Config.ConvertOGGsToWAVsOnInstall = sf.OutConfig.ConvertOGGsToWAVsOnInstall;
+            Config.ConvertWAVsTo16BitOnInstall = outConfig.ConvertWAVsTo16BitOnInstall;
+            Config.ConvertOGGsToWAVsOnInstall = outConfig.ConvertOGGsToWAVsOnInstall;
 
-            Config.ConfirmUninstall = sf.OutConfig.ConfirmUninstall;
+            Config.ConfirmUninstall = outConfig.ConfirmUninstall;
 
-            Config.BackupFMData = sf.OutConfig.BackupFMData;
-            Config.BackupAlwaysAsk = sf.OutConfig.BackupAlwaysAsk;
+            Config.BackupFMData = outConfig.BackupFMData;
+            Config.BackupAlwaysAsk = outConfig.BackupAlwaysAsk;
 
-            Config.Language = sf.OutConfig.Language;
+            Config.Language = outConfig.Language;
 
-            Config.WebSearchUrl = sf.OutConfig.WebSearchUrl;
+            Config.WebSearchUrl = outConfig.WebSearchUrl;
 
-            Config.ConfirmPlayOnDCOrEnter = sf.OutConfig.ConfirmPlayOnDCOrEnter;
+            Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
 
-            Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
-            Config.HideFMListZoomButtons = sf.OutConfig.HideFMListZoomButtons;
+            Config.HideUninstallButton = outConfig.HideUninstallButton;
+            Config.HideFMListZoomButtons = outConfig.HideFMListZoomButtons;
 
-            Config.ReadmeUseFixedWidthFont = sf.OutConfig.ReadmeUseFixedWidthFont;
+            Config.ReadmeUseFixedWidthFont = outConfig.ReadmeUseFixedWidthFont;
 
             #endregion
 
