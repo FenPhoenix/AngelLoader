@@ -2966,34 +2966,28 @@ namespace FMScanner
             {
                 codePoint -= 0xF000;
 
-                int fontNum = _lastUsedFontWithCodePage42;
-                if (fontNum == -1)
-                {
-                    fontNum = _header.CodePage;
-                    if (fontNum != 42) return Error.OK;
-                }
+                int fontNum = _lastUsedFontWithCodePage42 > -1
+                    ? _lastUsedFontWithCodePage42
+                    : _header.DefaultFontNum;
 
-                if (!_fontEntries.TryGetValue(fontNum, out var fontEntry))
+                if (!_fontEntries.TryGetValue(fontNum, out FontEntry? fontEntry) || fontEntry.CodePage != 42)
                 {
                     return Error.OK;
                 }
 
                 // We already know our code point is within bounds of the array, because the arrays also go from
                 // 0x20 - 0xFF, so no need to check.
-                if (fontEntry != null)
+                if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _wingdingsChars))
                 {
-                    if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _wingdingsChars))
-                    {
-                        codePoint = _wingdingsFontToUnicode[codePoint - 0x20];
-                    }
-                    else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _webdingsChars))
-                    {
-                        codePoint = _webdingsFontToUnicode[codePoint - 0x20];
-                    }
-                    else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _symbolChars))
-                    {
-                        codePoint = _symbolFontToUnicode[codePoint - 0x20];
-                    }
+                    codePoint = _wingdingsFontToUnicode[codePoint - 0x20];
+                }
+                else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _webdingsChars))
+                {
+                    codePoint = _webdingsFontToUnicode[codePoint - 0x20];
+                }
+                else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _symbolChars))
+                {
+                    codePoint = _symbolFontToUnicode[codePoint - 0x20];
                 }
             }
 
