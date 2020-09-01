@@ -166,11 +166,6 @@ namespace AngelLoader
 
             internal const uint DaysRecent = 15;
             internal const uint MaxDaysRecent = 99999;
-
-            //internal static ConfigVar CV_ForceFullScreen = new ConfigVar { Command = "-force_windowed" };
-            //internal static ConfigVar CV_ForceWindowed = new ConfigVar { Command = "+force_windowed" };
-            //internal static ConfigVar CV_ForceOldMantle = new ConfigVar { Command = "-new_mantle" };
-            //internal static ConfigVar CV_ForceNewMantle = new ConfigVar { Command = "+new_mantle" };
         }
 
         #region Interfaces

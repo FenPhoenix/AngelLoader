@@ -6,12 +6,6 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses
 {
-    //internal sealed class ConfigVar
-    //{
-    //    internal string Name = "";
-    //    internal string Command = "";
-    //}
-
     #region Columns
 
     internal sealed class ColumnData

@@ -134,9 +134,6 @@ namespace AngelLoader
                         }
                     }
                     Ini.AddLanguageFromFile(f, Config.LanguageNames);
-
-                    // These need to be set after language read. Slightly awkward but oh well.
-                    //SetDefaultConfigVarNamesToLocalized();
                 }
 
                 #endregion
@@ -555,15 +552,6 @@ namespace AngelLoader
                 }
             }
         }
-
-        // Future use
-        //internal static void SetDefaultConfigVarNamesToLocalized()
-        //{
-        //    Defaults.CV_ForceFullScreen.Name = LText.ConfigVars.ForceFullScreen;
-        //    Defaults.CV_ForceWindowed.Name = LText.ConfigVars.ForceWindowed;
-        //    Defaults.CV_ForceNewMantle.Name = LText.ConfigVars.ForceNewMantle;
-        //    Defaults.CV_ForceOldMantle.Name = LText.ConfigVars.ForceOldMantle;
-        //}
 
         internal static void SortFMsViewList(Column column, SortOrder sortDirection)
         {

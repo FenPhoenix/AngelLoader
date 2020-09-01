@@ -46,7 +46,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private ToolStripMenuItem? PlayFMMenuItem;
         private ToolStripMenuItem? PlayFMInMPMenuItem;
-        //private ToolStripMenuItem? PlayFMAdvancedMenuItem;
         private ToolStripMenuItem? InstallUninstallMenuItem;
 
         private ToolStripSeparator? DeleteFMSep;
@@ -109,7 +108,6 @@ namespace AngelLoader.Forms.CustomControls
                 FMContextMenu = new ContextMenuStrip(),
                 PlayFMMenuItem = new ToolStripMenuItem(),
                 PlayFMInMPMenuItem = new ToolStripMenuItem(),
-                //PlayFMAdvancedMenuItem = new ToolStripMenuItem(),
 
                 InstallUninstallMenuItem = new ToolStripMenuItem(),
 
@@ -164,7 +162,6 @@ namespace AngelLoader.Forms.CustomControls
             {
                 PlayFMMenuItem,
                 PlayFMInMPMenuItem,
-                //PlayFMAdvancedMenuItem,
                 InstallUninstallMenuItem,
                 DeleteFMSep,
                 DeleteFMMenuItem,
@@ -313,9 +310,6 @@ namespace AngelLoader.Forms.CustomControls
 
             PlayFMMenuItem!.Text = LText.FMsList.FMMenu_PlayFM.EscapeAmpersands();
             PlayFMInMPMenuItem!.Text = LText.FMsList.FMMenu_PlayFM_Multiplayer.EscapeAmpersands();
-
-            //PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced.EscapeAmpersands();
-            //Core.SetDefaultConfigVarNamesToLocalized();
 
             #endregion
 

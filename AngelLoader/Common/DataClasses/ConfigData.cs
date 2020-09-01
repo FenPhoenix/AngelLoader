@@ -386,8 +386,6 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
-        //internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
-
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed = false;
