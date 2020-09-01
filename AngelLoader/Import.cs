@@ -844,37 +844,29 @@ namespace AngelLoader
                         (importType == ImportType.NewDarkLoader &&
                          mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
                     {
-                        var priorityFMData = new FanMission();
-
                         if (fields.Title && !importedFM.Title.IsEmpty())
                         {
                             mainFM.Title = importedFM.Title;
-                            priorityFMData.Title = importedFM.Title;
                         }
                         if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
                         {
                             mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
-                            priorityFMData.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
                         }
                         if (fields.LastPlayed)
                         {
                             mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
-                            priorityFMData.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
                         }
                         if (fields.FinishedOn)
                         {
                             mainFM.FinishedOn = importedFM.FinishedOn;
-                            priorityFMData.FinishedOn = importedFM.FinishedOn;
                             if (importType != ImportType.FMSel)
                             {
                                 mainFM.FinishedOnUnknown = false;
-                                priorityFMData.FinishedOnUnknown = false;
                             }
                         }
                         if (fields.Comment)
                         {
                             mainFM.Comment = importedFM.Comment;
-                            priorityFMData.Comment = importedFM.Comment;
                         }
 
                         if (importType == ImportType.NewDarkLoader ||
@@ -883,24 +875,19 @@ namespace AngelLoader
                             if (fields.Rating)
                             {
                                 mainFM.Rating = importedFM.Rating;
-                                priorityFMData.Rating = importedFM.Rating;
                             }
                             if (fields.DisabledMods)
                             {
                                 mainFM.DisabledMods = importedFM.DisabledMods;
-                                priorityFMData.DisabledMods = importedFM.DisabledMods;
                                 mainFM.DisableAllMods = importedFM.DisableAllMods;
-                                priorityFMData.DisableAllMods = importedFM.DisableAllMods;
                             }
                             if (fields.Tags)
                             {
                                 mainFM.TagsString = importedFM.TagsString;
-                                priorityFMData.TagsString = importedFM.TagsString;
                             }
                             if (fields.SelectedReadme)
                             {
                                 mainFM.SelectedReadme = importedFM.SelectedReadme;
-                                priorityFMData.SelectedReadme = importedFM.SelectedReadme;
                             }
                         }
                         if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
@@ -908,7 +895,6 @@ namespace AngelLoader
                             if (fields.Size && mainFM.SizeBytes == 0)
                             {
                                 mainFM.SizeBytes = importedFM.SizeBytes;
-                                priorityFMData.SizeBytes = importedFM.SizeBytes;
                             }
                         }
                         else if (importType == ImportType.FMSel && mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
@@ -916,7 +902,6 @@ namespace AngelLoader
                             if (fields.FinishedOn)
                             {
                                 mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
-                                priorityFMData.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                             }
                         }
 

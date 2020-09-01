@@ -494,10 +494,6 @@ namespace AngelLoader
 
                 Config.SetFMInstallPath(gameIndex, data.FMsPath);
                 Config.SetGameEditorDetected(gameIndex, gameExeSpecified && !Config.GetEditorExe_FromDisk(gameIndex).IsEmpty());
-#if false
-                Config.SetPerGameFMLanguage(game, data.FMLanguage);
-                Config.SetPerGameFMForcedLanguage(game, data.FMLanguageForced);
-#endif
 
                 if (storeConfigInfo)
                 {
