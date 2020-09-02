@@ -175,6 +175,112 @@ namespace FMScanner
 #endif
         }
 
+        [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        public Scanner()
+        {
+            // Perf/size balance: we want to build these strings only once so we don't re-concat them a million
+            // times during the scan, but we also want to lower file size by not having a bunch of duplicate
+            // strings. So we build the string arrays dynamically only once here. That way we trade perf where it
+            // doesn't matter (this once-only build is mere noise) and keep it where it does, and also save file
+            // size.
+
+            int langsCount = Languages.Length;
+            Languages_FS_Lang_FS = new string[langsCount];
+            Languages_FS_Lang_Language_FS = new string[langsCount];
+            LanguagesC = new Dictionary<string, string>(langsCount);
+            EnglishOnly = new List<string> { Languages[0] };
+
+            FMFiles_SS2MisFiles = new HashSet<string>(23, StringComparer.OrdinalIgnoreCase);
+
+            #region FMFiles_TitlesStrLocations
+
+            string strings = "strings";
+            string fs = "/";
+            string title = "title";
+            string titles = title + "s";
+            string str = ".str";
+            string titleStr = title + str;
+            string titlesStr = titles + str;
+
+            // Do not change search order: strings/english, strings, strings/[any other language]
+            FMFiles_TitlesStrLocations[0] = strings + fs + Languages[0] + fs + titlesStr;
+            FMFiles_TitlesStrLocations[1] = strings + fs + Languages[0] + fs + titleStr;
+            FMFiles_TitlesStrLocations[2] = strings + fs + titlesStr;
+            FMFiles_TitlesStrLocations[3] = strings + fs + titleStr;
+
+            for (int i = 1; i < langsCount; i++)
+            {
+                FMFiles_TitlesStrLocations[(i - 1) + 4] = strings + fs + Languages[i] + fs + titlesStr;
+                FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = strings + fs + Languages[i] + fs + titleStr;
+            }
+
+            #endregion
+
+            #region Languages
+
+            for (int i = 0; i < langsCount; i++)
+            {
+                string lang = Languages[i];
+                Languages_FS_Lang_FS[i] = fs + Languages[i] + fs;
+                Languages_FS_Lang_Language_FS[i] = fs + Languages[i] + " Language" + fs;
+
+                // Lowercase to first-char-uppercase dict: Cheesy hack because it wasn't designed this way.
+                // All lang first chars are lowercase ASCII letters, so just subtract 32 to uppercase them.
+                LanguagesC.Add(lang, (char)(lang[0] - 32) + lang.Substring(1));
+            }
+
+            #endregion
+
+            #region SS2 mis files
+
+            string mis = ".mis";
+            string command = "command";
+            string eng = "eng";
+            string hydro = "hydro";
+            string medsci = "medsci";
+            string ops = "ops";
+            string rec = "rec";
+            string rick = "rick";
+
+            // This results in smaller file size than a flat sequence of adds
+            for (int i = 1; i <= 2; i++)
+            {
+                FMFiles_SS2MisFiles.Add(command + i + mis);
+            }
+            FMFiles_SS2MisFiles.Add("earth" + mis);
+            for (int i = 1; i <= 2; i++)
+            {
+                FMFiles_SS2MisFiles.Add(eng + i + mis);
+            }
+            for (int i = 1; i <= 3; i++)
+            {
+                FMFiles_SS2MisFiles.Add(hydro + i + mis);
+            }
+            FMFiles_SS2MisFiles.Add("many" + mis);
+            for (int i = 1; i <= 2; i++)
+            {
+                FMFiles_SS2MisFiles.Add(medsci + i + mis);
+            }
+            for (int i = 1; i <= 4; i++)
+            {
+                FMFiles_SS2MisFiles.Add(ops + i + mis);
+            }
+            for (int i = 1; i <= 3; i++)
+            {
+                FMFiles_SS2MisFiles.Add(rec + i + mis);
+            }
+            for (int i = 1; i <= 3; i++)
+            {
+                FMFiles_SS2MisFiles.Add(rick + i + mis);
+            }
+            FMFiles_SS2MisFiles.Add("shodan" + mis);
+            FMFiles_SS2MisFiles.Add("station" + mis);
+
+            #endregion
+        }
+
         #region Scan synchronous
 
         public ScannedFMData?
@@ -1202,12 +1308,12 @@ namespace FMScanner
 
                 if (t3Found)
                 {
-                    foreach (string f in EnumFiles(FMDirs.T3FMExtras1, "*", SearchOption.TopDirectoryOnly))
+                    foreach (string f in EnumFiles(FMDirs.T3FMExtras1S, "*", SearchOption.TopDirectoryOnly))
                     {
                         t3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
 
-                    foreach (string f in EnumFiles(FMDirs.T3FMExtras2, "*", SearchOption.TopDirectoryOnly))
+                    foreach (string f in EnumFiles(FMDirs.T3FMExtras2S, "*", SearchOption.TopDirectoryOnly))
                     {
                         t3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
@@ -1216,7 +1322,7 @@ namespace FMScanner
                 {
                     if (baseDirFiles.Count == 0) return false;
 
-                    foreach (string f in EnumFiles(FMDirs.Strings, "*", SearchOption.AllDirectories))
+                    foreach (string f in EnumFiles(FMDirs.StringsS, "*", SearchOption.AllDirectories))
                     {
                         stringsDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                         if (SS2FingerprintRequiredAndNotDone() &&
@@ -1229,12 +1335,12 @@ namespace FMScanner
                         }
                     }
 
-                    foreach (string f in EnumFiles(FMDirs.Intrface, "*", SearchOption.AllDirectories))
+                    foreach (string f in EnumFiles(FMDirs.IntrfaceS, "*", SearchOption.AllDirectories))
                     {
                         intrfaceDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
 
-                    foreach (string f in EnumFiles(FMDirs.Books, "*", SearchOption.AllDirectories))
+                    foreach (string f in EnumFiles(FMDirs.BooksS, "*", SearchOption.AllDirectories))
                     {
                         booksDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
@@ -3194,17 +3300,13 @@ namespace FMScanner
             // can still at least have an accurate detection while I work on a new version that takes the new
             // MAPPARAM location into account.
 
-            static bool SS2MisFilesPresent(List<NameAndIndex> misFiles, string[] ss2MisFiles)
+            static bool SS2MisFilesPresent(List<NameAndIndex> misFiles, HashSet<string> ss2MisFiles)
             {
                 for (int mfI = 0; mfI < misFiles.Count; mfI++)
                 {
-                    string fn = misFiles[mfI].Name;
-                    for (int ss2mfI = 0; ss2mfI < ss2MisFiles.Length; ss2mfI++)
+                    if (ss2MisFiles.Contains(misFiles[mfI].Name))
                     {
-                        if (fn.EqualsI(ss2MisFiles[ss2mfI]))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
 

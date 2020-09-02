@@ -25,7 +25,6 @@ namespace FMScanner
     */
     public sealed partial class Scanner
     {
-
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal static class Constants
         {
@@ -39,9 +38,9 @@ namespace FMScanner
             // PERF: const string concatenation is free (const concats are done at compile time), so do it to lessen
             // the chance of error.
 
-            internal const string Books = "books";
+            // We only need BooksS
             internal const string Fam = "fam";
-            internal const string Intrface = "intrface";
+            // We only need IntrfaceS
             internal const string Mesh = "mesh";
             internal const string Motions = "motions";
             internal const string Movies = "movies";
@@ -50,12 +49,12 @@ namespace FMScanner
             internal const string Scripts = "scripts";
             internal const string Snd = "snd";
             internal const string Snd2 = "snd2"; // SS2 only
-            internal const string Strings = "strings";
+            // We only need StringsS
             internal const string Subtitles = "subtitles";
 
-            internal const string BooksS = Books + "/";
+            internal const string BooksS = "books/";
             internal const string FamS = Fam + "/";
-            internal const string IntrfaceS = Intrface + "/";
+            internal const string IntrfaceS = "intrface/";
             internal const int IntrfaceSLen = 9; // workaround for .NET 4.7.2 not inlining const string lengths
             internal const string MeshS = Mesh + "/";
             internal const string MotionsS = Motions + "/";
@@ -65,13 +64,11 @@ namespace FMScanner
             internal const string ScriptsS = Scripts + "/";
             internal const string SndS = Snd + "/";
             internal const string Snd2S = Snd2 + "/"; // SS2 only
-            internal const string StringsS = Strings + "/";
+            internal const string StringsS = "strings/";
             internal const string SubtitlesS = Subtitles + "/";
 
-            internal const string T3FMExtras1 = "Fan Mission Extras";
-            internal const string T3FMExtras2 = "FanMissionExtras";
-            internal const string T3FMExtras1S = T3FMExtras1 + "/";
-            internal const string T3FMExtras2S = T3FMExtras2 + "/";
+            internal const string T3FMExtras1S = "Fan Mission Extras/";
+            internal const string T3FMExtras2S = "FanMissionExtras/";
 
             internal const string T3DetectS = "Content/T3/Maps/";
             internal const int T3DetectSLen = 16; // workaround for .NET 4.7.2 not inlining const string lengths
@@ -106,67 +103,10 @@ namespace FMScanner
 
         #region Non-const FM Files
 
-        private readonly string[]
-        FMFiles_TitlesStrLocations =
-        {
-            // Do not change search order: strings/english, strings, strings/[any other language]
-            "strings/english/titles.str",
-            "strings/english/title.str",
-            "strings/titles.str",
-            "strings/title.str",
-
-            "strings/czech/titles.str",
-            "strings/dutch/titles.str",
-            "strings/french/titles.str",
-            "strings/german/titles.str",
-            "strings/hungarian/titles.str",
-            "strings/italian/titles.str",
-            "strings/japanese/titles.str",
-            "strings/polish/titles.str",
-            "strings/russian/titles.str",
-            "strings/spanish/titles.str",
-
-            "strings/czech/title.str",
-            "strings/dutch/title.str",
-            "strings/french/title.str",
-            "strings/german/title.str",
-            "strings/hungarian/title.str",
-            "strings/italian/title.str",
-            "strings/japanese/title.str",
-            "strings/polish/title.str",
-            "strings/russian/title.str",
-            "strings/spanish/title.str"
-        };
+        private readonly string[] FMFiles_TitlesStrLocations = new string[24];
 
         // Used for SS2 fingerprinting for the game type scan fallback
-        [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        private readonly string[]
-        FMFiles_SS2MisFiles =
-        {
-            "command1.mis",
-            "command2.mis",
-            "earth.mis",
-            "eng1.mis",
-            "eng2.mis",
-            "hydro1.mis",
-            "hydro2.mis",
-            "hydro3.mis",
-            "many.mis",
-            "medsci1.mis",
-            "medsci2.mis",
-            "ops1.mis",
-            "ops2.mis",
-            "ops3.mis",
-            "ops4.mis",
-            "rec1.mis",
-            "rec2.mis",
-            "rec3.mis",
-            "rick1.mis",
-            "rick2.mis",
-            "rick3.mis",
-            "shodan.mis",
-            "station.mis"
-        };
+        private readonly HashSet<string> FMFiles_SS2MisFiles;
 
         #endregion
 
@@ -254,12 +194,10 @@ namespace FMScanner
 
         #region Languages
 
-        // NOTE: I think this was for GetLanguages() for the planned accuracy update?
-        //private readonly string[] LanguageDirs = { FMDirs.Books, FMDirs.Intrface, FMDirs.Strings };
-
         // Perf micro-optimization: don't create a new list if we're only returning English
-        private readonly List<string> EnglishOnly = new List<string> { "english" };
+        private readonly List<string> EnglishOnly;
 
+        // Single source of truth for language names (but we use this to build more arrays based on it for perf)
         private readonly string[]
         Languages =
         {
@@ -276,56 +214,9 @@ namespace FMScanner
             "spanish"
         };
 
-        // Perf: avoids concats
-
-        private readonly string[]
-        Languages_FS_Lang_FS =
-        {
-            "/english/",
-            "/czech/",
-            "/dutch/",
-            "/french/",
-            "/german/",
-            "/hungarian/",
-            "/italian/",
-            "/japanese/",
-            "/polish/",
-            "/russian/",
-            "/spanish/"
-        };
-
-        private readonly string[]
-        Languages_FS_Lang_Language_FS =
-        {
-            "/english Language/",
-            "/czech Language/",
-            "/dutch Language/",
-            "/french Language/",
-            "/german Language/",
-            "/hungarian Language/",
-            "/italian Language/",
-            "/japanese Language/",
-            "/polish Language/",
-            "/russian Language/",
-            "/spanish Language/"
-        };
-
-        // Cheesy hack because it wasn't designed this way
-        private readonly Dictionary<string, string>
-        LanguagesC = new Dictionary<string, string>
-        {
-            { "english", "English" },
-            { "czech", "Czech" },
-            { "dutch", "Dutch" },
-            { "french", "French" },
-            { "german", "German" },
-            { "hungarian", "Hungarian" },
-            { "italian", "Italian" },
-            { "japanese", "Japanese" },
-            { "polish", "Polish" },
-            { "russian", "Russian" },
-            { "spanish", "Spanish" }
-        };
+        private readonly string[] Languages_FS_Lang_FS;
+        private readonly string[] Languages_FS_Lang_Language_FS;
+        private readonly Dictionary<string, string> LanguagesC;
 
         #endregion
 
