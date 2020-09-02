@@ -10,17 +10,7 @@ namespace FMScanner
 {
     internal static class Utility
     {
-        #region Extensions
-
-        #region Queries
-
-        /// <summary>
-        /// Returns a value between 0 and 1.0 that indicates how similar the two strings are.
-        /// </summary>
-        /// <param name="string1"></param>
-        /// <param name="string2"></param>
-        /// <param name="stringComparison"></param>
-        /// <returns></returns>
+        /// <summary>Returns a value between 0 and 1.0 that indicates how similar the two strings are.</summary>
         internal static double SimilarityTo(this string string1, string string2, StringComparison stringComparison)
         {
             if (string1.Equals(string2, stringComparison)) return 1.0;
@@ -50,6 +40,10 @@ namespace FMScanner
             return 1.0 - ((double)vec2[string2.Length] / Math.Max(string1.Length, string2.Length));
         }
 
+        internal static int GetPercentFromValue(int current, int total) => (100 * current) / total;
+
+        #region Readme validation
+
         internal static bool IsEnglishReadme(this string value)
         {
             int dotIndex = value.IndexOf('.');
@@ -58,6 +52,18 @@ namespace FMScanner
                     (dotIndex == 10 && value.StartsWithI("fminfo-eng")) ||
                     !(dotIndex > 6 && value.StartsWithI("fminfo")));
         }
+
+        internal static bool IsValidReadme(this string readme) =>
+            readme.ExtIsTxt() ||
+            readme.ExtIsRtf() ||
+            readme.ExtIsWri() ||
+            readme.ExtIsGlml() ||
+            // We don't scan HTML files, but we may still need them to check their dates
+            readme.ExtIsHtml();
+
+        #endregion
+
+        #region Count chars
 
         /// <summary>
         /// Returns the number of times a character appears in a string.
@@ -86,6 +92,10 @@ namespace FMScanner
             return false;
         }
 
+        #endregion
+
+        #region Contains
+
         // I don't know if this is "supposed" to be the fastest way, but every other algorithm I've tried is at
         // least 2-8x slower. IndexOf() calls an internal method TrySZIndexOf() which is obviously some voodoo
         // speed demon stuff because none of this Moyer-Bohr-Kensington-Smythe-Wappcapplet fancy stuff beats it.
@@ -112,8 +122,6 @@ namespace FMScanner
 
             return false;
         }
-
-        #region Contains
 
         internal static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
 
@@ -155,27 +163,28 @@ namespace FMScanner
 
         #endregion
 
+        #region Equals
+
         /// <summary>
         /// Determines whether this string and a specified <see langword="string"/> object have the same value.
         /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
         /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns></returns>
         internal static bool EqualsI(this string first, string second) => first.Equals(second, OrdinalIgnoreCase);
+
+        #endregion
 
         #region Path-specific string queries (separator-agnostic)
 
-        [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsDirSep(this char character) => character == '/' || character == '\\';
-        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsDirSep(this char character) => character == '/' || character == '\\';
+
         // Disabled until needed
         /*
         [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
         */
 
-        [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
 
         // Note: We hardcode '/' and '\' for now because we can get paths from archive files too, where the dir
@@ -231,19 +240,15 @@ namespace FMScanner
             int i1 = value.LastIndexOf('/');
             int i2 = value.LastIndexOf('\\');
 
-            if (i1 == -1 && i2 == -1) return -1;
-
-            return Math.Max(i1, i2);
+            return i1 == -1 && i2 == -1 ? -1 : Math.Max(i1, i2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool AsciiPathCharsConsideredEqual_Win(char char1, char char2)
-        {
-            return char1 == char2 ||
-                   (char1.IsDirSep() && char2.IsDirSep()) ||
-                   (char1 >= 65 && char1 <= 90 && char2 >= 97 && char2 <= 122 && char1 == char2 - 32) ||
-                   (char1 >= 97 && char1 <= 122 && char2 >= 65 && char2 <= 90 && char1 == char2 + 32);
-        }
+        private static bool AsciiPathCharsConsideredEqual_Win(char char1, char char2) =>
+            char1 == char2 ||
+            (char1.IsDirSep() && char2.IsDirSep()) ||
+            (char1 >= 'A' && char1 <= 'Z' && char2 >= 'a' && char2 <= 'z' && char1 == char2 - 32) ||
+            (char1 >= 'a' && char1 <= 'z' && char2 >= 'A' && char2 <= 'Z' && char1 == char2 + 32);
 
         /// <summary>
         /// Path equality check ignoring case and directory separator differences.
@@ -349,14 +354,18 @@ namespace FMScanner
                    lastDotIndex > value.LastIndexOf('\\');
         }
 
-        internal static bool IsValidReadme(this string readme, bool englishOnly = false)
+        /// <summary>
+        /// Just removes the extension from a filename, without the rather large overhead of
+        /// Path.GetFileNameWithoutExtension().
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        internal static string RemoveExtension(this string fileName)
         {
-            return (readme.ExtIsTxt() ||
-                    readme.ExtIsRtf() ||
-                    readme.ExtIsWri() ||
-                    readme.ExtIsGlml() ||
-                    readme.ExtIsHtml()) &&
-                   (!englishOnly || readme.IsEnglishReadme());
+            int i = fileName.LastIndexOf('.');
+            return i > -1 && i > fileName.LastIndexOf('\\') && i > fileName.LastIndexOf('/')
+                ? fileName.Substring(0, i)
+                : fileName;
         }
 
         #region Baked-in extension checks (generated)
@@ -686,9 +695,7 @@ namespace FMScanner
 
         #endregion
 
-        #endregion
-
-        #region Modifications
+        #region String value cleanup
 
         /// <summary>
         /// Removes all matching pairs of parentheses that surround the entire string, while leaving
@@ -745,22 +752,6 @@ namespace FMScanner
             return value;
         }
 
-        /// <summary>
-        /// Just removes the extension from a filename, without the rather large overhead of
-        /// Path.GetFileNameWithoutExtension().
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        internal static string RemoveExtension(this string fileName)
-        {
-            int i = fileName.LastIndexOf('.');
-            return i > -1 && i > fileName.LastIndexOf('\\') && i > fileName.LastIndexOf('/')
-                ? fileName.Substring(0, i)
-                : fileName;
-        }
-
-        #endregion
-
         #endregion
 
         #region Clear and add
@@ -787,7 +778,5 @@ namespace FMScanner
         }
 
         #endregion
-
-        internal static int GetPercentFromValue(int current, int total) => (100 * current) / total;
     }
 }

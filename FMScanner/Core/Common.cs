@@ -25,12 +25,8 @@ namespace FMScanner
     */
     public sealed partial class Scanner
     {
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal static class Constants
-        {
-            internal const char uldq = '\u201C'; // Unicode left double-quote
-            internal const char urdq = '\u201D'; // Unicode right double-quote
-        }
+        private const char LeftDoubleQuote = '\u201C';
+        private const char RightDoubleQuote = '\u201D';
 
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         private static class FMDirs
@@ -126,7 +122,7 @@ namespace FMScanner
         private readonly char[] CA_Hyphen = { '-' };
         private readonly char[] CA_CommaSemicolon = { ',', ';' };
         private readonly char[] CA_DoubleQuote = { '\"' };
-        private readonly char[] CA_UnicodeQuotes = { Constants.uldq, Constants.urdq };
+        private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
         private readonly string[] SA_CRLF = { "\r\n" };
         private readonly string[] SA_DoubleSpaces = { "  " };
         private readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };

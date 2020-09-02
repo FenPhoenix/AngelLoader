@@ -28,7 +28,6 @@ using JetBrains.Annotations;
 using SevenZip;
 using static System.StringComparison;
 using static FMScanner.Logger;
-using static FMScanner.Scanner.Constants;
 using static FMScanner.Utility;
 
 namespace FMScanner
@@ -2245,8 +2244,8 @@ namespace FMScanner
 
             // Remove surrounding quotes
             if (ret[0] == '\"' && ret[ret.Length - 1] == '\"') ret = ret.Trim(CA_DoubleQuote);
-            if ((ret[0] == uldq || ret[0] == urdq) &&
-                (ret[ret.Length - 1] == uldq || ret[ret.Length - 1] == urdq))
+            if ((ret[0] == LeftDoubleQuote || ret[0] == RightDoubleQuote) &&
+                (ret[ret.Length - 1] == LeftDoubleQuote || ret[ret.Length - 1] == RightDoubleQuote))
             {
                 ret = ret.Trim(CA_UnicodeQuotes);
             }
