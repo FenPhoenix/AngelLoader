@@ -1685,8 +1685,8 @@ namespace FMScanner
                 {
                     fmIni.Descr = fmIni.Descr.Trim(CA_DoubleQuote);
                 }
-                if (fmIni.Descr[0] == uldq && fmIni.Descr[fmIni.Descr.Length - 1] == urdq &&
-                    fmIni.Descr.CountChars(uldq) + fmIni.Descr.CountChars(urdq) == 2)
+                if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[fmIni.Descr.Length - 1] == RightDoubleQuote &&
+                    fmIni.Descr.CountChars(LeftDoubleQuote) + fmIni.Descr.CountChars(RightDoubleQuote) == 2)
                 {
                     fmIni.Descr = fmIni.Descr.Trim(CA_UnicodeQuotes);
                 }
