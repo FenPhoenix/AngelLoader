@@ -272,7 +272,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log(nameof(ResetGameConfigTempChanges) + ": Exception trying to unset temp config values\r\n" +
+                    Log("Exception trying to unset temp config values\r\n" +
                         "GameIndex: " + gameIndex + "\r\n" +
                         "GameExe: " + gameExe,
                         ex);

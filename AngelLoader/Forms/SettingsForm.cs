@@ -1438,8 +1438,14 @@ namespace AngelLoader.Forms
 
         private void LocalizeOwnerForm()
         {
-            try { _ownerForm!.Localize(); }
-            catch (Exception ex) { Log(nameof(_ownerForm) + " was null or some other exotic exception occurred - not supposed to happen", ex); }
+            try
+            {
+                _ownerForm!.Localize();
+            }
+            catch (Exception ex)
+            {
+                Log(nameof(_ownerForm) + " was null or some other exotic exception occurred - not supposed to happen", ex);
+            }
         }
 
         /// <summary>

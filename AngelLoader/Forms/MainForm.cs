@@ -2605,7 +2605,7 @@ namespace AngelLoader.Forms
                 HidePatchSectionWithMessage(LText.PatchTab.FMNotInstalled);
             }
 
-            PatchDMLsPanel.Enabled = fm.Game != Game.Thief3;
+            PatchDMLsPanel.Enabled = GameIsDark(fm.Game);
 
             #endregion
 

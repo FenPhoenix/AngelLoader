@@ -130,7 +130,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log("There was an error while reading " + f + ".", ex);
+                            Log("Error while reading " + f + ".", ex);
                         }
                     }
                     Ini.AddLanguageFromFile(f, Config.LanguageNames);
@@ -1014,11 +1014,7 @@ namespace AngelLoader
 
         internal static bool AddDML(FanMission fm, string sourceDMLPath)
         {
-            if (!GameIsDark(fm.Game))
-            {
-                Log("AddDML: fm is not Dark", stackTrace: true);
-                return false;
-            }
+            AssertR(GameIsDark(fm.Game), nameof(AddDML) + ": " + nameof(fm) + " is not Dark");
 
             if (!FMIsReallyInstalled(fm))
             {
@@ -1045,11 +1041,7 @@ namespace AngelLoader
 
         internal static bool RemoveDML(FanMission fm, string dmlFile)
         {
-            if (!GameIsDark(fm.Game))
-            {
-                Log("RemoveDML: fm is not Dark", stackTrace: true);
-                return false;
-            }
+            AssertR(GameIsDark(fm.Game), nameof(RemoveDML) + ": " + nameof(fm) + " is not Dark");
 
             if (!FMIsReallyInstalled(fm))
             {
@@ -1075,11 +1067,7 @@ namespace AngelLoader
         internal static (bool Success, List<string> DMLFiles)
         GetDMLFiles(FanMission fm)
         {
-            if (!GameIsDark(fm.Game))
-            {
-                Log("GetDMLFiles: fm is not Dark", stackTrace: true);
-                return (false, new List<string>());
-            }
+            AssertR(GameIsDark(fm.Game), nameof(GetDMLFiles) + ": " + nameof(fm) + " is not Dark");
 
             try
             {
@@ -1429,7 +1417,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(nameof(OpenHelpFile) + ": Exception writing temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
+                Log("Exception writing temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
                 finalUri = helpFileUri;
             }
 
@@ -1439,7 +1427,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(nameof(OpenHelpFile) + ": Exception in " + nameof(ProcessStart_UseShellExecute) + ". Couldn't open help file.", ex);
+                Log("Exception in " + nameof(ProcessStart_UseShellExecute) + ". Couldn't open help file.", ex);
                 View.ShowAlert(LText.AlertMessages.Help_UnableToOpenHelpFile, LText.AlertMessages.Alert);
             }
         }

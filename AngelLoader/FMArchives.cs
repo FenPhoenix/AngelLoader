@@ -144,7 +144,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log(nameof(Delete) + ": Exception deleting file '" + archive + "'", ex);
+                            Log("Exception deleting archive '" + archive + "'", ex);
                             Core.View.InvokeSync(new Action(() =>
                             {
                                 Core.View.ShowAlert(

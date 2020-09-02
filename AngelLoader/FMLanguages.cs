@@ -341,7 +341,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in " + nameof(GetFMSupportedLanguagesFromInstDir) + ". Unable to run the language selection; language may be wrong.", ex);
+                Log(nameof(GetFMSupportedLanguagesFromInstDir) + ": Unable to run the language selection; language may be wrong.", ex);
                 return new List<string>();
             }
         }

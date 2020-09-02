@@ -177,7 +177,7 @@ namespace AngelLoader
                         // a refresh that gets called in that case
                         if (scanningOne)
                         {
-                            Log(nameof(ScanFMs) + " (one) scanned FM was null. FM was:\r\n" +
+                            Log("(one) scanned FM was null. FM was:\r\n" +
                                 "Archive: " + fmsToScanFiltered[0].Archive + "\r\n" +
                                 "InstalledDir: " + fmsToScanFiltered[0].InstalledDir,
                                 methodName: false);

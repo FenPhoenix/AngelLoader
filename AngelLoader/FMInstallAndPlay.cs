@@ -445,7 +445,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(nameof(GenerateMissFlagFileIfRequired) + ": Exception trying to write missflag.str file", ex);
+                Log("Exception trying to write missflag.str file", ex);
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
             }
