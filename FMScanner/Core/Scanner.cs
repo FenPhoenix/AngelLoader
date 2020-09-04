@@ -1447,11 +1447,11 @@ namespace FMScanner
             {
                 // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
                 missFlag =
-                    stringsDirFiles.FirstOrDefault(x =>
+                    stringsDirFiles.Find(x =>
                         x.Name.PathEqualsI(FMFiles.StringsMissFlag))
-                    ?? stringsDirFiles.FirstOrDefault(x =>
+                    ?? stringsDirFiles.Find(x =>
                         x.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
-                    ?? stringsDirFiles.FirstOrDefault(x =>
+                    ?? stringsDirFiles.Find(x =>
                         x.Name.PathEndsWithI(FMFiles.SMissFlag));
             }
 
@@ -2352,11 +2352,11 @@ namespace FMScanner
             if (intrfaceDirFiles.Count == 0) return "";
 
             NameAndIndex? newGameStrFile =
-                intrfaceDirFiles.FirstOrDefault(x =>
+                intrfaceDirFiles.Find(x =>
                     x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
-                ?? intrfaceDirFiles.FirstOrDefault(x =>
+                ?? intrfaceDirFiles.Find(x =>
                     x.Name.PathEqualsI(FMFiles.IntrfaceNewGameStr))
-                ?? intrfaceDirFiles.FirstOrDefault(x =>
+                ?? intrfaceDirFiles.Find(x =>
                     x.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
                     x.Name.PathEndsWithI(FMFiles.SNewGameStr));
 
@@ -2503,7 +2503,7 @@ namespace FMScanner
             foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
             {
                 NameAndIndex? titlesFile = _fmIsZip
-                    ? stringsDirFiles.FirstOrDefault(x => x.Name.PathEqualsI(titlesFileLocation))
+                    ? stringsDirFiles.Find(x => x.Name.PathEqualsI(titlesFileLocation))
                     : new NameAndIndex(Path.Combine(_fmWorkingPath, titlesFileLocation));
 
                 if (titlesFile == null || (!_fmIsZip && !File.Exists(titlesFile.Name))) continue;
@@ -2998,7 +2998,7 @@ namespace FMScanner
                         else
                         {
                             string? gamFullPath = null;
-                            FileInfo? gamFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
+                            FileInfo? gamFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
                             length = gamFI?.Length ?? new FileInfo(gamFullPath ?? Path.Combine(_fmWorkingPath, gam.Name)).Length;
                         }
                         gamSizeList.Add((gam.Name, gam.Index, length));
@@ -3034,7 +3034,7 @@ namespace FMScanner
                     else
                     {
                         string? misFullPath = null;
-                        FileInfo? misFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
+                        FileInfo? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
                     }
                     misSizeList.Add((mis.Name, mis.Index, length));

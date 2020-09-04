@@ -49,8 +49,8 @@ namespace AngelLoader
 
         #region Per-game constants
 
-        // IMPORTANT: These are used in Config.ini, so they must remain the same for compatibility. Don't change
-        // the existing values, only add new ones!
+        // IMPORTANT: These are used in Config.ini, so they must remain the same for compatibility.
+        // Don't change the existing values, only add new ones!
         private static readonly string[]
         _gamePrefixes =
         {
