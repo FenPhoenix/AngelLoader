@@ -103,7 +103,6 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
                     : PagePanel.Width;
                 // Guess we gotta do this one too or something
                 FlowLayoutPanel1.Width = ActualPathsPanel.Width;
-
             }
             finally
             {

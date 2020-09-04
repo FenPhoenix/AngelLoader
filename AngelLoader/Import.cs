@@ -636,7 +636,6 @@ namespace AngelLoader
                                 break;
                             }
                             i++;
-
                         }
 
                         fms.Add(fm);
@@ -836,13 +835,13 @@ namespace AngelLoader
                     var mainFM = FMDataIniList[mainFMi];
 
                     if (!checkedArray[mainFMi] &&
-                        (importType == ImportType.DarkLoader &&
-                         mainFM.Archive.EqualsI(importedFM.Archive)) ||
-                        (importType == ImportType.FMSel &&
-                         (!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
-                          importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)) ||
-                        (importType == ImportType.NewDarkLoader &&
-                         mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
+                        ((importType == ImportType.DarkLoader &&
+                          mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                         (importType == ImportType.FMSel &&
+                          ((!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                         importedFM.InstalledDir.EqualsI(mainFM.InstalledDir))) ||
+                         (importType == ImportType.NewDarkLoader &&
+                          mainFM.InstalledDir.EqualsI(importedFM.InstalledDir))))
                     {
                         if (fields.Title && !importedFM.Title.IsEmpty())
                         {

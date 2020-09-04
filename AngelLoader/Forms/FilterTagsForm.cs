@@ -307,7 +307,6 @@ namespace AngelLoader.Forms
                     _ => TagsFilter.NotTags
                 };
 
-
                 CatAndTags? match = null;
                 for (int i = 0; i < filteredTags.Count; i++)
                 {

@@ -843,7 +843,7 @@ namespace FMScanner
                 if (!fmIsT3) SetOrAddTitle(GetTitleFromNewGameStrFile(intrfaceDirFiles));
 
                 var topOfReadmeTitles = GetTitlesFromTopOfReadmes(_readmeFiles);
-                if (topOfReadmeTitles != null && topOfReadmeTitles.Count > 0)
+                if (topOfReadmeTitles?.Count > 0)
                 {
                     for (int i = 0; i < topOfReadmeTitles.Count; i++) SetOrAddTitle(topOfReadmeTitles[i]);
                 }
@@ -1247,8 +1247,8 @@ namespace FMScanner
                         {
                             fmd.HasCustomCreatures = true;
                         }
-                        else if (fmd.HasCustomScripts == null &&
-                                 (!fn.ContainsDirSep() &&
+                        else if ((fmd.HasCustomScripts == null &&
+                                  !fn.ContainsDirSep() &&
                                   ScriptFileExtensions.Any(fn.EndsWithI)) ||
                                  (fn.PathStartsWithI(FMDirs.ScriptsS) &&
                                   fn.HasFileExtension()))
@@ -1954,7 +1954,7 @@ namespace FMScanner
                     }
 
                     // file is rtf
-                    if (rtfHeader != null && rtfHeader.SequenceEqual(RtfTags_HeaderBytes))
+                    if (rtfHeader?.SequenceEqual(RtfTags_HeaderBytes) == true)
                     {
                         bool success;
                         string text;
@@ -2313,7 +2313,7 @@ namespace FMScanner
                 {
                     string lineT = lines[i].Trim();
                     if (i > 0 &&
-                        lineT.StartsWithI("By ") || lineT.StartsWithI("By: ") ||
+                        (lineT.StartsWithI("By ") || lineT.StartsWithI("By: ") ||
                         lineT.StartsWithI("Original concept by ") ||
                         lineT.StartsWithI("Created by ") ||
                         lineT.StartsWithI("A Thief 2 fan") ||
@@ -2324,7 +2324,7 @@ namespace FMScanner
                         lineT.StartsWithI("A Thief 3") ||
                         AThief3Mission.Match(lineT).Success ||
                         lineT.StartsWithI("A System Shock") ||
-                        lineT.StartsWithI("An SS2"))
+                        lineT.StartsWithI("An SS2")))
                     {
                         for (int j = 0; j < i; j++)
                         {
@@ -2506,7 +2506,7 @@ namespace FMScanner
                     ? stringsDirFiles.FirstOrDefault(x => x.Name.PathEqualsI(titlesFileLocation))
                     : new NameAndIndex(Path.Combine(_fmWorkingPath, titlesFileLocation));
 
-                if (titlesFile == null || !_fmIsZip && !File.Exists(titlesFile.Name)) continue;
+                if (titlesFile == null || (!_fmIsZip && !File.Exists(titlesFile.Name))) continue;
 
                 if (_fmIsZip)
                 {
@@ -2580,9 +2580,7 @@ namespace FMScanner
                 }
             }
 
-            value = CleanupValue(value);
-
-            return value;
+            return CleanupValue(value);
         }
 
         #endregion
@@ -2773,11 +2771,7 @@ namespace FMScanner
                 if (foundAuthor) break;
             }
 
-            if (author.IsWhiteSpace()) return "";
-
-            author = CleanupCopyrightAuthor(author);
-
-            return author;
+            return author.IsWhiteSpace() ? "" : CleanupCopyrightAuthor(author);
         }
 
         private string CleanupCopyrightAuthor(string author)
@@ -2809,9 +2803,7 @@ namespace FMScanner
                 author = author.Substring(0, author.Length - 2);
             }
 
-            author = author.TrimEnd(CA_Period).Trim();
-
-            return author;
+            return author.TrimEnd(CA_Period).Trim();
         }
 
         #endregion

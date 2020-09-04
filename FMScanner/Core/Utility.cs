@@ -135,8 +135,7 @@ namespace FMScanner
         internal static bool ContainsI(this string value, string substring) => value.IndexOf(substring, OrdinalIgnoreCase) >= 0;
 
         /// <summary>
-        /// Determines whether a List&lt;string&gt; contains a specified element. Uses 
-        /// <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// Determines whether a List&lt;string&gt; contains a specified element. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="substring"></param>
@@ -145,12 +144,10 @@ namespace FMScanner
         {
             for (int i = 0; i < value.Length; i++) if (value[i].Equals(substring, OrdinalIgnoreCase)) return true;
             return false;
-
         }
 
         /// <summary>
-        /// Determines whether a string[] contains a specified element. Uses 
-        /// <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// Determines whether a string[] contains a specified element. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="substring"></param>
@@ -720,7 +717,7 @@ namespace FMScanner
                             surroundedByParens = false;
                             break;
                         case ')':
-                            int index = stack.Any() ? stack.Pop() : -1;
+                            int index = stack.Count > 0 ? stack.Pop() : -1;
                             surroundedByParens = index == 0;
                             break;
                         default:

@@ -49,7 +49,6 @@ namespace AngelLoader.Forms.CustomControls
                     int newCaretPosition = oldCaretPosition - (oldTextLength - newText.Length);
                     Select(newCaretPosition < 0 ? 0 : newCaretPosition, 0);
                 }
-
             }
 
             _backingText = Text;

@@ -57,7 +57,7 @@ namespace AngelLoader.DataClasses
 
         [FenGenNumericEmpty(0)]
         internal ulong SizeBytes = 0;
-        
+
         [FenGenIgnore]
         private int _rating = -1;
         [FenGenNumericEmpty(-1)]

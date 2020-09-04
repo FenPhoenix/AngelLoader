@@ -1144,7 +1144,6 @@ namespace AngelLoader.Forms
             PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
         }
 
-
         #region Archive paths
 
         private bool FMArchivePathExistsInBox(string path)

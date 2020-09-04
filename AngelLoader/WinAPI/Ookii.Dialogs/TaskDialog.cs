@@ -46,7 +46,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         #region Constructors
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="title">
         /// The window title of the task dialog. The default is an empty string ("").
@@ -83,7 +83,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </para>
         /// </param>
         /// <param name="customMainIcon">
-        /// 
+        ///
         /// An <see cref="System.Drawing.Icon"/> that represents the icon to display in the main content area of the task dialog,
         /// or <see langword="null" /> if no custom icon should be used. The default value is <see langword="null"/>.
         /// <para>
@@ -330,7 +330,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             {
                 // This'll be safe until they introduce 128 bit machines. :)
                 // It's the only way to do it without unsafe code.
-                IntPtr offset = new IntPtr(buttons.ToInt64() + x * elementSize);
+                IntPtr offset = new IntPtr(buttons.ToInt64() + (x * elementSize));
                 Marshal.DestroyStructure(offset, typeof(NativeMethods.TASKDIALOG_BUTTON));
             }
             Marshal.FreeHGlobal(buttons);
@@ -350,7 +350,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             {
                 // This'll be safe until they introduce 128 bit machines. :)
                 // It's the only way to do it without unsafe code.
-                IntPtr offset = new IntPtr(buttonsPtr.ToInt64() + x * elementSize);
+                IntPtr offset = new IntPtr(buttonsPtr.ToInt64() + (x * elementSize));
                 Marshal.StructureToPtr(buttons[x], offset, false);
             }
             count = (uint)buttons.Count;

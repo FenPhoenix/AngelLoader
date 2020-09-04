@@ -10,12 +10,12 @@ namespace FenGen
         {
             const string formsDir = "Forms";
             const string customControlsDir = "CustomControls";
-            
+
             string visLocProjectPath = Path.Combine(Core.ALSolutionPath, "AngelLoaderVisualLocalizer");
 
             string alFormsPath = Path.Combine(Core.ALProjectPath, formsDir);
             string visLocFormsPath = Path.Combine(visLocProjectPath, formsDir);
-            
+
             string alCustomControlsPath = Path.Combine(Core.ALProjectPath, customControlsDir);
             string visLocCustomControlsPath = Path.Combine(visLocProjectPath, customControlsDir);
 

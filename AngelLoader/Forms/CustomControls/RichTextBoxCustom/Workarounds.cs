@@ -145,7 +145,7 @@ namespace AngelLoader.Forms.CustomControls
 
             // Send a WM_VSCROLL scroll message using SB_THUMBTRACK as wParam
             // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
-            IntPtr ptrWParam = new IntPtr(SB_THUMBTRACK + 0x10000 * si.nPos);
+            IntPtr ptrWParam = new IntPtr(SB_THUMBTRACK + (0x10000 * si.nPos));
             IntPtr ptrLParam = new IntPtr(0);
 
             IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)SB_THUMBTRACK;
@@ -475,8 +475,6 @@ namespace AngelLoader.Forms.CustomControls
             {
                 // Do nothing; remain at 1.0
             }
-
-
         }
         #endregion
 

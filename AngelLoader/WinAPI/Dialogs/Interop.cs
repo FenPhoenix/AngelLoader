@@ -27,8 +27,8 @@ namespace AngelLoader.WinAPI.Dialogs
 
     internal enum HResult
     {
-        /// <summary>     
-        /// S_OK          
+        /// <summary>
+        /// S_OK
         /// </summary>
         Ok = 0x0000,
 

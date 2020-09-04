@@ -700,7 +700,6 @@ namespace AngelLoader
                     // Throws a weird exception even if everything's fine
                     Log("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
                 }
-
             }
             catch (Exception ex)
             {

@@ -8,7 +8,7 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnDrawNode(DrawTreeNodeEventArgs e)
         {
             bool nodeFocused = (e.State & TreeNodeStates.Focused) == TreeNodeStates.Focused;
-            
+
             Brush backColor;
             Color textColor;
             if (e.Node == SelectedNode)

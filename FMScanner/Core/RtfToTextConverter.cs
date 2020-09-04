@@ -2327,7 +2327,7 @@ namespace FMScanner
                         if (fontEntry == null)
                         {
                             GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChar);
-                            if (finalChar == "") finalChar = _unicodeUnknown_String;
+                            if (finalChar.IsEmpty()) finalChar = _unicodeUnknown_String;
                         }
                         else
                         {
@@ -2367,7 +2367,6 @@ namespace FMScanner
                             finalChar = _unicodeUnknown_String;
                         }
                     }
-
                 }
 
                 PutChar(finalChar);
@@ -3000,7 +2999,7 @@ namespace FMScanner
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string? ConvertFromUtf32(int utf32)
         {
-            if (utf32 < 0 || utf32 > 1114111 || utf32 >= 55296 && utf32 <= 57343)
+            if (utf32 < 0 || utf32 > 1114111 || (utf32 >= 55296 && utf32 <= 57343))
             {
                 return null;
             }
@@ -3015,8 +3014,8 @@ namespace FMScanner
             // Small enough not to even bother caching it
             return new string(new[]
             {
-                (char)(utf32 / 1024 + 55296),
-                (char)(utf32 % 1024 + 56320)
+                (char)((utf32 / 1024) + 55296),
+                (char)((utf32 % 1024) + 56320)
             });
         }
 

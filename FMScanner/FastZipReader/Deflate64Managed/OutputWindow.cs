@@ -42,14 +42,14 @@ namespace FMScanner.FastZipReader.Deflate64Managed
         internal void WriteLengthDistance(int length, int distance)
         {
             Debug.Assert(AvailableBytes + length <= WindowSize, "No Enough space");
-            
+
             // move backwards distance bytes in the output stream,
             // and copy length bytes from this position to the output stream.
             AvailableBytes += length;
             int copyStart = (_end - distance) & WindowMask; // start position for coping.
 
             int border = WindowSize - length;
-            if (copyStart <= border && _end < border) 
+            if (copyStart <= border && _end < border)
             {
                 if (length <= distance)
                 {

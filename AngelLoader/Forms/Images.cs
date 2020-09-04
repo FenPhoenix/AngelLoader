@@ -377,7 +377,6 @@ namespace AngelLoader.Forms
                         _starRightEmpty?.Dispose();
                         _starFull?.Dispose();
                     }
-
                 }
                 return _ratingExample_FMSel_Stars;
             }

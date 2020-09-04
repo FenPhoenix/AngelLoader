@@ -682,8 +682,8 @@ namespace AngelLoader
                     selectorPath = "";
                     changeLoaderIfResetting = false;
                 }
-                else if (startupFMSelectorLines.Count > 0 &&
-                    startupFMSelectorLines[0].PathEqualsI(Paths.StubFileName) ||
+                else if ((startupFMSelectorLines.Count > 0 &&
+                    startupFMSelectorLines[0].PathEqualsI(Paths.StubFileName)) ||
                     prevFMSelectorValue.IsEmpty())
                 {
                     selectorPath = Paths.FMSelDll;

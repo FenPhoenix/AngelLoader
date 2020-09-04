@@ -305,7 +305,6 @@ namespace AngelLoader
                         x.FinishedOn < y.FinishedOn ? -1 : 1;
                 }
 
-
                 return SortOrder == SortOrder.Ascending ? ret : -ret;
             }
         }
@@ -456,7 +455,7 @@ namespace AngelLoader
                 AssertR(y.Category.ToLowerInvariant() == y.Category, "CategoryComparer: y.Name is not lowercase");
 
                 // Category names are supposed to always be lowercase, so don't waste time checking
-                return string.Compare(x.Category, y.Category, StringComparison.Ordinal);
+                return string.CompareOrdinal(x.Category, y.Category);
             }
         }
 
@@ -471,7 +470,7 @@ namespace AngelLoader
                 AssertR(y.Category.Name.ToLowerInvariant() == y.Category.Name, "CategoryComparer: y.Name is not lowercase");
 
                 // Category names are supposed to always be lowercase, so don't waste time checking
-                return string.Compare(x.Category.Name, y.Category.Name, StringComparison.Ordinal);
+                return string.CompareOrdinal(x.Category.Name, y.Category.Name);
             }
         }
 

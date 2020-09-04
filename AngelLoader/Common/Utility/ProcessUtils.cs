@@ -139,7 +139,6 @@ namespace AngelLoader
             return Process.Start(startInfo);
         }
 
-
         #endregion
     }
 }

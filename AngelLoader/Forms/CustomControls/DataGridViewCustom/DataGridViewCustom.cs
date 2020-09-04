@@ -63,7 +63,7 @@ namespace AngelLoader.Forms.CustomControls
         #region API methods
 
         #region Init
-       
+
         public DataGridViewCustom() => DoubleBuffered = true;
 
         internal void InjectOwner(IView owner) => _owner = owner;
@@ -199,9 +199,7 @@ namespace AngelLoader.Forms.CustomControls
                 });
             }
 
-            columns = columns.OrderBy(x => x.Id).ToList();
-
-            return columns;
+            return columns.OrderBy(x => x.Id).ToList();
         }
 
         internal void SetColumnData(List<ColumnData> columnDataList)
