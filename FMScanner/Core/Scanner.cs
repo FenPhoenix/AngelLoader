@@ -3270,7 +3270,9 @@ namespace FMScanner
 
                     if (!header.Contains(OBJ_MAP)) continue;
 
-                    br.BaseStream.Position = offset;
+                    // Put us past the name (12), version high (4), version low (4), and the zero (4) - length
+                    // starts AFTER this 24-byte header! (thanks JayRude)
+                    br.BaseStream.Position = offset + 24;
 
                     byte[] content = br.ReadBytes((int)length);
                     ret.Game = content.Contains(Thief2UniqueString)
