@@ -294,6 +294,14 @@ namespace FMScanner
 
         private readonly byte[] OBJ_MAP = Encoding.ASCII.GetBytes("OBJ_MAP");
 
+        /*
+        In theory, someone could make a Thief 1 mission with a RopeyArrow archetype. It's never happened and is
+        vanishingly unlikely to happen, but hey. Before RopeyArrow, there will be an int32 id number followed by
+        the bytes 0B 00 00 00 (for .mis files) or 0F 00 00 00 0B 00 00 00 (for .gam files). 99% of the time this
+        id number is D7 F3 FF FF (presumably the T2 default), so we could almost prepend this to our string for
+        extra strength defense against a custom RopeyArrow archetype... except that a handful of legit T2 missions
+        have different ids. So unfortunately if we want to stay accurate we have to stay with just "RopeyArrow".
+        */
         private readonly byte[] Thief2UniqueString = Encoding.ASCII.GetBytes("RopeyArrow");
 
         // SS2-only detection string
