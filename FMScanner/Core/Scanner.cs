@@ -3142,8 +3142,8 @@ namespace FMScanner
             }
 
             using (var sr = _fmIsZip
-                ? new BinaryReader(misFileZipEntry!.Open(), Encoding.ASCII, false)
-                : new BinaryReader(new FileStream(misFileOnDisk!, FileMode.Open, FileAccess.Read), Encoding.ASCII, false))
+                ? new BinaryReader(misFileZipEntry.Open(), Encoding.ASCII, false)
+                : new BinaryReader(new FileStream(misFileOnDisk, FileMode.Open, FileAccess.Read), Encoding.ASCII, false))
             {
                 for (int i = 0; i < locations.Length; i++)
                 {
@@ -3246,7 +3246,7 @@ namespace FMScanner
             {
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
-                Stream stream = smallestGamFile != null ? gamFileZipEntry!.Open() : misFileZipEntry!.Open();
+                Stream stream = smallestGamFile != null ? gamFileZipEntry.Open() : misFileZipEntry.Open();
                 ret.Game = StreamContainsIdentString(stream, Thief2UniqueString)
                     ? Game.Thief2
                     : Game.Thief1;
@@ -3255,8 +3255,9 @@ namespace FMScanner
             {
                 // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
                 // OBJ_MAP chunk and search it for the string. Phew.
-                using var br = new BinaryReader(File.Open(misFileOnDisk!, FileMode.Open, FileAccess.Read),
+                using var br = new BinaryReader(File.Open(misFileOnDisk, FileMode.Open, FileAccess.Read),
                     Encoding.ASCII, leaveOpen: false);
+
                 uint tocOffset = br.ReadUInt32();
 
                 br.BaseStream.Position = tocOffset;
@@ -3310,8 +3311,8 @@ namespace FMScanner
             if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
             {
                 Stream stream = _fmIsZip
-                    ? misFileZipEntry!.Open()
-                    : new FileStream(misFileOnDisk!, FileMode.Open, FileAccess.Read);
+                    ? misFileZipEntry.Open()
+                    : new FileStream(misFileOnDisk, FileMode.Open, FileAccess.Read);
 
                 if (StreamContainsIdentString(stream, MAPPARAM))
                 {
