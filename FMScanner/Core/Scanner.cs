@@ -2443,10 +2443,11 @@ namespace FMScanner
                     string line = titlesStrLines[lineIndex];
                     int i;
                     titleNum = line.Substring(i = line.IndexOf('_') + 1, line.IndexOf(':') - i).Trim();
-                    if (titleNum == "0") ret.TitleFrom0 = ExtractFromQuotedSection(line);
-
+                    
                     title = ExtractFromQuotedSection(line);
                     if (title.IsEmpty()) continue;
+
+                    if (titleNum == "0") ret.TitleFrom0 = title;
 
                     string umf = usedMisFiles[umfIndex].Name;
                     int umfDotIndex = umf.IndexOf('.');
@@ -2530,20 +2531,19 @@ namespace FMScanner
 
             // There's a way to do this with an IEqualityComparer, but no, for reasons
             var tfLinesD = new List<string>(titlesStrLines.Count);
+            
+            for (int i = 0; i < titlesStrLines.Count; i++)
             {
-                for (int i = 0; i < titlesStrLines.Count; i++)
+                int indexOfColon;
+                // Note: the Trim() is important, don't remove it
+                string line = titlesStrLines[i].Trim();
+                if (!line.IsEmpty() &&
+                    line.StartsWithI("title_") &&
+                    (indexOfColon = line.IndexOf(':')) > -1 &&
+                    line.CharCountIsAtLeast('\"', 2) &&
+                    !tfLinesD.Any(x => x.StartsWithI(line.Substring(0, indexOfColon))))
                 {
-                    int indexOfColon;
-                    // Note: the Trim() is important, don't remove it
-                    string line = titlesStrLines[i].Trim();
-                    if (!line.IsEmpty() &&
-                        line.StartsWithI("title_") &&
-                        (indexOfColon = line.IndexOf(':')) > -1 &&
-                        line.CharCountIsAtLeast('\"', 2) &&
-                        !tfLinesD.Any(x => x.StartsWithI(line.Substring(0, indexOfColon))))
-                    {
-                        tfLinesD.Add(line);
-                    }
+                    tfLinesD.Add(line);
                 }
             }
 

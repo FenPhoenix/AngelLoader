@@ -253,7 +253,7 @@ namespace FMScanner
             // For listtext, pntext
             // Ignore list item bullets and numeric prefixes etc. We don't need them.
 
-            private readonly Symbol?[] _symbolTable = //new Symbol_Named[72];
+            private readonly Symbol?[] _symbolTable =
             {
                 null,
 // Entry 16
