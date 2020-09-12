@@ -13,19 +13,6 @@ namespace AngelLoader
 {
     internal static class FindFMs
     {
-        // Whole extra class just for the one thing... oh well...
-        private sealed class ArchiveValue
-        {
-            internal readonly string FileNameWithExt;
-            internal readonly DateTime DateTime;
-
-            internal ArchiveValue(string fileNameWithExt, DateTime dateTime)
-            {
-                FileNameWithExt = fileNameWithExt;
-                DateTime = dateTime;
-            }
-        }
-
         // MT: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
         // @CAN_RUN_BEFORE_VIEW_INIT
@@ -140,7 +127,7 @@ namespace AngelLoader
 
             #region Get archives from disk
 
-            var fmArchivesAndDatesDict = new Dictionary<string, ArchiveValue>(StringComparer.OrdinalIgnoreCase);
+            var fmArchivesAndDatesDict = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 
             var archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
@@ -155,11 +142,6 @@ namespace AngelLoader
                         string f = files[fi];
                         // Do this first because it should be faster than a dictionary lookup
                         if (!f.ExtIsArchive()) continue;
-
-                        // Even though this allocates for every file, it's still only linear. Better to allocate
-                        // and be O(n) than to not allocate and be O(n^2).
-                        string fNoExt = f.RemoveExtension();
-
                         // NOTE: We do a ContainsKey check to keep behavior the same as previously. When we use
                         // dict[key] = value, it _replaces_ the value with the new one every time. What we want
                         // is for it to just not touch it at all if the key is already in there. This check does
@@ -167,15 +149,11 @@ namespace AngelLoader
                         // still avoid the n-squared 1.6-million-call nightmare we get with ~1600 FMs in the list.
                         // Nevertheless, we can avoid even this small extra cost if we only have one FM archive
                         // path, so no harm in keeping the only-one-path check.
-
-                        // Fix: we want to disregard extensions for equality check purposes here. Otherwise, we
-                        // could end up with "fm.zip" and "fm.7z" both being converted to "fm" installed dirs,
-                        // and then the number adder will hit an assert (as it should).
-                        if ((onlyOnePath || !fmArchivesAndDatesDict.ContainsKey(fNoExt)) &&
+                        if ((onlyOnePath || !fmArchivesAndDatesDict.ContainsKey(f)) &&
                             // @DIRSEP: These are filename only, no need for PathContainsI()
                             !f.ContainsI(Paths.FMSelBak))
                         {
-                            fmArchivesAndDatesDict[fNoExt] = new ArchiveValue(f, dateTimes[fi]);
+                            fmArchivesAndDatesDict[f] = dateTimes[fi];
                         }
                     }
                 }
@@ -193,8 +171,8 @@ namespace AngelLoader
                 int i = 0;
                 foreach (var item in fmArchivesAndDatesDict)
                 {
-                    fmArchives[i] = item.Value.FileNameWithExt;
-                    fmArchivesDates[i] = item.Value.DateTime;
+                    fmArchives[i] = item.Key;
+                    fmArchivesDates[i] = item.Value;
                     i++;
                 }
             }
@@ -333,11 +311,13 @@ namespace AngelLoader
                         if (i > 999) break;
 
                         // Conform to FMSel's numbering format
-                        string numStr = (i + 2).ToString();
-                        instDir = instDir.Substring(0, (instDir.Length - 2) - numStr.Length) + "(" + numStr + ")";
+                        string append = "(" + (i + 2).ToString() + ")";
 
-                        AssertR(truncate && instDir.Length == 30,
-                            nameof(instDir) + "should have been truncated but its length is not 30");
+                        if (truncate && instDir.Length + append.Length > 30)
+                        {
+                            instDir = instDir.Substring(0, 30 - append.Length);
+                        }
+                        instDir += append;
 
                         i++;
                     }
