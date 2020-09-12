@@ -8,7 +8,7 @@
  in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
  Images to switch to drawing:
-  -Install / uninstall
+ -Install / uninstall
  -Green CheckCircle
  -Settings (can we do gradients and curved paths?)
  -Import

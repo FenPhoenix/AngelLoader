@@ -206,11 +206,11 @@ namespace FenGen
 
         internal static void Generate(string sourceFile, string destFile)
         {
-            var fields = ReadSourceFields(sourceFile);
+            FieldList fields = ReadSourceFields(sourceFile);
 
             // Always do an atomic read operation, because we may want to open the same file for other purposes
             // in the middle of it (we had an access exception before)
-            var lines = File.ReadAllLines(destFile);
+            string[] lines = File.ReadAllLines(destFile);
 
             var destTopLines = new List<string>();
 
@@ -337,8 +337,8 @@ namespace FenGen
 
             #endregion
 
-            var code = File.ReadAllText(sourceFile);
-            var tree = ParseTextFast(code);
+            string code = File.ReadAllText(sourceFile);
+            SyntaxTree tree = ParseTextFast(code);
 
             var (member, classAttr) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenFMDataSourceClass);
             var fmDataClass = (ClassDeclarationSyntax)member;
@@ -355,7 +355,7 @@ namespace FenGen
 
             foreach (SyntaxNode item in fmDataClass.ChildNodes())
             {
-                var tempField = new Field();
+                Field tempField = new Field();
                 if (item.IsKind(SyntaxKind.FieldDeclaration) || item.IsKind(SyntaxKind.PropertyDeclaration))
                 {
                     FillFieldFromAttributes((MemberDeclarationSyntax)item, tempField, out bool ignore);
@@ -399,7 +399,7 @@ namespace FenGen
 
             for (int i = 0; i < fields.Count; i++)
             {
-                var field = fields[i];
+                Field field = fields[i];
                 string objDotField = obj + "." + field.Name;
 
                 string optElse = i > 0 ? "else " : "";
@@ -607,7 +607,7 @@ namespace FenGen
 
             var w = new Generators.IndentingWriter(sb, startingIndent: 4);
 
-            foreach (var field in fields)
+            foreach (Field field in fields)
             {
                 string objDotField = obj + "." + field.Name;
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;

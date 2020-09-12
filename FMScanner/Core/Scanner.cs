@@ -1462,8 +1462,7 @@ namespace FMScanner
                 // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
                 if (_fmIsZip)
                 {
-                    var e = _archive.Entries[missFlag.Index];
-                    using var es = e.Open();
+                    using var es = _archive.Entries[missFlag.Index].Open();
                     mfLines = ReadAllLines(es, Encoding.UTF8);
                 }
                 else
@@ -1541,8 +1540,7 @@ namespace FMScanner
 
             if (_fmIsZip)
             {
-                var e = _archive.Entries[file.Index];
-                using var es = e.Open();
+                using var es = _archive.Entries[file.Index].Open();
                 fmInfoXml.Load(es);
             }
             else
@@ -1984,7 +1982,8 @@ namespace FMScanner
                             // Plain text, so load the whole thing in one go
                             readmeStream?.Dispose();
                             readmeStream = new MemoryStream(readmeFileLen);
-                            using (var es = readmeEntry!.Open()) es.CopyTo(readmeStream);
+                            using var es = readmeEntry!.Open();
+                            es.CopyTo(readmeStream);
                         }
 
                         ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
@@ -2443,7 +2442,7 @@ namespace FMScanner
                     string line = titlesStrLines[lineIndex];
                     int i;
                     titleNum = line.Substring(i = line.IndexOf('_') + 1, line.IndexOf(':') - i).Trim();
-                    
+
                     title = ExtractFromQuotedSection(line);
                     if (title.IsEmpty()) continue;
 
@@ -2531,7 +2530,7 @@ namespace FMScanner
 
             // There's a way to do this with an IEqualityComparer, but no, for reasons
             var tfLinesD = new List<string>(titlesStrLines.Count);
-            
+
             for (int i = 0; i < titlesStrLines.Count; i++)
             {
                 int indexOfColon;
@@ -3509,7 +3508,7 @@ namespace FMScanner
                 DateTimeFormatInfo.InvariantInfo,
                 DateTimeStyles.None,
                 out DateTime result);
-            
+
             dateTime = success ? (DateTime?)result : null;
             return success;
         }

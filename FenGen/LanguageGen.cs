@@ -37,12 +37,12 @@ namespace FenGen
         ReadSource(string file)
         {
             string code = File.ReadAllText(file);
-            var tree = ParseTextFast(code);
+            SyntaxTree tree = ParseTextFast(code);
 
             var (markedMember, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationSourceClass);
             var lTextClass = (ClassDeclarationSyntax)markedMember;
 
-            var childNodes = lTextClass.ChildNodes().ToArray();
+            SyntaxNode[] childNodes = lTextClass.ChildNodes().ToArray();
             var classInstanceDict = new Dictionary<string, string>();
 
             // Once through first to get the instance types and names
@@ -169,7 +169,7 @@ namespace FenGen
             #region Find the class we're going to write to
 
             string code = File.ReadAllText(destFile);
-            var tree = ParseTextFast(code);
+            SyntaxTree tree = ParseTextFast(code);
 
             var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationDestClass);
             var iniClass = (ClassDeclarationSyntax)member;
@@ -199,45 +199,6 @@ namespace FenGen
             sb.Append(codeBlock);
             w.WL("{");
 
-            #region Old static dictionary style
-
-            //if (writeReflectionStyle)
-            //{
-            //    w.WL("private const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic;");
-            //    w.WL();
-            //    w.WL("private static Dictionary<string, Dictionary<string, FieldInfo>>? _lTextFieldGraph;");
-            //    w.WL("private static Dictionary<string, Dictionary<string, FieldInfo>> LTextFieldGraph");
-            //    w.WL("{");
-            //    w.WL("get");
-            //    w.WL("{");
-            //    w.WL("if (_lTextFieldGraph == null)");
-            //    w.WL("{");
-
-            //    w.WL("_lTextFieldGraph = new Dictionary<string, Dictionary<string, FieldInfo>>(" + sections.Count + ");");
-            //    for (int i = 0; i < sections.Count; i++)
-            //    {
-            //        var section = sections[i];
-            //        var dictName = section.Name + "_Dict";
-            //        var langSubclass = langClassName + "." + classNames[i];
-            //        var curFieldsName = section.Name.FirstCharToLower() + "Fields";
-            //        w.WL("var " + curFieldsName + " = typeof(" + langSubclass + ").GetFields(_bfLText);");
-            //        w.WL("var " + dictName + " = new Dictionary<string, FieldInfo>(" + curFieldsName + ".Length);");
-            //        w.WL("foreach (var f in " + curFieldsName + ")");
-            //        w.WL("{");
-            //        w.WL(dictName + ".Add(f.Name, f);");
-            //        w.WL("}");
-            //        w.WL("_lTextFieldGraph.Add(nameof(" + langSubclass + "), " + dictName + ");");
-            //    }
-
-            //    w.WL("}");
-            //    w.WL("return _lTextFieldGraph;");
-            //    w.WL("}");
-            //    w.WL("}");
-            //    w.WL();
-            //}
-
-            #endregion
-
             w.WL(GenMessages.Method);
             w.WL("[MustUseReturnValue]");
             w.WL("internal static " + langClassName + " ReadLocalizationIni(string file)");
@@ -251,10 +212,10 @@ namespace FenGen
 
                 for (int i = 0; i < sections.Count; i++)
                 {
-                    var section = sections[i];
-                    var dictName = section.Name + "_Dict";
-                    var langSubclass = langClassName + "." + classNames[i];
-                    var curFieldsName = section.Name.FirstCharToLower() + "Fields";
+                    IniSection section = sections[i];
+                    string dictName = section.Name + "_Dict";
+                    string langSubclass = langClassName + "." + classNames[i];
+                    string curFieldsName = section.Name.FirstCharToLower() + "Fields";
                     w.WL("var " + curFieldsName + " = typeof(" + langSubclass + ").GetFields(_bfLText);");
                     w.WL("var " + dictName + " = new Dictionary<string, FieldInfo>(" + curFieldsName + ".Length);");
                     w.WL("foreach (var f in " + curFieldsName + ")");
@@ -275,7 +236,7 @@ namespace FenGen
             bool sectElseIf = false;
             for (int i = 0; i < sections.Count; i++)
             {
-                var section = sections[i];
+                IniSection section = sections[i];
 
                 w.WL((sectElseIf ? "else " : "") + "if (lineT == \"[" + section.Name + "]\")");
                 w.WL("{");
@@ -306,7 +267,7 @@ namespace FenGen
                         w.WL("{");
                         w.WL("ret." + section.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
                         w.WL("}");
-                        if (!keysElseIf) keysElseIf = true;
+                        keysElseIf = true;
                     }
                 }
 
@@ -317,7 +278,7 @@ namespace FenGen
                 w.WL("i++;");
                 w.WL("}");
                 w.WL("}");
-                if (!sectElseIf) sectElseIf = true;
+                sectElseIf = true;
             }
             w.WL("}");
             w.WL();

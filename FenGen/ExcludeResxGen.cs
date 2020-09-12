@@ -45,7 +45,8 @@ namespace FenGen
             // else have you, just remove it again so we know we're clean.
             GenerateRestore();
 
-            var resxFilesToExclude = Directory.GetFiles(Core.ALProjectPath, "*.resx", SearchOption.AllDirectories)
+            string[] resxFilesToExclude = Directory
+                .GetFiles(Core.ALProjectPath, "*.resx", SearchOption.AllDirectories)
                 .Where(x => !Path.GetFileName(x).EqualsI("Resources.resx")).ToArray();
 
             const string embeddedResourceName = "EmbeddedResource";
