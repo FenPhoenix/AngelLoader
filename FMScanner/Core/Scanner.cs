@@ -1872,13 +1872,12 @@ namespace FMScanner
                 string readmeFileOnDisk = "";
 
                 string fileName;
-                DateTime lastModifiedDate;
+                DateTime? lastModifiedDate = null;
                 long readmeSize;
 
                 if (_fmIsZip)
                 {
                     fileName = readmeEntry!.Name;
-                    lastModifiedDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(readmeEntry.LastWriteTime)).DateTime;
                     readmeSize = readmeEntry.Length;
                 }
                 else
@@ -1910,7 +1909,7 @@ namespace FMScanner
                     _readmeFiles.Add(new ReadmeInternal
                     {
                         FileName = fileName,
-                        LastModifiedDate = lastModifiedDate,
+                        LastModifiedDate = (DateTime)lastModifiedDate!,
                         Scan = scanThisReadme
                     });
                 }
@@ -2103,7 +2102,7 @@ namespace FMScanner
                         {
                             string lineAfterNext = lines[i + 2].Trim();
                             int lanLen = lineAfterNext.Length;
-                            if ((lanLen > 0 && lineAfterNext[lanLen - 1] == ':' && lineAfterNext.Length <= 50) ||
+                            if ((lanLen > 0 && lineAfterNext[lanLen - 1] == ':' && lanLen <= 50) ||
                                 lineAfterNext.IsWhiteSpace())
                             {
                                 return lines[i + 1].Trim();
