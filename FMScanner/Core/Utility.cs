@@ -550,6 +550,12 @@ namespace FMScanner
 
         #region StartsWith and EndsWith
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsAsciiUpper(this char c) => c >= 'A' && c <= 'Z';
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsAsciiLower(this char c) => c >= 'a' && c <= 'z';
+
         private enum CaseComparison
         {
             CaseSensitive,
@@ -652,12 +658,11 @@ namespace FMScanner
                     }
                 }
 
-                // TODO: Make IsAsciiUpper()/IsAsciiLower() etc. functions for these to be extra tidy if you want
-                if (str[si] >= 65 && str[si] <= 90 && value[vi] >= 97 && value[vi] <= 122)
+                if (IsAsciiUpper(str[si]) && IsAsciiLower(value[vi]))
                 {
                     if (caseComparison == CaseComparison.GivenOrLower || str[si] != value[vi] - 32) return false;
                 }
-                else if (value[vi] >= 65 && value[vi] <= 90 && str[si] >= 97 && str[si] <= 122)
+                else if (IsAsciiUpper(value[vi]) && IsAsciiLower(str[si]))
                 {
                     if (caseComparison == CaseComparison.GivenOrUpper || str[si] != value[vi] + 32) return false;
                 }

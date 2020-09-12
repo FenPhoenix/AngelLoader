@@ -3503,8 +3503,13 @@ namespace FMScanner
 
             // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
             // want to fail, and not assume the current year.
-            bool success = DateTime.TryParseExact(dateString, DateFormats,
-                DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime result);
+            bool success = DateTime.TryParseExact(
+                dateString,
+                DateFormats,
+                DateTimeFormatInfo.InvariantInfo,
+                DateTimeStyles.None,
+                out DateTime result);
+            
             dateTime = success ? (DateTime?)result : null;
             return success;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
 using static System.StringComparison;
@@ -12,10 +13,12 @@ namespace AngelLoader
         #region ASCII-specific
 
         [PublicAPI]
-        internal static bool IsAsciiUpper(this char c) => c >= 65 && c <= 90;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsAsciiUpper(this char c) => c >= 'A' && c <= 'Z';
 
         [PublicAPI]
-        internal static bool IsAsciiLower(this char c) => c >= 97 && c <= 122;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsAsciiLower(this char c) => c >= 'a' && c <= 'z';
 
         [PublicAPI]
         internal static bool EqualsIAscii(this char char1, char char2) =>
@@ -24,12 +27,15 @@ namespace AngelLoader
             (char1.IsAsciiLower() && char2.IsAsciiUpper() && char1 == char2 + 32);
 
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsAsciiAlpha(this char c) => c.IsAsciiUpper() || c.IsAsciiLower();
 
         [PublicAPI]
-        internal static bool IsAsciiNumeric(this char c) => c >= 48 && c <= 57;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsAsciiNumeric(this char c) => c >= '0' && c <= '9';
 
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsAsciiAlphanumeric(this char c) => c.IsAsciiAlpha() || c.IsAsciiNumeric();
 
         [PublicAPI]

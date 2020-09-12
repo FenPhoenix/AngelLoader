@@ -54,6 +54,7 @@ namespace AngelLoader
         // Not like any OS is likely to use anything other than '/' or '\' anyway.
 
         // We hope not to have to call this too often, but it's here as a fallback.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string CanonicalizePath(string value) => value.Replace('/', '\\');
 
         #region Contains / count / find

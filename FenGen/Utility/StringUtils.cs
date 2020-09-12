@@ -11,10 +11,10 @@ namespace FenGen
         #region ASCII-specific
 
         [PublicAPI]
-        internal static bool IsAsciiUpper(this char c) => c >= 65 && c <= 90;
+        internal static bool IsAsciiUpper(this char c) => c >= 'A' && c <= 'Z';
 
         [PublicAPI]
-        internal static bool IsAsciiLower(this char c) => c >= 97 && c <= 122;
+        internal static bool IsAsciiLower(this char c) => c >= 'a' && c <= 'z';
 
         [PublicAPI]
         internal static bool EqualsIAscii(this char char1, char char2) =>
@@ -26,7 +26,7 @@ namespace FenGen
         internal static bool IsAsciiAlpha(this char c) => c.IsAsciiUpper() || c.IsAsciiLower();
 
         [PublicAPI]
-        internal static bool IsAsciiNumeric(this char c) => c >= 48 && c <= 57;
+        internal static bool IsAsciiNumeric(this char c) => c >= '0' && c <= '9';
 
         [PublicAPI]
         internal static bool IsAsciiAlphanumeric(this char c) => c.IsAsciiAlpha() || c.IsAsciiNumeric();
