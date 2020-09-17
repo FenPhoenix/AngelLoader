@@ -773,8 +773,8 @@ namespace FenGen
                 {
                     // If we DIDN'T convert before, we need to convert now
                     string val = !field.DoNotConvertDateTimeToLocal
-                        ? "new DateTimeOffset((DateTime)" + objDotField + ").ToUnixTimeSeconds().ToString(\"X\")" :
-                        "new DateTimeOffset(((DateTime)" + objDotField + ").ToLocalTime()).ToUnixTimeSeconds().ToString(\"X\")";
+                        ? "new DateTimeOffset((DateTime)" + objDotField + ").ToUnixTimeSeconds().ToString(\"X\")"
+                        : "new DateTimeOffset(((DateTime)" + objDotField + ").ToLocalTime()).ToUnixTimeSeconds().ToString(\"X\")";
 
                     if (fields.WriteEmptyValues)
                     {
