@@ -633,14 +633,14 @@ namespace AngelLoader.Forms
             TestButton.Location = new Point(640, 0);
             TestButton.Size = new Size(75, 22);
             TestButton.TabIndex = 999;
-            TestButton.Text = @"Test";
+            TestButton.Text = "Test";
             TestButton.UseVisualStyleBackColor = true;
             TestButton.Click += TestButton_Click;
 
             Test2Button.Location = new Point(640, 21);
             Test2Button.Size = new Size(75, 22);
             Test2Button.TabIndex = 999;
-            Test2Button.Text = @"Test2";
+            Test2Button.Text = "Test2";
             Test2Button.UseVisualStyleBackColor = true;
             Test2Button.Click += Test2Button_Click;
 
@@ -648,13 +648,13 @@ namespace AngelLoader.Forms
             DebugLabel.Location = new Point(720, 8);
             DebugLabel.Size = new Size(71, 13);
             DebugLabel.TabIndex = 29;
-            DebugLabel.Text = @"[DebugLabel]";
+            DebugLabel.Text = "[DebugLabel]";
 
             DebugLabel2.AutoSize = true;
             DebugLabel2.Location = new Point(720, 24);
             DebugLabel2.Size = new Size(77, 13);
             DebugLabel2.TabIndex = 32;
-            DebugLabel2.Text = @"[DebugLabel2]";
+            DebugLabel2.Text = "[DebugLabel2]";
 
             #endregion
 #endif
@@ -732,7 +732,7 @@ namespace AngelLoader.Forms
         // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
         public void InitThreadable()
         {
-            Text = @"AngelLoader " + Application.ProductVersion;
+            Text = "AngelLoader " + Application.ProductVersion;
 
             FMsDGV.InjectOwner(this);
 
@@ -2288,7 +2288,7 @@ namespace AngelLoader.Forms
                     string from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(curCulture);
                     string to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(curCulture);
 
-                    Lazy_ToolStripLabels.Show(this, Lazy_ToolStripLabel.FilterByRating, from + @" - " + to);
+                    Lazy_ToolStripLabels.Show(this, Lazy_ToolStripLabel.FilterByRating, from + " - " + to);
                 }
                 else
                 {
@@ -3376,7 +3376,7 @@ namespace AngelLoader.Forms
             var cat = item.OwnerItem;
             if (cat == null) return;
 
-            AddTagOperation(FMsDGV.GetSelectedFM(), cat.Text + @": " + item.Text);
+            AddTagOperation(FMsDGV.GetSelectedFM(), cat.Text + ": " + item.Text);
         }
 
         private void AddTagMenuCustomItem_Click(object sender, EventArgs e)
@@ -3386,7 +3386,7 @@ namespace AngelLoader.Forms
             var cat = item.OwnerItem;
             if (cat == null) return;
 
-            AddTagTextBox.SetTextAndMoveCursorToEnd(cat.Text + @": ");
+            AddTagTextBox.SetTextAndMoveCursorToEnd(cat.Text + ": ");
         }
 
         private void AddTagMenuMiscItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItem)sender).Text);
@@ -3426,7 +3426,7 @@ namespace AngelLoader.Forms
             using (var d = new OpenFileDialog())
             {
                 d.Multiselect = true;
-                d.Filter = LText.BrowseDialogs.DMLFiles + @"|*.dml";
+                d.Filter = LText.BrowseDialogs.DMLFiles + "|*.dml";
                 if (d.ShowDialog() != DialogResult.OK || d.FileNames.Length == 0) return;
                 dmlFiles.AddRange(d.FileNames);
             }
@@ -3817,7 +3817,7 @@ namespace AngelLoader.Forms
                     Lazy_ToolStripLabels.Show(this,
                         lastPlayed
                             ? Lazy_ToolStripLabel.FilterByLastPlayed
-                            : Lazy_ToolStripLabel.FilterByReleaseDate, from + @" - " + to);
+                            : Lazy_ToolStripLabel.FilterByReleaseDate, from + " - " + to);
                 }
                 else
                 {
@@ -3896,10 +3896,7 @@ namespace AngelLoader.Forms
             {
                 while (_repeatButtonRunning)
                 {
-                    Invoke(new Action(() =>
-                    {
-                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
-                    }));
+                    Invoke(new Action(() => InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero)));
                     Thread.Sleep(150);
                 }
             });

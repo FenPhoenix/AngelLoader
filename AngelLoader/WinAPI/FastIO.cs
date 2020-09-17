@@ -173,7 +173,7 @@ namespace AngelLoader.WinAPI
         {
             if (string.IsNullOrEmpty(searchPattern))
             {
-                throw new ArgumentException(nameof(searchPattern) + @" was null or empty", nameof(searchPattern));
+                throw new ArgumentException(nameof(searchPattern) + " was null or empty", nameof(searchPattern));
             }
 
             // Vital, path must not have a trailing separator

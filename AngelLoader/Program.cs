@@ -67,8 +67,11 @@ namespace AngelLoader
                 // NOTE: Not localizable because we don't want to do anything until we've checked this, and getting
                 // the right language would mean trying to read multiple different files and whatever junk, and
                 // we don't want to add the potential for even more errors here.
-                MessageBox.Show(@"Fatal error: 7z.dll was not found in the application startup directory.", @"Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    "Fatal error: 7z.dll was not found in the application startup directory.",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
 

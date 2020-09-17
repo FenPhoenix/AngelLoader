@@ -69,7 +69,7 @@ namespace FenGen
                                  !strT.StartsWithPlusWhiteSpace("#endregion") &&
                                  strT != "#endregion");
                 string indent = noIndent ? "" : Indent(curIndent);
-                _sb.AppendLine(indent + strT);
+                _sb.Append(indent).AppendLine(strT);
             }
 
             internal void WLs(string[] lines)

@@ -738,21 +738,10 @@ namespace FMScanner
         }
 
         // Doesn't handle unicode left and right double quotes, but meh...
-        internal static string RemoveUnpairedLeadingOrTrailingQuotes(this string value)
-        {
-            if (value.CountChars('\"') != 1) return value;
-
-            if (value[0] == '\"')
-            {
-                value = value.Substring(1);
-            }
-            else if (value[value.Length - 1] == '\"')
-            {
-                value = value.Substring(0, value.Length - 1);
-            }
-
-            return value;
-        }
+        internal static string RemoveUnpairedLeadingOrTrailingQuotes(this string value) =>
+            value.CountChars('\"') != 1 ? value :
+            value[0] == '\"' ? value.Substring(1) :
+            value[value.Length - 1] == '\"' ? value.Substring(0, value.Length - 1) : value;
 
         #endregion
 

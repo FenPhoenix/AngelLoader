@@ -334,7 +334,7 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < config.Articles.Count; i++)
                 {
                     string article = config.Articles[i];
-                    if (i > 0) FMDisplayPage.ArticlesTextBox.Text += @", ";
+                    if (i > 0) FMDisplayPage.ArticlesTextBox.Text += ", ";
                     FMDisplayPage.ArticlesTextBox.Text += article;
                 }
 

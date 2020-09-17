@@ -24,7 +24,7 @@ namespace AngelLoader.Forms
         {
             using var d = new OpenFileDialog
             {
-                Filter = LText.BrowseDialogs.IniFiles + @"|*.ini|" + LText.BrowseDialogs.AllFiles + @"|*.*"
+                Filter = LText.BrowseDialogs.IniFiles + "|*.ini|" + LText.BrowseDialogs.AllFiles + "|*.*"
             };
             if (d.ShowDialog() != DialogResult.OK) return;
 

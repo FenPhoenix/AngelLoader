@@ -28,15 +28,15 @@ namespace AngelLoader
                 bool cont = Core.View.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
-                CatAndTags? cat = fm.Tags.FirstOrDefault(x => x.Category == tagText);
+                CatAndTags? cat = fm.Tags.Find(x => x.Category == tagText);
                 if (cat != null)
                 {
                     fm.Tags.Remove(cat);
                     UpdateFMTagsString(fm);
 
-                    // TODO: Profile the FirstOrDefaults and see if I should make them for loops
-                    GlobalCatAndTags? globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
-                    if (globalCat != null && !globalCat.Category.IsPreset)
+                    // TODO: Can we store these as hash tables/dictionaries or something?
+                    GlobalCatAndTags? globalCat = GlobalTags.Find(x => x.Category.Name == cat.Category);
+                    if (globalCat?.Category.IsPreset == false)
                     {
                         if (globalCat.Category.UsedCount > 0) globalCat.Category.UsedCount--;
                         if (globalCat.Category.UsedCount == 0) GlobalTags.Remove(globalCat);
@@ -49,17 +49,17 @@ namespace AngelLoader
                 bool cont = Core.View.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
-                CatAndTags? cat = fm.Tags.FirstOrDefault(x => x.Category == catText);
-                string? tag = cat?.Tags.FirstOrDefault(x => x == tagText);
+                CatAndTags? cat = fm.Tags.Find(x => x.Category == catText);
+                string? tag = cat?.Tags.Find(x => x == tagText);
                 if (tag != null)
                 {
                     cat!.Tags.Remove(tag);
                     if (cat.Tags.Count == 0) fm.Tags.Remove(cat);
                     UpdateFMTagsString(fm);
 
-                    GlobalCatAndTags? globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
-                    GlobalCatOrTag? globalTag = globalCat?.Tags.FirstOrDefault(x => x.Name == tagText);
-                    if (globalTag != null && !globalTag.IsPreset)
+                    GlobalCatAndTags? globalCat = GlobalTags.Find(x => x.Category.Name == cat.Category);
+                    GlobalCatOrTag? globalTag = globalCat?.Tags.Find(x => x.Name == tagText);
+                    if (globalTag?.IsPreset == false)
                     {
                         if (globalTag.UsedCount > 0) globalTag.UsedCount--;
                         if (globalTag.UsedCount == 0) globalCat!.Tags.Remove(globalTag);

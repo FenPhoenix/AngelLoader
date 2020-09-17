@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
@@ -246,14 +245,14 @@ namespace AngelLoader.Forms
             // Parent node (category)
             if (tv.SelectedNode.Parent == null)
             {
-                CatAndTags? cat = tags.FirstOrDefault(x => x.Category == tv.SelectedNode.Text);
+                CatAndTags? cat = tags.Find(x => x.Category == tv.SelectedNode.Text);
                 if (cat != null) tags.Remove(cat);
             }
             // Child node (tag)
             else
             {
-                CatAndTags? cat = tags.FirstOrDefault(x => x.Category == tv.SelectedNode.Parent.Text);
-                string? tag = cat?.Tags.FirstOrDefault(x => x == tv.SelectedNode.Text);
+                CatAndTags? cat = tags.Find(x => x.Category == tv.SelectedNode.Parent.Text);
+                string? tag = cat?.Tags.Find(x => x == tv.SelectedNode.Text);
                 if (tag != null)
                 {
                     cat!.Tags.Remove(tag);

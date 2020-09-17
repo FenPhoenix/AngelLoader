@@ -326,7 +326,7 @@ namespace AngelLoader
                             // Cap the length, cause... well, nobody's going to put a 500MB binary file named
                             // fmsel.inf, but hey...
                             // Null check required because GetEntry() can return null
-                            if (fmSelInf != null && fmSelInf.Length < ByteSize.MB * 10)
+                            if (fmSelInf?.Length < ByteSize.MB * 10)
                             {
                                 using var eo = fmSelInf.Open();
                                 using var sr = new StreamReader(eo);

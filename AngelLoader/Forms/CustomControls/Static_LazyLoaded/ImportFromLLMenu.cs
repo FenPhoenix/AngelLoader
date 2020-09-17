@@ -23,9 +23,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ImportFromMenu = new ContextMenuStrip(components);
 
             // Not localized because they consist solely of proper names! Don't remove these!
-            ImportFromDarkLoaderMenuItem = new ToolStripMenuItem { Text = @"DarkLoader..." };
-            ImportFromFMSelMenuItem = new ToolStripMenuItem { Text = @"FMSel..." };
-            ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItem { Text = @"NewDarkLoader..." };
+            ImportFromDarkLoaderMenuItem = new ToolStripMenuItem { Text = "DarkLoader..." };
+            ImportFromFMSelMenuItem = new ToolStripMenuItem { Text = "FMSel..." };
+            ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItem { Text = "NewDarkLoader..." };
 
             ImportFromMenu.Items.AddRange(new ToolStripItem[]
             {

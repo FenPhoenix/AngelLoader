@@ -9,6 +9,7 @@ namespace AngelLoader.WinAPI
 {
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "CommentTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static class InteropMisc
     {
         internal const int WM_USER = 0x0400;

@@ -268,7 +268,7 @@ namespace AngelLoader
 
                     // Exponential (slow) stuff, but we only do it once to correct the list and then never again
                     // NOTE: I guess this removes duplicates, which is why it has to do the search?
-                    FanMission? existingFM = FMDataIniList.FirstOrDefault(x => x.Archive.EqualsI(archiveName));
+                    FanMission? existingFM = FMDataIniList.Find(x => x.Archive.EqualsI(archiveName));
                     if (existingFM != null)
                     {
                         existingFM.InstalledDir = fm.InstalledDir;
@@ -480,12 +480,12 @@ namespace AngelLoader
                 // we therefore already know this is not going to find anything?
                 bool truncate = fm.Game != Game.Thief3;
                 string? tryArchive =
-                    archives.FirstOrDefault(x => x.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
-                    archives.FirstOrDefault(x => x.ToInstDirNameNDL().EqualsI(fm.InstalledDir)) ??
-                    archives.FirstOrDefault(x => x.EqualsI(fm.InstalledDir)) ??
-                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir))?.Archive ??
-                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameNDL().EqualsI(fm.InstalledDir))?.Archive ??
-                    FMDataIniList.FirstOrDefault(x => x.InstalledDir.EqualsI(fm.InstalledDir))?.Archive;
+                    Array.Find(archives, x => x.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
+                    Array.Find(archives, x => x.ToInstDirNameNDL().EqualsI(fm.InstalledDir)) ??
+                    Array.Find(archives, x => x.EqualsI(fm.InstalledDir)) ??
+                    FMDataIniList.Find(x => x.Archive.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir))?.Archive ??
+                    FMDataIniList.Find(x => x.Archive.ToInstDirNameNDL().EqualsI(fm.InstalledDir))?.Archive ??
+                    FMDataIniList.Find(x => x.InstalledDir.EqualsI(fm.InstalledDir))?.Archive;
 
                 if (tryArchive.IsEmpty())
                 {

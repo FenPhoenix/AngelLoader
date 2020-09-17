@@ -45,9 +45,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         #region Constructors
 
-        /// <summary>
-        ///
-        /// </summary>
         /// <param name="title">
         /// The window title of the task dialog. The default is an empty string ("").
         /// </param>

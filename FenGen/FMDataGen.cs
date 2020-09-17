@@ -237,7 +237,7 @@ namespace FenGen
             WriteWriter(sb, obj, fields);
 
             // class
-            sb.AppendLine(Indent(1) + "}");
+            sb.Append(Indent(1)).AppendLine("}");
 
             // namespace
             sb.AppendLine("}");
@@ -379,7 +379,7 @@ namespace FenGen
 
         private static void WriteReader(StringBuilder sb, string obj, FieldList fields)
         {
-            sb.AppendLine(Indent(2) + GenMessages.Method);
+            sb.Append(Indent(2)).AppendLine(GenMessages.Method);
 
             string[] topLines = _readFMDataIniTopLines;
 
@@ -588,7 +588,7 @@ namespace FenGen
 
         private static void WriteWriter(StringBuilder sb, string obj, FieldList fields)
         {
-            sb.AppendLine(Indent(2) + GenMessages.Method);
+            sb.Append(Indent(2)).AppendLine(GenMessages.Method);
 
             foreach (string l in _writeFMDataIniTopLines) sb.AppendLine(l);
 

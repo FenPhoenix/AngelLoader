@@ -690,13 +690,13 @@ namespace AngelLoader
 
             #region Settings window state
 
-            sb.AppendLine("SettingsTab=" + config.SettingsTab);
-            sb.AppendLine("SettingsWindowSize=" + config.SettingsWindowSize.Width + "," + config.SettingsWindowSize.Height);
-            sb.AppendLine("SettingsWindowSplitterDistance=" + config.SettingsWindowSplitterDistance);
+            sb.Append("SettingsTab=").Append(config.SettingsTab).AppendLine();
+            sb.Append("SettingsWindowSize=").Append(config.SettingsWindowSize.Width).Append(',').Append(config.SettingsWindowSize.Height).AppendLine();
+            sb.Append("SettingsWindowSplitterDistance=").Append(config.SettingsWindowSplitterDistance).AppendLine();
 
-            sb.AppendLine("SettingsPathsVScrollPos=" + config.SettingsPathsVScrollPos);
-            sb.AppendLine("SettingsFMDisplayVScrollPos=" + config.SettingsFMDisplayVScrollPos);
-            sb.AppendLine("SettingsOtherVScrollPos=" + config.SettingsOtherVScrollPos);
+            sb.Append("SettingsPathsVScrollPos=").Append(config.SettingsPathsVScrollPos).AppendLine();
+            sb.Append("SettingsFMDisplayVScrollPos=").Append(config.SettingsFMDisplayVScrollPos).AppendLine();
+            sb.Append("SettingsOtherVScrollPos=").Append(config.SettingsOtherVScrollPos).AppendLine();
 
             #endregion
 
@@ -707,14 +707,14 @@ namespace AngelLoader
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
-                sb.AppendLine(GetGamePrefix(gameIndex) + "Exe=" + config.GetGameExe(gameIndex).Trim());
+                sb.Append(GetGamePrefix(gameIndex)).Append("Exe=").AppendLine(config.GetGameExe(gameIndex).Trim());
             }
 
             #endregion
 
             #region Steam
 
-            sb.AppendLine("LaunchGamesWithSteam=" + config.LaunchGamesWithSteam);
+            sb.Append("LaunchGamesWithSteam=").Append(config.LaunchGamesWithSteam).AppendLine();
 
             // @GENGAMES (Config writer - Steam): Begin
             // So far all games are on Steam. If we have one that isn't, we can just add an internal per-game
@@ -722,51 +722,51 @@ namespace AngelLoader
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
-                sb.AppendLine(GetGamePrefix(gameIndex) + "UseSteam=" + config.GetUseSteamSwitch(gameIndex));
+                sb.Append(GetGamePrefix(gameIndex)).Append("UseSteam=").Append(config.GetUseSteamSwitch(gameIndex)).AppendLine();
             }
             // @GENGAMES (Config writer - Steam): End
 
-            sb.AppendLine("SteamExe=" + config.SteamExe);
+            sb.Append("SteamExe=").AppendLine(config.SteamExe);
 
             #endregion
 
-            sb.AppendLine("FMsBackupPath=" + config.FMsBackupPath.Trim());
-            foreach (string path in config.FMArchivePaths) sb.AppendLine("FMArchivePath=" + path.Trim());
-            sb.AppendLine("FMArchivePathsIncludeSubfolders=" + config.FMArchivePathsIncludeSubfolders);
+            sb.Append("FMsBackupPath=").AppendLine(config.FMsBackupPath.Trim());
+            foreach (string path in config.FMArchivePaths) sb.Append("FMArchivePath=").AppendLine(path.Trim());
+            sb.Append("FMArchivePathsIncludeSubfolders=").Append(config.FMArchivePathsIncludeSubfolders).AppendLine();
 
             #endregion
 
-            sb.AppendLine("GameOrganization=" + config.GameOrganization);
-            sb.AppendLine("UseShortGameTabNames=" + config.UseShortGameTabNames);
+            sb.Append("GameOrganization=").Append(config.GameOrganization).AppendLine();
+            sb.Append("UseShortGameTabNames=").Append(config.UseShortGameTabNames).AppendLine();
 
-            sb.AppendLine("EnableArticles=" + config.EnableArticles);
-            sb.AppendLine("Articles=" + string.Join(",", config.Articles));
-            sb.AppendLine("MoveArticlesToEnd=" + config.MoveArticlesToEnd);
+            sb.Append("EnableArticles=").Append(config.EnableArticles).AppendLine();
+            sb.Append("Articles=").AppendLine(string.Join(",", config.Articles));
+            sb.Append("MoveArticlesToEnd=").Append(config.MoveArticlesToEnd).AppendLine();
 
-            sb.AppendLine("RatingDisplayStyle=" + config.RatingDisplayStyle);
-            sb.AppendLine("RatingUseStars=" + config.RatingUseStars);
+            sb.Append("RatingDisplayStyle=").Append(config.RatingDisplayStyle).AppendLine();
+            sb.Append("RatingUseStars=").Append(config.RatingUseStars).AppendLine();
 
-            sb.AppendLine("DateFormat=" + config.DateFormat);
-            sb.AppendLine("DateCustomFormat1=" + config.DateCustomFormat1);
-            sb.AppendLine("DateCustomSeparator1=" + config.DateCustomSeparator1);
-            sb.AppendLine("DateCustomFormat2=" + config.DateCustomFormat2);
-            sb.AppendLine("DateCustomSeparator2=" + config.DateCustomSeparator2);
-            sb.AppendLine("DateCustomFormat3=" + config.DateCustomFormat3);
-            sb.AppendLine("DateCustomSeparator3=" + config.DateCustomSeparator3);
-            sb.AppendLine("DateCustomFormat4=" + config.DateCustomFormat4);
+            sb.Append("DateFormat=").Append(config.DateFormat).AppendLine();
+            sb.Append("DateCustomFormat1=").AppendLine(config.DateCustomFormat1);
+            sb.Append("DateCustomSeparator1=").AppendLine(config.DateCustomSeparator1);
+            sb.Append("DateCustomFormat2=").AppendLine(config.DateCustomFormat2);
+            sb.Append("DateCustomSeparator2=").AppendLine(config.DateCustomSeparator2);
+            sb.Append("DateCustomFormat3=").AppendLine(config.DateCustomFormat3);
+            sb.Append("DateCustomSeparator3=").AppendLine(config.DateCustomSeparator3);
+            sb.Append("DateCustomFormat4=").AppendLine(config.DateCustomFormat4);
 
-            sb.AppendLine("DaysRecent=" + config.DaysRecent);
+            sb.Append("DaysRecent=").Append(config.DaysRecent).AppendLine();
 
-            sb.AppendLine("ConvertWAVsTo16BitOnInstall=" + config.ConvertWAVsTo16BitOnInstall);
-            sb.AppendLine("ConvertOGGsToWAVsOnInstall=" + config.ConvertOGGsToWAVsOnInstall);
-            sb.AppendLine("HideUninstallButton=" + config.HideUninstallButton);
-            sb.AppendLine("HideFMListZoomButtons=" + config.HideFMListZoomButtons);
-            sb.AppendLine("ConfirmUninstall=" + config.ConfirmUninstall);
-            sb.AppendLine("BackupFMData=" + config.BackupFMData);
-            sb.AppendLine("BackupAlwaysAsk=" + config.BackupAlwaysAsk);
-            sb.AppendLine("Language=" + config.Language);
-            sb.AppendLine("WebSearchUrl=" + config.WebSearchUrl);
-            sb.AppendLine("ConfirmPlayOnDCOrEnter=" + config.ConfirmPlayOnDCOrEnter);
+            sb.Append("ConvertWAVsTo16BitOnInstall=").Append(config.ConvertWAVsTo16BitOnInstall).AppendLine();
+            sb.Append("ConvertOGGsToWAVsOnInstall=").Append(config.ConvertOGGsToWAVsOnInstall).AppendLine();
+            sb.Append("HideUninstallButton=").Append(config.HideUninstallButton).AppendLine();
+            sb.Append("HideFMListZoomButtons=").Append(config.HideFMListZoomButtons).AppendLine();
+            sb.Append("ConfirmUninstall=").Append(config.ConfirmUninstall).AppendLine();
+            sb.Append("BackupFMData=").Append(config.BackupFMData).AppendLine();
+            sb.Append("BackupAlwaysAsk=").Append(config.BackupAlwaysAsk).AppendLine();
+            sb.Append("Language=").AppendLine(config.Language);
+            sb.Append("WebSearchUrl=").AppendLine(config.WebSearchUrl);
+            sb.Append("ConfirmPlayOnDCOrEnter=").Append(config.ConfirmPlayOnDCOrEnter).AppendLine();
 
             #endregion
 
@@ -783,40 +783,40 @@ namespace AngelLoader
                     CommaCombineGameFlags(sb, config.Filter.Games);
                 }
 
-                sb.AppendLine(p + "FilterTitle=" + filter.Title);
-                sb.AppendLine(p + "FilterAuthor=" + filter.Author);
+                sb.Append(p).Append("FilterTitle=").AppendLine(filter.Title);
+                sb.Append(p).Append("FilterAuthor=").AppendLine(filter.Author);
 
-                sb.AppendLine(p + "FilterReleaseDateFrom=" + FilterDate(filter.ReleaseDateFrom));
-                sb.AppendLine(p + "FilterReleaseDateTo=" + FilterDate(filter.ReleaseDateTo));
+                sb.Append(p).Append("FilterReleaseDateFrom=").AppendLine(FilterDate(filter.ReleaseDateFrom));
+                sb.Append(p).Append("FilterReleaseDateTo=").AppendLine(FilterDate(filter.ReleaseDateTo));
 
-                sb.AppendLine(p + "FilterLastPlayedFrom=" + FilterDate(filter.LastPlayedFrom));
-                sb.AppendLine(p + "FilterLastPlayedTo=" + FilterDate(filter.LastPlayedTo));
+                sb.Append(p).Append("FilterLastPlayedFrom=").AppendLine(FilterDate(filter.LastPlayedFrom));
+                sb.Append(p).Append("FilterLastPlayedTo=").AppendLine(FilterDate(filter.LastPlayedTo));
 
-                sb.Append(p + "FilterFinishedStates=");
+                sb.Append(p).Append("FilterFinishedStates=");
                 CommaCombineFinishedStates(sb, filter.Finished);
 
-                sb.AppendLine(p + "FilterRatingFrom=" + filter.RatingFrom);
-                sb.AppendLine(p + "FilterRatingTo=" + filter.RatingTo);
+                sb.Append(p).Append("FilterRatingFrom=").Append(filter.RatingFrom).AppendLine();
+                sb.Append(p).Append("FilterRatingTo=").Append(filter.RatingTo).AppendLine();
 
-                sb.AppendLine(p + "FilterShowJunk=" + filter.ShowUnsupported);
+                sb.Append(p).Append("FilterShowJunk=").Append(filter.ShowUnsupported).AppendLine();
 
-                sb.AppendLine(p + "FilterTagsAnd=" + TagsToString(filter.Tags.AndTags));
-                sb.AppendLine(p + "FilterTagsOr=" + TagsToString(filter.Tags.OrTags));
-                sb.AppendLine(p + "FilterTagsNot=" + TagsToString(filter.Tags.NotTags));
+                sb.Append(p).Append("FilterTagsAnd=").AppendLine(TagsToString(filter.Tags.AndTags));
+                sb.Append(p).Append("FilterTagsOr=").AppendLine(TagsToString(filter.Tags.OrTags));
+                sb.Append(p).Append("FilterTagsNot=").AppendLine(TagsToString(filter.Tags.NotTags));
             }
 
             #endregion
 
             #region Columns
 
-            sb.AppendLine("SortedColumn=" + config.SortedColumn);
-            sb.AppendLine("SortDirection=" + config.SortDirection);
-            sb.AppendLine("ShowRecentAtTop=" + config.ShowRecentAtTop);
-            sb.AppendLine("FMsListFontSizeInPoints=" + config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
+            sb.Append("SortedColumn=").Append(config.SortedColumn).AppendLine();
+            sb.Append("SortDirection=").Append(config.SortDirection).AppendLine();
+            sb.Append("ShowRecentAtTop=").Append(config.ShowRecentAtTop).AppendLine();
+            sb.Append("FMsListFontSizeInPoints=").AppendLine(config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 
             foreach (ColumnData col in config.Columns)
             {
-                sb.AppendLine("Column" + col.Id + "=" + col.DisplayIndex + "," + col.Width + "," + col.Visible);
+                sb.Append("Column").Append(col.Id).Append('=').Append(col.DisplayIndex).Append(',').Append(col.Width).Append(',').Append(col.Visible).AppendLine();
             }
 
             #endregion
@@ -828,40 +828,40 @@ namespace AngelLoader
                 SelectedFM selFM = i == 0 ? config.SelFM : config.GameTabsState.GetSelectedFM((GameIndex)(i - 1));
                 string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
 
-                sb.AppendLine(p + "SelFMInstDir=" + selFM.InstalledName);
-                sb.AppendLine(p + "SelFMIndexFromTop=" + selFM.IndexFromTop);
+                sb.Append(p).Append("SelFMInstDir=").AppendLine(selFM.InstalledName);
+                sb.Append(p).Append("SelFMIndexFromTop=").Append(selFM.IndexFromTop).AppendLine();
             }
 
             #endregion
 
             #region Main window state
 
-            sb.AppendLine("MainWindowState=" + config.MainWindowState);
+            sb.Append("MainWindowState=").Append(config.MainWindowState).AppendLine();
 
-            sb.AppendLine("MainWindowSize=" + config.MainWindowSize.Width + "," + config.MainWindowSize.Height);
-            sb.AppendLine("MainWindowLocation=" + config.MainWindowLocation.X + "," + config.MainWindowLocation.Y);
+            sb.Append("MainWindowSize=").Append(config.MainWindowSize.Width).Append(',').Append(config.MainWindowSize.Height).AppendLine();
+            sb.Append("MainWindowLocation=").Append(config.MainWindowLocation.X).Append(',').Append(config.MainWindowLocation.Y).AppendLine();
 
-            sb.AppendLine("MainSplitterPercent=" + config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-            sb.AppendLine("TopSplitterPercent=" + config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-            sb.AppendLine("TopRightPanelCollapsed=" + config.TopRightPanelCollapsed);
+            sb.Append("MainSplitterPercent=").AppendLine(config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+            sb.Append("TopSplitterPercent=").AppendLine(config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+            sb.Append("TopRightPanelCollapsed=").Append(config.TopRightPanelCollapsed).AppendLine();
 
-            sb.AppendLine("GameTab=" + config.GameTab);
-            sb.AppendLine("TopRightTab=" + config.TopRightTabsData.SelectedTab);
+            sb.Append("GameTab=").Append(config.GameTab).AppendLine();
+            sb.Append("TopRightTab=").Append(config.TopRightTabsData.SelectedTab).AppendLine();
 
-            sb.AppendLine("StatsTabPosition=" + config.TopRightTabsData.StatsTab.DisplayIndex);
-            sb.AppendLine("EditFMTabPosition=" + config.TopRightTabsData.EditFMTab.DisplayIndex);
-            sb.AppendLine("CommentTabPosition=" + config.TopRightTabsData.CommentTab.DisplayIndex);
-            sb.AppendLine("TagsTabPosition=" + config.TopRightTabsData.TagsTab.DisplayIndex);
-            sb.AppendLine("PatchTabPosition=" + config.TopRightTabsData.PatchTab.DisplayIndex);
+            sb.Append("StatsTabPosition=").Append(config.TopRightTabsData.StatsTab.DisplayIndex).AppendLine();
+            sb.Append("EditFMTabPosition=").Append(config.TopRightTabsData.EditFMTab.DisplayIndex).AppendLine();
+            sb.Append("CommentTabPosition=").Append(config.TopRightTabsData.CommentTab.DisplayIndex).AppendLine();
+            sb.Append("TagsTabPosition=").Append(config.TopRightTabsData.TagsTab.DisplayIndex).AppendLine();
+            sb.Append("PatchTabPosition=").Append(config.TopRightTabsData.PatchTab.DisplayIndex).AppendLine();
 
-            sb.AppendLine("StatsTabVisible=" + config.TopRightTabsData.StatsTab.Visible);
-            sb.AppendLine("EditFMTabVisible=" + config.TopRightTabsData.EditFMTab.Visible);
-            sb.AppendLine("CommentTabVisible=" + config.TopRightTabsData.CommentTab.Visible);
-            sb.AppendLine("TagsTabVisible=" + config.TopRightTabsData.TagsTab.Visible);
-            sb.AppendLine("PatchTabVisible=" + config.TopRightTabsData.PatchTab.Visible);
+            sb.Append("StatsTabVisible=").Append(config.TopRightTabsData.StatsTab.Visible).AppendLine();
+            sb.Append("EditFMTabVisible=").Append(config.TopRightTabsData.EditFMTab.Visible).AppendLine();
+            sb.Append("CommentTabVisible=").Append(config.TopRightTabsData.CommentTab.Visible).AppendLine();
+            sb.Append("TagsTabVisible=").Append(config.TopRightTabsData.TagsTab.Visible).AppendLine();
+            sb.Append("PatchTabVisible=").Append(config.TopRightTabsData.PatchTab.Visible).AppendLine();
 
-            sb.AppendLine("ReadmeZoomFactor=" + config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
-            sb.AppendLine("ReadmeUseFixedWidthFont=" + config.ReadmeUseFixedWidthFont);
+            sb.Append("ReadmeZoomFactor=").AppendLine(config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
+            sb.Append("ReadmeUseFixedWidthFont=").Append(config.ReadmeUseFixedWidthFont).AppendLine();
 
             #endregion
 

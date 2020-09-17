@@ -106,7 +106,7 @@ namespace FenGen
         internal static void ThrowErrorAndTerminate(string message)
         {
             Trace.WriteLine("FenGen: " + message + "\r\nTerminating FenGen.");
-            MessageBox.Show(message + "\r\n\r\n" + @"Exiting.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(message + "\r\n\r\nExiting.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             Environment.Exit(-999);
         }
 

@@ -548,7 +548,7 @@ namespace FMScanner
 
             if (_fmIsZip)
             {
-                Debug.WriteLine(@"----------" + _archivePath);
+                Debug.WriteLine("----------" + _archivePath);
 
                 if (_archivePath.ExtIsZip())
                 {
@@ -574,7 +574,7 @@ namespace FMScanner
             else
             {
                 if (!Directory.Exists(_fmWorkingPath)) return UnsupportedDir();
-                Debug.WriteLine(@"----------" + _fmWorkingPath);
+                Debug.WriteLine("----------" + _fmWorkingPath);
             }
 
             #endregion
@@ -3485,7 +3485,7 @@ namespace FMScanner
         private bool StringToDate(string dateString, out DateTime? dateTime)
         {
             dateString = dateString.Replace(",", " ");
-            dateString = Regex.Replace(dateString, @"\s+", @" ");
+            dateString = Regex.Replace(dateString, @"\s+", " ");
             dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
             dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
             dateString = Regex.Replace(dateString, @"\s+of\s+", " ");

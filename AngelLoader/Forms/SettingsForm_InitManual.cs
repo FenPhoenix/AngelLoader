@@ -181,7 +181,7 @@ namespace AngelLoader.Forms
             // Un-obvious hack: If we DON'T set Text to something, anything, here, then first render (if paths tab
             // is the startup tab) is really slow. We just set a one-char blank space to prevent that(?!) Probably
             // something to do with this activating some kind of render routine beforehand... I guess... who knows...
-            Text = @" ";
+            Text = " ";
             FormClosing += SettingsForm_FormClosing;
             Load += SettingsForm_Load;
             Shown += SettingsForm_Shown;

@@ -59,7 +59,7 @@ namespace AngelLoader
                     // ReSharper disable once ConvertToConstant.Local
                     string message = "Failed to create required application directories on startup.";
                     Log(message, ex);
-                    MessageBox.Show(message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Environment.Exit(1);
                 }
 
@@ -778,7 +778,7 @@ namespace AngelLoader
                         bool andPass = true;
                         foreach (CatAndTags andTag in andTags)
                         {
-                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == andTag.Category);
+                            CatAndTags? match = fm.Tags.Find(x => x.Category == andTag.Category);
                             if (match == null)
                             {
                                 andPass = false;
@@ -789,7 +789,7 @@ namespace AngelLoader
                             {
                                 foreach (string andTagTag in andTag.Tags)
                                 {
-                                    if (match.Tags.FirstOrDefault(x => x == andTagTag) == null)
+                                    if (match.Tags.Find(x => x == andTagTag) == null)
                                     {
                                         andPass = false;
                                         break;
@@ -817,14 +817,14 @@ namespace AngelLoader
                         bool orPass = false;
                         foreach (CatAndTags orTag in orTags)
                         {
-                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == orTag.Category);
+                            CatAndTags? match = fm.Tags.Find(x => x.Category == orTag.Category);
                             if (match == null) continue;
 
                             if (orTag.Tags.Count > 0)
                             {
                                 foreach (string orTagTag in orTag.Tags)
                                 {
-                                    if (match.Tags.FirstOrDefault(x => x == orTagTag) != null)
+                                    if (match.Tags.Find(x => x == orTagTag) != null)
                                     {
                                         orPass = true;
                                         break;
@@ -856,7 +856,7 @@ namespace AngelLoader
                         bool notPass = true;
                         foreach (CatAndTags notTag in notTags)
                         {
-                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == notTag.Category);
+                            CatAndTags? match = fm.Tags.Find(x => x.Category == notTag.Category);
                             if (match == null) continue;
 
                             if (notTag.Tags.Count == 0)
@@ -869,7 +869,7 @@ namespace AngelLoader
                             {
                                 foreach (string notTagTag in notTag.Tags)
                                 {
-                                    if (match.Tags.FirstOrDefault(x => x == notTagTag) != null)
+                                    if (match.Tags.Find(x => x == notTagTag) != null)
                                     {
                                         notPass = false;
                                         break;

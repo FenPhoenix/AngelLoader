@@ -21,9 +21,6 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Class)]
         internal sealed class FenGenFMDataSourceClassAttribute : Attribute
         {
-            /// <summary>
-            /// 
-            /// </summary>
             /// <param name="writeEmptyValues">
             /// Specifies whether empty values will be written to the ini.
             /// What constitutes "empty" will vary depending on type.

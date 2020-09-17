@@ -115,7 +115,7 @@ namespace AngelLoader.Forms.CustomControls
             string last = LText.ProgressBox.ReportScanningLast;
             ProgressMessageLabel.Text = first + fmNumber + between + fmsTotal + last;
             CurrentThingLabel.Text = fmName;
-            ProgressPercentLabel.Text = percent + @"%";
+            ProgressPercentLabel.Text = percent + "%";
 
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
         }
@@ -124,7 +124,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             ProgressBar.SetValueInstant(percent.Clamp(0, 100));
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
-            ProgressPercentLabel.Text = percent + @"%";
+            ProgressPercentLabel.Text = percent + "%";
 
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
         }
@@ -132,7 +132,7 @@ namespace AngelLoader.Forms.CustomControls
         internal void ReportCachingProgress(int percent)
         {
             ProgressBar.SetValueInstant(percent.Clamp(0, 100));
-            ProgressPercentLabel.Text = percent + @"%";
+            ProgressPercentLabel.Text = percent + "%";
 
             if (Visible)
             {
