@@ -50,7 +50,7 @@ namespace AngelLoader.Forms
             FMsDGV.SelectProperly();
         }
 
-        public void ShowProgressBox(ProgressTasks progressTask, bool suppressShow = false)
+        public void ShowProgressBox(ProgressTask progressTask, bool suppressShow = false)
         {
             ConstructProgressBox();
             ProgressBox!.ShowProgressWindow(progressTask, suppressShow);

@@ -6,7 +6,7 @@ namespace AngelLoader
 {
     internal static class Attributes
     {
-        // IMPORTANT!
+        // IMPORTANT (Attributes):
         // Do NOT change the names of any FenGen attributes without also going in to FenGen and changing their
         // names there. Otherwise FenGen will break!
 

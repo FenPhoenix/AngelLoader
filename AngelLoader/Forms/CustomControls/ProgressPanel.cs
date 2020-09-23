@@ -12,7 +12,7 @@ namespace AngelLoader.Forms.CustomControls
         #region Fields etc.
 
         private MainForm? _owner;
-        private ProgressTasks _progressTask;
+        private ProgressTask _progressTask;
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Open/close
 
-        internal void ShowProgressWindow(ProgressTasks progressTask, bool suppressShow = false)
+        internal void ShowProgressWindow(ProgressTask progressTask, bool suppressShow = false)
         {
             _progressTask = progressTask;
 
@@ -37,30 +37,30 @@ namespace AngelLoader.Forms.CustomControls
 
             ProgressMessageLabel.Text = progressTask switch
             {
-                ProgressTasks.ScanAllFMs => LText.ProgressBox.Scanning,
-                ProgressTasks.InstallFM => LText.ProgressBox.InstallingFM,
-                ProgressTasks.UninstallFM => LText.ProgressBox.UninstallingFM,
-                ProgressTasks.ConvertFiles => LText.ProgressBox.ConvertingFiles,
-                ProgressTasks.ImportFromDarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
-                ProgressTasks.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
-                ProgressTasks.ImportFromFMSel => LText.ProgressBox.ImportingFromFMSel,
-                ProgressTasks.CacheFM => LText.ProgressBox.CachingReadmeFiles,
-                ProgressTasks.DeleteFMArchive => LText.ProgressBox.DeletingFMArchive,
+                ProgressTask.ScanAllFMs => LText.ProgressBox.Scanning,
+                ProgressTask.InstallFM => LText.ProgressBox.InstallingFM,
+                ProgressTask.UninstallFM => LText.ProgressBox.UninstallingFM,
+                ProgressTask.ConvertFiles => LText.ProgressBox.ConvertingFiles,
+                ProgressTask.ImportFromDarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
+                ProgressTask.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
+                ProgressTask.ImportFromFMSel => LText.ProgressBox.ImportingFromFMSel,
+                ProgressTask.CacheFM => LText.ProgressBox.CachingReadmeFiles,
+                ProgressTask.DeleteFMArchive => LText.ProgressBox.DeletingFMArchive,
                 _ => ""
             };
 
             CurrentThingLabel.Text =
-                progressTask == ProgressTasks.ScanAllFMs ? LText.ProgressBox.CheckingInstalledFMs
+                progressTask == ProgressTask.ScanAllFMs ? LText.ProgressBox.CheckingInstalledFMs
                 : "";
 
             ProgressPercentLabel.Text = "";
 
-            if (progressTask == ProgressTasks.UninstallFM ||
-                progressTask == ProgressTasks.ConvertFiles ||
-                progressTask == ProgressTasks.ImportFromDarkLoader ||
-                progressTask == ProgressTasks.ImportFromNDL ||
-                progressTask == ProgressTasks.ImportFromFMSel ||
-                progressTask == ProgressTasks.DeleteFMArchive)
+            if (progressTask == ProgressTask.UninstallFM ||
+                progressTask == ProgressTask.ConvertFiles ||
+                progressTask == ProgressTask.ImportFromDarkLoader ||
+                progressTask == ProgressTask.ImportFromNDL ||
+                progressTask == ProgressTask.ImportFromFMSel ||
+                progressTask == ProgressTask.DeleteFMArchive)
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
                 if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
@@ -69,7 +69,7 @@ namespace AngelLoader.Forms.CustomControls
             else
             {
                 ProgressBar.Style = ProgressBarStyle.Blocks;
-                ProgressCancelButton.Visible = progressTask != ProgressTasks.CacheFM;
+                ProgressCancelButton.Visible = progressTask != ProgressTask.CacheFM;
                 ProgressBar.SetValueInstant(0);
             }
 
@@ -167,10 +167,10 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch (_progressTask)
             {
-                case ProgressTasks.ScanAllFMs:
+                case ProgressTask.ScanAllFMs:
                     FMScan.CancelScan();
                     break;
-                case ProgressTasks.InstallFM:
+                case ProgressTask.InstallFM:
                     FMInstallAndPlay.CancelInstallFM();
                     break;
             }

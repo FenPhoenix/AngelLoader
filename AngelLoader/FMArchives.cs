@@ -133,7 +133,7 @@ namespace AngelLoader
 
             try
             {
-                Core.View.ShowProgressBox(ProgressTasks.DeleteFMArchive);
+                Core.View.ShowProgressBox(ProgressTask.DeleteFMArchive);
                 await Task.Run(() =>
                 {
                     foreach (string archive in finalArchives)

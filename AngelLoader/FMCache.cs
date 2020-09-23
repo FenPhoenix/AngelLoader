@@ -353,7 +353,7 @@ namespace AngelLoader
 
                 // Block the view immediately after starting another thread, because otherwise we could end
                 // up allowing multiple of these to be called and all that insanity...
-                Core.View.InvokeSync(new Action(() => Core.View.ShowProgressBox(ProgressTasks.CacheFM)));
+                Core.View.InvokeSync(new Action(() => Core.View.ShowProgressBox(ProgressTask.CacheFM)));
 
                 Directory.CreateDirectory(fmCachePath);
 

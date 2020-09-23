@@ -34,7 +34,7 @@ namespace AngelLoader
             "spanish"     // es
         };
 
-        // Important: This must be instantiated with the StringComparer.OrdinalIgnoreCase comparer. Don't remove.
+        // IMPORTANT: This must be instantiated with the StringComparer.OrdinalIgnoreCase comparer. Don't remove.
         private static Dictionary<string, string>? _langCodes;
         internal static Dictionary<string, string>
         LangCodes => _langCodes ??= new Dictionary<string, string>(11, StringComparer.OrdinalIgnoreCase)
@@ -52,7 +52,7 @@ namespace AngelLoader
             { "spanish", "es" }
         };
 
-        // Important: This must be instantiated with the StringComparer.OrdinalIgnoreCase comparer. Don't remove.
+        // IMPORTANT: This must be instantiated with the StringComparer.OrdinalIgnoreCase comparer. Don't remove.
         private static Dictionary<string, string>? _altLangCodes;
         internal static Dictionary<string, string>
         AltLangCodes => _altLangCodes ??= new Dictionary<string, string>(2, StringComparer.OrdinalIgnoreCase)

@@ -8,7 +8,6 @@ using System.IO;
 
 namespace FMScanner.FastZipReader
 {
-    // TODO: This duplicate-but-internal thing is silly, make it better
     internal static class ZipHelpers
     {
         private const int ValidZipDate_YearMin = 1980;

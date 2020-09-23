@@ -208,6 +208,7 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Important
 
+            // IMPORTANT (SetColumnData):
             // Do not remove! DataGridViewColumn.DisplayIndex changes the DisplayIndex of other columns when you
             // set it. That means we can't step through columns in order and set their DisplayIndex to whatever
             // it should be; instead we have to step through DisplayIndexes in order and assign them to whatever

@@ -429,7 +429,8 @@ namespace AngelLoader.Forms
             #region Mouse
             if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
             {
-                // IMPORTANT! Do this check inside each if block rather than above, because the message may not
+                // IMPORTANT (PreFilterMessage):
+                // Do this check inside each if block rather than above, because the message may not
                 // be a mousemove message, and in that case we'd be trying to get a window point from a random
                 // value, and that causes the min,max,close button flickering.
                 if (!TryGetHWndFromMousePos(m, out IntPtr hWnd)) return PassMessageOn;
@@ -1136,8 +1137,11 @@ namespace AngelLoader.Forms
             // Do I really want to put up this dialog during that situation?
             if (!EverythingPanel.Enabled || _viewBlocked)
             {
-                MessageBox.Show(LText.AlertMessages.AppClosing_OperationInProgress, LText.AlertMessages.Alert,
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    LText.AlertMessages.AppClosing_OperationInProgress,
+                    LText.AlertMessages.Alert,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 e.Cancel = true;
                 return;
             }
@@ -1921,7 +1925,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.DateAdded:
-                    // Convert to local time: very important. We don't do it earlier for startup perf reasons.
+                    // IMPORTANT (Convert to local time): We don't do it earlier for startup perf reasons.
                     e.Value = fm.DateAdded != null ? FormatDate(((DateTime)fm.DateAdded).ToLocalTime()) : "";
                     break;
 

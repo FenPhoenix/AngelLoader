@@ -109,7 +109,7 @@ namespace AngelLoader
                 return string.Compare(fm1.InstalledDir, fm2.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
             }
 
-            // Important: these get modified, so don't use the originals!
+            // IMPORTANT: these get modified, so don't use the originals!
             string xTitle = x.Title;
             string yTitle = y.Title;
 

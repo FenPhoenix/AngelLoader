@@ -52,7 +52,7 @@ namespace AngelLoader
         public static readonly int ZoomTypesCount = Enum.GetValues(typeof(Zoom)).Length;
 
         // Public for param accessibility reasons or whatever
-        public enum ProgressTasks
+        public enum ProgressTask
         {
             ScanAllFMs,
             InstallFM,

@@ -12,7 +12,7 @@ namespace AngelLoader.Forms
     {
         #region Progress box
 
-        void ShowProgressBox(ProgressTasks progressTask, bool suppressShow = false);
+        void ShowProgressBox(ProgressTask progressTask, bool suppressShow = false);
         void HideProgressBox();
         void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName);
         void ReportFMExtractProgress(int percent);

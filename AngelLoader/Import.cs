@@ -155,9 +155,9 @@ namespace AngelLoader
                 {
                     Core.View.ShowProgressBox(importType switch
                     {
-                        ImportType.DarkLoader => ProgressTasks.ImportFromDarkLoader,
-                        ImportType.FMSel => ProgressTasks.ImportFromFMSel,
-                        _ => ProgressTasks.ImportFromNDL
+                        ImportType.DarkLoader => ProgressTask.ImportFromDarkLoader,
+                        ImportType.FMSel => ProgressTask.ImportFromFMSel,
+                        _ => ProgressTask.ImportFromNDL
                     });
 
                     var (error, fmsToScan) = await Task.Run(() => importType switch
@@ -464,7 +464,8 @@ namespace AngelLoader
                 }
                 finally
                 {
-                    // IMPORTANT! This MUST be invoked back to the UI thread because this method will be called
+                    // IMPORTANT (ImportDarkLoaderInternal):
+                    // This MUST be invoked back to the UI thread because this method will be called
                     // from inside an await Task.Run()!
                     // TODO: ImportDarkLoaderInternal: Invoke: We don't really need this here; we already close later
                     // This just lets us close before putting up a possible error dialog, but other than that is

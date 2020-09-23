@@ -265,7 +265,7 @@ namespace AngelLoader
 
             try
             {
-                // IMPORTANT:
+                // IMPORTANT (Stub comm file encoding):
                 // Encoding MUST be "new UTF8Encoding(false, true)" or the C++ stub won't read it (it doesn't
                 // handle the byte order mark).
                 using var sw = new StreamWriter(Paths.StubCommFilePath, append: false,
@@ -511,7 +511,7 @@ namespace AngelLoader
 
             _extractCts = new CancellationTokenSource();
 
-            Core.View.ShowProgressBox(ProgressTasks.InstallFM);
+            Core.View.ShowProgressBox(ProgressTask.InstallFM);
 
             // Framework zip extracting is much faster, so use it if possible
             bool canceled = !await (fmArchivePath.ExtIsZip()
@@ -556,7 +556,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
+                    Core.View.ShowProgressBox(ProgressTask.ConvertFiles);
 
                     // Dark engine games can't play MP3s, so they must be converted in all cases.
                     // This one won't be called anywhere except during install, because it always runs during
@@ -747,7 +747,7 @@ namespace AngelLoader
                 return;
             }
 
-            Core.View.ShowProgressBox(ProgressTasks.UninstallFM);
+            Core.View.ShowProgressBox(ProgressTask.UninstallFM);
 
             try
             {

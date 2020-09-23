@@ -37,7 +37,7 @@ namespace AngelLoader
 
             try
             {
-                if (doChecksAndProgressBox) Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
+                if (doChecksAndProgressBox) Core.View.ShowProgressBox(ProgressTask.ConvertFiles);
 
                 await Task.Run(async () =>
                 {
