@@ -62,6 +62,33 @@ namespace AngelLoader.Forms
 #if !ReleaseBeta && !ReleasePublic
         private readonly CheckBox ForceWindowedCheckBox;
         private void ForceWindowedCheckBox_CheckedChanged(object sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
+        private readonly CheckBox T1ScreenShotModeCheckBox;
+        private readonly CheckBox T2ScreenShotModeCheckBox;
+        private void T1ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            GameConfigFiles.SetScreenShotMode(Thief1, T1ScreenShotModeCheckBox.Checked);
+        }
+        private void T2ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            GameConfigFiles.SetScreenShotMode(Thief2, T2ScreenShotModeCheckBox.Checked);
+        }
+
+        public void UpdateGameScreenShotModes()
+        {
+            using (new DisableEvents(this))
+            {
+                bool? t1 = GameConfigFiles.GetScreenShotMode(Thief1);
+                bool? t2 = GameConfigFiles.GetScreenShotMode(Thief2);
+
+                T1ScreenShotModeCheckBox.Visible = t1 != null;
+                T2ScreenShotModeCheckBox.Visible = t2 != null;
+
+                if (t1 != null) T1ScreenShotModeCheckBox.Checked = (bool)t1;
+                if (t2 != null) T2ScreenShotModeCheckBox.Checked = (bool)t2;
+            }
+        }
 #endif
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -661,11 +688,17 @@ namespace AngelLoader.Forms
 #endif
 
 #if !ReleaseBeta && !ReleasePublic
-            ForceWindowedCheckBox = new CheckBox();
+            ForceWindowedCheckBox = new CheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "Force windowed" };
             BottomRightButtonsFLP.Controls.Add(ForceWindowedCheckBox);
-            ForceWindowedCheckBox.Dock = DockStyle.Fill;
-            ForceWindowedCheckBox.Text = @"Force windowed";
             ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
+
+            T1ScreenShotModeCheckBox = new CheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 SSM" };
+            T2ScreenShotModeCheckBox = new CheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 SSM" };
+            // Add in reverse order because the flow layout panel is right-to-left I guess?
+            BottomRightButtonsFLP.Controls.Add(T2ScreenShotModeCheckBox);
+            BottomRightButtonsFLP.Controls.Add(T1ScreenShotModeCheckBox);
+            T1ScreenShotModeCheckBox.CheckedChanged += T1ScreenShotModeCheckBox_CheckedChanged;
+            T2ScreenShotModeCheckBox.CheckedChanged += T2ScreenShotModeCheckBox_CheckedChanged;
 #endif
 
             // -------- New games go here!
@@ -862,6 +895,10 @@ namespace AngelLoader.Forms
         public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned)
         {
             if (Visible) return;
+
+#if !ReleaseBeta && !ReleasePublic
+            UpdateGameScreenShotModes();
+#endif
 
             // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
             // Find() to have been run first.

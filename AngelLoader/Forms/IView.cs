@@ -142,5 +142,8 @@ namespace AngelLoader.Forms
         SelectedFM? GetSelectedFMPosInfo();
 
         void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
+#if !ReleaseBeta && !ReleasePublic
+        void UpdateGameScreenShotModes();
+#endif
     }
 }

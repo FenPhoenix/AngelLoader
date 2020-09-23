@@ -444,6 +444,10 @@ namespace AngelLoader
                     {
                         ret.FMsViewListUnscanned = fmsViewListUnscanned;
                     }
+
+#if !ReleaseBeta && !ReleasePublic
+                    if (gamePathsChanged) View.UpdateGameScreenShotModes();
+#endif
                 }
 
                 ret.KeepSel = !gameOrganizationChanged;

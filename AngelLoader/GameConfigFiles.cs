@@ -223,6 +223,38 @@ namespace AngelLoader
                 : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue, alwaysShowLoader);
         }
 
+#if !ReleaseBeta && !ReleasePublic
+
+        internal static bool? GetScreenShotMode(GameIndex gameIndex)
+        {
+            string gamePath = Config.GetGamePath(gameIndex);
+            if (gamePath.IsEmpty()) return null;
+            string userCfgFile = Path.Combine(gamePath, "USER.CFG");
+            if (!File.Exists(userCfgFile)) return null;
+
+            bool ret = false;
+
+            var lines = File.ReadAllLines(userCfgFile).ToList();
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lt = lines[i].Trim();
+                string ltNS = lt;
+                do { ltNS = ltNS.TrimStart(CA_Semicolon).Trim(); } while (ltNS.Length > 0 && ltNS[0] == ';');
+                if (ltNS.StartsWithIPlusWhiteSpace("inv_status_height"))
+                {
+                    var fields = ltNS.Split(new[] { ' ', '\t', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    ret = fields.Length >= 2 &&
+                          int.TryParse(fields[1], out int result) &&
+                          result == 0 &&
+                          !lt.StartsWith(";");
+                }
+            }
+
+            return ret;
+        }
+
+#endif
+
         #endregion
 
         #region Write
@@ -342,8 +374,7 @@ namespace AngelLoader
         {
             #region Local functions
 
-            static string FindPreviousSelector(List<string> lines, string fmSelectorKey, string stubPath,
-            string gamePath)
+            static string FindPreviousSelector(List<string> lines, string fmSelectorKey, string stubPath, string gamePath)
             {
                 // Handle relative paths
                 static string GetFullPath(string _gamePath, string path)
@@ -764,6 +795,58 @@ namespace AngelLoader
         }
 
         #endregion
+
+#if !ReleaseBeta && !ReleasePublic
+
+        internal static void SetScreenShotMode(GameIndex gameIndex, bool enabled)
+        {
+            string gamePath = Config.GetGamePath(gameIndex);
+            if (gamePath.IsEmpty()) return;
+            string userCfgFile = Path.Combine(gamePath, "USER.CFG");
+            if (!File.Exists(userCfgFile)) return;
+
+            var lines = File.ReadAllLines(userCfgFile).ToList();
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lt = lines[i].Trim();
+                string ltNS = lt;
+                do { ltNS = ltNS.TrimStart(CA_Semicolon).Trim(); } while (ltNS.Length > 0 && ltNS[0] == ';');
+                if (ltNS.StartsWithIPlusWhiteSpace("inv_status_height"))
+                {
+                    lines.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            lines.Insert(0, "inv_status_height 0 ; Added by AngelLoader: uncommented = screenshot mode enabled (no hud)");
+            lines.Insert(1, "");
+            if (!enabled) lines[0] = ";" + lines[0];
+
+            // Remove consecutive whitespace lines (leaving only one-in-a-row at most).
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].IsWhiteSpace())
+                {
+                    for (int j = i + 1; j < lines.Count; j++)
+                    {
+                        if (lines[j].IsWhiteSpace())
+                        {
+                            lines.RemoveAt(j);
+                            j--;
+                            i--;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            File.WriteAllLines(userCfgFile, lines);
+        }
+
+#endif
 
         #endregion
     }
