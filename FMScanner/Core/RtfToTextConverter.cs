@@ -41,6 +41,9 @@ To that end:
  done already.
 
 TODO:
+Spec conformance:
+-Check each character for the current font and put it through the translation table if appropriate!
+
 Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
