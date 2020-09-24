@@ -2751,10 +2751,11 @@ namespace FMScanner
                 !_currentScope.InFontTable)
             {
                 // We don't really have a way to set the default font num as the first scope's font num, because
-                // the font definitions comes AFTER the default font control word, so let's just do this check
+                // the font definitions come AFTER the default font control word, so let's just do this check
                 // right here. It's fast if we have a font num for this scope, and if not, it'll only run once
                 // anyway, so we shouldn't take much of a speed hit.
-                if (_currentScope.Properties[(int)Property.FontNum] == -1 &&
+                if (_currentScope.SymbolFont == SymbolFont.None &&
+                    _currentScope.Properties[(int)Property.FontNum] == -1 &&
                     _header.DefaultFontNum > -1 &&
                     _fontEntries.TryGetValue(_header.DefaultFontNum, out FontEntry fontEntry))
                 {
