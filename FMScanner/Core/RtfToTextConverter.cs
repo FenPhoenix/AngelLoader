@@ -41,9 +41,6 @@ To that end:
  done already.
 
 TODO:
-Spec conformance:
--Check each character for the current font and put it through the translation table if appropriate!
-
 Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
@@ -701,6 +698,7 @@ namespace FMScanner
             internal RtfDestinationState RtfDestinationState;
             internal RtfInternalState RtfInternalState;
             internal bool InFontTable;
+            internal SymbolFont SymbolFont;
 
             internal readonly int[] Properties = new int[_propertiesLen];
 
@@ -709,6 +707,7 @@ namespace FMScanner
                 RtfDestinationState = 0;
                 RtfInternalState = 0;
                 InFontTable = false;
+                SymbolFont = SymbolFont.None;
 
                 Properties[(int)Property.Hidden] = 0;
                 Properties[(int)Property.UnicodeCharSkipCount] = 1;
@@ -738,6 +737,7 @@ namespace FMScanner
                 nextScope.RtfDestinationState = currentScope.RtfDestinationState;
                 nextScope.RtfInternalState = currentScope.RtfInternalState;
                 nextScope.InFontTable = currentScope.InFontTable;
+                nextScope.SymbolFont = currentScope.SymbolFont;
 
                 Array.Copy(currentScope.Properties, 0, nextScope.Properties, 0, _propertiesLen);
             }
@@ -755,6 +755,7 @@ namespace FMScanner
             internal RtfDestinationState RtfDestinationState;
             internal RtfInternalState RtfInternalState;
             internal bool InFontTable;
+            internal SymbolFont SymbolFont;
 
             internal readonly int[] Properties = new int[_propertiesLen];
 
@@ -764,6 +765,7 @@ namespace FMScanner
                 dest.RtfDestinationState = RtfDestinationState;
                 dest.RtfInternalState = RtfInternalState;
                 dest.InFontTable = InFontTable;
+                dest.SymbolFont = SymbolFont;
 
                 Array.Copy(Properties, 0, dest.Properties, 0, _propertiesLen);
             }
@@ -793,6 +795,14 @@ namespace FMScanner
         #endregion
 
         #region Enums
+
+        private enum SymbolFont
+        {
+            None,
+            Symbol,
+            Wingdings,
+            Webdings
+        }
 
         private const int _propertiesLen = 3;
         private enum Property
@@ -2151,11 +2161,18 @@ namespace FMScanner
                     _fontEntries.Add(val, new FontEntry());
                     return Error.OK;
                 }
-                else if (_fontEntries.TryGetValue(val, out FontEntry? fontEntry) &&
-                      fontEntry.CodePage == 42)
+                else if (_fontEntries.TryGetValue(val, out FontEntry fontEntry))
                 {
-                    // We have to track this globally, per behavior of RichEdit and implied by the spec.
-                    _lastUsedFontWithCodePage42 = val;
+                    if (fontEntry.CodePage == 42)
+                    {
+                        // We have to track this globally, per behavior of RichEdit and implied by the spec.
+                        _lastUsedFontWithCodePage42 = val;
+                    }
+
+                    // Support bare characters that are supposed to be displayed in a symbol font. We use a simple
+                    // enum so that we don't have to do a dictionary lookup on every single character, but only
+                    // once per font change.
+                    _currentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
                 }
             }
 
@@ -2733,7 +2750,40 @@ namespace FMScanner
                 _currentScope.Properties[(int)Property.Hidden] == 0 &&
                 !_currentScope.InFontTable)
             {
-                _plainText.Add(ch);
+                // We don't really have a way to set the default font num as the first scope's font num, because
+                // the font definitions comes AFTER the default font control word, so let's just do this check
+                // right here. It's fast if we have a font num for this scope, and if not, it'll only run once
+                // anyway, so we shouldn't take much of a speed hit.
+                if (_currentScope.Properties[(int)Property.FontNum] == -1 &&
+                    _header.DefaultFontNum > -1 &&
+                    _fontEntries.TryGetValue(_header.DefaultFontNum, out FontEntry fontEntry))
+                {
+                    _currentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                }
+
+                // Support bare characters that are supposed to be displayed in a symbol font.
+                if (_currentScope.SymbolFont > SymbolFont.None)
+                {
+#pragma warning disable 8509
+                    int[] fontTable = _currentScope.SymbolFont switch
+                    {
+                        SymbolFont.Symbol => _symbolFontToUnicode,
+                        SymbolFont.Wingdings => _wingdingsFontToUnicode,
+                        SymbolFont.Webdings => _webdingsFontToUnicode
+                    };
+#pragma warning restore 8509
+                    if (GetCharFromConversionList(ch, fontTable, out string result))
+                    {
+                        for (int i = 0; i < result.Length; i++)
+                        {
+                            _plainText.Add(result[i]);
+                        }
+                    }
+                }
+                else
+                {
+                    _plainText.Add(ch);
+                }
             }
             return Error.OK;
         }
@@ -2907,6 +2957,16 @@ namespace FMScanner
 
             return (true, false, enc, fontEntry);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private SymbolFont GetSymbolFontTypeFromFontEntry(FontEntry fontEntry) =>
+              CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _symbolChars)
+            ? SymbolFont.Symbol
+            : CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _wingdingsChars)
+            ? SymbolFont.Wingdings
+            : CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _webdingsChars)
+            ? SymbolFont.Webdings
+            : SymbolFont.None;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out string finalChar)
