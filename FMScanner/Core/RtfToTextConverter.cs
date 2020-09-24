@@ -2792,6 +2792,9 @@ namespace FMScanner
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error PutChar(string ch)
         {
+            // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
+            // need to duplicate any of the bare-char symbol font stuff here.
+
             //Trace.Write(ch);
             if (ch != "\0" &&
                 _currentScope.Properties[(int)Property.Hidden] == 0 &&
