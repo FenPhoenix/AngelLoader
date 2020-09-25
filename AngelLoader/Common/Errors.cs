@@ -16,6 +16,7 @@
         T3FMInstPathNotFound,
         GameExeNotSpecified,
         GameExeNotFound,
+        SneakyDllNotFound,
         ExeIsLargerThanInt,
         GameVersionNotFound,
         GameExeReadFailed

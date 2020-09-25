@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Windows.Forms;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -50,6 +43,21 @@ namespace AngelLoader.Forms
                     else if (error != Error.None)
                     {
                         ver = "error getting version";
+                    }
+
+                    if (GameIsDark(gameIndex))
+                    {
+                        // Conservative approach: don't explicitly say "OldDark" just in case something weird
+                        // happens with versions in the future and this ends up a false negative (unlikely, but hey)
+                        if (float.TryParse(ver, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result) &&
+                            result > 1.18)
+                        {
+                            ver += " (NewDark)";
+                        }
+                    }
+                    else
+                    {
+                        ver = "Sneaky Upgrade " + ver;
                     }
                 }
                 else

@@ -14,9 +14,16 @@ namespace AngelLoader
 {
     internal static class GameVersions
     {
+        // UTF-16-encoded ASCII: first byte is an ASCII character, second byte is always null
+        private static readonly byte[] ProductVersionBytes = Encoding.ASCII.GetBytes(new[]
+        {
+            'P', '\0', 'r', '\0', 'o', '\0', 'd', '\0', 'u', '\0', 'c', '\0', 't', '\0',
+            'V', '\0', 'e', '\0', 'r', '\0', 's', '\0', 'i', '\0', 'o', '\0', 'n', '\0', '\0', '\0'
+        });
+
         private static int IndexOfByteSequence(this byte[] input, byte[] pattern)
         {
-            var firstByte = pattern[0];
+            byte firstByte = pattern[0];
             int index = Array.IndexOf(input, firstByte);
 
             while (index > -1)
@@ -37,51 +44,33 @@ namespace AngelLoader
             return index;
         }
 
-        // Used for detecting NewDark version of NewDark executables
-        private static readonly byte[] ProductVersionBytes = Encoding.ASCII.GetBytes(new[]
-        {
-            'P', '\0', 'r', '\0', 'o', '\0', 'd', '\0', 'u', '\0', 'c', '\0', 't', '\0',
-            'V', '\0', 'e', '\0', 'r', '\0', 's', '\0', 'i', '\0', 'o', '\0', 'n', '\0', '\0', '\0'
-        });
-
-        internal static string CreateTitle()
-        {
-            string ret = "";
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                string gameExe = Config.GetGameExe((GameIndex)i);
-                if (!gameExe.IsWhiteSpace() && File.Exists(gameExe))
-                {
-                    if (ret.Length > 0) ret += ", ";
-                    ret += i switch
-                    {
-                        0 => "T1: ",
-                        1 => "T2: ",
-                        2 => "T3: ",
-                        _ => "SS2: "
-                    };
-                    Error error = TryGetGameVersion((GameIndex)i, out string version);
-                    ret += error == Error.None ? version : "unknown";
-                }
-            }
-
-            return ret;
-        }
-
         [PublicAPI]
         internal static Error TryGetGameVersion(GameIndex game, out string version)
         {
             version = "";
 
-            string gameExe = GameIsDark(game) ? Config.GetGameExe(game) : Path.Combine(Config.GetGamePath(Thief3), "Sneaky.dll");
+            string gameExe = Config.GetGameExe(game);
+            string exeToSearch;
 
             if (gameExe.IsWhiteSpace()) return Error.GameExeNotSpecified;
             if (!File.Exists(gameExe)) return Error.GameExeNotFound;
 
+            if (GameIsDark(game))
+            {
+                exeToSearch = gameExe;
+            }
+            else
+            {
+                if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(Thief3), "Sneaky.dll", out exeToSearch))
+                {
+                    return Error.SneakyDllNotFound;
+                }
+            }
+
             BinaryReader? br = null;
             try
             {
-                br = new BinaryReader(new FileStream(gameExe, FileMode.Open, FileAccess.Read), Encoding.ASCII, leaveOpen: false);
+                br = new BinaryReader(new FileStream(exeToSearch, FileMode.Open, FileAccess.Read), Encoding.ASCII, leaveOpen: false);
 
                 long streamLen = br.BaseStream.Length;
 
