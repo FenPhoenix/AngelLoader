@@ -1226,6 +1226,9 @@ namespace AngelLoader.Forms
             }
             try
             {
+                MainToolTip.SetToolTip(MainMenuButton, LText.MainMenu.MainMenuToolTip);
+                MainLLMenu.Localize();
+
                 #region Game tabs
 
                 ChangeGameTabNameShortness(Config.UseShortGameTabNames, false);
@@ -4088,7 +4091,13 @@ namespace AngelLoader.Forms
 
         private void MainMenuButton_Click(object sender, EventArgs e)
         {
+            MainLLMenu.Construct(this, components);
+            ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight);
+        }
 
+        internal void MainMenu_ViewGameInfoMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("game info placeholder");
         }
     }
 }

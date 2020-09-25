@@ -27,6 +27,7 @@ namespace AngelLoader.DataClasses
         internal readonly Global_Class Global = new Global_Class();
         internal readonly BrowseDialogs_Class BrowseDialogs = new BrowseDialogs_Class();
         internal readonly AlertMessages_Class AlertMessages = new AlertMessages_Class();
+        internal readonly MainMenu_Class MainMenu = new MainMenu_Class();
         internal readonly FMDeletion_Class FMDeletion = new FMDeletion_Class();
         internal readonly Difficulties_Class Difficulties = new Difficulties_Class();
         internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
@@ -176,6 +177,13 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Help_HelpFileNotFound = "Help file not found.";
             internal readonly string Help_UnableToOpenHelpFile = "Unable to open help file.";
+        }
+
+        // Working, subject to change
+        internal sealed class MainMenu_Class
+        {
+            internal readonly string MainMenuToolTip = "Main menu";
+            internal readonly string ViewGameInfo = "View game info...";
         }
 
         internal sealed class FMDeletion_Class
