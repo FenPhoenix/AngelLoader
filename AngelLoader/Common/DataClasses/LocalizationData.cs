@@ -103,6 +103,7 @@ namespace AngelLoader.DataClasses
             internal readonly string AllFiles = "All files (*.*)";
             internal readonly string ExeFiles = "Executable files (*.exe)";
             internal readonly string IniFiles = "ini files (*.ini)";
+            internal readonly string FMIniFile = "FM ini file";
             internal readonly string DMLFiles = "NewDark .dml patch files (*.dml)";
         }
 
@@ -267,6 +268,7 @@ namespace AngelLoader.DataClasses
             internal readonly string FMMenu_DeleteFM = "Delete FM archive";
             internal readonly string FMMenu_OpenInDromEd = "Open FM in DromEd";
             internal readonly string FMMenu_OpenInShockEd = "Open FM in ShockEd";
+            internal readonly string FMMenu_ExportFMIniFromFM = "Export fm.ini from FM...";
             internal readonly string FMMenu_Rating = "Rating";
             internal readonly string FMMenu_FinishedOn = "Finished on";
             internal readonly string FMMenu_ConvertAudio = "Convert audio";
