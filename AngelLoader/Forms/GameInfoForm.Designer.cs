@@ -1,4 +1,6 @@
-﻿namespace AngelLoader.Forms
+﻿using AngelLoader.Properties;
+
+namespace AngelLoader.Forms
 {
     partial class GameInfoForm
     {
@@ -148,7 +150,7 @@
             this.Controls.Add(this.T1VersionTextBox);
             this.Controls.Add(this.T1VersionLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "GameInfoForm";
