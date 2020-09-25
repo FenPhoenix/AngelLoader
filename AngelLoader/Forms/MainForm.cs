@@ -628,6 +628,12 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private static void HideFocusRectangle(Control control) => InteropMisc.SendMessage(
+            control.Handle,
+            InteropMisc.WM_CHANGEUISTATE,
+            new IntPtr(InteropMisc.SetControlFocusToHidden),
+            new IntPtr(0));
+
         #region Init / load / show
 
         // InitializeComponent() (and stuff that doesn't do anything) only - for everything else use the init
@@ -645,6 +651,8 @@ namespace AngelLoader.Forms
             // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
             InitComponentManual();
 #endif
+
+            HideFocusRectangle(MainMenuButton);
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             #region Init debug-only controls
@@ -4095,9 +4103,13 @@ namespace AngelLoader.Forms
             ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight);
         }
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void MainMenu_ViewGameInfoMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("game info placeholder");
+            using var f = new GameInfoForm();
+            f.ShowDialog();
         }
+
+        private void MainMenuButton_Enter(object sender, EventArgs e) => HideFocusRectangle(MainMenuButton);
     }
 }

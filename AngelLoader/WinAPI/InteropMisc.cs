@@ -21,6 +21,22 @@ namespace AngelLoader.WinAPI
 
         internal const int EN_LINK = 0x070b;
 
+        internal const int WM_CHANGEUISTATE = 0x0127;
+
+        #region WM_CHANGEUISTATE
+
+        internal const int UIS_SET = 1;
+        //internal const int UIS_CLEAR = 2;
+        //internal const int UIS_INITIALIZE = 3;
+
+        internal const int UISF_HIDEFOCUS = 1;
+        //internal const int UISF_HIDEACCEL = 2;
+        //internal const int UISF_ACTIVE = 4;
+
+        internal const int SetControlFocusToHidden = UISF_HIDEFOCUS + (UIS_SET << 16);
+
+        #endregion
+
         #region Scrollbar
 
         internal const int WM_SCROLL = 276;

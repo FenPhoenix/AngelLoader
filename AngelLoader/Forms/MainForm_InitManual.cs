@@ -1532,6 +1532,7 @@ namespace AngelLoader.Forms
             MainMenuButton.UseVisualStyleBackColor = true;
             MainMenuButton.Paint += MainMenuButton_Paint;
             MainMenuButton.Click += MainMenuButton_Click;
+            MainMenuButton.Enter += MainMenuButton_Enter;
             // 
             // MainForm
             // 

@@ -1,4 +1,4 @@
-﻿//#define GAME_VERSIONS
+﻿#define GAME_VERSIONS
 
 #if GAME_VERSIONS
 using System;
@@ -78,12 +78,10 @@ namespace AngelLoader
             if (gameExe.IsWhiteSpace()) return Error.GameExeNotSpecified;
             if (!File.Exists(gameExe)) return Error.GameExeNotFound;
 
-            FileStream? fs = null;
             BinaryReader? br = null;
             try
             {
-                fs = new FileStream(gameExe, FileMode.Open, FileAccess.Read);
-                br = new BinaryReader(fs, Encoding.ASCII, leaveOpen: false);
+                br = new BinaryReader(new FileStream(gameExe, FileMode.Open, FileAccess.Read), Encoding.ASCII, leaveOpen: false);
 
                 long streamLen = br.BaseStream.Length;
 
@@ -126,7 +124,6 @@ namespace AngelLoader
             finally
             {
                 br?.Dispose();
-                fs?.Dispose();
             }
 
             return Error.None;

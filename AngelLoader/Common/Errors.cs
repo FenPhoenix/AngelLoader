@@ -14,12 +14,12 @@
         SneakyOptionsNoRegKey,
         SneakyOptionsNotFound,
         T3FMInstPathNotFound,
-        /*
         GameExeNotSpecified,
         GameExeNotFound,
         ExeIsLargerThanInt,
         GameVersionNotFound,
         GameExeReadFailed
+        /*
         */
     }
 
