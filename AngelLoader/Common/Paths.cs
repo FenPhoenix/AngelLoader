@@ -190,6 +190,9 @@ namespace AngelLoader
 
         #endregion
 
+        // Sneaky Upgrade file. We scan this for the SU version number.
+        internal const string SneakyDll = "Sneaky.dll";
+
         #region Game config files
 
         internal const string CamCfg = "cam.cfg";

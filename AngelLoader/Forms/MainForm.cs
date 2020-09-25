@@ -4105,9 +4105,9 @@ namespace AngelLoader.Forms
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void MainMenu_ViewGameInfoMenuItem_Click(object sender, EventArgs e)
+        internal void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
         {
-            using var f = new GameInfoForm();
+            using var f = new GameVersionsForm();
             f.ShowDialog();
         }
 

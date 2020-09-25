@@ -5,15 +5,20 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public partial class GameInfoForm : Form
+    public sealed partial class GameVersionsForm : Form
     {
         private readonly (Label Label, TextBox TextBox)[] GameVersionItems;
 
-        public GameInfoForm()
+        public GameVersionsForm()
         {
-            InitializeComponent();
 
-            // @GENGAMES (GameInfoForm): Begin
+#if DEBUG
+            InitializeComponent();
+#else
+            InitComponentManual();
+#endif
+
+            // @GENGAMES (GameVersionsForm): Begin
             GameVersionItems = new[]
             {
                 (T1VersionLabel, T1VersionTextBox),
@@ -21,18 +26,18 @@ namespace AngelLoader.Forms
                 (T3VersionLabel, T3VersionTextBox),
                 (SS2VersionLabel, SS2VersionTextBox)
             };
-            // @GENGAMES (GameInfoForm): End
+            // @GENGAMES (GameVersionsForm): End
 
             Localize();
         }
 
-        private void GameInfoForm_Load(object sender, EventArgs e)
+        private void GameVersionsForm_Load(object sender, EventArgs e)
         {
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
 
-                string ver = "";
+                string ver;
 
                 if (!Config.GetGameExe(gameIndex).IsEmpty())
                 {

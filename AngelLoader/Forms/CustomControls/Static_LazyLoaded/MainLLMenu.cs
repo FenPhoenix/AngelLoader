@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -15,7 +9,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static bool _constructed;
 
         internal static ContextMenuStrip Menu = null!;
-        private static ToolStripMenuItem ViewGameInfoMenuItem = null!;
+        private static ToolStripMenuItem GameVersionsMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -24,10 +18,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Menu = new ContextMenuStrip(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                ViewGameInfoMenuItem = new ToolStripMenuItem()
+                GameVersionsMenuItem = new ToolStripMenuItem()
             });
 
-            ViewGameInfoMenuItem.Click += form.MainMenu_ViewGameInfoMenuItem_Click;
+            GameVersionsMenuItem.Click += form.MainMenu_GameVersionsMenuItem_Click;
 
             _constructed = true;
 
@@ -38,7 +32,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            ViewGameInfoMenuItem.Text = LText.MainMenu.GameVersions;
+            GameVersionsMenuItem.Text = LText.MainMenu.GameVersions;
         }
     }
 }

@@ -61,7 +61,7 @@ namespace AngelLoader
             }
             else
             {
-                if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(Thief3), "Sneaky.dll", out exeToSearch))
+                if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(Thief3), Paths.SneakyDll, out exeToSearch))
                 {
                     return Error.SneakyDllNotFound;
                 }
@@ -95,6 +95,7 @@ namespace AngelLoader
                 }
 
                 // Init with non-null values so we don't start out with two nulls and early-out before we do anything
+                // UTF-16, so two null bytes = one null char
                 byte[] null2 = { 255, 255 };
                 for (int i = verIndex + ProductVersionBytes.Length; i < bytes.Length; i++)
                 {

@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms
 {
-    partial class GameInfoForm
+    public sealed partial class GameVersionsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -22,6 +22,7 @@ namespace AngelLoader.Forms
             base.Dispose(disposing);
         }
 
+#if DEBUG
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace AngelLoader.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameInfoForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameVersionsForm));
             this.T1VersionLabel = new System.Windows.Forms.Label();
             this.T1VersionTextBox = new System.Windows.Forms.TextBox();
             this.T2VersionLabel = new System.Windows.Forms.Label();
@@ -134,7 +135,7 @@ namespace AngelLoader.Forms
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
-            // GameInfoForm
+            // GameVersionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -153,17 +154,18 @@ namespace AngelLoader.Forms
             this.Icon = Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "GameInfoForm";
+            this.Name = "GameVersionsForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Game versions";
-            this.Load += new System.EventHandler(this.GameInfoForm_Load);
+            this.Load += new System.EventHandler(this.GameVersionsForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
+#endif
 
         private System.Windows.Forms.Label T1VersionLabel;
         private System.Windows.Forms.TextBox T1VersionTextBox;
