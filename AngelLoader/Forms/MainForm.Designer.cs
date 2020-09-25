@@ -50,6 +50,7 @@ namespace AngelLoader.Forms
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
+            this.MainMenuButton = new System.Windows.Forms.Button();
             this.FilterBarScrollRightButton = new AngelLoader.Forms.CustomControls.ArrowButton();
             this.FilterBarScrollLeftButton = new AngelLoader.Forms.CustomControls.ArrowButton();
             this.FMsDGV = new AngelLoader.Forms.CustomControls.DataGridViewCustom();
@@ -385,6 +386,7 @@ namespace AngelLoader.Forms
             // TopSplitContainer.Panel1
             // 
             this.TopSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.TopSplitContainer.Panel1.Controls.Add(this.MainMenuButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.FilterBarScrollRightButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.FilterBarScrollLeftButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.FMsDGV);
@@ -402,6 +404,17 @@ namespace AngelLoader.Forms
             this.TopSplitContainer.Size = new System.Drawing.Size(1671, 309);
             this.TopSplitContainer.SplitterDistance = 1116;
             this.TopSplitContainer.TabIndex = 0;
+            // 
+            // MainMenuButton
+            // 
+            this.MainMenuButton.FlatAppearance.BorderSize = 0;
+            this.MainMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.MainMenuButton.Location = new System.Drawing.Point(4, 6);
+            this.MainMenuButton.Name = "MainMenuButton";
+            this.MainMenuButton.Size = new System.Drawing.Size(16, 16);
+            this.MainMenuButton.TabIndex = 14;
+            this.MainMenuButton.UseVisualStyleBackColor = true;
+            this.MainMenuButton.Paint += new System.Windows.Forms.PaintEventHandler(this.MainMenuButton_Paint);
             // 
             // FilterBarScrollRightButton
             // 
@@ -443,8 +456,8 @@ namespace AngelLoader.Forms
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -618,7 +631,7 @@ namespace AngelLoader.Forms
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -638,7 +651,7 @@ namespace AngelLoader.Forms
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -751,7 +764,7 @@ namespace AngelLoader.Forms
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -885,7 +898,7 @@ namespace AngelLoader.Forms
             // 
             // RefreshAreaToolStrip
             // 
-            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RefreshAreaToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshAreaToolStrip.CanOverflow = false;
@@ -965,10 +978,10 @@ namespace AngelLoader.Forms
             this.GamesTabControl.Controls.Add(this.Thief3TabPage);
             this.GamesTabControl.Controls.Add(this.SS2TabPage);
             this.GamesTabControl.ImageList = this.GameTabsImageList;
-            this.GamesTabControl.Location = new System.Drawing.Point(1, 5);
+            this.GamesTabControl.Location = new System.Drawing.Point(24, 5);
             this.GamesTabControl.Name = "GamesTabControl";
             this.GamesTabControl.SelectedIndex = 0;
-            this.GamesTabControl.Size = new System.Drawing.Size(1103, 24);
+            this.GamesTabControl.Size = new System.Drawing.Size(1079, 24);
             this.GamesTabControl.TabIndex = 1;
             this.GamesTabControl.SelectedIndexChanged += new System.EventHandler(this.GamesTabControl_SelectedIndexChanged);
             this.GamesTabControl.Deselecting += new System.Windows.Forms.TabControlCancelEventHandler(this.GamesTabControl_Deselecting);
@@ -979,7 +992,7 @@ namespace AngelLoader.Forms
             this.Thief1TabPage.Location = new System.Drawing.Point(4, 23);
             this.Thief1TabPage.Name = "Thief1TabPage";
             this.Thief1TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.Thief1TabPage.Size = new System.Drawing.Size(1095, 0);
+            this.Thief1TabPage.Size = new System.Drawing.Size(1071, 0);
             this.Thief1TabPage.TabIndex = 0;
             this.Thief1TabPage.Text = "Thief 1";
             this.Thief1TabPage.UseVisualStyleBackColor = true;
@@ -990,7 +1003,7 @@ namespace AngelLoader.Forms
             this.Thief2TabPage.Location = new System.Drawing.Point(4, 23);
             this.Thief2TabPage.Name = "Thief2TabPage";
             this.Thief2TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.Thief2TabPage.Size = new System.Drawing.Size(1095, 0);
+            this.Thief2TabPage.Size = new System.Drawing.Size(1071, 0);
             this.Thief2TabPage.TabIndex = 1;
             this.Thief2TabPage.Text = "Thief 2";
             this.Thief2TabPage.UseVisualStyleBackColor = true;
@@ -1001,7 +1014,7 @@ namespace AngelLoader.Forms
             this.Thief3TabPage.Location = new System.Drawing.Point(4, 23);
             this.Thief3TabPage.Name = "Thief3TabPage";
             this.Thief3TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.Thief3TabPage.Size = new System.Drawing.Size(1095, 0);
+            this.Thief3TabPage.Size = new System.Drawing.Size(1071, 0);
             this.Thief3TabPage.TabIndex = 2;
             this.Thief3TabPage.Text = "Thief 3";
             this.Thief3TabPage.UseVisualStyleBackColor = true;
@@ -1012,7 +1025,7 @@ namespace AngelLoader.Forms
             this.SS2TabPage.Location = new System.Drawing.Point(4, 23);
             this.SS2TabPage.Name = "SS2TabPage";
             this.SS2TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.SS2TabPage.Size = new System.Drawing.Size(1095, 0);
+            this.SS2TabPage.Size = new System.Drawing.Size(1071, 0);
             this.SS2TabPage.TabIndex = 3;
             this.SS2TabPage.Text = "System Shock 2";
             this.SS2TabPage.UseVisualStyleBackColor = true;
@@ -1032,7 +1045,7 @@ namespace AngelLoader.Forms
             // 
             // TopRightCollapseButton
             // 
-            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightCollapseButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
             this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -1047,8 +1060,8 @@ namespace AngelLoader.Forms
             // 
             // TopRightTabControl
             // 
-            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
             this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
@@ -1349,7 +1362,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMTitleTextBox
             // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
@@ -1461,7 +1474,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMDisabledModsTextBox
             // 
-            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
@@ -1481,7 +1494,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMAuthorTextBox
             // 
-            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
@@ -1520,8 +1533,8 @@ namespace AngelLoader.Forms
             // 
             // CommentTextBox
             // 
-            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CommentTextBox.Location = new System.Drawing.Point(8, 8);
             this.CommentTextBox.Multiline = true;
@@ -1564,7 +1577,7 @@ namespace AngelLoader.Forms
             // 
             // AddTagTextBox
             // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
@@ -1621,8 +1634,8 @@ namespace AngelLoader.Forms
             // 
             // TagsTreeView
             // 
-            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.HideSelection = false;
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
@@ -2034,5 +2047,6 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
         internal System.Windows.Forms.Button EditFMScanLanguagesButton;
         internal System.Windows.Forms.Label EditFMLanguageLabel;
+        internal System.Windows.Forms.Button MainMenuButton;
     }
 }

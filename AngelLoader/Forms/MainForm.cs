@@ -35,6 +35,7 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -1472,6 +1473,9 @@ namespace AngelLoader.Forms
             if (!startup) RefreshFMsListKeepSelection();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int TopBarXZero() => MainMenuButton.Left + MainMenuButton.Width;
+
         // Separate so we can call it from _Load on startup (because it needs the form to be loaded to layout the
         // controls properly) but keep the rest of the work before load
         private void ChangeFilterControlsForGameType()
@@ -1480,8 +1484,8 @@ namespace AngelLoader.Forms
             {
                 GamesTabControl.Hide();
                 // Don't inline this var - it stores the X value to persist it through a change
-                int plusWidth = FilterBarFLP.Location.X;
-                FilterBarFLP.Location = new Point(0, FilterBarFLP.Location.Y);
+                int plusWidth = FilterBarFLP.Location.X - TopBarXZero();
+                FilterBarFLP.Location = new Point(TopBarXZero(), FilterBarFLP.Location.Y);
                 FilterBarFLP.Width += plusWidth;
                 FilterGameButtonsToolStrip.Show();
             }
@@ -3763,12 +3767,12 @@ namespace AngelLoader.Forms
             // In case I decide to allow a variable number of tabs based on which games are defined
             if (GamesTabControl.TabCount == 0)
             {
-                filterBarAfterTabsX = 0;
+                filterBarAfterTabsX = TopBarXZero();
             }
             else
             {
                 var lastRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
-                filterBarAfterTabsX = lastRect.X + lastRect.Width + 5;
+                filterBarAfterTabsX = TopBarXZero() + lastRect.X + lastRect.Width + 5;
             }
 
             FilterBarFLP.Location = new Point(filterBarAfterTabsX, FilterBarFLP.Location.Y);
@@ -4041,7 +4045,9 @@ namespace AngelLoader.Forms
 
         private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintMinusButton(PatchRemoveDMLButton, e);
 
-        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintTopRightMenuButton(TopRightMenuButton, e);
+        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton(TopRightMenuButton, e);
+
+        private void MainMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton(MainMenuButton, e);
 
         private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintWebSearchButton(WebSearchButton, e);
 

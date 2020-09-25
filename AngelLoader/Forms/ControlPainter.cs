@@ -458,7 +458,7 @@ namespace AngelLoader.Forms
             e.Graphics.FillPolygon(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, ps);
         }
 
-        internal static void PaintTopRightMenuButton(Button button, PaintEventArgs e)
+        internal static void PaintHamburgerMenuButton(Button button, PaintEventArgs e)
         {
             e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, _hamRects);
         }

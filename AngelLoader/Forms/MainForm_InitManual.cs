@@ -164,6 +164,7 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new ComboBoxCustom();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
+            MainMenuButton = new Button();
 
             #endregion
 
@@ -375,6 +376,7 @@ namespace AngelLoader.Forms
             // TopSplitContainer.Panel1
             // 
             TopSplitContainer.Panel1.BackColor = SystemColors.Control;
+            TopSplitContainer.Panel1.Controls.Add(MainMenuButton);
             TopSplitContainer.Panel1.Controls.Add(FilterBarScrollRightButton);
             TopSplitContainer.Panel1.Controls.Add(FilterBarScrollLeftButton);
             TopSplitContainer.Panel1.Controls.Add(FMsDGV);
@@ -830,9 +832,9 @@ namespace AngelLoader.Forms
             GamesTabControl.Controls.Add(Thief3TabPage);
             GamesTabControl.Controls.Add(SS2TabPage);
             GamesTabControl.ImageList = GameTabsImageList;
-            GamesTabControl.Location = new Point(1, 5);
+            GamesTabControl.Location = new Point(24, 5);
             GamesTabControl.SelectedIndex = 0;
-            GamesTabControl.Size = new Size(1103, 24);
+            GamesTabControl.Size = new Size(1079, 24);
             GamesTabControl.TabIndex = 1;
             GamesTabControl.SelectedIndexChanged += GamesTabControl_SelectedIndexChanged;
             GamesTabControl.Deselecting += GamesTabControl_Deselecting;
@@ -1519,6 +1521,16 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.TabIndex = 0;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
             ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
+            // 
+            // MainMenuButton
+            // 
+            MainMenuButton.FlatAppearance.BorderSize = 0;
+            MainMenuButton.FlatStyle = FlatStyle.Flat;
+            MainMenuButton.Location = new Point(4, 6);
+            MainMenuButton.Size = new Size(16, 16);
+            MainMenuButton.TabIndex = 14;
+            MainMenuButton.UseVisualStyleBackColor = true;
+            MainMenuButton.Paint += MainMenuButton_Paint;
             // 
             // MainForm
             // 
