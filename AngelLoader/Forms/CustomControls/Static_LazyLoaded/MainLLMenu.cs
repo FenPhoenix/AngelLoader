@@ -38,7 +38,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            ViewGameInfoMenuItem.Text = LText.MainMenu.ViewGameInfo;
+            ViewGameInfoMenuItem.Text = LText.MainMenu.GameVersions;
         }
     }
 }

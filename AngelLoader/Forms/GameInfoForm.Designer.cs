@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameInfoForm));
             this.T1VersionLabel = new System.Windows.Forms.Label();
             this.T1VersionTextBox = new System.Windows.Forms.TextBox();
             this.T2VersionLabel = new System.Windows.Forms.Label();
@@ -42,7 +43,7 @@
             // T1VersionLabel
             // 
             this.T1VersionLabel.AutoSize = true;
-            this.T1VersionLabel.Location = new System.Drawing.Point(88, 67);
+            this.T1VersionLabel.Location = new System.Drawing.Point(11, 11);
             this.T1VersionLabel.Name = "T1VersionLabel";
             this.T1VersionLabel.Size = new System.Drawing.Size(43, 13);
             this.T1VersionLabel.TabIndex = 1;
@@ -50,7 +51,10 @@
             // 
             // T1VersionTextBox
             // 
-            this.T1VersionTextBox.Location = new System.Drawing.Point(224, 64);
+            this.T1VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.T1VersionTextBox.Location = new System.Drawing.Point(147, 8);
+            this.T1VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
+            this.T1VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
             this.T1VersionTextBox.Name = "T1VersionTextBox";
             this.T1VersionTextBox.ReadOnly = true;
             this.T1VersionTextBox.Size = new System.Drawing.Size(224, 20);
@@ -59,7 +63,7 @@
             // T2VersionLabel
             // 
             this.T2VersionLabel.AutoSize = true;
-            this.T2VersionLabel.Location = new System.Drawing.Point(88, 91);
+            this.T2VersionLabel.Location = new System.Drawing.Point(11, 35);
             this.T2VersionLabel.Name = "T2VersionLabel";
             this.T2VersionLabel.Size = new System.Drawing.Size(43, 13);
             this.T2VersionLabel.TabIndex = 3;
@@ -67,7 +71,10 @@
             // 
             // T2VersionTextBox
             // 
-            this.T2VersionTextBox.Location = new System.Drawing.Point(224, 88);
+            this.T2VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.T2VersionTextBox.Location = new System.Drawing.Point(147, 32);
+            this.T2VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
+            this.T2VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
             this.T2VersionTextBox.Name = "T2VersionTextBox";
             this.T2VersionTextBox.ReadOnly = true;
             this.T2VersionTextBox.Size = new System.Drawing.Size(224, 20);
@@ -76,7 +83,7 @@
             // T3VersionLabel
             // 
             this.T3VersionLabel.AutoSize = true;
-            this.T3VersionLabel.Location = new System.Drawing.Point(88, 115);
+            this.T3VersionLabel.Location = new System.Drawing.Point(11, 59);
             this.T3VersionLabel.Name = "T3VersionLabel";
             this.T3VersionLabel.Size = new System.Drawing.Size(43, 13);
             this.T3VersionLabel.TabIndex = 5;
@@ -84,7 +91,10 @@
             // 
             // T3VersionTextBox
             // 
-            this.T3VersionTextBox.Location = new System.Drawing.Point(224, 112);
+            this.T3VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.T3VersionTextBox.Location = new System.Drawing.Point(147, 56);
+            this.T3VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
+            this.T3VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
             this.T3VersionTextBox.Name = "T3VersionTextBox";
             this.T3VersionTextBox.ReadOnly = true;
             this.T3VersionTextBox.Size = new System.Drawing.Size(224, 20);
@@ -93,7 +103,7 @@
             // SS2VersionLabel
             // 
             this.SS2VersionLabel.AutoSize = true;
-            this.SS2VersionLabel.Location = new System.Drawing.Point(88, 139);
+            this.SS2VersionLabel.Location = new System.Drawing.Point(11, 83);
             this.SS2VersionLabel.Name = "SS2VersionLabel";
             this.SS2VersionLabel.Size = new System.Drawing.Size(87, 13);
             this.SS2VersionLabel.TabIndex = 7;
@@ -101,7 +111,10 @@
             // 
             // SS2VersionTextBox
             // 
-            this.SS2VersionTextBox.Location = new System.Drawing.Point(224, 136);
+            this.SS2VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SS2VersionTextBox.Location = new System.Drawing.Point(147, 80);
+            this.SS2VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
+            this.SS2VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
             this.SS2VersionTextBox.Name = "SS2VersionTextBox";
             this.SS2VersionTextBox.ReadOnly = true;
             this.SS2VersionTextBox.Size = new System.Drawing.Size(224, 20);
@@ -111,7 +124,7 @@
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.OKButton.Location = new System.Drawing.Point(481, 337);
+            this.OKButton.Location = new System.Drawing.Point(297, 107);
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -124,7 +137,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.OKButton;
-            this.ClientSize = new System.Drawing.Size(564, 367);
+            this.ClientSize = new System.Drawing.Size(380, 137);
             this.Controls.Add(this.OKButton);
             this.Controls.Add(this.SS2VersionTextBox);
             this.Controls.Add(this.SS2VersionLabel);
@@ -135,12 +148,13 @@
             this.Controls.Add(this.T1VersionTextBox);
             this.Controls.Add(this.T1VersionLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "GameInfoForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Game info";
+            this.Text = "Game versions";
             this.Load += new System.EventHandler(this.GameInfoForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

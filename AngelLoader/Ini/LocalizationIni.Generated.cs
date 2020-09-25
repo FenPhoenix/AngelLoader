@@ -67,6 +67,12 @@ namespace AngelLoader
             {
                 MainMenu_Dict.Add(f.Name, f);
             }
+            var gameVersionsWindowFields = typeof(LText_Class.GameVersionsWindow_Class).GetFields(_bfLText);
+            var GameVersionsWindow_Dict = new Dictionary<string, FieldInfo>(gameVersionsWindowFields.Length);
+            foreach (var f in gameVersionsWindowFields)
+            {
+                GameVersionsWindow_Dict.Add(f.Name, f);
+            }
             var fMDeletionFields = typeof(LText_Class.FMDeletion_Class).GetFields(_bfLText);
             var FMDeletion_Dict = new Dictionary<string, FieldInfo>(fMDeletionFields.Length);
             foreach (var f in fMDeletionFields)
@@ -291,6 +297,28 @@ namespace AngelLoader
                             if (MainMenu_Dict.TryGetValue(key, out FieldInfo value))
                             {
                                 value.SetValue(ret.MainMenu, lt.Substring(eqIndex + 1));
+                            }
+                        }
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                else if (lineT == "[GameVersionsWindow]")
+                {
+                    while (i < linesLength - 1)
+                    {
+                        int ltLength;
+                        string lt = lines[i + 1].TrimStart();
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
+                        {
+                            string key = lt.Substring(0, eqIndex);
+                            if (GameVersionsWindow_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.GameVersionsWindow, lt.Substring(eqIndex + 1));
                             }
                         }
                         else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')

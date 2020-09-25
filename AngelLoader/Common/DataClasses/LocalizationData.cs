@@ -28,6 +28,7 @@ namespace AngelLoader.DataClasses
         internal readonly BrowseDialogs_Class BrowseDialogs = new BrowseDialogs_Class();
         internal readonly AlertMessages_Class AlertMessages = new AlertMessages_Class();
         internal readonly MainMenu_Class MainMenu = new MainMenu_Class();
+        internal readonly GameVersionsWindow_Class GameVersionsWindow = new GameVersionsWindow_Class();
         internal readonly FMDeletion_Class FMDeletion = new FMDeletion_Class();
         internal readonly Difficulties_Class Difficulties = new Difficulties_Class();
         internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
@@ -183,7 +184,12 @@ namespace AngelLoader.DataClasses
         internal sealed class MainMenu_Class
         {
             internal readonly string MainMenuToolTip = "Main menu";
-            internal readonly string ViewGameInfo = "View game info...";
+            internal readonly string GameVersions = "Game versions...";
+        }
+
+        internal sealed class GameVersionsWindow_Class
+        {
+            internal readonly string TitleText = "Game versions";
         }
 
         internal sealed class FMDeletion_Class
