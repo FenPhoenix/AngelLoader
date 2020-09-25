@@ -3984,7 +3984,8 @@ namespace AngelLoader.Forms
 
         private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
 
-        private static void ShowMenu(ContextMenuStrip menu, Control control, MenuPos pos, bool unstickMenu = false)
+        private static void ShowMenu(ContextMenuStrip menu, Control control, MenuPos pos,
+                                     int xOffset = 0, int yOffset = 0, bool unstickMenu = false)
         {
             int x = pos == MenuPos.LeftUp || pos == MenuPos.LeftDown || pos == MenuPos.TopRight || pos == MenuPos.BottomRight
                 ? 0
@@ -4008,7 +4009,7 @@ namespace AngelLoader.Forms
                 menu.Hide();
             }
 
-            menu.Show(control, new Point(x, y), direction);
+            menu.Show(control, new Point(x + xOffset, y + yOffset), direction);
         }
 
         #endregion
@@ -4100,7 +4101,7 @@ namespace AngelLoader.Forms
         private void MainMenuButton_Click(object sender, EventArgs e)
         {
             MainLLMenu.Construct(this, components);
-            ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight);
+            ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: -2, yOffset: 2);
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
