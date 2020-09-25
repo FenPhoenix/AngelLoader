@@ -1531,6 +1531,7 @@ namespace AngelLoader.Forms
             MainMenuButton.TabIndex = 14;
             MainMenuButton.UseVisualStyleBackColor = true;
             MainMenuButton.Paint += MainMenuButton_Paint;
+            MainMenuButton.Click += MainMenuButton_Click;
             // 
             // MainForm
             // 

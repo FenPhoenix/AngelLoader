@@ -415,6 +415,7 @@ namespace AngelLoader.Forms
             this.MainMenuButton.TabIndex = 14;
             this.MainMenuButton.UseVisualStyleBackColor = true;
             this.MainMenuButton.Paint += new System.Windows.Forms.PaintEventHandler(this.MainMenuButton_Paint);
+            this.MainMenuButton.Click += new System.EventHandler(this.MainMenuButton_Click);
             // 
             // FilterBarScrollRightButton
             // 

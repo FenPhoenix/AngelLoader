@@ -4085,5 +4085,10 @@ namespace AngelLoader.Forms
         void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Reset);
 
         #endregion
+
+        private void MainMenuButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
