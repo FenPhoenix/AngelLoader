@@ -539,7 +539,7 @@ namespace AngelLoader.Forms
         // perf and lightness of weight, we just draw them ourselves.
 
         internal static void PaintToolStripSeparators(PaintEventArgs e, int pixelsFromVerticalEdges,
-            params ToolStripItem[] items)
+                                                      params ToolStripItem[] items)
         {
             Pen s1Pen = GetSeparatorPenForCurrentVisualStyleMode();
 
@@ -550,8 +550,10 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < items.Length; i++)
             {
-                int l1s = (int)Math.Ceiling((double)items[i].Margin.Left / 2);
-                DrawSeparator(e, s1Pen, l1s, y1, y2, items[i].Bounds.Location.X);
+                ToolStripItem item = items[i];
+                if (!item.Visible) continue;
+                int l1s = (int)Math.Ceiling((double)item.Margin.Left / 2);
+                DrawSeparator(e, s1Pen, l1s, y1, y2, item.Bounds.Location.X);
             }
         }
 
@@ -571,8 +573,10 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < items.Length; i++)
             {
-                int l1s = (int)Math.Ceiling((double)items[i].Margin.Left / 2);
-                DrawSeparator(e, s1Pen, l1s, y1, y2, items[i].Bounds.Location.X);
+                Control item = items[i];
+                if (!item.Visible) continue;
+                int l1s = (int)Math.Ceiling((double)item.Margin.Left / 2);
+                DrawSeparator(e, s1Pen, l1s, y1, y2, item.Bounds.Location.X);
             }
         }
 
