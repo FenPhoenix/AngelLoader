@@ -4119,50 +4119,47 @@ namespace AngelLoader.Forms
         internal void FilterControlsMenuItems_Click(object sender, EventArgs e)
         {
             var s = (ToolStripMenuItem)sender;
-            var tag = (HideableFilterControls)s.Tag;
 
             try
             {
                 this.SuspendDrawing();
 
-                if (tag == HideableFilterControls.Title)
+                // Because we sometimes need to count multiple controls as one item for showing/hiding purposes,
+                // we end up having to get messy no matter what. We could also have an array of arrays of controls,
+                // but the code is no smaller, no cleaner, and it doesn't even reduce the places we have to change
+                // if we add new controls. So this straightforward switch block is as good as anything else.
+                switch ((HideableFilterControls)s.Tag)
                 {
-                    FilterTitleLabel.Visible = s.Checked;
-                    FilterTitleTextBox.Visible = s.Checked;
-                }
-                else if (tag == HideableFilterControls.Author)
-                {
-                    FilterAuthorLabel.Visible = s.Checked;
-                    FilterAuthorTextBox.Visible = s.Checked;
-                }
-                else if (tag == HideableFilterControls.ReleaseDate)
-                {
-                    FilterByReleaseDateButton.Visible = s.Checked;
-                }
-                else if (tag == HideableFilterControls.LastPlayed)
-                {
-                    FilterByLastPlayedButton.Visible = s.Checked;
-                }
-                else if (tag == HideableFilterControls.Tags)
-                {
-                    FilterByTagsButton.Visible = s.Checked;
-                }
-                else if (tag == HideableFilterControls.FinishedState)
-                {
-                    FilterByFinishedButton.Visible = s.Checked;
-                    FilterByUnfinishedButton.Visible = s.Checked;
-                }
-                else if (tag == HideableFilterControls.Rating)
-                {
-                    FilterByRatingButton.Visible = s.Checked;
-                }
-                else if (tag == HideableFilterControls.ShowUnsupported)
-                {
-                    FilterShowUnsupportedButton.Visible = s.Checked;
-                }
-                else if (tag == HideableFilterControls.ShowRecentAtTop)
-                {
-                    FilterShowRecentAtTopButton.Visible = s.Checked;
+                    case HideableFilterControls.Title:
+                        FilterTitleLabel.Visible = s.Checked;
+                        FilterTitleTextBox.Visible = s.Checked;
+                        break;
+                    case HideableFilterControls.Author:
+                        FilterAuthorLabel.Visible = s.Checked;
+                        FilterAuthorTextBox.Visible = s.Checked;
+                        break;
+                    case HideableFilterControls.ReleaseDate:
+                        FilterByReleaseDateButton.Visible = s.Checked;
+                        break;
+                    case HideableFilterControls.LastPlayed:
+                        FilterByLastPlayedButton.Visible = s.Checked;
+                        break;
+                    case HideableFilterControls.Tags:
+                        FilterByTagsButton.Visible = s.Checked;
+                        break;
+                    case HideableFilterControls.FinishedState:
+                        FilterByFinishedButton.Visible = s.Checked;
+                        FilterByUnfinishedButton.Visible = s.Checked;
+                        break;
+                    case HideableFilterControls.Rating:
+                        FilterByRatingButton.Visible = s.Checked;
+                        break;
+                    case HideableFilterControls.ShowUnsupported:
+                        FilterShowUnsupportedButton.Visible = s.Checked;
+                        break;
+                    case HideableFilterControls.ShowRecentAtTop:
+                        FilterShowRecentAtTopButton.Visible = s.Checked;
+                        break;
                 }
             }
             finally
