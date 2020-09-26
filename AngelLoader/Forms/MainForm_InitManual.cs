@@ -605,7 +605,7 @@ namespace AngelLoader.Forms
             FilterByThief1Button.CheckOnClick = true;
             FilterByThief1Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByThief1Button.Image = Images.Thief1_21;
-            FilterByThief1Button.Margin = new Padding(0);
+            FilterByThief1Button.Margin = new Padding(1, 0, 0, 0);
             FilterByThief1Button.Size = new Size(25, 25);
             FilterByThief1Button.Click += SortAndSetFiltersButtons_Click;
             // 
@@ -843,7 +843,7 @@ namespace AngelLoader.Forms
             GamesTabControl.Controls.Add(Thief3TabPage);
             GamesTabControl.Controls.Add(SS2TabPage);
             GamesTabControl.ImageList = GameTabsImageList;
-            GamesTabControl.Location = new Point(24, 5);
+            GamesTabControl.Location = new Point(28, 5);
             GamesTabControl.SelectedIndex = 0;
             GamesTabControl.Size = new Size(1079, 24);
             GamesTabControl.TabIndex = 1;

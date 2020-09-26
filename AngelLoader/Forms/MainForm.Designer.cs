@@ -682,7 +682,7 @@ namespace AngelLoader.Forms
             this.FilterByThief1Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.FilterByThief1Button.Image = global::AngelLoader.Properties.Resources.Thief1_21;
             this.FilterByThief1Button.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByThief1Button.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByThief1Button.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
             this.FilterByThief1Button.Name = "FilterByThief1Button";
             this.FilterByThief1Button.Size = new System.Drawing.Size(25, 25);
             this.FilterByThief1Button.ToolTipText = "Thief 1";
@@ -993,10 +993,10 @@ namespace AngelLoader.Forms
             this.GamesTabControl.Controls.Add(this.Thief3TabPage);
             this.GamesTabControl.Controls.Add(this.SS2TabPage);
             this.GamesTabControl.ImageList = this.GameTabsImageList;
-            this.GamesTabControl.Location = new System.Drawing.Point(24, 5);
+            this.GamesTabControl.Location = new System.Drawing.Point(28, 5);
             this.GamesTabControl.Name = "GamesTabControl";
             this.GamesTabControl.SelectedIndex = 0;
-            this.GamesTabControl.Size = new System.Drawing.Size(1079, 24);
+            this.GamesTabControl.Size = new System.Drawing.Size(1075, 24);
             this.GamesTabControl.TabIndex = 1;
             this.GamesTabControl.SelectedIndexChanged += new System.EventHandler(this.GamesTabControl_SelectedIndexChanged);
             this.GamesTabControl.Deselecting += new System.Windows.Forms.TabControlCancelEventHandler(this.GamesTabControl_Deselecting);

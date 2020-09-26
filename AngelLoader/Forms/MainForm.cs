@@ -1485,7 +1485,7 @@ namespace AngelLoader.Forms
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int TopBarXZero() => MainMenuButton.Left + MainMenuButton.Width + 4;
+        private int TopBarXZero() => MainMenuButton.Left + MainMenuButton.Width + 8;
 
         // Separate so we can call it from _Load on startup (because it needs the form to be loaded to layout the
         // controls properly) but keep the rest of the work before load
