@@ -25,11 +25,11 @@ namespace AngelLoader.WinAPI
 
         #region WM_CHANGEUISTATE
 
-        internal const int UIS_SET = 1;
+        private const int UIS_SET = 1;
         //internal const int UIS_CLEAR = 2;
         //internal const int UIS_INITIALIZE = 3;
 
-        internal const int UISF_HIDEFOCUS = 1;
+        private const int UISF_HIDEFOCUS = 1;
         //internal const int UISF_HIDEACCEL = 2;
         //internal const int UISF_ACTIVE = 4;
 

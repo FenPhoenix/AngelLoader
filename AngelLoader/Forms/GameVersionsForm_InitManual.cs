@@ -59,7 +59,7 @@ namespace AngelLoader.Forms
             // 
             // T3VersionTextBox
             // 
-            T3VersionTextBox.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
+            T3VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             T3VersionTextBox.Location = new Point(147, 56);
             T3VersionTextBox.MaximumSize = new Size(224, 32767);
             T3VersionTextBox.MinimumSize = new Size(80, 4);
@@ -75,7 +75,7 @@ namespace AngelLoader.Forms
             // 
             // SS2VersionTextBox
             // 
-            SS2VersionTextBox.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
+            SS2VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             SS2VersionTextBox.Location = new Point(147, 80);
             SS2VersionTextBox.MaximumSize = new Size(224, 32767);
             SS2VersionTextBox.MinimumSize = new Size(80, 4);

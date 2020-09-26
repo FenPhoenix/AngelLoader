@@ -77,7 +77,7 @@ namespace AngelLoader.Forms
                 var textBox = GameVersionItems[i].TextBox;
                 if (maxLabelRightSidePos > textBox.Left)
                 {
-                    int amount = (maxLabelRightSidePos - textBox.Left);
+                    int amount = maxLabelRightSidePos - textBox.Left;
                     textBox.Width -= amount;
                     textBox.Left += amount;
                     if (textBox.Right > ClientSize.Width)
