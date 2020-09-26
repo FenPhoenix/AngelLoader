@@ -7,16 +7,16 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields
 
+        private const int ColumnResizeLeft = 4;
+
+        /*
         private enum DataGridViewHitTestTypeInternal
         {
-            /*
             None = 0,
             Cell = 1,
             ColumnHeader = 2,
             RowHeader = 3,
-            */
             ColumnResizeLeft = 4,
-            /*
             ColumnResizeRight = 5,
             RowResizeTop = 6,
             RowResizeBottom = 7,
@@ -32,8 +32,8 @@ namespace AngelLoader.Forms.CustomControls
             RowHeadersResizeLeft = 17,
             ColumnHeaderLeft = 18,
             ColumnHeaderRight = 19
-            */
         }
+        */
 
         #region Resize data fields
 
@@ -91,10 +91,10 @@ namespace AngelLoader.Forms.CustomControls
                     return true;
                 }
 
-                DataGridViewHitTestTypeInternal hitTestType;
+                int hitTestType;
                 try
                 {
-                    hitTestType = (DataGridViewHitTestTypeInternal)typeInternal.GetValue(ht);
+                    hitTestType = (int)typeInternal.GetValue(ht);
                 }
                 catch
                 {
@@ -123,7 +123,7 @@ namespace AngelLoader.Forms.CustomControls
                 // NOTE: I think ColumnResizeLeft means the resizable divider on the left side of the current
                 //       column. But if we're thinking of the divider itself, we're on the right side of it.
                 //       Just so I don't get confused again if I look at this in a few months.
-                _columnToResize = hitTestType == DataGridViewHitTestTypeInternal.ColumnResizeLeft
+                _columnToResize = hitTestType == ColumnResizeLeft
                     ? FindColumnIndexByDisplayIndex(Columns[ht.ColumnIndex].DisplayIndex - 1)
                     : ht.ColumnIndex;
 
