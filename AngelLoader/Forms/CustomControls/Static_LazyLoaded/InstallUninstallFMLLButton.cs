@@ -93,6 +93,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private static void SetSayInstallState(bool value)
         {
+            // Special-cased; don't autosize this one
             Button.Text = value ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
             Button.Image = value ? Images.Install_24 : Images.Uninstall_24;
         }

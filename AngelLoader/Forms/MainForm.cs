@@ -2493,7 +2493,6 @@ namespace AngelLoader.Forms
             FMsDGV.SetDeleteFMMenuItemEnabled(false);
             FMsDGV.SetOpenInDromEdMenuItemText(false);
 
-            // Special-cased; don't autosize this one
             InstallUninstallFMLLButton.SetSayInstall(true);
             InstallUninstallFMLLButton.SetEnabled(false);
 
@@ -2626,7 +2625,6 @@ namespace AngelLoader.Forms
             FMsDGV.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
 
             InstallUninstallFMLLButton.SetEnabled(gameIsSupported);
-            // Special-cased; don't autosize this one
             InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
             FMsDGV.SetPlayFMMenuItemEnabled(gameIsSupported);
