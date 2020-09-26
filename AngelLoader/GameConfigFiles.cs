@@ -801,12 +801,6 @@ namespace AngelLoader
             }
         }
 
-        private static string RemoveLeadingSemicolons(string line)
-        {
-            do { line = line.TrimStart(CA_Semicolon).Trim(); } while (line.Length > 0 && line[0] == ';');
-            return line;
-        }
-
         internal static bool? GetScreenShotMode(GameIndex gameIndex)
         {
             if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserCfg, out string userCfgFile)) return null;
@@ -875,5 +869,15 @@ namespace AngelLoader
         }
 
 #endif
+
+        #region Helpers
+
+        private static string RemoveLeadingSemicolons(string line)
+        {
+            do { line = line.TrimStart(CA_Semicolon).Trim(); } while (line.Length > 0 && line[0] == ';');
+            return line;
+        }
+
+        #endregion
     }
 }
