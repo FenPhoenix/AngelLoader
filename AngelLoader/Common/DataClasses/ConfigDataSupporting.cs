@@ -36,6 +36,19 @@ namespace AngelLoader.DataClasses
 
     #endregion
 
+    public enum HideableFilterControls
+    {
+        Title,
+        Author,
+        ReleaseDate,
+        LastPlayed,
+        Tags,
+        FinishedState,
+        Rating,
+        ShowUnsupported,
+        ShowRecentAtTop
+    }
+
     internal enum GameOrganization { ByTab, OneList }
 
     // Public for interface use
