@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -12,6 +13,7 @@ namespace AngelLoader.Forms.CustomControls
 
         // Public for the designer
         [Browsable(true)]
+        [PublicAPI]
         public Direction ArrowDirection
         {
             get => _arrowDirection;

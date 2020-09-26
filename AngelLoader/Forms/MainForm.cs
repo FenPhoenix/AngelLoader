@@ -4170,5 +4170,15 @@ namespace AngelLoader.Forms
                 this.ResumeDrawing();
             }
         }
+
+        private void FilterControlsShowHideButton_Click(object sender, EventArgs e)
+        {
+            FilterControlsLLMenu.Construct(this, this.components);
+            ShowMenu(FilterControlsLLMenu.Menu,
+                FilterIconButtonsToolStrip,
+                MenuPos.RightDown,
+                -FilterControlsShowHideButton.Width,
+                FilterIconButtonsToolStrip.Height);
+        }
     }
 }

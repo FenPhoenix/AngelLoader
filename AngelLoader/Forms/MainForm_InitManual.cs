@@ -88,6 +88,7 @@ namespace AngelLoader.Forms
             FilterByRatingButton = new ToolStripButtonCustom();
             FilterShowUnsupportedButton = new ToolStripButtonCustom();
             FilterShowRecentAtTopButton = new ToolStripButtonCustom();
+            FilterControlsShowHideButton = new ToolStripArrowButton();
             RefreshAreaToolStrip = new ToolStripCustom();
             RefreshFromDiskButton = new ToolStripButtonCustom();
             RefreshFiltersButton = new ToolStripButtonCustom();
@@ -684,7 +685,8 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton,
             FilterByRatingButton,
             FilterShowUnsupportedButton,
-            FilterShowRecentAtTopButton});
+            FilterShowRecentAtTopButton,
+            FilterControlsShowHideButton});
             FilterIconButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
             FilterIconButtonsToolStrip.TabIndex = 3;
             FilterIconButtonsToolStrip.Paint += FilterIconButtonsToolStrip_Paint;
@@ -764,6 +766,15 @@ namespace AngelLoader.Forms
             FilterShowRecentAtTopButton.Margin = new Padding(6, 0, 2, 0);
             FilterShowRecentAtTopButton.Size = new Size(25, 25);
             FilterShowRecentAtTopButton.Click += SortAndSetFiltersButtons_Click;
+            // 
+            // FilterControlsShowHideButton
+            // 
+            FilterControlsShowHideButton.ArrowDirection = Direction.Down;
+            FilterControlsShowHideButton.AutoSize = false;
+            FilterControlsShowHideButton.DisplayStyle = ToolStripItemDisplayStyle.None;
+            FilterControlsShowHideButton.Margin = new Padding(4, 1, 0, 2);
+            FilterControlsShowHideButton.Size = new Size(10, 23);
+            FilterControlsShowHideButton.Click += FilterControlsShowHideButton_Click;
             // 
             // RefreshAreaToolStrip
             // 
