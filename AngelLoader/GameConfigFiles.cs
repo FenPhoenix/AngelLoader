@@ -11,6 +11,33 @@ namespace AngelLoader
 {
     internal static class GameConfigFiles
     {
+        #region Constants
+
+        // cam_mod.ini
+        private const string key_fm_selector = "fm_selector";
+        private const int key_fm_selector_len = 11;
+        private const string key_fm = "fm";
+        private const string key_fm_path = "fm_path";
+        private const int key_fm_path_len = 7;
+
+        // cam_mod.ini, cam.cfg
+        private const string key_fm_language = "fm_language";
+        private const int key_fm_language_len = 11;
+        private const string key_fm_language_forced = "fm_language_forced";
+        private const int key_fm_language_forced_len = 18;
+
+        // SneakyOptions.ini
+        private const string key_ExternSelector = "ExternSelector=";
+        private const string key_AlwaysShow = "AlwaysShow=";
+        private const string key_FanMission = "FanMission=";
+        private const string key_InstallPath = "InstallPath=";
+        private const string key_IgnoreSavesKey = "IgnoreSavesKey=";
+
+        // user.cfg
+        private const string inv_status_height = "inv_status_height";
+
+        #endregion
+
         #region Read
 
         // @CAN_RUN_BEFORE_VIEW_INIT
@@ -46,17 +73,6 @@ namespace AngelLoader
             string path = "";
             string fm_language = "";
             bool fm_language_forced = false;
-
-            const string key_fm_selector = "fm_selector";
-            //const int key_fm_selector_len = 11; // unused currently
-            const string key_fm = "fm";
-            //const int key_fm_len = 2; // unused currently
-            const string key_fm_path = "fm_path";
-            const int key_fm_path_len = 7;
-            const string key_fm_language = "fm_language";
-            const int key_fm_language_len = 11;
-            const string key_fm_language_forced = "fm_language_forced";
-            const int key_fm_language_forced_len = 18;
 
             using (var sr = new StreamReader(camModIni))
             {
@@ -173,25 +189,25 @@ namespace AngelLoader
                     {
                         string lt = lines[i + 1].Trim();
                         if (!ignoreSavesKeyFound &&
-                            !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("IgnoreSavesKey="))
+                            !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI(key_IgnoreSavesKey))
                         {
                             ignoreSavesKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
                             ignoreSavesKeyFound = true;
                         }
                         else if (!fmInstPathFound &&
-                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("InstallPath="))
+                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI(key_InstallPath))
                         {
                             fmInstPath = lt.Substring(lt.IndexOf('=') + 1).Trim();
                             fmInstPathFound = true;
                         }
                         else if (!externSelectorFound &&
-                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("ExternSelector="))
+                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI(key_ExternSelector))
                         {
                             prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1).Trim();
                             externSelectorFound = true;
                         }
                         else if (!alwaysShowLoaderFound &&
-                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("AlwaysShow="))
+                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI(key_AlwaysShow))
                         {
                             alwaysShowLoader = lt.Substring(lt.IndexOf('=') + 1).Trim().EqualsTrue();
                             alwaysShowLoaderFound = true;
@@ -223,38 +239,6 @@ namespace AngelLoader
                 : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue, alwaysShowLoader);
         }
 
-#if !ReleaseBeta && !ReleasePublic
-
-        internal static bool? GetScreenShotMode(GameIndex gameIndex)
-        {
-            string gamePath = Config.GetGamePath(gameIndex);
-            if (gamePath.IsEmpty()) return null;
-            string userCfgFile = Path.Combine(gamePath, "USER.CFG");
-            if (!File.Exists(userCfgFile)) return null;
-
-            bool ret = false;
-
-            var lines = File.ReadAllLines(userCfgFile).ToList();
-            for (int i = 0; i < lines.Count; i++)
-            {
-                string lt = lines[i].Trim();
-                string ltNS = lt;
-                do { ltNS = ltNS.TrimStart(CA_Semicolon).Trim(); } while (ltNS.Length > 0 && ltNS[0] == ';');
-                if (ltNS.StartsWithIPlusWhiteSpace("inv_status_height"))
-                {
-                    var fields = ltNS.Split(new[] { ' ', '\t', ';' }, StringSplitOptions.RemoveEmptyEntries);
-                    ret = fields.Length >= 2 &&
-                          int.TryParse(fields[1], out int result) &&
-                          result == 0 &&
-                          !lt.StartsWith(";");
-                }
-            }
-
-            return ret;
-        }
-
-#endif
-
         #endregion
 
         #region Write
@@ -272,7 +256,7 @@ namespace AngelLoader
         internal static void ResetGameConfigTempChanges(bool[]? perGameGoFlags = null)
         {
             AssertR(perGameGoFlags == null || perGameGoFlags.Length == SupportedGameCount,
-                nameof(perGameGoFlags) + " length does not match " + nameof(SupportedGameCount));
+                    nameof(perGameGoFlags) + " length does not match " + nameof(SupportedGameCount));
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
@@ -316,9 +300,6 @@ namespace AngelLoader
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal static void SetCamCfgLanguage(string gamePath, string lang)
         {
-            const string fmLanguage = "fm_language";
-            const string fmLanguageForced = "fm_language_forced";
-
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamCfg, out string camCfg))
             {
                 Log(Paths.CamCfg + " not found for " + gamePath, stackTrace: true);
@@ -339,7 +320,7 @@ namespace AngelLoader
             for (int i = 0; i < lines.Count; i++)
             {
                 string lineT = lines[i].Trim();
-                if (lineT.StartsWithI(fmLanguage) || lineT.StartsWithI(fmLanguageForced))
+                if (lineT.StartsWithI(key_fm_language) || lineT.StartsWithI(key_fm_language_forced))
                 {
                     lines.RemoveAt(i);
                     i--;
@@ -348,8 +329,8 @@ namespace AngelLoader
 
             if (!lang.IsEmpty())
             {
-                lines.Add(fmLanguage + " " + lang);
-                lines.Add(fmLanguageForced + " 1");
+                lines.Add(key_fm_language + " " + lang);
+                lines.Add(key_fm_language_forced + " 1");
             }
 
             try
@@ -374,7 +355,7 @@ namespace AngelLoader
         {
             #region Local functions
 
-            static string FindPreviousSelector(List<string> lines, string fmSelectorKey, string stubPath, string gamePath)
+            static string FindPreviousSelector(List<string> lines, string stubPath, string gamePath)
             {
                 // Handle relative paths
                 static string GetFullPath(string _gamePath, string path)
@@ -401,8 +382,8 @@ namespace AngelLoader
                     // In .NET Core, we could use Path.Join() to avoid throwing
                     try
                     {
-                        return line.StartsWithIPlusWhiteSpace(fmSelectorKey) &&
-                               (selectorFileName = line.Substring(fmSelectorKey.Length + 1)).EndsWithI(".dll") &&
+                        return line.StartsWithIPlusWhiteSpace(key_fm_selector) &&
+                               (selectorFileName = line.Substring(key_fm_selector_len + 1)).EndsWithI(".dll") &&
                                !selectorFileName.PathEqualsI(stubPath) &&
                                !GetFullPath(gamePath, selectorFileName).IsEmpty() &&
                                File.Exists(Path.Combine(gamePath, selectorFileName))
@@ -425,7 +406,7 @@ namespace AngelLoader
                     string selectorFileName;
                     if (lt.Length > 0 && lt[0] == ';')
                     {
-                        do { lt = lt.TrimStart(CA_Semicolon).Trim(); } while (lt.Length > 0 && lt[0] == ';');
+                        lt = RemoveLeadingSemicolons(lt);
 
                         if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
                         {
@@ -446,7 +427,6 @@ namespace AngelLoader
 
             #endregion
 
-            const string fmSelectorKey = "fm_selector";
             const string fmCommentLine = "always start the FM Selector (if one is present)";
 
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
@@ -480,8 +460,8 @@ namespace AngelLoader
                     string lt = lines[i].Trim();
 
                     string selectorFileName;
-                    if (lt.StartsWithIPlusWhiteSpace(fmSelectorKey) &&
-                        (selectorFileName = lt.Substring(fmSelectorKey.Length + 1)).EndsWithI(".dll"))
+                    if (lt.StartsWithIPlusWhiteSpace(key_fm_selector) &&
+                        (selectorFileName = lt.Substring(key_fm_selector_len + 1)).EndsWithI(".dll"))
                     {
                         if (!tempSelectorsList.PathContainsI(selectorFileName)) tempSelectorsList.Add(selectorFileName);
                     }
@@ -500,7 +480,7 @@ namespace AngelLoader
             var startupFMSelectorLines = Config.GetStartupFMSelectorLines(game);
             string selectorPath = resetSelector
                 ? FindPreviousSelector(startupFMSelectorLines.Count > 0 ? startupFMSelectorLines : lines,
-                    fmSelectorKey, Paths.StubPath, gamePath)
+                    Paths.StubPath, gamePath)
                 : Paths.StubPath;
 
             bool prevAlwaysLoadSelector = Config.GetStartupAlwaysStartSelector(game);
@@ -522,11 +502,11 @@ namespace AngelLoader
             {
                 string lt = lines[i].TrimStart();
 
-                do { lt = lt.TrimStart(CA_Semicolon).Trim(); } while (lt.Length > 0 && lt[0] == ';');
+                lt = RemoveLeadingSemicolons(lt);
 
                 // Steam robustness: get rid of any fan mission specifiers in here
                 // line is "fm BrokenTriad_1_0" for example
-                if (lt.StartsWithIPlusWhiteSpace("fm") &&
+                if (lt.StartsWithIPlusWhiteSpace(key_fm) &&
                     lt.Substring(2).Trim().Length > 0)
                 {
                     if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + lines[i];
@@ -534,29 +514,29 @@ namespace AngelLoader
 
                 if (fmCommentLineIndex == -1 && lt.EqualsI(fmCommentLine)) fmCommentLineIndex = i;
 
-                if (fmLineLastIndex == -1 && lt.EqualsI("fm"))
+                if (fmLineLastIndex == -1 && lt.EqualsI(key_fm))
                 {
                     if (!resetSelector)
                     {
-                        if (lines[i].TrimStart()[0] == ';') lines[i] = "fm";
+                        if (lines[i].TrimStart()[0] == ';') lines[i] = key_fm;
                     }
                     else
                     {
                         if (prevAlwaysLoadSelector)
                         {
-                            if (lines[i].TrimStart()[0] == ';') lines[i] = "fm";
+                            if (lines[i].TrimStart()[0] == ';') lines[i] = key_fm;
                         }
                         else
                         {
-                            if (lines[i].TrimStart()[0] != ';') lines[i] = ";fm";
+                            if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + key_fm;
                         }
                     }
                     fmLineLastIndex = i;
                 }
                 if (!resetSelector || changeLoaderIfResetting)
                 {
-                    if (lt.StartsWithIPlusWhiteSpace(fmSelectorKey) &&
-                        lt.Substring(fmSelectorKey.Length + 1).TrimStart().PathEqualsI(selectorPath))
+                    if (lt.StartsWithIPlusWhiteSpace(key_fm_selector) &&
+                        lt.Substring(key_fm_selector_len + 1).TrimStart().PathEqualsI(selectorPath))
                     {
                         if (loaderIsAlreadyUs)
                         {
@@ -566,13 +546,13 @@ namespace AngelLoader
                         }
                         else
                         {
-                            lines[i] = fmSelectorKey + " " + selectorPath;
+                            lines[i] = key_fm_selector + " " + selectorPath;
                             loaderIsAlreadyUs = true;
                         }
                         continue;
                     }
 
-                    if (lt.EqualsI(fmSelectorKey) || lt.StartsWithIPlusWhiteSpace(fmSelectorKey))
+                    if (lt.EqualsI(key_fm_selector) || lt.StartsWithIPlusWhiteSpace(key_fm_selector))
                     {
                         if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + lines[i];
                         lastSelKeyIndex = i;
@@ -586,11 +566,11 @@ namespace AngelLoader
                 {
                     if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
                     {
-                        lines.Add(fmSelectorKey + " " + selectorPath);
+                        lines.Add(key_fm_selector + " " + selectorPath);
                     }
                     else
                     {
-                        lines.Insert(lastSelKeyIndex + 1, fmSelectorKey + " " + selectorPath);
+                        lines.Insert(lastSelKeyIndex + 1, key_fm_selector + " " + selectorPath);
                     }
                 }
             }
@@ -603,22 +583,22 @@ namespace AngelLoader
                     lines.Add("; " + fmCommentLine);
                     if (!resetSelector)
                     {
-                        lines.Add("fm");
+                        lines.Add(key_fm);
                     }
                     else
                     {
-                        lines.Add(prevAlwaysLoadSelector ? "fm" : ";fm");
+                        lines.Add(prevAlwaysLoadSelector ? key_fm : ";" + key_fm);
                     }
                 }
                 else
                 {
                     if (!resetSelector)
                     {
-                        lines.Insert(fmCommentLineIndex + 1, "fm");
+                        lines.Insert(fmCommentLineIndex + 1, key_fm);
                     }
                     else
                     {
-                        lines.Insert(fmCommentLineIndex + 1, prevAlwaysLoadSelector ? "fm" : ";fm");
+                        lines.Insert(fmCommentLineIndex + 1, prevAlwaysLoadSelector ? key_fm : ";" + key_fm);
                     }
                 }
             }
@@ -639,9 +619,6 @@ namespace AngelLoader
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal static bool SetT3FMSelector(bool resetSelector = false)
         {
-            const string externSelectorKey = "ExternSelector=";
-            const string alwaysShowKey = "AlwaysShow=";
-            const string fanMissionKey = "FanMission=";
             bool existingExternSelectorKeyOverwritten = false;
             bool existingAlwaysShowKeyOverwritten = false;
             int insertLineIndex = -1;
@@ -688,7 +665,7 @@ namespace AngelLoader
                     while (i < lines.Count - 1)
                     {
                         string lt = lines[i + 1].Trim();
-                        if (lt.StartsWithI(externSelectorKey))
+                        if (lt.StartsWithI(key_ExternSelector))
                         {
                             prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1);
                             break;
@@ -746,21 +723,21 @@ namespace AngelLoader
                     string lt = lines[i + 1].Trim();
                     if ((!resetSelector || changeLoaderIfResetting) &&
                         !existingExternSelectorKeyOverwritten &&
-                        lt.StartsWithI(externSelectorKey))
+                        lt.StartsWithI(key_ExternSelector))
                     {
-                        lines[i + 1] = externSelectorKey + selectorPath;
+                        lines[i + 1] = key_ExternSelector + selectorPath;
                         existingExternSelectorKeyOverwritten = true;
                     }
                     else if (!existingAlwaysShowKeyOverwritten &&
-                        lt.StartsWithI(alwaysShowKey))
+                        lt.StartsWithI(key_AlwaysShow))
                     {
-                        lines[i + 1] = alwaysShowKey + (resetSelector && !prevAlwaysShowValue ? "false" : "true");
+                        lines[i + 1] = key_AlwaysShow + (resetSelector && !prevAlwaysShowValue ? "false" : "true");
                         existingAlwaysShowKeyOverwritten = true;
                     }
                     // Steam robustness: get rid of any fan mission specifiers in here
-                    else if (lt.StartsWithI(fanMissionKey))
+                    else if (lt.StartsWithI(key_FanMission))
                     {
-                        lines[i + 1] = fanMissionKey;
+                        lines[i + 1] = key_FanMission;
                     }
 
                     if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']') break;
@@ -773,12 +750,12 @@ namespace AngelLoader
             if ((!resetSelector || changeLoaderIfResetting) &&
                 !existingExternSelectorKeyOverwritten && insertLineIndex > -1)
             {
-                lines.Insert(insertLineIndex, externSelectorKey + selectorPath);
+                lines.Insert(insertLineIndex, key_ExternSelector + selectorPath);
             }
 
             if (!existingAlwaysShowKeyOverwritten && insertLineIndex > -1)
             {
-                lines.Insert(insertLineIndex, alwaysShowKey + "true");
+                lines.Insert(insertLineIndex, key_AlwaysShow + "true");
             }
 
             try
@@ -796,31 +773,82 @@ namespace AngelLoader
 
         #endregion
 
+        #endregion
+
 #if !ReleaseBeta && !ReleasePublic
 
-        internal static void SetScreenShotMode(GameIndex gameIndex, bool enabled)
+        private static bool TryGetGameDirFilePathIfExists(GameIndex gameIndex, string fileName, out string result)
         {
+            result = "";
             string gamePath = Config.GetGamePath(gameIndex);
-            if (gamePath.IsEmpty()) return;
-            string userCfgFile = Path.Combine(gamePath, "USER.CFG");
-            if (!File.Exists(userCfgFile)) return;
+            if (gamePath.IsEmpty()) return false;
+            try
+            {
+                string fullPath = Path.Combine(gamePath, fileName);
+                if (File.Exists(fullPath))
+                {
+                    result = fullPath;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static string RemoveLeadingSemicolons(string line)
+        {
+            do { line = line.TrimStart(CA_Semicolon).Trim(); } while (line.Length > 0 && line[0] == ';');
+            return line;
+        }
+
+        internal static bool? GetScreenShotMode(GameIndex gameIndex)
+        {
+            if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserCfg, out string userCfgFile)) return null;
+
+            bool ret = false;
 
             var lines = File.ReadAllLines(userCfgFile).ToList();
             for (int i = 0; i < lines.Count; i++)
             {
                 string lt = lines[i].Trim();
-                string ltNS = lt;
-                do { ltNS = ltNS.TrimStart(CA_Semicolon).Trim(); } while (ltNS.Length > 0 && ltNS[0] == ';');
-                if (ltNS.StartsWithIPlusWhiteSpace("inv_status_height"))
+                string ltNS = RemoveLeadingSemicolons(lt);
+                if (ltNS.StartsWithIPlusWhiteSpace(inv_status_height))
+                {
+                    string[] fields = ltNS.Split(new[] { ' ', '\t', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    ret = fields.Length >= 2 &&
+                          int.TryParse(fields[1], out int result) &&
+                          result == 0 &&
+                          lt[0] != ';';
+                }
+            }
+
+            return ret;
+        }
+
+        internal static void SetScreenShotMode(GameIndex gameIndex, bool enabled)
+        {
+            if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserCfg, out string userCfgFile)) return;
+
+            var lines = File.ReadAllLines(userCfgFile).ToList();
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lt = lines[i].Trim();
+                string ltNS = RemoveLeadingSemicolons(lt);
+                if (ltNS.StartsWithIPlusWhiteSpace(inv_status_height))
                 {
                     lines.RemoveAt(i);
                     i--;
                 }
             }
 
-            lines.Insert(0, "inv_status_height 0 ; Added by AngelLoader: uncommented = screenshot mode enabled (no hud)");
+            lines.Insert(0, (enabled ? "" : ";") + inv_status_height + " 0 ; Added by AngelLoader: uncommented = screenshot mode enabled (no hud)");
             lines.Insert(1, "");
-            if (!enabled) lines[0] = ";" + lines[0];
 
             // Remove consecutive whitespace lines (leaving only one-in-a-row at most).
             for (int i = 0; i < lines.Count; i++)
@@ -847,7 +875,5 @@ namespace AngelLoader
         }
 
 #endif
-
-        #endregion
     }
 }

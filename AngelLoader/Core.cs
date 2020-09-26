@@ -1455,7 +1455,7 @@ namespace AngelLoader
             string fileName = "";
             using (var d = new SaveFileDialog())
             {
-                d.Filter = LText.BrowseDialogs.FMIniFile + @"|" + Paths.FMIni;
+                d.Filter = LText.BrowseDialogs.FMIniFile + "|" + Paths.FMIni;
                 d.FileName = Paths.FMIni;
                 if (d.ShowDialog() != DialogResult.OK) return;
                 fileName = d.FileName;

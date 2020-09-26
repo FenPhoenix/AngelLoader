@@ -14,7 +14,6 @@ namespace AngelLoader.DataClasses
     {
         internal ConfigData()
         {
-            // Automatically set the correct length based on our actual supported game count
             GameExes = new string[SupportedGameCount];
             GamePaths = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];

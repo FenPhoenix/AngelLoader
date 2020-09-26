@@ -1134,7 +1134,7 @@ namespace AngelLoader.Forms
             using var dialog = new OpenFileDialog
             {
                 InitialDirectory = initialPath,
-                Filter = LText.BrowseDialogs.ExeFiles + @"|*.exe"
+                Filter = LText.BrowseDialogs.ExeFiles + "|*.exe"
             };
             return (dialog.ShowDialog(), dialog.FileName);
         }
