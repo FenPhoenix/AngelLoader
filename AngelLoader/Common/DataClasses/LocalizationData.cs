@@ -190,7 +190,35 @@ namespace AngelLoader.DataClasses
 
         internal sealed class GameVersionsWindow_Class
         {
+            [FenGenComment(
+                "This is where game versions are displayed.",
+                "For Thief 1, Thief 2, and System Shock 2, the NewDark version will be displayed.",
+                "For Thief 3, the Sneaky Upgrade version will be displayed.",
+                "Versions are detected by scanning the game executable (for T1, T2, SS2) or the Sneaky.dll file (for T3).",
+                "Error messages relate to not being able to find the appropriate .exe/.dll file, or not being able to find",
+                "a version in said file.")]
+            [FenGenBlankLine]
             internal readonly string TitleText = "Game versions";
+            [FenGenBlankLine]
+            [FenGenComment(
+                "An exe file has not been specified for this game.")]
+            internal readonly string GameNotSet = "Game not set";
+            [FenGenBlankLine]
+            [FenGenComment(
+                "An exe file has been specified for this game, but the file cannot be found.")]
+            internal readonly string Error_GameExeNotFound = "Game executable not found";
+            [FenGenBlankLine]
+            [FenGenComment(
+                "An exe file has been specified for Thief 3, but Sneaky.dll cannot be found.")]
+            internal readonly string Error_SneakyDllNotFound = "Sneaky.dll not found";
+            [FenGenBlankLine]
+            [FenGenComment(
+                "A version could not be found inside the .exe/.dll file.")]
+            internal readonly string Error_GameVersionNotFound = "Version not found";
+            [FenGenBlankLine]
+            [FenGenComment(
+                "An error of some kind has occurred while reading or attempting to read the .exe/.dll file.")]
+            internal readonly string Error_ErrorDetectingVersion = "Error detecting version";
         }
 
         internal sealed class FMDeletion_Class

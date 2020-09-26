@@ -113,7 +113,6 @@ namespace AngelLoader.Forms
             MinimizeBox = false;
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
-            Load += GameVersionsForm_Load;
             ResumeLayout(false);
             PerformLayout();
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -26,43 +25,30 @@ namespace AngelLoader.Forms
                 (T3VersionLabel, T3VersionTextBox),
                 (SS2VersionLabel, SS2VersionTextBox)
             };
-            // @GENGAMES (GameVersionsForm): End
 
-            Localize();
-        }
-
-        private void GameVersionsForm_Load(object sender, EventArgs e)
-        {
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
-
-                string ver;
+                TextBox textBox = GameVersionItems[i].TextBox;
 
                 if (!Config.GetGameExe(gameIndex).IsEmpty())
                 {
-                    Error error = GameVersions.TryGetGameVersion((GameIndex)i, out ver);
-                    if (error == Error.GameVersionNotFound)
-                    {
-                        ver = "not found";
-                    }
-                    else if (error != Error.None)
-                    {
-                        ver = "error getting version";
-                    }
-
-                    if (!GameIsDark(gameIndex))
-                    {
-                        ver = "Sneaky Upgrade " + ver;
-                    }
+                    Error error = GameVersions.TryGetGameVersion((GameIndex)i, out string ver);
+                    textBox.Text =
+                        error == Error.GameExeNotFound ? LText.GameVersionsWindow.Error_GameExeNotFound :
+                        error == Error.SneakyDllNotFound ? LText.GameVersionsWindow.Error_SneakyDllNotFound :
+                        error == Error.GameVersionNotFound ? LText.GameVersionsWindow.Error_GameVersionNotFound :
+                        error != Error.None ? LText.GameVersionsWindow.Error_ErrorDetectingVersion + ": " + error :
+                        GameIsDark(gameIndex) ? ver : "Sneaky Upgrade " + ver;
                 }
                 else
                 {
-                    ver = "Game not set";
+                    textBox.Text = LText.GameVersionsWindow.GameNotSet;
                 }
-
-                GameVersionItems[i].TextBox.Text = ver;
             }
+            // @GENGAMES (GameVersionsForm): End
+
+            Localize();
         }
 
         private void Localize()

@@ -158,7 +158,6 @@ namespace AngelLoader.Forms
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Game versions";
-            this.Load += new System.EventHandler(this.GameVersionsForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
