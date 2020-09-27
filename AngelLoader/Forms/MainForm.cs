@@ -4116,6 +4116,11 @@ namespace AngelLoader.Forms
             f.ShowDialog();
         }
 
+        internal void FMsListStatsMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void MainMenuButton_Enter(object sender, EventArgs e) => HideFocusRectangle(MainMenuButton);
 
         internal void FilterControlsMenuItems_Click(object sender, EventArgs e)

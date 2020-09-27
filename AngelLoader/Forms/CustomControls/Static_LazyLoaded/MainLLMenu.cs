@@ -10,6 +10,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static ContextMenuStrip Menu = null!;
         private static ToolStripMenuItem GameVersionsMenuItem = null!;
+        private static ToolStripMenuItem FMsListStatsMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -18,10 +19,12 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Menu = new ContextMenuStrip(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                GameVersionsMenuItem = new ToolStripMenuItem()
+                GameVersionsMenuItem = new ToolStripMenuItem(),
+                FMsListStatsMenuItem = new ToolStripMenuItem()
             });
 
             GameVersionsMenuItem.Click += form.MainMenu_GameVersionsMenuItem_Click;
+            FMsListStatsMenuItem.Click += form.FMsListStatsMenuItem_Click;
 
             _constructed = true;
 
