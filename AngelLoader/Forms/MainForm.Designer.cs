@@ -789,7 +789,7 @@ namespace AngelLoader.Forms
             this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(493, 0);
             this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
             this.FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
-            this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(290, 26);
+            this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(291, 26);
             this.FilterIconButtonsToolStrip.TabIndex = 3;
             this.FilterIconButtonsToolStrip.Paint += new System.Windows.Forms.PaintEventHandler(this.FilterIconButtonsToolStrip_Paint);
             // 
@@ -908,7 +908,7 @@ namespace AngelLoader.Forms
             this.FilterControlsShowHideButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterControlsShowHideButton.Margin = new System.Windows.Forms.Padding(4, 1, 0, 2);
             this.FilterControlsShowHideButton.Name = "FilterControlsShowHideButton";
-            this.FilterControlsShowHideButton.Size = new System.Drawing.Size(10, 23);
+            this.FilterControlsShowHideButton.Size = new System.Drawing.Size(11, 23);
             this.FilterControlsShowHideButton.Click += new System.EventHandler(this.FilterControlsShowHideButton_Click);
             // 
             // RefreshAreaToolStrip

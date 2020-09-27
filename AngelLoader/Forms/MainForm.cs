@@ -1284,6 +1284,8 @@ namespace AngelLoader.Forms
                 FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowUnsupported;
                 FilterShowRecentAtTopButton.ToolTipText = LText.FilterBar.ShowRecentAtTop;
 
+                FilterControlsShowHideButton.ToolTipText = LText.FilterBar.ShowHideMenuToolTip;
+
                 #endregion
 
                 #region Clear/refresh/reset area

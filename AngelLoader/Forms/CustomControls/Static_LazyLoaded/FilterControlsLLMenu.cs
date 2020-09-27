@@ -96,15 +96,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private static void Localize()
         {
-            TitleMenuItem.Text = "Title";
-            AuthorMenuItem.Text = "Author";
-            ReleaseDateMenuItem.Text = "Release date";
-            LastPlayedMenuItem.Text = "Last played";
-            TagsMenuItem.Text = "Tags";
-            FinishedStateMenuItem.Text = "Finished state";
-            RatingMenuItem.Text = "Rating";
-            ShowUnsupportedMenuItem.Text = "Show unsupported";
-            ShowRecentAtTopMenuItem.Text = "Show recent at top";
+            TitleMenuItem.Text = LText.FilterBar.ShowHideMenu_Title;
+            AuthorMenuItem.Text = LText.FilterBar.ShowHideMenu_Author;
+            ReleaseDateMenuItem.Text = LText.FilterBar.ShowHideMenu_ReleaseDate;
+            LastPlayedMenuItem.Text = LText.FilterBar.ShowHideMenu_LastPlayed;
+            TagsMenuItem.Text = LText.FilterBar.ShowHideMenu_Tags;
+            FinishedStateMenuItem.Text = LText.FilterBar.ShowHideMenu_FinishedState;
+            RatingMenuItem.Text = LText.FilterBar.ShowHideMenu_Rating;
+            ShowUnsupportedMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowUnsupported;
+            ShowRecentAtTopMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowRecentAtTop;
         }
     }
 }

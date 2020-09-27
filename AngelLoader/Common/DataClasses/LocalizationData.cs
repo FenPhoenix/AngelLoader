@@ -260,6 +260,18 @@ namespace AngelLoader.DataClasses
             internal readonly string RefreshFilteredListButtonToolTip = "Refresh filtered list";
             internal readonly string ClearFiltersButtonToolTip = "Clear filters";
             internal readonly string ResetLayoutButtonToolTip = "Reset layout";
+
+            [FenGenBlankLine]
+            internal readonly string ShowHideMenuToolTip = "Show or hide filter controls";
+            internal readonly string ShowHideMenu_Title = "Title";
+            internal readonly string ShowHideMenu_Author = "Author";
+            internal readonly string ShowHideMenu_ReleaseDate = "Release date";
+            internal readonly string ShowHideMenu_LastPlayed = "Last played";
+            internal readonly string ShowHideMenu_Tags = "Tags";
+            internal readonly string ShowHideMenu_FinishedState = "Finished state";
+            internal readonly string ShowHideMenu_Rating = "Rating";
+            internal readonly string ShowHideMenu_ShowUnsupported = "Show unsupported";
+            internal readonly string ShowHideMenu_ShowRecentAtTop = "Show recent at top";
         }
 
         internal sealed class FMsList_Class

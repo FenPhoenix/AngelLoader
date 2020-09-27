@@ -773,7 +773,7 @@ namespace AngelLoader.Forms
             FilterControlsShowHideButton.AutoSize = false;
             FilterControlsShowHideButton.DisplayStyle = ToolStripItemDisplayStyle.None;
             FilterControlsShowHideButton.Margin = new Padding(4, 1, 0, 2);
-            FilterControlsShowHideButton.Size = new Size(10, 23);
+            FilterControlsShowHideButton.Size = new Size(11, 23);
             FilterControlsShowHideButton.Click += FilterControlsShowHideButton_Click;
             // 
             // RefreshAreaToolStrip
