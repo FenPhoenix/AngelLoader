@@ -215,10 +215,6 @@ namespace AngelLoader.DataClasses
             [FenGenComment(
                 "A version could not be found inside the .exe/.dll file.")]
             internal readonly string Error_GameVersionNotFound = "Version not found";
-            [FenGenBlankLine]
-            [FenGenComment(
-                "An error of some kind has occurred while reading or attempting to read the .exe/.dll file.")]
-            internal readonly string Error_ErrorDetectingVersion = "Error detecting version";
         }
 
         internal sealed class FMDeletion_Class

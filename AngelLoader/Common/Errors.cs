@@ -17,11 +17,7 @@
         GameExeNotSpecified,
         GameExeNotFound,
         SneakyDllNotFound,
-        ExeIsLargerThanInt,
-        GameVersionNotFound,
-        GameExeReadFailed
-        /*
-        */
+        GameVersionNotFound
     }
 
     internal enum ImportError

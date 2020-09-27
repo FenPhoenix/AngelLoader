@@ -33,12 +33,11 @@ namespace AngelLoader.Forms
 
                 if (!Config.GetGameExe(gameIndex).IsEmpty())
                 {
-                    Error error = GameVersions.TryGetGameVersion((GameIndex)i, out string ver);
+                    Error error = Core.TryGetGameVersion((GameIndex)i, out string ver);
                     textBox.Text =
                         error == Error.GameExeNotFound ? LText.GameVersionsWindow.Error_GameExeNotFound :
                         error == Error.SneakyDllNotFound ? LText.GameVersionsWindow.Error_SneakyDllNotFound :
                         error == Error.GameVersionNotFound ? LText.GameVersionsWindow.Error_GameVersionNotFound :
-                        error != Error.None ? LText.GameVersionsWindow.Error_ErrorDetectingVersion + ": " + error :
                         GameIsDark(gameIndex) ? ver : "Sneaky Upgrade " + ver;
                 }
                 else
