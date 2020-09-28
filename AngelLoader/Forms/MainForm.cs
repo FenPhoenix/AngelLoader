@@ -1175,8 +1175,16 @@ namespace AngelLoader.Forms
             {
                 if (e.KeyCode == Keys.F)
                 {
-                    FilterTitleTextBox.Focus();
-                    FilterTitleTextBox.SelectAll();
+                    TextBox? textBox =
+                        FilterTitleTextBox.Visible ? FilterTitleTextBox :
+                        FilterAuthorTextBox.Visible ? FilterAuthorTextBox :
+                        null;
+
+                    if (textBox != null)
+                    {
+                        textBox.Focus();
+                        textBox.SelectAll();
+                    }
                 }
                 else if (e.KeyCode == Keys.Add || e.KeyCode == Keys.Oemplus)
                 {
