@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -375,6 +376,8 @@ namespace AngelLoader.Forms
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
         private readonly Control[] _bottomAreaSeparatedItems;
+
+        private readonly Component[][] _hideableFilterControls;
 
         private enum KeepSel { False, True, TrueNearest }
 
@@ -766,6 +769,19 @@ namespace AngelLoader.Forms
             };
 
             #endregion
+
+            _hideableFilterControls = new[]
+            {
+                new Component[] { FilterTitleLabel, FilterTitleTextBox },
+                new Component[] { FilterAuthorLabel, FilterAuthorTextBox },
+                new Component[] { FilterByReleaseDateButton },
+                new Component[] { FilterByLastPlayedButton },
+                new Component[] { FilterByTagsButton },
+                new Component[] { FilterByFinishedButton, FilterByUnfinishedButton },
+                new Component[] { FilterByRatingButton },
+                new Component[] { FilterShowUnsupportedButton },
+                new Component[] { FilterShowRecentAtTopButton }
+            };
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
@@ -858,6 +874,29 @@ namespace AngelLoader.Forms
             #endregion
 
             #region Filters
+
+            #region Set filter control visibilities
+
+            FilterControlsLLMenu.SetCheckedStates(Config.FilterControlVisibilities);
+
+            for (int fiI = 0; fiI < HideableFilterControlsCount; fiI++)
+            {
+                Component[] filterItems = _hideableFilterControls[fiI];
+                for (int i = 0; i < filterItems.Length; i++)
+                {
+                    switch (filterItems[i])
+                    {
+                        case Control control:
+                            control.Visible = Config.FilterControlVisibilities[fiI];
+                            break;
+                        case ToolStripItem toolStripItem:
+                            toolStripItem.Visible = Config.FilterControlVisibilities[fiI];
+                            break;
+                    }
+                }
+            }
+
+            #endregion
 
             FilterBarFLP.HorizontalScroll.SmallChange = 20;
 
@@ -1572,6 +1611,7 @@ namespace AngelLoader.Forms
                 FMsDGV.CurrentSortDirection,
                 FMsDGV.DefaultCellStyle.Font.SizeInPoints,
                 FMsDGV.Filter,
+                FilterControlsLLMenu.GetCheckedStates(),
                 selectedFM,
                 FMsDGV.GameTabsState,
                 gameTab,
@@ -4129,49 +4169,25 @@ namespace AngelLoader.Forms
 
             try
             {
-                this.SuspendDrawing();
+                FilterBarFLP.SuspendDrawing();
 
-                // Because we sometimes need to count multiple controls as one item for showing/hiding purposes,
-                // we end up having to get messy no matter what. We could also have an array of arrays of controls,
-                // but the code is no smaller, no cleaner, and it doesn't even reduce the places we have to change
-                // if we add new controls. So this straightforward switch block is as good as anything else.
-                switch ((HideableFilterControls)s.Tag)
+                var filterItems = _hideableFilterControls[(int)s.Tag];
+                for (int i = 0; i < filterItems.Length; i++)
                 {
-                    case HideableFilterControls.Title:
-                        FilterTitleLabel.Visible = s.Checked;
-                        FilterTitleTextBox.Visible = s.Checked;
-                        break;
-                    case HideableFilterControls.Author:
-                        FilterAuthorLabel.Visible = s.Checked;
-                        FilterAuthorTextBox.Visible = s.Checked;
-                        break;
-                    case HideableFilterControls.ReleaseDate:
-                        FilterByReleaseDateButton.Visible = s.Checked;
-                        break;
-                    case HideableFilterControls.LastPlayed:
-                        FilterByLastPlayedButton.Visible = s.Checked;
-                        break;
-                    case HideableFilterControls.Tags:
-                        FilterByTagsButton.Visible = s.Checked;
-                        break;
-                    case HideableFilterControls.FinishedState:
-                        FilterByFinishedButton.Visible = s.Checked;
-                        FilterByUnfinishedButton.Visible = s.Checked;
-                        break;
-                    case HideableFilterControls.Rating:
-                        FilterByRatingButton.Visible = s.Checked;
-                        break;
-                    case HideableFilterControls.ShowUnsupported:
-                        FilterShowUnsupportedButton.Visible = s.Checked;
-                        break;
-                    case HideableFilterControls.ShowRecentAtTop:
-                        FilterShowRecentAtTopButton.Visible = s.Checked;
-                        break;
+                    switch (filterItems[i])
+                    {
+                        case Control control:
+                            control.Visible = s.Checked;
+                            break;
+                        case ToolStripItem toolStripItem:
+                            toolStripItem.Visible = s.Checked;
+                            break;
+                    }
                 }
             }
             finally
             {
-                this.ResumeDrawing();
+                FilterBarFLP.ResumeDrawing();
             }
         }
 

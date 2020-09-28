@@ -1529,6 +1529,7 @@ namespace AngelLoader
             SortOrder sortDirection,
             float fmsListFontSizeInPoints,
             Filter filter,
+            bool[] filterControlsVisibility,
             SelectedFM selectedFM,
             GameTabsState gameTabsState,
             GameIndex gameTab,
@@ -1558,6 +1559,8 @@ namespace AngelLoader
             Config.FMsListFontSizeInPoints = fmsListFontSizeInPoints;
 
             #endregion
+
+            Array.Copy(filterControlsVisibility, Config.FilterControlVisibilities, HideableFilterControlsCount);
 
             filter.DeepCopyTo(Config.Filter);
 

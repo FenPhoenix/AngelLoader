@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -105,6 +106,40 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             RatingMenuItem.Text = LText.FilterBar.ShowHideMenu_Rating;
             ShowUnsupportedMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowUnsupported;
             ShowRecentAtTopMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowRecentAtTop;
+        }
+
+        internal static void SetCheckedStates(bool[] states)
+        {
+            if (_constructed)
+            {
+                for (int i = 0; i < Menu!.Items.Count; i++)
+                {
+                    ((ToolStripMenuItem)Menu.Items[i]).Checked = states[i];
+                }
+            }
+            else
+            {
+                Array.Copy(states, _filterCheckedStates, HideableFilterControlsCount);
+            }
+        }
+
+        internal static bool[] GetCheckedStates()
+        {
+            bool[] ret = new bool[HideableFilterControlsCount];
+
+            if (_constructed)
+            {
+                for (int i = 0; i < Menu!.Items.Count; i++)
+                {
+                    ret[i] = ((ToolStripMenuItem)Menu.Items[i]).Checked;
+                }
+            }
+            else
+            {
+                Array.Copy(_filterCheckedStates, ret, HideableFilterControlsCount);
+            }
+
+            return ret;
         }
     }
 }

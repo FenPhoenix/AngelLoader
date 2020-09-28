@@ -27,6 +27,8 @@ namespace AngelLoader.DataClasses
             // Leave all false
             StartupAlwaysStartSelector = new bool[SupportedGameCount];
 
+            FilterControlVisibilities = InitializedArray(HideableFilterControlsCount, true);
+
             // We want them empty strings, not null, for safety
             for (int i = 0; i < SupportedGameCount; i++)
             {
@@ -249,6 +251,8 @@ namespace AngelLoader.DataClasses
         #region Filtering
 
         internal readonly Filter Filter = new Filter();
+
+        internal readonly bool[] FilterControlVisibilities;
 
         #endregion
 

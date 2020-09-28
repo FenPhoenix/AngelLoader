@@ -72,6 +72,16 @@ namespace AngelLoader
 
                 #region Filter
 
+                else if (lineTS.StartsWithFast_NoNullChecks("FilterVisible") && lineTS[13] != '=')
+                {
+                    string filterName = lineTS.Substring(13, indexOfEq - 13);
+
+                    var field = typeof(HideableFilterControls).GetField(filterName, _bFlagsEnum);
+                    if (field == null) continue;
+
+                    config.FilterControlVisibilities[(int)field.GetValue(null)] = val.EqualsTrue();
+                }
+
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterGames="))
                 {
                     string[] iniGames = val
@@ -771,6 +781,11 @@ namespace AngelLoader
             #endregion
 
             #region Filters
+
+            for (int i = 0; i < HideableFilterControlsCount; i++)
+            {
+                sb.Append("FilterVisible").Append((HideableFilterControls)i).Append("=").AppendLine(config.FilterControlVisibilities[i].ToString());
+            }
 
             for (int i = 0; i < SupportedGameCount + 1; i++)
             {

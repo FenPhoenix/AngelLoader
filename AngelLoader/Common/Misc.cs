@@ -11,32 +11,9 @@ namespace AngelLoader
         // ReSharper disable once ConvertToConstant.Global
         internal static readonly string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
 
-        #region Global mutable state
-
-        internal static readonly ConfigData Config = new ConfigData();
-
-        internal static LText_Class LText = new LText_Class();
-
-        // Preset tags will be deep copied to this list later
-        internal static readonly GlobalCatAndTagsList GlobalTags = new GlobalCatAndTagsList(PresetTags.Count);
-
-        #region FM lists
-
-        // PERF_TODO: Set capacity later when we read FMData.ini and we count the [FM] entries in the file
-        internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
-        internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
-
-        #endregion
-
-        #region Cheap hacks
-
-        // Stupid hack for perf and nice UX when deleting FMs (we filter out deleted ones until the next find from
-        // disk, when we remove them properly)
-        internal static bool OneOrMoreFMsAreMarkedDeleted;
-
-        #endregion
-
-        #endregion
+        internal static readonly int ColumnsCount = Enum.GetValues(typeof(Column)).Length;
+        internal static readonly int HideableFilterControlsCount = Enum.GetValues(typeof(HideableFilterControls)).Length;
+        public static readonly int ZoomTypesCount = Enum.GetValues(typeof(Zoom)).Length;
 
         #region Enums and enum-like
 
@@ -49,7 +26,6 @@ namespace AngelLoader
         }
 
         public enum Zoom { In, Out, Reset }
-        public static readonly int ZoomTypesCount = Enum.GetValues(typeof(Zoom)).Length;
 
         // Public for param accessibility reasons or whatever
         public enum ProgressTask
@@ -121,10 +97,6 @@ namespace AngelLoader
         internal static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
 
         #endregion
-
-        internal static readonly int ColumnsCount = Enum.GetValues(typeof(Column)).Length;
-
-        internal static readonly int HideableFilterControlsCount = Enum.GetValues(typeof(HideableFilterControls)).Length;
 
         internal static readonly string[] ValidDateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
 
@@ -237,6 +209,36 @@ namespace AngelLoader
         {
             void Localize();
         }
+
+        #endregion
+
+        // IMPORTANT: Put these AFTER every other static field has been initialized!
+        // Otherwise, these things' constructors might refer back to this class and get a field that may not have
+        // been initialized. Ugh.
+        #region Global mutable state
+
+        internal static readonly ConfigData Config = new ConfigData();
+
+        internal static LText_Class LText = new LText_Class();
+
+        // Preset tags will be deep copied to this list later
+        internal static readonly GlobalCatAndTagsList GlobalTags = new GlobalCatAndTagsList(PresetTags.Count);
+
+        #region FM lists
+
+        // PERF_TODO: Set capacity later when we read FMData.ini and we count the [FM] entries in the file
+        internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
+        internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
+
+        #endregion
+
+        #region Cheap hacks
+
+        // Stupid hack for perf and nice UX when deleting FMs (we filter out deleted ones until the next find from
+        // disk, when we remove them properly)
+        internal static bool OneOrMoreFMsAreMarkedDeleted;
+
+        #endregion
 
         #endregion
     }
