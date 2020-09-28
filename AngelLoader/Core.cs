@@ -1451,16 +1451,13 @@ namespace AngelLoader
 
         #endregion
 
-        internal static Error TryGetGameVersion(GameIndex game, out string version)
+        internal static (Error Error, string Version) GetGameVersion(GameIndex game)
         {
-            version = "";
-
             string gameExe = Config.GetGameExe(game);
+            if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, "");
+            if (!File.Exists(gameExe)) return (Error.GameExeNotFound, "");
+
             string exeToSearch;
-
-            if (gameExe.IsWhiteSpace()) return Error.GameExeNotSpecified;
-            if (!File.Exists(gameExe)) return Error.GameExeNotFound;
-
             if (GameIsDark(game))
             {
                 exeToSearch = gameExe;
@@ -1470,7 +1467,7 @@ namespace AngelLoader
                 // TODO: If Sneaky.dll not found, just use the version from specified exe and don't say "Sneaky Upgrade" before it
                 if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(Thief3), Paths.SneakyDll, out exeToSearch))
                 {
-                    return Error.SneakyDllNotFound;
+                    return (Error.SneakyDllNotFound, "");
                 }
             }
 
@@ -1481,13 +1478,10 @@ namespace AngelLoader
             }
             catch (FileNotFoundException)
             {
-                return Error.GameExeNotFound;
+                return (Error.GameExeNotFound, "");
             }
 
-            if (vi.ProductVersion.IsEmpty()) return Error.GameVersionNotFound;
-
-            version = vi.ProductVersion;
-            return Error.None;
+            return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
         }
 
         internal static void ExportFMIni(FanMission fm)
