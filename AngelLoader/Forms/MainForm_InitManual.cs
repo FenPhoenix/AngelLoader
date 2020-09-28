@@ -578,8 +578,8 @@ namespace AngelLoader.Forms
 
             FilterBarFLP.TabIndex = 11;
             FilterBarFLP.WrapContents = false;
-            FilterBarFLP.Scroll += FiltersFlowLayoutPanel_Scroll;
-            FilterBarFLP.SizeChanged += FiltersFlowLayoutPanel_SizeChanged;
+            FilterBarFLP.Scroll += FilterBarFLP_Scroll;
+            FilterBarFLP.SizeChanged += FilterBarFLP_SizeChanged;
             FilterBarFLP.Paint += FilterBarFLP_Paint;
             // 
             // FilterGameButtonsToolStrip

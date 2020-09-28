@@ -38,8 +38,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region FM context menu fields
 
-#pragma warning disable IDE0069 // Disposable fields should be disposed
-
         // These are disposed by adding them to an array and iterating through it in Dispose()
         // TODO: This probably doesn't even need to happen, as they prolly get dumped with everything else on app exit
 
@@ -95,8 +93,6 @@ namespace AngelLoader.Forms.CustomControls
         private ToolStripSeparator? WebSearchSep;
 
         private ToolStripMenuItem? WebSearchMenuItem;
-
-#pragma warning restore IDE0069 // Disposable fields should be disposed
 
         #endregion
 

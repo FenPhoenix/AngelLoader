@@ -6,9 +6,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class MainForm
     {
-        // You know the drill
-#pragma warning disable IDE0069 // Disposable fields should be disposed
-
         // Not great code really, but works.
 
         private ProgressPanel? ProgressBox;

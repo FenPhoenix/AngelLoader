@@ -8,7 +8,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    internal interface IView : ILocalizable, IEventDisabler
+    internal interface IView : ILocalizable, IEventDisabler, IKeyPressDisabler, IMessageFilter
     {
         #region Progress box
 

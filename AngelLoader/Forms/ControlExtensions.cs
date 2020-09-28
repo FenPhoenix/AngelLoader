@@ -1,5 +1,7 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 using static AngelLoader.WinAPI.InteropMisc;
 
@@ -145,5 +147,11 @@ namespace AngelLoader.Forms
         }
 
         internal static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
+
+        internal static void HideFocusRectangle(this Control control) => SendMessage(
+            control.Handle,
+            WM_CHANGEUISTATE,
+            new IntPtr(SetControlFocusToHidden),
+            new IntPtr(0));
     }
 }
