@@ -162,6 +162,9 @@ namespace AngelLoader
         internal const string NewDarkLoaderIni = "NewDarkLoader.ini";
         internal const string FMSelIni = "fmsel.ini";
 
+        // A dir that goes in the installed FMs dir and isn't an FM, so we have to ignore it when finding FMs
+        internal const string FMSelCache = ".fmsel.cache";
+
         #endregion
 
         #region FM backup

@@ -1524,6 +1524,8 @@ namespace AngelLoader.Forms
             ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: -2, yOffset: 2);
         }
 
+        private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
+
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
         {
@@ -1531,7 +1533,12 @@ namespace AngelLoader.Forms
             f.ShowDialog();
         }
 
-        private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+        internal void FMsListStatsMenuItem_Click(object sender, EventArgs e)
+        {
+            using var f = new FMsListStatsForm();
+            f.ShowDialog();
+        }
 
         #endregion
 
@@ -4215,10 +4222,5 @@ namespace AngelLoader.Forms
         void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Reset);
 
         #endregion
-
-        internal void FMsListStatsMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

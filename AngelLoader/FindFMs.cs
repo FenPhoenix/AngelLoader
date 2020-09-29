@@ -109,7 +109,7 @@ namespace AngelLoader
                         for (int di = 0; di < dirs.Count; di++)
                         {
                             string d = dirs[di];
-                            if (!d.EqualsI(".fmsel.cache"))
+                            if (!d.EqualsI(Paths.FMSelCache))
                             {
                                 perGameInstFMDirsList[gi].Add(d);
                                 perGameInstFMDirsDatesList[gi].Add(dateTimes[di]);
