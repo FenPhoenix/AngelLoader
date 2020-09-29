@@ -648,8 +648,8 @@ namespace AngelLoader.Forms
             this.FilterBarFLP.Size = new System.Drawing.Size(768, 100);
             this.FilterBarFLP.TabIndex = 11;
             this.FilterBarFLP.WrapContents = false;
-            this.FilterBarFLP.Scroll += new System.Windows.Forms.ScrollEventHandler(this.FiltersFlowLayoutPanel_Scroll);
-            this.FilterBarFLP.SizeChanged += new System.EventHandler(this.FiltersFlowLayoutPanel_SizeChanged);
+            this.FilterBarFLP.Scroll += new System.Windows.Forms.ScrollEventHandler(this.FilterBarFLP_Scroll);
+            this.FilterBarFLP.SizeChanged += new System.EventHandler(this.FilterBarFLP_SizeChanged);
             this.FilterBarFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.FilterBarFLP_Paint);
             // 
             // FilterGameButtonsToolStrip
