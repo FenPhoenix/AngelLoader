@@ -13,12 +13,31 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class FMsListStatsForm : Form
+    public sealed partial class GlobalFMStatsForm : Form
     {
-        public FMsListStatsForm()
+        public GlobalFMStatsForm()
         {
             InitializeComponent();
+
             CalculateStats();
+
+            Localize();
+        }
+
+        private void Localize()
+        {
+            Text = LText.GlobalFMStats.TitleText;
+
+            FMsInDatabaseLabel.Text = LText.GlobalFMStats.FMsInDatabase;
+            AvailableFMsLabel.Text = LText.GlobalFMStats.AvailableFMs;
+            T1Label.Text = LText.Global.Thief1_Colon;
+            T2Label.Text = LText.Global.Thief2_Colon;
+            T3Label.Text = LText.Global.Thief3_Colon;
+            SS2Label.Text = LText.Global.SystemShock2_Colon;
+            UnscannedLabel.Text = LText.GlobalFMStats.Unscanned;
+            UnsupportedLabel.Text = LText.GlobalFMStats.Unsupported;
+
+            OKButton.Text = LText.Global.OK;
         }
 
         private void CalculateStats()

@@ -29,6 +29,7 @@ namespace AngelLoader.DataClasses
         internal readonly AlertMessages_Class AlertMessages = new AlertMessages_Class();
         internal readonly MainMenu_Class MainMenu = new MainMenu_Class();
         internal readonly GameVersionsWindow_Class GameVersionsWindow = new GameVersionsWindow_Class();
+        internal readonly GlobalFMStats_Class GlobalFMStats = new GlobalFMStats_Class();
         internal readonly FMDeletion_Class FMDeletion = new FMDeletion_Class();
         internal readonly Difficulties_Class Difficulties = new Difficulties_Class();
         internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
@@ -186,6 +187,7 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string MainMenuToolTip = "Main menu";
             internal readonly string GameVersions = "Game versions...";
+            internal readonly string GlobalFMStats = "Global FM stats...";
         }
 
         internal sealed class GameVersionsWindow_Class
@@ -215,6 +217,15 @@ namespace AngelLoader.DataClasses
             [FenGenComment(
                 "A version could not be found inside the .exe/.dll file.")]
             internal readonly string Error_GameVersionNotFound = "Version not found";
+        }
+
+        internal sealed class GlobalFMStats_Class
+        {
+            internal readonly string TitleText = "Global FM stats";
+            internal readonly string FMsInDatabase = "FMs in database:";
+            internal readonly string AvailableFMs = "Available FMs:";
+            internal readonly string Unscanned = "Unscanned:";
+            internal readonly string Unsupported = "Invalid or unsupported:";
         }
 
         internal sealed class FMDeletion_Class

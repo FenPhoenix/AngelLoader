@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms
 {
-    sealed partial class FMsListStatsForm
+    sealed partial class GlobalFMStatsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -52,6 +52,7 @@
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.OKButton.Location = new System.Drawing.Point(712, 416);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 0;
@@ -194,7 +195,7 @@
             this.FMsInDatabaseTextBox.Size = new System.Drawing.Size(100, 20);
             this.FMsInDatabaseTextBox.TabIndex = 2;
             // 
-            // FMsListStatsForm
+            // GlobalFMStatsForm
             // 
             this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -221,9 +222,10 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FMsListStatsForm";
+            this.Name = "GlobalFMStatsForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "FMs list stats";
+            this.Text = "Global FM stats";
             this.ResumeLayout(false);
             this.PerformLayout();
 

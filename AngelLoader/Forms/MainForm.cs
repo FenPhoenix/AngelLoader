@@ -1534,9 +1534,9 @@ namespace AngelLoader.Forms
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void FMsListStatsMenuItem_Click(object sender, EventArgs e)
+        internal void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
         {
-            using var f = new FMsListStatsForm();
+            using var f = new GlobalFMStatsForm();
             f.ShowDialog();
         }
 
