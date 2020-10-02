@@ -1338,15 +1338,17 @@ namespace AngelLoader
             string url = Config.WebSearchUrl;
             if (url.IsWhiteSpace() || url.Length > 32766) return;
 
+            url = Uri.EscapeUriString(url);
+
             int index = url.IndexOf("$TITLE$", StringComparison.OrdinalIgnoreCase);
 
             // Possible exceptions are:
             // ArgumentNullException (stringToEscape is null)
             // UriFormatException (The length of stringToEscape exceeds 32766 characters)
             // Those are both checked for above so we're good.
-            string finalUrl = Uri.EscapeUriString(index == -1
+            string finalUrl = index == -1
                 ? url
-                : url.Substring(0, index) + fmTitle + url.Substring(index + "$TITLE$".Length));
+                : url.Substring(0, index) + Uri.EscapeDataString(fmTitle) + url.Substring(index + "$TITLE$".Length);
 
             try
             {
