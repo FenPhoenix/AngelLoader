@@ -2547,6 +2547,7 @@ namespace AngelLoader.Forms
             if (!catAndTag.CharCountIsAtLeast(':', 2) && !catAndTag.IsWhiteSpace())
             {
                 FMTags.AddTagToFM(fm, catAndTag);
+                Ini.WriteFullFMDataIni();
                 DisplayFMTags(fm.Tags);
             }
 
@@ -2564,22 +2565,22 @@ namespace AngelLoader.Forms
             AddTagLLMenu.Menu.Items.Clear();
 
             var addTagMenuItems = new List<ToolStripItem>(GlobalTags.Count);
-            foreach (GlobalCatAndTags catAndTag in GlobalTags)
+            foreach (CatAndTags catAndTag in GlobalTags)
             {
                 if (catAndTag.Tags.Count == 0)
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category.Name + ":");
+                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category + ":");
                     catItem.Click += AddTagMenuEmptyItem_Click;
                     addTagMenuItems.Add(catItem);
                 }
                 else
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category.Name);
+                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category);
                     addTagMenuItems.Add(catItem);
 
                     var last = addTagMenuItems[addTagMenuItems.Count - 1];
 
-                    if (catAndTag.Category.Name != "misc")
+                    if (catAndTag.Category != "misc")
                     {
                         var customItem = new ToolStripMenuItemWithBackingText(LText.Global.CustomTagInCategory);
                         customItem.Click += AddTagMenuCustomItem_Click;
@@ -2587,11 +2588,11 @@ namespace AngelLoader.Forms
                         ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator());
                     }
 
-                    foreach (GlobalCatOrTag tag in catAndTag.Tags)
+                    foreach (string tag in catAndTag.Tags)
                     {
-                        var tagItem = new ToolStripMenuItemWithBackingText(tag.Name);
+                        var tagItem = new ToolStripMenuItemWithBackingText(tag);
 
-                        if (catAndTag.Category.Name == "misc")
+                        if (catAndTag.Category == "misc")
                         {
                             tagItem.Click += AddTagMenuMiscItem_Click;
                         }

@@ -62,9 +62,6 @@ namespace AngelLoader
         private static CategoryComparer? _categoryComparer;
         internal static CategoryComparer Category => _categoryComparer ??= new CategoryComparer();
 
-        private static CategoryComparerGlobal? _categoryComparerGlobal;
-        internal static CategoryComparerGlobal CategoryGlobal => _categoryComparerGlobal ??= new CategoryComparerGlobal();
-
         private static CatItemComparer? _catItemComparer;
         internal static CatItemComparer CatItem => _catItemComparer ??= new CatItemComparer();
 
@@ -459,24 +456,9 @@ namespace AngelLoader
             }
         }
 
-        internal sealed class CategoryComparerGlobal : IComparer<GlobalCatAndTags>
+        internal sealed class CatItemComparer : IComparer<string>
         {
-            public int Compare(GlobalCatAndTags x, GlobalCatAndTags y)
-            {
-                AssertR(!x.Category.Name.IsEmpty(), "CategoryComparer: x.Name is null or empty");
-                AssertR(!y.Category.Name.IsEmpty(), "CategoryComparer: y.Name is null or empty");
-
-                AssertR(x.Category.Name.ToLowerInvariant() == x.Category.Name, "CategoryComparer: x.Name is not lowercase");
-                AssertR(y.Category.Name.ToLowerInvariant() == y.Category.Name, "CategoryComparer: y.Name is not lowercase");
-
-                // Category names are supposed to always be lowercase, so don't waste time checking
-                return string.CompareOrdinal(x.Category.Name, y.Category.Name);
-            }
-        }
-
-        internal sealed class CatItemComparer : IComparer<GlobalCatOrTag>
-        {
-            public int Compare(GlobalCatOrTag x, GlobalCatOrTag y) => string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
+            public int Compare(string x, string y) => string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion

@@ -12,11 +12,11 @@ namespace AngelLoader.Forms
     {
         private readonly Bitmap _arrowRightBmp = new Bitmap(7, 7, PixelFormat.Format32bppPArgb);
 
-        private readonly GlobalCatAndTagsList _sourceTags;
+        private readonly CatAndTagsList _sourceTags;
 
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
-        internal FilterTagsForm(GlobalCatAndTagsList sourceTags, TagsFilter tagsFilter)
+        internal FilterTagsForm(CatAndTagsList sourceTags, TagsFilter tagsFilter)
         {
 #if DEBUG
             InitializeComponent();
@@ -24,7 +24,7 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            _sourceTags = new GlobalCatAndTagsList(sourceTags.Count);
+            _sourceTags = new CatAndTagsList(sourceTags.Count);
 
             #region Arrow buttons setup
 
@@ -98,11 +98,11 @@ namespace AngelLoader.Forms
 
             _sourceTags.SortAndMoveMiscToEnd();
 
-            foreach (GlobalCatAndTags catAndTags in _sourceTags)
+            foreach (CatAndTags catAndTags in _sourceTags)
             {
-                tv.Nodes.Add(catAndTags.Category.Name);
+                tv.Nodes.Add(catAndTags.Category);
                 var last = tv.Nodes[tv.Nodes.Count - 1];
-                foreach (GlobalCatOrTag tag in catAndTags.Tags) last.Nodes.Add(tag.Name);
+                foreach (string tag in catAndTags.Tags) last.Nodes.Add(tag);
             }
 
             tv.ExpandAll();

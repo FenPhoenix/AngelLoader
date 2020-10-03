@@ -222,7 +222,7 @@ namespace AngelLoader
         internal static LText_Class LText = new LText_Class();
 
         // Preset tags will be deep copied to this list later
-        internal static readonly GlobalCatAndTagsList GlobalTags = new GlobalCatAndTagsList(PresetTags.Count);
+        internal static readonly CatAndTagsList GlobalTags = new CatAndTagsList(PresetTags.Count);
 
         #region FM lists
 

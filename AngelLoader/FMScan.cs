@@ -263,8 +263,7 @@ namespace AngelLoader
                         // add to those, not overwrite them
                         if (gameSup)
                         {
-                            FMTags.AddTagsToFMAndGlobalList(tagsString, sel.Tags);
-                            FMTags.UpdateFMTagsString(sel);
+                            FMTags.AddTagToFM(sel, tagsString);
                         }
                     }
 

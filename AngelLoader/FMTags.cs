@@ -12,7 +12,17 @@ namespace AngelLoader
         {
             AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
             UpdateFMTagsString(fm);
-            Ini.WriteFullFMDataIni();
+            RebuildGlobalTags();
+        }
+
+        private static void RebuildGlobalTags()
+        {
+            PresetTags.DeepCopyTo(GlobalTags);
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                FanMission fm = FMsViewList[i];
+                AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
+            }
         }
 
         internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
@@ -32,34 +42,6 @@ namespace AngelLoader
                 {
                     fm.Tags.Remove(cat);
                     UpdateFMTagsString(fm);
-
-                    // TODO: Can we store these as hash tables/dictionaries or something?
-                    GlobalCatAndTags? globalCat = GlobalTags.Find(x => x.Category.Name == cat.Category);
-                    if (globalCat != null)
-                    {
-                        for (int i = 0; i < globalCat.Tags.Count; i++)
-                        {
-                            GlobalCatOrTag tag = globalCat.Tags[i];
-                            string? tag0 = cat.Tags.Find(x => x == tag.Name);
-                            if (tag0 != null)
-                            {
-                                if (!tag.IsPreset)
-                                {
-                                    if (tag.UsedCount > 0) tag.UsedCount--;
-                                    if (tag.UsedCount == 0)
-                                    {
-                                        globalCat.Tags.Remove(tag);
-                                        i--;
-                                    }
-                                }
-                            }
-                        }
-                        if (!globalCat.Category.IsPreset)
-                        {
-                            if (globalCat.Category.UsedCount > 0) globalCat.Category.UsedCount--;
-                            if (globalCat.Category.UsedCount == 0) GlobalTags.Remove(globalCat);
-                        }
-                    }
                 }
             }
             // Child node (tag)
@@ -75,17 +57,10 @@ namespace AngelLoader
                     cat!.Tags.Remove(tag);
                     if (cat.Tags.Count == 0) fm.Tags.Remove(cat);
                     UpdateFMTagsString(fm);
-
-                    GlobalCatAndTags? globalCat = GlobalTags.Find(x => x.Category.Name == cat.Category);
-                    GlobalCatOrTag? globalTag = globalCat?.Tags.Find(x => x.Name == tagText);
-                    if (globalTag?.IsPreset == false)
-                    {
-                        if (globalTag.UsedCount > 0) globalTag.UsedCount--;
-                        if (globalTag.UsedCount == 0) globalCat!.Tags.Remove(globalTag);
-                        if (globalCat!.Tags.Count == 0) GlobalTags.Remove(globalCat);
-                    }
                 }
             }
+
+            RebuildGlobalTags();
 
             Ini.WriteFullFMDataIni();
 
@@ -115,37 +90,37 @@ namespace AngelLoader
             var list = new List<string>();
             foreach (var gCat in GlobalTags)
             {
-                if (gCat.Category.Name.ContainsI(text.First))
+                if (gCat.Category.ContainsI(text.First))
                 {
                     if (gCat.Tags.Count == 0)
                     {
-                        if (gCat.Category.Name != "misc") list.Add(gCat.Category.Name + ":");
+                        if (gCat.Category != "misc") list.Add(gCat.Category + ":");
                     }
                     else
                     {
                         foreach (var gTag in gCat.Tags)
                         {
-                            if (!text.Second.IsWhiteSpace() && !gTag.Name.ContainsI(text.Second)) continue;
-                            if (gCat.Category.Name == "misc")
+                            if (!text.Second.IsWhiteSpace() && !gTag.ContainsI(text.Second)) continue;
+                            if (gCat.Category == "misc")
                             {
-                                if (text.Second.IsWhiteSpace() && !gCat.Category.Name.ContainsI(text.First))
+                                if (text.Second.IsWhiteSpace() && !gCat.Category.ContainsI(text.First))
                                 {
-                                    list.Add(gTag.Name);
+                                    list.Add(gTag);
                                 }
                             }
                             else
                             {
-                                list.Add(gCat.Category.Name + ": " + gTag.Name);
+                                list.Add(gCat.Category + ": " + gTag);
                             }
                         }
                     }
                 }
                 // if, not else if - we want to display found tags both categorized and uncategorized
-                if (gCat.Category.Name == "misc")
+                if (gCat.Category == "misc")
                 {
                     foreach (var gTag in gCat.Tags)
                     {
-                        if (gTag.Name.ContainsI(searchText)) list.Add(gTag.Name);
+                        if (gTag.ContainsI(searchText)) list.Add(gTag);
                     }
                 }
             }
@@ -160,7 +135,7 @@ namespace AngelLoader
         // filled out for FMs that will be displayed. TagsString is the one that gets saved and loaded, and must
         // be kept in sync with Tags. This should ONLY be called when a tag is added or removed. Keep it simple
         // so we can see and follow the logic.
-        internal static void UpdateFMTagsString(FanMission fm)
+        private static void UpdateFMTagsString(FanMission fm)
         {
             var intermediateList = new List<string>();
             foreach (CatAndTags item in fm.Tags)
@@ -245,10 +220,10 @@ namespace AngelLoader
 
                 #region Global tags
 
-                GlobalCatAndTags? globalMatch = null;
+                CatAndTags? globalMatch = null;
                 for (int i = 0; i < GlobalTags.Count; i++)
                 {
-                    if (GlobalTags[i].Category.Name == cat)
+                    if (GlobalTags[i].Category == cat)
                     {
                         globalMatch = GlobalTags[i];
                         break;
@@ -256,18 +231,15 @@ namespace AngelLoader
                 }
                 if (globalMatch == null)
                 {
-                    GlobalTags.Add(new GlobalCatAndTags { Category = new GlobalCatOrTag { Name = cat, UsedCount = 1 } });
-                    GlobalTags[GlobalTags.Count - 1].Tags.Add(new GlobalCatOrTag { Name = tag, UsedCount = 1 });
+                    GlobalTags.Add(new CatAndTags { Category = cat });
+                    GlobalTags[GlobalTags.Count - 1].Tags.Add(tag);
                 }
                 else
                 {
-                    // TODO: If IsPreset, this shouldn't be set to 1, but we don't know what other nasty bugs lurk
-                    if (globalMatch.Category.UsedCount == 0) globalMatch.Category.UsedCount = 1;
-
-                    GlobalCatOrTag? ft = null;
+                    string? ft = null;
                     for (int i = 0; i < globalMatch.Tags.Count; i++)
                     {
-                        if (globalMatch.Tags[i].Name.EqualsI(tag))
+                        if (globalMatch.Tags[i].EqualsI(tag))
                         {
                             ft = globalMatch.Tags[i];
                             break;
@@ -275,11 +247,7 @@ namespace AngelLoader
                     }
                     if (ft == null)
                     {
-                        globalMatch.Tags.Add(new GlobalCatOrTag { Name = tag, UsedCount = 1 });
-                    }
-                    else
-                    {
-                        ft.UsedCount++;
+                        globalMatch.Tags.Add(tag);
                     }
                 }
 
