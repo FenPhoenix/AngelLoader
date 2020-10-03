@@ -10,11 +10,11 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static ContextMenuStrip ImportFromMenu = null!;
 
-        internal static ToolStripMenuItem ImportFromDarkLoaderMenuItem = null!;
-        internal static ToolStripMenuItem ImportFromFMSelMenuItem = null!;
+        internal static ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
+        internal static ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
         [UsedImplicitly]
         // It's an implicit "else" case, but let's keep it non-private just for consistency
-        internal static ToolStripMenuItem ImportFromNewDarkLoaderMenuItem = null!;
+        internal static ToolStripMenuItemCustom ImportFromNewDarkLoaderMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -23,9 +23,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ImportFromMenu = new ContextMenuStrip(components);
 
             // Not localized because they consist solely of proper names! Don't remove these!
-            ImportFromDarkLoaderMenuItem = new ToolStripMenuItem("DarkLoader...");
-            ImportFromFMSelMenuItem = new ToolStripMenuItem("FMSel...");
-            ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItem("NewDarkLoader...");
+            ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom("DarkLoader...");
+            ImportFromFMSelMenuItem = new ToolStripMenuItemCustom("FMSel...");
+            ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom("NewDarkLoader...");
 
             ImportFromMenu.Items.AddRange(new ToolStripItem[]
             {

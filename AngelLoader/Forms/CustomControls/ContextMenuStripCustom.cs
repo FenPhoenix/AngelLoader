@@ -7,17 +7,17 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class ContextMenuStripCustom : ContextMenuStrip
     {
         private bool _preventClose;
-        private ToolStripMenuItem[]? _preventCloseItems;
+        private ToolStripMenuItemCustom[]? _preventCloseItems;
 
         public ContextMenuStripCustom() { }
 
         public ContextMenuStripCustom(IContainer container) : base(container) { }
 
-        internal void SetPreventCloseOnClickItems(params ToolStripMenuItem[] items) => _preventCloseItems = items;
+        internal void SetPreventCloseOnClickItems(params ToolStripMenuItemCustom[] items) => _preventCloseItems = items;
 
         protected override void OnItemClicked(ToolStripItemClickedEventArgs e)
         {
-            _preventClose = _preventCloseItems!.Contains(e.ClickedItem) && ((ToolStripMenuItem)e.ClickedItem).CheckOnClick;
+            _preventClose = _preventCloseItems!.Contains(e.ClickedItem) && ((ToolStripMenuItemCustom)e.ClickedItem).CheckOnClick;
 
             base.OnItemClicked(e);
         }

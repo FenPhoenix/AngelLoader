@@ -15,15 +15,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static MainForm _owner = null!;
 
         internal static ContextMenuStripCustom Menu = null!;
-        private static ToolStripMenuItem TitleMenuItem = null!;
-        private static ToolStripMenuItem AuthorMenuItem = null!;
-        private static ToolStripMenuItem ReleaseDateMenuItem = null!;
-        private static ToolStripMenuItem LastPlayedMenuItem = null!;
-        private static ToolStripMenuItem TagsMenuItem = null!;
-        private static ToolStripMenuItem FinishedStateMenuItem = null!;
-        private static ToolStripMenuItem RatingMenuItem = null!;
-        private static ToolStripMenuItem ShowUnsupportedMenuItem = null!;
-        private static ToolStripMenuItem ShowRecentAtTopMenuItem = null!;
+        private static ToolStripMenuItemCustom TitleMenuItem = null!;
+        private static ToolStripMenuItemCustom AuthorMenuItem = null!;
+        private static ToolStripMenuItemCustom ReleaseDateMenuItem = null!;
+        private static ToolStripMenuItemCustom LastPlayedMenuItem = null!;
+        private static ToolStripMenuItemCustom TagsMenuItem = null!;
+        private static ToolStripMenuItemCustom FinishedStateMenuItem = null!;
+        private static ToolStripMenuItemCustom RatingMenuItem = null!;
+        private static ToolStripMenuItemCustom ShowUnsupportedMenuItem = null!;
+        private static ToolStripMenuItemCustom ShowRecentAtTopMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -34,47 +34,47 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Menu = new ContextMenuStripCustom(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                TitleMenuItem = new ToolStripMenuItem
+                TitleMenuItem = new ToolStripMenuItemCustom
                 {
                     CheckOnClick = true,
                     Tag = HideableFilterControls.Title
                 },
-                AuthorMenuItem = new ToolStripMenuItem
+                AuthorMenuItem = new ToolStripMenuItemCustom
                 {
                     CheckOnClick = true,
                     Tag = HideableFilterControls.Author
                 },
-                ReleaseDateMenuItem = new ToolStripMenuItem
+                ReleaseDateMenuItem = new ToolStripMenuItemCustom
                 {
                     CheckOnClick = true,
                     Tag = HideableFilterControls.ReleaseDate
                 },
-                LastPlayedMenuItem = new ToolStripMenuItem
+                LastPlayedMenuItem = new ToolStripMenuItemCustom
                 {
                     CheckOnClick = true,
                     Tag = HideableFilterControls.LastPlayed
                 },
-                TagsMenuItem = new ToolStripMenuItem
+                TagsMenuItem = new ToolStripMenuItemCustom
                 {
                     CheckOnClick = true,
                     Tag = HideableFilterControls.Tags
                 },
-                FinishedStateMenuItem = new ToolStripMenuItem
+                FinishedStateMenuItem = new ToolStripMenuItemCustom
                 {
                     CheckOnClick = true,
                     Tag = HideableFilterControls.FinishedState
                 },
-                RatingMenuItem = new ToolStripMenuItem
+                RatingMenuItem = new ToolStripMenuItemCustom
                 {
                     CheckOnClick = true,
                     Tag = HideableFilterControls.Rating
                 },
-                ShowUnsupportedMenuItem = new ToolStripMenuItem
+                ShowUnsupportedMenuItem = new ToolStripMenuItemCustom
                 {
                     CheckOnClick = true,
                     Tag = HideableFilterControls.ShowUnsupported
                 },
-                ShowRecentAtTopMenuItem = new ToolStripMenuItem
+                ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom
                 {
                     CheckOnClick = true,
                     Tag = HideableFilterControls.ShowRecentAtTop
@@ -83,12 +83,12 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             for (int i = 0; i < Menu.Items.Count; i++)
             {
-                var item = (ToolStripMenuItem)Menu.Items[i];
+                var item = (ToolStripMenuItemCustom)Menu.Items[i];
                 item.Checked = _filterCheckedStates[i];
                 item.Click += _owner.FilterControlsMenuItems_Click;
             }
 
-            Menu.SetPreventCloseOnClickItems(Menu.Items.Cast<ToolStripMenuItem>().ToArray());
+            Menu.SetPreventCloseOnClickItems(Menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
 
             _constructed = true;
 
@@ -97,15 +97,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private static void Localize()
         {
-            TitleMenuItem.Text = LText.FilterBar.ShowHideMenu_Title.EscapeAmpersands();
-            AuthorMenuItem.Text = LText.FilterBar.ShowHideMenu_Author.EscapeAmpersands();
-            ReleaseDateMenuItem.Text = LText.FilterBar.ShowHideMenu_ReleaseDate.EscapeAmpersands();
-            LastPlayedMenuItem.Text = LText.FilterBar.ShowHideMenu_LastPlayed.EscapeAmpersands();
-            TagsMenuItem.Text = LText.FilterBar.ShowHideMenu_Tags.EscapeAmpersands();
-            FinishedStateMenuItem.Text = LText.FilterBar.ShowHideMenu_FinishedState.EscapeAmpersands();
-            RatingMenuItem.Text = LText.FilterBar.ShowHideMenu_Rating.EscapeAmpersands();
-            ShowUnsupportedMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowUnsupported.EscapeAmpersands();
-            ShowRecentAtTopMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowRecentAtTop.EscapeAmpersands();
+            TitleMenuItem.Text = LText.FilterBar.ShowHideMenu_Title;
+            AuthorMenuItem.Text = LText.FilterBar.ShowHideMenu_Author;
+            ReleaseDateMenuItem.Text = LText.FilterBar.ShowHideMenu_ReleaseDate;
+            LastPlayedMenuItem.Text = LText.FilterBar.ShowHideMenu_LastPlayed;
+            TagsMenuItem.Text = LText.FilterBar.ShowHideMenu_Tags;
+            FinishedStateMenuItem.Text = LText.FilterBar.ShowHideMenu_FinishedState;
+            RatingMenuItem.Text = LText.FilterBar.ShowHideMenu_Rating;
+            ShowUnsupportedMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowUnsupported;
+            ShowRecentAtTopMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowRecentAtTop;
         }
 
         internal static void SetCheckedStates(bool[] states)
@@ -114,7 +114,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 for (int i = 0; i < Menu!.Items.Count; i++)
                 {
-                    ((ToolStripMenuItem)Menu.Items[i]).Checked = states[i];
+                    ((ToolStripMenuItemCustom)Menu.Items[i]).Checked = states[i];
                 }
             }
             else
@@ -131,7 +131,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 for (int i = 0; i < Menu!.Items.Count; i++)
                 {
-                    ret[i] = ((ToolStripMenuItem)Menu.Items[i]).Checked;
+                    ret[i] = ((ToolStripMenuItemCustom)Menu.Items[i]).Checked;
                 }
             }
             else

@@ -2082,7 +2082,7 @@ namespace AngelLoader.Forms
 
         internal void FilterControlsMenuItems_Click(object sender, EventArgs e)
         {
-            var s = (ToolStripMenuItem)sender;
+            var s = (ToolStripMenuItemCustom)sender;
 
             try
             {
@@ -2269,7 +2269,7 @@ namespace AngelLoader.Forms
 
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
         {
-            EditFMTitleTextBox.Text = ((ToolStripMenuItem)sender).Text;
+            EditFMTitleTextBox.Text = ((ToolStripMenuItemCustom)sender).Text;
             Ini.WriteFullFMDataIni();
         }
 
@@ -2501,12 +2501,32 @@ namespace AngelLoader.Forms
 
         private void RemoveTagButton_Click(object sender, EventArgs e)
         {
-            if (!FMsDGV.RowSelected()) return;
+            var tv = TagsTreeView;
+            if (!FMsDGV.RowSelected() || tv.SelectedNode == null) return;
 
             var fm = FMsDGV.GetSelectedFM();
-            var tv = TagsTreeView;
 
-            bool success = FMTags.RemoveTagFromFM(fm, tv.SelectedNode?.Parent?.Text ?? "", tv.SelectedNode?.Text ?? "");
+            string catText = "";
+            string tagText = "";
+            bool isCategory = false;
+            if (tv.SelectedNode != null)
+            {
+                if (tv.SelectedNode.Parent != null)
+                {
+                    isCategory = false;
+                    catText = tv.SelectedNode.Parent.Text;
+                    tagText = tv.SelectedNode.Text;
+                }
+                else
+                {
+                    isCategory = true;
+                    catText = tv.SelectedNode.Text;
+                    tagText = "";
+                }
+            }
+
+            //bool success = FMTags.RemoveTagFromFM(fm, tv.SelectedNode != null ? tv.SelectedNode.Parent != null ? tv.SelectedNode.Parent.Text : "" : "", tv.SelectedNode != null ? tv.SelectedNode.Text : "");
+            bool success = FMTags.RemoveTagFromFM(fm, catText, tagText, isCategory);
             if (!success) return;
 
             DisplayFMTags(fm.Tags);
@@ -2548,28 +2568,28 @@ namespace AngelLoader.Forms
             {
                 if (catAndTag.Tags.Count == 0)
                 {
-                    var catItem = new ToolStripMenuItem(catAndTag.Category.Name.EscapeAmpersands() + ":");
+                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category.Name + ":");
                     catItem.Click += AddTagMenuEmptyItem_Click;
                     addTagMenuItems.Add(catItem);
                 }
                 else
                 {
-                    var catItem = new ToolStripMenuItem(catAndTag.Category.Name.EscapeAmpersands());
+                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category.Name);
                     addTagMenuItems.Add(catItem);
 
                     var last = addTagMenuItems[addTagMenuItems.Count - 1];
 
                     if (catAndTag.Category.Name != "misc")
                     {
-                        var customItem = new ToolStripMenuItem(LText.Global.CustomTagInCategory.EscapeAmpersands());
+                        var customItem = new ToolStripMenuItemWithBackingText(LText.Global.CustomTagInCategory);
                         customItem.Click += AddTagMenuCustomItem_Click;
-                        ((ToolStripMenuItem)last).DropDownItems.Add(customItem);
-                        ((ToolStripMenuItem)last).DropDownItems.Add(new ToolStripSeparator());
+                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(customItem);
+                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator());
                     }
 
                     foreach (GlobalCatOrTag tag in catAndTag.Tags)
                     {
-                        var tagItem = new ToolStripMenuItem(tag.Name.EscapeAmpersands());
+                        var tagItem = new ToolStripMenuItemWithBackingText(tag.Name);
 
                         if (catAndTag.Category.Name == "misc")
                         {
@@ -2580,7 +2600,7 @@ namespace AngelLoader.Forms
                             tagItem.Click += AddTagMenuItem_Click;
                         }
 
-                        ((ToolStripMenuItem)last).DropDownItems.Add(tagItem);
+                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(tagItem);
                     }
                 }
             }
@@ -2592,28 +2612,28 @@ namespace AngelLoader.Forms
 
         private void AddTagMenuItem_Click(object sender, EventArgs e)
         {
-            var item = (ToolStripMenuItem)sender;
+            var item = (ToolStripMenuItemWithBackingText)sender;
             if (item.HasDropDownItems) return;
 
-            var cat = item.OwnerItem;
+            var cat = (ToolStripMenuItemWithBackingText?)item.OwnerItem;
             if (cat == null) return;
 
-            AddTagOperation(FMsDGV.GetSelectedFM(), cat.Text + ": " + item.Text);
+            AddTagOperation(FMsDGV.GetSelectedFM(), cat.BackingText + ": " + item.BackingText);
         }
 
         private void AddTagMenuCustomItem_Click(object sender, EventArgs e)
         {
-            var item = (ToolStripMenuItem)sender;
+            var item = (ToolStripMenuItemWithBackingText)sender;
 
-            var cat = item.OwnerItem;
+            var cat = (ToolStripMenuItemWithBackingText?)item.OwnerItem;
             if (cat == null) return;
 
-            AddTagTextBox.SetTextAndMoveCursorToEnd(cat.Text + ": ");
+            AddTagTextBox.SetTextAndMoveCursorToEnd(cat.BackingText + ": ");
         }
 
-        private void AddTagMenuMiscItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItem)sender).Text);
+        private void AddTagMenuMiscItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText);
 
-        private void AddTagMenuEmptyItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItem)sender).Text + " ");
+        private void AddTagMenuEmptyItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText + " ");
 
         // Just to keep things in a known state (clearing items also removes their event hookups, which is
         // convenient)
@@ -2693,13 +2713,13 @@ namespace AngelLoader.Forms
 
         internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
         {
-            var s = (ToolStripMenuItem)sender;
+            var s = (ToolStripMenuItemCustom)sender;
 
             // NULL_TODO: Null so I can assert
             TabPage? tab = null;
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                if (s == (ToolStripMenuItem)TopRightLLMenu.Menu.Items[i])
+                if (s == (ToolStripMenuItemCustom)TopRightLLMenu.Menu.Items[i])
                 {
                     tab = _topRightTabsInOrder[i];
                     break;
@@ -3518,7 +3538,7 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
-            var item = (ToolStripMenuItem)sender;
+            var item = (ToolStripMenuItemCustom)sender;
 
             GameIndex game =
                 item == PlayOriginalGameLLMenu.Thief1MenuItem ? Thief1 :
@@ -4099,7 +4119,7 @@ namespace AngelLoader.Forms
                 List<ToolStripItem> altTitlesMenuItems = new List<ToolStripItem>(fmAltTitles.Count);
                 foreach (string altTitle in fmAltTitles)
                 {
-                    var item = new ToolStripMenuItem(altTitle.EscapeAmpersands());
+                    var item = new ToolStripMenuItemCustom(altTitle);
                     item.Click += EditFMAltTitlesMenuItems_Click;
                     altTitlesMenuItems.Add(item);
                 }

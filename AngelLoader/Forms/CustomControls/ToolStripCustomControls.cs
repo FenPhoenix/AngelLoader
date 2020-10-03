@@ -35,6 +35,46 @@ namespace AngelLoader.Forms.CustomControls
         }
     }
 
+    /// <summary>
+    /// Tool strip menu item but with automatic ampersand escaping, because it's hell to make sure they all get escaped otherwise.
+    /// </summary>
+    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
+    public class ToolStripMenuItemCustom : ToolStripMenuItem
+    {
+        public ToolStripMenuItemCustom() { }
+
+        /// <summary>Set text with escaped ampersands.</summary>
+        /// <param name="text">The text to display on the menu item, with escaped ampersands.</param>
+        // Call it with bare text because the constructor will set Text, which will jump back up to setting it
+        // here (which will escape ampersands), then jump back down to setting it in the base class. OOP IS THE
+        // LITERAL DEFINITION OF SPAGHETTI CODE.
+        // But we do it anyway to try and reduce our own errors of forgetting to call the ampersand escaper every
+        // time we set text one way or the other...
+        public ToolStripMenuItemCustom(string text) : base(text) { }
+
+        /// <summary>
+        /// Sets the text and escapes ampersands.
+        /// </summary>
+        public override string Text
+        {
+            get => base.Text;
+            set => base.Text = value.EscapeAmpersands();
+        }
+    }
+
+    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
+    public sealed class ToolStripMenuItemWithBackingText : ToolStripMenuItemCustom
+    {
+        private string _backingText;
+        public string BackingText => _backingText;
+
+        public ToolStripMenuItemWithBackingText(string text)
+        {
+            _backingText = text;
+            base.Text = text;
+        }
+    }
+
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
     public sealed class ToolStripButtonCustom : ToolStripButton
     {

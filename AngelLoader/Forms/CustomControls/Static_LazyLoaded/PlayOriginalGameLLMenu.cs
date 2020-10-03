@@ -11,15 +11,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static ContextMenuStrip Menu = null!;
 
-        internal static ToolStripMenuItem Thief1MenuItem = null!;
+        internal static ToolStripMenuItemCustom Thief1MenuItem = null!;
 
-        internal static ToolStripMenuItem Thief2MenuItem = null!;
+        internal static ToolStripMenuItemCustom Thief2MenuItem = null!;
 
-        internal static ToolStripMenuItem Thief2MPMenuItem = null!;
+        internal static ToolStripMenuItemCustom Thief2MPMenuItem = null!;
 
-        internal static ToolStripMenuItem Thief3MenuItem = null!;
+        internal static ToolStripMenuItemCustom Thief3MenuItem = null!;
 
-        internal static ToolStripMenuItem SS2MenuItem = null!;
+        internal static ToolStripMenuItemCustom SS2MenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -27,11 +27,11 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             Menu = new ContextMenuStrip(components);
 
-            Thief1MenuItem = new ToolStripMenuItem { Image = Images.Thief1_16 };
-            Thief2MenuItem = new ToolStripMenuItem { Image = Images.Thief2_16 };
-            Thief2MPMenuItem = new ToolStripMenuItem { Image = Images.Thief2_16 };
-            Thief3MenuItem = new ToolStripMenuItem { Image = Images.Thief3_16 };
-            SS2MenuItem = new ToolStripMenuItem { Image = Images.Shock2_16 };
+            Thief1MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief1_16 };
+            Thief2MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16 };
+            Thief2MPMenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16 };
+            Thief3MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief3_16 };
+            SS2MenuItem = new ToolStripMenuItemCustom { Image = Images.Shock2_16 };
 
             Menu.Items.AddRange(new ToolStripItem[]
             {
@@ -57,11 +57,11 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            Thief1MenuItem.Text = LText.Global.Thief1.EscapeAmpersands();
-            Thief2MenuItem.Text = LText.Global.Thief2.EscapeAmpersands();
-            Thief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer.EscapeAmpersands();
-            Thief3MenuItem.Text = LText.Global.Thief3.EscapeAmpersands();
-            SS2MenuItem.Text = LText.Global.SystemShock2.EscapeAmpersands();
+            Thief1MenuItem.Text = LText.Global.Thief1;
+            Thief2MenuItem.Text = LText.Global.Thief2;
+            Thief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer;
+            Thief3MenuItem.Text = LText.Global.Thief3;
+            SS2MenuItem.Text = LText.Global.SystemShock2;
         }
     }
     // @GENGAMES (Play original game menu): End

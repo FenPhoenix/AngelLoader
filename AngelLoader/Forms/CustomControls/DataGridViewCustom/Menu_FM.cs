@@ -43,56 +43,56 @@ namespace AngelLoader.Forms.CustomControls
 
         private ContextMenuStrip? FMContextMenu;
 
-        private ToolStripMenuItem? PlayFMMenuItem;
-        private ToolStripMenuItem? PlayFMInMPMenuItem;
-        private ToolStripMenuItem? InstallUninstallMenuItem;
+        private ToolStripMenuItemCustom? PlayFMMenuItem;
+        private ToolStripMenuItemCustom? PlayFMInMPMenuItem;
+        private ToolStripMenuItemCustom? InstallUninstallMenuItem;
 
         private ToolStripSeparator? DeleteFMSep;
 
-        private ToolStripMenuItem? DeleteFMMenuItem;
+        private ToolStripMenuItemCustom? DeleteFMMenuItem;
 
         private ToolStripSeparator? OpenInDromEdSep;
 
-        private ToolStripMenuItem? OpenInDromEdMenuItem;
+        private ToolStripMenuItemCustom? OpenInDromEdMenuItem;
 
         private ToolStripSeparator? ExportFMIniFromFMSep;
 
-        private ToolStripMenuItem? ExportFMIniFromFMMenuItem;
+        private ToolStripMenuItemCustom? ExportFMIniFromFMMenuItem;
 
         private ToolStripSeparator? ScanFMSep;
 
-        private ToolStripMenuItem? ScanFMMenuItem;
-        private ToolStripMenuItem? ConvertAudioMenuItem;
-        private ToolStripMenuItem? ConvertWAVsTo16BitMenuItem;
-        private ToolStripMenuItem? ConvertOGGsToWAVsMenuItem;
+        private ToolStripMenuItemCustom? ScanFMMenuItem;
+        private ToolStripMenuItemCustom? ConvertAudioMenuItem;
+        private ToolStripMenuItemCustom? ConvertWAVsTo16BitMenuItem;
+        private ToolStripMenuItemCustom? ConvertOGGsToWAVsMenuItem;
 
         private ToolStripSeparator? RatingSep;
 
-        private ToolStripMenuItem? RatingMenuItem;
-        private ToolStripMenuItem? RatingMenuUnrated;
-        private ToolStripMenuItem? Rating0MenuItem;
-        private ToolStripMenuItem? Rating1MenuItem;
-        private ToolStripMenuItem? Rating2MenuItem;
-        private ToolStripMenuItem? Rating3MenuItem;
-        private ToolStripMenuItem? Rating4MenuItem;
-        private ToolStripMenuItem? Rating5MenuItem;
-        private ToolStripMenuItem? Rating6MenuItem;
-        private ToolStripMenuItem? Rating7MenuItem;
-        private ToolStripMenuItem? Rating8MenuItem;
-        private ToolStripMenuItem? Rating9MenuItem;
-        private ToolStripMenuItem? Rating10MenuItem;
+        private ToolStripMenuItemCustom? RatingMenuItem;
+        private ToolStripMenuItemCustom? RatingMenuUnrated;
+        private ToolStripMenuItemCustom? Rating0MenuItem;
+        private ToolStripMenuItemCustom? Rating1MenuItem;
+        private ToolStripMenuItemCustom? Rating2MenuItem;
+        private ToolStripMenuItemCustom? Rating3MenuItem;
+        private ToolStripMenuItemCustom? Rating4MenuItem;
+        private ToolStripMenuItemCustom? Rating5MenuItem;
+        private ToolStripMenuItemCustom? Rating6MenuItem;
+        private ToolStripMenuItemCustom? Rating7MenuItem;
+        private ToolStripMenuItemCustom? Rating8MenuItem;
+        private ToolStripMenuItemCustom? Rating9MenuItem;
+        private ToolStripMenuItemCustom? Rating10MenuItem;
 
-        private ToolStripMenuItem? FinishedOnMenuItem;
+        private ToolStripMenuItemCustom? FinishedOnMenuItem;
         private ContextMenuStripCustom? FinishedOnMenu;
-        private ToolStripMenuItem? FinishedOnNormalMenuItem;
-        private ToolStripMenuItem? FinishedOnHardMenuItem;
-        private ToolStripMenuItem? FinishedOnExpertMenuItem;
-        private ToolStripMenuItem? FinishedOnExtremeMenuItem;
-        private ToolStripMenuItem? FinishedOnUnknownMenuItem;
+        private ToolStripMenuItemCustom? FinishedOnNormalMenuItem;
+        private ToolStripMenuItemCustom? FinishedOnHardMenuItem;
+        private ToolStripMenuItemCustom? FinishedOnExpertMenuItem;
+        private ToolStripMenuItemCustom? FinishedOnExtremeMenuItem;
+        private ToolStripMenuItemCustom? FinishedOnUnknownMenuItem;
 
         private ToolStripSeparator? WebSearchSep;
 
-        private ToolStripMenuItem? WebSearchMenuItem;
+        private ToolStripMenuItemCustom? WebSearchMenuItem;
 
         #endregion
 
@@ -107,56 +107,56 @@ namespace AngelLoader.Forms.CustomControls
             _fmContextMenuDisposables = new IDisposable[]
             {
                 FMContextMenu = new ContextMenuStrip(),
-                PlayFMMenuItem = new ToolStripMenuItem(),
-                PlayFMInMPMenuItem = new ToolStripMenuItem(),
+                PlayFMMenuItem = new ToolStripMenuItemCustom(),
+                PlayFMInMPMenuItem = new ToolStripMenuItemCustom(),
 
-                InstallUninstallMenuItem = new ToolStripMenuItem(),
+                InstallUninstallMenuItem = new ToolStripMenuItemCustom(),
 
                 DeleteFMSep = new ToolStripSeparator(),
-                DeleteFMMenuItem = new ToolStripMenuItem { Image = Resources.Trash_16 },
+                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Resources.Trash_16 },
 
                 OpenInDromEdSep = new ToolStripSeparator(),
-                OpenInDromEdMenuItem = new ToolStripMenuItem(),
+                OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
 
                 ExportFMIniFromFMSep = new ToolStripSeparator(),
 
-                ExportFMIniFromFMMenuItem = new ToolStripMenuItem(),
+                ExportFMIniFromFMMenuItem = new ToolStripMenuItemCustom(),
 
                 ScanFMSep = new ToolStripSeparator(),
 
-                ScanFMMenuItem = new ToolStripMenuItem(),
+                ScanFMMenuItem = new ToolStripMenuItemCustom(),
 
-                ConvertAudioMenuItem = new ToolStripMenuItem(),
-                ConvertWAVsTo16BitMenuItem = new ToolStripMenuItem(),
-                ConvertOGGsToWAVsMenuItem = new ToolStripMenuItem(),
+                ConvertAudioMenuItem = new ToolStripMenuItemCustom(),
+                ConvertWAVsTo16BitMenuItem = new ToolStripMenuItemCustom(),
+                ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom(),
 
                 RatingSep = new ToolStripSeparator(),
 
-                RatingMenuItem = new ToolStripMenuItem(),
-                RatingMenuUnrated = new ToolStripMenuItem { CheckOnClick = true },
-                Rating0MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating1MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating2MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating3MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating4MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating5MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating6MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating7MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating8MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating9MenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                Rating10MenuItem = new ToolStripMenuItem { CheckOnClick = true },
+                RatingMenuItem = new ToolStripMenuItemCustom(),
+                RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating0MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating1MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating2MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating3MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating4MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating5MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating6MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating7MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating8MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating9MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                Rating10MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
 
-                FinishedOnMenuItem = new ToolStripMenuItem(),
+                FinishedOnMenuItem = new ToolStripMenuItemCustom(),
                 FinishedOnMenu = new ContextMenuStripCustom(),
-                FinishedOnNormalMenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                FinishedOnHardMenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                FinishedOnExpertMenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                FinishedOnExtremeMenuItem = new ToolStripMenuItem { CheckOnClick = true },
-                FinishedOnUnknownMenuItem = new ToolStripMenuItem { CheckOnClick = true },
+                FinishedOnNormalMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnHardMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnExpertMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnExtremeMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
 
                 WebSearchSep = new ToolStripSeparator(),
 
-                WebSearchMenuItem = new ToolStripMenuItem()
+                WebSearchMenuItem = new ToolStripMenuItemCustom()
             };
 
             #endregion
@@ -215,7 +215,7 @@ namespace AngelLoader.Forms.CustomControls
                 FinishedOnUnknownMenuItem
             });
 
-            FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItem>().ToArray());
+            FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
             FinishedOnMenuItem.DropDown = FinishedOnMenu;
 
             #endregion
@@ -233,7 +233,7 @@ namespace AngelLoader.Forms.CustomControls
             ConvertWAVsTo16BitMenuItem.Click += AsyncMenuItems_Click;
             ConvertOGGsToWAVsMenuItem.Click += AsyncMenuItems_Click;
 
-            foreach (ToolStripMenuItem item in RatingMenuItem.DropDownItems)
+            foreach (ToolStripMenuItemCustom item in RatingMenuItem.DropDownItems)
             {
                 item.Click += RatingMenuItems_Click;
                 item.CheckedChanged += RatingRCMenuItems_CheckedChanged;
@@ -317,46 +317,46 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Play
 
-            PlayFMMenuItem!.Text = LText.FMsList.FMMenu_PlayFM.EscapeAmpersands();
-            PlayFMInMPMenuItem!.Text = LText.FMsList.FMMenu_PlayFM_Multiplayer.EscapeAmpersands();
+            PlayFMMenuItem!.Text = LText.FMsList.FMMenu_PlayFM;
+            PlayFMInMPMenuItem!.Text = LText.FMsList.FMMenu_PlayFM_Multiplayer;
 
             #endregion
 
             SetInstallUninstallMenuItemText(sayInstall);
 
-            DeleteFMMenuItem!.Text = LText.FMsList.FMMenu_DeleteFM.EscapeAmpersands();
+            DeleteFMMenuItem!.Text = LText.FMsList.FMMenu_DeleteFM;
 
             SetOpenInDromEdMenuItemText(sayShockEd);
 
-            ExportFMIniFromFMMenuItem!.Text = LText.FMsList.FMMenu_ExportFMIniFromFM.EscapeAmpersands();
+            ExportFMIniFromFMMenuItem!.Text = LText.FMsList.FMMenu_ExportFMIniFromFM;
 
-            ScanFMMenuItem!.Text = LText.FMsList.FMMenu_ScanFM.EscapeAmpersands();
+            ScanFMMenuItem!.Text = LText.FMsList.FMMenu_ScanFM;
 
             #region Convert audio submenu
 
-            ConvertAudioMenuItem!.Text = LText.FMsList.FMMenu_ConvertAudio.EscapeAmpersands();
-            ConvertWAVsTo16BitMenuItem!.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit.EscapeAmpersands();
-            ConvertOGGsToWAVsMenuItem!.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs.EscapeAmpersands();
+            ConvertAudioMenuItem!.Text = LText.FMsList.FMMenu_ConvertAudio;
+            ConvertWAVsTo16BitMenuItem!.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit;
+            ConvertOGGsToWAVsMenuItem!.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs;
 
             #endregion
 
             #region Rating submenu
 
-            RatingMenuItem!.Text = LText.FMsList.FMMenu_Rating.EscapeAmpersands();
-            RatingMenuUnrated!.Text = LText.Global.Unrated.EscapeAmpersands();
+            RatingMenuItem!.Text = LText.FMsList.FMMenu_Rating;
+            RatingMenuUnrated!.Text = LText.Global.Unrated;
 
             #endregion
 
             #region Finished On submenu
 
-            FinishedOnMenuItem!.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
+            FinishedOnMenuItem!.Text = LText.FMsList.FMMenu_FinishedOn;
 
             SetGameSpecificFinishedOnMenuItemsText(selFM?.Game ?? Game.Null);
-            FinishedOnUnknownMenuItem!.Text = LText.Difficulties.Unknown.EscapeAmpersands();
+            FinishedOnUnknownMenuItem!.Text = LText.Difficulties.Unknown;
 
             #endregion
 
-            WebSearchMenuItem!.Text = LText.FMsList.FMMenu_WebSearch.EscapeAmpersands();
+            WebSearchMenuItem!.Text = LText.FMsList.FMMenu_WebSearch;
         }
 
         private void SetFinishedOnUnknownMenuItemChecked(bool value)
@@ -485,7 +485,7 @@ namespace AngelLoader.Forms.CustomControls
 
             InstallUninstallMenuItem!.Text = (sayInstall
                 ? LText.FMsList.FMMenu_InstallFM
-                : LText.FMsList.FMMenu_UninstallFM).EscapeAmpersands();
+                : LText.FMsList.FMMenu_UninstallFM);
         }
 
         internal void SetDeleteFMMenuItemEnabled(bool value)
@@ -532,7 +532,7 @@ namespace AngelLoader.Forms.CustomControls
 
             OpenInDromEdMenuItem!.Text = (sayShockEd
                 ? LText.FMsList.FMMenu_OpenInShockEd
-                : LText.FMsList.FMMenu_OpenInDromEd).EscapeAmpersands();
+                : LText.FMsList.FMMenu_OpenInDromEd);
         }
 
         internal void SetScanFMMenuItemEnabled(bool value)
@@ -565,7 +565,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_fmMenuConstructed)
             {
-                ((ToolStripMenuItem)RatingMenuItem!.DropDownItems[value + 1]).Checked = true;
+                ((ToolStripMenuItemCustom)RatingMenuItem!.DropDownItems[value + 1]).Checked = true;
             }
             else
             {
@@ -597,10 +597,10 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (!_fmMenuConstructed) return;
 
-            FinishedOnNormalMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Normal).EscapeAmpersands();
-            FinishedOnHardMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Hard).EscapeAmpersands();
-            FinishedOnExpertMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Expert).EscapeAmpersands();
-            FinishedOnExtremeMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Extreme).EscapeAmpersands();
+            FinishedOnNormalMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Normal);
+            FinishedOnHardMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Hard);
+            FinishedOnExpertMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Expert);
+            FinishedOnExtremeMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Extreme);
         }
 
         internal void ClearFinishedOnMenuItemChecks()
@@ -677,10 +677,10 @@ namespace AngelLoader.Forms.CustomControls
 
         private void RatingRCMenuItems_CheckedChanged(object sender, EventArgs e)
         {
-            var s = (ToolStripMenuItem)sender;
+            var s = (ToolStripMenuItemCustom)sender;
             if (!s.Checked) return;
 
-            foreach (ToolStripMenuItem item in RatingMenuItem!.DropDownItems)
+            foreach (ToolStripMenuItemCustom item in RatingMenuItem!.DropDownItems)
             {
                 if (item != s) item.Checked = false;
             }
@@ -688,7 +688,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
-            var senderItem = (ToolStripMenuItem)sender;
+            var senderItem = (ToolStripMenuItemCustom)sender;
 
             var fm = GetSelectedFM();
 
@@ -702,7 +702,7 @@ namespace AngelLoader.Forms.CustomControls
             else
             {
                 uint at = 1;
-                foreach (ToolStripMenuItem item in FinishedOnMenu!.Items)
+                foreach (ToolStripMenuItemCustom item in FinishedOnMenu!.Items)
                 {
                     if (item == FinishedOnUnknownMenuItem) continue;
 

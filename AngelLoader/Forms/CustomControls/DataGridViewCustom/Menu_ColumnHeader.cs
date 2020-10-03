@@ -26,26 +26,26 @@ namespace AngelLoader.Forms.CustomControls
 
             private static ContextMenuStripCustom? ColumnHeaderContextMenu;
 
-            private static ToolStripMenuItem? ResetColumnVisibilityMenuItem;
-            private static ToolStripMenuItem? ResetAllColumnWidthsMenuItem;
-            private static ToolStripMenuItem? ResetColumnPositionsMenuItem;
+            private static ToolStripMenuItemCustom? ResetColumnVisibilityMenuItem;
+            private static ToolStripMenuItemCustom? ResetAllColumnWidthsMenuItem;
+            private static ToolStripMenuItemCustom? ResetColumnPositionsMenuItem;
 
             private static ToolStripSeparator? ColumnHeaderContextMenuSep1;
 
-            private static ToolStripMenuItem[]? ColumnHeaderCheckBoxMenuItems;
-            private static ToolStripMenuItem? ShowGameMenuItem;
-            private static ToolStripMenuItem? ShowInstalledMenuItem;
-            private static ToolStripMenuItem? ShowTitleMenuItem;
-            private static ToolStripMenuItem? ShowArchiveMenuItem;
-            private static ToolStripMenuItem? ShowAuthorMenuItem;
-            private static ToolStripMenuItem? ShowSizeMenuItem;
-            private static ToolStripMenuItem? ShowRatingMenuItem;
-            private static ToolStripMenuItem? ShowFinishedMenuItem;
-            private static ToolStripMenuItem? ShowReleaseDateMenuItem;
-            private static ToolStripMenuItem? ShowLastPlayedMenuItem;
-            private static ToolStripMenuItem? ShowDateAddedMenuItem;
-            private static ToolStripMenuItem? ShowDisabledModsMenuItem;
-            private static ToolStripMenuItem? ShowCommentMenuItem;
+            private static ToolStripMenuItemCustom[]? ColumnHeaderCheckBoxMenuItems;
+            private static ToolStripMenuItemCustom? ShowGameMenuItem;
+            private static ToolStripMenuItemCustom? ShowInstalledMenuItem;
+            private static ToolStripMenuItemCustom? ShowTitleMenuItem;
+            private static ToolStripMenuItemCustom? ShowArchiveMenuItem;
+            private static ToolStripMenuItemCustom? ShowAuthorMenuItem;
+            private static ToolStripMenuItemCustom? ShowSizeMenuItem;
+            private static ToolStripMenuItemCustom? ShowRatingMenuItem;
+            private static ToolStripMenuItemCustom? ShowFinishedMenuItem;
+            private static ToolStripMenuItemCustom? ShowReleaseDateMenuItem;
+            private static ToolStripMenuItemCustom? ShowLastPlayedMenuItem;
+            private static ToolStripMenuItemCustom? ShowDateAddedMenuItem;
+            private static ToolStripMenuItemCustom? ShowDisabledModsMenuItem;
+            private static ToolStripMenuItemCustom? ShowCommentMenuItem;
 
             #endregion
 
@@ -87,7 +87,7 @@ namespace AngelLoader.Forms.CustomControls
 
             private static void CheckBoxMenuItem_Click(object sender, EventArgs e)
             {
-                var s = (ToolStripMenuItem)sender;
+                var s = (ToolStripMenuItemCustom)sender;
                 MakeColumnVisible(_owner.Columns[(int)s.Tag], s.Checked);
                 _owner.SelectProperly();
             }
@@ -111,71 +111,71 @@ namespace AngelLoader.Forms.CustomControls
                 _columnHeaderMenuDisposables = new IDisposable[]
                 {
                     ColumnHeaderContextMenu = new ContextMenuStripCustom(),
-                    ResetColumnVisibilityMenuItem = new ToolStripMenuItem(),
-                    ResetAllColumnWidthsMenuItem = new ToolStripMenuItem(),
-                    ResetColumnPositionsMenuItem = new ToolStripMenuItem(),
+                    ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom(),
+                    ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom(),
+                    ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom(),
                     ColumnHeaderContextMenuSep1 = new ToolStripSeparator(),
-                    ShowGameMenuItem = new ToolStripMenuItem
+                    ShowGameMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.Game
                     },
-                    ShowInstalledMenuItem = new ToolStripMenuItem
+                    ShowInstalledMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.Installed
                     },
-                    ShowTitleMenuItem = new ToolStripMenuItem
+                    ShowTitleMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.Title
                     },
-                    ShowArchiveMenuItem = new ToolStripMenuItem
+                    ShowArchiveMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.Archive
                     },
-                    ShowAuthorMenuItem = new ToolStripMenuItem
+                    ShowAuthorMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.Author
                     },
-                    ShowSizeMenuItem = new ToolStripMenuItem
+                    ShowSizeMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.Size
                     },
-                    ShowRatingMenuItem = new ToolStripMenuItem
+                    ShowRatingMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.Rating
                     },
-                    ShowFinishedMenuItem = new ToolStripMenuItem
+                    ShowFinishedMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.Finished
                     },
-                    ShowReleaseDateMenuItem = new ToolStripMenuItem
+                    ShowReleaseDateMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.ReleaseDate
                     },
-                    ShowLastPlayedMenuItem = new ToolStripMenuItem
+                    ShowLastPlayedMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.LastPlayed
                     },
-                    ShowDateAddedMenuItem = new ToolStripMenuItem
+                    ShowDateAddedMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.DateAdded
                     },
-                    ShowDisabledModsMenuItem = new ToolStripMenuItem
+                    ShowDisabledModsMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.DisabledMods
                     },
-                    ShowCommentMenuItem = new ToolStripMenuItem
+                    ShowCommentMenuItem = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
                         Tag = Column.Comment
@@ -268,23 +268,23 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (!_constructed) return;
 
-                ResetColumnVisibilityMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible.EscapeAmpersands();
-                ResetAllColumnWidthsMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths.EscapeAmpersands();
-                ResetColumnPositionsMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions.EscapeAmpersands();
+                ResetColumnVisibilityMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible;
+                ResetAllColumnWidthsMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
+                ResetColumnPositionsMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions;
 
-                ShowGameMenuItem!.Text = LText.FMsList.GameColumn.EscapeAmpersands();
-                ShowInstalledMenuItem!.Text = LText.FMsList.InstalledColumn.EscapeAmpersands();
-                ShowTitleMenuItem!.Text = LText.FMsList.TitleColumn.EscapeAmpersands();
-                ShowArchiveMenuItem!.Text = LText.FMsList.ArchiveColumn.EscapeAmpersands();
-                ShowAuthorMenuItem!.Text = LText.FMsList.AuthorColumn.EscapeAmpersands();
-                ShowSizeMenuItem!.Text = LText.FMsList.SizeColumn.EscapeAmpersands();
-                ShowRatingMenuItem!.Text = LText.FMsList.RatingColumn.EscapeAmpersands();
-                ShowFinishedMenuItem!.Text = LText.FMsList.FinishedColumn.EscapeAmpersands();
-                ShowReleaseDateMenuItem!.Text = LText.FMsList.ReleaseDateColumn.EscapeAmpersands();
-                ShowLastPlayedMenuItem!.Text = LText.FMsList.LastPlayedColumn.EscapeAmpersands();
-                ShowDateAddedMenuItem!.Text = LText.FMsList.DateAddedColumn.EscapeAmpersands();
-                ShowDisabledModsMenuItem!.Text = LText.FMsList.DisabledModsColumn.EscapeAmpersands();
-                ShowCommentMenuItem!.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
+                ShowGameMenuItem!.Text = LText.FMsList.GameColumn;
+                ShowInstalledMenuItem!.Text = LText.FMsList.InstalledColumn;
+                ShowTitleMenuItem!.Text = LText.FMsList.TitleColumn;
+                ShowArchiveMenuItem!.Text = LText.FMsList.ArchiveColumn;
+                ShowAuthorMenuItem!.Text = LText.FMsList.AuthorColumn;
+                ShowSizeMenuItem!.Text = LText.FMsList.SizeColumn;
+                ShowRatingMenuItem!.Text = LText.FMsList.RatingColumn;
+                ShowFinishedMenuItem!.Text = LText.FMsList.FinishedColumn;
+                ShowReleaseDateMenuItem!.Text = LText.FMsList.ReleaseDateColumn;
+                ShowLastPlayedMenuItem!.Text = LText.FMsList.LastPlayedColumn;
+                ShowDateAddedMenuItem!.Text = LText.FMsList.DateAddedColumn;
+                ShowDisabledModsMenuItem!.Text = LText.FMsList.DisabledModsColumn;
+                ShowCommentMenuItem!.Text = LText.FMsList.CommentColumn;
             }
 
             internal static void SetColumnChecked(int index, bool enabled)

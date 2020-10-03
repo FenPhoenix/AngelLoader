@@ -13,11 +13,11 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static ContextMenuStripCustom Menu = null!;
 
-        private static ToolStripMenuItem StatsMenuItem = null!;
-        private static ToolStripMenuItem EditFMMenuItem = null!;
-        private static ToolStripMenuItem CommentMenuItem = null!;
-        private static ToolStripMenuItem TagsMenuItem = null!;
-        private static ToolStripMenuItem PatchMenuItem = null!;
+        private static ToolStripMenuItemCustom StatsMenuItem = null!;
+        private static ToolStripMenuItemCustom EditFMMenuItem = null!;
+        private static ToolStripMenuItemCustom CommentMenuItem = null!;
+        private static ToolStripMenuItemCustom TagsMenuItem = null!;
+        private static ToolStripMenuItemCustom PatchMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -28,27 +28,27 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Menu = new ContextMenuStripCustom(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                StatsMenuItem = new ToolStripMenuItem
+                StatsMenuItem = new ToolStripMenuItemCustom
                 {
                     Checked = _checkedStates[(int)TopRightTab.Statistics],
                     CheckOnClick = true
                 },
-                EditFMMenuItem = new ToolStripMenuItem
+                EditFMMenuItem = new ToolStripMenuItemCustom
                 {
                     Checked = _checkedStates[(int)TopRightTab.EditFM],
                     CheckOnClick = true
                 },
-                CommentMenuItem = new ToolStripMenuItem
+                CommentMenuItem = new ToolStripMenuItemCustom
                 {
                     Checked = _checkedStates[(int)TopRightTab.Comment],
                     CheckOnClick = true
                 },
-                TagsMenuItem = new ToolStripMenuItem
+                TagsMenuItem = new ToolStripMenuItemCustom
                 {
                     Checked = _checkedStates[(int)TopRightTab.Tags],
                     CheckOnClick = true
                 },
-                PatchMenuItem = new ToolStripMenuItem
+                PatchMenuItem = new ToolStripMenuItemCustom
                 {
                     Checked = _checkedStates[(int)TopRightTab.Patch],
                     CheckOnClick = true
@@ -57,7 +57,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #endregion
 
-            Menu.SetPreventCloseOnClickItems(Menu.Items.Cast<ToolStripMenuItem>().ToArray());
+            Menu.SetPreventCloseOnClickItems(Menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
 
             #region Event hookups
 
@@ -77,7 +77,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed)
             {
-                ((ToolStripMenuItem)Menu.Items[index]).Checked = value;
+                ((ToolStripMenuItemCustom)Menu.Items[index]).Checked = value;
             }
             else
             {
@@ -89,11 +89,11 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            StatsMenuItem.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
-            EditFMMenuItem.Text = LText.EditFMTab.TabText.EscapeAmpersands();
-            CommentMenuItem.Text = LText.CommentTab.TabText.EscapeAmpersands();
-            TagsMenuItem.Text = LText.TagsTab.TabText.EscapeAmpersands();
-            PatchMenuItem.Text = LText.PatchTab.TabText.EscapeAmpersands();
+            StatsMenuItem.Text = LText.StatisticsTab.TabText;
+            EditFMMenuItem.Text = LText.EditFMTab.TabText;
+            CommentMenuItem.Text = LText.CommentTab.TabText;
+            TagsMenuItem.Text = LText.TagsTab.TabText;
+            PatchMenuItem.Text = LText.PatchTab.TabText;
         }
 
         internal static bool Focused => _constructed && Menu.Focused;

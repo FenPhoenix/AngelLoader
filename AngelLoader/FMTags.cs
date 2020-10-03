@@ -15,19 +15,19 @@ namespace AngelLoader
             Ini.WriteFullFMDataIni();
         }
 
-        internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText)
+        internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
         {
-            if (tagText.IsEmpty()) return false;
+            if ((isCategory && catText.IsWhiteSpace()) || (!isCategory && tagText.IsWhiteSpace())) return false;
 
             // Parent node (category)
-            if (catText.IsEmpty())
+            if (isCategory)
             {
                 // TODO: These messageboxes are annoying, but they prevent accidental deletion.
                 // Figure out something better.
                 bool cont = Core.View.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
-                CatAndTags? cat = fm.Tags.Find(x => x.Category == tagText);
+                CatAndTags? cat = fm.Tags.Find(x => x.Category == catText);
                 if (cat != null)
                 {
                     fm.Tags.Remove(cat);
@@ -35,10 +35,30 @@ namespace AngelLoader
 
                     // TODO: Can we store these as hash tables/dictionaries or something?
                     GlobalCatAndTags? globalCat = GlobalTags.Find(x => x.Category.Name == cat.Category);
-                    if (globalCat?.Category.IsPreset == false)
+                    if (globalCat != null)
                     {
-                        if (globalCat.Category.UsedCount > 0) globalCat.Category.UsedCount--;
-                        if (globalCat.Category.UsedCount == 0) GlobalTags.Remove(globalCat);
+                        for (int i = 0; i < globalCat.Tags.Count; i++)
+                        {
+                            GlobalCatOrTag tag = globalCat.Tags[i];
+                            string? tag0 = cat.Tags.Find(x => x == tag.Name);
+                            if (tag0 != null)
+                            {
+                                if (!tag.IsPreset)
+                                {
+                                    if (tag.UsedCount > 0) tag.UsedCount--;
+                                    if (tag.UsedCount == 0)
+                                    {
+                                        globalCat.Tags.Remove(tag);
+                                        i--;
+                                    }
+                                }
+                            }
+                        }
+                        if (!globalCat.Category.IsPreset)
+                        {
+                            if (globalCat.Category.UsedCount > 0) globalCat.Category.UsedCount--;
+                            if (globalCat.Category.UsedCount == 0) GlobalTags.Remove(globalCat);
+                        }
                     }
                 }
             }
@@ -241,7 +261,8 @@ namespace AngelLoader
                 }
                 else
                 {
-                    globalMatch.Category.UsedCount++;
+                    // TODO: If IsPreset, this shouldn't be set to 1, but we don't know what other nasty bugs lurk
+                    if (globalMatch.Category.UsedCount == 0) globalMatch.Category.UsedCount = 1;
 
                     GlobalCatOrTag? ft = null;
                     for (int i = 0; i < globalMatch.Tags.Count; i++)

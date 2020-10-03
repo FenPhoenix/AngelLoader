@@ -9,8 +9,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static bool _constructed;
 
         internal static ContextMenuStrip Menu = null!;
-        private static ToolStripMenuItem GameVersionsMenuItem = null!;
-        private static ToolStripMenuItem GlobalFMStatsMenuItem = null!;
+        private static ToolStripMenuItemCustom GameVersionsMenuItem = null!;
+        private static ToolStripMenuItemCustom GlobalFMStatsMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -19,8 +19,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Menu = new ContextMenuStrip(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                GameVersionsMenuItem = new ToolStripMenuItem(),
-                GlobalFMStatsMenuItem = new ToolStripMenuItem()
+                GameVersionsMenuItem = new ToolStripMenuItemCustom(),
+                GlobalFMStatsMenuItem = new ToolStripMenuItemCustom()
             });
 
             GameVersionsMenuItem.Click += form.MainMenu_GameVersionsMenuItem_Click;
@@ -35,8 +35,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-             GameVersionsMenuItem.Text = LText.MainMenu.GameVersions.EscapeAmpersands();
-            GlobalFMStatsMenuItem.Text = LText.MainMenu.GlobalFMStats.EscapeAmpersands();
+            GameVersionsMenuItem.Text = LText.MainMenu.GameVersions;
+            GlobalFMStatsMenuItem.Text = LText.MainMenu.GlobalFMStats;
         }
     }
 }
