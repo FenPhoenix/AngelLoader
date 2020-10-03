@@ -30,7 +30,7 @@ namespace AngelLoader
         #region Percent
 
         internal static int GetPercentFromValue(int current, int total) => (100 * current) / total;
-        internal static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
+        //internal static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
 
         #endregion
 

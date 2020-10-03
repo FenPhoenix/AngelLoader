@@ -5,8 +5,6 @@ namespace AngelLoader
 {
     public static partial class Misc
     {
-        #region Process.Start with UseShellExecute on
-
         /// <summary>
         /// Starts a process resource by specifying the name of a document or application file and associates the resource with a new <see cref="T:System.Diagnostics.Process" /> component.
         /// <para>
@@ -138,7 +136,5 @@ namespace AngelLoader
             if (overrideUseShellExecuteToOn) startInfo.UseShellExecute = true;
             return Process.Start(startInfo);
         }
-
-        #endregion
     }
 }
