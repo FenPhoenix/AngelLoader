@@ -62,16 +62,18 @@ namespace AngelLoader.Forms.CustomControls
         }
     }
 
+    /// <summary>
+    /// Because the text will be displayed as "One &amp; Two" but will still be stored as "One &amp;&amp; Two"
+    /// </summary>
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
     public sealed class ToolStripMenuItemWithBackingText : ToolStripMenuItemCustom
     {
-        private string _backingText;
-        public string BackingText => _backingText;
+        public string BackingText { get; }
 
         public ToolStripMenuItemWithBackingText(string text)
         {
-            _backingText = text;
-            base.Text = text;
+            BackingText = text;
+            Text = text;
         }
     }
 

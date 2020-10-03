@@ -158,21 +158,79 @@ namespace AngelLoader.DataClasses
 
     public sealed class Filter
     {
-        internal void Clear(bool clearGames = true)
+        internal void ClearAll(bool clearGames = true)
         {
-            Title = "";
-            Author = "";
-            if (clearGames) Games = Game.Null;
-            Tags.Clear();
+            ClearTitle();
+            ClearAuthor();
+            if (clearGames) ClearGames();
+            ClearTags();
+            ClearRating();
+            ClearReleaseDate();
+            ClearLastPlayed();
+            ClearFinished();
+            ClearShowUnsupported();
+        }
+
+        internal void ClearHideableFilter(HideableFilterControls filter)
+        {
+            switch (filter)
+            {
+                case HideableFilterControls.Title:
+                    ClearTitle();
+                    break;
+                case HideableFilterControls.Author:
+                    ClearAuthor();
+                    break;
+                case HideableFilterControls.ReleaseDate:
+                    ClearReleaseDate();
+                    break;
+                case HideableFilterControls.LastPlayed:
+                    ClearLastPlayed();
+                    break;
+                case HideableFilterControls.Tags:
+                    ClearTags();
+                    break;
+                case HideableFilterControls.FinishedState:
+                    ClearFinished();
+                    break;
+                case HideableFilterControls.Rating:
+                    ClearRating();
+                    break;
+                case HideableFilterControls.ShowUnsupported:
+                    ClearShowUnsupported();
+                    break;
+            }
+        }
+
+        private void ClearTitle() => Title = "";
+
+        private void ClearAuthor() => Author = "";
+
+        private void ClearGames() => Games = Game.Null;
+
+        private void ClearTags() => Tags.Clear();
+
+        private void ClearRating()
+        {
             _ratingFrom = -1;
             _ratingTo = 10;
+        }
+
+        private void ClearReleaseDate()
+        {
             _releaseDateFrom = null;
             _releaseDateTo = null;
+        }
+
+        private void ClearLastPlayed()
+        {
             _lastPlayedFrom = null;
             _lastPlayedTo = null;
-            Finished = FinishedState.Null;
-            ShowUnsupported = false;
         }
+
+        private void ClearFinished() => Finished = FinishedState.Null;
+
+        private void ClearShowUnsupported() => ShowUnsupported = false;
 
         internal string Title = "";
         internal string Author = "";
@@ -265,7 +323,7 @@ namespace AngelLoader.DataClasses
 
         internal void DeepCopyTo(Filter dest)
         {
-            dest.Clear();
+            dest.ClearAll();
             dest.Title = Title;
             dest.Author = Author;
             dest.SetRatingFromAndTo(RatingFrom, RatingTo);
@@ -380,7 +438,7 @@ namespace AngelLoader.DataClasses
 
         internal void ClearAllFilters()
         {
-            for (int i = 0; i < SupportedGameCount; i++) Filters[i].Clear();
+            for (int i = 0; i < SupportedGameCount; i++) Filters[i].ClearAll();
         }
     }
 }

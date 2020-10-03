@@ -235,7 +235,7 @@ namespace AngelLoader.DataClasses
 
         internal void ClearAllFilters()
         {
-            Filter.Clear();
+            Filter.ClearAll();
             GameTabsState.ClearAllFilters();
         }
 

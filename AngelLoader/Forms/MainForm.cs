@@ -1544,49 +1544,6 @@ namespace AngelLoader.Forms
 
         #region Filter bar
 
-        public void ClearUIAndCurrentInternalFilter()
-        {
-            using (new DisableEvents(this))
-            {
-                FilterBarFLP.SuspendDrawing();
-                try
-                {
-                    bool oneList = Config.GameOrganization == GameOrganization.OneList;
-                    if (oneList)
-                    {
-                        for (int i = 0; i < SupportedGameCount; i++)
-                        {
-                            _filterByGameButtonsInOrder[i].Checked = false;
-                        }
-                    }
-                    FilterTitleTextBox.Text = "";
-                    FilterAuthorTextBox.Text = "";
-
-                    FilterByReleaseDateButton.Checked = false;
-                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByReleaseDate);
-
-                    FilterByLastPlayedButton.Checked = false;
-                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByLastPlayed);
-
-                    FilterByTagsButton.Checked = false;
-                    FilterByFinishedButton.Checked = false;
-                    FilterByUnfinishedButton.Checked = false;
-
-                    FilterByRatingButton.Checked = false;
-                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
-
-                    FilterShowUnsupportedButton.Checked = false;
-
-                    // NOTE: Here is the line where the internal filter is cleared. It does in fact happen!
-                    FMsDGV.Filter.Clear(oneList);
-                }
-                finally
-                {
-                    FilterBarFLP.ResumeDrawing();
-                }
-            }
-        }
-
         public void ChangeGameOrganization(bool startup = false)
         {
             if (Config.GameOrganization == GameOrganization.OneList)
@@ -1745,6 +1702,49 @@ namespace AngelLoader.Forms
             }
 
             SetFilterBarScrollButtons();
+        }
+
+        public void ClearUIAndCurrentInternalFilter()
+        {
+            using (new DisableEvents(this))
+            {
+                FilterBarFLP.SuspendDrawing();
+                try
+                {
+                    bool oneList = Config.GameOrganization == GameOrganization.OneList;
+                    if (oneList)
+                    {
+                        for (int i = 0; i < SupportedGameCount; i++)
+                        {
+                            _filterByGameButtonsInOrder[i].Checked = false;
+                        }
+                    }
+                    FilterTitleTextBox.Clear();
+                    FilterAuthorTextBox.Clear();
+
+                    FilterByReleaseDateButton.Checked = false;
+                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByReleaseDate);
+
+                    FilterByLastPlayedButton.Checked = false;
+                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByLastPlayed);
+
+                    FilterByTagsButton.Checked = false;
+                    FilterByFinishedButton.Checked = false;
+                    FilterByUnfinishedButton.Checked = false;
+
+                    FilterByRatingButton.Checked = false;
+                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
+
+                    FilterShowUnsupportedButton.Checked = false;
+
+                    // NOTE: Here is the line where the internal filter is cleared. It does in fact happen!
+                    FMsDGV.Filter.ClearAll(oneList);
+                }
+                finally
+                {
+                    FilterBarFLP.ResumeDrawing();
+                }
+            }
         }
 
         private void SetUIFilterValues(Filter filter)
@@ -1923,7 +1923,8 @@ namespace AngelLoader.Forms
 
                 if (sender == ClearFiltersButton) ClearUIAndCurrentInternalFilter();
 
-                // Don't keep selection for these ones, cause you want to end up on the FM you typed as soon as possible
+                // Don't keep selection for title/author, cause you want to end up on the FM you typed as soon as
+                // possible
                 bool keepSel = sender != FilterShowRecentAtTopButton && !senderIsTextBox;
                 await SortAndSetFilter(keepSelection: keepSel);
             }
@@ -2080,7 +2081,7 @@ namespace AngelLoader.Forms
                 FilterIconButtonsToolStrip.Height);
         }
 
-        internal void FilterControlsMenuItems_Click(object sender, EventArgs e)
+        internal async void FilterControlsMenuItems_Click(object sender, EventArgs e)
         {
             var s = (ToolStripMenuItemCustom)sender;
 
@@ -2095,9 +2096,42 @@ namespace AngelLoader.Forms
                     {
                         case Control control:
                             control.Visible = s.Checked;
+                            if (control is TextBox textBox && !s.Checked)
+                            {
+                                // Leave events on and just the events handle it
+                                textBox.Clear();
+                            }
                             break;
                         case ToolStripItem toolStripItem:
                             toolStripItem.Visible = s.Checked;
+                            if (toolStripItem is ToolStripButton toolStripButton && !s.Checked)
+                            {
+                                // Some buttons aren't just toggles but bring up windows, so we can't just call
+                                // PerformClick() on them. So let's do like in the clear filters method but just
+                                // for this one filter.
+                                using (new DisableEvents(this))
+                                {
+                                    toolStripButton.Checked = false;
+                                    var filterControl = (HideableFilterControls)s.Tag;
+                                    switch (filterControl)
+                                    {
+                                        case HideableFilterControls.ReleaseDate:
+                                            Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByReleaseDate);
+                                            break;
+                                        case HideableFilterControls.LastPlayed:
+                                            Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByLastPlayed);
+                                            break;
+                                        case HideableFilterControls.Rating:
+                                            Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
+                                            break;
+                                    }
+
+                                    FMsDGV.Filter.ClearHideableFilter(filterControl);
+
+                                    bool keepSel = toolStripButton != FilterShowRecentAtTopButton;
+                                    await SortAndSetFilter(keepSelection: keepSel);
+                                }
+                            }
                             break;
                     }
                 }
@@ -2130,7 +2164,7 @@ namespace AngelLoader.Forms
         /// <param name="fromColumnClick"></param>
         /// <returns></returns>
         private bool RefreshFMsList(SelectedFM? selectedFM, bool startup = false, KeepSel keepSelection = KeepSel.False,
-            bool fromColumnClick = false)
+                                    bool fromColumnClick = false)
         {
             using (new DisableEvents(this))
             {
