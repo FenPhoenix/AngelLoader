@@ -62,9 +62,6 @@ namespace AngelLoader
         private static CategoryComparer? _categoryComparer;
         internal static CategoryComparer Category => _categoryComparer ??= new CategoryComparer();
 
-        private static CatItemComparer? _catItemComparer;
-        internal static CatItemComparer CatItem => _catItemComparer ??= new CatItemComparer();
-
         #endregion
 
         #region Misc comparers
@@ -456,26 +453,18 @@ namespace AngelLoader
             }
         }
 
-        internal sealed class CatItemComparer : IComparer<string>
-        {
-            public int Compare(string x, string y) => string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
-        }
-
         #endregion
 
         internal sealed class FileNameNoExtComparer : IComparer<string>
         {
-            public int Compare(string x, string y)
-            {
-                if (x == y) return 0;
-                if (x.IsEmpty()) return -1;
-                if (y.IsEmpty()) return 1;
-
-                return string.Compare(
+            public int Compare(string x, string y) =>
+                x == y ? 0 :
+                x.IsEmpty() ? -1 :
+                y.IsEmpty() ? 1 :
+                string.Compare(
                     Path.GetFileNameWithoutExtension(x),
                     Path.GetFileNameWithoutExtension(y),
                     StringComparison.OrdinalIgnoreCase);
-            }
         }
 
         #endregion
