@@ -1480,7 +1480,7 @@ namespace AngelLoader
             }
             catch (FileNotFoundException)
             {
-                return (Error.GameExeNotFound, "");
+                return (GameIsDark(game) ? Error.GameExeNotFound : Error.SneakyDllNotFound, "");
             }
 
             return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
