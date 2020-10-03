@@ -2501,31 +2501,25 @@ namespace AngelLoader.Forms
 
         private void RemoveTagButton_Click(object sender, EventArgs e)
         {
-            var tv = TagsTreeView;
-            if (!FMsDGV.RowSelected() || tv.SelectedNode == null) return;
+            if (!FMsDGV.RowSelected() || TagsTreeView.SelectedNode == null) return;
 
             var fm = FMsDGV.GetSelectedFM();
 
-            string catText = "";
-            string tagText = "";
-            bool isCategory = false;
-            if (tv.SelectedNode != null)
+            string catText, tagText;
+            bool isCategory;
+            if (TagsTreeView.SelectedNode.Parent != null)
             {
-                if (tv.SelectedNode.Parent != null)
-                {
-                    isCategory = false;
-                    catText = tv.SelectedNode.Parent.Text;
-                    tagText = tv.SelectedNode.Text;
-                }
-                else
-                {
-                    isCategory = true;
-                    catText = tv.SelectedNode.Text;
-                    tagText = "";
-                }
+                isCategory = false;
+                catText = TagsTreeView.SelectedNode.Parent.Text;
+                tagText = TagsTreeView.SelectedNode.Text;
+            }
+            else
+            {
+                isCategory = true;
+                catText = TagsTreeView.SelectedNode.Text;
+                tagText = "";
             }
 
-            //bool success = FMTags.RemoveTagFromFM(fm, tv.SelectedNode != null ? tv.SelectedNode.Parent != null ? tv.SelectedNode.Parent.Text : "" : "", tv.SelectedNode != null ? tv.SelectedNode.Text : "");
             bool success = FMTags.RemoveTagFromFM(fm, catText, tagText, isCategory);
             if (!success) return;
 
