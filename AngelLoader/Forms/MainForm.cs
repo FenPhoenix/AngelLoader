@@ -2548,20 +2548,20 @@ namespace AngelLoader.Forms
             {
                 if (catAndTag.Tags.Count == 0)
                 {
-                    var catItem = new ToolStripMenuItem(catAndTag.Category + ":");
+                    var catItem = new ToolStripMenuItem(catAndTag.Category.Name.EscapeAmpersands() + ":");
                     catItem.Click += AddTagMenuEmptyItem_Click;
                     addTagMenuItems.Add(catItem);
                 }
                 else
                 {
-                    var catItem = new ToolStripMenuItem(catAndTag.Category.Name);
+                    var catItem = new ToolStripMenuItem(catAndTag.Category.Name.EscapeAmpersands());
                     addTagMenuItems.Add(catItem);
 
                     var last = addTagMenuItems[addTagMenuItems.Count - 1];
 
                     if (catAndTag.Category.Name != "misc")
                     {
-                        var customItem = new ToolStripMenuItem(LText.Global.CustomTagInCategory);
+                        var customItem = new ToolStripMenuItem(LText.Global.CustomTagInCategory.EscapeAmpersands());
                         customItem.Click += AddTagMenuCustomItem_Click;
                         ((ToolStripMenuItem)last).DropDownItems.Add(customItem);
                         ((ToolStripMenuItem)last).DropDownItems.Add(new ToolStripSeparator());
@@ -2569,7 +2569,7 @@ namespace AngelLoader.Forms
 
                     foreach (GlobalCatOrTag tag in catAndTag.Tags)
                     {
-                        var tagItem = new ToolStripMenuItem(tag.Name);
+                        var tagItem = new ToolStripMenuItem(tag.Name.EscapeAmpersands());
 
                         if (catAndTag.Category.Name == "misc")
                         {
@@ -4099,7 +4099,7 @@ namespace AngelLoader.Forms
                 List<ToolStripItem> altTitlesMenuItems = new List<ToolStripItem>(fmAltTitles.Count);
                 foreach (string altTitle in fmAltTitles)
                 {
-                    var item = new ToolStripMenuItem { Text = altTitle };
+                    var item = new ToolStripMenuItem(altTitle.EscapeAmpersands());
                     item.Click += EditFMAltTitlesMenuItems_Click;
                     altTitlesMenuItems.Add(item);
                 }

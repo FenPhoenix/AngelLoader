@@ -97,15 +97,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private static void Localize()
         {
-            TitleMenuItem.Text = LText.FilterBar.ShowHideMenu_Title;
-            AuthorMenuItem.Text = LText.FilterBar.ShowHideMenu_Author;
-            ReleaseDateMenuItem.Text = LText.FilterBar.ShowHideMenu_ReleaseDate;
-            LastPlayedMenuItem.Text = LText.FilterBar.ShowHideMenu_LastPlayed;
-            TagsMenuItem.Text = LText.FilterBar.ShowHideMenu_Tags;
-            FinishedStateMenuItem.Text = LText.FilterBar.ShowHideMenu_FinishedState;
-            RatingMenuItem.Text = LText.FilterBar.ShowHideMenu_Rating;
-            ShowUnsupportedMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowUnsupported;
-            ShowRecentAtTopMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowRecentAtTop;
+            TitleMenuItem.Text = LText.FilterBar.ShowHideMenu_Title.EscapeAmpersands();
+            AuthorMenuItem.Text = LText.FilterBar.ShowHideMenu_Author.EscapeAmpersands();
+            ReleaseDateMenuItem.Text = LText.FilterBar.ShowHideMenu_ReleaseDate.EscapeAmpersands();
+            LastPlayedMenuItem.Text = LText.FilterBar.ShowHideMenu_LastPlayed.EscapeAmpersands();
+            TagsMenuItem.Text = LText.FilterBar.ShowHideMenu_Tags.EscapeAmpersands();
+            FinishedStateMenuItem.Text = LText.FilterBar.ShowHideMenu_FinishedState.EscapeAmpersands();
+            RatingMenuItem.Text = LText.FilterBar.ShowHideMenu_Rating.EscapeAmpersands();
+            ShowUnsupportedMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowUnsupported.EscapeAmpersands();
+            ShowRecentAtTopMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowRecentAtTop.EscapeAmpersands();
         }
 
         internal static void SetCheckedStates(bool[] states)
