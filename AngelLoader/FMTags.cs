@@ -8,14 +8,14 @@ namespace AngelLoader
 {
     internal static class FMTags
     {
-        internal static void AddTagToFM(FanMission fm, string catAndTag)
+        internal static void AddTagToFM(FanMission fm, string catAndTag, bool rebuildGlobalTags = true)
         {
-            AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
+            AddTagsToFMAndGlobalList(catAndTag, fm.Tags, addToGlobalList: false);
             UpdateFMTagsString(fm);
-            RebuildGlobalTags();
+            if (rebuildGlobalTags) RebuildGlobalTags();
         }
 
-        private static void RebuildGlobalTags()
+        internal static void RebuildGlobalTags()
         {
             PresetTags.DeepCopyTo(GlobalTags);
             for (int i = 0; i < FMsViewList.Count; i++)
@@ -165,7 +165,8 @@ namespace AngelLoader
 
         // Very awkward procedure that accesses global state in the name of only doing one iteration
         // TODO: Test perf when 1000+ FMs each have a bunch of tags
-        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, CatAndTagsList existingFMTags)
+        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, CatAndTagsList existingFMTags,
+                                                      bool addToGlobalList = true)
         {
             if (tagsToAdd.IsEmpty()) return;
 
@@ -217,6 +218,8 @@ namespace AngelLoader
                 }
 
                 #endregion
+
+                if (!addToGlobalList) continue;
 
                 #region Global tags
 

@@ -263,7 +263,8 @@ namespace AngelLoader
                         // add to those, not overwrite them
                         if (gameSup)
                         {
-                            FMTags.AddTagToFM(sel, tagsString);
+                            // Don't rebuild global tags for every FM; do it only once at the end
+                            FMTags.AddTagToFM(sel, tagsString, rebuildGlobalTags: false);
                         }
                     }
 
@@ -273,6 +274,8 @@ namespace AngelLoader
                 }
 
                 #endregion
+
+                FMTags.RebuildGlobalTags();
 
                 Ini.WriteFullFMDataIni();
             }
