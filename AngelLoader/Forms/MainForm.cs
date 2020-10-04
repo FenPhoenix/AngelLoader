@@ -2098,7 +2098,7 @@ namespace AngelLoader.Forms
                             control.Visible = s.Checked;
                             if (control is TextBox textBox && !s.Checked)
                             {
-                                // Leave events on and just the events handle it
+                                // Leave events on and just let the events handle it
                                 textBox.Clear();
                             }
                             break;
