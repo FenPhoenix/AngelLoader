@@ -2098,7 +2098,7 @@ namespace AngelLoader.Forms
                             control.Visible = s.Checked;
                             if (control is TextBox textBox && !s.Checked)
                             {
-                                // Leave events on and just let the events handle it
+                                // Just let the normal event handle it
                                 textBox.Clear();
                             }
                             break;
@@ -2127,6 +2127,9 @@ namespace AngelLoader.Forms
                                 FMsDGV.Filter.ClearHideableFilter(filterControl);
 
                                 bool keepSel = toolStripButton != FilterShowRecentAtTopButton;
+                                // Note: It's fine that we call this in the middle of a suspend/resume block,
+                                // because we're suspend/resuming the filter bar, whereas this is suspend/resuming
+                                // the FMs list.
                                 await SortAndSetFilter(keepSelection: keepSel);
                             }
                             break;
