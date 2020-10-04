@@ -2109,28 +2109,25 @@ namespace AngelLoader.Forms
                                 // Some buttons aren't just toggles but bring up windows, so we can't just call
                                 // PerformClick() on them. So let's do like in the clear filters method but just
                                 // for this one filter.
-                                using (new DisableEvents(this))
+                                toolStripButton.Checked = false;
+                                var filterControl = (HideableFilterControls)s.Tag;
+                                switch (filterControl)
                                 {
-                                    toolStripButton.Checked = false;
-                                    var filterControl = (HideableFilterControls)s.Tag;
-                                    switch (filterControl)
-                                    {
-                                        case HideableFilterControls.ReleaseDate:
-                                            Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByReleaseDate);
-                                            break;
-                                        case HideableFilterControls.LastPlayed:
-                                            Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByLastPlayed);
-                                            break;
-                                        case HideableFilterControls.Rating:
-                                            Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
-                                            break;
-                                    }
-
-                                    FMsDGV.Filter.ClearHideableFilter(filterControl);
-
-                                    bool keepSel = toolStripButton != FilterShowRecentAtTopButton;
-                                    await SortAndSetFilter(keepSelection: keepSel);
+                                    case HideableFilterControls.ReleaseDate:
+                                        Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByReleaseDate);
+                                        break;
+                                    case HideableFilterControls.LastPlayed:
+                                        Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByLastPlayed);
+                                        break;
+                                    case HideableFilterControls.Rating:
+                                        Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
+                                        break;
                                 }
+
+                                FMsDGV.Filter.ClearHideableFilter(filterControl);
+
+                                bool keepSel = toolStripButton != FilterShowRecentAtTopButton;
+                                await SortAndSetFilter(keepSelection: keepSel);
                             }
                             break;
                     }
