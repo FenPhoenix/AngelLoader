@@ -38,6 +38,10 @@
             this.ReleaseDateTextBox = new System.Windows.Forms.TextBox();
             this.TagsTextBox = new System.Windows.Forms.TextBox();
             this.DescrTextBox = new System.Windows.Forms.TextBox();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.Cancel_Button = new System.Windows.Forms.Button();
+            this.OKButton = new System.Windows.Forms.Button();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // NiceNameLabel
@@ -89,57 +93,96 @@
             // 
             this.NiceNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.NiceNameTextBox.Location = new System.Drawing.Point(96, 16);
+            this.NiceNameTextBox.Location = new System.Drawing.Point(96, 13);
             this.NiceNameTextBox.Name = "NiceNameTextBox";
             this.NiceNameTextBox.ReadOnly = true;
-            this.NiceNameTextBox.Size = new System.Drawing.Size(696, 20);
+            this.NiceNameTextBox.Size = new System.Drawing.Size(688, 20);
             this.NiceNameTextBox.TabIndex = 1;
             // 
             // InfoFileTextBox
             // 
             this.InfoFileTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.InfoFileTextBox.Location = new System.Drawing.Point(96, 40);
+            this.InfoFileTextBox.Location = new System.Drawing.Point(96, 37);
             this.InfoFileTextBox.Name = "InfoFileTextBox";
             this.InfoFileTextBox.ReadOnly = true;
-            this.InfoFileTextBox.Size = new System.Drawing.Size(696, 20);
+            this.InfoFileTextBox.Size = new System.Drawing.Size(688, 20);
             this.InfoFileTextBox.TabIndex = 1;
             // 
             // ReleaseDateTextBox
             // 
             this.ReleaseDateTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ReleaseDateTextBox.Location = new System.Drawing.Point(96, 64);
+            this.ReleaseDateTextBox.Location = new System.Drawing.Point(96, 61);
             this.ReleaseDateTextBox.Name = "ReleaseDateTextBox";
             this.ReleaseDateTextBox.ReadOnly = true;
-            this.ReleaseDateTextBox.Size = new System.Drawing.Size(696, 20);
+            this.ReleaseDateTextBox.Size = new System.Drawing.Size(688, 20);
             this.ReleaseDateTextBox.TabIndex = 1;
             // 
             // TagsTextBox
             // 
             this.TagsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TagsTextBox.Location = new System.Drawing.Point(96, 88);
+            this.TagsTextBox.Location = new System.Drawing.Point(96, 85);
             this.TagsTextBox.Name = "TagsTextBox";
             this.TagsTextBox.ReadOnly = true;
-            this.TagsTextBox.Size = new System.Drawing.Size(696, 20);
+            this.TagsTextBox.Size = new System.Drawing.Size(688, 20);
             this.TagsTextBox.TabIndex = 1;
             // 
             // DescrTextBox
             // 
             this.DescrTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.DescrTextBox.Location = new System.Drawing.Point(96, 112);
+            this.DescrTextBox.Location = new System.Drawing.Point(96, 109);
             this.DescrTextBox.Name = "DescrTextBox";
             this.DescrTextBox.ReadOnly = true;
-            this.DescrTextBox.Size = new System.Drawing.Size(696, 20);
+            this.DescrTextBox.Size = new System.Drawing.Size(688, 20);
             this.DescrTextBox.TabIndex = 1;
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel1.Controls.Add(this.Cancel_Button);
+            this.flowLayoutPanel1.Controls.Add(this.OKButton);
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 421);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(800, 29);
+            this.flowLayoutPanel1.TabIndex = 2;
+            // 
+            // Cancel_Button
+            // 
+            this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.Cancel_Button.Location = new System.Drawing.Point(722, 3);
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
+            this.Cancel_Button.Name = "Cancel_Button";
+            this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
+            this.Cancel_Button.TabIndex = 0;
+            this.Cancel_Button.Text = "Cancel";
+            this.Cancel_Button.UseVisualStyleBackColor = true;
+            // 
+            // OKButton
+            // 
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.OKButton.Location = new System.Drawing.Point(641, 3);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
+            this.OKButton.Name = "OKButton";
+            this.OKButton.Size = new System.Drawing.Size(75, 23);
+            this.OKButton.TabIndex = 0;
+            this.OKButton.Text = "OK";
+            this.OKButton.UseVisualStyleBackColor = true;
             // 
             // ExportFMIniForm
             // 
+            this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.DescrTextBox);
             this.Controls.Add(this.TagsTextBox);
             this.Controls.Add(this.ReleaseDateTextBox);
@@ -150,8 +193,12 @@
             this.Controls.Add(this.ReleaseDateLabel);
             this.Controls.Add(this.InfoFileLabel);
             this.Controls.Add(this.NiceNameLabel);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ExportFMIniForm";
-            this.Text = "ExportFMIniForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Export fm.ini";
+            this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -169,5 +216,8 @@
         private System.Windows.Forms.TextBox ReleaseDateTextBox;
         private System.Windows.Forms.TextBox TagsTextBox;
         private System.Windows.Forms.TextBox DescrTextBox;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button Cancel_Button;
+        private System.Windows.Forms.Button OKButton;
     }
 }
