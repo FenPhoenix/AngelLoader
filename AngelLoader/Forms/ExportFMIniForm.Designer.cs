@@ -131,6 +131,8 @@
             // 
             // DescrTextBox
             // 
+            this.DescrTextBox.AcceptsReturn = true;
+            this.DescrTextBox.AcceptsTab = true;
             this.DescrTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -167,6 +169,7 @@
             // ExportButton
             // 
             this.ExportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ExportButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ExportButton.Location = new System.Drawing.Point(634, 3);
             this.ExportButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ExportButton.Name = "ExportButton";
@@ -174,7 +177,6 @@
             this.ExportButton.TabIndex = 0;
             this.ExportButton.Text = "Export";
             this.ExportButton.UseVisualStyleBackColor = true;
-            this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
             // 
             // ExportFMIniForm
             // 

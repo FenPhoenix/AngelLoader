@@ -9,22 +9,20 @@ namespace AngelLoader.Forms
 {
     public sealed partial class ExportFMIniForm : Form
     {
-        public ExportFMIniForm()
-        {
-            InitializeComponent();
-        }
+        public ExportFMIniForm() => InitializeComponent();
 
         public ExportFMIniForm(FanMission fm)
         {
+            InitializeComponent();
+
             NiceNameTextBox.Text = fm.Title;
-            InfoFileTextBox.Text = fm.SelectedReadme;
+            // @DIRSEP: ExportFMIniForm: SelectedReadme: Probably both will work here, but we aren't sure.
+            // Only Thief 3 FMs normally have readmes in subfolders, and SU's FMSel is closed-source so we don't
+            // know if it's writing system dirseps or just explicit backslashes with its fm.ini export feature.
+            // We're just going to go with system dirseps for now.
+            InfoFileTextBox.Text = fm.SelectedReadme.ToSystemDirSeps();
             ReleaseDateTextBox.Text = fm.ReleaseDate.UnixDateString;
             TagsTextBox.Text = fm.TagsString;
-        }
-
-        private void ExportButton_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void ExportFMIniForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -39,6 +37,7 @@ namespace AngelLoader.Forms
                 if (d.ShowDialog() != DialogResult.OK)
                 {
                     e.Cancel = true;
+                    DialogResult = DialogResult.None;
                     return;
                 }
                 fileName = d.FileName;
@@ -61,6 +60,7 @@ namespace AngelLoader.Forms
                 Log("Exception writing fm.ini", ex);
                 MessageBox.Show(ex.Message);
                 e.Cancel = true;
+                DialogResult = DialogResult.None;
             }
         }
     }
