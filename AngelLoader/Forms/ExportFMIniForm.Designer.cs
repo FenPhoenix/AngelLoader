@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportFMIniForm));
             this.NiceNameLabel = new System.Windows.Forms.Label();
             this.InfoFileLabel = new System.Windows.Forms.Label();
             this.ReleaseDateLabel = new System.Windows.Forms.Label();
@@ -40,7 +41,7 @@
             this.DescrTextBox = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.Cancel_Button = new System.Windows.Forms.Button();
-            this.OKButton = new System.Windows.Forms.Button();
+            this.ExportButton = new System.Windows.Forms.Button();
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,7 +97,7 @@
             this.NiceNameTextBox.Location = new System.Drawing.Point(96, 13);
             this.NiceNameTextBox.Name = "NiceNameTextBox";
             this.NiceNameTextBox.ReadOnly = true;
-            this.NiceNameTextBox.Size = new System.Drawing.Size(688, 20);
+            this.NiceNameTextBox.Size = new System.Drawing.Size(681, 20);
             this.NiceNameTextBox.TabIndex = 1;
             // 
             // InfoFileTextBox
@@ -106,7 +107,7 @@
             this.InfoFileTextBox.Location = new System.Drawing.Point(96, 37);
             this.InfoFileTextBox.Name = "InfoFileTextBox";
             this.InfoFileTextBox.ReadOnly = true;
-            this.InfoFileTextBox.Size = new System.Drawing.Size(688, 20);
+            this.InfoFileTextBox.Size = new System.Drawing.Size(681, 20);
             this.InfoFileTextBox.TabIndex = 1;
             // 
             // ReleaseDateTextBox
@@ -116,7 +117,7 @@
             this.ReleaseDateTextBox.Location = new System.Drawing.Point(96, 61);
             this.ReleaseDateTextBox.Name = "ReleaseDateTextBox";
             this.ReleaseDateTextBox.ReadOnly = true;
-            this.ReleaseDateTextBox.Size = new System.Drawing.Size(688, 20);
+            this.ReleaseDateTextBox.Size = new System.Drawing.Size(681, 20);
             this.ReleaseDateTextBox.TabIndex = 1;
             // 
             // TagsTextBox
@@ -126,17 +127,18 @@
             this.TagsTextBox.Location = new System.Drawing.Point(96, 85);
             this.TagsTextBox.Name = "TagsTextBox";
             this.TagsTextBox.ReadOnly = true;
-            this.TagsTextBox.Size = new System.Drawing.Size(688, 20);
+            this.TagsTextBox.Size = new System.Drawing.Size(681, 20);
             this.TagsTextBox.TabIndex = 1;
             // 
             // DescrTextBox
             // 
-            this.DescrTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.DescrTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.DescrTextBox.Location = new System.Drawing.Point(96, 109);
+            this.DescrTextBox.Multiline = true;
             this.DescrTextBox.Name = "DescrTextBox";
-            this.DescrTextBox.ReadOnly = true;
-            this.DescrTextBox.Size = new System.Drawing.Size(688, 20);
+            this.DescrTextBox.Size = new System.Drawing.Size(681, 264);
             this.DescrTextBox.TabIndex = 1;
             // 
             // flowLayoutPanel1
@@ -144,18 +146,18 @@
             this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel1.Controls.Add(this.Cancel_Button);
-            this.flowLayoutPanel1.Controls.Add(this.OKButton);
+            this.flowLayoutPanel1.Controls.Add(this.ExportButton);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 421);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 386);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(800, 29);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(793, 29);
             this.flowLayoutPanel1.TabIndex = 2;
             // 
             // Cancel_Button
             // 
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(722, 3);
+            this.Cancel_Button.Location = new System.Drawing.Point(715, 3);
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -163,25 +165,25 @@
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
-            // OKButton
+            // ExportButton
             // 
-            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(641, 3);
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
-            this.OKButton.Name = "OKButton";
-            this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 0;
-            this.OKButton.Text = "OK";
-            this.OKButton.UseVisualStyleBackColor = true;
+            this.ExportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ExportButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.ExportButton.Location = new System.Drawing.Point(634, 3);
+            this.ExportButton.MinimumSize = new System.Drawing.Size(75, 23);
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.Size = new System.Drawing.Size(75, 23);
+            this.ExportButton.TabIndex = 0;
+            this.ExportButton.Text = "Export";
+            this.ExportButton.UseVisualStyleBackColor = true;
             // 
             // ExportFMIniForm
             // 
-            this.AcceptButton = this.OKButton;
+            this.AcceptButton = this.ExportButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(793, 415);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.DescrTextBox);
             this.Controls.Add(this.TagsTextBox);
@@ -193,8 +195,10 @@
             this.Controls.Add(this.ReleaseDateLabel);
             this.Controls.Add(this.InfoFileLabel);
             this.Controls.Add(this.NiceNameLabel);
+            this.Icon = AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(410, 312);
             this.Name = "ExportFMIniForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Export fm.ini";
@@ -218,6 +222,6 @@
         private System.Windows.Forms.TextBox DescrTextBox;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button Cancel_Button;
-        private System.Windows.Forms.Button OKButton;
+        private System.Windows.Forms.Button ExportButton;
     }
 }
