@@ -31,7 +31,6 @@ namespace AngelLoader.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameVersionsForm));
             this.T1VersionLabel = new System.Windows.Forms.Label();
             this.T1VersionTextBox = new System.Windows.Forms.TextBox();
             this.T2VersionLabel = new System.Windows.Forms.Label();
@@ -126,6 +125,7 @@ namespace AngelLoader.Forms
             // OKButton
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.OKButton.Location = new System.Drawing.Point(297, 107);
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
@@ -151,7 +151,7 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.T1VersionTextBox);
             this.Controls.Add(this.T1VersionLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = Resources.AngelLoader;
+            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "GameVersionsForm";
