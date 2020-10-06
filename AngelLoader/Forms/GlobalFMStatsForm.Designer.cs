@@ -50,7 +50,6 @@
             // OKButton
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.OKButton.Location = new System.Drawing.Point(712, 416);
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);

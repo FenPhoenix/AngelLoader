@@ -86,7 +86,6 @@ namespace AngelLoader.Forms
             // OKButton
             // 
             OKButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            OKButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             OKButton.DialogResult = DialogResult.Cancel;
             OKButton.Location = new Point(297, 107);
             OKButton.MinimumSize = new Size(75, 23);
