@@ -1488,28 +1488,10 @@ namespace AngelLoader
 
         internal static void ExportFMIni(FanMission fm)
         {
-            string fileName = "";
-            using (var d = new SaveFileDialog())
+            using (var f = new ExportFMIniForm(fm))
             {
-                d.Filter = LText.BrowseDialogs.FMIniFile + "|" + Paths.FMIni;
-                d.FileName = Paths.FMIni;
-                if (d.ShowDialog() != DialogResult.OK) return;
-                fileName = d.FileName;
+                if (f.ShowDialog() != DialogResult.OK) return;
             }
-
-            /*
-            NiceName (title)
-            ReleaseDate (in Unix hex time)
-            InfoFile (selected readme)
-            Tags (tags)
-            Descr (uh... copy from existing fm.ini description or else leave blank?)
-            */
-
-            /*
-            TODO: ExportFMIni
-            We want to implement an FMSel feature but we don't have the same data as FMSel.
-            Decide what to do.
-            */
         }
 
         #region Shutdown

@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms
 {
-    partial class ExportFMIniForm
+    sealed partial class ExportFMIniForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportFMIniForm));
             this.NiceNameLabel = new System.Windows.Forms.Label();
             this.InfoFileLabel = new System.Windows.Forms.Label();
             this.ReleaseDateLabel = new System.Windows.Forms.Label();
@@ -168,7 +167,6 @@
             // ExportButton
             // 
             this.ExportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ExportButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ExportButton.Location = new System.Drawing.Point(634, 3);
             this.ExportButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ExportButton.Name = "ExportButton";
@@ -176,6 +174,7 @@
             this.ExportButton.TabIndex = 0;
             this.ExportButton.Text = "Export";
             this.ExportButton.UseVisualStyleBackColor = true;
+            this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
             // 
             // ExportFMIniForm
             // 
@@ -195,13 +194,14 @@
             this.Controls.Add(this.ReleaseDateLabel);
             this.Controls.Add(this.InfoFileLabel);
             this.Controls.Add(this.NiceNameLabel);
-            this.Icon = AngelLoader.Properties.Resources.AngelLoader;
+            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(410, 312);
             this.Name = "ExportFMIniForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Export fm.ini";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExportFMIniForm_FormClosing);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
