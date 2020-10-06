@@ -1488,10 +1488,8 @@ namespace AngelLoader
 
         internal static void ExportFMIni(FanMission fm)
         {
-            using (var f = new ExportFMIniForm(fm))
-            {
-                if (f.ShowDialog() != DialogResult.OK) return;
-            }
+            using var f = new ExportFMIniForm(fm);
+            f.ShowDialog();
         }
 
         #region Shutdown
