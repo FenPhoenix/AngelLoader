@@ -16,7 +16,7 @@ namespace AngelLoader.Forms.CustomControls
         #region Backing fields
 
         private bool _fmMenuConstructed;
-        private bool _installUninstallMenuEnabled;
+        private bool _installUninstallMenuItemEnabled;
         private bool _playFMMenuItemEnabled;
         private bool _scanFMMenuItemEnabled;
         private bool _openInDromEdSepVisible;
@@ -252,7 +252,7 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Set main menu item values
 
-            InstallUninstallMenuItem.Enabled = _installUninstallMenuEnabled;
+            InstallUninstallMenuItem.Enabled = _installUninstallMenuItemEnabled;
             DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
             PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
             PlayFMInMPMenuItem.Visible = _playFMInMPMenuItemVisible;
@@ -475,7 +475,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             else
             {
-                _installUninstallMenuEnabled = value;
+                _installUninstallMenuItemEnabled = value;
             }
         }
 
