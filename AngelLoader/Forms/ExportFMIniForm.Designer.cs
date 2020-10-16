@@ -50,7 +50,7 @@
             this.NiceNameLabel.Location = new System.Drawing.Point(16, 16);
             this.NiceNameLabel.Name = "NiceNameLabel";
             this.NiceNameLabel.Size = new System.Drawing.Size(63, 13);
-            this.NiceNameLabel.TabIndex = 0;
+            this.NiceNameLabel.TabIndex = 1;
             this.NiceNameLabel.Text = "NiceName=";
             // 
             // InfoFileLabel
@@ -59,7 +59,7 @@
             this.InfoFileLabel.Location = new System.Drawing.Point(16, 40);
             this.InfoFileLabel.Name = "InfoFileLabel";
             this.InfoFileLabel.Size = new System.Drawing.Size(47, 13);
-            this.InfoFileLabel.TabIndex = 0;
+            this.InfoFileLabel.TabIndex = 3;
             this.InfoFileLabel.Text = "InfoFile=";
             // 
             // ReleaseDateLabel
@@ -68,7 +68,7 @@
             this.ReleaseDateLabel.Location = new System.Drawing.Point(16, 64);
             this.ReleaseDateLabel.Name = "ReleaseDateLabel";
             this.ReleaseDateLabel.Size = new System.Drawing.Size(75, 13);
-            this.ReleaseDateLabel.TabIndex = 0;
+            this.ReleaseDateLabel.TabIndex = 5;
             this.ReleaseDateLabel.Text = "ReleaseDate=";
             // 
             // TagsLabel
@@ -77,7 +77,7 @@
             this.TagsLabel.Location = new System.Drawing.Point(16, 88);
             this.TagsLabel.Name = "TagsLabel";
             this.TagsLabel.Size = new System.Drawing.Size(37, 13);
-            this.TagsLabel.TabIndex = 0;
+            this.TagsLabel.TabIndex = 7;
             this.TagsLabel.Text = "Tags=";
             // 
             // DescrLabel
@@ -86,7 +86,7 @@
             this.DescrLabel.Location = new System.Drawing.Point(16, 112);
             this.DescrLabel.Name = "DescrLabel";
             this.DescrLabel.Size = new System.Drawing.Size(41, 13);
-            this.DescrLabel.TabIndex = 0;
+            this.DescrLabel.TabIndex = 9;
             this.DescrLabel.Text = "Descr=";
             // 
             // NiceNameTextBox
@@ -97,7 +97,7 @@
             this.NiceNameTextBox.Name = "NiceNameTextBox";
             this.NiceNameTextBox.ReadOnly = true;
             this.NiceNameTextBox.Size = new System.Drawing.Size(681, 20);
-            this.NiceNameTextBox.TabIndex = 1;
+            this.NiceNameTextBox.TabIndex = 2;
             // 
             // InfoFileTextBox
             // 
@@ -107,7 +107,7 @@
             this.InfoFileTextBox.Name = "InfoFileTextBox";
             this.InfoFileTextBox.ReadOnly = true;
             this.InfoFileTextBox.Size = new System.Drawing.Size(681, 20);
-            this.InfoFileTextBox.TabIndex = 1;
+            this.InfoFileTextBox.TabIndex = 4;
             // 
             // ReleaseDateTextBox
             // 
@@ -117,7 +117,7 @@
             this.ReleaseDateTextBox.Name = "ReleaseDateTextBox";
             this.ReleaseDateTextBox.ReadOnly = true;
             this.ReleaseDateTextBox.Size = new System.Drawing.Size(681, 20);
-            this.ReleaseDateTextBox.TabIndex = 1;
+            this.ReleaseDateTextBox.TabIndex = 6;
             // 
             // TagsTextBox
             // 
@@ -127,7 +127,7 @@
             this.TagsTextBox.Name = "TagsTextBox";
             this.TagsTextBox.ReadOnly = true;
             this.TagsTextBox.Size = new System.Drawing.Size(681, 20);
-            this.TagsTextBox.TabIndex = 1;
+            this.TagsTextBox.TabIndex = 8;
             // 
             // DescrTextBox
             // 
@@ -140,7 +140,7 @@
             this.DescrTextBox.Multiline = true;
             this.DescrTextBox.Name = "DescrTextBox";
             this.DescrTextBox.Size = new System.Drawing.Size(681, 264);
-            this.DescrTextBox.TabIndex = 1;
+            this.DescrTextBox.TabIndex = 10;
             // 
             // flowLayoutPanel1
             // 
@@ -149,20 +149,20 @@
             this.flowLayoutPanel1.Controls.Add(this.Cancel_Button);
             this.flowLayoutPanel1.Controls.Add(this.ExportButton);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 386);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 379);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(793, 29);
-            this.flowLayoutPanel1.TabIndex = 2;
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(782, 29);
+            this.flowLayoutPanel1.TabIndex = 0;
             // 
             // Cancel_Button
             // 
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(715, 3);
+            this.Cancel_Button.Location = new System.Drawing.Point(704, 3);
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
-            this.Cancel_Button.TabIndex = 0;
+            this.Cancel_Button.TabIndex = 1;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
@@ -170,7 +170,7 @@
             // 
             this.ExportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ExportButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ExportButton.Location = new System.Drawing.Point(634, 3);
+            this.ExportButton.Location = new System.Drawing.Point(623, 3);
             this.ExportButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ExportButton.Name = "ExportButton";
             this.ExportButton.Size = new System.Drawing.Size(75, 23);
