@@ -23,6 +23,14 @@ namespace AngelLoader.Forms
             InfoFileTextBox.Text = fm.SelectedReadme.ToSystemDirSeps();
             ReleaseDateTextBox.Text = fm.ReleaseDate.UnixDateString;
             TagsTextBox.Text = fm.TagsString;
+
+            Localize();
+        }
+
+        private void Localize()
+        {
+            ExportButton.Text = LText.Global.Export;
+            Cancel_Button.Text = LText.Global.Cancel;
         }
 
         private void ExportFMIniForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -61,6 +69,8 @@ namespace AngelLoader.Forms
                 MessageBox.Show(ex.Message);
                 e.Cancel = true;
                 DialogResult = DialogResult.None;
+                // ReSharper disable once RedundantJumpStatement
+                return;
             }
         }
     }

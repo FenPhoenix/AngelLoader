@@ -72,6 +72,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Autodetect = "Autodetect";
             internal readonly string SelectAll = "Select all";
             internal readonly string SelectNone = "Select none";
+            internal readonly string Export = "Export";
             [FenGenBlankLine]
             internal readonly string Unrated = "Unrated";
             internal readonly string None = "None";
