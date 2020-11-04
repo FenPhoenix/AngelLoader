@@ -25,6 +25,16 @@
   controls on each tab page (in case the tabs are visible but not selected on startup)
  -Game buttons and game tabs (one or the other will be invisible on startup)
  -DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
+
+ @NET5: Fonts will change and control sizes will all change too.
+ -We could go through and set font to MS Sans Serif 8.25pt everywhere. This would get us up and running quickly
+  with no other changes, but we would have to remember to set it for every single control manually (including
+  ones we lazy-load manually - that would preclude us from simply running a loop through all controls on the form
+  and setting the font on them all that way!)
+ -We could bite the bullet and go through the entire UI fixing and adjusting the layout and layout logic (including
+  our "75,23" button min sizes etc!). This would give us a nicer font and a UI layout that supports it, but now
+  we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
+ IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 */
 
 using System;

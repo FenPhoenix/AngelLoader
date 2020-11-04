@@ -257,6 +257,8 @@ namespace FMScanner.SimpleHelpers
             // vote for best encoding
             _encodingName = GetCurrentEncoding();
             // check result
+            // @NET5: GetEncoding(string): string could be UTF7 and then we throw on .NET 5
+            // https://docs.microsoft.com/en-us/dotnet/core/compatibility/corefx#utf-7-code-paths-are-obsolete
             return !_encodingName.IsEmpty() ? Encoding.GetEncoding(_encodingName) : null;
         }
 

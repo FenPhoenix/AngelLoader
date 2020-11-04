@@ -22,6 +22,8 @@ namespace AngelLoader.DataClasses
         // -Comments don't support concatenation (try to fix later)
         // -Strings must be inside the nested classes or they won't be picked up (that's the nature of ini files)
         // -Strings in here can be readonly because they're set via reflection.
+        // @NET5: It says we shouldn't SetValue on static readonly fields, but our readonly fields aren't static, so we're fine I guess?
+        // https://docs.microsoft.com/en-us/dotnet/core/compatibility/corefx#fieldinfosetvalue-throws-exception-for-static-init-only-fields
 
         internal readonly Meta_Class Meta = new Meta_Class();
         internal readonly Global_Class Global = new Global_Class();

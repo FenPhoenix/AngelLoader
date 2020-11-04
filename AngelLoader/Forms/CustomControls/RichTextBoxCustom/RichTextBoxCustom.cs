@@ -194,7 +194,13 @@ namespace AngelLoader.Forms.CustomControls
 
                         // Ditto the above
                         ContentIsPlainText = false;
-                        using (var ms = new MemoryStream(bytes)) LoadFile(ms, RichTextBoxStreamType.RichText);
+                        using (var ms = new MemoryStream(bytes))
+                        {
+                            // @NET5: RichTextBox.LoadFile(Stream data, RichTextBoxStreamType fileType)
+                            // Throws ArgumentNullException instead of NullReferenceException if data param is null.
+                            // We catch Exception up-stack though so no change needed.
+                            LoadFile(ms, RichTextBoxStreamType.RichText);
+                        }
                         break;
                     case ReadmeType.PlainText:
                         ContentIsPlainText = true;
