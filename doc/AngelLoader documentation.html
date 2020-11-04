@@ -133,24 +133,24 @@ Whenever new FMs are detected, they will be automatically scanned. If you cancel
 <h4>Filter bar</h4>
 Here you can choose to filter your FM list by game, title, author, release date, last played date, tags, finished status, and rating. If you've chosen to organize your games by tab, then these tabs will take the place of the game filter buttons.
 
-<h4><a name="show_unsupported" />Show FMs marked as "unsupported game or non-FM archive"</h4>
+<h4><img src="images/Show_Unsupported.png" style="vertical-align:bottom" /> <a name="show_unsupported" />Show FMs marked as "unsupported game or non-FM archive"</h4>
 This allows archives marked as Unknown (<img src="images/red_circle_question_mark_21.png" />) (archives that were rejected as not being FMs) to be displayed in the list. If support for new games is added in the future, you can use this to show previously unsupported FMs so you can re-scan them individually if you wish.
 
-<h4><a name="show_recent_at_top" />Show recently added FMs at the top of the list</h4>
+<h4><img src="images/FilterShowRecentAtTop.png" style="vertical-align:bottom" /> <a name="show_recent_at_top" />Show recently added FMs at the top of the list</h4>
 This will cause recently added FMs to be highlighted and displayed at the top of the list. This makes it easier to find FMs that you've just downloaded, for example. The number of days to consider an FM "recent" can be changed in the <a href="#settings_days_recent">Settings window</a>. The default is 15 days.
 
-<h4>Refresh from disk button</h4>
+<h4><img src="images/RefreshFromDisk.png" style="vertical-align:bottom" /> Refresh from disk button</h4>
 Reloads the list of FMs from disk. This will always occur on startup, but this button is useful if you've added new FMs since starting AngelLoader.
 <br>The list can also be refreshed from disk by pressing <code>Shift-F5</code> when the <a href="#mission_list">mission list</a> is focused.
 
-<h4>Refresh list button</h4>
+<h4><img src="images/Refresh.png" style="vertical-align:bottom" /> Refresh list button</h4>
 When you edit a mission's data, the list of missions is not refreshed. This is to prevent a mission that no longer fits the filter criteria from being filtered out of the list in the middle of being edited. If you've edited an FM and want to re-filter the list, click this button.
 <br>The list can also be refreshed by pressing <code>F5</code> when the <a href="#mission_list">mission list</a> is focused.
 
-<h4>Clear filters button</h4>
+<h4><img src="images/ClearFilters.png" style="vertical-align:bottom" /> Clear filters button</h4>
 Clears all filters.
 
-<h4>Reset layout button</h4>
+<h4><img src="images/ResetLayout.png" style="vertical-align:bottom" /> Reset layout button</h4>
 Resets the main window to its default proportions.
 
 <h4>Draggable splitters</h4>
@@ -166,31 +166,33 @@ have the option to select another from a drop-down list that appears in the uppe
 In the upper-right corner of the readme area, there is a set of controls for choosing a readme; zooming in, zooming out, and resetting zoom; and toggling fullscreen. When you click the fullscreen button, the readme area enlarges to take up the entire window. Click the button again to restore it to normal size. These controls appear when the mouse cursor is over the readme area, and disappear when it moves away.
 In addition to clicking the zoom buttons, the readme can also be zoomed by pressing <code>Ctrl+-</code>, <code>Ctrl++</code>, and <code>Ctrl-0</code>, or by holding <code>Ctrl</code> and scrolling the mouse wheel while the cursor is over the readme area.
 
-<h4>Play FM button</h4>
+<h4><img src="images/PlayFM.png" style="vertical-align:bottom" /> Play FM button</h4>
 Click this button to play the currently selected FM. If the FM is not installed, it will be installed automatically first.
 
-<h4>Play original game button</h4>
+<h4><img src="images/PlayOriginalGame.png" style="vertical-align:bottom" /> Play original game button</h4>
 Click this button to bring up a list of supported games. Only games that you've <a href="#paths_to_game_exes">provided a path to</a> will be enabled; others will be grayed out. Clicking on one of these games will let you play it without loading an FM.<br>
 If you have NewDark 1.27 or later and have installed the multiplayer option (meaning Thief2MP.exe exists in your Thief 2 directory), then there will be an additional option in the list to play Thief 2 in multiplayer mode.
 
-<h4>Install / Uninstall FM button</h4>
+<h4><img src="images/Install.png" style="vertical-align:bottom" /> / <img src="images/Uninstall.png" style="vertical-align:bottom" /> Install / Uninstall FM button</h4>
 If the currently selected FM is not installed, this button will install it; otherwise, it will uninstall it.
 
-<h4><a name="scan_all_fms_button" />Scan all FMs button</h4>
+<h4><img src="images/BlueMagnifier.png" style="vertical-align:bottom" /> <a name="scan_all_fms_button" />Scan all FMs button</h4>
 This allows you to scan all the FMs in the list. Clicking it will bring up a window where you can choose what to scan for.
 
 <p><img src="images/ScanAllFMs_window.png" /></p>
 
 Only the fields you select will be scanned for and overwritten; non-selected fields will not be touched. The exception to overwriting is tags: tags will only ever be kept the same or added to, not overwritten.
 
-<h4>Web search button</h4>
+<h4><img src="images/WebSearch.png" style="vertical-align:bottom" /> Web search button</h4>
 Click this button to search the web for the selected mission. You can set the search URL in the <a href="#settings_web_search">Settings window</a>.
 
-<h4>Import from button</h4>
+<h4><img src="images/Import.png" style="vertical-align:bottom"/> Import from button</h4>
 Clicking this button will bring up a list of other loaders you can import data from. Supported loaders are <b>DarkLoader</b>, <b>NewDarkLoader</b>, and <b>FMSel</b>. If you have a large collection of FM data from one of these loaders (comments, ratings, finished statuses, etc.) then you can import that data into AngelLoader, replacing any current data (so be careful).
 
-<h4>Settings button</h4>
+<h4><img src="images/Settings.png" style="vertical-align:bottom" /> Settings button</h4>
 Brings up the <a href="#settings_window">Settings window</a>.
+<p/>
+<hr>
 
 <h3><a name="mission_list" />Mission list</h3>
 
@@ -212,11 +214,11 @@ Press the Delete key while an FM is selected to delete that FM's archive from di
 <h4>Game</h4>
 Displays an icon based on which game the mission is for. If unknown, it will be blank. The icons are:
 <p>
-<img src="images/Thief1_21.png" /> - Thief<br>
-<img src="images/Thief2_21.png" /> - Thief II<br>
-<img src="images/Thief3_21.png" /> - Thief: Deadly Shadows<br>
-<img src="images/Shock2_21.png" /> - System Shock 2<br>
-<img src="images/red_circle_question_mark_21.png" /> - Unsupported mission or non-mission archive (these only appear when the <a href="#show_unsupported">Show Unsupported</a> filter is enabled).</p>
+<img src="images/Thief1_21.png" style="vertical-align:text-bottom" /> - Thief<br>
+<img src="images/Thief2_21.png" style="vertical-align:text-bottom" /> - Thief II<br>
+<img src="images/Thief3_21.png" style="vertical-align:text-bottom" /> - Thief: Deadly Shadows<br>
+<img src="images/Shock2_21.png" style="vertical-align:text-bottom" /> - System Shock 2<br>
+<img src="images/red_circle_question_mark_21.png" style="vertical-align:bottom" /> - Unsupported mission or non-mission archive (these only appear when the <a href="#show_unsupported">Show Unsupported</a> filter is enabled).</p>
 
 <h4>Installed</h4>
 Displays a <img src="images/green_check_21.png" /> icon if an FM is installed; otherwise remains blank.
@@ -239,11 +241,11 @@ Displays the FM's rating using the <a href="#settings_rating_display_style">sele
 <h4>Finished</h4>
 Displays an icon representing which difficulty or difficulties you've finished an FM on.
 <p>
-<img src="images/Finished_Normal.png" /> - <b>Normal</b> (<b>Easy</b> for Thief: Deadly Shadows and System Shock 2)<br>
-<img src="images/Finished_Hard.png" /> - <b>Hard</b> (<b>Normal</b> for Thief: Deadly Shadows and System Shock 2)<br>
-<img src="images/Finished_Expert.png" /> - <b>Expert</b> (<b>Hard</b> for Thief: Deadly Shadows and System Shock 2)<br>
-<img src="images/Finished_Extreme.png" /> - <b>Extreme</b> (<b>Expert</b> for Thief: Deadly Shadows, <b>Impossible</b> for System Shock 2)<br>
-<img src="images/Finished_Unknown.png" /> - <b>Unknown</b>
+<img src="images/Finished_Normal.png" style="vertical-align:text-bottom" /> - <b>Normal</b> (<b>Easy</b> for Thief: Deadly Shadows and System Shock 2)<br>
+<img src="images/Finished_Hard.png" style="vertical-align:text-bottom" /> - <b>Hard</b> (<b>Normal</b> for Thief: Deadly Shadows and System Shock 2)<br>
+<img src="images/Finished_Expert.png" style="vertical-align:text-bottom" /> - <b>Expert</b> (<b>Hard</b> for Thief: Deadly Shadows and System Shock 2)<br>
+<img src="images/Finished_Extreme.png" style="vertical-align:text-bottom" /> - <b>Extreme</b> (<b>Expert</b> for Thief: Deadly Shadows, <b>Impossible</b> for System Shock 2)<br>
+<img src="images/Finished_Unknown.png" style="vertical-align:text-bottom" /> - <b>Unknown</b>
 </p>
 See the <a href="#finished_on">Finished On submenu</a> for more information about difficulty levels.
 
@@ -310,6 +312,8 @@ For System Shock 2, they are <b>Easy</b>, <b>Normal</b>, <b>Hard</b>, and <b>Imp
 
 <h4>Web search</h4>
 Click this to search the web for the selected mission. You can set the search URL in the <a href="#settings_web_search">Settings window</a>.
+<p/>
+<hr>
 
 <h3><a name="top_right_tabs" />Top-right tabs</h3>
 

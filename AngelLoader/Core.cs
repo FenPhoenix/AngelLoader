@@ -1453,7 +1453,8 @@ namespace AngelLoader
 
         #endregion
 
-        internal static (Error Error, string Version) GetGameVersion(GameIndex game)
+        internal static (Error Error, string Version)
+        GetGameVersion(GameIndex game)
         {
             string gameExe = Config.GetGameExe(game);
             if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, "");
