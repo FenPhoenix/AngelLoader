@@ -43,6 +43,8 @@ namespace AngelLoader.DataClasses
             }
         }
 
+        internal int Version = 1;
+
         #region Saved-on-startup loader config values
 
         #region fm_selector lines
@@ -269,6 +271,15 @@ namespace AngelLoader.DataClasses
             set
             {
                 float val = value;
+
+                // @NET5: Enable this when we want to start converting old default font size to new
+#if false
+                if (Version == 1 && Math.Abs(val - 8.25f) < 0.001)
+                {
+                    val = 9.0f;
+                }
+#endif
+
                 if (val < Math.Round(1.00f, 2)) val = 1.00f;
                 if (val > Math.Round(41.25f, 2)) val = 41.25f;
                 val = (float)Math.Round(val, 2);

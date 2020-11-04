@@ -32,6 +32,19 @@ namespace AngelLoader
         {
             string[] iniLines = File.ReadAllLines(path);
 
+            for (int i = 0; i < iniLines.Length; i++)
+            {
+                string lt = iniLines[i].Trim();
+                if (lt.StartsWithFast_NoNullChecks(ConfigVersionHeader))
+                {
+                    if (int.TryParse(lt.Substring(ConfigVersionHeader.Length), out int result))
+                    {
+                        config.Version = result;
+                        break;
+                    }
+                }
+            }
+
             for (int li = 0; li < iniLines.Length; li++)
             {
                 // PERF: It's okay to do a TrimStart() right off the bat since blank lines are the rare case.
@@ -695,6 +708,11 @@ namespace AngelLoader
             // 2020-06-03: My config file is ~4000 bytes (OneList, Thief2 filter only). 6000 gives reasonable
             // headroom for avoiding reallocations.
             var sb = new StringBuilder(6000);
+
+            // @NET5: Write current config version header (keep it off for testing old-to-new)
+#if false
+            sb.Append(ConfigVersionHeader).AppendLine(AppConfigVersion.ToString());
+#endif
 
             #region Settings window
 
