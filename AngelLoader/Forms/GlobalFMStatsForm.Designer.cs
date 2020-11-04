@@ -51,7 +51,7 @@
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.OKButton.Location = new System.Drawing.Point(712, 416);
+            this.OKButton.Location = new System.Drawing.Point(300, 288);
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -201,7 +201,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.OKButton;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(388, 322);
             this.Controls.Add(this.UnsupportedTextBox);
             this.Controls.Add(this.UnscannedTextBox);
             this.Controls.Add(this.T3TextBox);

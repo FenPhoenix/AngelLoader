@@ -42,7 +42,7 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    textBox.Text = LText.GameVersionsWindow.GameNotSet;
+                    textBox.Text = LText.GameVersionsWindow.NoExeSpecified;
                 }
             }
             // @GENGAMES (GameVersionsForm): End

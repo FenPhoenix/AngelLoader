@@ -1543,12 +1543,14 @@ namespace AngelLoader.Forms
             f.ShowDialog();
         }
 
+#if false
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new GlobalFMStatsForm();
             f.ShowDialog();
         }
+#endif
 
         #endregion
 

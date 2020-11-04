@@ -10,7 +10,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static ContextMenuStrip Menu = null!;
         private static ToolStripMenuItemCustom GameVersionsMenuItem = null!;
+#if false
         private static ToolStripMenuItemCustom GlobalFMStatsMenuItem = null!;
+#endif
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -20,11 +22,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 GameVersionsMenuItem = new ToolStripMenuItemCustom(),
+#if false
                 GlobalFMStatsMenuItem = new ToolStripMenuItemCustom()
+#endif
             });
 
             GameVersionsMenuItem.Click += form.MainMenu_GameVersionsMenuItem_Click;
+#if false
             GlobalFMStatsMenuItem.Click += form.GlobalFMStatsMenuItem_Click;
+#endif
 
             _constructed = true;
 
@@ -36,7 +42,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             if (!_constructed) return;
 
             GameVersionsMenuItem.Text = LText.MainMenu.GameVersions;
+#if false
             GlobalFMStatsMenuItem.Text = LText.MainMenu.GlobalFMStats;
+#endif
         }
     }
 }
