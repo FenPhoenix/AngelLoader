@@ -65,7 +65,7 @@ namespace AngelLoader
                     // whatever.
                     if (fmsToScan[0].Archive.ExtIs7z())
                     {
-                        Core.View.ShowProgressBox(ProgressTask.ScanAllFMs);
+                        Core.View.ShowProgressBox(ProgressTask.FMScan);
                     }
                     else
                     {
@@ -73,12 +73,12 @@ namespace AngelLoader
                         // here
                         Core.View.Block(true);
                         // Doesn't actually show the box, but shows the meter on the taskbar I guess?
-                        Core.View.ShowProgressBox(ProgressTask.ScanAllFMs, suppressShow: true);
+                        Core.View.ShowProgressBox(ProgressTask.FMScan, suppressShow: true);
                     }
                 }
                 else
                 {
-                    Core.View.ShowProgressBox(ProgressTask.ScanAllFMs);
+                    Core.View.ShowProgressBox(ProgressTask.FMScan);
                 }
 
                 #endregion

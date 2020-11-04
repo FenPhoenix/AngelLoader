@@ -1223,9 +1223,9 @@ namespace AngelLoader.Forms
 
                 #region Readme area
 
-                MainToolTip.SetToolTip(ReadmeZoomInButton, LText.ReadmeArea.ZoomInToolTip);
-                MainToolTip.SetToolTip(ReadmeZoomOutButton, LText.ReadmeArea.ZoomOutToolTip);
-                MainToolTip.SetToolTip(ReadmeResetZoomButton, LText.ReadmeArea.ResetZoomToolTip);
+                MainToolTip.SetToolTip(ReadmeZoomInButton, LText.Global.ZoomIn);
+                MainToolTip.SetToolTip(ReadmeZoomOutButton, LText.Global.ZoomOut);
+                MainToolTip.SetToolTip(ReadmeResetZoomButton, LText.Global.ResetZoom);
                 MainToolTip.SetToolTip(ReadmeFullScreenButton, LText.ReadmeArea.FullScreenToolTip);
 
                 ViewHTMLReadmeLLButton.Localize();
@@ -2610,7 +2610,7 @@ namespace AngelLoader.Forms
 
                     if (catAndTag.Category != "misc")
                     {
-                        var customItem = new ToolStripMenuItemWithBackingText(LText.Global.CustomTagInCategory);
+                        var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory);
                         customItem.Click += AddTagMenuCustomItem_Click;
                         ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(customItem);
                         ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator());

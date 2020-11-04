@@ -64,10 +64,6 @@ namespace AngelLoader.DataClasses
             internal readonly string OK = "OK";
             internal readonly string Cancel = "Cancel";
             internal readonly string BrowseEllipses = "Browse...";
-            internal readonly string Add = "Add";
-            internal readonly string AddEllipses = "Add...";
-            internal readonly string Remove = "Remove";
-            internal readonly string RemoveEllipses = "Remove...";
             internal readonly string Reset = "Reset";
             internal readonly string Autodetect = "Autodetect";
             internal readonly string SelectAll = "Select all";
@@ -76,7 +72,6 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Unrated = "Unrated";
             internal readonly string None = "None";
-            internal readonly string CustomTagInCategory = "<custom>";
             [FenGenBlankLine]
             internal readonly string KilobyteShort = "KB";
             internal readonly string MegabyteShort = "MB";
@@ -98,6 +93,10 @@ namespace AngelLoader.DataClasses
             internal readonly string Thief3_Colon = "Thief 3:";
             internal readonly string SystemShock2_Colon = "System Shock 2:";
             // @GENGAMES (Localization - Global): End
+
+            internal readonly string ZoomIn = "Zoom in (Ctrl++)";
+            internal readonly string ZoomOut = "Zoom out (Ctrl+-)";
+            internal readonly string ResetZoom = "Reset zoom (Ctrl-0)";
         }
 
         internal sealed class BrowseDialogs_Class
@@ -197,7 +196,7 @@ namespace AngelLoader.DataClasses
                 "This is where game versions are displayed.",
                 "For Thief 1, Thief 2, and System Shock 2, the NewDark version will be displayed.",
                 "For Thief 3, the Sneaky Upgrade version will be displayed.",
-                "Versions are detected by scanning the game executable (for T1, T2, SS2) or the Sneaky.dll file (for T3).",
+                "Versions are detected by looking in the game executable (for T1, T2, SS2) or the Sneaky.dll file (for T3).",
                 "Error messages relate to not being able to find the appropriate .exe/.dll file, or not being able to find",
                 "a version in said file.")]
             [FenGenBlankLine]
@@ -223,9 +222,17 @@ namespace AngelLoader.DataClasses
         internal sealed class GlobalFMStats_Class
         {
             internal readonly string TitleText = "Global FM stats";
+            [FenGenComment(
+                "The number of FMs that are in the FMData.ini file.")]
             internal readonly string FMsInDatabase = "FMs in database:";
+            [FenGenComment(
+                "The number of FMs that actually exist across all specified archive directories and installed FM directories.")]
             internal readonly string AvailableFMs = "Available FMs:";
+            [FenGenComment(
+                "FMs that have not been scanned for game type.")]
             internal readonly string Unscanned = "Unscanned:";
+            [FenGenComment(
+                "FMs that have been scanned and detected as \"unsupported game or non-FM archive\".")]
             internal readonly string Unsupported = "Invalid or unsupported:";
         }
 
@@ -240,6 +247,11 @@ namespace AngelLoader.DataClasses
 
         internal sealed class Difficulties_Class
         {
+            [FenGenComment(
+                "Thief 1 and Thief 2 difficulties are: Normal, Hard, Expert, Extreme.",
+                "Thief 3 difficulties are: Easy, Normal, Hard, Expert.",
+                "System Shock 2 difficulties are: Easy, Normal, Hard, Impossible.",
+                "\"Extreme\" is not a real difficulty for Thief 1 and Thief 2, but is included for DarkLoader compatibility.")]
             internal readonly string Easy = "Easy";
             internal readonly string Normal = "Normal";
             internal readonly string Hard = "Hard";
@@ -284,9 +296,6 @@ namespace AngelLoader.DataClasses
 
         internal sealed class FMsList_Class
         {
-            internal readonly string ZoomInToolTip = "Zoom in (Ctrl++)";
-            internal readonly string ZoomOutToolTip = "Zoom out (Ctrl+-)";
-            internal readonly string ResetZoomToolTip = "Reset zoom (Ctrl-0)";
             [FenGenBlankLine]
             internal readonly string GameColumn = "Game";
             internal readonly string InstalledColumn = "Installed";
@@ -385,6 +394,10 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string AddTag = "Add tag";
             internal readonly string AddFromList = "Add from list...";
+            [FenGenComment(
+                "Each category in the \"Add from list...\" menu will have this as a menu item that the user can click",
+                "to create a new tag in that category.")]
+            internal readonly string CustomTagInCategory = "<custom>";
             internal readonly string RemoveTag = "Remove tag";
             [FenGenBlankLine]
             internal readonly string AskRemoveCategory = "Remove category?";
@@ -405,9 +418,6 @@ namespace AngelLoader.DataClasses
         internal sealed class ReadmeArea_Class
         {
             internal readonly string ViewHTMLReadme = "View HTML Readme";
-            internal readonly string ZoomInToolTip = "Zoom in (Ctrl++)";
-            internal readonly string ZoomOutToolTip = "Zoom out (Ctrl+-)";
-            internal readonly string ResetZoomToolTip = "Reset zoom (Ctrl+0)";
             internal readonly string FullScreenToolTip = "Fullscreen";
             [FenGenBlankLine]
             internal readonly string NoReadmeFound = "No readme found.";
@@ -437,7 +447,7 @@ namespace AngelLoader.DataClasses
             internal readonly string InstallingFM = "Installing FM...";
             internal readonly string UninstallingFM = "Uninstalling FM...";
             internal readonly string ConvertingFiles = "Converting files...";
-            internal readonly string CheckingInstalledFMs = "Checking installed FMs...";
+            internal readonly string PreparingToScanFMs = "Preparing to scan FM(s)...";
             internal readonly string ReportScanningFirst = "Scanning ";
             internal readonly string ReportScanningBetweenNumAndTotal = " of ";
             internal readonly string ReportScanningLast = "...";

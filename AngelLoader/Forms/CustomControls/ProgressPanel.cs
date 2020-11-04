@@ -37,7 +37,7 @@ namespace AngelLoader.Forms.CustomControls
 
             ProgressMessageLabel.Text = progressTask switch
             {
-                ProgressTask.ScanAllFMs => LText.ProgressBox.Scanning,
+                ProgressTask.FMScan => LText.ProgressBox.Scanning,
                 ProgressTask.InstallFM => LText.ProgressBox.InstallingFM,
                 ProgressTask.UninstallFM => LText.ProgressBox.UninstallingFM,
                 ProgressTask.ConvertFiles => LText.ProgressBox.ConvertingFiles,
@@ -50,7 +50,7 @@ namespace AngelLoader.Forms.CustomControls
             };
 
             CurrentThingLabel.Text =
-                progressTask == ProgressTask.ScanAllFMs ? LText.ProgressBox.CheckingInstalledFMs
+                progressTask == ProgressTask.FMScan ? LText.ProgressBox.PreparingToScanFMs
                 : "";
 
             ProgressPercentLabel.Text = "";
@@ -167,7 +167,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch (_progressTask)
             {
-                case ProgressTask.ScanAllFMs:
+                case ProgressTask.FMScan:
                     FMScan.CancelScan();
                     break;
                 case ProgressTask.InstallFM:

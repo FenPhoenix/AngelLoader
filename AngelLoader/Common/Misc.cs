@@ -30,7 +30,7 @@ namespace AngelLoader
         // Public for param accessibility reasons or whatever
         public enum ProgressTask
         {
-            ScanAllFMs,
+            FMScan,
             InstallFM,
             UninstallFM,
             ConvertFiles,

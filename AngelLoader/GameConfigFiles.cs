@@ -33,8 +33,12 @@ namespace AngelLoader
         private const string key_InstallPath = "InstallPath=";
         private const string key_IgnoreSavesKey = "IgnoreSavesKey=";
 
+#if !ReleaseBeta && !ReleasePublic
+
         // user.cfg
         private const string inv_status_height = "inv_status_height";
+
+#endif
 
         #endregion
 

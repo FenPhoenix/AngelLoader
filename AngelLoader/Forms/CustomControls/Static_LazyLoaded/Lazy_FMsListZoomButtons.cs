@@ -52,9 +52,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            ZoomInButton.ToolTipText = LText.FMsList.ZoomInToolTip;
-            ZoomOutButton.ToolTipText = LText.FMsList.ZoomOutToolTip;
-            ResetZoomButton.ToolTipText = LText.FMsList.ResetZoomToolTip;
+            ZoomInButton.ToolTipText = LText.Global.ZoomIn;
+            ZoomOutButton.ToolTipText = LText.Global.ZoomOut;
+            ResetZoomButton.ToolTipText = LText.Global.ResetZoom;
         }
 
         internal static void SetVisible(MainForm owner, bool value)
