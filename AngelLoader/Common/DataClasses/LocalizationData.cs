@@ -31,7 +31,7 @@ namespace AngelLoader.DataClasses
         internal readonly AlertMessages_Class AlertMessages = new AlertMessages_Class();
         internal readonly MainMenu_Class MainMenu = new MainMenu_Class();
         internal readonly GameVersionsWindow_Class GameVersionsWindow = new GameVersionsWindow_Class();
-        internal readonly GlobalFMStats_Class GlobalFMStats = new GlobalFMStats_Class();
+        //internal readonly GlobalFMStats_Class GlobalFMStats = new GlobalFMStats_Class();
         internal readonly FMDeletion_Class FMDeletion = new FMDeletion_Class();
         internal readonly Difficulties_Class Difficulties = new Difficulties_Class();
         internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
@@ -98,7 +98,7 @@ namespace AngelLoader.DataClasses
 
             internal readonly string ZoomIn = "Zoom in (Ctrl++)";
             internal readonly string ZoomOut = "Zoom out (Ctrl+-)";
-            internal readonly string ResetZoom = "Reset zoom (Ctrl-0)";
+            internal readonly string ResetZoom = "Reset zoom (Ctrl+0)";
         }
 
         internal sealed class BrowseDialogs_Class
@@ -106,6 +106,8 @@ namespace AngelLoader.DataClasses
             internal readonly string AllFiles = "All files (*.*)";
             internal readonly string ExeFiles = "Executable files (*.exe)";
             internal readonly string IniFiles = "ini files (*.ini)";
+            [FenGenComment(
+                "This is for the \"Export fm.ini\" save-file dialog box.")]
             internal readonly string FMIniFile = "FM ini file";
             internal readonly string DMLFiles = "NewDark .dml patch files (*.dml)";
         }
@@ -119,6 +121,8 @@ namespace AngelLoader.DataClasses
             internal readonly string Uninstall = "Uninstall";
             internal readonly string BackUp = "Back up";
             internal readonly string DontBackUp = "Don't back up";
+            [FenGenComment(
+                "This is displayed in the title bar of the \"Delete FM archive\" confirmation dialog box.")]
             internal readonly string DeleteFMArchive = "Delete FM archive";
             [FenGenBlankLine]
             internal readonly string DontAskAgain = "Don't ask again";
@@ -130,12 +134,21 @@ namespace AngelLoader.DataClasses
             internal readonly string Install_UnknownGameType = "This FM's game type is unknown, so it can't be installed.";
             internal readonly string Install_UnsupportedGameType = "This FM's game type is unsupported, so it can't be installed.";
             internal readonly string Install_ArchiveNotFound = "FM archive not found. Unable to install.";
-            internal readonly string Install_ExecutableNotFound = "Executable file not specified or not found. Unable to install.";
-            internal readonly string Install_FMInstallPathNotFound = "FM install path not specified or not found. Unable to install.";
-            internal readonly string Install_GameIsRunning = "Game is running; unable to install. Please exit the game and then try again.";
+            [FenGenComment(
+                "These messages will be displayed with the game name and then the message itself.",
+                "Example:",
+                "\"Thief 2:",
+                "Game executable file not specified or not found. Unable to install.\"")]
+            internal readonly string Install_ExecutableNotFound = "Game executable file not specified or not found. Unable to install FM.";
+            [FenGenComment(
+                "\"FM install path\" means the folder in which FMs are installed, which is usually \"[Game directory]\\FMs\"",
+                "for Thief 1, Thief 2, and System Shock 2 (for example \"C:\\Games\\Thief2\\FMs\") and usually",
+                "\"C:\\ProgramData\\Thief 3 Sneaky Upgrade\\Installed FMs\" for Thief 3.")]
+            internal readonly string Install_FMInstallPathNotFound = "FM install path not specified or not found. Unable to install FM.";
+            internal readonly string Install_GameIsRunning = "Game is running; unable to install FM. Please exit the game and then try again.";
             [FenGenBlankLine]
             internal readonly string Uninstall_Confirm = "Are you sure you want to uninstall this FM?";
-            internal readonly string Uninstall_GameIsRunning = "Game is running; unable to uninstall. Please exit the game and then try again.";
+            internal readonly string Uninstall_GameIsRunning = "Game is running; unable to uninstall FM. Please exit the game and then try again.";
             internal readonly string Uninstall_FMAlreadyUninstalled = "This FM has already been uninstalled or its folder cannot be found. Mark it as uninstalled?";
             internal readonly string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Saves and screenshots will be backed up, but any other data will not. Are you sure you want to uninstall this FM?";
             internal readonly string Uninstall_UninstallNotCompleted = "The uninstall could not be completed. The FM will be marked as uninstalled but its folder may be in an unknown state.";
@@ -146,9 +159,9 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string FileConversion_GameIsRunning = "Game is running; unable to convert files. Please exit the game and then try again.";
             [FenGenBlankLine]
-            internal readonly string Play_ExecutableNotFound = "Executable file not specified or not found. Unable to play.";
+            internal readonly string Play_ExecutableNotFound = "Game executable file not specified or not found. Unable to play.";
+            internal readonly string Play_ExecutableNotFoundFM = "Game executable file not specified or not found. Unable to play FM.";
             internal readonly string Play_GamePathNotFound = "Game path not found. Unable to play.";
-            internal readonly string Play_ExecutableNotFoundFM = "Executable file not specified or not found. Unable to play FM.";
             internal readonly string Play_AnyGameIsRunning = "One or more supported games are already running. Please exit them first.";
             internal readonly string Play_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.";
             internal readonly string Play_ConfirmMessage = "Play FM?";
@@ -161,17 +174,22 @@ namespace AngelLoader.DataClasses
             internal readonly string Thief2_Multiplayer_ExecutableNotFound = "Thief2MP.exe was not found in the game directory. Unable to play FM in multiplayer mode.";
             // @GENGAMES (Localization - Alerts - Dark multiplayer): End
             [FenGenBlankLine]
+            [FenGenComment(
+                "The generic \"Unable to add/remove patch\" messages are for when the folder was found but there was some other error that prevented",
+                "the add/remove operation.")]
             internal readonly string Patch_AddDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to add patch.";
             internal readonly string Patch_AddDML_UnableToAdd = "Unable to add patch to fan mission folder.";
             internal readonly string Patch_RemoveDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to remove patch.";
             internal readonly string Patch_RemoveDML_UnableToRemove = "Unable to remove patch from fan mission folder.";
+            [FenGenComment(
+                "This error message is displayed when the users clicks the \"Open FM folder\" button and the folder cannot be found.")]
             internal readonly string Patch_FMFolderNotFound = "The FM's folder couldn't be found.";
             [FenGenBlankLine]
             internal readonly string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";
             internal readonly string Misc_FMMarkedInstalledButNotInstalled = "This FM is marked as installed, but its folder cannot be found. Mark it as uninstalled?";
             [FenGenBlankLine]
-            internal readonly string Extract_ZipExtractFailedFullyOrPartially = "Zip extract failed fully or partially.";
-            internal readonly string Extract_SevenZipExtractFailedFullyOrPartially = "7-zip extract failed fully or partially.";
+            internal readonly string Extract_ZipExtractFailedFullyOrPartially = "Zip extraction failed fully or partially.";
+            internal readonly string Extract_SevenZipExtractFailedFullyOrPartially = "7-zip extraction failed fully or partially.";
             [FenGenBlankLine]
             internal readonly string Scan_ExceptionInScanOne = "There was a problem scanning the FM. See the log file for error details.";
             internal readonly string Scan_ExceptionInScanMultiple = "There was a problem scanning the FMs. See the log file for error details.";
@@ -189,7 +207,7 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string MainMenuToolTip = "Main menu";
             internal readonly string GameVersions = "Game versions...";
-            internal readonly string GlobalFMStats = "Global FM stats...";
+            //internal readonly string GlobalFMStats = "Global FM stats...";
         }
 
         internal sealed class GameVersionsWindow_Class
@@ -221,6 +239,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Error_GameVersionNotFound = "Version not found";
         }
 
+        /*
         internal sealed class GlobalFMStats_Class
         {
             internal readonly string TitleText = "Global FM stats";
@@ -237,12 +256,15 @@ namespace AngelLoader.DataClasses
                 "FMs that have been scanned and detected as \"unsupported game or non-FM archive\".")]
             internal readonly string Unsupported = "Invalid or unsupported:";
         }
+        */
 
         internal sealed class FMDeletion_Class
         {
             internal readonly string ArchiveNotFound = "This FM's archive could not be found. To delete this FM permanently, simply uninstall it.";
             internal readonly string AboutToDelete = "The following FM archive is about to be deleted from disk:";
             internal readonly string DuplicateArchivesFound = "Multiple archives with the same name were found. Please choose which archives(s) you want to delete.";
+            [FenGenComment(
+                "One of these will be displayed on a button on the \"Delete FM archive\" dialog box, depending if one or multiple FM archives were found.")]
             internal readonly string DeleteFM = "Delete FM";
             internal readonly string DeleteFMs = "Delete FM(s)";
         }
@@ -309,7 +331,8 @@ namespace AngelLoader.DataClasses
             internal readonly string FinishedColumn = "Finished";
             internal readonly string ReleaseDateColumn = "Release Date";
             internal readonly string LastPlayedColumn = "Last Played";
-            [FenGenComment("The date an FM was added to the list. Basically means the date you downloaded it and put it into your archives folder.")]
+            [FenGenComment(
+                "The date an FM was added to the list. Basically means the date you downloaded it and put it into your archives folder.")]
             internal readonly string DateAddedColumn = "Date Added";
             internal readonly string DisabledModsColumn = "Disabled Mods";
             internal readonly string CommentColumn = "Comment";
@@ -482,6 +505,10 @@ namespace AngelLoader.DataClasses
             internal readonly string Paths_Other = "Other";
             internal readonly string Paths_BackupPath = "Backup path (required):";
             internal readonly string Paths_FMArchivePaths = "FM archive paths";
+            [FenGenComment(
+                "This is a checkbox in the \"FM archive paths\" section. If checked, then all subfolders of all specified",
+                "FM archive paths will also be searched for FM archives; otherwise, only exactly the specified FM archive",
+                "paths will be searched.")]
             internal readonly string Paths_IncludeSubfolders = "Include subfolders";
             internal readonly string Paths_BackupPath_Info = "This is the directory that will be used for new backups of saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths.";
             [FenGenBlankLine]
@@ -533,6 +560,9 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Other_WebSearch = "Web search";
             internal readonly string Other_WebSearchURL = "Full URL to use when searching for an FM title:";
+            [FenGenComment(
+                "$TITLE$ is a keyword that the user can place into the URL to signify that the current FM's title should",
+                "be placed there. It should not be translated (it must always remain $TITLE$).")]
             internal readonly string Other_WebSearchTitleVar = "$TITLE$ : the title of the FM";
             internal readonly string Other_WebSearchResetToolTip = "Reset to default";
             [FenGenBlankLine]

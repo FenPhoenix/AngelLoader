@@ -1,4 +1,5 @@
-﻿namespace AngelLoader.Forms
+﻿/*
+namespace AngelLoader.Forms
 {
     sealed partial class GlobalFMStatsForm
     {
@@ -252,3 +253,4 @@
         private System.Windows.Forms.TextBox FMsInDatabaseTextBox;
     }
 }
+*/

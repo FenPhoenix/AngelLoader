@@ -494,7 +494,8 @@ namespace AngelLoader
 
             if (!Directory.Exists(instBasePath))
             {
-                Core.View.ShowAlert(LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
+                Core.View.ShowAlert(gameName + ":\r\n" +
+                    LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
