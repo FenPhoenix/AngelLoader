@@ -46,7 +46,7 @@ namespace FMScanner.SimpleHelpers
 
         private bool _started;
         private bool _done;
-        private readonly Dictionary<string, int> encodingFrequency = new Dictionary<string, int>(StringComparer.Ordinal);
+        private readonly Dictionary<string, int> _encodingFrequency = new Dictionary<string, int>(StringComparer.Ordinal);
         private readonly Ude.CharsetDetector _ude = new Ude.CharsetDetector();
         private readonly Ude.CharsetDetector _singleUde = new Ude.CharsetDetector();
         private string? _encodingName;
@@ -158,7 +158,7 @@ namespace FMScanner.SimpleHelpers
         {
             _started = false;
             _done = false;
-            encodingFrequency.Clear();
+            _encodingFrequency.Clear();
             _ude.Reset();
             _singleUde.Reset();
             _encodingName = null;
@@ -256,23 +256,36 @@ namespace FMScanner.SimpleHelpers
             }
             // vote for best encoding
             _encodingName = GetCurrentEncoding();
+
+            /*
+             Fen's Notes:
+             @NET5: GetEncoding(string): string could be "utf-7" and then we throw on .NET 5
+             https://docs.microsoft.com/en-us/dotnet/core/compatibility/corefx#utf-7-code-paths-are-obsolete
+             Ude.NetStandard v1.2.0 at least does not appear to detect nor ever return the value "utf-7", and
+             it doesn't deal with .NET Encoding objects either, it returns encoding names as strings. Still,
+             let's put a guard check in here just for robustness in case we change to a different detector or
+             whatever.
+
+             There's another UTF-7 reference up in the byte order mark checker, but this is the only place where
+             we create an Encoding object and return a value back to the caller (the public methods both get their
+             values from here), so this one guard is the only one we need.
+            */
+
             // check result
-            // @NET5: GetEncoding(string): string could be UTF7 and then we throw on .NET 5
-            // https://docs.microsoft.com/en-us/dotnet/core/compatibility/corefx#utf-7-code-paths-are-obsolete
-            return !_encodingName.IsEmpty() ? Encoding.GetEncoding(_encodingName) : null;
+            return _encodingName.IsEmpty() || _encodingName.EqualsI("utf-7") ? null : Encoding.GetEncoding(_encodingName);
         }
 
         private void IncrementFrequency(string charset)
         {
-            encodingFrequency.TryGetValue(charset, out int currentCount);
-            encodingFrequency[charset] = ++currentCount;
+            _encodingFrequency.TryGetValue(charset, out int currentCount);
+            _encodingFrequency[charset] = ++currentCount;
         }
 
         private string? GetCurrentEncoding()
         {
-            if (encodingFrequency.Count == 0) return null;
+            if (_encodingFrequency.Count == 0) return null;
             // ASCII should be the last option, since other encodings often has ASCII included...
-            return encodingFrequency
+            return _encodingFrequency
                     .OrderByDescending(i => i.Value * (i.Key != "ASCII" ? 1 : 0))
                     .FirstOrDefault().Key;
         }
