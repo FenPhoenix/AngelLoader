@@ -1114,13 +1114,34 @@ namespace AngelLoader.Forms
             ShowPathError(s, !Directory.Exists(s.Text));
         }
 
+        // @NET5: Do it on this side of the boundary now because we'll want to use the built-in Vista dialog that comes with .NET 5
+        private static string SanitizePathForDialog(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path) && !Directory.Exists(path))
+            {
+                try
+                {
+                    // C:\Folder\File.exe becomes C:\Folder
+                    path = Path.GetDirectoryName(path) ?? "";
+                    return Directory.Exists(path) ? path : "";
+                }
+                // Fix: we weren't checking for invalid path names
+                catch
+                {
+                    return "";
+                }
+            }
+
+            return path;
+        }
+
         private void BackupPathBrowseButton_Click(object sender, EventArgs e)
         {
             var tb = PathsPage.BackupPathTextBox;
 
             using (var d = new VistaFolderBrowserDialog())
             {
-                d.InitialDirectory = tb.Text;
+                d.InitialDirectory = SanitizePathForDialog(tb.Text);
                 d.MultiSelect = false;
                 if (d.ShowDialog() == DialogResult.OK) tb.Text = d.DirectoryName;
             }
