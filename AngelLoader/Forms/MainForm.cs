@@ -2121,6 +2121,7 @@ namespace AngelLoader.Forms
                                 // Some buttons aren't just toggles but bring up windows, so we can't just call
                                 // PerformClick() on them. So let's do like in the clear filters method but just
                                 // for this one filter.
+                                bool buttonWasChecked = toolStripButton.Checked;
                                 toolStripButton.Checked = false;
                                 var filterControl = (HideableFilterControls)s.Tag;
                                 switch (filterControl)
@@ -2138,7 +2139,8 @@ namespace AngelLoader.Forms
 
                                 FMsDGV.Filter.ClearHideableFilter(filterControl);
 
-                                bool keepSel = toolStripButton != FilterShowRecentAtTopButton;
+                                bool keepSel = toolStripButton != FilterShowRecentAtTopButton ||
+                                               !buttonWasChecked;
                                 // Note: It's fine that we call this in the middle of a suspend/resume block,
                                 // because we're suspend/resuming the filter bar, whereas this is suspend/resuming
                                 // the FMs list.
