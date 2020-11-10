@@ -96,7 +96,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Thief3_Colon = "Thief 3:";
             internal readonly string SystemShock2_Colon = "System Shock 2:";
             // @GENGAMES (Localization - Global): End
-
+            [FenGenBlankLine]
             internal readonly string ZoomIn = "Zoom in (Ctrl++)";
             internal readonly string ZoomOut = "Zoom out (Ctrl+-)";
             internal readonly string ResetZoom = "Reset zoom (Ctrl+0)";
