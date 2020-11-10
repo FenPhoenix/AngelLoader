@@ -331,11 +331,11 @@ namespace AngelLoader.Forms
             new Rectangle(1, 13, 14, 2)
         };
 
-        private static readonly Rectangle[] _hamRects20 =
+        private static readonly Rectangle[] _hamRects24 =
         {
-            new Rectangle(3, 3, 14, 2),
-            new Rectangle(3, 9, 14, 2),
-            new Rectangle(3, 15, 14, 2)
+            new Rectangle(5, 5, 14, 2),
+            new Rectangle(5, 11, 14, 2),
+            new Rectangle(5, 17, 14, 2)
         };
 
         #endregion
@@ -470,9 +470,9 @@ namespace AngelLoader.Forms
             e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, _hamRects16);
         }
 
-        internal static void PaintHamburgerMenuButton20(Button button, PaintEventArgs e)
+        internal static void PaintHamburgerMenuButton24(Button button, PaintEventArgs e)
         {
-            e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, _hamRects20);
+            e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, _hamRects24);
         }
 
         internal static void PaintWebSearchButton(Button button, PaintEventArgs e)

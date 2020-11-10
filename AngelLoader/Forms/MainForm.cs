@@ -4257,7 +4257,7 @@ namespace AngelLoader.Forms
 
         private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton16(TopRightMenuButton, e);
 
-        private void MainMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton20(MainMenuButton, e);
+        private void MainMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton24(MainMenuButton, e);
 
         private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintWebSearchButton(WebSearchButton, e);
 
