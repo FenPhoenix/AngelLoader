@@ -154,5 +154,9 @@ namespace AngelLoader
         internal sealed class FenGenNotAGameTypeAttribute : Attribute { }
 
         #endregion
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Class)]
+        internal sealed class FenGenBuildDateDestClassAttribute : Attribute { }
     }
 }

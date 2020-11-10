@@ -45,6 +45,7 @@
             this.AngelLoaderUsesLabel = new System.Windows.Forms.Label();
             this.LogoTextPictureBox = new System.Windows.Forms.PictureBox();
             this.OKFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.BuildDateLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LogoTextPictureBox)).BeginInit();
             this.OKFlowLayoutPanel.SuspendLayout();
@@ -63,7 +64,7 @@
             // 
             this.VersionLabel.AutoSize = true;
             this.VersionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.VersionLabel.Location = new System.Drawing.Point(352, 40);
+            this.VersionLabel.Location = new System.Drawing.Point(352, 24);
             this.VersionLabel.Name = "VersionLabel";
             this.VersionLabel.Size = new System.Drawing.Size(71, 21);
             this.VersionLabel.TabIndex = 1;
@@ -73,7 +74,7 @@
             // 
             this.GitHubLinkLabel.AutoSize = true;
             this.GitHubLinkLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.GitHubLinkLabel.Location = new System.Drawing.Point(72, 72);
+            this.GitHubLinkLabel.Location = new System.Drawing.Point(72, 68);
             this.GitHubLinkLabel.Name = "GitHubLinkLabel";
             this.GitHubLinkLabel.Size = new System.Drawing.Size(269, 16);
             this.GitHubLinkLabel.TabIndex = 2;
@@ -84,7 +85,7 @@
             // LicenseTextBox
             // 
             this.LicenseTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.LicenseTextBox.Location = new System.Drawing.Point(32, 112);
+            this.LicenseTextBox.Location = new System.Drawing.Point(32, 108);
             this.LicenseTextBox.Multiline = true;
             this.LicenseTextBox.Name = "LicenseTextBox";
             this.LicenseTextBox.ReadOnly = true;
@@ -109,7 +110,7 @@
             // SevenZipLinkLabel
             // 
             this.SevenZipLinkLabel.AutoSize = true;
-            this.SevenZipLinkLabel.Location = new System.Drawing.Point(32, 392);
+            this.SevenZipLinkLabel.Location = new System.Drawing.Point(32, 388);
             this.SevenZipLinkLabel.Name = "SevenZipLinkLabel";
             this.SevenZipLinkLabel.Size = new System.Drawing.Size(31, 13);
             this.SevenZipLinkLabel.TabIndex = 5;
@@ -120,7 +121,7 @@
             // SevenZipSharpLinkLabel
             // 
             this.SevenZipSharpLinkLabel.AutoSize = true;
-            this.SevenZipSharpLinkLabel.Location = new System.Drawing.Point(32, 408);
+            this.SevenZipSharpLinkLabel.Location = new System.Drawing.Point(32, 404);
             this.SevenZipSharpLinkLabel.Name = "SevenZipSharpLinkLabel";
             this.SevenZipSharpLinkLabel.Size = new System.Drawing.Size(129, 13);
             this.SevenZipSharpLinkLabel.TabIndex = 6;
@@ -131,7 +132,7 @@
             // FFmpegLinkLabel
             // 
             this.FFmpegLinkLabel.AutoSize = true;
-            this.FFmpegLinkLabel.Location = new System.Drawing.Point(32, 425);
+            this.FFmpegLinkLabel.Location = new System.Drawing.Point(32, 421);
             this.FFmpegLinkLabel.Name = "FFmpegLinkLabel";
             this.FFmpegLinkLabel.Size = new System.Drawing.Size(39, 13);
             this.FFmpegLinkLabel.TabIndex = 7;
@@ -142,7 +143,7 @@
             // FFmpegDotNetLinkLabel
             // 
             this.FFmpegDotNetLinkLabel.AutoSize = true;
-            this.FFmpegDotNetLinkLabel.Location = new System.Drawing.Point(32, 441);
+            this.FFmpegDotNetLinkLabel.Location = new System.Drawing.Point(32, 437);
             this.FFmpegDotNetLinkLabel.Name = "FFmpegDotNetLinkLabel";
             this.FFmpegDotNetLinkLabel.Size = new System.Drawing.Size(70, 13);
             this.FFmpegDotNetLinkLabel.TabIndex = 8;
@@ -153,7 +154,7 @@
             // SimpleHelpersDotNetLinkLabel
             // 
             this.SimpleHelpersDotNetLinkLabel.AutoSize = true;
-            this.SimpleHelpersDotNetLinkLabel.Location = new System.Drawing.Point(32, 457);
+            this.SimpleHelpersDotNetLinkLabel.Location = new System.Drawing.Point(32, 453);
             this.SimpleHelpersDotNetLinkLabel.Name = "SimpleHelpersDotNetLinkLabel";
             this.SimpleHelpersDotNetLinkLabel.Size = new System.Drawing.Size(94, 13);
             this.SimpleHelpersDotNetLinkLabel.TabIndex = 9;
@@ -164,7 +165,7 @@
             // UdeNetStandardLinkLabel
             // 
             this.UdeNetStandardLinkLabel.AutoSize = true;
-            this.UdeNetStandardLinkLabel.Location = new System.Drawing.Point(32, 472);
+            this.UdeNetStandardLinkLabel.Location = new System.Drawing.Point(32, 468);
             this.UdeNetStandardLinkLabel.Name = "UdeNetStandardLinkLabel";
             this.UdeNetStandardLinkLabel.Size = new System.Drawing.Size(90, 13);
             this.UdeNetStandardLinkLabel.TabIndex = 10;
@@ -175,7 +176,7 @@
             // OokiiDialogsLinkLabel
             // 
             this.OokiiDialogsLinkLabel.AutoSize = true;
-            this.OokiiDialogsLinkLabel.Location = new System.Drawing.Point(32, 488);
+            this.OokiiDialogsLinkLabel.Location = new System.Drawing.Point(32, 484);
             this.OokiiDialogsLinkLabel.Name = "OokiiDialogsLinkLabel";
             this.OokiiDialogsLinkLabel.Size = new System.Drawing.Size(69, 13);
             this.OokiiDialogsLinkLabel.TabIndex = 11;
@@ -186,7 +187,7 @@
             // NetCore3SysIOCompLinkLabel
             // 
             this.NetCore3SysIOCompLinkLabel.AutoSize = true;
-            this.NetCore3SysIOCompLinkLabel.Location = new System.Drawing.Point(32, 504);
+            this.NetCore3SysIOCompLinkLabel.Location = new System.Drawing.Point(32, 500);
             this.NetCore3SysIOCompLinkLabel.Name = "NetCore3SysIOCompLinkLabel";
             this.NetCore3SysIOCompLinkLabel.Size = new System.Drawing.Size(180, 13);
             this.NetCore3SysIOCompLinkLabel.TabIndex = 12;
@@ -197,7 +198,7 @@
             // AngelLoaderUsesLabel
             // 
             this.AngelLoaderUsesLabel.AutoSize = true;
-            this.AngelLoaderUsesLabel.Location = new System.Drawing.Point(32, 368);
+            this.AngelLoaderUsesLabel.Location = new System.Drawing.Point(32, 364);
             this.AngelLoaderUsesLabel.Name = "AngelLoaderUsesLabel";
             this.AngelLoaderUsesLabel.Size = new System.Drawing.Size(95, 13);
             this.AngelLoaderUsesLabel.TabIndex = 4;
@@ -218,10 +219,21 @@
             this.OKFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.OKFlowLayoutPanel.Controls.Add(this.OKButton);
             this.OKFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKFlowLayoutPanel.Location = new System.Drawing.Point(0, 527);
+            this.OKFlowLayoutPanel.Location = new System.Drawing.Point(0, 523);
             this.OKFlowLayoutPanel.Name = "OKFlowLayoutPanel";
             this.OKFlowLayoutPanel.Size = new System.Drawing.Size(529, 40);
             this.OKFlowLayoutPanel.TabIndex = 0;
+            // 
+            // BuildDateLabel
+            // 
+            this.BuildDateLabel.AutoSize = true;
+            this.BuildDateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BuildDateLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.BuildDateLabel.Location = new System.Drawing.Point(352, 48);
+            this.BuildDateLabel.Name = "BuildDateLabel";
+            this.BuildDateLabel.Size = new System.Drawing.Size(34, 13);
+            this.BuildDateLabel.TabIndex = 1;
+            this.BuildDateLabel.Text = "[date]";
             // 
             // AboutForm
             // 
@@ -229,7 +241,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.CancelButton = this.OKButton;
-            this.ClientSize = new System.Drawing.Size(529, 567);
+            this.ClientSize = new System.Drawing.Size(529, 563);
+            this.Controls.Add(this.BuildDateLabel);
+            this.Controls.Add(this.VersionLabel);
             this.Controls.Add(this.OKFlowLayoutPanel);
             this.Controls.Add(this.LogoTextPictureBox);
             this.Controls.Add(this.AngelLoaderUsesLabel);
@@ -243,7 +257,6 @@
             this.Controls.Add(this.SevenZipLinkLabel);
             this.Controls.Add(this.LicenseTextBox);
             this.Controls.Add(this.GitHubLinkLabel);
-            this.Controls.Add(this.VersionLabel);
             this.Controls.Add(this.LogoPictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -279,5 +292,6 @@
         private System.Windows.Forms.Label AngelLoaderUsesLabel;
         private System.Windows.Forms.PictureBox LogoTextPictureBox;
         private System.Windows.Forms.FlowLayoutPanel OKFlowLayoutPanel;
+        private System.Windows.Forms.Label BuildDateLabel;
     }
 }

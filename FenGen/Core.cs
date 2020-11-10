@@ -83,6 +83,8 @@ namespace FenGen
         #endregion
 
         internal const string FenGenExcludeResx = nameof(FenGenExcludeResx);
+
+        internal const string FenGenBuildDateDestClass = nameof(FenGenBuildDateDestClass);
     }
 
     internal static class Core
@@ -97,7 +99,8 @@ namespace FenGen
             VisLoc,
             ExcludeResx,
             RestoreResx,
-            TrimDesigner
+            TrimDesigner,
+            BuildDate
         }
 
         private static readonly Dictionary<string, GenType>
@@ -109,7 +112,8 @@ namespace FenGen
             { "-game_support", GenType.GameSupport },
             { "-exclude_resx", GenType.ExcludeResx },
             { "-restore_resx", GenType.RestoreResx },
-            { "-designer_trim", GenType.TrimDesigner}
+            { "-designer_trim", GenType.TrimDesigner },
+            { "-build_date", GenType.BuildDate }
         };
 
         // Only used for debug, so we can explicitly place test arguments into the set
@@ -133,6 +137,7 @@ namespace FenGen
             internal const string FMDataSource = "FenGen_FMDataSource";
             internal const string FMDataDest = "FenGen_FMDataDest";
             internal const string ExcludeDesigner = "FenGen_ExcludeDesigner";
+            internal const string BuildDate = "FenGen_BuildDateDest";
         }
 
         private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
@@ -193,8 +198,9 @@ namespace FenGen
                 GetArg(GenType.FMData),
                 GetArg(GenType.LanguageAndAlsoCreateTestIni),
                 GetArg(GenType.ExcludeResx),
-                GetArg(GenType.RestoreResx),
-                GetArg(GenType.TrimDesigner)
+                //GetArg(GenType.RestoreResx),
+                //GetArg(GenType.TrimDesigner),
+                GetArg(GenType.BuildDate)
             };
 #else
             string[] args = Environment.GetCommandLineArgs();
@@ -256,6 +262,10 @@ namespace FenGen
             {
                 forceFindRequiredFiles = true;
             }
+            if (GenTaskActive(GenType.BuildDate))
+            {
+                genFileTags.Add(GenFileTags.BuildDate);
+            }
 
             Dictionary<string, string>? taggedFilesDict = null;
             if (forceFindRequiredFiles || genFileTags.Count > 0)
@@ -302,6 +312,10 @@ namespace FenGen
             if (GenTaskActive(GenType.TrimDesigner))
             {
                 DesignerGen.Generate();
+            }
+            if (GenTaskActive(GenType.BuildDate))
+            {
+                BuildDateGen.Generate(taggedFilesDict![GenFileTags.BuildDate]);
             }
         }
 
