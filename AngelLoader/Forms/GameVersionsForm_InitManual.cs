@@ -87,7 +87,6 @@ namespace AngelLoader.Forms
             // 
             // OKButton
             // 
-            OKButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             OKButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             OKButton.DialogResult = DialogResult.Cancel;
             OKButton.Margin = new Padding(3, 8, 9, 3);
@@ -111,7 +110,6 @@ namespace AngelLoader.Forms
             CancelButton = OKButton;
             ClientSize = new Size(438, 146);
             Controls.Add(OKFlowLayoutPanel);
-            Controls.Add(OKButton);
             Controls.Add(SS2VersionTextBox);
             Controls.Add(SS2VersionLabel);
             Controls.Add(T3VersionTextBox);
@@ -122,10 +120,12 @@ namespace AngelLoader.Forms
             Controls.Add(T1VersionLabel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = Resources.AngelLoader;
+            KeyPreview = true;
             MaximizeBox = false;
             MinimizeBox = false;
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
+            KeyDown += GameVersionsForm_KeyDown;
             OKFlowLayoutPanel.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();

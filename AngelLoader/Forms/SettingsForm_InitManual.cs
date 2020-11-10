@@ -173,6 +173,7 @@ namespace AngelLoader.Forms
             Controls.Add(BottomFlowLayoutPanel);
             DoubleBuffered = true;
             Icon = Images.AngelLoader;
+            KeyPreview = true;
             MaximizeBox = false;
             MinimizeBox = false;
             MinimumSize = new Size(540, 320);

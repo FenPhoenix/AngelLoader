@@ -47,8 +47,6 @@ namespace AngelLoader.Forms
             // OKCancelFlowLayoutPanel
             // 
             OKCancelFlowLayoutPanel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            OKCancelFlowLayoutPanel.AutoSize = true;
-            OKCancelFlowLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             OKCancelFlowLayoutPanel.Controls.Add(Cancel_Button);
             OKCancelFlowLayoutPanel.Controls.Add(OKButton);
             OKCancelFlowLayoutPanel.FlowDirection = FlowDirection.RightToLeft;

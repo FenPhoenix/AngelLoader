@@ -44,8 +44,10 @@
             this.NetCore3SysIOCompLinkLabel = new System.Windows.Forms.LinkLabel();
             this.AngelLoaderUsesLabel = new System.Windows.Forms.Label();
             this.LogoTextPictureBox = new System.Windows.Forms.PictureBox();
+            this.OKFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LogoTextPictureBox)).BeginInit();
+            this.OKFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // LogoPictureBox
@@ -93,8 +95,11 @@
             // OKButton
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.OKButton.Location = new System.Drawing.Point(445, 535);
+            this.OKButton.Location = new System.Drawing.Point(445, 8);
+            this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 0;
@@ -208,6 +213,16 @@
             this.LogoTextPictureBox.TabIndex = 7;
             this.LogoTextPictureBox.TabStop = false;
             // 
+            // OKFlowLayoutPanel
+            // 
+            this.OKFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.OKFlowLayoutPanel.Controls.Add(this.OKButton);
+            this.OKFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.OKFlowLayoutPanel.Location = new System.Drawing.Point(0, 527);
+            this.OKFlowLayoutPanel.Name = "OKFlowLayoutPanel";
+            this.OKFlowLayoutPanel.Size = new System.Drawing.Size(529, 40);
+            this.OKFlowLayoutPanel.TabIndex = 0;
+            // 
             // AboutForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -215,6 +230,7 @@
             this.BackColor = System.Drawing.SystemColors.Window;
             this.CancelButton = this.OKButton;
             this.ClientSize = new System.Drawing.Size(529, 567);
+            this.Controls.Add(this.OKFlowLayoutPanel);
             this.Controls.Add(this.LogoTextPictureBox);
             this.Controls.Add(this.AngelLoaderUsesLabel);
             this.Controls.Add(this.NetCore3SysIOCompLinkLabel);
@@ -225,7 +241,6 @@
             this.Controls.Add(this.FFmpegLinkLabel);
             this.Controls.Add(this.SevenZipSharpLinkLabel);
             this.Controls.Add(this.SevenZipLinkLabel);
-            this.Controls.Add(this.OKButton);
             this.Controls.Add(this.LicenseTextBox);
             this.Controls.Add(this.GitHubLinkLabel);
             this.Controls.Add(this.VersionLabel);
@@ -239,6 +254,7 @@
             this.Text = "About AngelLoader";
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LogoTextPictureBox)).EndInit();
+            this.OKFlowLayoutPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -262,5 +278,6 @@
         private System.Windows.Forms.LinkLabel NetCore3SysIOCompLinkLabel;
         private System.Windows.Forms.Label AngelLoaderUsesLabel;
         private System.Windows.Forms.PictureBox LogoTextPictureBox;
+        private System.Windows.Forms.FlowLayoutPanel OKFlowLayoutPanel;
     }
 }

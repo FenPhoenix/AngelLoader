@@ -77,7 +77,6 @@
             // OKCancelFlowLayoutPanel
             // 
             this.OKCancelFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OKCancelFlowLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
             this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
             this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;

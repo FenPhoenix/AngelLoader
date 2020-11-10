@@ -201,6 +201,7 @@
             this.Controls.Add(this.BottomFlowLayoutPanel);
             this.DoubleBuffered = true;
             this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(540, 320);

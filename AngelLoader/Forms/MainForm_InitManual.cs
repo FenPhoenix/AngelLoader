@@ -1554,6 +1554,7 @@ namespace AngelLoader.Forms
             Controls.Add(EverythingPanel);
             DoubleBuffered = true;
             Icon = Images.AngelLoader;
+            KeyPreview = true;
             MinimumSize = new Size(894, 260);
             Deactivate += MainForm_Deactivate;
             FormClosing += MainForm_FormClosing;

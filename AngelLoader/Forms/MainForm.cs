@@ -568,9 +568,6 @@ namespace AngelLoader.Forms
             // Set here specifically (before anything else) so that splitter positioning etc. works right.
             SetWindowStateAndSize();
 
-            // Allows shortcut keys to be detected globally (selected control doesn't affect them)
-            KeyPreview = true;
-
             #region Top-right tabs
 
             var sortedTabPages = new SortedDictionary<int, TabPage>();

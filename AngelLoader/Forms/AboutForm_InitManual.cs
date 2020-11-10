@@ -34,8 +34,10 @@ namespace AngelLoader.Forms
             NetCore3SysIOCompLinkLabel = new LinkLabel();
             AngelLoaderUsesLabel = new Label();
             LogoTextPictureBox = new PictureBox();
+            OKFlowLayoutPanel = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(LogoTextPictureBox)).BeginInit();
+            OKFlowLayoutPanel.SuspendLayout();
             SuspendLayout();
             // 
             // LogoPictureBox
@@ -78,8 +80,9 @@ namespace AngelLoader.Forms
             // OKButton
             // 
             OKButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            OKButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             OKButton.DialogResult = DialogResult.Cancel;
-            OKButton.Location = new Point(445, 535);
+            OKButton.Margin = new Padding(3, 8, 9, 3);
             OKButton.MinimumSize = new Size(75, 23);
             OKButton.TabIndex = 0;
             OKButton.UseVisualStyleBackColor = true;
@@ -170,6 +173,15 @@ namespace AngelLoader.Forms
             LogoTextPictureBox.TabIndex = 7;
             LogoTextPictureBox.TabStop = false;
             // 
+            // OKFlowLayoutPanel
+            // 
+            OKFlowLayoutPanel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            OKFlowLayoutPanel.Controls.Add(OKButton);
+            OKFlowLayoutPanel.FlowDirection = FlowDirection.RightToLeft;
+            OKFlowLayoutPanel.Location = new Point(0, 527);
+            OKFlowLayoutPanel.Size = new Size(529, 40);
+            OKFlowLayoutPanel.TabIndex = 0;
+            // 
             // AboutForm
             // 
             AutoScaleDimensions = new SizeF(6F, 13F);
@@ -177,6 +189,7 @@ namespace AngelLoader.Forms
             BackColor = SystemColors.Window;
             CancelButton = OKButton;
             ClientSize = new Size(529, 567);
+            Controls.Add(OKFlowLayoutPanel);
             Controls.Add(LogoTextPictureBox);
             Controls.Add(AngelLoaderUsesLabel);
             Controls.Add(NetCore3SysIOCompLinkLabel);
@@ -187,7 +200,6 @@ namespace AngelLoader.Forms
             Controls.Add(FFmpegLinkLabel);
             Controls.Add(SevenZipSharpLinkLabel);
             Controls.Add(SevenZipLinkLabel);
-            Controls.Add(OKButton);
             Controls.Add(LicenseTextBox);
             Controls.Add(GitHubLinkLabel);
             Controls.Add(VersionLabel);
@@ -200,6 +212,7 @@ namespace AngelLoader.Forms
             Text = " ";
             ((System.ComponentModel.ISupportInitialize)(LogoPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(LogoTextPictureBox)).EndInit();
+            OKFlowLayoutPanel.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
