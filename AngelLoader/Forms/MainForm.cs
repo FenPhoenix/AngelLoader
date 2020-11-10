@@ -1552,6 +1552,16 @@ namespace AngelLoader.Forms
         }
 #endif
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+        internal void ViewHelpFileMenuItemClick(object sender, EventArgs e) => Core.OpenHelpFile();
+
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+        internal void AboutMenuItemClick(object sender, EventArgs e)
+        {
+            using var f = new AboutForm();
+            f.ShowDialog();
+        }
+
         #endregion
 
         #region Filter bar

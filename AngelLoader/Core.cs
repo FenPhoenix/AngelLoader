@@ -1395,7 +1395,7 @@ namespace AngelLoader
             }
         }
 
-        internal static void OpenHelpFile(string section)
+        internal static void OpenHelpFile(string section = "")
         {
             /*
              We want to go directly to the relevant section of the manual, but Process.Start() won't let us open
@@ -1415,17 +1415,24 @@ namespace AngelLoader
                 return;
             }
 
-            string helpFileUri = "file://" + Paths.DocFile;
             string finalUri;
-            try
+            if (section.IsEmpty())
             {
-                File.WriteAllText(Paths.HelpRedirectFilePath, @"<meta http-equiv=""refresh"" content=""0; URL=" + helpFileUri + section + @""" />");
-                finalUri = Paths.HelpRedirectFilePath;
+                finalUri = Paths.DocFile;
             }
-            catch (Exception ex)
+            else
             {
-                Log("Exception writing temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
-                finalUri = helpFileUri;
+                string helpFileUri = "file://" + Paths.DocFile;
+                try
+                {
+                    File.WriteAllText(Paths.HelpRedirectFilePath, @"<meta http-equiv=""refresh"" content=""0; URL=" + helpFileUri + section + @""" />");
+                    finalUri = Paths.HelpRedirectFilePath;
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception writing temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
+                    finalUri = helpFileUri;
+                }
             }
 
             try

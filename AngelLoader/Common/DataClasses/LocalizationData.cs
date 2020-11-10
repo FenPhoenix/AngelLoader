@@ -30,6 +30,7 @@ namespace AngelLoader.DataClasses
         internal readonly BrowseDialogs_Class BrowseDialogs = new BrowseDialogs_Class();
         internal readonly AlertMessages_Class AlertMessages = new AlertMessages_Class();
         internal readonly MainMenu_Class MainMenu = new MainMenu_Class();
+        internal readonly AboutWindow_Class AboutWindow = new AboutWindow_Class();
         internal readonly GameVersionsWindow_Class GameVersionsWindow = new GameVersionsWindow_Class();
         //internal readonly GlobalFMStats_Class GlobalFMStats = new GlobalFMStats_Class();
         internal readonly FMDeletion_Class FMDeletion = new FMDeletion_Class();
@@ -208,6 +209,21 @@ namespace AngelLoader.DataClasses
             internal readonly string MainMenuToolTip = "Main menu";
             internal readonly string GameVersions = "Game versions...";
             //internal readonly string GlobalFMStats = "Global FM stats...";
+            internal readonly string ViewHelpFile = "View help file";
+            internal readonly string About = "About AngelLoader";
+        }
+
+        internal sealed class AboutWindow_Class
+        {
+            internal readonly string TitleText = "About AngelLoader";
+            [FenGenComment(
+                "This is the header for the list of third-party libraries and portions of code that AngelLoader uses.",
+                "In the About window, it looks like:",
+                "\"AngelLoader uses:",
+                "7-Zip",
+                "ffmpeg",
+                "etc.\"")]
+            internal readonly string AngelLoaderUses = "AngelLoader uses:";
         }
 
         internal sealed class GameVersionsWindow_Class
