@@ -239,10 +239,6 @@ namespace AngelLoader.DataClasses
             internal readonly string TitleText = "Game versions";
             [FenGenBlankLine]
             [FenGenComment(
-                "An exe file has not been specified for this game.")]
-            internal readonly string NoExeSpecified = "No executable specified";
-            [FenGenBlankLine]
-            [FenGenComment(
                 "An exe file has been specified for this game, but the file cannot be found.")]
             internal readonly string Error_GameExeNotFound = "Game executable not found";
             [FenGenBlankLine]

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 using static AngelLoader.WinAPI.InteropMisc;
 

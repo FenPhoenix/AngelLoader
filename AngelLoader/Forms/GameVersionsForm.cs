@@ -32,7 +32,7 @@ namespace AngelLoader.Forms
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
-                TextBox textBox = GameVersionItems[i].TextBox;
+                var (label, textBox) = GameVersionItems[i];
 
                 if (!Config.GetGameExe(gameIndex).IsEmpty())
                 {
@@ -45,7 +45,8 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    textBox.Text = LText.GameVersionsWindow.NoExeSpecified;
+                    textBox.Enabled = false;
+                    label.Enabled = false;
                 }
             }
             // @GENGAMES (GameVersionsForm): End
@@ -90,6 +91,14 @@ namespace AngelLoader.Forms
             }
 
             #endregion
+        }
+
+        private void GameVersionsForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F1)
+            {
+                Core.OpenHelpFile(HelpSections.GameVersions);
+            }
         }
     }
 }

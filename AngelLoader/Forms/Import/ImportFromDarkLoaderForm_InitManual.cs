@@ -28,6 +28,7 @@ namespace AngelLoader.Forms
             OKButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             OKButton.MinimumSize = new Size(75, 23);
             OKButton.DialogResult = DialogResult.OK;
+            OKButton.Margin = new Padding(3, 8, 3, 3);
             OKButton.Padding = new Padding(6, 0, 6, 0);
             OKButton.TabIndex = 1;
             OKButton.UseVisualStyleBackColor = true;
@@ -38,6 +39,7 @@ namespace AngelLoader.Forms
             Cancel_Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Cancel_Button.MinimumSize = new Size(75, 23);
             Cancel_Button.DialogResult = DialogResult.Cancel;
+            Cancel_Button.Margin = new Padding(3, 8, 9, 3);
             Cancel_Button.Padding = new Padding(6, 0, 6, 0);
             Cancel_Button.TabIndex = 0;
             Cancel_Button.UseVisualStyleBackColor = true;
@@ -50,8 +52,8 @@ namespace AngelLoader.Forms
             OKCancelFlowLayoutPanel.Controls.Add(Cancel_Button);
             OKCancelFlowLayoutPanel.Controls.Add(OKButton);
             OKCancelFlowLayoutPanel.FlowDirection = FlowDirection.RightToLeft;
-            OKCancelFlowLayoutPanel.Location = new Point(384, 246);
-            OKCancelFlowLayoutPanel.Size = new Size(162, 29);
+            OKCancelFlowLayoutPanel.Location = new Point(0, 245);
+            OKCancelFlowLayoutPanel.Size = new Size(547, 40);
             OKCancelFlowLayoutPanel.TabIndex = 9;
             // 
             // ImportFinishedOnCheckBox
@@ -131,7 +133,7 @@ namespace AngelLoader.Forms
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = Cancel_Button;
-            ClientSize = new Size(547, 277);
+            ClientSize = new Size(547, 285);
             Controls.Add(ImportFinishedOnCheckBox);
             Controls.Add(ImportLastPlayedCheckBox);
             Controls.Add(ImportReleaseDateCheckBox);

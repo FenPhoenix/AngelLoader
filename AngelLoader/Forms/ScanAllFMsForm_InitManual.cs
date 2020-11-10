@@ -108,6 +108,7 @@ namespace AngelLoader.Forms
             ScanButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ScanButton.MinimumSize = new Size(75, 23);
             ScanButton.DialogResult = DialogResult.OK;
+            ScanButton.Margin = new Padding(3, 8, 3, 3);
             ScanButton.Padding = new Padding(6, 0, 6, 0);
             ScanButton.TabIndex = 1;
             ScanButton.UseVisualStyleBackColor = true;
@@ -118,6 +119,7 @@ namespace AngelLoader.Forms
             Cancel_Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Cancel_Button.MinimumSize = new Size(75, 23);
             Cancel_Button.DialogResult = DialogResult.Cancel;
+            this.Cancel_Button.Margin = new Padding(3, 8, 9, 3);
             Cancel_Button.Padding = new Padding(6, 0, 6, 0);
             Cancel_Button.TabIndex = 0;
             Cancel_Button.UseVisualStyleBackColor = true;
@@ -130,11 +132,12 @@ namespace AngelLoader.Forms
             // 
             // OKCancelButtonsFLP
             // 
+            OKCancelButtonsFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             OKCancelButtonsFLP.Controls.Add(Cancel_Button);
             OKCancelButtonsFLP.Controls.Add(ScanButton);
             OKCancelButtonsFLP.FlowDirection = FlowDirection.RightToLeft;
-            OKCancelButtonsFLP.Location = new Point(0, 184);
-            OKCancelButtonsFLP.Size = new Size(416, 30);
+            OKCancelButtonsFLP.Location = new Point(0, 179);
+            OKCancelButtonsFLP.Size = new Size(416, 40);
             OKCancelButtonsFLP.TabIndex = 0;
             // 
             // SelectButtonsFLP
@@ -151,7 +154,7 @@ namespace AngelLoader.Forms
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = Cancel_Button;
-            ClientSize = new Size(416, 214);
+            ClientSize = new Size(416, 219);
             Controls.Add(SelectButtonsFLP);
             Controls.Add(OKCancelButtonsFLP);
             Controls.Add(ScanAllFMsForLabel);
@@ -164,11 +167,13 @@ namespace AngelLoader.Forms
             Controls.Add(TitleCheckBox);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = Images.AngelLoader;
+            KeyPreview = true;
             MaximizeBox = false;
             MinimizeBox = false;
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             FormClosing += ScanAllFMs_FormClosing;
+            KeyDown += ScanAllFMsForm_KeyDown;
             OKCancelButtonsFLP.ResumeLayout(false);
             OKCancelButtonsFLP.PerformLayout();
             SelectButtonsFLP.ResumeLayout(false);

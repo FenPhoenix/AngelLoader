@@ -17,6 +17,8 @@ namespace AngelLoader.Forms
             SS2VersionLabel = new Label();
             SS2VersionTextBox = new TextBox();
             OKButton = new Button();
+            OKFlowLayoutPanel = new FlowLayoutPanel();
+            OKFlowLayoutPanel.SuspendLayout();
             SuspendLayout();
             // 
             // T1VersionLabel
@@ -28,7 +30,7 @@ namespace AngelLoader.Forms
             // T1VersionTextBox
             // 
             T1VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            T1VersionTextBox.Location = new Point(147, 8);
+            T1VersionTextBox.Location = new Point(205, 8);
             T1VersionTextBox.MaximumSize = new Size(224, 32767);
             T1VersionTextBox.MinimumSize = new Size(80, 4);
             T1VersionTextBox.ReadOnly = true;
@@ -44,7 +46,7 @@ namespace AngelLoader.Forms
             // T2VersionTextBox
             // 
             T2VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            T2VersionTextBox.Location = new Point(147, 32);
+            T2VersionTextBox.Location = new Point(205, 32);
             T2VersionTextBox.MaximumSize = new Size(224, 32767);
             T2VersionTextBox.MinimumSize = new Size(80, 4);
             T2VersionTextBox.ReadOnly = true;
@@ -60,7 +62,7 @@ namespace AngelLoader.Forms
             // T3VersionTextBox
             // 
             T3VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            T3VersionTextBox.Location = new Point(147, 56);
+            T3VersionTextBox.Location = new Point(205, 56);
             T3VersionTextBox.MaximumSize = new Size(224, 32767);
             T3VersionTextBox.MinimumSize = new Size(80, 4);
             T3VersionTextBox.ReadOnly = true;
@@ -76,7 +78,7 @@ namespace AngelLoader.Forms
             // SS2VersionTextBox
             // 
             SS2VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            SS2VersionTextBox.Location = new Point(147, 80);
+            SS2VersionTextBox.Location = new Point(205, 80);
             SS2VersionTextBox.MaximumSize = new Size(224, 32767);
             SS2VersionTextBox.MinimumSize = new Size(80, 4);
             SS2VersionTextBox.ReadOnly = true;
@@ -88,17 +90,27 @@ namespace AngelLoader.Forms
             OKButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             OKButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             OKButton.DialogResult = DialogResult.Cancel;
-            OKButton.Location = new Point(297, 107);
+            OKButton.Margin = new Padding(3, 8, 9, 3);
             OKButton.MinimumSize = new Size(75, 23);
             OKButton.TabIndex = 0;
             OKButton.UseVisualStyleBackColor = true;
+            // 
+            // OKFlowLayoutPanel
+            // 
+            OKFlowLayoutPanel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            OKFlowLayoutPanel.Controls.Add(OKButton);
+            OKFlowLayoutPanel.FlowDirection = FlowDirection.RightToLeft;
+            OKFlowLayoutPanel.Location = new Point(0, 106);
+            OKFlowLayoutPanel.Size = new Size(438, 40);
+            OKFlowLayoutPanel.TabIndex = 0;
             // 
             // GameVersionsForm
             // 
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = OKButton;
-            ClientSize = new Size(380, 137);
+            ClientSize = new Size(438, 146);
+            Controls.Add(OKFlowLayoutPanel);
             Controls.Add(OKButton);
             Controls.Add(SS2VersionTextBox);
             Controls.Add(SS2VersionLabel);
@@ -114,6 +126,7 @@ namespace AngelLoader.Forms
             MinimizeBox = false;
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
+            OKFlowLayoutPanel.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }

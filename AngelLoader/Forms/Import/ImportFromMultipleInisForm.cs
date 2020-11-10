@@ -30,6 +30,9 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            // @NET5: Force MS Sans Serif
+            Font = ControlExtensions.LegacyMSSansSerif();
+
             ImportControls.Init(ImportType);
 
             if (ImportType == ImportType.FMSel) ImportSizeCheckBox.Hide();

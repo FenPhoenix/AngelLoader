@@ -364,8 +364,11 @@ namespace AngelLoader.Forms
                         (TopRightTabControl.Focused && TopRightTabControl.SelectedTab == tabPage) ||
                         AnyControlFocusedIn(tabPage);
 
+                    bool mainMenuWasOpen = MainLLMenu.Visible;
+
                     string section =
                         !EverythingPanel.Enabled ? HelpSections.MainWindow :
+                        mainMenuWasOpen ? HelpSections.MainMenu :
                         FMsDGV.FMContextMenuVisible ? HelpSections.FMContextMenu :
                         FMsDGV.ColumnHeaderMenuVisible ? HelpSections.ColumnHeaderContextMenu :
                         // TODO: We could try to be clever and take mouse position into account in some cases?
@@ -381,6 +384,9 @@ namespace AngelLoader.Forms
                         HelpSections.MainWindow;
 
                     Core.OpenHelpFile(section);
+
+                    // Otherwise, F1 activates the menu item marked F1, but we want to handle it manually
+                    if (mainMenuWasOpen) return BlockMessage;
                 }
             }
             else if (m.Msg == InteropMisc.WM_KEYUP)

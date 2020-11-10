@@ -28,7 +28,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 #if false
                 GlobalFMStatsMenuItem = new ToolStripMenuItemCustom()
 #endif
-                ViewHelpFileMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1 },
                 AboutMenuItem = new ToolStripMenuItemCustom()
             });
 
@@ -55,5 +56,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ViewHelpFileMenuItem.Text = LText.MainMenu.ViewHelpFile;
             AboutMenuItem.Text = LText.MainMenu.About;
         }
+
+        internal static bool Visible => _constructed && Menu.Visible;
     }
 }

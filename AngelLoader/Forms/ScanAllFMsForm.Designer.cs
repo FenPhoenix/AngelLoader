@@ -168,7 +168,8 @@ namespace AngelLoader.Forms
             this.ScanButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ScanButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ScanButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ScanButton.Location = new System.Drawing.Point(257, 3);
+            this.ScanButton.Location = new System.Drawing.Point(251, 8);
+            this.ScanButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
             this.ScanButton.Name = "ScanButton";
             this.ScanButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ScanButton.Size = new System.Drawing.Size(75, 23);
@@ -182,7 +183,8 @@ namespace AngelLoader.Forms
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(338, 3);
+            this.Cancel_Button.Location = new System.Drawing.Point(332, 8);
+            this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -201,12 +203,13 @@ namespace AngelLoader.Forms
             // 
             // OKCancelButtonsFLP
             // 
+            this.OKCancelButtonsFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.OKCancelButtonsFLP.Controls.Add(this.Cancel_Button);
             this.OKCancelButtonsFLP.Controls.Add(this.ScanButton);
             this.OKCancelButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelButtonsFLP.Location = new System.Drawing.Point(0, 184);
+            this.OKCancelButtonsFLP.Location = new System.Drawing.Point(0, 179);
             this.OKCancelButtonsFLP.Name = "OKCancelButtonsFLP";
-            this.OKCancelButtonsFLP.Size = new System.Drawing.Size(416, 30);
+            this.OKCancelButtonsFLP.Size = new System.Drawing.Size(416, 40);
             this.OKCancelButtonsFLP.TabIndex = 0;
             // 
             // SelectButtonsFLP
@@ -224,7 +227,7 @@ namespace AngelLoader.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(416, 214);
+            this.ClientSize = new System.Drawing.Size(416, 219);
             this.Controls.Add(this.SelectButtonsFLP);
             this.Controls.Add(this.OKCancelButtonsFLP);
             this.Controls.Add(this.ScanAllFMsForLabel);
@@ -237,6 +240,7 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.TitleCheckBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ScanAllFMsForm";
@@ -244,6 +248,7 @@ namespace AngelLoader.Forms
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Scan all FMs";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanAllFMs_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScanAllFMsForm_KeyDown);
             this.OKCancelButtonsFLP.ResumeLayout(false);
             this.OKCancelButtonsFLP.PerformLayout();
             this.SelectButtonsFLP.ResumeLayout(false);

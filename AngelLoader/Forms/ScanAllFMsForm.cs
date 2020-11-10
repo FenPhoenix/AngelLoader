@@ -95,5 +95,13 @@ namespace AngelLoader.Forms
                 ScanOptions.ScanTags = TagsCheckBox.Checked;
             }
         }
+
+        private void ScanAllFMsForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F1)
+            {
+                Core.OpenHelpFile(HelpSections.ScanAllFMs);
+            }
+        }
     }
 }

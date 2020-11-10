@@ -40,7 +40,7 @@
             this.ImportTitleCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportFMDataCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportSavesCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportControls = new User_DL_ImportControls();
+            this.ImportControls = new AngelLoader.Forms.User_DL_ImportControls();
             this.OKCancelFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,7 +50,8 @@
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(3, 3);
+            this.OKButton.Location = new System.Drawing.Point(382, 8);
+            this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -64,7 +65,8 @@
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(84, 3);
+            this.Cancel_Button.Location = new System.Drawing.Point(463, 8);
+            this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -75,14 +77,13 @@
             // OKCancelFlowLayoutPanel
             // 
             this.OKCancelFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OKCancelFlowLayoutPanel.AutoSize = true;
             this.OKCancelFlowLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
             this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
             this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(384, 246);
+            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(0, 245);
             this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
-            this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
+            this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(547, 40);
             this.OKCancelFlowLayoutPanel.TabIndex = 9;
             // 
             // ImportFinishedOnCheckBox
@@ -195,7 +196,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(547, 277);
+            this.ClientSize = new System.Drawing.Size(547, 285);
             this.Controls.Add(this.ImportFinishedOnCheckBox);
             this.Controls.Add(this.ImportLastPlayedCheckBox);
             this.Controls.Add(this.ImportReleaseDateCheckBox);

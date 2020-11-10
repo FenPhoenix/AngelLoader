@@ -40,6 +40,8 @@ namespace AngelLoader.Forms
             this.SS2VersionLabel = new System.Windows.Forms.Label();
             this.SS2VersionTextBox = new System.Windows.Forms.TextBox();
             this.OKButton = new System.Windows.Forms.Button();
+            this.OKFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.OKFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // T1VersionLabel
@@ -54,7 +56,7 @@ namespace AngelLoader.Forms
             // T1VersionTextBox
             // 
             this.T1VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.T1VersionTextBox.Location = new System.Drawing.Point(147, 8);
+            this.T1VersionTextBox.Location = new System.Drawing.Point(205, 8);
             this.T1VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
             this.T1VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
             this.T1VersionTextBox.Name = "T1VersionTextBox";
@@ -74,7 +76,7 @@ namespace AngelLoader.Forms
             // T2VersionTextBox
             // 
             this.T2VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.T2VersionTextBox.Location = new System.Drawing.Point(147, 32);
+            this.T2VersionTextBox.Location = new System.Drawing.Point(205, 32);
             this.T2VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
             this.T2VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
             this.T2VersionTextBox.Name = "T2VersionTextBox";
@@ -94,7 +96,7 @@ namespace AngelLoader.Forms
             // T3VersionTextBox
             // 
             this.T3VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.T3VersionTextBox.Location = new System.Drawing.Point(147, 56);
+            this.T3VersionTextBox.Location = new System.Drawing.Point(205, 56);
             this.T3VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
             this.T3VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
             this.T3VersionTextBox.Name = "T3VersionTextBox";
@@ -114,7 +116,7 @@ namespace AngelLoader.Forms
             // SS2VersionTextBox
             // 
             this.SS2VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SS2VersionTextBox.Location = new System.Drawing.Point(147, 80);
+            this.SS2VersionTextBox.Location = new System.Drawing.Point(205, 80);
             this.SS2VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
             this.SS2VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
             this.SS2VersionTextBox.Name = "SS2VersionTextBox";
@@ -127,7 +129,8 @@ namespace AngelLoader.Forms
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.OKButton.Location = new System.Drawing.Point(297, 107);
+            this.OKButton.Location = new System.Drawing.Point(354, 8);
+            this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -135,13 +138,23 @@ namespace AngelLoader.Forms
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
+            // OKFlowLayoutPanel
+            // 
+            this.OKFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.OKFlowLayoutPanel.Controls.Add(this.OKButton);
+            this.OKFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.OKFlowLayoutPanel.Location = new System.Drawing.Point(0, 106);
+            this.OKFlowLayoutPanel.Name = "OKFlowLayoutPanel";
+            this.OKFlowLayoutPanel.Size = new System.Drawing.Size(438, 40);
+            this.OKFlowLayoutPanel.TabIndex = 0;
+            // 
             // GameVersionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.OKButton;
-            this.ClientSize = new System.Drawing.Size(380, 137);
-            this.Controls.Add(this.OKButton);
+            this.ClientSize = new System.Drawing.Size(438, 146);
+            this.Controls.Add(this.OKFlowLayoutPanel);
             this.Controls.Add(this.SS2VersionTextBox);
             this.Controls.Add(this.SS2VersionLabel);
             this.Controls.Add(this.T3VersionTextBox);
@@ -152,12 +165,15 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.T1VersionLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "GameVersionsForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Game versions";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameVersionsForm_KeyDown);
+            this.OKFlowLayoutPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -175,5 +191,6 @@ namespace AngelLoader.Forms
         private System.Windows.Forms.Label SS2VersionLabel;
         private System.Windows.Forms.TextBox SS2VersionTextBox;
         private System.Windows.Forms.Button OKButton;
+        private System.Windows.Forms.FlowLayoutPanel OKFlowLayoutPanel;
     }
 }
