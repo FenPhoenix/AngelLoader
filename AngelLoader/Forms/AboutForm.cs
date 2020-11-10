@@ -16,8 +16,15 @@ namespace AngelLoader.Forms
 #endif
 
             Icon = Images.AngelLoader;
+            
+            // Just grab the largest frame (sub-icon) from the AL icon resource we have already, that way we don't
+            // add any extra size to our executable.
             LogoPictureBox.Image = new Icon(Images.AngelLoader, 48, 48).ToBitmap();
+            
             VersionLabel.Text = Application.ProductVersion;
+            
+            // Manually set the text here, because multiline texts are otherwise stored in resources and it's a
+            // whole nasty thing that doesn't even work with our resx exclude system anyway.
             LicenseTextBox.Text =
                 "MIT License\r\n\r\n" +
                 "Copyright (c) 2018-2020 Brian Tobin (FenPhoenix)\r\n\r\n" +

@@ -81,7 +81,7 @@ namespace AngelLoader.Forms
             OKButton.DialogResult = DialogResult.Cancel;
             OKButton.Location = new Point(445, 535);
             OKButton.MinimumSize = new Size(75, 23);
-            OKButton.TabIndex = 4;
+            OKButton.TabIndex = 0;
             OKButton.UseVisualStyleBackColor = true;
             // 
             // SevenZipLinkLabel
@@ -97,7 +97,7 @@ namespace AngelLoader.Forms
             // 
             SevenZipSharpLinkLabel.AutoSize = true;
             SevenZipSharpLinkLabel.Location = new Point(32, 408);
-            SevenZipSharpLinkLabel.TabIndex = 5;
+            SevenZipSharpLinkLabel.TabIndex = 6;
             SevenZipSharpLinkLabel.TabStop = true;
             SevenZipSharpLinkLabel.Text = "SquidBox.SevenZipSharp";
             SevenZipSharpLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -106,7 +106,7 @@ namespace AngelLoader.Forms
             // 
             FFmpegLinkLabel.AutoSize = true;
             FFmpegLinkLabel.Location = new Point(32, 425);
-            FFmpegLinkLabel.TabIndex = 5;
+            FFmpegLinkLabel.TabIndex = 7;
             FFmpegLinkLabel.TabStop = true;
             FFmpegLinkLabel.Text = "ffmpeg";
             FFmpegLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -115,7 +115,7 @@ namespace AngelLoader.Forms
             // 
             FFmpegDotNetLinkLabel.AutoSize = true;
             FFmpegDotNetLinkLabel.Location = new Point(32, 441);
-            FFmpegDotNetLinkLabel.TabIndex = 5;
+            FFmpegDotNetLinkLabel.TabIndex = 8;
             FFmpegDotNetLinkLabel.TabStop = true;
             FFmpegDotNetLinkLabel.Text = "FFmpeg.NET";
             FFmpegDotNetLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -124,7 +124,7 @@ namespace AngelLoader.Forms
             // 
             SimpleHelpersDotNetLinkLabel.AutoSize = true;
             SimpleHelpersDotNetLinkLabel.Location = new Point(32, 457);
-            SimpleHelpersDotNetLinkLabel.TabIndex = 5;
+            SimpleHelpersDotNetLinkLabel.TabIndex = 9;
             SimpleHelpersDotNetLinkLabel.TabStop = true;
             SimpleHelpersDotNetLinkLabel.Text = "SimpleHelpers.Net";
             SimpleHelpersDotNetLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -133,7 +133,7 @@ namespace AngelLoader.Forms
             // 
             UdeNetStandardLinkLabel.AutoSize = true;
             UdeNetStandardLinkLabel.Location = new Point(32, 472);
-            UdeNetStandardLinkLabel.TabIndex = 5;
+            UdeNetStandardLinkLabel.TabIndex = 10;
             UdeNetStandardLinkLabel.TabStop = true;
             UdeNetStandardLinkLabel.Text = "Ude.NetStandard";
             UdeNetStandardLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -142,7 +142,7 @@ namespace AngelLoader.Forms
             // 
             OokiiDialogsLinkLabel.AutoSize = true;
             OokiiDialogsLinkLabel.Location = new Point(32, 488);
-            OokiiDialogsLinkLabel.TabIndex = 5;
+            OokiiDialogsLinkLabel.TabIndex = 11;
             OokiiDialogsLinkLabel.TabStop = true;
             OokiiDialogsLinkLabel.Text = "Ookii Dialogs";
             OokiiDialogsLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -151,7 +151,7 @@ namespace AngelLoader.Forms
             // 
             NetCore3SysIOCompLinkLabel.AutoSize = true;
             NetCore3SysIOCompLinkLabel.Location = new Point(32, 504);
-            NetCore3SysIOCompLinkLabel.TabIndex = 5;
+            NetCore3SysIOCompLinkLabel.TabIndex = 12;
             NetCore3SysIOCompLinkLabel.TabStop = true;
             NetCore3SysIOCompLinkLabel.Text = ".NET Core 3 System.IO.Compression";
             NetCore3SysIOCompLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -160,7 +160,7 @@ namespace AngelLoader.Forms
             // 
             AngelLoaderUsesLabel.AutoSize = true;
             AngelLoaderUsesLabel.Location = new Point(32, 368);
-            AngelLoaderUsesLabel.TabIndex = 6;
+            AngelLoaderUsesLabel.TabIndex = 4;
             // 
             // LogoTextPictureBox
             // 

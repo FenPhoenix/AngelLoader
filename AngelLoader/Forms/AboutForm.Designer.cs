@@ -97,7 +97,7 @@
             this.OKButton.Location = new System.Drawing.Point(445, 535);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 4;
+            this.OKButton.TabIndex = 0;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
@@ -118,7 +118,7 @@
             this.SevenZipSharpLinkLabel.Location = new System.Drawing.Point(32, 408);
             this.SevenZipSharpLinkLabel.Name = "SevenZipSharpLinkLabel";
             this.SevenZipSharpLinkLabel.Size = new System.Drawing.Size(129, 13);
-            this.SevenZipSharpLinkLabel.TabIndex = 5;
+            this.SevenZipSharpLinkLabel.TabIndex = 6;
             this.SevenZipSharpLinkLabel.TabStop = true;
             this.SevenZipSharpLinkLabel.Text = "SquidBox.SevenZipSharp";
             this.SevenZipSharpLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -129,7 +129,7 @@
             this.FFmpegLinkLabel.Location = new System.Drawing.Point(32, 425);
             this.FFmpegLinkLabel.Name = "FFmpegLinkLabel";
             this.FFmpegLinkLabel.Size = new System.Drawing.Size(39, 13);
-            this.FFmpegLinkLabel.TabIndex = 5;
+            this.FFmpegLinkLabel.TabIndex = 7;
             this.FFmpegLinkLabel.TabStop = true;
             this.FFmpegLinkLabel.Text = "ffmpeg";
             this.FFmpegLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -140,7 +140,7 @@
             this.FFmpegDotNetLinkLabel.Location = new System.Drawing.Point(32, 441);
             this.FFmpegDotNetLinkLabel.Name = "FFmpegDotNetLinkLabel";
             this.FFmpegDotNetLinkLabel.Size = new System.Drawing.Size(70, 13);
-            this.FFmpegDotNetLinkLabel.TabIndex = 5;
+            this.FFmpegDotNetLinkLabel.TabIndex = 8;
             this.FFmpegDotNetLinkLabel.TabStop = true;
             this.FFmpegDotNetLinkLabel.Text = "FFmpeg.NET";
             this.FFmpegDotNetLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -151,7 +151,7 @@
             this.SimpleHelpersDotNetLinkLabel.Location = new System.Drawing.Point(32, 457);
             this.SimpleHelpersDotNetLinkLabel.Name = "SimpleHelpersDotNetLinkLabel";
             this.SimpleHelpersDotNetLinkLabel.Size = new System.Drawing.Size(94, 13);
-            this.SimpleHelpersDotNetLinkLabel.TabIndex = 5;
+            this.SimpleHelpersDotNetLinkLabel.TabIndex = 9;
             this.SimpleHelpersDotNetLinkLabel.TabStop = true;
             this.SimpleHelpersDotNetLinkLabel.Text = "SimpleHelpers.Net";
             this.SimpleHelpersDotNetLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -162,7 +162,7 @@
             this.UdeNetStandardLinkLabel.Location = new System.Drawing.Point(32, 472);
             this.UdeNetStandardLinkLabel.Name = "UdeNetStandardLinkLabel";
             this.UdeNetStandardLinkLabel.Size = new System.Drawing.Size(90, 13);
-            this.UdeNetStandardLinkLabel.TabIndex = 5;
+            this.UdeNetStandardLinkLabel.TabIndex = 10;
             this.UdeNetStandardLinkLabel.TabStop = true;
             this.UdeNetStandardLinkLabel.Text = "Ude.NetStandard";
             this.UdeNetStandardLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -173,7 +173,7 @@
             this.OokiiDialogsLinkLabel.Location = new System.Drawing.Point(32, 488);
             this.OokiiDialogsLinkLabel.Name = "OokiiDialogsLinkLabel";
             this.OokiiDialogsLinkLabel.Size = new System.Drawing.Size(69, 13);
-            this.OokiiDialogsLinkLabel.TabIndex = 5;
+            this.OokiiDialogsLinkLabel.TabIndex = 11;
             this.OokiiDialogsLinkLabel.TabStop = true;
             this.OokiiDialogsLinkLabel.Text = "Ookii Dialogs";
             this.OokiiDialogsLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -184,7 +184,7 @@
             this.NetCore3SysIOCompLinkLabel.Location = new System.Drawing.Point(32, 504);
             this.NetCore3SysIOCompLinkLabel.Name = "NetCore3SysIOCompLinkLabel";
             this.NetCore3SysIOCompLinkLabel.Size = new System.Drawing.Size(180, 13);
-            this.NetCore3SysIOCompLinkLabel.TabIndex = 5;
+            this.NetCore3SysIOCompLinkLabel.TabIndex = 12;
             this.NetCore3SysIOCompLinkLabel.TabStop = true;
             this.NetCore3SysIOCompLinkLabel.Text = ".NET Core 3 System.IO.Compression";
             this.NetCore3SysIOCompLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -195,7 +195,7 @@
             this.AngelLoaderUsesLabel.Location = new System.Drawing.Point(32, 368);
             this.AngelLoaderUsesLabel.Name = "AngelLoaderUsesLabel";
             this.AngelLoaderUsesLabel.Size = new System.Drawing.Size(95, 13);
-            this.AngelLoaderUsesLabel.TabIndex = 6;
+            this.AngelLoaderUsesLabel.TabIndex = 4;
             this.AngelLoaderUsesLabel.Text = "AngelLoader uses:";
             // 
             // LogoTextPictureBox

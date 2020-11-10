@@ -410,9 +410,9 @@ namespace AngelLoader.Forms
             // 
             this.MainMenuButton.FlatAppearance.BorderSize = 0;
             this.MainMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.MainMenuButton.Location = new System.Drawing.Point(4, 6);
+            this.MainMenuButton.Location = new System.Drawing.Point(2, 2);
             this.MainMenuButton.Name = "MainMenuButton";
-            this.MainMenuButton.Size = new System.Drawing.Size(16, 16);
+            this.MainMenuButton.Size = new System.Drawing.Size(20, 20);
             this.MainMenuButton.TabIndex = 14;
             this.MainMenuButton.UseVisualStyleBackColor = true;
             this.MainMenuButton.Paint += new System.Windows.Forms.PaintEventHandler(this.MainMenuButton_Paint);

@@ -1537,8 +1537,8 @@ namespace AngelLoader.Forms
             // 
             MainMenuButton.FlatAppearance.BorderSize = 0;
             MainMenuButton.FlatStyle = FlatStyle.Flat;
-            MainMenuButton.Location = new Point(4, 6);
-            MainMenuButton.Size = new Size(16, 16);
+            MainMenuButton.Location = new Point(2, 2);
+            MainMenuButton.Size = new Size(20,20);
             MainMenuButton.TabIndex = 14;
             MainMenuButton.UseVisualStyleBackColor = true;
             MainMenuButton.Paint += MainMenuButton_Paint;
