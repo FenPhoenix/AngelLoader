@@ -19,6 +19,10 @@ namespace AngelLoader.Forms
 #else
             InitComponentManual();
 #endif
+
+            // @NET5: Force MS Sans Serif
+            Font = ControlExtensions.LegacyMSSansSerif();
+
             _checkBoxes = new[]
             {
                 TitleCheckBox,

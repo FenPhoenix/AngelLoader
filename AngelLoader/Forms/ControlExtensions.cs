@@ -153,5 +153,11 @@ namespace AngelLoader.Forms
             WM_CHANGEUISTATE,
             new IntPtr(SetControlFocusToHidden),
             new IntPtr(0));
+
+        internal static Font LegacyMSSansSerif()
+        {
+            // @NET5: Force MS Sans Serif
+            return new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        }
     }
 }

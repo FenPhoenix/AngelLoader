@@ -25,7 +25,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             if (!_constructed[li])
             {
-                _labels[li] = new ToolStripLabel();
+                // @NET5: Force MS Sans Serif
+                _labels[li] = new ToolStripLabel { Font = ControlExtensions.LegacyMSSansSerif() };
                 var _label = _labels[li];
 
                 var container = owner.FilterIconButtonsToolStrip;

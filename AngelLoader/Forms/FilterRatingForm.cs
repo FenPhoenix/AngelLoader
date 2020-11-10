@@ -20,6 +20,9 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            // @NET5: Force MS Sans Serif
+            Font = ControlExtensions.LegacyMSSansSerif();
+
             Localize();
 
             FromComboBox.Items.Add(LText.Global.Unrated);

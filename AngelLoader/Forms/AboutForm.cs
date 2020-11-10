@@ -15,6 +15,9 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            // @NET5: Force MS Sans Serif
+            Font = ControlExtensions.LegacyMSSansSerif();
+
             Icon = Images.AngelLoader;
             
             // Just grab the largest frame (sub-icon) from the AL icon resource we have already, that way we don't

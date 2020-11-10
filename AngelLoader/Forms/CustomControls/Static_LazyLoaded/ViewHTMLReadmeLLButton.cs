@@ -46,6 +46,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 Button.Click += owner.ViewHTMLReadmeButton_Click;
                 Button.MouseLeave += owner.ReadmeArea_MouseLeave;
 
+                // @NET5: Force MS Sans Serif
+                Button.Font = ControlExtensions.LegacyMSSansSerif();
+
                 _constructed = true;
 
                 Localize();

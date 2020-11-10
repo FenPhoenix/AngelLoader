@@ -15,7 +15,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (Constructed) return;
 
-            ListBox = new ListBox();
+            // @NET5: Force MS Sans Serif
+            ListBox = new ListBox { Font = ControlExtensions.LegacyMSSansSerif() };
             owner.EverythingPanel.Controls.Add(ListBox);
             ListBox.FormattingEnabled = true;
             ListBox.TabIndex = 3;

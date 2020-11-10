@@ -90,6 +90,9 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            // @NET5: Force MS Sans Serif
+            Font = ControlExtensions.LegacyMSSansSerif();
+
             // Needed for Esc-to-cancel-drag and stuff
             KeyPreview = true;
 
