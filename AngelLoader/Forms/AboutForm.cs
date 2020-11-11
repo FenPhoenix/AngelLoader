@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Globalization;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
@@ -38,6 +40,24 @@ namespace AngelLoader.Forms
             BuildDateLabel.Text = success
                 ? result.ToLocalTime().ToString("yyyy MMM dd, HH:mm:ss", CultureInfo.CurrentCulture)
                 : "";
+
+            try
+            {
+                var attrs = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(TargetFrameworkAttribute), false);
+                if (attrs.Length == 1)
+                {
+                    var fn = new FrameworkName(((TargetFrameworkAttribute)attrs[0]).FrameworkName);
+                    string dotNetName = fn.Identifier.ContainsI("Framework")
+                        ? ".NET Framework " + fn.Version
+                        : ".NET " + fn.Version;
+                    BuildDateLabel.Text += "\r\n" + dotNetName;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
 
             // Manually set the text here, because multiline texts are otherwise stored in resources and it's a
             // whole nasty thing that doesn't even work with our resx exclude system anyway.
