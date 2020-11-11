@@ -1553,28 +1553,28 @@ namespace FMScanner
             if (_scanOptions.ScanTitle)
             {
                 var xTitle = fmInfoXml.GetElementsByTagName("title");
-                if (xTitle.Count > 0) title = xTitle[0].InnerText;
+                if (xTitle.Count > 0) title = xTitle[0]?.InnerText ?? "";
             }
 
             if (_scanOptions.ScanAuthor)
             {
                 var xAuthor = fmInfoXml.GetElementsByTagName("author");
-                if (xAuthor.Count > 0) author = xAuthor[0].InnerText;
+                if (xAuthor.Count > 0) author = xAuthor[0]?.InnerText ?? "";
             }
 
 #if FMScanner_FullCode
             if (_scanOptions.ScanVersion)
             {
                 var xVersion = fmInfoXml.GetElementsByTagName("version");
-                if (xVersion.Count > 0) version = xVersion[0].InnerText;
+                if (xVersion.Count > 0) version = xVersion[0]?.InnerText ?? "";
             }
 #endif
 
             var xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
             if (xReleaseDate.Count > 0)
             {
-                string rdString = xReleaseDate[0].InnerText;
-                releaseDate = StringToDate(rdString, out DateTime? dt) ? dt : null;
+                string rdString = xReleaseDate[0]?.InnerText ?? "";
+                if (!rdString.IsEmpty()) releaseDate = StringToDate(rdString, out DateTime? dt) ? dt : null;
             }
 
             // These files also specify languages and whether the mission has custom stuff, but we're not going
