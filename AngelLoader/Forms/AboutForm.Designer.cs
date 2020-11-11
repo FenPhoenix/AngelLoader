@@ -64,9 +64,9 @@
             // 
             this.VersionLabel.AutoSize = true;
             this.VersionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.VersionLabel.Location = new System.Drawing.Point(352, 24);
+            this.VersionLabel.Location = new System.Drawing.Point(352, 26);
             this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(71, 21);
+            this.VersionLabel.Size = new System.Drawing.Size(43, 21);
             this.VersionLabel.TabIndex = 1;
             this.VersionLabel.Text = "[version]";
             // 
@@ -77,7 +77,7 @@
             this.GitHubLinkLabel.Location = new System.Drawing.Point(72, 68);
             this.GitHubLinkLabel.Name = "GitHubLinkLabel";
             this.GitHubLinkLabel.Size = new System.Drawing.Size(269, 16);
-            this.GitHubLinkLabel.TabIndex = 2;
+            this.GitHubLinkLabel.TabIndex = 3;
             this.GitHubLinkLabel.TabStop = true;
             this.GitHubLinkLabel.Text = "https://github.com/FenPhoenix/AngelLoader";
             this.GitHubLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -91,7 +91,7 @@
             this.LicenseTextBox.ReadOnly = true;
             this.LicenseTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.LicenseTextBox.Size = new System.Drawing.Size(464, 240);
-            this.LicenseTextBox.TabIndex = 3;
+            this.LicenseTextBox.TabIndex = 4;
             // 
             // OKButton
             // 
@@ -113,7 +113,7 @@
             this.SevenZipLinkLabel.Location = new System.Drawing.Point(32, 388);
             this.SevenZipLinkLabel.Name = "SevenZipLinkLabel";
             this.SevenZipLinkLabel.Size = new System.Drawing.Size(31, 13);
-            this.SevenZipLinkLabel.TabIndex = 5;
+            this.SevenZipLinkLabel.TabIndex = 6;
             this.SevenZipLinkLabel.TabStop = true;
             this.SevenZipLinkLabel.Text = "7-Zip";
             this.SevenZipLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -124,7 +124,7 @@
             this.SevenZipSharpLinkLabel.Location = new System.Drawing.Point(32, 404);
             this.SevenZipSharpLinkLabel.Name = "SevenZipSharpLinkLabel";
             this.SevenZipSharpLinkLabel.Size = new System.Drawing.Size(129, 13);
-            this.SevenZipSharpLinkLabel.TabIndex = 6;
+            this.SevenZipSharpLinkLabel.TabIndex = 7;
             this.SevenZipSharpLinkLabel.TabStop = true;
             this.SevenZipSharpLinkLabel.Text = "SquidBox.SevenZipSharp";
             this.SevenZipSharpLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -135,7 +135,7 @@
             this.FFmpegLinkLabel.Location = new System.Drawing.Point(32, 421);
             this.FFmpegLinkLabel.Name = "FFmpegLinkLabel";
             this.FFmpegLinkLabel.Size = new System.Drawing.Size(39, 13);
-            this.FFmpegLinkLabel.TabIndex = 7;
+            this.FFmpegLinkLabel.TabIndex = 8;
             this.FFmpegLinkLabel.TabStop = true;
             this.FFmpegLinkLabel.Text = "ffmpeg";
             this.FFmpegLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -146,7 +146,7 @@
             this.FFmpegDotNetLinkLabel.Location = new System.Drawing.Point(32, 437);
             this.FFmpegDotNetLinkLabel.Name = "FFmpegDotNetLinkLabel";
             this.FFmpegDotNetLinkLabel.Size = new System.Drawing.Size(70, 13);
-            this.FFmpegDotNetLinkLabel.TabIndex = 8;
+            this.FFmpegDotNetLinkLabel.TabIndex = 9;
             this.FFmpegDotNetLinkLabel.TabStop = true;
             this.FFmpegDotNetLinkLabel.Text = "FFmpeg.NET";
             this.FFmpegDotNetLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -157,7 +157,7 @@
             this.SimpleHelpersDotNetLinkLabel.Location = new System.Drawing.Point(32, 453);
             this.SimpleHelpersDotNetLinkLabel.Name = "SimpleHelpersDotNetLinkLabel";
             this.SimpleHelpersDotNetLinkLabel.Size = new System.Drawing.Size(94, 13);
-            this.SimpleHelpersDotNetLinkLabel.TabIndex = 9;
+            this.SimpleHelpersDotNetLinkLabel.TabIndex = 10;
             this.SimpleHelpersDotNetLinkLabel.TabStop = true;
             this.SimpleHelpersDotNetLinkLabel.Text = "SimpleHelpers.Net";
             this.SimpleHelpersDotNetLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -168,7 +168,7 @@
             this.UdeNetStandardLinkLabel.Location = new System.Drawing.Point(32, 468);
             this.UdeNetStandardLinkLabel.Name = "UdeNetStandardLinkLabel";
             this.UdeNetStandardLinkLabel.Size = new System.Drawing.Size(90, 13);
-            this.UdeNetStandardLinkLabel.TabIndex = 10;
+            this.UdeNetStandardLinkLabel.TabIndex = 11;
             this.UdeNetStandardLinkLabel.TabStop = true;
             this.UdeNetStandardLinkLabel.Text = "Ude.NetStandard";
             this.UdeNetStandardLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -179,7 +179,7 @@
             this.OokiiDialogsLinkLabel.Location = new System.Drawing.Point(32, 484);
             this.OokiiDialogsLinkLabel.Name = "OokiiDialogsLinkLabel";
             this.OokiiDialogsLinkLabel.Size = new System.Drawing.Size(69, 13);
-            this.OokiiDialogsLinkLabel.TabIndex = 11;
+            this.OokiiDialogsLinkLabel.TabIndex = 12;
             this.OokiiDialogsLinkLabel.TabStop = true;
             this.OokiiDialogsLinkLabel.Text = "Ookii Dialogs";
             this.OokiiDialogsLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -190,7 +190,7 @@
             this.NetCore3SysIOCompLinkLabel.Location = new System.Drawing.Point(32, 500);
             this.NetCore3SysIOCompLinkLabel.Name = "NetCore3SysIOCompLinkLabel";
             this.NetCore3SysIOCompLinkLabel.Size = new System.Drawing.Size(180, 13);
-            this.NetCore3SysIOCompLinkLabel.TabIndex = 12;
+            this.NetCore3SysIOCompLinkLabel.TabIndex = 13;
             this.NetCore3SysIOCompLinkLabel.TabStop = true;
             this.NetCore3SysIOCompLinkLabel.Text = ".NET Core 3 System.IO.Compression";
             this.NetCore3SysIOCompLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
@@ -201,7 +201,7 @@
             this.AngelLoaderUsesLabel.Location = new System.Drawing.Point(32, 364);
             this.AngelLoaderUsesLabel.Name = "AngelLoaderUsesLabel";
             this.AngelLoaderUsesLabel.Size = new System.Drawing.Size(95, 13);
-            this.AngelLoaderUsesLabel.TabIndex = 4;
+            this.AngelLoaderUsesLabel.TabIndex = 5;
             this.AngelLoaderUsesLabel.Text = "AngelLoader uses:";
             // 
             // LogoTextPictureBox
@@ -229,10 +229,10 @@
             this.BuildDateLabel.AutoSize = true;
             this.BuildDateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BuildDateLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.BuildDateLabel.Location = new System.Drawing.Point(352, 48);
+            this.BuildDateLabel.Location = new System.Drawing.Point(352, 50);
             this.BuildDateLabel.Name = "BuildDateLabel";
             this.BuildDateLabel.Size = new System.Drawing.Size(34, 13);
-            this.BuildDateLabel.TabIndex = 1;
+            this.BuildDateLabel.TabIndex = 2;
             this.BuildDateLabel.Text = "[date]";
             // 
             // AboutForm

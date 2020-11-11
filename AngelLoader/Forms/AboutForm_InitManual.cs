@@ -53,8 +53,7 @@ namespace AngelLoader.Forms
             // 
             VersionLabel.AutoSize = true;
             VersionLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
-            VersionLabel.Location = new Point(352, 28);
-            VersionLabel.Size = new Size(71, 21);
+            VersionLabel.Location = new Point(352, 26);
             VersionLabel.TabIndex = 1;
             // 
             // GitHubLinkLabel
@@ -62,8 +61,7 @@ namespace AngelLoader.Forms
             GitHubLinkLabel.AutoSize = true;
             GitHubLinkLabel.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
             GitHubLinkLabel.Location = new Point(72, 68);
-            GitHubLinkLabel.Size = new Size(269, 16);
-            GitHubLinkLabel.TabIndex = 2;
+            GitHubLinkLabel.TabIndex = 3;
             GitHubLinkLabel.TabStop = true;
             GitHubLinkLabel.Text = "https://github.com/FenPhoenix/AngelLoader";
             GitHubLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -76,7 +74,7 @@ namespace AngelLoader.Forms
             LicenseTextBox.ReadOnly = true;
             LicenseTextBox.ScrollBars = ScrollBars.Vertical;
             LicenseTextBox.Size = new Size(464, 240);
-            LicenseTextBox.TabIndex = 3;
+            LicenseTextBox.TabIndex = 4;
             // 
             // OKButton
             // 
@@ -92,7 +90,7 @@ namespace AngelLoader.Forms
             // 
             SevenZipLinkLabel.AutoSize = true;
             SevenZipLinkLabel.Location = new Point(32, 388);
-            SevenZipLinkLabel.TabIndex = 5;
+            SevenZipLinkLabel.TabIndex = 6;
             SevenZipLinkLabel.TabStop = true;
             SevenZipLinkLabel.Text = "7-Zip";
             SevenZipLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -100,8 +98,8 @@ namespace AngelLoader.Forms
             // SevenZipSharpLinkLabel
             // 
             SevenZipSharpLinkLabel.AutoSize = true;
-            SevenZipSharpLinkLabel.Location = new Point(32, 408);
-            SevenZipSharpLinkLabel.TabIndex = 6;
+            SevenZipSharpLinkLabel.Location = new Point(32, 404);
+            SevenZipSharpLinkLabel.TabIndex = 7;
             SevenZipSharpLinkLabel.TabStop = true;
             SevenZipSharpLinkLabel.Text = "SquidBox.SevenZipSharp";
             SevenZipSharpLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -110,7 +108,7 @@ namespace AngelLoader.Forms
             // 
             FFmpegLinkLabel.AutoSize = true;
             FFmpegLinkLabel.Location = new Point(32, 421);
-            FFmpegLinkLabel.TabIndex = 7;
+            FFmpegLinkLabel.TabIndex = 8;
             FFmpegLinkLabel.TabStop = true;
             FFmpegLinkLabel.Text = "ffmpeg";
             FFmpegLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -119,7 +117,7 @@ namespace AngelLoader.Forms
             // 
             FFmpegDotNetLinkLabel.AutoSize = true;
             FFmpegDotNetLinkLabel.Location = new Point(32, 437);
-            FFmpegDotNetLinkLabel.TabIndex = 8;
+            FFmpegDotNetLinkLabel.TabIndex = 9;
             FFmpegDotNetLinkLabel.TabStop = true;
             FFmpegDotNetLinkLabel.Text = "FFmpeg.NET";
             FFmpegDotNetLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -128,7 +126,7 @@ namespace AngelLoader.Forms
             // 
             SimpleHelpersDotNetLinkLabel.AutoSize = true;
             SimpleHelpersDotNetLinkLabel.Location = new Point(32, 453);
-            SimpleHelpersDotNetLinkLabel.TabIndex = 9;
+            SimpleHelpersDotNetLinkLabel.TabIndex = 10;
             SimpleHelpersDotNetLinkLabel.TabStop = true;
             SimpleHelpersDotNetLinkLabel.Text = "SimpleHelpers.Net";
             SimpleHelpersDotNetLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -137,7 +135,7 @@ namespace AngelLoader.Forms
             // 
             UdeNetStandardLinkLabel.AutoSize = true;
             UdeNetStandardLinkLabel.Location = new Point(32, 468);
-            UdeNetStandardLinkLabel.TabIndex = 10;
+            UdeNetStandardLinkLabel.TabIndex = 11;
             UdeNetStandardLinkLabel.TabStop = true;
             UdeNetStandardLinkLabel.Text = "Ude.NetStandard";
             UdeNetStandardLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -146,7 +144,7 @@ namespace AngelLoader.Forms
             // 
             OokiiDialogsLinkLabel.AutoSize = true;
             OokiiDialogsLinkLabel.Location = new Point(32, 484);
-            OokiiDialogsLinkLabel.TabIndex = 11;
+            OokiiDialogsLinkLabel.TabIndex = 12;
             OokiiDialogsLinkLabel.TabStop = true;
             OokiiDialogsLinkLabel.Text = "Ookii Dialogs";
             OokiiDialogsLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -155,7 +153,7 @@ namespace AngelLoader.Forms
             // 
             NetCore3SysIOCompLinkLabel.AutoSize = true;
             NetCore3SysIOCompLinkLabel.Location = new Point(32, 500);
-            NetCore3SysIOCompLinkLabel.TabIndex = 12;
+            NetCore3SysIOCompLinkLabel.TabIndex = 13;
             NetCore3SysIOCompLinkLabel.TabStop = true;
             NetCore3SysIOCompLinkLabel.Text = ".NET Core 3 System.IO.Compression";
             NetCore3SysIOCompLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
@@ -164,7 +162,7 @@ namespace AngelLoader.Forms
             // 
             AngelLoaderUsesLabel.AutoSize = true;
             AngelLoaderUsesLabel.Location = new Point(32, 364);
-            AngelLoaderUsesLabel.TabIndex = 4;
+            AngelLoaderUsesLabel.TabIndex = 5;
             // 
             // LogoTextPictureBox
             // 
@@ -188,8 +186,8 @@ namespace AngelLoader.Forms
             BuildDateLabel.AutoSize = true;
             BuildDateLabel.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             BuildDateLabel.ForeColor = SystemColors.ControlDarkDark;
-            BuildDateLabel.Location = new Point(352, 52);
-            BuildDateLabel.TabIndex = 1;
+            BuildDateLabel.Location = new Point(352, 50);
+            BuildDateLabel.TabIndex = 2;
             // 
             // AboutForm
             // 
