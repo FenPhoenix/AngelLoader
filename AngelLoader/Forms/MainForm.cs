@@ -2813,115 +2813,124 @@ namespace AngelLoader.Forms
 
         private void ZoomFMsDGV(ZoomFMsDGVType type, float? zoomFontSize = null)
         {
-            // No goal escapes me, mate
-
-            SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
-
-            Font f = FMsDGV.DefaultCellStyle.Font;
-
-            // Set zoom level
-            float fontSize =
-                type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
-                type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
-                type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
-                type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
-                _fMsListDefaultFontSizeInPoints;
-
-            // Clamp zoom level
-            if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
-            if (fontSize > Math.Round(41.25f, 2)) fontSize = 41.25f;
-            fontSize = (float)Math.Round(fontSize, 2);
-
-            // Set new font size
-            Font newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
-
-            // Set row height based on font plus some padding
-            int rowHeight = type == ZoomFMsDGVType.ResetZoom ? _rMsListDefaultRowHeight : newF.Height + 9;
-
-            // If we're on startup, then the widths will already have been restored (to zoomed size) from the
-            // config
-            bool heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
-
-            // Must be done first, else we get wrong values
-            List<double> widthMul = new List<double>();
-            foreach (DataGridViewColumn c in FMsDGV.Columns)
+            try
             {
-                Size size = c.HeaderCell.Size;
-                widthMul.Add((double)size.Width / size.Height);
-            }
+                this.SuspendDrawing();
 
-            // Set font on cells
-            FMsDGV.DefaultCellStyle.Font = newF;
+                // No goal escapes me, mate
 
-            // Set font on headers
-            FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
+                SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
-            // Set height on all rows (but it won't take effect yet)
-            FMsDGV.RowTemplate.Height = rowHeight;
+                Font f = FMsDGV.DefaultCellStyle.Font;
 
-            // Save previous selection
-            int selIndex = FMsDGV.RowSelected() ? FMsDGV.SelectedRows[0].Index : -1;
-            using (new DisableEvents(this))
-            {
-                // Force a regeneration of rows (height will take effect here)
-                int rowCount = FMsDGV.RowCount;
-                FMsDGV.RowCount = 0;
-                FMsDGV.RowCount = rowCount;
+                // Set zoom level
+                float fontSize =
+                    type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
+                    type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
+                    type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
+                    type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
+                    _fMsListDefaultFontSizeInPoints;
 
-                // Restore previous selection (no events will be fired, due to being in a DisableEvents block)
-                if (selIndex > -1)
+                // Clamp zoom level
+                if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
+                if (fontSize > Math.Round(41.25f, 2)) fontSize = 41.25f;
+                fontSize = (float)Math.Round(fontSize, 2);
+
+                // Set new font size
+                Font newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
+
+                // Set row height based on font plus some padding
+                int rowHeight = type == ZoomFMsDGVType.ResetZoom ? _rMsListDefaultRowHeight : newF.Height + 9;
+
+                // If we're on startup, then the widths will already have been restored (to zoomed size) from the
+                // config
+                bool heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
+
+                // Must be done first, else we get wrong values
+                List<double> widthMul = new List<double>();
+                foreach (DataGridViewColumn c in FMsDGV.Columns)
                 {
-                    FMsDGV.Rows[selIndex].Selected = true;
-                    FMsDGV.SelectProperly();
+                    Size size = c.HeaderCell.Size;
+                    widthMul.Add((double)size.Width / size.Height);
                 }
 
-                // Set column widths (keeping ratio to height)
-                for (int i = 0; i < FMsDGV.Columns.Count; i++)
+                // Set font on cells
+                FMsDGV.DefaultCellStyle.Font = newF;
+
+                // Set font on headers
+                FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
+
+                // Set height on all rows (but it won't take effect yet)
+                FMsDGV.RowTemplate.Height = rowHeight;
+
+                // Save previous selection
+                int selIndex = FMsDGV.RowSelected() ? FMsDGV.SelectedRows[0].Index : -1;
+                using (new DisableEvents(this))
                 {
-                    DataGridViewColumn c = FMsDGV.Columns[i];
+                    // Force a regeneration of rows (height will take effect here)
+                    int rowCount = FMsDGV.RowCount;
+                    FMsDGV.RowCount = 0;
+                    FMsDGV.RowCount = rowCount;
 
-                    // Complicated gobbledegook for handling different options and also special-casing the
-                    // non-resizable columns
-                    bool reset = type == ZoomFMsDGVType.ResetZoom;
-                    if (c != RatingImageColumn && c != FinishedColumn)
+                    // Restore previous selection (no events will be fired, due to being in a DisableEvents block)
+                    if (selIndex > -1)
                     {
-                        c.MinimumWidth = reset ? Defaults.MinColumnWidth : rowHeight + 3;
+                        FMsDGV.Rows[selIndex].Selected = true;
+                        FMsDGV.SelectProperly();
                     }
 
-                    if (heightOnly)
+                    // Set column widths (keeping ratio to height)
+                    for (int i = 0; i < FMsDGV.Columns.Count; i++)
                     {
-                        if (c == RatingImageColumn || c == FinishedColumn)
+                        DataGridViewColumn c = FMsDGV.Columns[i];
+
+                        // Complicated gobbledegook for handling different options and also special-casing the
+                        // non-resizable columns
+                        bool reset = type == ZoomFMsDGVType.ResetZoom;
+                        if (c != RatingImageColumn && c != FinishedColumn)
                         {
-                            c.Width = (int)Math.Round(c.HeaderCell.Size.Height * widthMul[i]);
+                            c.MinimumWidth = reset ? Defaults.MinColumnWidth : rowHeight + 3;
                         }
-                    }
-                    else
-                    {
-                        if (reset && c == RatingImageColumn)
+
+                        if (heightOnly)
                         {
-                            c.Width = _ratingImageColumnWidth;
-                        }
-                        else if (reset && c == FinishedColumn)
-                        {
-                            c.Width = _finishedColumnWidth;
+                            if (c == RatingImageColumn || c == FinishedColumn)
+                            {
+                                c.Width = (int)Math.Round(c.HeaderCell.Size.Height * widthMul[i]);
+                            }
                         }
                         else
                         {
-                            // The ever-present rounding errors creep in here, but meh. I should figure out
-                            // how to not have those - ensure scaling always happens in integral pixel counts
-                            // somehow?
-                            c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - _fMsListDefaultFontSizeInPoints) < 0.1
-                                ? Config.Columns[i].Width
-                                : (int)Math.Ceiling(c.HeaderCell.Size.Height * widthMul[i]);
+                            if (reset && c == RatingImageColumn)
+                            {
+                                c.Width = _ratingImageColumnWidth;
+                            }
+                            else if (reset && c == FinishedColumn)
+                            {
+                                c.Width = _finishedColumnWidth;
+                            }
+                            else
+                            {
+                                // The ever-present rounding errors creep in here, but meh. I should figure out
+                                // how to not have those - ensure scaling always happens in integral pixel counts
+                                // somehow?
+                                c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - _fMsListDefaultFontSizeInPoints) < 0.1
+                                    ? Config.Columns[i].Width
+                                    : (int)Math.Ceiling(c.HeaderCell.Size.Height * widthMul[i]);
+                            }
                         }
                     }
                 }
+
+                // Keep selected FM in the center of the list vertically where possible (UX nicety)
+                if (selIndex > -1 && selFM != null) CenterSelectedFM();
+
+                // And that's how you do it
             }
-
-            // Keep selected FM in the center of the list vertically where possible (UX nicety)
-            if (selIndex > -1 && selFM != null) CenterSelectedFM();
-
-            // And that's how you do it
+            finally
+            {
+                this.ResumeDrawing();
+            }
         }
 
         private void CenterSelectedFM()
