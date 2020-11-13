@@ -132,7 +132,7 @@ namespace AngelLoader.WinAPI
         // Second-instance telling first instance to show itself junk
         public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Misc.AppGuid);
 
-        [DllImport("user32")]
+        [DllImport("user32", CharSet = CharSet.Unicode)]
         private static extern int RegisterWindowMessage(string message);
 
         [DllImport("user32.dll")]
@@ -151,7 +151,7 @@ namespace AngelLoader.WinAPI
 
         internal const uint QUERY_LIMITED_INFORMATION = 0x00001000;
 
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern bool QueryFullProcessImageName([In] SafeProcessHandle hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
         [DllImport("kernel32.dll")]
