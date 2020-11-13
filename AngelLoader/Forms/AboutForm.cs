@@ -28,14 +28,14 @@ namespace AngelLoader.Forms
             LogoPictureBox.Image = new Icon(Images.AngelLoader, 48, 48).ToBitmap();
 
             VersionLabel.Text = Application.ProductVersion;
-            
+
             bool success = DateTime.TryParseExact(
                 BuildDateSource.BuildDate,
                 "yyyyMMddHHmmss",
                 DateTimeFormatInfo.InvariantInfo,
                 DateTimeStyles.AssumeUniversal,
                 out DateTime result);
-            
+
             BuildDateLabel.Text = success
                 ? result.ToLocalTime().ToString("yyyy MMM dd, HH:mm:ss", CultureInfo.CurrentCulture)
                 : "";
@@ -56,7 +56,6 @@ namespace AngelLoader.Forms
             {
                 // ignore
             }
-
 
             // Manually set the text here, because multiline texts are otherwise stored in resources and it's a
             // whole nasty thing that doesn't even work with our resx exclude system anyway.

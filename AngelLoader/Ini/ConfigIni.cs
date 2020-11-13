@@ -802,7 +802,7 @@ namespace AngelLoader
 
             for (int i = 0; i < HideableFilterControlsCount; i++)
             {
-                sb.Append("FilterVisible").Append((HideableFilterControls)i).Append("=").AppendLine(config.FilterControlVisibilities[i].ToString());
+                sb.Append("FilterVisible").Append((HideableFilterControls)i).Append('=').AppendLine(config.FilterControlVisibilities[i].ToString());
             }
 
             for (int i = 0; i < SupportedGameCount + 1; i++)
