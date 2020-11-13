@@ -130,7 +130,10 @@ namespace AngelLoader.WinAPI.Dialogs
                     ref guid,
                     out object item);
 
-                if (result != HResult.Ok) throw Marshal.GetExceptionForHR((int)result);
+                if (result != HResult.Ok)
+                {
+                    throw Marshal.GetExceptionForHR((int)result) ?? new Exception("Argh!\r\n" + result);
+                }
 
                 dialog.SetFolder((IShellItem)item);
             }
