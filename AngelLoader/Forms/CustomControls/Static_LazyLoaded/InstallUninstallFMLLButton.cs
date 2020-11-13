@@ -19,7 +19,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             var container = owner.BottomLeftButtonsFLP;
 
-            // @NET5: Force MS Sans Serif
             Button = new Button { Visible = false, Font = ControlExtensions.LegacyMSSansSerif() };
 
             container.Controls.Add(Button);

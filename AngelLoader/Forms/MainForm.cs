@@ -421,7 +421,6 @@ namespace AngelLoader.Forms
             MainMenuButton.HideFocusRectangle();
 
             //Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            // @NET5: Force MS Sans Serif
             Font = ControlExtensions.LegacyMSSansSerif();
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)

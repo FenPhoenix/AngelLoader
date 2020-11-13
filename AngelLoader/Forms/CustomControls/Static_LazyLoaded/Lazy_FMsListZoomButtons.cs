@@ -16,7 +16,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             if (_constructed) return;
 
             // Insert them in reverse order so we always insert at 0
-            // @NET5: Force MS Sans Serif
             ResetZoomButton = new ToolStripButtonCustom { Font = ControlExtensions.LegacyMSSansSerif() };
             owner.RefreshAreaToolStrip.Items.Insert(0, ResetZoomButton);
             ResetZoomButton.AutoSize = false;
@@ -26,7 +25,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ResetZoomButton.Image = Images.GetZoomImage(ResetZoomButton.ContentRectangle.Width, ResetZoomButton.ContentRectangle.Height, Zoom.Reset);
             ResetZoomButton.Click += owner.FMsListResetZoomButton_Click;
 
-            // @NET5: Force MS Sans Serif
             ZoomOutButton = new ToolStripButtonCustom { Font = ControlExtensions.LegacyMSSansSerif() };
             owner.RefreshAreaToolStrip.Items.Insert(0, ZoomOutButton);
             ZoomOutButton.AutoSize = false;
@@ -36,7 +34,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ZoomOutButton.Image = Images.GetZoomImage(ZoomOutButton.ContentRectangle.Width, ZoomOutButton.ContentRectangle.Height, Zoom.Out);
             ZoomOutButton.Click += owner.FMsListZoomOutButton_Click;
 
-            // @NET5: Force MS Sans Serif
             ZoomInButton = new ToolStripButtonCustom { Font = ControlExtensions.LegacyMSSansSerif() };
             owner.RefreshAreaToolStrip.Items.Insert(0, ZoomInButton);
             ZoomInButton.AutoSize = false;

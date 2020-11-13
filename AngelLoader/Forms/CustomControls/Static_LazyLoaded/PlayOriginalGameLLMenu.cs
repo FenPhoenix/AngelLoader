@@ -25,7 +25,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            // @NET5: Force MS Sans Serif
             Menu = new ContextMenuStrip(components) { Font = ControlExtensions.LegacyMSSansSerif() };
 
             Thief1MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief1_16 };

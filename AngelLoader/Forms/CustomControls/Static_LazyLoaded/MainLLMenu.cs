@@ -20,7 +20,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            // @NET5: Force MS Sans Serif
             Menu = new ContextMenuStrip(components) { Font = ControlExtensions.LegacyMSSansSerif() };
             Menu.Items.AddRange(new ToolStripItem[]
             {

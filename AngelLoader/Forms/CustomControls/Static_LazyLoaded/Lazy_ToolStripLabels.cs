@@ -25,7 +25,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             if (!_constructed[li])
             {
-                // @NET5: Force MS Sans Serif
                 _labels[li] = new ToolStripLabel { Font = ControlExtensions.LegacyMSSansSerif() };
                 var _label = _labels[li];
 
