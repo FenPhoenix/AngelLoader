@@ -213,7 +213,7 @@ namespace AngelLoader
 
                 // We're not x64 currently, but this check lets us be compatible for an easy switch if we decide
                 // to do so in the future.
-                object regKey = Registry.GetValue(
+                object? regKey = Registry.GetValue(
                     !Environment.Is64BitProcess
                         // If we're x86 Win/x86 app OR x64 Win/x86 app, then this is the right path. On x86 Win,
                         // this is the actual registry path, and on x64 Win/x86 app, this will redirect to the
@@ -232,7 +232,8 @@ namespace AngelLoader
                 }
                 else
                 {
-                    string regKeyStr = regKey.ToString();
+                    // @NULL_TODO: Test with like !(regKey is string regKeyStr) up there
+                    string regKeyStr = regKey.ToString()!;
                     string soIni = "";
                     try
                     {
