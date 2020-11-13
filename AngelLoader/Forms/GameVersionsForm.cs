@@ -17,8 +17,6 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            Font = ControlExtensions.LegacyMSSansSerif();
-
             // @GENGAMES (GameVersionsForm): Begin
             GameVersionItems = new[]
             {

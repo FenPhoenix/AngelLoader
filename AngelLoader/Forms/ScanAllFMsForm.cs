@@ -20,8 +20,6 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            Font = ControlExtensions.LegacyMSSansSerif();
-
             _checkBoxes = new[]
             {
                 TitleCheckBox,

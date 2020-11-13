@@ -14,7 +14,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (Constructed) return;
 
-            Menu = new ContextMenuStrip(components) { Font = ControlExtensions.LegacyMSSansSerif() };
+            Menu = new ContextMenuStrip(components);
 
             Constructed = true;
         }

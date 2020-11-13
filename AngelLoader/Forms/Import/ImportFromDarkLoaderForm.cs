@@ -25,8 +25,6 @@ namespace AngelLoader.Forms
 #else
             InitComponentManual();
 #endif
-
-            Font = ControlExtensions.LegacyMSSansSerif();
         }
 
         private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e) => Localize();

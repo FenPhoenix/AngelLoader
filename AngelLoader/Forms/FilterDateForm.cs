@@ -21,8 +21,6 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
             
-            Font = ControlExtensions.LegacyMSSansSerif();
-
             Localize();
 
             Text = title;

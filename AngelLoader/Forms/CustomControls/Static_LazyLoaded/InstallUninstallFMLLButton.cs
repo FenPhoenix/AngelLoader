@@ -19,7 +19,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             var container = owner.BottomLeftButtonsFLP;
 
-            Button = new Button { Visible = false, Font = ControlExtensions.LegacyMSSansSerif() };
+            Button = new Button { Visible = false };
 
             container.Controls.Add(Button);
             container.Controls.SetChildIndex(Button, 2);

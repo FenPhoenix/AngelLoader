@@ -90,8 +90,6 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            Font = ControlExtensions.LegacyMSSansSerif();
-
             _startup = startup;
             _cleanStart = cleanStart;
             _ownerForm = ownerForm;

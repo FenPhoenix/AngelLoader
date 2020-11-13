@@ -24,8 +24,6 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            Font = ControlExtensions.LegacyMSSansSerif();
-
             _sourceTags = new CatAndTagsList(sourceTags.Count);
 
             #region Arrow buttons setup

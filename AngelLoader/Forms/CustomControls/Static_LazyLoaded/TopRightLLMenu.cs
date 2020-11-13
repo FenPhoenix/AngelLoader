@@ -25,7 +25,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation
 
-            Menu = new ContextMenuStripCustom(components) { Font = ControlExtensions.LegacyMSSansSerif() };
+            Menu = new ContextMenuStripCustom(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 StatsMenuItem = new ToolStripMenuItemCustom

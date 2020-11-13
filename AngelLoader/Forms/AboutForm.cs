@@ -19,8 +19,6 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            Font = ControlExtensions.LegacyMSSansSerif();
-
             Icon = Images.AngelLoader;
 
             // Just grab the largest frame (sub-icon) from the AL icon resource we have already, that way we don't

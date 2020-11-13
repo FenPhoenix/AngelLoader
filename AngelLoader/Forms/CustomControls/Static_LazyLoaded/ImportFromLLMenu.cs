@@ -20,7 +20,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            ImportFromMenu = new ContextMenuStrip(components) { Font = ControlExtensions.LegacyMSSansSerif() };
+            ImportFromMenu = new ContextMenuStrip(components);
 
             // Not localized because they consist solely of proper names! Don't remove these!
             ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom("DarkLoader...");

@@ -31,7 +31,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             _owner = form;
 
-            Menu = new ContextMenuStripCustom(components) { Font = ControlExtensions.LegacyMSSansSerif() };
+            Menu = new ContextMenuStripCustom(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 TitleMenuItem = new ToolStripMenuItemCustom

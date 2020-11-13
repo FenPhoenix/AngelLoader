@@ -15,7 +15,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (Constructed) return;
 
-            ListBox = new ListBox { Font = ControlExtensions.LegacyMSSansSerif() };
+            ListBox = new ListBox();
             owner.EverythingPanel.Controls.Add(ListBox);
             ListBox.FormattingEnabled = true;
             ListBox.TabIndex = 3;

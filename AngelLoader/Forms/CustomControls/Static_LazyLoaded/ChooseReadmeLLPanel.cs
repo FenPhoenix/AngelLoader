@@ -53,8 +53,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 Anchor = AnchorStyles.None,
                 TabIndex = 46,
                 Visible = false,
-                Size = new Size(324, 161),
-                Font = ControlExtensions.LegacyMSSansSerif()
+                Size = new Size(324, 161)
             };
             Panel.Controls.Add(ListBox);
             Panel.Controls.Add(OKButtonFLP);

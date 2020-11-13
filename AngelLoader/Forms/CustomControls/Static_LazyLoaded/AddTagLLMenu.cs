@@ -13,7 +13,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            Menu = new ContextMenuStrip(components) { Font = ControlExtensions.LegacyMSSansSerif() };
+            Menu = new ContextMenuStrip(components);
             Menu.Closed += form.AddTagMenu_Closed;
 
             _constructed = true;

@@ -20,7 +20,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            Menu = new ContextMenuStrip(components) { Font = ControlExtensions.LegacyMSSansSerif() };
+            Menu = new ContextMenuStrip(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 GameVersionsMenuItem = new ToolStripMenuItemCustom(),
