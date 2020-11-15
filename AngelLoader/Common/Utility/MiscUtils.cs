@@ -17,7 +17,7 @@ namespace AngelLoader
     public static partial class Misc
     {
         // Depend on non-defined symbol if we're in public release profile, to prevent the bloat of calls to this
-#if ReleasePublic || ReleaseBeta || NoAsserts
+#if ReleasePublic || NoAsserts
         [Conditional("_AngelLoader_In_Release_Public_Mode")]
 #endif
         [PublicAPI]
