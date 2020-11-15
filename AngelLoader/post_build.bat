@@ -51,6 +51,8 @@ rem "%system%xcopy" "%SolutionDir%\libs\x86\7z.dll" "%TargetDir%" /y
 
 if %ConfigurationName% == Release_Public (
 "%system%xcopy" "%ProjectDir%Languages\English.ini" "%destDir%Data\Languages\" /y
+) else if %ConfigurationName% == Release_Beta (
+"%system%xcopy" "%ProjectDir%Languages\English.ini" "%destDir%Data\Languages\" /y
 ) else (
 "%system%xcopy" "%ProjectDir%Languages" "%destDir%Data\Languages\" /y /i /e
 )
