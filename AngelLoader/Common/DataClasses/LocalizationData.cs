@@ -50,6 +50,7 @@ namespace AngelLoader.DataClasses
         internal readonly RatingFilterBox_Class RatingFilterBox = new RatingFilterBox_Class();
         internal readonly Importing_Class Importing = new Importing_Class();
         internal readonly ScanAllFMsBox_Class ScanAllFMsBox = new ScanAllFMsBox_Class();
+        internal readonly ExportFMIni_Class ExportFMIni = new ExportFMIni_Class();
 
         internal sealed class Meta_Class
         {
@@ -668,6 +669,11 @@ namespace AngelLoader.DataClasses
             internal readonly string Scan = "Scan";
             [FenGenBlankLine]
             internal readonly string NothingWasScanned = "No options were selected; no FMs have been scanned.";
+        }
+
+        internal sealed class ExportFMIni_Class
+        {
+            internal readonly string TitleText = "Export fm.ini";
         }
     }
 }

@@ -193,6 +193,12 @@ namespace AngelLoader
             {
                 ScanAllFMsBox_Dict.Add(f.Name, f);
             }
+            var exportFMIniFields = typeof(LText_Class.ExportFMIni_Class).GetFields(_bfLText);
+            var ExportFMIni_Dict = new Dictionary<string, FieldInfo>(exportFMIniFields.Length);
+            foreach (var f in exportFMIniFields)
+            {
+                ExportFMIni_Dict.Add(f.Name, f);
+            }
 
             #endregion
 
@@ -765,6 +771,28 @@ namespace AngelLoader
                             if (ScanAllFMsBox_Dict.TryGetValue(key, out FieldInfo value))
                             {
                                 value.SetValue(ret.ScanAllFMsBox, lt.Substring(eqIndex + 1));
+                            }
+                        }
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                else if (lineT == "[ExportFMIni]")
+                {
+                    while (i < linesLength - 1)
+                    {
+                        int ltLength;
+                        string lt = lines[i + 1].TrimStart();
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
+                        {
+                            string key = lt.Substring(0, eqIndex);
+                            if (ExportFMIni_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.ExportFMIni, lt.Substring(eqIndex + 1));
                             }
                         }
                         else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')

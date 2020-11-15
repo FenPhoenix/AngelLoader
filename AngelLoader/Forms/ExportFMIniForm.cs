@@ -29,6 +29,7 @@ namespace AngelLoader.Forms
 
         private void Localize()
         {
+            Text = LText.ExportFMIni.TitleText;
             ExportButton.Text = LText.Global.Export;
             Cancel_Button.Text = LText.Global.Cancel;
         }
