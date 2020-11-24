@@ -24,7 +24,7 @@ FM loaders have traditionally had FM scanning functionality, and AngelLoader's s
 In short, AngelLoader aims to be a complete successor to DarkLoader, being an all-in-one loader and manager with an intuitive interface, high performance, and many features both classic and modern.
 
 ## Building
-- Download a 32-bit build of [FFmpeg](https://ffmpeg.zeranoe.com/builds/) (**must be 32-bit**) or use this [custom minimal build](https://www.dropbox.com/s/hguxwku13kf16zc/ffmpeg_minimal_AngelLoader.zip)
+- Download a 32-bit build of [FFmpeg](https://www.gyan.dev/ffmpeg/builds/) (**must be 32-bit**) or use this [custom minimal build](https://www.dropbox.com/s/hguxwku13kf16zc/ffmpeg_minimal_AngelLoader.zip)
     - For the regular build:
         - Create a folder named "ffmpeg" in the solution base dir.
         - Extract the ffmpeg archive. It should have a bin folder in it. Copy all files from the bin folder to the ffmpeg folder you just created.
