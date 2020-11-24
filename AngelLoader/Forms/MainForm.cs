@@ -3719,8 +3719,6 @@ namespace AngelLoader.Forms
 
             FMsDGV.SetOpenInDromEdVisible(false);
 
-            FMsDGV.SetExportFMIniFromFMMenuItemEnabled(false);
-
             FMsDGV.SetScanFMMenuItemEnabled(false);
 
             FMsDGV.SetConvertAudioRCSubMenuEnabled(false);
@@ -3832,9 +3830,6 @@ namespace AngelLoader.Forms
             FMsDGV.SetInstallUninstallMenuItemText(!fm.Installed);
             FMsDGV.SetDeleteFMMenuItemEnabled(true);
             FMsDGV.SetOpenInDromEdMenuItemText(fmIsSS2);
-
-            // Sneaky Upgrade's FMSel allows exporting fm.ini files, so I guess Thief 3 can have those too
-            FMsDGV.SetExportFMIniFromFMMenuItemEnabled(gameIsSupported);
 
             FMsDGV.SetOpenInDromEdVisible(GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
 

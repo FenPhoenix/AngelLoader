@@ -21,7 +21,6 @@ namespace AngelLoader.Forms.CustomControls
         private bool _scanFMMenuItemEnabled;
         private bool _openInDromEdSepVisible;
         private bool _openInDromEdMenuItemVisible;
-        private bool _exportFMIniFromFMMenuItemEnabled;
         private bool _playFMInMPMenuItemVisible;
         private bool _convertAudioSubMenuEnabled;
         private bool _deleteFMMenuItemEnabled;
@@ -54,10 +53,6 @@ namespace AngelLoader.Forms.CustomControls
         private ToolStripSeparator? OpenInDromEdSep;
 
         private ToolStripMenuItemCustom? OpenInDromEdMenuItem;
-
-        private ToolStripSeparator? ExportFMIniFromFMSep;
-
-        private ToolStripMenuItemCustom? ExportFMIniFromFMMenuItem;
 
         private ToolStripSeparator? ScanFMSep;
 
@@ -118,10 +113,6 @@ namespace AngelLoader.Forms.CustomControls
                 OpenInDromEdSep = new ToolStripSeparator(),
                 OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
 
-                ExportFMIniFromFMSep = new ToolStripSeparator(),
-
-                ExportFMIniFromFMMenuItem = new ToolStripMenuItemCustom(),
-
                 ScanFMSep = new ToolStripSeparator(),
 
                 ScanFMMenuItem = new ToolStripMenuItemCustom(),
@@ -172,8 +163,6 @@ namespace AngelLoader.Forms.CustomControls
                 DeleteFMMenuItem,
                 OpenInDromEdSep,
                 OpenInDromEdMenuItem,
-                ExportFMIniFromFMSep,
-                ExportFMIniFromFMMenuItem,
                 ScanFMSep,
                 ScanFMMenuItem,
                 ConvertAudioMenuItem,
@@ -228,7 +217,6 @@ namespace AngelLoader.Forms.CustomControls
             InstallUninstallMenuItem.Click += AsyncMenuItems_Click;
             DeleteFMMenuItem.Click += AsyncMenuItems_Click;
             OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
-            ExportFMIniFromFMMenuItem.Click += ExportFMIniFromFM_Click;
             ScanFMMenuItem.Click += AsyncMenuItems_Click;
             ConvertWAVsTo16BitMenuItem.Click += AsyncMenuItems_Click;
             ConvertOGGsToWAVsMenuItem.Click += AsyncMenuItems_Click;
@@ -259,7 +247,6 @@ namespace AngelLoader.Forms.CustomControls
             ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
             OpenInDromEdSep.Visible = _openInDromEdSepVisible;
             OpenInDromEdMenuItem.Visible = _openInDromEdMenuItemVisible;
-            ExportFMIniFromFMMenuItem.Enabled = _exportFMIniFromFMMenuItemEnabled;
             ConvertAudioMenuItem.Enabled = _convertAudioSubMenuEnabled;
 
             #endregion
@@ -327,8 +314,6 @@ namespace AngelLoader.Forms.CustomControls
             DeleteFMMenuItem!.Text = LText.FMsList.FMMenu_DeleteFM;
 
             SetOpenInDromEdMenuItemText(sayShockEd);
-
-            ExportFMIniFromFMMenuItem!.Text = LText.FMsList.FMMenu_ExportFMIniFromFM;
 
             ScanFMMenuItem!.Text = LText.FMsList.FMMenu_ScanFM;
 
@@ -514,18 +499,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetExportFMIniFromFMMenuItemEnabled(bool value)
-        {
-            if (_fmMenuConstructed)
-            {
-                ExportFMIniFromFMMenuItem!.Enabled = value;
-            }
-            else
-            {
-                _exportFMIniFromFMMenuItemEnabled = value;
-            }
-        }
-
         internal void SetOpenInDromEdMenuItemText(bool sayShockEd)
         {
             if (!_fmMenuConstructed) return;
@@ -652,11 +625,6 @@ namespace AngelLoader.Forms.CustomControls
                 var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
                 await FMAudio.ConvertToWAVs(GetSelectedFM(), convertType, true);
             }
-        }
-
-        private void ExportFMIniFromFM_Click(object sender, EventArgs e)
-        {
-            Core.ExportFMIni(GetSelectedFM());
         }
 
         private void RatingMenuItems_Click(object sender, EventArgs e)

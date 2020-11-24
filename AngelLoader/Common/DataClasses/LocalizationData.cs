@@ -50,7 +50,6 @@ namespace AngelLoader.DataClasses
         internal readonly RatingFilterBox_Class RatingFilterBox = new RatingFilterBox_Class();
         internal readonly Importing_Class Importing = new Importing_Class();
         internal readonly ScanAllFMsBox_Class ScanAllFMsBox = new ScanAllFMsBox_Class();
-        internal readonly ExportFMIni_Class ExportFMIni = new ExportFMIni_Class();
 
         internal sealed class Meta_Class
         {
@@ -70,7 +69,6 @@ namespace AngelLoader.DataClasses
             internal readonly string Autodetect = "Autodetect";
             internal readonly string SelectAll = "Select all";
             internal readonly string SelectNone = "Select none";
-            internal readonly string Export = "Export";
             [FenGenBlankLine]
             internal readonly string Unrated = "Unrated";
             internal readonly string None = "None";
@@ -106,9 +104,6 @@ namespace AngelLoader.DataClasses
             internal readonly string AllFiles = "All files (*.*)";
             internal readonly string ExeFiles = "Executable files (*.exe)";
             internal readonly string IniFiles = "ini files (*.ini)";
-            [FenGenComment(
-                "This is for the \"Export fm.ini\" save-file dialog box.")]
-            internal readonly string FMIniFile = "FM ini file";
             internal readonly string DMLFiles = "NewDark .dml patch files (*.dml)";
         }
 
@@ -361,7 +356,6 @@ namespace AngelLoader.DataClasses
             internal readonly string FMMenu_DeleteFM = "Delete FM archive";
             internal readonly string FMMenu_OpenInDromEd = "Open FM in DromEd";
             internal readonly string FMMenu_OpenInShockEd = "Open FM in ShockEd";
-            internal readonly string FMMenu_ExportFMIniFromFM = "Export fm.ini from FM...";
             internal readonly string FMMenu_Rating = "Rating";
             internal readonly string FMMenu_FinishedOn = "Finished on";
             internal readonly string FMMenu_ConvertAudio = "Convert audio";
@@ -669,11 +663,6 @@ namespace AngelLoader.DataClasses
             internal readonly string Scan = "Scan";
             [FenGenBlankLine]
             internal readonly string NothingWasScanned = "No options were selected; no FMs have been scanned.";
-        }
-
-        internal sealed class ExportFMIni_Class
-        {
-            internal readonly string TitleText = "Export fm.ini";
         }
     }
 }

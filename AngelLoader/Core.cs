@@ -1494,12 +1494,6 @@ namespace AngelLoader
             return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
         }
 
-        internal static void ExportFMIni(FanMission fm)
-        {
-            using var f = new ExportFMIniForm(fm);
-            f.ShowDialog();
-        }
-
         #region Shutdown
 
         internal static void UpdateConfig(
