@@ -203,6 +203,7 @@
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(410, 312);
             this.Name = "ExportFMIniForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Export fm.ini";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExportFMIniForm_FormClosing);
