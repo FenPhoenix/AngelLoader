@@ -17,7 +17,25 @@ AngelLoader is awesome.
 Thanks for checking it out!
 ```
 
-## List of new strings by version
+## List of localization-related changes by version
+
+### v1.4.5:
+
+#### [English.ini changes](https://gist.github.com/FenPhoenix/f33f08b4e9df0b63c8bb3b39f80a9b91/revisions#diff-63bba9e557421359e41e003c03221af5937d46cbd860b042f2dbe08514f23f9c)
+
+#### [AngelLoader documentation.html changes](https://gist.github.com/FenPhoenix/658cb74fab82ff3b1f75d91a56f85931/revisions#diff-0698c9216fed52b45c64b61efc49d53cf0ea8a260699b65f0a9221fa7c016fc0)
+
+#### Images:
+The following images have been **updated** to show new UI elements:  
+`fms_list_960.png`  
+`main_window_full_960.png`  
+
+The following images have been **added**:  
+`filter_bar.png`  
+`game_versions_window.png`  
+`main_menu.png`  
+
+
 
 ### v1.4.4:
 
