@@ -607,5 +607,61 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+        
+        internal static void PaintArrow(
+            PaintEventArgs e,
+            Point[] _arrowPolygon,
+            Direction direction,
+            int width,
+            int height,
+            bool enabled)
+        {
+            int arrowX;
+            int arrowY;
+
+            switch (direction)
+            {
+                case Direction.Left:
+                    arrowX = (width / 2) + 2;
+                    arrowY = (height / 2) - 4;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY - 1);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX, arrowY + 7);
+                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX - 4, arrowY + 3);
+
+                    break;
+                case Direction.Right:
+                    arrowX = (width / 2) - 2;
+                    arrowY = (height / 2) - 4;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY - 1);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX, arrowY + 7);
+                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 4, arrowY + 3);
+
+                    break;
+                case Direction.Up:
+                    arrowX = (width / 2) - 3;
+                    arrowY = (height / 2) + 1;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX + 7, arrowY);
+                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 3, arrowY - 4);
+
+                    break;
+                case Direction.Down:
+                default:
+                    arrowX = (width / 2) - 3;
+                    arrowY = (height / 2) - 1;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX + 7, arrowY);
+                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 3, arrowY + 4);
+
+                    break;
+            }
+
+            Brush brush = enabled ? SystemBrushes.ControlText : SystemBrushes.ControlDark;
+            e.Graphics.FillPolygon(brush, _arrowPolygon);
+        }
     }
 }
