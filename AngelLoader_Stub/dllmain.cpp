@@ -42,8 +42,8 @@
 #include <filesystem>
 #include <cstdio>
 #include <Windows.h>
-//#include <shlwapi.h> // add shlwapi.lib to Additional Dependencies
-//#include <tchar.h>
+ //#include <shlwapi.h> // add shlwapi.lib to Additional Dependencies
+ //#include <tchar.h>
 using std::string;
 using std::wstring;
 namespace fs = std::filesystem;
@@ -147,29 +147,29 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     string line;
     while (std::getline(ifs, line))
     {
-        if (line.length() > play_original_game_eq_len&&
+        if (line.length() > play_original_game_eq_len &&
             line.substr(0, play_original_game_eq_len) == play_original_game_eq)
         {
             play_original_game_key_found = true;
             string val = line.substr(play_original_game_eq_len);
             play_original_game = !_stricmp(val.c_str(), "true");
         }
-        else if (line.length() > fm_name_eq_len&&
+        else if (line.length() > fm_name_eq_len &&
             line.substr(0, fm_name_eq_len) == fm_name_eq)
         {
             fm_name = line.substr(fm_name_eq_len);
         }
-        else if (line.length() > disabled_mods_eq_len&&
+        else if (line.length() > disabled_mods_eq_len &&
             line.substr(0, disabled_mods_eq_len) == disabled_mods_eq)
         {
             disabled_mods = line.substr(disabled_mods_eq_len);
         }
-        else if (line.length() > language_eq_len&&
+        else if (line.length() > language_eq_len &&
             line.substr(0, language_eq_len) == language_eq)
         {
             language = line.substr(language_eq_len);
         }
-        else if (line.length() > force_language_eq_len&&
+        else if (line.length() > force_language_eq_len &&
             line.substr(0, force_language_eq_len) == force_language_eq)
         {
             force_language = line.substr(force_language_eq_len);
@@ -189,7 +189,9 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
         return show_loader_alert();
     }
     // error conditions; they can be reported through a response file if I decided to ever use that
-    else if (fm_name.length() > 30 ||
+    // Fix: we used to compare fm_name length to 30, but Thief 3 supports fm names longer than that, so we would
+    // just silently exit the game in that case (ex. On The Trail of a Fence).
+    else if (fm_name.length() > static_cast<unsigned int>(data->nMaxNameLen) ||
         disabled_mods.length() > static_cast<unsigned int>(data->nMaxModExcludeLen))
     {
         return kSelFMRet_ExitGame;
