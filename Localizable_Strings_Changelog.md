@@ -19,6 +19,10 @@ Thanks for checking it out!
 
 ## List of localization-related changes by version
 
+### v1.4.6:
+
+No localizable text changes.
+
 ### v1.4.5:
 
 #### [English.ini changes](https://gist.github.com/FenPhoenix/f33f08b4e9df0b63c8bb3b39f80a9b91/revisions#diff-63bba9e557421359e41e003c03221af5937d46cbd860b042f2dbe08514f23f9c)
@@ -34,8 +38,6 @@ The following images have been **added**:
 `filter_bar.png`  
 `game_versions_window.png`  
 `main_menu.png`  
-
-
 
 ### v1.4.4:
 
