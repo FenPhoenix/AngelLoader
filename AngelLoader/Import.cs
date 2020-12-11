@@ -30,7 +30,7 @@ namespace AngelLoader
             internal bool Size;
         }
 
-        #region Importing
+        #region API methods
 
         internal static async Task ImportFrom(ImportType importType)
         {
@@ -814,8 +814,6 @@ namespace AngelLoader
             return (ImportError.None, importedFMs);
         }
 
-        #endregion
-
         private static List<FanMission>
         MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport fields)
         {
@@ -991,5 +989,7 @@ namespace AngelLoader
 
             return importedFMsInMainList;
         }
+
+        #endregion
     }
 }
