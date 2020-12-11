@@ -81,10 +81,10 @@ namespace AngelLoader
             {
                 string[] readmePaths =
                 {
-                basePath,
-                Path.Combine(basePath, _t3ReadmeDir1),
-                Path.Combine(basePath, _t3ReadmeDir2)
-            };
+                    basePath,
+                    Path.Combine(basePath, _t3ReadmeDir1),
+                    Path.Combine(basePath, _t3ReadmeDir2)
+                };
 
                 var readmes = new List<string>();
 
