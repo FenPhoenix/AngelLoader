@@ -19,6 +19,10 @@ Thanks for checking it out!
 
 ## List of localization-related changes by version
 
+### v1.4.7:
+
+No localizable text changes.
+
 ### v1.4.6:
 
 No localizable text changes.
