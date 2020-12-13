@@ -561,7 +561,11 @@ namespace AngelLoader
             List<List<string>> perGameInstalledFMDirsList,
             List<int> fmsViewListUnscanned)
         {
-            var fmArchivesHash = new HashSet<string>(fmArchives, StringComparer.OrdinalIgnoreCase);
+            var fmArchivesDict = new Dictionary<string, bool>(fmArchives.Length, StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < fmArchives.Length; i++)
+            {
+                fmArchivesDict.Add(fmArchives[i], false);
+            }
 
             bool?[] boolsList = new bool?[SupportedGameCount];
 
@@ -618,11 +622,22 @@ namespace AngelLoader
                 // Archive dirs: Thief1(personal)+Thief2(personal)
                 // Total time taken running this for all FMs in FMDataIniList: 3~7ms
                 // Good enough?
-                if ((!fm.Installed ||
-                     NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: true)) &&
-                    !fmArchivesHash.Contains(fm.Archive))
+                if (!fm.Installed ||
+                    NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: true))
                 {
-                    continue;
+                    // Fix: we can have duplicate archive names if the installed dir is different, so cull them
+                    // out of the view list at least.
+                    // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
+                    // TODO: We shouldn't have duplicate archives, but importing might add different installed dirs...
+                    bool success = fmArchivesDict.TryGetValue(fm.Archive, out bool checkedThis);
+                    if (!success || checkedThis)
+                    {
+                        continue;
+                    }
+                    else if (success && !checkedThis)
+                    {
+                        fmArchivesDict[fm.Archive] = true;
+                    }
                 }
 
                 #endregion
