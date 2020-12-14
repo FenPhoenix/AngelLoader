@@ -843,12 +843,10 @@ namespace AngelLoader
                           ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
                            importedFM.InstalledDir.EqualsI(mainFM.InstalledDir))) ||
                          (importType == ImportType.NewDarkLoader &&
-                          (
-                              // TODO: BUG:? Why aren't we checking archive for this?!?!
-                              /* TODO: Test this!
-                              ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
-                              */
-                              importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)))
+                          // TODO: BUG:? Why aren't we checking archive for this?!?!
+                          // TODO: Test this!
+                          ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
+                           importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)))
                         )
                     )
                     {
