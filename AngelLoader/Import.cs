@@ -834,12 +834,16 @@ namespace AngelLoader
                     var mainFM = FMDataIniList[mainFMi];
 
                     if (!checkedArray[mainFMi] &&
+                        // TODO: Import match-up
+                        // We should match installed dirs better! Match to FMSel/NDL _-replace style, truncated
+                        // and not, etc... even bracket-numbered? D:
                         ((importType == ImportType.DarkLoader &&
                           mainFM.Archive.EqualsI(importedFM.Archive)) ||
                          (importType == ImportType.FMSel &&
                           ((!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
                          importedFM.InstalledDir.EqualsI(mainFM.InstalledDir))) ||
                          (importType == ImportType.NewDarkLoader &&
+                          // TODO: BUG:? Why aren't we checking archive for this?!?!
                           mainFM.InstalledDir.EqualsI(importedFM.InstalledDir))))
                     {
                         if (fields.Title && !importedFM.Title.IsEmpty())
