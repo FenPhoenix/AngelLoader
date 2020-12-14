@@ -840,11 +840,17 @@ namespace AngelLoader
                         ((importType == ImportType.DarkLoader &&
                           mainFM.Archive.EqualsI(importedFM.Archive)) ||
                          (importType == ImportType.FMSel &&
-                          ((!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
-                         importedFM.InstalledDir.EqualsI(mainFM.InstalledDir))) ||
+                          ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
+                           importedFM.InstalledDir.EqualsI(mainFM.InstalledDir))) ||
                          (importType == ImportType.NewDarkLoader &&
-                          // TODO: BUG:? Why aren't we checking archive for this?!?!
-                          mainFM.InstalledDir.EqualsI(importedFM.InstalledDir))))
+                          (
+                              // TODO: BUG:? Why aren't we checking archive for this?!?!
+                              /* TODO: Test this!
+                              ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
+                              */
+                              importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)))
+                        )
+                    )
                     {
                         if (fields.Title && !importedFM.Title.IsEmpty())
                         {
