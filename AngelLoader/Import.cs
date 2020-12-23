@@ -580,6 +580,7 @@ namespace AngelLoader
 
                         while (i < lines.Length - 1)
                         {
+                            // TODO: FMSel: We're not trimming these lines at all. Is this to spec?
                             string lineFM = lines[i + 1];
                             if (lineFM.StartsWithFast_NoNullChecks("NiceName="))
                             {
@@ -672,6 +673,7 @@ namespace AngelLoader
                     {
                         while (i < lines.Length - 1)
                         {
+                            // TODO: NDL: We're not trimming these lines at all. Is this to spec?
                             string lc = lines[i + 1];
                             if (lc.StartsWithFast_NoNullChecks("ArchiveRoot="))
                             {
@@ -736,6 +738,7 @@ namespace AngelLoader
 
                         while (i < lines.Length - 1)
                         {
+                            // TODO: NDL: We're not trimming these lines at all. Is this to spec?
                             string lineFM = lines[i + 1];
                             if (lineFM.StartsWithFast_NoNullChecks("NiceName="))
                             {
