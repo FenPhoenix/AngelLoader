@@ -217,7 +217,7 @@ namespace AngelLoader
                                 value.SetValue(ret.Meta, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -239,7 +239,7 @@ namespace AngelLoader
                                 value.SetValue(ret.Global, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -261,7 +261,7 @@ namespace AngelLoader
                                 value.SetValue(ret.BrowseDialogs, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -283,7 +283,7 @@ namespace AngelLoader
                                 value.SetValue(ret.AlertMessages, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -305,7 +305,7 @@ namespace AngelLoader
                                 value.SetValue(ret.MainMenu, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -327,7 +327,7 @@ namespace AngelLoader
                                 value.SetValue(ret.AboutWindow, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -349,7 +349,7 @@ namespace AngelLoader
                                 value.SetValue(ret.GameVersionsWindow, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -371,7 +371,7 @@ namespace AngelLoader
                                 value.SetValue(ret.FMDeletion, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -393,7 +393,7 @@ namespace AngelLoader
                                 value.SetValue(ret.Difficulties, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -415,7 +415,7 @@ namespace AngelLoader
                                 value.SetValue(ret.FilterBar, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -437,7 +437,7 @@ namespace AngelLoader
                                 value.SetValue(ret.FMsList, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -459,7 +459,7 @@ namespace AngelLoader
                                 value.SetValue(ret.StatisticsTab, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -481,7 +481,7 @@ namespace AngelLoader
                                 value.SetValue(ret.EditFMTab, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -503,7 +503,7 @@ namespace AngelLoader
                                 value.SetValue(ret.CommentTab, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -525,7 +525,7 @@ namespace AngelLoader
                                 value.SetValue(ret.TagsTab, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -547,7 +547,7 @@ namespace AngelLoader
                                 value.SetValue(ret.PatchTab, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -569,7 +569,7 @@ namespace AngelLoader
                                 value.SetValue(ret.ReadmeArea, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -591,7 +591,7 @@ namespace AngelLoader
                                 value.SetValue(ret.PlayOriginalGameMenu, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -613,7 +613,7 @@ namespace AngelLoader
                                 value.SetValue(ret.MainButtons, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -635,7 +635,7 @@ namespace AngelLoader
                                 value.SetValue(ret.ProgressBox, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -657,7 +657,7 @@ namespace AngelLoader
                                 value.SetValue(ret.SettingsWindow, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -679,7 +679,7 @@ namespace AngelLoader
                                 value.SetValue(ret.DateFilterBox, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -701,7 +701,7 @@ namespace AngelLoader
                                 value.SetValue(ret.TagsFilterBox, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -723,7 +723,7 @@ namespace AngelLoader
                                 value.SetValue(ret.RatingFilterBox, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -745,7 +745,7 @@ namespace AngelLoader
                                 value.SetValue(ret.Importing, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
@@ -767,7 +767,7 @@ namespace AngelLoader
                                 value.SetValue(ret.ScanAllFMsBox, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
                         {
                             break;
                         }
