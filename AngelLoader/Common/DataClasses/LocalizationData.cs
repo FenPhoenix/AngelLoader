@@ -205,6 +205,7 @@ namespace AngelLoader.DataClasses
             //internal readonly string GlobalFMStats = "Global FM stats...";
             internal readonly string ViewHelpFile = "View help file";
             internal readonly string About = "About AngelLoader";
+            internal readonly string Exit = "Exit";
         }
 
         internal sealed class AboutWindow_Class

@@ -15,6 +15,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 #endif
         private static ToolStripMenuItemCustom ViewHelpFileMenuItem = null!;
         private static ToolStripMenuItemCustom AboutMenuItem = null!;
+        private static ToolStripMenuItemCustom ExitMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -29,7 +30,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 #endif
                 new ToolStripSeparator(),
                 ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1 },
-                AboutMenuItem = new ToolStripMenuItemCustom()
+                AboutMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                ExitMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.Alt | Keys.F4 }
             });
 
             GameVersionsMenuItem.Click += form.MainMenu_GameVersionsMenuItem_Click;
@@ -38,6 +41,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 #endif
             ViewHelpFileMenuItem.Click += form.ViewHelpFileMenuItemClick;
             AboutMenuItem.Click += form.AboutMenuItemClick;
+            ExitMenuItem.Click += (_, _) => form.Close();
 
             _constructed = true;
 
@@ -54,6 +58,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 #endif
             ViewHelpFileMenuItem.Text = LText.MainMenu.ViewHelpFile;
             AboutMenuItem.Text = LText.MainMenu.About;
+            ExitMenuItem.Text = LText.MainMenu.Exit;
         }
 
         internal static bool Visible => _constructed && Menu.Visible;
