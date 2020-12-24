@@ -166,22 +166,7 @@ namespace FenGen
             string testLangIniFile,
             bool writeReflectionStyle = false)
         {
-            #region Find the class we're going to write to
-
-            string code = File.ReadAllText(destFile);
-            SyntaxTree tree = ParseTextFast(code);
-
-            var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationDestClass);
-            var iniClass = (ClassDeclarationSyntax)member;
-
-            string iniClassString = iniClass.ToString();
-            string classDeclLine = iniClassString.Substring(0, iniClassString.IndexOf('{'));
-
-            string codeBlock = code
-                .Substring(0, iniClass.GetLocation().SourceSpan.Start + classDeclLine.Length)
-                .TrimEnd() + "\r\n";
-
-            #endregion
+            string codeBlock = GetCodeBlock(destFile, GenAttributes.FenGenLocalizationDestClass);
 
             // TODO: Roslyn-ize this
             // Requires figuring out the idiotic black magic of how to CONSTRUCT code with Roslyn, but hey...

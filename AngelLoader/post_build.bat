@@ -12,7 +12,7 @@ rem batch file hell #21354: vars with spaces in the value must be entirely in qu
 rem Autogenerate code
 rem ---
 set "FenGen=%SolutionDir%FenGen\bin\Release\net472\FenGen.exe"
-set fenGenArgs=-restore_resx
+set fenGenArgs=-restore_resx -remove_build_date
 
 %FenGen% %fenGenArgs%
 rem ---

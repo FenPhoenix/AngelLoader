@@ -100,7 +100,8 @@ namespace FenGen
             ExcludeResx,
             RestoreResx,
             TrimDesigner,
-            BuildDate
+            AddBuildDate,
+            RemoveBuildDate
         }
 
         private static readonly Dictionary<string, GenType>
@@ -113,7 +114,8 @@ namespace FenGen
             { "-exclude_resx", GenType.ExcludeResx },
             { "-restore_resx", GenType.RestoreResx },
             { "-designer_trim", GenType.TrimDesigner },
-            { "-build_date", GenType.BuildDate }
+            { "-add_build_date", GenType.AddBuildDate },
+            { "-remove_build_date", GenType.RemoveBuildDate },
         };
 
         // Only used for debug, so we can explicitly place test arguments into the set
@@ -200,7 +202,7 @@ namespace FenGen
                 GetArg(GenType.ExcludeResx),
                 //GetArg(GenType.RestoreResx),
                 //GetArg(GenType.TrimDesigner),
-                GetArg(GenType.BuildDate)
+                GetArg(GenType.AddBuildDate)
             };
 #else
             string[] args = Environment.GetCommandLineArgs();
@@ -262,7 +264,7 @@ namespace FenGen
             {
                 forceFindRequiredFiles = true;
             }
-            if (GenTaskActive(GenType.BuildDate))
+            if (GenTaskActive(GenType.AddBuildDate) || GenTaskActive(GenType.RemoveBuildDate))
             {
                 genFileTags.Add(GenFileTags.BuildDate);
             }
@@ -313,9 +315,13 @@ namespace FenGen
             {
                 DesignerGen.Generate();
             }
-            if (GenTaskActive(GenType.BuildDate))
+            if (GenTaskActive(GenType.AddBuildDate))
             {
                 BuildDateGen.Generate(taggedFilesDict![GenFileTags.BuildDate]);
+            }
+            if (GenTaskActive(GenType.RemoveBuildDate))
+            {
+                BuildDateGen.Generate(taggedFilesDict![GenFileTags.BuildDate], remove: true);
             }
         }
 

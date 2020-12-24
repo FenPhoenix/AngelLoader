@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 using FenGen.Forms;
 using JetBrains.Annotations;
@@ -27,6 +28,22 @@ namespace FenGen
             string ret = "";
             for (int i = 0; i < num; i++) ret += tab;
             return ret;
+        }
+
+        internal static string GetCodeBlock(string destFile, string genAttr)
+        {
+            string code = File.ReadAllText(destFile);
+            SyntaxTree tree = ParseTextFast(code);
+
+            var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, genAttr);
+            var iniClass = (ClassDeclarationSyntax)member;
+
+            string iniClassString = iniClass.ToString();
+            string classDeclLine = iniClassString.Substring(0, iniClassString.IndexOf('{'));
+
+            return code
+                .Substring(0, iniClass.GetLocation().SourceSpan.Start + classDeclLine.Length)
+                .TrimEnd() + "\r\n";
         }
 
         internal static bool HasAttribute(MemberDeclarationSyntax member, string attrName)
