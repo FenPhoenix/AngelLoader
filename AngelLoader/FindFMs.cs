@@ -617,11 +617,6 @@ namespace AngelLoader
                     fm.Installed = false;
                 }
 
-                // NOTE: Old data
-                // FMDataIniList: Thief1(personal)+Thief2(personal)+All(1098 set)
-                // Archive dirs: Thief1(personal)+Thief2(personal)
-                // Total time taken running this for all FMs in FMDataIniList: 3~7ms
-                // Good enough?
                 if (!fm.Installed ||
                     NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: true))
                 {
