@@ -15,10 +15,12 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             if (_constructed) Button.Text = LText.MainMenu.Exit;
         }
 
+        /* Disabled until needed
         internal static void Hide()
         {
             if (_constructed) Button.Hide();
         }
+        */
 
         internal static void Show(MainForm owner)
         {
