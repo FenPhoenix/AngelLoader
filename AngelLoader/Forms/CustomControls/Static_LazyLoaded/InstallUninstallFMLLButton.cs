@@ -19,6 +19,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             var container = owner.BottomLeftButtonsFLP;
 
+            // TODO: This Visible = false must be being ignored?
+            // Otherwise, it's impossible that this would work, because we construct but only explicitly call
+            // Show() in OpenSettings()...
             Button = new Button { Visible = false };
 
             container.Controls.Add(Button);

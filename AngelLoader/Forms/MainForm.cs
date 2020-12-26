@@ -680,6 +680,7 @@ namespace AngelLoader.Forms
             }
 
             if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct(this);
+            ExitLLButton.Show(this); // Lazy-loaded because we might want to make hiding it an option later
 
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
             if (Config.TopRightPanelCollapsed)
@@ -1261,8 +1262,10 @@ namespace AngelLoader.Forms
                 PlayOriginalGameButton.Text = LText.MainButtons.PlayOriginalGame;
                 WebSearchButton.Text = LText.MainButtons.WebSearch;
                 ScanAllFMsButton.Text = LText.MainButtons.ScanAllFMs;
+
                 ImportButton.Text = LText.MainButtons.Import;
                 SettingsButton.Text = LText.MainButtons.Settings;
+                ExitLLButton.Localize();
 
                 #endregion
 
