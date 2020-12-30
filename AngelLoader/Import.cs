@@ -39,7 +39,7 @@ namespace AngelLoader
 
             FieldsToImport fields;
 
-            List<string> iniFiles = new List<string>();
+            var iniFiles = new List<string>();
 
             if (importType == ImportType.DarkLoader)
             {

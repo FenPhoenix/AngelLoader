@@ -167,7 +167,7 @@ namespace AngelLoader
             if (!GameIsDark(fm.Game)) return;
 
             string fmInstPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
-            List<string> langs = new List<string>();
+            var langs = new List<string>();
             if (FMIsReallyInstalled(fm))
             {
                 try

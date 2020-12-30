@@ -71,7 +71,7 @@ namespace FMScanner
         private enum FastIOSearchOption
         {
             TopDirectoryOnly,
-            AllDirectories,
+            AllDirectories
         }
 
         internal static bool FilesExistSearchTop(string path, params string[] searchPatterns)

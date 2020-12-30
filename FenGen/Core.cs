@@ -115,7 +115,7 @@ namespace FenGen
             { "-restore_resx", GenType.RestoreResx },
             { "-designer_trim", GenType.TrimDesigner },
             { "-add_build_date", GenType.AddBuildDate },
-            { "-remove_build_date", GenType.RemoveBuildDate },
+            { "-remove_build_date", GenType.RemoveBuildDate }
         };
 
         // Only used for debug, so we can explicitly place test arguments into the set

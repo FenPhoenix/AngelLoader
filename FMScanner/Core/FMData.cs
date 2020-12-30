@@ -52,25 +52,24 @@ namespace FMScanner
 #endif
             };
 
-        internal ScanOptions DeepCopy() =>
-            new ScanOptions
-            {
-                ScanTitle = ScanTitle,
-                ScanAuthor = ScanAuthor,
-                ScanGameType = ScanGameType,
-                ScanCustomResources = ScanCustomResources,
-                ScanSize = ScanSize,
-                ScanReleaseDate = ScanReleaseDate,
-                ScanTags = ScanTags,
+        internal ScanOptions DeepCopy() => new ScanOptions
+        {
+            ScanTitle = ScanTitle,
+            ScanAuthor = ScanAuthor,
+            ScanGameType = ScanGameType,
+            ScanCustomResources = ScanCustomResources,
+            ScanSize = ScanSize,
+            ScanReleaseDate = ScanReleaseDate,
+            ScanTags = ScanTags,
 #if FMScanner_FullCode
-                ScanCampaignMissionNames = ScanCampaignMissionNames,
-                ScanVersion = ScanVersion,
-                ScanLanguages = ScanLanguages,
-                ScanNewDarkRequired = ScanNewDarkRequired,
-                ScanNewDarkMinimumVersion = ScanNewDarkMinimumVersion,
-                ScanDescription = ScanDescription
+            ScanCampaignMissionNames = ScanCampaignMissionNames,
+            ScanVersion = ScanVersion,
+            ScanLanguages = ScanLanguages,
+            ScanNewDarkRequired = ScanNewDarkRequired,
+            ScanNewDarkMinimumVersion = ScanNewDarkMinimumVersion,
+            ScanDescription = ScanDescription
 #endif
-            };
+        };
 
         /// <summary>
         /// <see langword="true"/> to detect the mission's title.

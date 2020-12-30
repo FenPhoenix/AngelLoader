@@ -303,7 +303,7 @@ namespace AngelLoader.Forms
         internal static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
 
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
-        private static readonly Brush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
+        private static readonly SolidBrush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
 
         internal static Pen GetSeparatorPenForCurrentVisualStyleMode() => Application.RenderWithVisualStyles ? Sep1Pen : Sep1PenC;
 

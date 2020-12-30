@@ -2848,7 +2848,7 @@ namespace AngelLoader.Forms
                 bool heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
 
                 // Must be done first, else we get wrong values
-                List<double> widthMul = new List<double>();
+                var widthMul = new List<double>();
                 foreach (DataGridViewColumn c in FMsDGV.Columns)
                 {
                     Size size = c.HeaderCell.Size;
@@ -4181,7 +4181,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                List<ToolStripItem> altTitlesMenuItems = new List<ToolStripItem>(fmAltTitles.Count);
+                var altTitlesMenuItems = new List<ToolStripItem>(fmAltTitles.Count);
                 foreach (string altTitle in fmAltTitles)
                 {
                     var item = new ToolStripMenuItemCustom(altTitle);

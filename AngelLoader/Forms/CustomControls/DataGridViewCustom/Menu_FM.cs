@@ -468,9 +468,9 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (!_fmMenuConstructed) return;
 
-            InstallUninstallMenuItem!.Text = (sayInstall
+            InstallUninstallMenuItem!.Text = sayInstall
                 ? LText.FMsList.FMMenu_InstallFM
-                : LText.FMsList.FMMenu_UninstallFM);
+                : LText.FMsList.FMMenu_UninstallFM;
         }
 
         internal void SetDeleteFMMenuItemEnabled(bool value)
@@ -503,9 +503,9 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (!_fmMenuConstructed) return;
 
-            OpenInDromEdMenuItem!.Text = (sayShockEd
+            OpenInDromEdMenuItem!.Text = sayShockEd
                 ? LText.FMsList.FMMenu_OpenInShockEd
-                : LText.FMsList.FMMenu_OpenInDromEd);
+                : LText.FMsList.FMMenu_OpenInDromEd;
         }
 
         internal void SetScanFMMenuItemEnabled(bool value)

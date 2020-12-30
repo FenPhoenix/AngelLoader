@@ -3474,9 +3474,11 @@ namespace FMScanner
             Encoding? enc = _fileEncoding.DetectFileEncoding(file);
 
             var lines = new List<string>();
-            using StreamReader streamReader = new StreamReader(file, enc ?? Encoding.GetEncoding(1252));
+
+            using var sr = new StreamReader(file, enc ?? Encoding.GetEncoding(1252));
             string? line;
-            while ((line = streamReader.ReadLine()) != null) lines.Add(line);
+            while ((line = sr.ReadLine()) != null) lines.Add(line);
+
             return lines;
         }
 

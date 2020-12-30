@@ -54,8 +54,15 @@ namespace AngelLoader.Forms
 
         public readonly List<string> SelectedItems = new List<string>();
 
-        public MessageBoxCustomForm(string messageTop, string messageBottom, string title, MessageBoxIcon icon,
-            string okText, string cancelText, bool okIsDangerous, string[]? choiceStrings = null)
+        public MessageBoxCustomForm(
+            string messageTop,
+            string messageBottom,
+            string title,
+            MessageBoxIcon icon,
+            string okText,
+            string cancelText,
+            bool okIsDangerous,
+            string[]? choiceStrings = null)
         {
 #if DEBUG
             InitializeComponent();
@@ -189,7 +196,7 @@ namespace AngelLoader.Forms
 
         private void SetMessageBoxIcon(MessageBoxIcon icon)
         {
-            SHSTOCKICONINFO sii = new SHSTOCKICONINFO();
+            var sii = new SHSTOCKICONINFO();
             try
             {
                 // ReSharper disable ConditionIsAlwaysTrueOrFalse
