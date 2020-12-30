@@ -2,9 +2,6 @@
 using System.Globalization;
 using System.IO;
 using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static FenGen.Misc;
 
 namespace FenGen

@@ -36,7 +36,7 @@ namespace AngelLoader
 #if !ReleaseBeta && !ReleasePublic
 
         // user.cfg
-        private const string inv_status_height = "inv_status_height";
+        private const string key_inv_status_height = "inv_status_height";
 
 #endif
 
@@ -816,7 +816,7 @@ namespace AngelLoader
             {
                 string lt = lines[i].Trim();
                 string ltNS = RemoveLeadingSemicolons(lt);
-                if (ltNS.StartsWithIPlusWhiteSpace(inv_status_height))
+                if (ltNS.StartsWithIPlusWhiteSpace(key_inv_status_height))
                 {
                     string[] fields = ltNS.Split(new[] { ' ', '\t', ';' }, StringSplitOptions.RemoveEmptyEntries);
                     ret = fields.Length >= 2 &&
@@ -838,14 +838,14 @@ namespace AngelLoader
             {
                 string lt = lines[i].Trim();
                 string ltNS = RemoveLeadingSemicolons(lt);
-                if (ltNS.StartsWithIPlusWhiteSpace(inv_status_height))
+                if (ltNS.StartsWithIPlusWhiteSpace(key_inv_status_height))
                 {
                     lines.RemoveAt(i);
                     i--;
                 }
             }
 
-            lines.Insert(0, (enabled ? "" : ";") + inv_status_height + " 0 ; Added by AngelLoader: uncommented = screenshot mode enabled (no hud)");
+            lines.Insert(0, (enabled ? "" : ";") + key_inv_status_height + " 0 ; Added by AngelLoader: uncommented = screenshot mode enabled (no hud)");
             lines.Insert(1, "");
 
             // Remove consecutive whitespace lines (leaving only one-in-a-row at most).
