@@ -78,7 +78,7 @@ namespace AngelLoader.Forms
 
         /// <summary>
         /// Special case for buttons that need to be autosized but then have their width adjusted after the fact,
-        /// and so are unable to have GrowOrShrink set.
+        /// and so are unable to have GrowAndShrink set.
         /// </summary>
         /// <param name="button"></param>
         /// <param name="text"></param>

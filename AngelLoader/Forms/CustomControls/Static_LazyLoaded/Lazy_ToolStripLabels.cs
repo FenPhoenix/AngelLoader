@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using static AngelLoader.Misc;
 #pragma warning disable 8509 // Switch expression doesn't handle all possible inputs
+#pragma warning disable CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {

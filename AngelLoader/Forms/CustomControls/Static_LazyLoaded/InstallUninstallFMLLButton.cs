@@ -22,6 +22,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             // TODO: This Visible = false must be being ignored?
             // Otherwise, it's impossible that this would work, because we construct but only explicitly call
             // Show() in OpenSettings()...
+            // 2020-12-30: No, it's because we call Localize() and that calls Show().
             Button = new Button { Visible = false };
 
             container.Controls.Add(Button);
@@ -63,7 +64,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             int uninstStringWidth = TextRenderer.MeasureText(uninstString, Button.Font).Width;
             string longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
 
-            // Special case autosize text-set: can't be GrowOrShrink
+            // Special case autosize text-set: can't be GrowAndShrink
             Button.SetTextAutoSize(longestString);
 
             if (!startup) Button.Text = _sayInstall ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;

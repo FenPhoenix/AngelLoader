@@ -101,7 +101,7 @@ namespace AngelLoader.Forms.CustomControls
                     if (suspendResume) this.ResumeDrawing();
                 }
             }
-            else if (!IsMain())
+            else
             {
                 if (enabled)
                 {
