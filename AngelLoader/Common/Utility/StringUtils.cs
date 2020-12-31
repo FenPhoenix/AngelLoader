@@ -115,10 +115,8 @@ namespace AngelLoader
         #region Contains
 
         [PublicAPI]
-        internal static bool Contains(this string value, string substring, StringComparison comparison)
-        {
-            return !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
-        }
+        internal static bool Contains(this string value, string substring, StringComparison comparison) =>
+            !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
 
         [PublicAPI]
         internal static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
@@ -214,15 +212,13 @@ namespace AngelLoader
             return true;
         }
 
-        private enum StartOrEnd { Start, End }
-
         /// <summary>
         /// StartsWith (case-insensitive). Uses a fast ASCII compare where possible.
         /// </summary>
         /// <param name="str"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static bool StartsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, StartOrEnd.Start);
+        internal static bool StartsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, start: true);
 
         /// <summary>
         /// EndsWith (case-insensitive). Uses a fast ASCII compare where possible.
@@ -230,9 +226,9 @@ namespace AngelLoader
         /// <param name="str"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static bool EndsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, StartOrEnd.End);
+        internal static bool EndsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, start: false);
 
-        private static bool StartsWithOrEndsWithIFast(this string str, string value, StartOrEnd startOrEnd)
+        private static bool StartsWithOrEndsWithIFast(this string str, string value, bool start)
         {
             if (str.IsEmpty() || str.Length < value.Length) return false;
 
@@ -240,7 +236,6 @@ namespace AngelLoader
             // Therefore, if a char is in one of these ranges, one can convert between cases by simply adding or
             // subtracting 32.
 
-            bool start = startOrEnd == StartOrEnd.Start;
             int siStart = start ? 0 : str.Length - value.Length;
             int siEnd = start ? value.Length : str.Length;
 

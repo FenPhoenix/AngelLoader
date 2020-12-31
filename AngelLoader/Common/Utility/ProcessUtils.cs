@@ -17,10 +17,8 @@ namespace AngelLoader
         /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
         /// <exception cref="T:System.IO.FileNotFoundException">The PATH environment variable has a string containing quotes.</exception>
         [PublicAPI]
-        internal static Process? ProcessStart_UseShellExecute(string fileName)
-        {
-            return Process.Start(new ProcessStartInfo { FileName = fileName, UseShellExecute = true });
-        }
+        internal static Process? ProcessStart_UseShellExecute(string fileName) =>
+            Process.Start(new ProcessStartInfo { FileName = fileName, UseShellExecute = true });
 
         #region Disabled until needed
 

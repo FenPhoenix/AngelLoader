@@ -459,25 +459,24 @@ namespace AngelLoader
 
         #region Helpers / private
 
-        private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName,
-            CompressionLevel compressionLevel = CompressionLevel.Fastest)
+        private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName)
         {
             // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
-            var entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), compressionLevel);
+            var entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
             entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
             using var fs = new FileStream(fileNameOnDisk, FileMode.Open, FileAccess.Read);
             using var eo = entry.Open();
             fs.CopyTo(eo);
         }
 
-        private static bool IsSaveOrScreenshot(string path, Game game)
-        {
-            return path.PathStartsWithI(_screensDirS) ||
-                   (game == Game.Thief3 && path.PathStartsWithI(_t3SavesDirS)) ||
-                   (game == Game.SS2 &&
-                    (_ss2SaveDirsInZipRegex.IsMatch(path) || path.PathStartsWithI(_ss2CurrentDirS))) ||
-                   (game != Game.Thief3 && (path.PathStartsWithI(_darkSavesDirS) || path.PathStartsWithI(_darkNetSavesDirS)));
-        }
+        private static bool IsSaveOrScreenshot(string path, Game game) =>
+            path.PathStartsWithI(_screensDirS) ||
+            (game == Game.Thief3 &&
+             path.PathStartsWithI(_t3SavesDirS)) ||
+            (game == Game.SS2 &&
+             (_ss2SaveDirsInZipRegex.IsMatch(path) || path.PathStartsWithI(_ss2CurrentDirS))) ||
+            (game != Game.Thief3 &&
+             (path.PathStartsWithI(_darkSavesDirS) || path.PathStartsWithI(_darkNetSavesDirS)));
 
         private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
         GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)

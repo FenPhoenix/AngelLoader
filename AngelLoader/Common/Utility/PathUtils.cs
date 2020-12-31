@@ -377,7 +377,9 @@ namespace AngelLoader
 
         #region Try combine path and check existence
 
-        internal static bool TryCombineFilePathAndCheckExistence(string pathPart1, string pathPart2,
+        internal static bool TryCombineFilePathAndCheckExistence(
+            string pathPart1,
+            string pathPart2,
             out string combinedPath)
         {
             try
@@ -401,7 +403,10 @@ namespace AngelLoader
             }
         }
 
-        internal static bool TryCombineFilePathAndCheckExistence(string pathPart1, string pathPart2, string pathPart3,
+        internal static bool TryCombineFilePathAndCheckExistence(
+            string pathPart1,
+            string pathPart2,
+            string pathPart3,
             out string combinedPath)
         {
             try

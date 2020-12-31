@@ -22,7 +22,11 @@ namespace AngelLoader
 #endif
         [PublicAPI]
         [AssertionMethod]
-        public static void AssertR([AssertionCondition(AssertionConditionType.IS_TRUE)] bool condition, string message, string detailedMessage = "")
+        public static void AssertR(
+            [AssertionCondition(AssertionConditionType.IS_TRUE)]
+            bool condition,
+            string message,
+            string detailedMessage = "")
             => Trace.Assert(condition, message, detailedMessage);
 
         #region Numeric
