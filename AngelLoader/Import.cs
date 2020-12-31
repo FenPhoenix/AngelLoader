@@ -465,8 +465,8 @@ namespace AngelLoader
                 finally
                 {
                     // IMPORTANT (ImportDarkLoaderInternal):
-                    // This MUST be invoked back to the UI thread because this method will be called
-                    // from inside an await Task.Run()!
+                    // This MUST be invoked back to the UI thread because this method will be called from inside
+                    // an await Task.Run()!
                     // TODO: ImportDarkLoaderInternal: Invoke: We don't really need this here; we already close later
                     // This just lets us close before putting up a possible error dialog, but other than that is
                     // unnecessary.
