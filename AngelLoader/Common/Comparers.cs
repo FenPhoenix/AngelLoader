@@ -108,7 +108,7 @@ namespace AngelLoader
             string yTitle = y.Title;
 
             // null for perf: don't create a new List<string> just to signify empty
-            var articles = Config.EnableArticles ? Config.Articles : null;
+            List<string>? articles = Config.EnableArticles ? Config.Articles : null;
 
             if (xTitle == yTitle) return TitleOrFallback(xTitle, yTitle, x, y, compareTitles: false);
             if (xTitle.IsEmpty()) return -1;
