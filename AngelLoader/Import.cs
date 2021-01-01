@@ -848,8 +848,11 @@ namespace AngelLoader
                          (importType == ImportType.NewDarkLoader &&
                           // TODO: BUG:? Why aren't we checking archive for this?!?!
                           // TODO: Test this!
-                          ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
-                           importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)))
+                          (
+                              //(!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
+                              importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)
+                          )
+                         )
                         )
                     )
                     {
