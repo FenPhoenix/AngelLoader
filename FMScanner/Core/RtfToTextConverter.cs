@@ -812,8 +812,7 @@ namespace FMScanner
             FontNum
         }
 
-        [PublicAPI]
-        internal enum Error
+        private enum Error
         {
             /// <summary>
             /// No error.
@@ -1786,6 +1785,31 @@ namespace FMScanner
 #endif
         }
 
+        [PublicAPI]
+        public (bool Success, string Text)
+        Convert(Stream stream, long streamLength)
+        {
+            Reset(stream, streamLength);
+
+#if ReleaseRTFTest || DebugRTFTest
+
+            Error error = ParseRtf();
+            return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : throw new Exception("RTF converter error: " + error);
+#else
+            try
+            {
+                Error error = ParseRtf();
+                return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : (false, "");
+            }
+            catch
+            {
+                return (false, "");
+            }
+#endif
+        }
+
+        #endregion
+
         private void Reset(Stream stream, long streamLength)
         {
             #region Fixed-size fields
@@ -1819,8 +1843,7 @@ namespace FMScanner
             if (_unicodeBuffer.Capacity > ByteSize.MB) _unicodeBuffer.Capacity = 0;
             // For the font entries, we can't check a Dictionary's capacity nor set it, so... oh well.
             // For the scope stack, we can't check its capacity because Stacks don't have a Capacity property(?!?),
-            // but we're guaranteed not to exceed 100 (or 128 I guess) because of a check in the only place where
-            // we push to it.
+            // but we're guaranteed not to exceed 100 because of a check in the only place where we push to it.
             if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
 
             // This one has the seek-back buffer (a Stack<char>) which is technically eligible for deallocation,
@@ -1830,31 +1853,6 @@ namespace FMScanner
             // frigging internal variable, gonna be honest.
             _rtfStream.Reset(stream, streamLength);
         }
-
-        [PublicAPI]
-        public (bool Success, string Text)
-        Convert(Stream stream, long streamLength)
-        {
-            Reset(stream, streamLength);
-
-#if ReleaseRTFTest || DebugRTFTest
-
-            Error error = ParseRtf();
-            return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : throw new Exception("RTF converter error: " + error);
-#else
-            try
-            {
-                Error error = ParseRtf();
-                return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : (false, "");
-            }
-            catch
-            {
-                return (false, "");
-            }
-#endif
-        }
-
-        #endregion
 
         private Error ParseRtf()
         {
@@ -3014,7 +3012,7 @@ namespace FMScanner
             From the spec:
             "Occasionally Word writes SYMBOL_CHARSET (nonUnicode) characters in the range U+F020..U+F0FF instead
             of U+0020..U+00FF. Internally Word uses the values U+F020..U+F0FF for these characters so that plain-
-            ext searches don't mistakenly match SYMBOL_CHARSET characters when searching for Unicode characters
+            text searches don't mistakenly match SYMBOL_CHARSET characters when searching for Unicode characters
             in the range U+0020..U+00FF. To find out the correct symbol font to use, e.g., Wingdings, Symbol,
             etc., find the last SYMBOL_CHARSET font control word \fN used, look up font N in the font table and
             find the face name. The charset is specified by the \fcharsetN control word and SYMBOL_CHARSET is for
