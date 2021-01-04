@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using static FenGen.Misc;
 
 namespace FenGen
 {
@@ -9,6 +8,14 @@ namespace FenGen
         {
             private int _nextIndent;
             private readonly StringBuilder _sb;
+
+            private static string Indent(int num)
+            {
+                const string tab = "    ";
+                string ret = "";
+                for (int i = 0; i < num; i++) ret += tab;
+                return ret;
+            }
 
             internal IndentingWriter(int startingIndent = 0)
             {

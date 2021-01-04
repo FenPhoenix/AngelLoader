@@ -43,62 +43,6 @@ namespace FenGen
 
         #endregion
 
-        #region Count chars
-
-        /// <summary>
-        /// Returns the number of times a character appears in a string. Avoids whatever silly overhead junk Count(predicate) is doing.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="character"></param>
-        /// <returns></returns>
-        internal static int CountChars(this string value, char character)
-        {
-            int count = 0;
-            for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
-
-            return count;
-        }
-
-        /// <summary>
-        /// Returns the number of times a character appears in a string, earlying-out once it's counted <paramref name="maxToCount"/>
-        /// occurrences.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="character"></param>
-        /// <param name="maxToCount">The maximum number of occurrences to count before earlying-out.</param>
-        /// <returns></returns>
-        internal static int CountCharsUpToAmount(this string value, char character, int maxToCount)
-        {
-            int foundCount = 0;
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (value[i] == character)
-                {
-                    foundCount++;
-                    if (foundCount == maxToCount) break;
-                }
-            }
-
-            return foundCount;
-        }
-
-        internal static bool CharCountIsAtLeast(this string value, char character, int count, int start = 0)
-        {
-            int foundCount = 0;
-            for (int i = start; i < value.Length; i++)
-            {
-                if (value[i] == character)
-                {
-                    foundCount++;
-                    if (foundCount == count) return true;
-                }
-            }
-
-            return false;
-        }
-
-        #endregion
-
         #region Contains
 
         [PublicAPI]
@@ -138,23 +82,6 @@ namespace FenGen
         internal static bool ContainsI(this string[] array, string str) => array.Contains(str, OrdinalIgnoreCase);
 
         [PublicAPI]
-        internal static bool ContainsIRemoveFirstHit(this List<string> list, string str) => list.ContainsRemoveFirstHit(str, OrdinalIgnoreCase);
-
-        [PublicAPI]
-        internal static bool ContainsRemoveFirstHit(this List<string> value, string substring, StringComparison stringComparison = Ordinal)
-        {
-            for (int i = 0; i < value.Count; i++)
-            {
-                if (value[i].Equals(substring, stringComparison))
-                {
-                    value.RemoveAt(i);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        [PublicAPI]
         internal static bool Contains(this List<string> value, string substring, StringComparison stringComparison = Ordinal)
         {
             for (int i = 0; i < value.Count; i++) if (value[i].Equals(substring, stringComparison)) return true;
@@ -178,8 +105,10 @@ namespace FenGen
         /// <param name="first"></param>
         /// <param name="second"></param>
         /// <returns></returns>
+        [PublicAPI]
         internal static bool EqualsI(this string first, string second) => string.Equals(first, second, OrdinalIgnoreCase);
 
+        [PublicAPI]
         internal static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
         #endregion
@@ -206,15 +135,14 @@ namespace FenGen
 
         #region StartsWith and EndsWith
 
-        private enum StartOrEnd { Start, End }
-
         /// <summary>
         /// StartsWith (case-insensitive). Uses a fast ASCII compare where possible.
         /// </summary>
         /// <param name="str"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static bool StartsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, StartOrEnd.Start);
+        [PublicAPI]
+        internal static bool StartsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, start: true);
 
         /// <summary>
         /// EndsWith (case-insensitive). Uses a fast ASCII compare where possible.
@@ -222,9 +150,10 @@ namespace FenGen
         /// <param name="str"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static bool EndsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, StartOrEnd.End);
+        [PublicAPI]
+        internal static bool EndsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, start: false);
 
-        private static bool StartsWithOrEndsWithIFast(this string str, string value, StartOrEnd startOrEnd)
+        private static bool StartsWithOrEndsWithIFast(this string str, string value, bool start)
         {
             if (str.IsEmpty() || str.Length < value.Length) return false;
 
@@ -232,7 +161,6 @@ namespace FenGen
             // Therefore, if a char is in one of these ranges, one can convert between cases by simply adding or
             // subtracting 32.
 
-            bool start = startOrEnd == StartOrEnd.Start;
             int siStart = start ? 0 : str.Length - value.Length;
             int siEnd = start ? value.Length : str.Length;
 
@@ -257,10 +185,13 @@ namespace FenGen
             return true;
         }
 
+        [PublicAPI]
         internal static bool EqualsOrStartsWithPlusWhiteSpaceI(this string str, string value) => str.EqualsI(value) || str.StartsWithPlusWhiteSpaceI(value);
 
+        [PublicAPI]
         internal static bool StartsWithPlusWhiteSpaceI(this string str, string value) => str.StartsWithPlusWhiteSpace(value, OrdinalIgnoreCase);
 
+        [PublicAPI]
         internal static bool StartsWithPlusWhiteSpace(this string str, string value, StringComparison comparison = Ordinal)
         {
             int valLen;
@@ -271,12 +202,7 @@ namespace FenGen
 
         #endregion
 
-        internal static string RemoveExtension(this string fileName)
-        {
-            int i;
-            return (i = fileName.LastIndexOf('.')) == -1 ? fileName : fileName.Substring(0, i);
-        }
-
+        [PublicAPI]
         internal static string FirstCharToLower(this string str) => char.ToLowerInvariant(str[0]) + str.Substring(1);
     }
 }

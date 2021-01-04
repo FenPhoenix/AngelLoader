@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FenGen
 {
-    [PublicAPI]
     internal static partial class Misc
     {
         private static readonly CSharpParseOptions _parseOptions = new CSharpParseOptions(
@@ -22,14 +21,9 @@ namespace FenGen
         // Try to make Roslyn be as non-slow as possible. It's still going to be slow, but hey...
         internal static SyntaxTree ParseTextFast(string text) => CSharpSyntaxTree.ParseText(text, _parseOptions);
 
-        internal static string Indent(int num)
-        {
-            const string tab = "    ";
-            string ret = "";
-            for (int i = 0; i < num; i++) ret += tab;
-            return ret;
-        }
+        #region Common gen utils
 
+        [PublicAPI]
         internal static string GetCodeBlock(string destFile, string genAttr)
         {
             string code = File.ReadAllText(destFile);
@@ -46,6 +40,7 @@ namespace FenGen
                 .TrimEnd() + "\r\n";
         }
 
+        [PublicAPI]
         internal static bool HasAttribute(MemberDeclarationSyntax member, string attrName)
         {
             SeparatedSyntaxList<AttributeSyntax> attributes;
@@ -64,6 +59,7 @@ namespace FenGen
             return false;
         }
 
+        [PublicAPI]
         internal static (MemberDeclarationSyntax Member, AttributeSyntax Attribute)
         GetAttrMarkedItem(SyntaxTree tree, SyntaxKind syntaxKind, string attrName)
         {
@@ -107,6 +103,7 @@ namespace FenGen
         /// <param name="name"></param>
         /// <param name="match"></param>
         /// <returns></returns>
+        [PublicAPI]
         internal static bool GetAttributeName(string name, string match)
         {
             // We have to handle this quirk where you can leave off the "Attribute" suffix - Roslyn won't handle
@@ -118,6 +115,10 @@ namespace FenGen
 
             return name == match;
         }
+
+        #endregion
+
+        #region Throw and terminate
 
         [ContractAnnotation("=> halt")]
         internal static void ThrowErrorAndTerminate(string message)
@@ -135,6 +136,8 @@ namespace FenGen
             Environment.Exit(-999);
         }
 
+        #endregion
+
         /// <summary>
         /// Returns an array of type <typeparamref name="T"/> with all elements initialized to non-null.
         /// Because even with the whole nullable reference types ballyhoo,
@@ -148,32 +151,5 @@ namespace FenGen
             for (int i = 0; i < length; i++) ret[i] = new T();
             return ret;
         }
-
-        #region Clamping
-
-        /// <summary>
-        /// Clamps a number to between min and max.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <returns></returns>
-        internal static T Clamp<T>(this T value, T min, T max) where T : IComparable<T>
-        {
-            return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
-        }
-
-        /// <summary>
-        /// If <paramref name="value"/> is less than zero, returns zero. Otherwise, returns <paramref name="value"/>
-        /// unchanged.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static int ClampToZero(this int value)
-        {
-            return Math.Max(value, 0);
-        }
-
-        #endregion
     }
 }
