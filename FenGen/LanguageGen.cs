@@ -177,11 +177,9 @@ namespace FenGen
             // work. Roslyn? Forget it. Zero documentation and you have to build the Burj Khalifa just to get it
             // to do anything. And you bang your head against a wall for five hours every time you need to write
             // the next statement. Forget. It.
-            var sb = new StringBuilder();
+            var w = new CodeWriters.IndentingWriter(startingIndent: 1);
 
-            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 1);
-
-            sb.Append(codeBlock);
+            w.AppendRawString(codeBlock);
             w.WL("{");
 
             w.WL(GenMessages.Method);
@@ -275,7 +273,7 @@ namespace FenGen
             w.WL("}");
             w.WL("}");
 
-            File.WriteAllText(destFile, sb.ToString());
+            File.WriteAllText(destFile, w.ToString());
 
             #endregion
 

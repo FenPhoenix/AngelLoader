@@ -211,25 +211,25 @@ namespace FenGen
                 if (openBraces == 2) break;
             }
 
-            var sb = new StringBuilder();
+            var w = new CodeWriters.IndentingWriter();
 
-            foreach (string l in destTopLines) sb.AppendLine(l);
+            w.WLs(destTopLines.ToArray());
 
             const string obj = "fm";
 
-            WriteReader(sb, obj, fields);
+            WriteReader(w, obj, fields);
 
-            sb.AppendLine("");
+            w.WL();
 
-            WriteWriter(sb, obj, fields);
+            WriteWriter(w, obj, fields);
 
             // class
-            sb.Append(Indent(1)).AppendLine("}");
+            w.WL("}");
 
             // namespace
-            sb.AppendLine("}");
+            w.WL("}");
 
-            File.WriteAllText(destFile, sb.ToString());
+            File.WriteAllText(destFile, w.ToString());
         }
 
         [MustUseReturnValue]
@@ -362,11 +362,9 @@ namespace FenGen
             return fields;
         }
 
-        private static void WriteReader(StringBuilder sb, string obj, FieldList fields)
+        private static void WriteReader(CodeWriters.IndentingWriter w, string obj, FieldList fields)
         {
-            sb.Append(Indent(2)).AppendLine(GenMessages.Method);
-
-            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 2);
+            w.WL(GenMessages.Method);
 
             w.WLs(_readFMDataIniTopLines);
 
@@ -569,11 +567,9 @@ namespace FenGen
             w.WL("}");
         }
 
-        private static void WriteWriter(StringBuilder sb, string obj, FieldList fields)
+        private static void WriteWriter(CodeWriters.IndentingWriter w, string obj, FieldList fields)
         {
-            sb.Append(Indent(2)).AppendLine(GenMessages.Method);
-
-            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 2);
+            w.WL(GenMessages.Method);
 
             w.WLs(_writeFMDataIniTopLines);
 

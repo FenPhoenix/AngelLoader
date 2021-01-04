@@ -10,14 +10,16 @@ namespace FenGen
             private int _nextIndent;
             private readonly StringBuilder _sb;
 
-            internal IndentingWriter(StringBuilder sb, int startingIndent)
+            internal IndentingWriter(int startingIndent = 0)
             {
-                _sb = sb;
                 _nextIndent = startingIndent;
+                _sb = new StringBuilder();
             }
 
             private bool _inSwitchStatement;
             private bool _inFirstCaseStatement;
+
+            internal void AppendRawString(string str) => _sb.Append(str);
 
             internal void WL(string str = "")
             {
@@ -76,6 +78,8 @@ namespace FenGen
             {
                 for (int i = 0; i < lines.Length; i++) WL(lines[i]);
             }
+
+            public override string ToString() => _sb.ToString();
         }
     }
 }

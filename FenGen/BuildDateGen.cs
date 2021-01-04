@@ -12,17 +12,16 @@ namespace FenGen
         {
             string codeBlock = GetCodeBlock(destFile, GenAttributes.FenGenBuildDateDestClass);
 
-            var sb = new StringBuilder();
-            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 1);
+            var w = new CodeWriters.IndentingWriter(startingIndent: 1);
 
-            sb.Append(codeBlock);
+            w.AppendRawString(codeBlock);
             w.WL("{");
             string date = remove ? "" : DateTime.UtcNow.ToString("yyyyMMddHHmmss", DateTimeFormatInfo.InvariantInfo);
             w.WL("internal const string BuildDate = \"" + date + "\";");
             w.WL("}");
             w.WL("}");
 
-            File.WriteAllText(destFile, sb.ToString());
+            File.WriteAllText(destFile, w.ToString());
         }
     }
 }
