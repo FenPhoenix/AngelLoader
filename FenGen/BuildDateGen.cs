@@ -13,7 +13,7 @@ namespace FenGen
             string codeBlock = GetCodeBlock(destFile, GenAttributes.FenGenBuildDateDestClass);
 
             var sb = new StringBuilder();
-            var w = new Generators.IndentingWriter(sb, startingIndent: 1);
+            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 1);
 
             sb.Append(codeBlock);
             w.WL("{");

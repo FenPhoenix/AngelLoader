@@ -395,7 +395,7 @@ namespace FenGen
                     ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                     : "";
 
-            var w = new Generators.IndentingWriter(sb, startingIndent: 4);
+            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 4);
 
             for (int i = 0; i < fields.Count; i++)
             {
@@ -605,7 +605,7 @@ namespace FenGen
                     ? "NumberFormatInfo.InvariantInfo"
                     : "";
 
-            var w = new Generators.IndentingWriter(sb, startingIndent: 4);
+            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 4);
 
             foreach (Field field in fields)
             {

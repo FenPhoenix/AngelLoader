@@ -3,7 +3,7 @@ using static FenGen.Misc;
 
 namespace FenGen
 {
-    internal static class Generators
+    internal static class CodeWriters
     {
         internal sealed class IndentingWriter
         {

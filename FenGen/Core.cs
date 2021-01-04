@@ -98,7 +98,6 @@ namespace FenGen
             GameSupport,
             ExcludeResx,
             RestoreResx,
-            TrimDesigner,
             AddBuildDate,
             RemoveBuildDate
         }
@@ -112,7 +111,6 @@ namespace FenGen
             { "-game_support", GenType.GameSupport },
             { "-exclude_resx", GenType.ExcludeResx },
             { "-restore_resx", GenType.RestoreResx },
-            { "-designer_trim", GenType.TrimDesigner },
             { "-add_build_date", GenType.AddBuildDate },
             { "-remove_build_date", GenType.RemoveBuildDate }
         };
@@ -200,7 +198,6 @@ namespace FenGen
                 GetArg(GenType.LanguageAndAlsoCreateTestIni),
                 GetArg(GenType.ExcludeResx),
                 //GetArg(GenType.RestoreResx),
-                //GetArg(GenType.TrimDesigner),
                 GetArg(GenType.AddBuildDate)
             };
 #else
@@ -259,10 +256,6 @@ namespace FenGen
                 genFileTags.Add(GenFileTags.LocalizationSource);
                 genFileTags.Add(GenFileTags.LocalizationDest);
             }
-            if (GenTaskActive(GenType.TrimDesigner))
-            {
-                forceFindRequiredFiles = true;
-            }
             if (GenTaskActive(GenType.AddBuildDate) || GenTaskActive(GenType.RemoveBuildDate))
             {
                 genFileTags.Add(GenFileTags.BuildDate);
@@ -309,10 +302,6 @@ namespace FenGen
             if (GenTaskActive(GenType.RestoreResx))
             {
                 ExcludeResx.GenerateRestore();
-            }
-            if (GenTaskActive(GenType.TrimDesigner))
-            {
-                DesignerGen.Generate();
             }
             if (GenTaskActive(GenType.AddBuildDate))
             {
