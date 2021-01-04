@@ -25,19 +25,6 @@ namespace FenGen
             internal bool DoNotTrimValue;
             internal bool DoNotConvertDateTimeToLocal;
             internal CustomCodeBlockNames CodeBlockToInsertAfter = CustomCodeBlockNames.None;
-
-            internal Field Copy()
-            {
-                Field dest = new Field();
-
-                // Meh... convenience wins
-                foreach (FieldInfo f in GetType().GetFields(_bFlagsEnum))
-                {
-                    dest.GetType().GetField(f.Name, _bFlagsEnum)!.SetValue(dest, f.GetValue(this));
-                }
-
-                return dest;
-            }
         }
 
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
@@ -88,119 +75,119 @@ namespace FenGen
         {
             internal static readonly string[] LegacyCustomResourceReads =
             {
-                "                #region Old resource format - backward compatibility, we still have to be able to read it",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasMap=\"))",
-                "                {",
-                "                    string val = lineT.Substring(7);",
-                "                    SetFMResource(fm, CustomResources.Map, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasAutomap=\"))",
-                "                {",
-                "                    string val = lineT.Substring(11);",
-                "                    SetFMResource(fm, CustomResources.Automap, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasScripts=\"))",
-                "                {",
-                "                    string val = lineT.Substring(11);",
-                "                    SetFMResource(fm, CustomResources.Scripts, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasTextures=\"))",
-                "                {",
-                "                    string val = lineT.Substring(12);",
-                "                    SetFMResource(fm, CustomResources.Textures, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasSounds=\"))",
-                "                {",
-                "                    string val = lineT.Substring(10);",
-                "                    SetFMResource(fm, CustomResources.Sounds, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasObjects=\"))",
-                "                {",
-                "                    string val = lineT.Substring(11);",
-                "                    SetFMResource(fm, CustomResources.Objects, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasCreatures=\"))",
-                "                {",
-                "                    string val = lineT.Substring(13);",
-                "                    SetFMResource(fm, CustomResources.Creatures, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasMotions=\"))",
-                "                {",
-                "                    string val = lineT.Substring(11);",
-                "                    SetFMResource(fm, CustomResources.Motions, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasMovies=\"))",
-                "                {",
-                "                    string val = lineT.Substring(10);",
-                "                    SetFMResource(fm, CustomResources.Movies, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasSubtitles=\"))",
-                "                {",
-                "                    string val = lineT.Substring(13);",
-                "                    SetFMResource(fm, CustomResources.Subtitles, val.EqualsTrue());",
-                "                    resourcesFound = true;",
-                "                }",
-                "                #endregion"
+                "#region Old resource format - backward compatibility, we still have to be able to read it",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasMap=\"))",
+                "{",
+                "    string val = lineT.Substring(7);",
+                "    SetFMResource(fm, CustomResources.Map, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasAutomap=\"))",
+                "{",
+                "    string val = lineT.Substring(11);",
+                "    SetFMResource(fm, CustomResources.Automap, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasScripts=\"))",
+                "{",
+                "    string val = lineT.Substring(11);",
+                "    SetFMResource(fm, CustomResources.Scripts, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasTextures=\"))",
+                "{",
+                "    string val = lineT.Substring(12);",
+                "    SetFMResource(fm, CustomResources.Textures, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasSounds=\"))",
+                "{",
+                "    string val = lineT.Substring(10);",
+                "    SetFMResource(fm, CustomResources.Sounds, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasObjects=\"))",
+                "{",
+                "    string val = lineT.Substring(11);",
+                "    SetFMResource(fm, CustomResources.Objects, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasCreatures=\"))",
+                "{",
+                "    string val = lineT.Substring(13);",
+                "    SetFMResource(fm, CustomResources.Creatures, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasMotions=\"))",
+                "{",
+                "    string val = lineT.Substring(11);",
+                "    SetFMResource(fm, CustomResources.Motions, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasMovies=\"))",
+                "{",
+                "    string val = lineT.Substring(10);",
+                "    SetFMResource(fm, CustomResources.Movies, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "else if (lineT.StartsWithFast_NoNullChecks(\"HasSubtitles=\"))",
+                "{",
+                "    string val = lineT.Substring(13);",
+                "    SetFMResource(fm, CustomResources.Subtitles, val.EqualsTrue());",
+                "    resourcesFound = true;",
+                "}",
+                "#endregion"
             };
         }
 
         private static readonly string[] _readFMDataIniTopLines =
         {
-            "        internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)",
+            "internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)",
+            "{",
+            "    string[] iniLines = File.ReadAllLines(fileName, Encoding.UTF8);",
+            "",
+            "    if (fmsList.Count > 0) fmsList.Clear();",
+            "",
+            "    bool fmsListIsEmpty = true;",
+            "",
+            "    foreach (string line in iniLines)",
+            "    {",
+            "        string lineTS = line.TrimStart();",
+            "        string lineT = lineTS.TrimEnd();",
+            "",
+            "        if (lineT.Length > 0 && lineT[0] == '[')",
             "        {",
-            "            string[] iniLines = File.ReadAllLines(fileName, Encoding.UTF8);",
-            "",
-            "            if (fmsList.Count > 0) fmsList.Clear();",
-            "",
-            "            bool fmsListIsEmpty = true;",
-            "",
-            "            foreach (string line in iniLines)",
+            "            if (lineT.Length >= 4 && lineT[1] == 'F' && lineT[2] == 'M' && lineT[3] == ']')",
             "            {",
-            "                string lineTS = line.TrimStart();",
-            "                string lineT = lineTS.TrimEnd();",
+            "                fmsList.Add(new FanMission());",
+            "                if (fmsListIsEmpty) fmsListIsEmpty = false;",
+            "            }",
             "",
-            "                if (lineT.Length > 0 && lineT[0] == '[')",
-            "                {",
-            "                    if (lineT.Length >= 4 && lineT[1] == 'F' && lineT[2] == 'M' && lineT[3] == ']')",
-            "                    {",
-            "                        fmsList.Add(new FanMission());",
-            "                        if (fmsListIsEmpty) fmsListIsEmpty = false;",
-            "                    }",
+            "            continue;",
+            "        }",
             "",
-            "                    continue;",
-            "                }",
+            "        if (fmsListIsEmpty) continue;",
             "",
-            "                if (fmsListIsEmpty) continue;",
+            "        bool resourcesFound = false;",
             "",
-            "                bool resourcesFound = false;",
+            "        // Comment chars (;) and blank lines will be rejected implicitly.",
+            "        // Since they're rare cases, checking for them would only slow us down.",
             "",
-            "                // Comment chars (;) and blank lines will be rejected implicitly.",
-            "                // Since they're rare cases, checking for them would only slow us down.",
-            "",
-            "                FanMission fm = fmsList[fmsList.Count - 1];",
+            "        FanMission fm = fmsList[fmsList.Count - 1];",
             ""
         };
 
         private static readonly string[] _writeFMDataIniTopLines =
         {
-            "        private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)",
-            "        {",
-            "            // Averaged over the 1573 FMs in my FMData.ini file (in new HasResources format)",
-            "            const int averageFMEntryCharCount = 378;",
-            "            var sb = new StringBuilder(averageFMEntryCharCount * fmDataList.Count);",
+            "private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)",
+            "{",
+            "    // Averaged over the 1573 FMs in my FMData.ini file (in new HasResources format)",
+            "    const int averageFMEntryCharCount = 378;",
+            "    var sb = new StringBuilder(averageFMEntryCharCount * fmDataList.Count);",
             "",
-            "            foreach (FanMission fm in fmDataList)",
-            "            {",
-            "                sb.AppendLine(\"[FM]\");",
+            "    foreach (FanMission fm in fmDataList)",
+            "    {",
+            "        sb.AppendLine(\"[FM]\");",
             ""
         };
 
@@ -355,13 +342,11 @@ namespace FenGen
 
             foreach (SyntaxNode item in fmDataClass.ChildNodes())
             {
-                Field tempField = new Field();
                 if (item.IsKind(SyntaxKind.FieldDeclaration) || item.IsKind(SyntaxKind.PropertyDeclaration))
                 {
-                    FillFieldFromAttributes((MemberDeclarationSyntax)item, tempField, out bool ignore);
+                    Field last = new Field();
+                    FillFieldFromAttributes((MemberDeclarationSyntax)item, last, out bool ignore);
                     if (ignore) continue;
-
-                    Field last = tempField.Copy();
 
                     last.Name = (item.IsKind(SyntaxKind.FieldDeclaration)
                             ? ((FieldDeclarationSyntax)item).Declaration.Variables[0].Identifier
@@ -381,9 +366,9 @@ namespace FenGen
         {
             sb.Append(Indent(2)).AppendLine(GenMessages.Method);
 
-            string[] topLines = _readFMDataIniTopLines;
+            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 2);
 
-            foreach (string l in topLines) sb.AppendLine(l);
+            w.WLs(_readFMDataIniTopLines);
 
             static string GetFloatArgsRead(string fieldType) =>
                 fieldType == "float" ||
@@ -394,8 +379,6 @@ namespace FenGen
                 fieldType == "decimal?"
                     ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                     : "";
-
-            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 4);
 
             for (int i = 0; i < fields.Count; i++)
             {
@@ -445,7 +428,7 @@ namespace FenGen
                         else
                         {
                             w.WL(objDotField + ".Clear();");
-                            w.WL("string[] items = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);");
+                            w.WL("string[] items = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
                             w.WL("for (int a = 0; a < items.Length; a++)");
                             w.WL("{");
                             w.WL("string result = items[a].Trim();");
@@ -471,7 +454,7 @@ namespace FenGen
                         else
                         {
                             w.WL(objDotField + ".Clear();");
-                            w.WL("string[] items = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);");
+                            w.WL("string[] items = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
                             w.WL("for (int a = 0; a < items.Length; a++)");
                             w.WL("{");
                             w.WL("items[a] = items[a].Trim();");
@@ -590,7 +573,9 @@ namespace FenGen
         {
             sb.Append(Indent(2)).AppendLine(GenMessages.Method);
 
-            foreach (string l in _writeFMDataIniTopLines) sb.AppendLine(l);
+            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 2);
+
+            w.WLs(_writeFMDataIniTopLines);
 
             const string toString = "ToString()";
             const string unixDateString = "UnixDateString";
@@ -604,8 +589,6 @@ namespace FenGen
                 fieldType == "decimal?"
                     ? "NumberFormatInfo.InvariantInfo"
                     : "";
-
-            var w = new CodeWriters.IndentingWriter(sb, startingIndent: 4);
 
             foreach (Field field in fields)
             {
