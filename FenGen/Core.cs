@@ -96,7 +96,6 @@ namespace FenGen
             Language,
             LanguageAndAlsoCreateTestIni,
             GameSupport,
-            VisLoc,
             ExcludeResx,
             RestoreResx,
             TrimDesigner,
