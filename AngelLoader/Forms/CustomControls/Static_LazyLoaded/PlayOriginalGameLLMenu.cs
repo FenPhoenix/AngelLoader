@@ -12,13 +12,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static ContextMenuStrip Menu = null!;
 
         internal static ToolStripMenuItemCustom Thief1MenuItem = null!;
-
         internal static ToolStripMenuItemCustom Thief2MenuItem = null!;
-
         internal static ToolStripMenuItemCustom Thief2MPMenuItem = null!;
-
         internal static ToolStripMenuItemCustom Thief3MenuItem = null!;
-
         internal static ToolStripMenuItemCustom SS2MenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
@@ -27,26 +23,19 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             Menu = new ContextMenuStrip(components);
 
-            Thief1MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief1_16 };
-            Thief2MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16 };
-            Thief2MPMenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16 };
-            Thief3MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief3_16 };
-            SS2MenuItem = new ToolStripMenuItemCustom { Image = Images.Shock2_16 };
-
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                Thief1MenuItem,
-                Thief2MenuItem,
-                Thief2MPMenuItem,
-                Thief3MenuItem,
-                SS2MenuItem
+                Thief1MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief1_16 },
+                Thief2MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16 },
+                Thief2MPMenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16 },
+                Thief3MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief3_16 },
+                SS2MenuItem = new ToolStripMenuItemCustom { Image = Images.Shock2_16 }
             });
 
-            Thief1MenuItem.Click += form.PlayOriginalGameMenuItem_Click;
-            Thief2MenuItem.Click += form.PlayOriginalGameMenuItem_Click;
-            Thief2MPMenuItem.Click += form.PlayOriginalGameMenuItem_Click;
-            Thief3MenuItem.Click += form.PlayOriginalGameMenuItem_Click;
-            SS2MenuItem.Click += form.PlayOriginalGameMenuItem_Click;
+            foreach (ToolStripMenuItemCustom item in Menu.Items)
+            {
+                item.Click += form.PlayOriginalGameMenuItem_Click;
+            }
 
             _constructed = true;
 

@@ -34,56 +34,22 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Menu = new ContextMenuStripCustom(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                TitleMenuItem = new ToolStripMenuItemCustom
-                {
-                    CheckOnClick = true,
-                    Tag = HideableFilterControls.Title
-                },
-                AuthorMenuItem = new ToolStripMenuItemCustom
-                {
-                    CheckOnClick = true,
-                    Tag = HideableFilterControls.Author
-                },
-                ReleaseDateMenuItem = new ToolStripMenuItemCustom
-                {
-                    CheckOnClick = true,
-                    Tag = HideableFilterControls.ReleaseDate
-                },
-                LastPlayedMenuItem = new ToolStripMenuItemCustom
-                {
-                    CheckOnClick = true,
-                    Tag = HideableFilterControls.LastPlayed
-                },
-                TagsMenuItem = new ToolStripMenuItemCustom
-                {
-                    CheckOnClick = true,
-                    Tag = HideableFilterControls.Tags
-                },
-                FinishedStateMenuItem = new ToolStripMenuItemCustom
-                {
-                    CheckOnClick = true,
-                    Tag = HideableFilterControls.FinishedState
-                },
-                RatingMenuItem = new ToolStripMenuItemCustom
-                {
-                    CheckOnClick = true,
-                    Tag = HideableFilterControls.Rating
-                },
-                ShowUnsupportedMenuItem = new ToolStripMenuItemCustom
-                {
-                    CheckOnClick = true,
-                    Tag = HideableFilterControls.ShowUnsupported
-                },
-                ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom
-                {
-                    CheckOnClick = true,
-                    Tag = HideableFilterControls.ShowRecentAtTop
-                }
+                TitleMenuItem = new ToolStripMenuItemCustom(),
+                AuthorMenuItem = new ToolStripMenuItemCustom(),
+                ReleaseDateMenuItem = new ToolStripMenuItemCustom(),
+                LastPlayedMenuItem = new ToolStripMenuItemCustom(),
+                TagsMenuItem = new ToolStripMenuItemCustom(),
+                FinishedStateMenuItem = new ToolStripMenuItemCustom(),
+                RatingMenuItem = new ToolStripMenuItemCustom(),
+                ShowUnsupportedMenuItem = new ToolStripMenuItemCustom(),
+                ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom()
             });
 
             for (int i = 0; i < Menu.Items.Count; i++)
             {
                 var item = (ToolStripMenuItemCustom)Menu.Items[i];
+                item.CheckOnClick = true;
+                item.Tag = (HideableFilterControls)i;
                 item.Checked = _filterCheckedStates[i];
                 item.Click += _owner.FilterControlsMenuItems_Click;
             }

@@ -1499,6 +1499,8 @@ namespace AngelLoader.Forms
                 ReadmeRichTextBox.ZoomFactor);
         }
 
+        internal IContainer GetComponents() => components;
+
         #region Cursor over area detection
 
         private bool CursorOverReadmeArea()
@@ -3668,7 +3670,7 @@ namespace AngelLoader.Forms
         private void ImportButton_Click(object sender, EventArgs e)
         {
             ImportFromLLMenu.Construct(this, components);
-            ShowMenu(ImportFromLLMenu.ImportFromMenu, ImportButton, MenuPos.TopLeft);
+            ShowMenu(ImportFromLLMenu.Menu, ImportButton, MenuPos.TopLeft);
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]

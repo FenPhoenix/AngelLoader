@@ -12,7 +12,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields
 
-        private IView _owner = null!;
+        private MainForm _owner = null!;
 
         #endregion
 
@@ -66,7 +66,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public DataGridViewCustom() => DoubleBuffered = true;
 
-        internal void InjectOwner(IView owner) => _owner = owner;
+        internal void InjectOwner(MainForm owner) => _owner = owner;
 
         internal void Localize()
         {
@@ -319,15 +319,5 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         #endregion
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                ColumnHeaderLLMenu.Dispose();
-                DisposeFMContextMenu();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

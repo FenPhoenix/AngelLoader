@@ -8,7 +8,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         private static bool _constructed;
 
-        internal static ContextMenuStrip ImportFromMenu = null!;
+        internal static ContextMenuStrip Menu = null!;
 
         internal static ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
         internal static ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
@@ -20,23 +20,20 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            ImportFromMenu = new ContextMenuStrip(components);
+            Menu = new ContextMenuStrip(components);
 
-            // Not localized because they consist solely of proper names! Don't remove these!
-            ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom("DarkLoader...");
-            ImportFromFMSelMenuItem = new ToolStripMenuItemCustom("FMSel...");
-            ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom("NewDarkLoader...");
-
-            ImportFromMenu.Items.AddRange(new ToolStripItem[]
+            Menu.Items.AddRange(new ToolStripItem[]
             {
-                ImportFromDarkLoaderMenuItem,
-                ImportFromFMSelMenuItem,
-                ImportFromNewDarkLoaderMenuItem
+                // Not localized because they consist solely of proper names! Don't remove these!
+                ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom("DarkLoader..."),
+                ImportFromFMSelMenuItem = new ToolStripMenuItemCustom("FMSel..."),
+                ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom("NewDarkLoader...")
             });
 
-            ImportFromDarkLoaderMenuItem.Click += form.ImportMenuItems_Click;
-            ImportFromFMSelMenuItem.Click += form.ImportMenuItems_Click;
-            ImportFromNewDarkLoaderMenuItem.Click += form.ImportMenuItems_Click;
+            foreach (ToolStripMenuItemCustom item in Menu.Items)
+            {
+                item.Click += form.ImportMenuItems_Click;
+            }
 
             _constructed = true;
         }

@@ -23,51 +23,28 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            #region Instantiation
+            #region Instantiation and hookup events
 
             Menu = new ContextMenuStripCustom(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                StatsMenuItem = new ToolStripMenuItemCustom
-                {
-                    Checked = _checkedStates[(int)TopRightTab.Statistics],
-                    CheckOnClick = true
-                },
-                EditFMMenuItem = new ToolStripMenuItemCustom
-                {
-                    Checked = _checkedStates[(int)TopRightTab.EditFM],
-                    CheckOnClick = true
-                },
-                CommentMenuItem = new ToolStripMenuItemCustom
-                {
-                    Checked = _checkedStates[(int)TopRightTab.Comment],
-                    CheckOnClick = true
-                },
-                TagsMenuItem = new ToolStripMenuItemCustom
-                {
-                    Checked = _checkedStates[(int)TopRightTab.Tags],
-                    CheckOnClick = true
-                },
-                PatchMenuItem = new ToolStripMenuItemCustom
-                {
-                    Checked = _checkedStates[(int)TopRightTab.Patch],
-                    CheckOnClick = true
-                }
+                StatsMenuItem = new ToolStripMenuItemCustom(),
+                EditFMMenuItem = new ToolStripMenuItemCustom(),
+                CommentMenuItem = new ToolStripMenuItemCustom(),
+                TagsMenuItem = new ToolStripMenuItemCustom(),
+                PatchMenuItem = new ToolStripMenuItemCustom()
             });
+            for (int i = 0; i < Menu.Items.Count; i++)
+            {
+                var item = (ToolStripMenuItemCustom)Menu.Items[i];
+                item.CheckOnClick = true;
+                item.Checked = _checkedStates[i];
+                item.Click += form.TopRightMenu_MenuItems_Click;
+            }
 
             #endregion
 
             Menu.SetPreventCloseOnClickItems(Menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
-
-            #region Event hookups
-
-            StatsMenuItem.Click += form.TopRightMenu_MenuItems_Click;
-            EditFMMenuItem.Click += form.TopRightMenu_MenuItems_Click;
-            CommentMenuItem.Click += form.TopRightMenu_MenuItems_Click;
-            TagsMenuItem.Click += form.TopRightMenu_MenuItems_Click;
-            PatchMenuItem.Click += form.TopRightMenu_MenuItems_Click;
-
-            #endregion
 
             _constructed = true;
             Localize();

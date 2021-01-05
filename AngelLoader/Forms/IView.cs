@@ -113,8 +113,6 @@ namespace AngelLoader.Forms
 
         void RefreshFMsListKeepSelection();
 
-        void UpdateRatingMenus(int rating, bool disableEvents = false);
-
         #endregion
 
         #region Dialogs

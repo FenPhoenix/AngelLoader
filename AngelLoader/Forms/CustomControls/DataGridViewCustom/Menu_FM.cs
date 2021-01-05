@@ -33,50 +33,22 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        private IDisposable[]? _fmContextMenuDisposables;
-
         #region FM context menu fields
-
-        // These are disposed by adding them to an array and iterating through it in Dispose()
-        // TODO: This probably doesn't even need to happen, as they prolly get dumped with everything else on app exit
 
         private ContextMenuStrip? FMContextMenu;
 
         private ToolStripMenuItemCustom? PlayFMMenuItem;
         private ToolStripMenuItemCustom? PlayFMInMPMenuItem;
         private ToolStripMenuItemCustom? InstallUninstallMenuItem;
-
-        private ToolStripSeparator? DeleteFMSep;
-
         private ToolStripMenuItemCustom? DeleteFMMenuItem;
-
         private ToolStripSeparator? OpenInDromEdSep;
-
         private ToolStripMenuItemCustom? OpenInDromEdMenuItem;
-
-        private ToolStripSeparator? ScanFMSep;
-
         private ToolStripMenuItemCustom? ScanFMMenuItem;
         private ToolStripMenuItemCustom? ConvertAudioMenuItem;
         private ToolStripMenuItemCustom? ConvertWAVsTo16BitMenuItem;
         private ToolStripMenuItemCustom? ConvertOGGsToWAVsMenuItem;
-
-        private ToolStripSeparator? RatingSep;
-
         private ToolStripMenuItemCustom? RatingMenuItem;
         private ToolStripMenuItemCustom? RatingMenuUnrated;
-        private ToolStripMenuItemCustom? Rating0MenuItem;
-        private ToolStripMenuItemCustom? Rating1MenuItem;
-        private ToolStripMenuItemCustom? Rating2MenuItem;
-        private ToolStripMenuItemCustom? Rating3MenuItem;
-        private ToolStripMenuItemCustom? Rating4MenuItem;
-        private ToolStripMenuItemCustom? Rating5MenuItem;
-        private ToolStripMenuItemCustom? Rating6MenuItem;
-        private ToolStripMenuItemCustom? Rating7MenuItem;
-        private ToolStripMenuItemCustom? Rating8MenuItem;
-        private ToolStripMenuItemCustom? Rating9MenuItem;
-        private ToolStripMenuItemCustom? Rating10MenuItem;
-
         private ToolStripMenuItemCustom? FinishedOnMenuItem;
         private ContextMenuStripCustom? FinishedOnMenu;
         private ToolStripMenuItemCustom? FinishedOnNormalMenuItem;
@@ -84,9 +56,6 @@ namespace AngelLoader.Forms.CustomControls
         private ToolStripMenuItemCustom? FinishedOnExpertMenuItem;
         private ToolStripMenuItemCustom? FinishedOnExtremeMenuItem;
         private ToolStripMenuItemCustom? FinishedOnUnknownMenuItem;
-
-        private ToolStripSeparator? WebSearchSep;
-
         private ToolStripMenuItemCustom? WebSearchMenuItem;
 
         #endregion
@@ -99,56 +68,8 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Instantiation
 
-            _fmContextMenuDisposables = new IDisposable[]
-            {
-                FMContextMenu = new ContextMenuStrip(),
-                PlayFMMenuItem = new ToolStripMenuItemCustom(),
-                PlayFMInMPMenuItem = new ToolStripMenuItemCustom(),
-
-                InstallUninstallMenuItem = new ToolStripMenuItemCustom(),
-
-                DeleteFMSep = new ToolStripSeparator(),
-                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Resources.Trash_16 },
-
-                OpenInDromEdSep = new ToolStripSeparator(),
-                OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
-
-                ScanFMSep = new ToolStripSeparator(),
-
-                ScanFMMenuItem = new ToolStripMenuItemCustom(),
-
-                ConvertAudioMenuItem = new ToolStripMenuItemCustom(),
-                ConvertWAVsTo16BitMenuItem = new ToolStripMenuItemCustom(),
-                ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom(),
-
-                RatingSep = new ToolStripSeparator(),
-
-                RatingMenuItem = new ToolStripMenuItemCustom(),
-                RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating0MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating1MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating2MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating3MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating4MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating5MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating6MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating7MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating8MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating9MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                Rating10MenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-
-                FinishedOnMenuItem = new ToolStripMenuItemCustom(),
-                FinishedOnMenu = new ContextMenuStripCustom(),
-                FinishedOnNormalMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                FinishedOnHardMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                FinishedOnExpertMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                FinishedOnExtremeMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-                FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-
-                WebSearchSep = new ToolStripSeparator(),
-
-                WebSearchMenuItem = new ToolStripMenuItemCustom()
-            };
+            FMContextMenu = new ContextMenuStrip(_owner.GetComponents());
+            FinishedOnMenu = new ContextMenuStripCustom(_owner.GetComponents());
 
             #endregion
 
@@ -156,52 +77,42 @@ namespace AngelLoader.Forms.CustomControls
 
             FMContextMenu.Items.AddRange(new ToolStripItem[]
             {
-                PlayFMMenuItem,
-                PlayFMInMPMenuItem,
-                InstallUninstallMenuItem,
-                DeleteFMSep,
-                DeleteFMMenuItem,
-                OpenInDromEdSep,
-                OpenInDromEdMenuItem,
-                ScanFMSep,
-                ScanFMMenuItem,
-                ConvertAudioMenuItem,
-                RatingSep,
-                RatingMenuItem,
-                FinishedOnMenuItem,
-                WebSearchSep,
-                WebSearchMenuItem
+                PlayFMMenuItem = new ToolStripMenuItemCustom(),
+                PlayFMInMPMenuItem = new ToolStripMenuItemCustom(),
+                InstallUninstallMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Resources.Trash_16 },
+                OpenInDromEdSep = new ToolStripSeparator(),
+                OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                ScanFMMenuItem = new ToolStripMenuItemCustom(),
+                ConvertAudioMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                RatingMenuItem = new ToolStripMenuItemCustom(),
+                FinishedOnMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                WebSearchMenuItem = new ToolStripMenuItemCustom()
             });
 
             ConvertAudioMenuItem.DropDownItems.AddRange(new ToolStripItem[]
             {
-                ConvertWAVsTo16BitMenuItem,
-                ConvertOGGsToWAVsMenuItem
+                ConvertWAVsTo16BitMenuItem = new ToolStripMenuItemCustom(),
+                ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom()
             });
 
-            RatingMenuItem.DropDownItems.AddRange(new ToolStripItem[]
+            RatingMenuItem.DropDownItems.Add(RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true });
+            for (int i = 0; i < 11; i++)
             {
-                RatingMenuUnrated,
-                Rating0MenuItem,
-                Rating1MenuItem,
-                Rating2MenuItem,
-                Rating3MenuItem,
-                Rating4MenuItem,
-                Rating5MenuItem,
-                Rating6MenuItem,
-                Rating7MenuItem,
-                Rating8MenuItem,
-                Rating9MenuItem,
-                Rating10MenuItem
-            });
+                RatingMenuItem.DropDownItems.Add(new ToolStripMenuItemCustom { CheckOnClick = true });
+            }
 
             FinishedOnMenu.Items.AddRange(new ToolStripItem[]
             {
-                FinishedOnNormalMenuItem,
-                FinishedOnHardMenuItem,
-                FinishedOnExpertMenuItem,
-                FinishedOnExtremeMenuItem,
-                FinishedOnUnknownMenuItem
+                FinishedOnNormalMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnHardMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnExpertMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnExtremeMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true }
             });
 
             FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
@@ -696,13 +607,5 @@ namespace AngelLoader.Forms.CustomControls
         private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(GetSelectedFM().Title);
 
         #endregion
-
-        private void DisposeFMContextMenu()
-        {
-            for (int i = 0; i < _fmContextMenuDisposables?.Length; i++)
-            {
-                _fmContextMenuDisposables?[i]?.Dispose();
-            }
-        }
     }
 }

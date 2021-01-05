@@ -20,8 +20,6 @@ namespace AngelLoader.Forms.CustomControls
 
             private enum ColumnProperties { Visible, DisplayIndex, Width }
 
-            private static IDisposable[]? _columnHeaderMenuDisposables;
-
             #region Column header context menu fields
 
             private static ContextMenuStripCustom? ColumnHeaderContextMenu;
@@ -29,8 +27,6 @@ namespace AngelLoader.Forms.CustomControls
             private static ToolStripMenuItemCustom? ResetColumnVisibilityMenuItem;
             private static ToolStripMenuItemCustom? ResetAllColumnWidthsMenuItem;
             private static ToolStripMenuItemCustom? ResetColumnPositionsMenuItem;
-
-            private static ToolStripSeparator? ColumnHeaderContextMenuSep1;
 
             private static ToolStripMenuItemCustom[]? ColumnHeaderCheckBoxMenuItems;
             private static ToolStripMenuItemCustom? ShowGameMenuItem;
@@ -85,7 +81,7 @@ namespace AngelLoader.Forms.CustomControls
 
             private static void ResetAllColumnWidthsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Width);
 
-            private static void CheckBoxMenuItem_Click(object sender, EventArgs e)
+            private static void CheckBoxMenuItems_Click(object sender, EventArgs e)
             {
                 var s = (ToolStripMenuItemCustom)sender;
                 MakeColumnVisible(_owner.Columns[(int)s.Tag], s.Checked);
@@ -108,156 +104,62 @@ namespace AngelLoader.Forms.CustomControls
 
                 #region Instantiation
 
-                _columnHeaderMenuDisposables = new IDisposable[]
+                ColumnHeaderContextMenu = new ContextMenuStripCustom(_owner._owner.GetComponents());
+
+                #endregion
+
+                #region Add items to menu and hookup events
+
+                ColumnHeaderContextMenu.Items.AddRange(new ToolStripItem[]
                 {
-                    ColumnHeaderContextMenu = new ContextMenuStripCustom(),
                     ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom(),
                     ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom(),
                     ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom(),
-                    ColumnHeaderContextMenuSep1 = new ToolStripSeparator(),
-                    ShowGameMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.Game
-                    },
-                    ShowInstalledMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.Installed
-                    },
-                    ShowTitleMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.Title
-                    },
-                    ShowArchiveMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.Archive
-                    },
-                    ShowAuthorMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.Author
-                    },
-                    ShowSizeMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.Size
-                    },
-                    ShowRatingMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.Rating
-                    },
-                    ShowFinishedMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.Finished
-                    },
-                    ShowReleaseDateMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.ReleaseDate
-                    },
-                    ShowLastPlayedMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.LastPlayed
-                    },
-                    ShowDateAddedMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.DateAdded
-                    },
-                    ShowDisabledModsMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.DisabledMods
-                    },
-                    ShowCommentMenuItem = new ToolStripMenuItemCustom
-                    {
-                        CheckOnClick = true,
-                        Tag = Column.Comment
-                    }
-                };
-
-                #endregion
+                    new ToolStripSeparator()
+                });
 
                 #region Fill ColumnHeaderCheckBoxMenuItems array
 
                 ColumnHeaderCheckBoxMenuItems = new[]
                 {
-                    ShowGameMenuItem,
-                    ShowInstalledMenuItem,
-                    ShowTitleMenuItem,
-                    ShowArchiveMenuItem,
-                    ShowAuthorMenuItem,
-                    ShowSizeMenuItem,
-                    ShowRatingMenuItem,
-                    ShowFinishedMenuItem,
-                    ShowReleaseDateMenuItem,
-                    ShowLastPlayedMenuItem,
-                    ShowDateAddedMenuItem,
-                    ShowDisabledModsMenuItem,
-                    ShowCommentMenuItem
+                    ShowGameMenuItem = new ToolStripMenuItemCustom(),
+                    ShowInstalledMenuItem = new ToolStripMenuItemCustom(),
+                    ShowTitleMenuItem = new ToolStripMenuItemCustom(),
+                    ShowArchiveMenuItem = new ToolStripMenuItemCustom(),
+                    ShowAuthorMenuItem = new ToolStripMenuItemCustom(),
+                    ShowSizeMenuItem = new ToolStripMenuItemCustom(),
+                    ShowRatingMenuItem = new ToolStripMenuItemCustom(),
+                    ShowFinishedMenuItem = new ToolStripMenuItemCustom(),
+                    ShowReleaseDateMenuItem = new ToolStripMenuItemCustom(),
+                    ShowLastPlayedMenuItem = new ToolStripMenuItemCustom(),
+                    ShowDateAddedMenuItem = new ToolStripMenuItemCustom(),
+                    ShowDisabledModsMenuItem = new ToolStripMenuItemCustom(),
+                    ShowCommentMenuItem = new ToolStripMenuItemCustom()
                 };
 
                 for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
                 {
-                    ColumnHeaderCheckBoxMenuItems[i].Checked = _columnCheckedStates[i];
+                    var item = ColumnHeaderCheckBoxMenuItems[i];
+                    item.CheckOnClick = true;
+                    item.Tag = (Column)i;
+                    item.Checked = _columnCheckedStates[i];
                 }
 
                 #endregion
 
-                #region Add items to menu
-
-                ColumnHeaderContextMenu.Items.AddRange(new ToolStripItem[]
+                foreach (var item in ColumnHeaderCheckBoxMenuItems)
                 {
-                    ResetColumnVisibilityMenuItem,
-                    ResetAllColumnWidthsMenuItem,
-                    ResetColumnPositionsMenuItem,
-                    ColumnHeaderContextMenuSep1,
-                    ShowGameMenuItem,
-                    ShowInstalledMenuItem,
-                    ShowTitleMenuItem,
-                    ShowArchiveMenuItem,
-                    ShowAuthorMenuItem,
-                    ShowSizeMenuItem,
-                    ShowRatingMenuItem,
-                    ShowFinishedMenuItem,
-                    ShowReleaseDateMenuItem,
-                    ShowLastPlayedMenuItem,
-                    ShowDateAddedMenuItem,
-                    ShowDisabledModsMenuItem,
-                    ShowCommentMenuItem
-                });
-
-                #endregion
-
-                ColumnHeaderContextMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
-
-                #region Event hookups
+                    ColumnHeaderContextMenu.Items.Add(item);
+                    item.Click += CheckBoxMenuItems_Click;
+                }
 
                 ResetColumnVisibilityMenuItem.Click += ResetColumnVisibilityMenuItem_Click;
                 ResetAllColumnWidthsMenuItem.Click += ResetAllColumnWidthsMenuItem_Click;
                 ResetColumnPositionsMenuItem.Click += ResetColumnPositionsMenuItem_Click;
 
-                ShowGameMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowInstalledMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowTitleMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowArchiveMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowAuthorMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowSizeMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowRatingMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowFinishedMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowReleaseDateMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowLastPlayedMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowDateAddedMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowDisabledModsMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowCommentMenuItem.Click += CheckBoxMenuItem_Click;
-
                 #endregion
+
+                ColumnHeaderContextMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
 
                 _constructed = true;
 
@@ -296,14 +198,6 @@ namespace AngelLoader.Forms.CustomControls
                 else
                 {
                     _columnCheckedStates[index] = enabled;
-                }
-            }
-
-            internal static void Dispose()
-            {
-                for (int i = 0; i < _columnHeaderMenuDisposables?.Length; i++)
-                {
-                    _columnHeaderMenuDisposables?[i]?.Dispose();
                 }
             }
 
