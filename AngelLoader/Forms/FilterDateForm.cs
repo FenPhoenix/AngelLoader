@@ -20,7 +20,7 @@ namespace AngelLoader.Forms
 #else
             InitComponentManual();
 #endif
-            
+
             Localize();
 
             Text = title;

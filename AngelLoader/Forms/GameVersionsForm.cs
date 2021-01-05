@@ -10,7 +10,6 @@ namespace AngelLoader.Forms
 
         public GameVersionsForm()
         {
-
 #if DEBUG
             InitializeComponent();
 #else

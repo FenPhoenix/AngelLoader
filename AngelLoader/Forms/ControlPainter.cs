@@ -607,7 +607,7 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-        
+
         internal static void PaintArrow(
             PaintEventArgs e,
             Point[] _arrowPolygon,

@@ -59,7 +59,7 @@ namespace AngelLoader.Forms
             GitHubLinkLabel.TabIndex = 3;
             GitHubLinkLabel.TabStop = true;
             GitHubLinkLabel.Text = "https://github.com/FenPhoenix/AngelLoader";
-            GitHubLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
+            GitHubLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // LicenseTextBox
             // 
@@ -88,7 +88,7 @@ namespace AngelLoader.Forms
             SevenZipLinkLabel.TabIndex = 6;
             SevenZipLinkLabel.TabStop = true;
             SevenZipLinkLabel.Text = "7-Zip";
-            SevenZipLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
+            SevenZipLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // SevenZipSharpLinkLabel
             // 
@@ -97,7 +97,7 @@ namespace AngelLoader.Forms
             SevenZipSharpLinkLabel.TabIndex = 7;
             SevenZipSharpLinkLabel.TabStop = true;
             SevenZipSharpLinkLabel.Text = "SquidBox.SevenZipSharp";
-            SevenZipSharpLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
+            SevenZipSharpLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // FFmpegLinkLabel
             // 
@@ -106,7 +106,7 @@ namespace AngelLoader.Forms
             FFmpegLinkLabel.TabIndex = 8;
             FFmpegLinkLabel.TabStop = true;
             FFmpegLinkLabel.Text = "ffmpeg";
-            FFmpegLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
+            FFmpegLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // FFmpegDotNetLinkLabel
             // 
@@ -115,7 +115,7 @@ namespace AngelLoader.Forms
             FFmpegDotNetLinkLabel.TabIndex = 9;
             FFmpegDotNetLinkLabel.TabStop = true;
             FFmpegDotNetLinkLabel.Text = "FFmpeg.NET";
-            FFmpegDotNetLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
+            FFmpegDotNetLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // SimpleHelpersDotNetLinkLabel
             // 
@@ -124,7 +124,7 @@ namespace AngelLoader.Forms
             SimpleHelpersDotNetLinkLabel.TabIndex = 10;
             SimpleHelpersDotNetLinkLabel.TabStop = true;
             SimpleHelpersDotNetLinkLabel.Text = "SimpleHelpers.Net";
-            SimpleHelpersDotNetLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
+            SimpleHelpersDotNetLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // UdeNetStandardLinkLabel
             // 
@@ -133,7 +133,7 @@ namespace AngelLoader.Forms
             UdeNetStandardLinkLabel.TabIndex = 11;
             UdeNetStandardLinkLabel.TabStop = true;
             UdeNetStandardLinkLabel.Text = "Ude.NetStandard";
-            UdeNetStandardLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
+            UdeNetStandardLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // OokiiDialogsLinkLabel
             // 
@@ -142,7 +142,7 @@ namespace AngelLoader.Forms
             OokiiDialogsLinkLabel.TabIndex = 12;
             OokiiDialogsLinkLabel.TabStop = true;
             OokiiDialogsLinkLabel.Text = "Ookii Dialogs";
-            OokiiDialogsLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
+            OokiiDialogsLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // NetCore3SysIOCompLinkLabel
             // 
@@ -151,7 +151,7 @@ namespace AngelLoader.Forms
             NetCore3SysIOCompLinkLabel.TabIndex = 13;
             NetCore3SysIOCompLinkLabel.TabStop = true;
             NetCore3SysIOCompLinkLabel.Text = ".NET Core 3 System.IO.Compression";
-            NetCore3SysIOCompLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabels_LinkClicked);
+            NetCore3SysIOCompLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // AngelLoaderUsesLabel
             // 
