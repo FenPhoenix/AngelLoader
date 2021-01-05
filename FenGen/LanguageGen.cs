@@ -60,7 +60,7 @@ namespace FenGen
             // Now through again to get the language string names from the nested classes
             foreach (SyntaxNode cn in childNodes)
             {
-                if (!(cn is ClassDeclarationSyntax childClass)) continue;
+                if (cn is not ClassDeclarationSyntax childClass) continue;
 
                 SyntaxNode[] members = childClass.ChildNodes()
                     .Where(x => x.IsKind(SyntaxKind.FieldDeclaration) || x.IsKind(SyntaxKind.PropertyDeclaration))

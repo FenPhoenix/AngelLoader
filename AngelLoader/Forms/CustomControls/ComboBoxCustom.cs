@@ -82,7 +82,7 @@ namespace AngelLoader.Forms.CustomControls
             int finalWidth = 0;
             foreach (object item in Items)
             {
-                if (!(item is string itemStr)) continue;
+                if (item is not string itemStr) continue;
 
                 int currentItemWidth = TextRenderer.MeasureText(itemStr, Font, Size.Empty).Width;
                 if (finalWidth < currentItemWidth) finalWidth = currentItemWidth;
