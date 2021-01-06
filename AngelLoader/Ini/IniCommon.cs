@@ -38,8 +38,8 @@ namespace AngelLoader
                 while ((line = sr.ReadLine()) != null)
                 {
                     string lineT = line.Trim();
-                    if (inMeta && lineT.StartsWithFast_NoNullChecks(
-                            nameof(LText.Meta.TranslatedLanguageName) + "="))
+                    if (inMeta &&
+                        lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.TranslatedLanguageName) + "="))
                     {
                         string key = file.GetFileNameFast().RemoveExtension();
                         string value = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
@@ -502,8 +502,7 @@ namespace AngelLoader
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gi = (GameIndex)i;
-                string p = GetGamePrefix(gi);
-                if (line.StartsWithFast_NoNullChecks(p + keyWithEquals))
+                if (line.StartsWithFast_NoNullChecks(GetGamePrefix(gi) + keyWithEquals))
                 {
                     gameIndex = gi;
                     return true;

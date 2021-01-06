@@ -158,11 +158,9 @@ namespace AngelLoader.DataClasses
         internal string GetT2MultiplayerExe_FromDisk()
         {
             string gamePath = GetGamePath(GameIndex.Thief2);
-            return gamePath.IsEmpty()
-                ? ""
-                : TryCombineFilePathAndCheckExistence(gamePath, Paths.T2MPExe, out string fullPathExe)
-                    ? fullPathExe
-                    : "";
+            return !gamePath.IsEmpty() && TryCombineFilePathAndCheckExistence(gamePath, Paths.T2MPExe, out string fullPathExe)
+                ? fullPathExe
+                : "";
         }
 
         #endregion
