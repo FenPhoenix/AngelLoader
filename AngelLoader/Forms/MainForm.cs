@@ -2828,16 +2828,11 @@ namespace AngelLoader.Forms
 
                 // Set zoom level
                 float fontSize =
-                    type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
+                    (type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
                     type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
                     type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
                     type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
-                    _fMsListDefaultFontSizeInPoints;
-
-                // Clamp zoom level
-                if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
-                if (fontSize > Math.Round(41.25f, 2)) fontSize = 41.25f;
-                fontSize = (float)Math.Round(fontSize, 2);
+                    _fMsListDefaultFontSizeInPoints).ClampToFMsDGVFontSizeMinMax();
 
                 // Set new font size
                 Font newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);

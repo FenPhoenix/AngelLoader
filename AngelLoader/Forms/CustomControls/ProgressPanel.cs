@@ -109,7 +109,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
         {
-            ProgressBar.SetValueInstant(percent.Clamp(0, 100));
+            ProgressBar.SetValueInstant(percent);
             string first = LText.ProgressBox.ReportScanningFirst;
             string between = LText.ProgressBox.ReportScanningBetweenNumAndTotal;
             string last = LText.ProgressBox.ReportScanningLast;
@@ -122,7 +122,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ReportFMExtractProgress(int percent)
         {
-            ProgressBar.SetValueInstant(percent.Clamp(0, 100));
+            ProgressBar.SetValueInstant(percent);
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
             ProgressPercentLabel.Text = percent + "%";
 
@@ -131,7 +131,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ReportCachingProgress(int percent)
         {
-            ProgressBar.SetValueInstant(percent.Clamp(0, 100));
+            ProgressBar.SetValueInstant(percent);
             ProgressPercentLabel.Text = percent + "%";
 
             if (Visible)

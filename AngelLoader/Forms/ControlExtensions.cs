@@ -33,6 +33,8 @@ namespace AngelLoader.Forms
         /// <param name="value"></param>
         public static void SetValueInstant(this ProgressBar pb, int value)
         {
+            value = value.Clamp(pb.Minimum, pb.Maximum);
+
             if (value == pb.Maximum)
             {
                 pb.Value = pb.Maximum;
@@ -40,7 +42,7 @@ namespace AngelLoader.Forms
             else
             {
                 pb.Value = (value + 1).Clamp(pb.Minimum, pb.Maximum);
-                pb.Value = value.Clamp(pb.Minimum, pb.Maximum);
+                pb.Value = value;
             }
         }
 

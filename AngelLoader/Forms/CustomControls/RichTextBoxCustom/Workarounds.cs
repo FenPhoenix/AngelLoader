@@ -448,13 +448,11 @@ namespace AngelLoader.Forms.CustomControls
         // Because the damn thing resets its zoom every time you load new content, we have to keep a global var
         // with the zoom value and keep both values in sync.
 
-        private static float ClampZoomToMinMax(float value) => value.Clamp(0.1f, 5.0f);
-
         private float _storedZoomFactor = 1.0f;
 
-        private void SetZoomFactorClamped(float zoomFactor) => ZoomFactor = ClampZoomToMinMax(zoomFactor);
+        private void SetZoomFactorClamped(float zoomFactor) => ZoomFactor = zoomFactor.ClampToRichTextBoxZoomMinMax();
 
-        private void SetStoredZoomFactorClamped(float zoomFactor) => _storedZoomFactor = ClampZoomToMinMax(zoomFactor);
+        private void SetStoredZoomFactorClamped(float zoomFactor) => _storedZoomFactor = zoomFactor.ClampToRichTextBoxZoomMinMax();
 
         private void SaveZoom() => SetStoredZoomFactorClamped(ZoomFactor);
 

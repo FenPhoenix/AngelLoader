@@ -264,10 +264,10 @@ namespace AngelLoader.DataClasses
         internal Column SortedColumn = Column.Title;
         internal SortOrder SortDirection = SortOrder.Ascending;
 
-        private float _fMsListFontSizeInPoints = Defaults.FMsListFontSizeInPoints;
+        private float _fmsListFontSizeInPoints = Defaults.FMsListFontSizeInPoints;
         internal float FMsListFontSizeInPoints
         {
-            get => _fMsListFontSizeInPoints;
+            get => _fmsListFontSizeInPoints;
             set
             {
                 float val = value;
@@ -280,10 +280,7 @@ namespace AngelLoader.DataClasses
                 }
 #endif
 
-                if (val < Math.Round(1.00f, 2)) val = 1.00f;
-                if (val > Math.Round(41.25f, 2)) val = 41.25f;
-                val = (float)Math.Round(val, 2);
-                _fMsListFontSizeInPoints = val;
+                _fmsListFontSizeInPoints = val.ClampToFMsDGVFontSizeMinMax();
             }
         }
 
@@ -326,10 +323,10 @@ namespace AngelLoader.DataClasses
         internal Point MainWindowLocation = new Point(Defaults.MainWindowX, Defaults.MainWindowY);
 
         private float _mainSplitterPercent = Defaults.MainSplitterPercent;
-        internal float MainSplitterPercent { get => _mainSplitterPercent; set => _mainSplitterPercent = value.Clamp(0, 1.0f); }
+        internal float MainSplitterPercent { get => _mainSplitterPercent; set => _mainSplitterPercent = value.ClampZeroToOne(); }
 
         private float _topSplitterPercent = Defaults.TopSplitterPercent;
-        internal float TopSplitterPercent { get => _topSplitterPercent; set => _topSplitterPercent = value.Clamp(0, 1.0f); }
+        internal float TopSplitterPercent { get => _topSplitterPercent; set => _topSplitterPercent = value.ClampZeroToOne(); }
 
         internal bool TopRightPanelCollapsed = false;
 
@@ -351,7 +348,7 @@ namespace AngelLoader.DataClasses
         #region Readme box
 
         private float _readmeZoomFactor = 1;
-        internal float ReadmeZoomFactor { get => _readmeZoomFactor; set => _readmeZoomFactor = value.Clamp(0.1f, 5.0f); }
+        internal float ReadmeZoomFactor { get => _readmeZoomFactor; set => _readmeZoomFactor = value.ClampToRichTextBoxZoomMinMax(); }
         internal bool ReadmeUseFixedWidthFont = true;
 
         #endregion

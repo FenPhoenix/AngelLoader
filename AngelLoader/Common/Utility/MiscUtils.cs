@@ -58,6 +58,17 @@ namespace AngelLoader
         /// <returns></returns>
         internal static int ClampToZero(this int value) => Math.Max(value, 0);
 
+        internal static float ClampZeroToOne(this float value) => value.Clamp(0, 1.0f);
+
+        internal static float ClampToRichTextBoxZoomMinMax(this float value) => value.Clamp(0.1f, 5.0f);
+
+        internal static float ClampToFMsDGVFontSizeMinMax(this float value)
+        {
+            if (value < Math.Round(1.00f, 2)) value = 1.00f;
+            if (value > Math.Round(41.25f, 2)) value = 41.25f;
+            return (float)Math.Round(value, 2);
+        }
+
         #endregion
 
         #endregion
