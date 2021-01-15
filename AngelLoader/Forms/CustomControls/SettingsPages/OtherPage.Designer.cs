@@ -97,6 +97,8 @@
             // 
             this.ReadmeFixedWidthFontCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ReadmeFixedWidthFontCheckBox.Checked = true;
+            this.ReadmeFixedWidthFontCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ReadmeFixedWidthFontCheckBox.Location = new System.Drawing.Point(16, 24);
             this.ReadmeFixedWidthFontCheckBox.Name = "ReadmeFixedWidthFontCheckBox";
             this.ReadmeFixedWidthFontCheckBox.Size = new System.Drawing.Size(400, 32);
@@ -186,7 +188,7 @@
             this.LanguageComboBox.Name = "LanguageComboBox";
             this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
             this.LanguageComboBox.TabIndex = 0;
-            //
+            // 
             // WebSearchGroupBox
             // 
             this.WebSearchGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)

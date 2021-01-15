@@ -70,6 +70,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             // ReadmeFixedWidthFontCheckBox
             // 
             ReadmeFixedWidthFontCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ReadmeFixedWidthFontCheckBox.Checked = true;
             ReadmeFixedWidthFontCheckBox.Location = new Point(16, 24);
             ReadmeFixedWidthFontCheckBox.Size = new Size(400, 32);
             ReadmeFixedWidthFontCheckBox.TabIndex = 0;
