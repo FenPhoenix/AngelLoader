@@ -387,6 +387,7 @@ namespace AngelLoader
 
             Config.HideUninstallButton = outConfig.HideUninstallButton;
             Config.HideFMListZoomButtons = outConfig.HideFMListZoomButtons;
+            Config.HideExitButton = outConfig.HideExitButton;
 
             Config.ReadmeUseFixedWidthFont = outConfig.ReadmeUseFixedWidthFont;
 
@@ -402,6 +403,7 @@ namespace AngelLoader
 
             View.ShowInstallUninstallButton(!Config.HideUninstallButton);
             View.ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
+            View.ShowExitButton(!Config.HideExitButton);
 
             if (archivePathsChanged || gamePathsChanged)
             {

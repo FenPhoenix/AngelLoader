@@ -680,7 +680,7 @@ namespace AngelLoader.Forms
             }
 
             if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct(this);
-            ExitLLButton.Show(this); // Lazy-loaded because we might want to make hiding it an option later
+            if (!Config.HideExitButton) ExitLLButton.Show(this);
 
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
             if (Config.TopRightPanelCollapsed)
@@ -3691,6 +3691,18 @@ namespace AngelLoader.Forms
             // If I store the selected FM up above the Find(), I can make the FM not have to reload if
             // it's still selected
             if (ret.SortAndSetFilter) await SortAndSetFilter(keepSelection: ret.KeepSel, forceDisplayFM: true);
+        }
+
+        public void ShowExitButton(bool enabled)
+        {
+            if (enabled)
+            {
+                ExitLLButton.Show(this);
+            }
+            else
+            {
+                ExitLLButton.Hide();
+            }
         }
 
         #endregion

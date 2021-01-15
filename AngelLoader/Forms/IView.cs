@@ -51,6 +51,8 @@ namespace AngelLoader.Forms
 
         void ShowInstallUninstallButton(bool enabled);
 
+        void ShowExitButton(bool enabled);
+
         #endregion
 
         #region Filter

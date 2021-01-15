@@ -578,6 +578,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Other_ShowOrHideInterfaceElements = "Show or hide interface elements";
             internal readonly string Other_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
             internal readonly string Other_HideFMListZoomButtons = "Hide FM list zoom buttons";
+            internal readonly string Other_HideExitButton = "Hide exit button";
             [FenGenBlankLine]
             internal readonly string Other_ReadmeBox = "Readme box";
             internal readonly string Other_ReadmeUseFixedWidthFont = "Use a fixed-width font when displaying plain text";

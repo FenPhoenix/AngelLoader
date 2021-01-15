@@ -458,6 +458,7 @@ namespace AngelLoader.Forms
 
                 OtherPage.HideUninstallButtonCheckBox.Checked = config.HideUninstallButton;
                 OtherPage.HideFMListZoomButtonsCheckBox.Checked = config.HideFMListZoomButtons;
+                OtherPage.HideExitButtonCheckBox.Checked = config.HideExitButton;
 
                 #endregion
 
@@ -679,6 +680,7 @@ namespace AngelLoader.Forms
                     OtherPage.ShowOrHideUIElementsGroupBox.Text = LText.SettingsWindow.Other_ShowOrHideInterfaceElements;
                     OtherPage.HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Other_HideUninstallButton;
                     OtherPage.HideFMListZoomButtonsCheckBox.Text = LText.SettingsWindow.Other_HideFMListZoomButtons;
+                    OtherPage.HideExitButtonCheckBox.Text = LText.SettingsWindow.Other_HideExitButton;
 
                     OtherPage.ReadmeGroupBox.Text = LText.SettingsWindow.Other_ReadmeBox;
                     OtherPage.ReadmeFixedWidthFontCheckBox.Text = LText.SettingsWindow.Other_ReadmeUseFixedWidthFont;
@@ -969,6 +971,7 @@ namespace AngelLoader.Forms
 
                 OutConfig.HideUninstallButton = OtherPage.HideUninstallButtonCheckBox.Checked;
                 OutConfig.HideFMListZoomButtons = OtherPage.HideFMListZoomButtonsCheckBox.Checked;
+                OutConfig.HideExitButton = OtherPage.HideExitButtonCheckBox.Checked;
 
                 #endregion
 

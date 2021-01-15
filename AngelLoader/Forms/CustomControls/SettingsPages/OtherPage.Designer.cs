@@ -33,6 +33,7 @@
             this.ReadmeGroupBox = new System.Windows.Forms.GroupBox();
             this.ReadmeFixedWidthFontCheckBox = new System.Windows.Forms.CheckBox();
             this.ShowOrHideUIElementsGroupBox = new System.Windows.Forms.GroupBox();
+            this.HideExitButtonCheckBox = new System.Windows.Forms.CheckBox();
             this.HideFMListZoomButtonsCheckBox = new System.Windows.Forms.CheckBox();
             this.HideUninstallButtonCheckBox = new System.Windows.Forms.CheckBox();
             this.PlayFMOnDCOrEnterGroupBox = new System.Windows.Forms.GroupBox();
@@ -78,7 +79,7 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 690);
+            this.PagePanel.Size = new System.Drawing.Size(440, 713);
             this.PagePanel.TabIndex = 0;
             // 
             // ReadmeGroupBox
@@ -86,7 +87,7 @@
             this.ReadmeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeGroupBox.Controls.Add(this.ReadmeFixedWidthFontCheckBox);
-            this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 616);
+            this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 640);
             this.ReadmeGroupBox.Name = "ReadmeGroupBox";
             this.ReadmeGroupBox.Size = new System.Drawing.Size(424, 64);
             this.ReadmeGroupBox.TabIndex = 13;
@@ -110,15 +111,29 @@
             // 
             this.ShowOrHideUIElementsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideExitButtonCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideFMListZoomButtonsCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideUninstallButtonCheckBox);
             this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 525);
             this.ShowOrHideUIElementsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.ShowOrHideUIElementsGroupBox.Name = "ShowOrHideUIElementsGroupBox";
-            this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(424, 80);
+            this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(424, 107);
             this.ShowOrHideUIElementsGroupBox.TabIndex = 5;
             this.ShowOrHideUIElementsGroupBox.TabStop = false;
             this.ShowOrHideUIElementsGroupBox.Text = "Show or hide interface elements";
+            // 
+            // HideExitButtonCheckBox
+            // 
+            this.HideExitButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.HideExitButtonCheckBox.Checked = true;
+            this.HideExitButtonCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.HideExitButtonCheckBox.Location = new System.Drawing.Point(16, 72);
+            this.HideExitButtonCheckBox.Name = "HideExitButtonCheckBox";
+            this.HideExitButtonCheckBox.Size = new System.Drawing.Size(400, 32);
+            this.HideExitButtonCheckBox.TabIndex = 3;
+            this.HideExitButtonCheckBox.Text = "Hide exit button";
+            this.HideExitButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideFMListZoomButtonsCheckBox
             // 
@@ -369,7 +384,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "OtherPage";
-            this.Size = new System.Drawing.Size(440, 690);
+            this.Size = new System.Drawing.Size(440, 713);
             this.PagePanel.ResumeLayout(false);
             this.ReadmeGroupBox.ResumeLayout(false);
             this.ShowOrHideUIElementsGroupBox.ResumeLayout(false);
@@ -413,5 +428,6 @@
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
         internal System.Windows.Forms.GroupBox ReadmeGroupBox;
         internal System.Windows.Forms.CheckBox ReadmeFixedWidthFontCheckBox;
+        internal System.Windows.Forms.CheckBox HideExitButtonCheckBox;
     }
 }

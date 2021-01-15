@@ -642,6 +642,10 @@ namespace AngelLoader
                 {
                     config.HideFMListZoomButtons = val.EqualsTrue();
                 }
+                else if (lineTS.StartsWithFast_NoNullChecks("HideExitButton="))
+                {
+                    config.HideExitButton = val.EqualsTrue();
+                }
 
                 #endregion
 
@@ -789,6 +793,7 @@ namespace AngelLoader
             sb.Append("ConvertOGGsToWAVsOnInstall=").Append(config.ConvertOGGsToWAVsOnInstall).AppendLine();
             sb.Append("HideUninstallButton=").Append(config.HideUninstallButton).AppendLine();
             sb.Append("HideFMListZoomButtons=").Append(config.HideFMListZoomButtons).AppendLine();
+            sb.Append("HideExitButton=").Append(config.HideExitButton).AppendLine();
             sb.Append("ConfirmUninstall=").Append(config.ConfirmUninstall).AppendLine();
             sb.Append("BackupFMData=").Append(config.BackupFMData).AppendLine();
             sb.Append("BackupAlwaysAsk=").Append(config.BackupAlwaysAsk).AppendLine();

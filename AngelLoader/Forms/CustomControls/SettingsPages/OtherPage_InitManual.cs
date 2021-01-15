@@ -11,6 +11,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             ReadmeGroupBox = new GroupBox();
             ReadmeFixedWidthFontCheckBox = new CheckBox();
             ShowOrHideUIElementsGroupBox = new GroupBox();
+            HideExitButtonCheckBox = new CheckBox();
             HideFMListZoomButtonsCheckBox = new CheckBox();
             HideUninstallButtonCheckBox = new CheckBox();
             PlayFMOnDCOrEnterGroupBox = new GroupBox();
@@ -55,14 +56,14 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             PagePanel.Controls.Add(DummyAutoScrollPanel);
             PagePanel.Dock = DockStyle.Fill;
             PagePanel.Location = new Point(0, 0);
-            PagePanel.Size = new Size(440, 690);
+            PagePanel.Size = new Size(440, 713);
             PagePanel.TabIndex = 0;
             // 
             // ReadmeGroupBox
             // 
             ReadmeGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             ReadmeGroupBox.Controls.Add(ReadmeFixedWidthFontCheckBox);
-            ReadmeGroupBox.Location = new Point(8, 616);
+            ReadmeGroupBox.Location = new Point(8, 640);
             ReadmeGroupBox.Size = new Size(424, 64);
             ReadmeGroupBox.TabIndex = 13;
             ReadmeGroupBox.TabStop = false;
@@ -79,13 +80,23 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             // ShowOrHideUIElementsGroupBox
             // 
             ShowOrHideUIElementsGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ShowOrHideUIElementsGroupBox.Controls.Add(HideExitButtonCheckBox);
             ShowOrHideUIElementsGroupBox.Controls.Add(HideFMListZoomButtonsCheckBox);
             ShowOrHideUIElementsGroupBox.Controls.Add(HideUninstallButtonCheckBox);
             ShowOrHideUIElementsGroupBox.Location = new Point(8, 525);
             ShowOrHideUIElementsGroupBox.MinimumSize = new Size(424, 0);
-            ShowOrHideUIElementsGroupBox.Size = new Size(424, 80);
+            ShowOrHideUIElementsGroupBox.Size = new Size(424, 107);
             ShowOrHideUIElementsGroupBox.TabIndex = 5;
             ShowOrHideUIElementsGroupBox.TabStop = false;
+            // 
+            // HideExitButtonCheckBox
+            // 
+            HideExitButtonCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            HideExitButtonCheckBox.Checked = true;
+            HideExitButtonCheckBox.Location = new Point(16, 72);
+            HideExitButtonCheckBox.Size = new Size(400, 32);
+            HideExitButtonCheckBox.TabIndex = 3;
+            HideExitButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideFMListZoomButtonsCheckBox
             // 
@@ -275,7 +286,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(PagePanel);
-            Size = new Size(440, 690);
+            Size = new Size(440, 713);
             PagePanel.ResumeLayout(false);
             ReadmeGroupBox.ResumeLayout(false);
             ShowOrHideUIElementsGroupBox.ResumeLayout(false);

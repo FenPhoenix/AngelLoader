@@ -382,6 +382,7 @@ namespace AngelLoader.DataClasses
 
         internal bool HideUninstallButton = false;
         internal bool HideFMListZoomButtons = false;
+        internal bool HideExitButton = true;
 
         #endregion
 
