@@ -679,8 +679,11 @@ namespace AngelLoader.Forms
                 }
             }
 
+            // This button is a weird special case (see its class) so we just construct it here and it will be
+            // shown when localized.
+            // TODO (inst/uninst button): We might be able to wrangle this into something cleaner nonetheless.
             if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct(this);
-            if (!Config.HideExitButton) ExitLLButton.Show(this);
+            if (!Config.HideExitButton) ExitLLButton.SetVisible(this, true);
 
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
             if (Config.TopRightPanelCollapsed)
@@ -3693,17 +3696,7 @@ namespace AngelLoader.Forms
             if (ret.SortAndSetFilter) await SortAndSetFilter(keepSelection: ret.KeepSel, forceDisplayFM: true);
         }
 
-        public void ShowExitButton(bool enabled)
-        {
-            if (enabled)
-            {
-                ExitLLButton.Show(this);
-            }
-            else
-            {
-                ExitLLButton.Hide();
-            }
-        }
+        public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(this, enabled);
 
         #endregion
 

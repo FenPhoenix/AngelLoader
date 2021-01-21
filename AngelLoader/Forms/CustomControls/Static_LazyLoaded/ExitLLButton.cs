@@ -15,35 +15,37 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             if (_constructed) Button.Text = LText.MainMenu.Exit;
         }
 
-        internal static void Hide()
+        internal static void SetVisible(MainForm owner, bool enabled)
         {
-            if (_constructed) Button.Hide();
-        }
-
-        internal static void Show(MainForm owner)
-        {
-            if (!_constructed)
+            if (enabled)
             {
-                var container = owner.BottomRightButtonsFLP;
+                if (!_constructed)
+                {
+                    var container = owner.BottomRightButtonsFLP;
 
-                Button = new Button();
+                    Button = new Button();
 
-                container.Controls.Add(Button);
-                container.Controls.SetChildIndex(Button, 0);
+                    container.Controls.Add(Button);
+                    container.Controls.SetChildIndex(Button, 0);
 
-                Button.AutoSize = true;
-                Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-                Button.MinimumSize = new Size(36, 36);
-                Button.TabIndex = 63;
-                Button.UseVisualStyleBackColor = true;
-                Button.Click += (_, _) => owner.Close();
+                    Button.AutoSize = true;
+                    Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+                    Button.MinimumSize = new Size(36, 36);
+                    Button.TabIndex = 63;
+                    Button.UseVisualStyleBackColor = true;
+                    Button.Click += (_, _) => owner.Close();
 
-                _constructed = true;
+                    _constructed = true;
 
-                Localize();
+                    Localize();
+                }
+
+                Button.Show();
             }
-
-            Button.Show();
+            else
+            {
+                if (_constructed) Button.Hide();
+            }
         }
     }
 }

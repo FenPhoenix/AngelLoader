@@ -57,9 +57,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ResetZoomButton.ToolTipText = LText.Global.ResetZoom;
         }
 
-        internal static void SetVisible(MainForm owner, bool value)
+        internal static void SetVisible(MainForm owner, bool enabled)
         {
-            if (value)
+            if (enabled)
             {
                 Construct(owner);
 
