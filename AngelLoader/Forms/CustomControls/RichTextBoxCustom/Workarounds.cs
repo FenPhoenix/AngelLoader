@@ -347,6 +347,7 @@ namespace AngelLoader.Forms.CustomControls
 
             var enlink = (ENLINK)m.GetLParam(typeof(ENLINK));
             /*
+            @X64 (RichTextBox workarounds - link hand cursor handler)
             NOTE:
             If building for x64, then we have to do this instead (requires unsafe code and extra structs etc.):
 

@@ -209,6 +209,7 @@ namespace AngelLoader
                 // Tested on Win7 Ultimate 64 and Win10 Pro 64:
                 // Admin and non-Admin accounts can both read this key
 
+                // @X64 (SneakyOptions.ini reg key)
                 // We're not x64 currently, but this check lets us be compatible for an easy switch if we decide
                 // to do so in the future.
                 object? regKey = Registry.GetValue(
