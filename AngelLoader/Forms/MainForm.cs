@@ -71,8 +71,8 @@ namespace AngelLoader.Forms
         private Size _nominalWindowSize;
         private Point _nominalWindowLocation;
 
-        private float _fMsListDefaultFontSizeInPoints;
-        private int _rMsListDefaultRowHeight;
+        private float _fmsListDefaultFontSizeInPoints;
+        private int _fmsListDefaultRowHeight;
 
         // To order them such that we can just look them up with an index
         private readonly TabPage[] _gameTabsInOrder;
@@ -600,8 +600,8 @@ namespace AngelLoader.Forms
 
             #region FMs DataGridView
 
-            _fMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
-            _rMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
+            _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
+            _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
             #region Columns
 
@@ -2835,13 +2835,13 @@ namespace AngelLoader.Forms
                     type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
                     type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
                     type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
-                    _fMsListDefaultFontSizeInPoints).ClampToFMsDGVFontSizeMinMax();
+                    _fmsListDefaultFontSizeInPoints).ClampToFMsDGVFontSizeMinMax();
 
                 // Set new font size
                 Font newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
 
                 // Set row height based on font plus some padding
-                int rowHeight = type == ZoomFMsDGVType.ResetZoom ? _rMsListDefaultRowHeight : newF.Height + 9;
+                int rowHeight = type == ZoomFMsDGVType.ResetZoom ? _fmsListDefaultRowHeight : newF.Height + 9;
 
                 // If we're on startup, then the widths will already have been restored (to zoomed size) from the
                 // config
@@ -2915,7 +2915,7 @@ namespace AngelLoader.Forms
                                 // The ever-present rounding errors creep in here, but meh. I should figure out
                                 // how to not have those - ensure scaling always happens in integral pixel counts
                                 // somehow?
-                                c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - _fMsListDefaultFontSizeInPoints) < 0.1
+                                c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - _fmsListDefaultFontSizeInPoints) < 0.1
                                     ? Config.Columns[i].Width
                                     : (int)Math.Ceiling(c.HeaderCell.Size.Height * widthMul[i]);
                             }
