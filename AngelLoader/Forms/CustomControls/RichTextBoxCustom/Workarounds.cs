@@ -475,11 +475,9 @@ namespace AngelLoader.Forms.CustomControls
                 // Do nothing; remain at 1.0
             }
         }
+
         #endregion
 
-        private void DisposeWorkarounds()
-        {
-            _autoScrollTimer?.Dispose();
-        }
+        private void DisposeWorkarounds() => _autoScrollTimer.Dispose();
     }
 }

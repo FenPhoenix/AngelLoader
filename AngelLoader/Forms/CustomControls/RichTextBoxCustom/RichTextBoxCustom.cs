@@ -23,7 +23,7 @@ namespace AngelLoader.Forms.CustomControls
                 _contentIsPlainText = value;
                 if (_contentIsPlainText)
                 {
-                    SetFontTypeInternal(Config.ReadmeUseFixedWidthFont, false);
+                    SetFontTypeInternal(Config.ReadmeUseFixedWidthFont, outsideCall: false);
                 }
                 else
                 {

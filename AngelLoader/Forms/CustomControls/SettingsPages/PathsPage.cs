@@ -95,7 +95,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
                                           ActualPathsPanel.Padding.Vertical;
 
                 // We have to re-set its width because it isn't docked because apparently it doesn't scroll when
-                // it's docked. I'll just trust my hundreds of hours spend on this and move on.
+                // it's docked. I'll just trust my hundreds of hours spent on this and move on.
                 // If we don't do this, its width can become desynced with the rest of the controls' width under
                 // heavy and fast resizing movement (even though it's anchored).
                 ActualPathsPanel.Width = PagePanel.VerticalScroll.Visible
