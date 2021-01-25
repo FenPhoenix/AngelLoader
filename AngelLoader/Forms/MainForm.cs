@@ -3527,10 +3527,12 @@ namespace AngelLoader.Forms
         private void SetReadmeVisible(bool enabled)
         {
             ReadmeRichTextBox.Visible = enabled;
-            ReadmeZoomInButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
-            ReadmeZoomOutButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
-            ReadmeResetZoomButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
-            ReadmeFullScreenButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
+
+            Color backColor = enabled ? SystemColors.Window : SystemColors.Control;
+            ReadmeZoomInButton.BackColor = backColor;
+            ReadmeZoomOutButton.BackColor = backColor;
+            ReadmeResetZoomButton.BackColor = backColor;
+            ReadmeFullScreenButton.BackColor = backColor;
 
             // In case the cursor is already over the readme when we do this
             // (cause it won't show automatically if it is)
@@ -3636,17 +3638,7 @@ namespace AngelLoader.Forms
             {
                 if (f.ShowDialog() != DialogResult.OK) return;
                 noneSelected = f.NoneSelected;
-                if (!noneSelected)
-                {
-                    scanOptions = FMScanner.ScanOptions.FalseDefault(
-                        scanTitle: f.ScanOptions.ScanTitle,
-                        scanAuthor: f.ScanOptions.ScanAuthor,
-                        scanGameType: f.ScanOptions.ScanGameType,
-                        scanCustomResources: f.ScanOptions.ScanCustomResources,
-                        scanSize: f.ScanOptions.ScanSize,
-                        scanReleaseDate: f.ScanOptions.ScanReleaseDate,
-                        scanTags: f.ScanOptions.ScanTags);
-                }
+                if (!noneSelected) scanOptions = f.ScanOptions;
             }
 
             if (noneSelected)
@@ -3655,8 +3647,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            bool success = await FMScan.ScanFMs(FMsViewList, scanOptions!);
-            if (success) await SortAndSetFilter(forceDisplayFM: true);
+            if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await SortAndSetFilter(forceDisplayFM: true);
         }
 
         private void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM().Title);
