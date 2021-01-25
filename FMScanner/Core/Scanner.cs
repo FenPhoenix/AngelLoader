@@ -369,7 +369,10 @@ namespace FMScanner
                 throw new ArgumentException("No mission(s) specified.", nameof(missions));
             }
 
-            _scanOptions = scanOptions ?? throw new ArgumentNullException(nameof(scanOptions));
+            // Deep-copy the scan options object because we might have to change its values in some cases, but we
+            // don't want to modify the original because the caller will still have a reference to it and may
+            // depend on it not changing.
+            _scanOptions = scanOptions?.DeepCopy() ?? throw new ArgumentNullException(nameof(scanOptions));
 
             #endregion
 
@@ -379,7 +382,7 @@ namespace FMScanner
             // fields as much as possible for performance.
             var rtfConverter = new RtfToTextConverter();
 
-            ProgressReport progressReport = new ProgressReport();
+            var progressReport = new ProgressReport();
 
             for (int i = 0; i < missions.Count; i++)
             {
@@ -591,6 +594,16 @@ namespace FMScanner
                     : new DirectoryInfo(_fmWorkingPath).Name
             };
 
+            // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan
+            // titles in that case, but we shouldn't actually set the title in the return object because the
+            // caller didn't request it.
+            bool scanTitleForAuthorPurposesOnly = false;
+            if (_scanOptions.ScanAuthor && !_scanOptions.ScanTitle)
+            {
+                _scanOptions.ScanTitle = true;
+                scanTitleForAuthorPurposesOnly = true;
+            }
+
             #region Size
 
             // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
@@ -652,17 +665,19 @@ namespace FMScanner
 
             var altTitles = new List<string>();
 
+            string finalTitle = "";
+
             void SetOrAddTitle(string value)
             {
                 value = CleanupTitle(value);
 
                 if (value.IsEmpty()) return;
 
-                if (fmData.Title.IsEmpty())
+                if (finalTitle.IsEmpty())
                 {
-                    fmData.Title = value;
+                    finalTitle = value;
                 }
-                else if (!fmData.Title.EqualsI(value) && !altTitles.ContainsI(value))
+                else if (!finalTitle.EqualsI(value) && !altTitles.ContainsI(value))
                 {
                     altTitles.Add(value);
                 }
@@ -848,7 +863,15 @@ namespace FMScanner
                     for (int i = 0; i < topOfReadmeTitles.Count; i++) SetOrAddTitle(topOfReadmeTitles[i]);
                 }
 
-                fmData.AlternateTitles = altTitles.ToArray();
+                if (!scanTitleForAuthorPurposesOnly)
+                {
+                    fmData.Title = finalTitle;
+                    fmData.AlternateTitles = altTitles.ToArray();
+                }
+                else
+                {
+                    _scanOptions.ScanTitle = false;
+                }
             }
 
             #endregion
@@ -859,7 +882,7 @@ namespace FMScanner
             {
                 if (fmData.Author.IsEmpty())
                 {
-                    var titles = !fmData.Title.IsEmpty() ? new List<string> { fmData.Title } : null;
+                    var titles = !finalTitle.IsEmpty() ? new List<string> { finalTitle } : null;
                     if (titles != null && altTitles.Count > 0)
                     {
                         titles.AddRange(altTitles);
