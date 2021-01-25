@@ -59,7 +59,7 @@ namespace AngelLoader.Forms
             // whole nasty thing that doesn't even work with our resx exclude system anyway.
             LicenseTextBox.Text =
                 "MIT License\r\n\r\n" +
-                "Copyright (c) 2018-2020 Brian Tobin (FenPhoenix)\r\n\r\n" +
+                "Copyright (c) 2018-2021 Brian Tobin (FenPhoenix)\r\n\r\n" +
                 "Permission is hereby granted, free of charge, to any person obtaining a copy " +
                 "of this software and associated documentation files (the \"Software\"), to deal " +
                 "in the Software without restriction, including without limitation the rights " +
