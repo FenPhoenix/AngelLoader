@@ -58,7 +58,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 #endif
             ViewHelpFileMenuItem.Text = LText.MainMenu.ViewHelpFile;
             AboutMenuItem.Text = LText.MainMenu.About;
-            ExitMenuItem.Text = LText.MainMenu.Exit;
+            ExitMenuItem.Text = LText.Global.Exit;
         }
 
         internal static bool Visible => _constructed && Menu.Visible;

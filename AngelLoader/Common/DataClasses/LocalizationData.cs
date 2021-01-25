@@ -97,6 +97,8 @@ namespace AngelLoader.DataClasses
             internal readonly string ZoomIn = "Zoom in (Ctrl++)";
             internal readonly string ZoomOut = "Zoom out (Ctrl+-)";
             internal readonly string ResetZoom = "Reset zoom (Ctrl+0)";
+            [FenGenBlankLine]
+            internal readonly string Exit = "Exit";
         }
 
         internal sealed class BrowseDialogs_Class
@@ -205,7 +207,6 @@ namespace AngelLoader.DataClasses
             //internal readonly string GlobalFMStats = "Global FM stats...";
             internal readonly string ViewHelpFile = "View help file";
             internal readonly string About = "About AngelLoader";
-            internal readonly string Exit = "Exit";
         }
 
         internal sealed class AboutWindow_Class

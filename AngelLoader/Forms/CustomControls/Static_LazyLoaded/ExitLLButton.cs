@@ -12,7 +12,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void Localize()
         {
-            if (_constructed) Button.Text = LText.MainMenu.Exit;
+            if (_constructed) Button.Text = LText.Global.Exit;
         }
 
         internal static void SetVisible(MainForm owner, bool enabled)
