@@ -19,6 +19,17 @@ Thanks for checking it out!
 
 ## List of localization-related changes by version
 
+### v1.4.8:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.4.5_1.4.8.html)
+
+#### [AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.4.5_1.4.8.html)
+
+The following images have been **updated**:  
+
+`main_menu.png`  
+`setup_other_tab.png`  
+
 ### v1.4.7:
 
 No localizable text changes.
