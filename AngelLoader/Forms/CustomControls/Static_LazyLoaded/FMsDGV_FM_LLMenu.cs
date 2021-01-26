@@ -65,6 +65,20 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #region Private methods
 
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (!_constructed) return;
+
+                FMContextMenu!.DarkModeEnabled = _darkModeEnabled;
+                FinishedOnMenu!.DarkModeEnabled = _darkModeEnabled;
+            }
+        }
+
         internal static void Construct(MainForm owner)
         {
             if (_constructed) return;
@@ -324,19 +338,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         }
 
         #endregion
-
-        private static bool _darkModeEnabled;
-        public static bool DarkModeEnabled
-        {
-            get => _darkModeEnabled;
-            set
-            {
-                _darkModeEnabled = value;
-                if (!_constructed) return;
-
-                FMContextMenu!.DarkModeEnabled = _darkModeEnabled;
-            }
-        }
 
         #region API methods
 
