@@ -45,7 +45,7 @@ namespace AngelLoader.Forms
             this.ImportButton = new System.Windows.Forms.Button();
             this.BottomLeftButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new System.Windows.Forms.Button();
-            this.PlayOriginalGameButton = new System.Windows.Forms.Button();
+            this.PlayOriginalGameButton = new DarkUI.Controls.DarkButton();
             this.WebSearchButton = new DarkUI.Controls.DarkButton();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
@@ -1951,7 +1951,7 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.Button ReadmeResetZoomButton;
         internal System.Windows.Forms.Label FilterTitleLabel;
         internal AngelLoader.Forms.CustomControls.TextBoxCustom FilterTitleTextBox;
-        internal System.Windows.Forms.Button PlayOriginalGameButton;
+        internal DarkUI.Controls.DarkButton PlayOriginalGameButton;
         internal System.Windows.Forms.TabControl GamesTabControl;
         internal System.Windows.Forms.TabPage Thief1TabPage;
         internal System.Windows.Forms.TabPage Thief2TabPage;

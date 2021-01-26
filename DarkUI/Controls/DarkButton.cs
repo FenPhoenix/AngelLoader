@@ -468,18 +468,34 @@ namespace DarkUI.Controls
 
             using (var b = new SolidBrush(textColor))
             {
-                var modRect = new Rectangle(rect.Left + textOffsetX + Padding.Left,
-                                            rect.Top + textOffsetY + Padding.Top, rect.Width - Padding.Horizontal,
-                                            rect.Height - Padding.Vertical);
+                var padding = Padding;
+                /*
+                TODO: Remove this hack entirely and just make all image buttons be manually painted
+                We can just draw a bitmap instead of a vector and be perfectly fine then.
+                Remember to cache all needed bitmaps so we don't pull from Resources every time.
 
-                var stringFormat = new StringFormat
+                Create a greyed-out version of any bitmap:
+                Bitmap c = new Bitmap("filename");
+                Image d = ToolStripRenderer.CreateDisabledImage(c);
+                */
+                if (Image != null)
                 {
-                    LineAlignment = StringAlignment.Center,
-                    Alignment = StringAlignment.Center,
-                    Trimming = StringTrimming.EllipsisCharacter
-                };
+                    //padding.Left = -42;
+                    padding.Left -= Image.Width * 2;
+                    //padding.Right = -32;
+                }
 
-                g.DrawString(Text, Font, b, modRect, stringFormat);
+                var modRect = new Rectangle(rect.Left + textOffsetX + padding.Left,
+                                            rect.Top + textOffsetY + padding.Top, rect.Width - padding.Horizontal,
+                                            rect.Height - padding.Vertical);
+
+                const TextFormatFlags textFormat =
+                    TextFormatFlags.HorizontalCenter |
+                    TextFormatFlags.VerticalCenter |
+                    TextFormatFlags.EndEllipsis;
+
+                // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
+                TextRenderer.DrawText(g, Text, Font, modRect, b.Color, textFormat);
             }
 
             PaintCustom?.Invoke(this, e);

@@ -175,6 +175,8 @@ namespace AngelLoader.Forms
             //WebSearchButton.DarkModeEnabled = !WebSearchButton.DarkModeEnabled;
             //return;
 
+            // IMPORTANT: We use DarkButton because it properly colors disabled button text
+
             //int stackCounter = 0;
             void DarkenControls(Control control)
             {
@@ -189,8 +191,11 @@ namespace AngelLoader.Forms
                     button.DarkModeEnabled = !button.DarkModeEnabled;
                     return;
                 }
-                else if (controlType == typeof(Button))
+                else if (controlType == typeof(DarkableButton))
                 {
+                    var button = (DarkableButton)control;
+                    button.DarkModeEnabled = !button.DarkModeEnabled;
+                    return;
                     //Button button = (Button)control;
                     //button.UseVisualStyleBackColor = false;
                     //button.FlatStyle = FlatStyle.Flat;

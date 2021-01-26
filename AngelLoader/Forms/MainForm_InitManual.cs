@@ -48,7 +48,7 @@ namespace AngelLoader.Forms
             ImportButton = new Button();
             BottomLeftButtonsFLP = new FlowLayoutPanel();
             PlayFMButton = new Button();
-            PlayOriginalGameButton = new Button();
+            PlayOriginalGameButton = new DarkUI.Controls.DarkButton();
             WebSearchButton = new DarkUI.Controls.DarkButton();
             EverythingPanel = new Panel();
             MainSplitContainer = new SplitContainerCustom();
