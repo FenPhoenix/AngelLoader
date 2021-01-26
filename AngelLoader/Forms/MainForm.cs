@@ -171,7 +171,8 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-            return;
+            //WebSearchButton.DarkModeEnabled = !WebSearchButton.DarkModeEnabled;
+            //return;
 
             int stackCounter = 0;
             void DarkenControls(Control control)
@@ -191,6 +192,8 @@ namespace AngelLoader.Forms
                     Button button = (Button)control;
                     button.UseVisualStyleBackColor = false;
                     button.FlatStyle = FlatStyle.Flat;
+                    button.FlatAppearance.BorderColor = Color.Aqua;
+                    button.FlatAppearance.MouseOverBackColor = Color.Brown;
                 }
                 else if (controlType == typeof(ComboBox))
                 {
@@ -210,7 +213,7 @@ namespace AngelLoader.Forms
             }
 
             DarkenControls(this);
-            Trace.WriteLine(nameof(stackCounter) + "=" + stackCounter);
+            //Trace.WriteLine(nameof(stackCounter) + "=" + stackCounter);
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
@@ -303,7 +306,8 @@ namespace AngelLoader.Forms
                     {
                         TopSplitContainer.Panel2.Focus();
                     }
-                    else if (CursorOverControl(MainSplitContainer.Panel2))
+                    else if (CursorOverControl(MainSplitContainer.Panel2) &&
+                             !ReadmeRichTextBox.Focused)
                     {
                         MainSplitContainer.Panel2.Focus();
                     }
