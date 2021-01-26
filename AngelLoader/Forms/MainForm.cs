@@ -187,8 +187,9 @@ namespace AngelLoader.Forms
                     Button button = (Button)control;
                     button.UseVisualStyleBackColor = false;
                     button.FlatStyle = FlatStyle.Flat;
-                    button.FlatAppearance.BorderColor = Color.Aqua;
-                    button.FlatAppearance.MouseOverBackColor = Color.Brown;
+                    button.FlatAppearance.BorderColor = DarkUI.Config.Colors.GreyHighlight;
+                    button.FlatAppearance.MouseOverBackColor = DarkUI.Config.Colors.BlueBackground;
+                    button.FlatAppearance.MouseDownBackColor = DarkUI.Config.Colors.DarkBackground;
                 }
                 else if (controlType == typeof(ComboBoxCustom))
                 {
@@ -196,7 +197,8 @@ namespace AngelLoader.Forms
                     cb.DarkModeEnabled = !cb.DarkModeEnabled;
                     return;
                 }
-                else if (controlType == typeof(ToolStripItem))
+                else if (controlType == typeof(ToolStripItem) ||
+                         controlType == typeof(ToolStripDropDownMenu))
                 {
                     return;
                 }
@@ -210,7 +212,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            //DarkenControls(this);
+            DarkenControls(this);
 
             MainLLMenu.DarkModeEnabled = !MainLLMenu.DarkModeEnabled;
             FMsDGV_FM_LLMenu.DarkModeEnabled = !FMsDGV_FM_LLMenu.DarkModeEnabled;
@@ -2384,7 +2386,7 @@ namespace AngelLoader.Forms
 
         #region Edit FM tab
 
-        private void EditFMAltTitlesArrowButtonClick(object sender, EventArgs e)
+        private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
         {
             AltTitlesLLMenu.Construct(components);
             FillAltTitlesMenu(FMsDGV.GetSelectedFM().AltTitles);

@@ -1137,7 +1137,7 @@ namespace AngelLoader.Forms
             EditFMAltTitlesArrowButton.Size = new Size(17, 22);
             EditFMAltTitlesArrowButton.TabIndex = 15;
             EditFMAltTitlesArrowButton.UseVisualStyleBackColor = true;
-            EditFMAltTitlesArrowButton.Click += EditFMAltTitlesArrowButtonClick;
+            EditFMAltTitlesArrowButton.Click += EditFMAltTitlesArrowButton_Click;
             // 
             // EditFMTitleTextBox
             // 

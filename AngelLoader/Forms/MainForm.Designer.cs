@@ -1373,7 +1373,7 @@ namespace AngelLoader.Forms
             this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesArrowButton.TabIndex = 15;
             this.EditFMAltTitlesArrowButton.UseVisualStyleBackColor = true;
-            this.EditFMAltTitlesArrowButton.Click += new System.EventHandler(this.EditFMAltTitlesArrowButtonClick);
+            this.EditFMAltTitlesArrowButton.Click += new System.EventHandler(this.EditFMAltTitlesArrowButton_Click);
             // 
             // EditFMTitleTextBox
             // 
