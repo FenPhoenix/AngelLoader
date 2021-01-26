@@ -9,6 +9,17 @@ namespace DarkUI.Controls
 {
     public class DarkComboBox : ComboBox
     {
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                SetUpTheme();
+            }
+        }
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new Color ForeColor { get; set; }
@@ -27,16 +38,31 @@ namespace DarkUI.Controls
 
         private Bitmap _buffer;
 
-        public DarkComboBox() : base()
+        public DarkComboBox() => SetUpTheme();
+
+        private void SetUpTheme()
         {
             SetStyle(ControlStyles.OptimizedDoubleBuffer |
                      ControlStyles.ResizeRedraw |
-                     ControlStyles.UserPaint, true);
+                     ControlStyles.UserPaint, _darkModeEnabled);
 
-            DrawMode = DrawMode.OwnerDrawVariable;
+            if (_darkModeEnabled)
+            {
+                DrawMode = DrawMode.OwnerDrawVariable;
+                base.FlatStyle = FlatStyle.Flat;
+            }
+            else
+            {
+                DrawMode = DrawMode.Normal;
+                base.FlatStyle = FlatStyle.Standard;
+            }
 
-            base.FlatStyle = FlatStyle.Flat;
             base.DropDownStyle = ComboBoxStyle.DropDownList;
+        }
+
+        private void InvalidateIfDark()
+        {
+            if (_darkModeEnabled) Invalidate();
         }
 
         protected override void Dispose(bool disposing)
@@ -50,43 +76,43 @@ namespace DarkUI.Controls
         protected override void OnTabStopChanged(EventArgs e)
         {
             base.OnTabStopChanged(e);
-            Invalidate();
+            InvalidateIfDark();
         }
 
         protected override void OnTabIndexChanged(EventArgs e)
         {
             base.OnTabIndexChanged(e);
-            Invalidate();
+            InvalidateIfDark();
         }
 
         protected override void OnGotFocus(EventArgs e)
         {
             base.OnGotFocus(e);
-            Invalidate();
+            InvalidateIfDark();
         }
 
         protected override void OnLostFocus(EventArgs e)
         {
             base.OnLostFocus(e);
-            Invalidate();
+            InvalidateIfDark();
         }
 
         protected override void OnTextChanged(EventArgs e)
         {
             base.OnTextChanged(e);
-            Invalidate();
+            InvalidateIfDark();
         }
 
         protected override void OnTextUpdate(EventArgs e)
         {
             base.OnTextUpdate(e);
-            Invalidate();
+            InvalidateIfDark();
         }
 
         protected override void OnSelectedValueChanged(EventArgs e)
         {
             base.OnSelectedValueChanged(e);
-            Invalidate();
+            InvalidateIfDark();
         }
 
         protected override void OnInvalidated(InvalidateEventArgs e)
@@ -99,11 +125,13 @@ namespace DarkUI.Controls
         {
             base.OnResize(e);
             _buffer = null;
-            Invalidate();
+            InvalidateIfDark();
         }
 
         private void PaintCombobox()
         {
+            if (!_darkModeEnabled) return;
+
             if (_buffer == null)
                 _buffer = new Bitmap(ClientRectangle.Width, ClientRectangle.Height);
 
@@ -160,6 +188,12 @@ namespace DarkUI.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            if (!_darkModeEnabled)
+            {
+                base.OnPaint(e);
+                return;
+            }
+
             if (_buffer == null)
                 PaintCombobox();
 
@@ -169,6 +203,12 @@ namespace DarkUI.Controls
 
         protected override void OnDrawItem(DrawItemEventArgs e)
         {
+            if (!_darkModeEnabled)
+            {
+                base.OnDrawItem(e);
+                return;
+            }
+
             var g = e.Graphics;
             var rect = e.Bounds;
 

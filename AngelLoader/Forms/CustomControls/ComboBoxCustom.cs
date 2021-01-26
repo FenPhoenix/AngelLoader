@@ -8,10 +8,16 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class ComboBoxCustom : ComboBox
+    public sealed class ComboBoxCustom : DarkUI.Controls.DarkComboBox
     {
         private const uint WM_CTLCOLORLISTBOX = 308;
         private const int SWP_NOSIZE = 1;
+
+        public ComboBoxCustom()
+        {
+            // Hack to make it autosize in dark mode
+            DropDownHeight = int.MaxValue;
+        }
 
         #region Backing items
 

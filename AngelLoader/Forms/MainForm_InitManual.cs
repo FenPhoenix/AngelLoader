@@ -127,7 +127,7 @@ namespace AngelLoader.Forms
             EditFMAltTitlesArrowButton = new ArrowButton();
             EditFMTitleTextBox = new TextBox();
             EditFMFinishedOnButton = new Button();
-            EditFMRatingComboBox = new ComboBox();
+            EditFMRatingComboBox = new ComboBoxCustom();
             EditFMRatingLabel = new Label();
             EditFMLastPlayedDateTimePicker = new DateTimePicker();
             EditFMReleaseDateDateTimePicker = new DateTimePicker();

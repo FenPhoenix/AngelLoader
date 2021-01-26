@@ -40,7 +40,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -57,6 +56,7 @@ using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
+using DarkUI.Controls;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
@@ -174,16 +174,11 @@ namespace AngelLoader.Forms
             //WebSearchButton.DarkModeEnabled = !WebSearchButton.DarkModeEnabled;
             //return;
 
-            int stackCounter = 0;
+            //int stackCounter = 0;
             void DarkenControls(Control control)
             {
-                stackCounter++;
+                //stackCounter++;
                 //if (stackCounter > 10000) return;
-
-                //if (control == WebSearchButton)
-                //{
-                //    Debugger.Break();
-                //}
 
                 Type controlType = control.GetType();
 
@@ -195,12 +190,11 @@ namespace AngelLoader.Forms
                     button.FlatAppearance.BorderColor = Color.Aqua;
                     button.FlatAppearance.MouseOverBackColor = Color.Brown;
                 }
-                else if (controlType == typeof(ComboBox))
+                else if (controlType == typeof(ComboBoxCustom))
                 {
-                    ComboBox comboBox = (ComboBox)control;
-                    comboBox.DrawMode = DrawMode.OwnerDrawFixed;
-                    comboBox.FormattingEnabled = false;
-                    comboBox.FlatStyle = FlatStyle.Flat;
+                    var cb = (DarkComboBox)control;
+                    cb.DarkModeEnabled = !cb.DarkModeEnabled;
+                    return;
                 }
 
                 control.BackColor = Color.FromArgb(32, 32, 32);

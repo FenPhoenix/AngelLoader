@@ -125,7 +125,7 @@ namespace AngelLoader.Forms
             this.EditFMAltTitlesArrowButton = new AngelLoader.Forms.CustomControls.ArrowButton();
             this.EditFMTitleTextBox = new System.Windows.Forms.TextBox();
             this.EditFMFinishedOnButton = new System.Windows.Forms.Button();
-            this.EditFMRatingComboBox = new System.Windows.Forms.ComboBox();
+            this.EditFMRatingComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
             this.EditFMRatingLabel = new System.Windows.Forms.Label();
             this.EditFMLastPlayedDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.EditFMReleaseDateDateTimePicker = new System.Windows.Forms.DateTimePicker();
@@ -1997,7 +1997,7 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.Panel StatsCheckBoxesPanel;
         internal System.Windows.Forms.CheckBox EditFMLastPlayedCheckBox;
         internal System.Windows.Forms.CheckBox EditFMReleaseDateCheckBox;
-        internal System.Windows.Forms.ComboBox EditFMRatingComboBox;
+        internal AngelLoader.Forms.CustomControls.ComboBoxCustom EditFMRatingComboBox;
         internal System.Windows.Forms.Label EditFMRatingLabel;
         internal System.Windows.Forms.Button EditFMFinishedOnButton;
         internal System.Windows.Forms.Button ReadmeFullScreenButton;
