@@ -212,7 +212,15 @@ namespace AngelLoader.Forms
 
             //DarkenControls(this);
 
+            MainLLMenu.DarkModeEnabled = !MainLLMenu.DarkModeEnabled;
             FMsDGV_FM_LLMenu.DarkModeEnabled = !FMsDGV_FM_LLMenu.DarkModeEnabled;
+            FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = !FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled;
+            ImportFromLLMenu.DarkModeEnabled = !ImportFromLLMenu.DarkModeEnabled;
+            TopRightLLMenu.DarkModeEnabled = !TopRightLLMenu.DarkModeEnabled;
+            AddTagLLMenu.DarkModeEnabled = !AddTagLLMenu.DarkModeEnabled;
+            AltTitlesLLMenu.DarkModeEnabled = !AltTitlesLLMenu.DarkModeEnabled;
+            FilterControlsLLMenu.DarkModeEnabled = !FilterControlsLLMenu.DarkModeEnabled;
+            PlayOriginalGameLLMenu.DarkModeEnabled = !PlayOriginalGameLLMenu.DarkModeEnabled;
             //Trace.WriteLine(nameof(stackCounter) + "=" + stackCounter);
         }
 
@@ -2718,6 +2726,11 @@ namespace AngelLoader.Forms
 
             AddTagLLMenu.Menu.Items.AddRange(addTagMenuItems.ToArray());
 
+            // TODO: @DarkMode: Make this less dumb
+            // Like maybe override add methods of DarkContextMenu to just always re-setup the theme afterward
+            // Special case because we add items dynamically
+            AddTagLLMenu.DarkModeEnabled = AddTagLLMenu.DarkModeEnabled;
+
             ShowMenu(AddTagLLMenu.Menu, AddTagFromListButton, MenuPos.LeftDown);
         }
 
@@ -4227,6 +4240,11 @@ namespace AngelLoader.Forms
                     altTitlesMenuItems.Add(item);
                 }
                 AltTitlesLLMenu.AddRange(altTitlesMenuItems);
+
+                // TODO: @DarkMode: Make this less dumb
+                // Like maybe override add methods of DarkContextMenu to just always re-setup the theme afterward
+                // Special case because we add items dynamically
+                AltTitlesLLMenu.DarkModeEnabled = AltTitlesLLMenu.DarkModeEnabled;
 
                 EditFMAltTitlesArrowButton.Enabled = true;
             }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
+using DarkUI.Controls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -8,7 +9,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         private static bool _constructed;
 
-        internal static ContextMenuStrip Menu = null!;
+        internal static DarkContextMenu Menu = null!;
         private static ToolStripMenuItemCustom GameVersionsMenuItem = null!;
 #if false
         private static ToolStripMenuItemCustom GlobalFMStatsMenuItem = null!;
@@ -17,11 +18,24 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom AboutMenuItem = null!;
         private static ToolStripMenuItemCustom ExitMenuItem = null!;
 
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (!_constructed) return;
+
+                Menu!.DarkModeEnabled = _darkModeEnabled;
+            }
+        }
+
         internal static void Construct(MainForm form, IContainer components)
         {
             if (_constructed) return;
 
-            Menu = new ContextMenuStrip(components);
+            Menu = new DarkContextMenu(_darkModeEnabled, components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 GameVersionsMenuItem = new ToolStripMenuItemCustom(),

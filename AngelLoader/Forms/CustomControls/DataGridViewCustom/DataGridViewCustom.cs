@@ -51,7 +51,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void Localize()
         {
-            ColumnHeaderLLMenu.SetMenuItemTextToLocalized();
+            FMsDGV_ColumnHeaderLLMenu.SetMenuItemTextToLocalized();
             FMsDGV_FM_LLMenu.SetFMMenuTextToLocalized();
         }
 
@@ -59,7 +59,7 @@ namespace AngelLoader.Forms.CustomControls
 
         // We keep this non-static so we can call it with an instance syntax like everything else for consistency.
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal bool ColumnHeaderMenuVisible => ColumnHeaderLLMenu.Visible;
+        internal bool ColumnHeaderMenuVisible => FMsDGV_ColumnHeaderLLMenu.Visible;
 
         #region Get FM / FM data
 
@@ -149,13 +149,13 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void SetContextMenuToColumnHeader()
         {
-            ColumnHeaderLLMenu.Construct(_owner);
-            ContextMenuStrip = ColumnHeaderLLMenu.GetContextMenu();
+            FMsDGV_ColumnHeaderLLMenu.Construct(_owner);
+            ContextMenuStrip = FMsDGV_ColumnHeaderLLMenu.GetContextMenu();
         }
 
         internal void SetContextMenuToFM()
         {
-            FMsDGV_FM_LLMenu.ConstructFMContextMenu(_owner);
+            FMsDGV_FM_LLMenu.Construct(_owner);
             ContextMenuStrip = FMsDGV_FM_LLMenu.FMContextMenu;
         }
 
@@ -211,7 +211,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
                 MakeColumnVisible(col, colData.Visible);
 
-                ColumnHeaderLLMenu.SetColumnChecked((int)colData.Id, colData.Visible);
+                FMsDGV_ColumnHeaderLLMenu.SetColumnChecked((int)colData.Id, colData.Visible);
             }
         }
 

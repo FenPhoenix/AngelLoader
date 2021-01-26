@@ -6,7 +6,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
-    internal static class ColumnHeaderLLMenu
+    internal static class FMsDGV_ColumnHeaderLLMenu
     {
         #region Control backing fields
 
@@ -21,7 +21,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #region Column header context menu fields
 
-        private static ContextMenuStripCustom? ColumnHeaderContextMenu;
+        private static ContextMenuStripCustom? Menu;
 
         private static ToolStripMenuItemCustom? ResetColumnVisibilityMenuItem;
         private static ToolStripMenuItemCustom? ResetAllColumnWidthsMenuItem;
@@ -89,11 +89,24 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #endregion
 
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (!_constructed) return;
+
+                Menu!.DarkModeEnabled = _darkModeEnabled;
+            }
+        }
+
         #region API methods
 
-        internal static ContextMenuStrip? GetContextMenu() => ColumnHeaderContextMenu;
+        internal static ContextMenuStrip? GetContextMenu() => Menu;
 
-        internal static bool Visible => _constructed && ColumnHeaderContextMenu!.Visible;
+        internal static bool Visible => _constructed && Menu!.Visible;
 
         internal static void Construct(MainForm owner)
         {
@@ -103,13 +116,13 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation
 
-            ColumnHeaderContextMenu = new ContextMenuStripCustom(_owner.GetComponents());
+            Menu = new ContextMenuStripCustom(_darkModeEnabled, _owner.GetComponents());
 
             #endregion
 
             #region Add items to menu and hookup events
 
-            ColumnHeaderContextMenu.Items.AddRange(new ToolStripItem[]
+            Menu.Items.AddRange(new ToolStripItem[]
             {
                     ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom(),
                     ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom(),
@@ -148,7 +161,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             foreach (var item in ColumnHeaderCheckBoxMenuItems)
             {
-                ColumnHeaderContextMenu.Items.Add(item);
+                Menu.Items.Add(item);
                 item.Click += CheckBoxMenuItems_Click;
             }
 
@@ -158,7 +171,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #endregion
 
-            ColumnHeaderContextMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
+            Menu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
 
             _constructed = true;
 

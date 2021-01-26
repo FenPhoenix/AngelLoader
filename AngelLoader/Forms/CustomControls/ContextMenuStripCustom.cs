@@ -21,7 +21,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnItemClicked(ToolStripItemClickedEventArgs e)
         {
-            _preventClose = _preventCloseItems!.Contains(e.ClickedItem) && ((ToolStripMenuItemCustom)e.ClickedItem).CheckOnClick;
+            _preventClose = _preventCloseItems?.Contains(e.ClickedItem) == true && ((ToolStripMenuItemCustom)e.ClickedItem).CheckOnClick;
 
             base.OnItemClicked(e);
         }

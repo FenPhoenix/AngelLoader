@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using DarkUI.Controls;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
@@ -8,13 +9,26 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         internal static bool Constructed { get; private set; }
 
-        internal static ContextMenuStrip Menu = null!;
+        internal static DarkContextMenu Menu = null!;
+
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (!Constructed) return;
+
+                Menu!.DarkModeEnabled = _darkModeEnabled;
+            }
+        }
 
         internal static void Construct(IContainer components)
         {
             if (Constructed) return;
 
-            Menu = new ContextMenuStrip(components);
+            Menu = new DarkContextMenu(_darkModeEnabled, components);
 
             Constructed = true;
         }

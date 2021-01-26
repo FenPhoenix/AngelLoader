@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Windows.Forms;
+using DarkUI.Controls;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
@@ -7,13 +7,26 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         private static bool _constructed;
 
-        internal static ContextMenuStrip Menu = null!;
+        internal static DarkContextMenu Menu = null!;
+
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (!_constructed) return;
+
+                Menu!.DarkModeEnabled = _darkModeEnabled;
+            }
+        }
 
         internal static void Construct(MainForm form, IContainer components)
         {
             if (_constructed) return;
 
-            Menu = new ContextMenuStrip(components);
+            Menu = new DarkContextMenu(_darkModeEnabled, components);
             Menu.Closed += form.AddTagMenu_Closed;
 
             _constructed = true;

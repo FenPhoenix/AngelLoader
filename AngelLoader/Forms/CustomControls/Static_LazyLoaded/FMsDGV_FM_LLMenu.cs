@@ -16,7 +16,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         #region Backing fields
 
-        private static bool _fmMenuConstructed;
+        private static bool _constructed;
         private static bool _installUninstallMenuItemEnabled;
         private static bool _playFMMenuItemEnabled;
         private static bool _scanFMMenuItemEnabled;
@@ -65,9 +65,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #region Private methods
 
-        internal static void ConstructFMContextMenu(MainForm owner)
+        internal static void Construct(MainForm owner)
         {
-            if (_fmMenuConstructed) return;
+            if (_constructed) return;
 
             _owner = owner;
 
@@ -177,7 +177,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #endregion
 
-            _fmMenuConstructed = true;
+            _constructed = true;
 
             // These must come after the constructed bool gets set to true
             UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
@@ -187,7 +187,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private static void UncheckFinishedOnMenuItemsExceptUnknown()
         {
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 FinishedOnNormalMenuItem!.Checked = false;
                 FinishedOnHardMenuItem!.Checked = false;
@@ -205,7 +205,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void SetFMMenuTextToLocalized()
         {
-            if (!_fmMenuConstructed) return;
+            if (!_constructed) return;
 
             #region Get current FM info
 
@@ -262,7 +262,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private static void SetFinishedOnUnknownMenuItemChecked(bool value)
         {
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 FinishedOnUnknownMenuItem!.Checked = value;
             }
@@ -276,12 +276,12 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private static void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
         {
-            if (value && !_fmMenuConstructed) _finishedOnUnknownChecked = false;
+            if (value && !_constructed) _finishedOnUnknownChecked = false;
 
             switch (difficulty)
             {
                 case Difficulty.Normal:
-                    if (_fmMenuConstructed)
+                    if (_constructed)
                     {
                         FinishedOnNormalMenuItem!.Checked = value;
                     }
@@ -291,7 +291,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                     }
                     break;
                 case Difficulty.Hard:
-                    if (_fmMenuConstructed)
+                    if (_constructed)
                     {
                         FinishedOnHardMenuItem!.Checked = value;
                     }
@@ -301,7 +301,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                     }
                     break;
                 case Difficulty.Expert:
-                    if (_fmMenuConstructed)
+                    if (_constructed)
                     {
                         FinishedOnExpertMenuItem!.Checked = value;
                     }
@@ -311,7 +311,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                     }
                     break;
                 case Difficulty.Extreme:
-                    if (_fmMenuConstructed)
+                    if (_constructed)
                     {
                         FinishedOnExtremeMenuItem!.Checked = value;
                     }
@@ -332,24 +332,19 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             set
             {
                 _darkModeEnabled = value;
-                SetUpTheme();
+                if (!_constructed) return;
+
+                FMContextMenu!.DarkModeEnabled = _darkModeEnabled;
             }
-        }
-
-        private static void SetUpTheme()
-        {
-            if (!_fmMenuConstructed) return;
-
-            FMContextMenu!.DarkModeEnabled = _darkModeEnabled;
         }
 
         #region API methods
 
-        internal static bool Visible => _fmMenuConstructed && FMContextMenu?.Visible == true;
+        internal static bool Visible => _constructed && FMContextMenu?.Visible == true;
 
         internal static void UpdateRatingList(bool fmSelStyle)
         {
-            if (!_fmMenuConstructed) return;
+            if (!_constructed) return;
 
             for (int i = 0; i <= 10; i++)
             {
@@ -360,13 +355,13 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static ContextMenuStrip GetFinishedOnMenu(MainForm owner)
         {
-            ConstructFMContextMenu(owner);
+            Construct(owner);
             return FinishedOnMenu!;
         }
 
         internal static void SetPlayFMMenuItemEnabled(bool value)
         {
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 PlayFMMenuItem!.Enabled = value;
             }
@@ -378,7 +373,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void SetPlayFMInMPMenuItemVisible(bool value)
         {
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 PlayFMInMPMenuItem!.Visible = value;
             }
@@ -390,7 +385,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void SetInstallUninstallMenuItemEnabled(bool value)
         {
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 InstallUninstallMenuItem!.Enabled = value;
             }
@@ -402,7 +397,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void SetInstallUninstallMenuItemText(bool sayInstall)
         {
-            if (!_fmMenuConstructed) return;
+            if (!_constructed) return;
 
             InstallUninstallMenuItem!.Text = sayInstall
                 ? LText.FMsList.FMMenu_InstallFM
@@ -411,7 +406,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void SetDeleteFMMenuItemEnabled(bool value)
         {
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 DeleteFMMenuItem!.Enabled = value;
             }
@@ -423,7 +418,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void SetOpenInDromEdVisible(bool value)
         {
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 OpenInDromEdSep!.Visible = value;
                 OpenInDromEdMenuItem!.Visible = value;
@@ -437,7 +432,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void SetOpenInDromEdMenuItemText(bool sayShockEd)
         {
-            if (!_fmMenuConstructed) return;
+            if (!_constructed) return;
 
             OpenInDromEdMenuItem!.Text = sayShockEd
                 ? LText.FMsList.FMMenu_OpenInShockEd
@@ -446,7 +441,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void SetScanFMMenuItemEnabled(bool value)
         {
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 ScanFMMenuItem!.Enabled = value;
             }
@@ -458,7 +453,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void SetConvertAudioRCSubMenuEnabled(bool value)
         {
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 ConvertAudioMenuItem!.Enabled = value;
             }
@@ -472,7 +467,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             value = value.Clamp(-1, 10);
 
-            if (_fmMenuConstructed)
+            if (_constructed)
             {
                 ((ToolStripMenuItemCustom)RatingMenuItem!.DropDownItems[value + 1]).Checked = true;
             }
@@ -504,7 +499,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         // SS2 difficulties: Easy, Normal, Hard, Impossible
         internal static void SetGameSpecificFinishedOnMenuItemsText(GameSupport.Game game)
         {
-            if (!_fmMenuConstructed) return;
+            if (!_constructed) return;
 
             FinishedOnNormalMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Normal);
             FinishedOnHardMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Hard);

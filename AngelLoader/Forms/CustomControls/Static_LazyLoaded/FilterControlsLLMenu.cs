@@ -25,13 +25,26 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom ShowUnsupportedMenuItem = null!;
         private static ToolStripMenuItemCustom ShowRecentAtTopMenuItem = null!;
 
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (!_constructed) return;
+
+                Menu!.DarkModeEnabled = _darkModeEnabled;
+            }
+        }
+
         internal static void Construct(MainForm form, IContainer components)
         {
             if (_constructed) return;
 
             _owner = form;
 
-            Menu = new ContextMenuStripCustom(components);
+            Menu = new ContextMenuStripCustom(_darkModeEnabled, components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 TitleMenuItem = new ToolStripMenuItemCustom(),
