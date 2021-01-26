@@ -40,6 +40,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -170,6 +171,46 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
+            return;
+
+            int stackCounter = 0;
+            void DarkenControls(Control control)
+            {
+                stackCounter++;
+                //if (stackCounter > 10000) return;
+
+                //if (control == WebSearchButton)
+                //{
+                //    Debugger.Break();
+                //}
+
+                Type controlType = control.GetType();
+
+                if (controlType == typeof(Button))
+                {
+                    Button button = (Button)control;
+                    button.UseVisualStyleBackColor = false;
+                    button.FlatStyle = FlatStyle.Flat;
+                }
+                else if (controlType == typeof(ComboBox))
+                {
+                    ComboBox comboBox = (ComboBox)control;
+                    comboBox.DrawMode = DrawMode.OwnerDrawFixed;
+                    comboBox.FormattingEnabled = false;
+                    comboBox.FlatStyle = FlatStyle.Flat;
+                }
+
+                control.BackColor = Color.FromArgb(32, 32, 32);
+                control.ForeColor = Color.FromArgb(200, 200, 200);
+
+                for (int i = 0; i < control.Controls.Count; i++)
+                {
+                    DarkenControls(control.Controls[i]);
+                }
+            }
+
+            DarkenControls(this);
+            Trace.WriteLine(nameof(stackCounter) + "=" + stackCounter);
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
