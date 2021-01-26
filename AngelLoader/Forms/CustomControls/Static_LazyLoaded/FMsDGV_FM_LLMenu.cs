@@ -6,70 +6,75 @@ using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Properties;
+using DarkUI.Controls;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
-    public sealed partial class DataGridViewCustom
+    internal static class FMsDGV_FM_LLMenu
     {
         #region Backing fields
 
-        private bool _fmMenuConstructed;
-        private bool _installUninstallMenuItemEnabled;
-        private bool _playFMMenuItemEnabled;
-        private bool _scanFMMenuItemEnabled;
-        private bool _openInDromEdSepVisible;
-        private bool _openInDromEdMenuItemVisible;
-        private bool _playFMInMPMenuItemVisible;
-        private bool _convertAudioSubMenuEnabled;
-        private bool _deleteFMMenuItemEnabled;
-        private int _rating = -1;
-        private bool _finishedOnNormalChecked;
-        private bool _finishedOnHardChecked;
-        private bool _finishedOnExpertChecked;
-        private bool _finishedOnExtremeChecked;
-        private bool _finishedOnUnknownChecked;
+        private static bool _fmMenuConstructed;
+        private static bool _installUninstallMenuItemEnabled;
+        private static bool _playFMMenuItemEnabled;
+        private static bool _scanFMMenuItemEnabled;
+        private static bool _openInDromEdSepVisible;
+        private static bool _openInDromEdMenuItemVisible;
+        private static bool _playFMInMPMenuItemVisible;
+        private static bool _convertAudioSubMenuEnabled;
+        private static bool _deleteFMMenuItemEnabled;
+        private static int _rating = -1;
+        private static bool _finishedOnNormalChecked;
+        private static bool _finishedOnHardChecked;
+        private static bool _finishedOnExpertChecked;
+        private static bool _finishedOnExtremeChecked;
+        private static bool _finishedOnUnknownChecked;
 
         #endregion
 
         #region FM context menu fields
 
-        private ContextMenuStrip? FMContextMenu;
+        private static MainForm _owner = null!;
 
-        private ToolStripMenuItemCustom? PlayFMMenuItem;
-        private ToolStripMenuItemCustom? PlayFMInMPMenuItem;
-        private ToolStripMenuItemCustom? InstallUninstallMenuItem;
-        private ToolStripMenuItemCustom? DeleteFMMenuItem;
-        private ToolStripSeparator? OpenInDromEdSep;
-        private ToolStripMenuItemCustom? OpenInDromEdMenuItem;
-        private ToolStripMenuItemCustom? ScanFMMenuItem;
-        private ToolStripMenuItemCustom? ConvertAudioMenuItem;
-        private ToolStripMenuItemCustom? ConvertWAVsTo16BitMenuItem;
-        private ToolStripMenuItemCustom? ConvertOGGsToWAVsMenuItem;
-        private ToolStripMenuItemCustom? RatingMenuItem;
-        private ToolStripMenuItemCustom? RatingMenuUnrated;
-        private ToolStripMenuItemCustom? FinishedOnMenuItem;
-        private ContextMenuStripCustom? FinishedOnMenu;
-        private ToolStripMenuItemCustom? FinishedOnNormalMenuItem;
-        private ToolStripMenuItemCustom? FinishedOnHardMenuItem;
-        private ToolStripMenuItemCustom? FinishedOnExpertMenuItem;
-        private ToolStripMenuItemCustom? FinishedOnExtremeMenuItem;
-        private ToolStripMenuItemCustom? FinishedOnUnknownMenuItem;
-        private ToolStripMenuItemCustom? WebSearchMenuItem;
+        internal static DarkContextMenu? FMContextMenu;
+
+        private static ToolStripMenuItemCustom? PlayFMMenuItem;
+        private static ToolStripMenuItemCustom? PlayFMInMPMenuItem;
+        private static ToolStripMenuItemCustom? InstallUninstallMenuItem;
+        private static ToolStripMenuItemCustom? DeleteFMMenuItem;
+        private static ToolStripSeparator? OpenInDromEdSep;
+        private static ToolStripMenuItemCustom? OpenInDromEdMenuItem;
+        private static ToolStripMenuItemCustom? ScanFMMenuItem;
+        private static ToolStripMenuItemCustom? ConvertAudioMenuItem;
+        private static ToolStripMenuItemCustom? ConvertWAVsTo16BitMenuItem;
+        private static ToolStripMenuItemCustom? ConvertOGGsToWAVsMenuItem;
+        private static ToolStripMenuItemCustom? RatingMenuItem;
+        private static ToolStripMenuItemCustom? RatingMenuUnrated;
+        private static ToolStripMenuItemCustom? FinishedOnMenuItem;
+        private static ContextMenuStripCustom? FinishedOnMenu;
+        private static ToolStripMenuItemCustom? FinishedOnNormalMenuItem;
+        private static ToolStripMenuItemCustom? FinishedOnHardMenuItem;
+        private static ToolStripMenuItemCustom? FinishedOnExpertMenuItem;
+        private static ToolStripMenuItemCustom? FinishedOnExtremeMenuItem;
+        private static ToolStripMenuItemCustom? FinishedOnUnknownMenuItem;
+        private static ToolStripMenuItemCustom? WebSearchMenuItem;
 
         #endregion
 
         #region Private methods
 
-        private void ConstructFMContextMenu()
+        internal static void ConstructFMContextMenu(MainForm owner)
         {
             if (_fmMenuConstructed) return;
 
+            _owner = owner;
+
             #region Instantiation
 
-            FMContextMenu = new ContextMenuStrip(_owner.GetComponents());
-            FinishedOnMenu = new ContextMenuStripCustom(_owner.GetComponents());
+            FMContextMenu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents());
+            FinishedOnMenu = new ContextMenuStripCustom(_darkModeEnabled, _owner.GetComponents());
 
             #endregion
 
@@ -180,7 +185,7 @@ namespace AngelLoader.Forms.CustomControls
             SetFMMenuTextToLocalized();
         }
 
-        private void UncheckFinishedOnMenuItemsExceptUnknown()
+        private static void UncheckFinishedOnMenuItemsExceptUnknown()
         {
             if (_fmMenuConstructed)
             {
@@ -198,7 +203,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void SetFMMenuTextToLocalized()
+        internal static void SetFMMenuTextToLocalized()
         {
             if (!_fmMenuConstructed) return;
 
@@ -206,10 +211,10 @@ namespace AngelLoader.Forms.CustomControls
 
             // Some menu items' text depends on FM state. Because this could be run after startup, we need to
             // make sure those items' text is set correctly.
-            FanMission? selFM = SelectedRows.Count > 0 ? GetSelectedFM() : null;
+            FanMission? selFM = _owner.FMsDGV.SelectedRows.Count > 0 ? _owner.FMsDGV.GetSelectedFM() : null;
             bool sayInstall = selFM == null || !selFM.Installed;
             // @GENGAMES - Localize FM context menu - "sayShockEd"
-            bool sayShockEd = selFM != null && selFM.Game == Game.SS2;
+            bool sayShockEd = selFM != null && selFM.Game == GameSupport.Game.SS2;
 
             #endregion
 
@@ -247,7 +252,7 @@ namespace AngelLoader.Forms.CustomControls
 
             FinishedOnMenuItem!.Text = LText.FMsList.FMMenu_FinishedOn;
 
-            SetGameSpecificFinishedOnMenuItemsText(selFM?.Game ?? Game.Null);
+            SetGameSpecificFinishedOnMenuItemsText(selFM?.Game ?? GameSupport.Game.Null);
             FinishedOnUnknownMenuItem!.Text = LText.Difficulties.Unknown;
 
             #endregion
@@ -255,7 +260,7 @@ namespace AngelLoader.Forms.CustomControls
             WebSearchMenuItem!.Text = LText.FMsList.FMMenu_WebSearch;
         }
 
-        private void SetFinishedOnUnknownMenuItemChecked(bool value)
+        private static void SetFinishedOnUnknownMenuItemChecked(bool value)
         {
             if (_fmMenuConstructed)
             {
@@ -269,7 +274,7 @@ namespace AngelLoader.Forms.CustomControls
             if (value) UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
-        private void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
+        private static void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
         {
             if (value && !_fmMenuConstructed) _finishedOnUnknownChecked = false;
 
@@ -320,9 +325,29 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                SetUpTheme();
+            }
+        }
+
+        private static void SetUpTheme()
+        {
+            if (!_fmMenuConstructed) return;
+
+            FMContextMenu!.DarkModeEnabled = _darkModeEnabled;
+        }
+
         #region API methods
 
-        internal void UpdateRatingList(bool fmSelStyle)
+        internal static bool Visible => _fmMenuConstructed && FMContextMenu?.Visible == true;
+
+        internal static void UpdateRatingList(bool fmSelStyle)
         {
             if (!_fmMenuConstructed) return;
 
@@ -333,13 +358,13 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal ContextMenuStrip GetFinishedOnMenu()
+        internal static ContextMenuStrip GetFinishedOnMenu(MainForm owner)
         {
-            ConstructFMContextMenu();
+            ConstructFMContextMenu(owner);
             return FinishedOnMenu!;
         }
 
-        internal void SetPlayFMMenuItemEnabled(bool value)
+        internal static void SetPlayFMMenuItemEnabled(bool value)
         {
             if (_fmMenuConstructed)
             {
@@ -351,7 +376,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetPlayFMInMPMenuItemVisible(bool value)
+        internal static void SetPlayFMInMPMenuItemVisible(bool value)
         {
             if (_fmMenuConstructed)
             {
@@ -363,7 +388,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetInstallUninstallMenuItemEnabled(bool value)
+        internal static void SetInstallUninstallMenuItemEnabled(bool value)
         {
             if (_fmMenuConstructed)
             {
@@ -375,7 +400,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetInstallUninstallMenuItemText(bool sayInstall)
+        internal static void SetInstallUninstallMenuItemText(bool sayInstall)
         {
             if (!_fmMenuConstructed) return;
 
@@ -384,7 +409,7 @@ namespace AngelLoader.Forms.CustomControls
                 : LText.FMsList.FMMenu_UninstallFM;
         }
 
-        internal void SetDeleteFMMenuItemEnabled(bool value)
+        internal static void SetDeleteFMMenuItemEnabled(bool value)
         {
             if (_fmMenuConstructed)
             {
@@ -396,7 +421,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetOpenInDromEdVisible(bool value)
+        internal static void SetOpenInDromEdVisible(bool value)
         {
             if (_fmMenuConstructed)
             {
@@ -410,7 +435,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetOpenInDromEdMenuItemText(bool sayShockEd)
+        internal static void SetOpenInDromEdMenuItemText(bool sayShockEd)
         {
             if (!_fmMenuConstructed) return;
 
@@ -419,7 +444,7 @@ namespace AngelLoader.Forms.CustomControls
                 : LText.FMsList.FMMenu_OpenInDromEd;
         }
 
-        internal void SetScanFMMenuItemEnabled(bool value)
+        internal static void SetScanFMMenuItemEnabled(bool value)
         {
             if (_fmMenuConstructed)
             {
@@ -431,7 +456,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetConvertAudioRCSubMenuEnabled(bool value)
+        internal static void SetConvertAudioRCSubMenuEnabled(bool value)
         {
             if (_fmMenuConstructed)
             {
@@ -443,7 +468,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetRatingMenuItemChecked(int value)
+        internal static void SetRatingMenuItemChecked(int value)
         {
             value = value.Clamp(-1, 10);
 
@@ -457,7 +482,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetFinishedOnMenuItemsChecked(Difficulty difficulty, bool finishedOnUnknown)
+        internal static void SetFinishedOnMenuItemsChecked(Difficulty difficulty, bool finishedOnUnknown)
         {
             if (finishedOnUnknown)
             {
@@ -477,7 +502,7 @@ namespace AngelLoader.Forms.CustomControls
         // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
         // Thief 3 difficulties: Easy, Normal, Hard, Expert
         // SS2 difficulties: Easy, Normal, Hard, Impossible
-        internal void SetGameSpecificFinishedOnMenuItemsText(Game game)
+        internal static void SetGameSpecificFinishedOnMenuItemsText(GameSupport.Game game)
         {
             if (!_fmMenuConstructed) return;
 
@@ -487,7 +512,7 @@ namespace AngelLoader.Forms.CustomControls
             FinishedOnExtremeMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Extreme);
         }
 
-        internal void ClearFinishedOnMenuItemChecks()
+        internal static void ClearFinishedOnMenuItemChecks()
         {
             SetFinishedOnUnknownMenuItemChecked(false);
             UncheckFinishedOnMenuItemsExceptUnknown();
@@ -497,55 +522,55 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Event handlers
 
-        private void FMContextMenu_Opening(object sender, CancelEventArgs e)
+        private static void FMContextMenu_Opening(object sender, CancelEventArgs e)
         {
             // Fix for a corner case where the user could press the right mouse button, hold it, keyboard-switch
             // to an empty tab, then let up the mouse and a menu would come up even though no FM was selected.
-            if (RowCount == 0 || SelectedRows.Count == 0) e.Cancel = true;
+            if (_owner.FMsDGV.RowCount == 0 || _owner.FMsDGV.SelectedRows.Count == 0) e.Cancel = true;
         }
 
         // Extra async/await avoidance
-        private async void AsyncMenuItems_Click(object sender, EventArgs e)
+        private static async void AsyncMenuItems_Click(object sender, EventArgs e)
         {
             if (sender == PlayFMMenuItem || sender == PlayFMInMPMenuItem)
             {
-                await FMInstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), playMP: sender == PlayFMInMPMenuItem);
+                await FMInstallAndPlay.InstallIfNeededAndPlay(_owner.FMsDGV.GetSelectedFM(), playMP: sender == PlayFMInMPMenuItem);
             }
             else if (sender == InstallUninstallMenuItem)
             {
-                await FMInstallAndPlay.InstallOrUninstall(GetSelectedFM());
+                await FMInstallAndPlay.InstallOrUninstall(_owner.FMsDGV.GetSelectedFM());
             }
             else if (sender == DeleteFMMenuItem)
             {
-                await FMArchives.Delete(GetSelectedFM());
+                await FMArchives.Delete(_owner.FMsDGV.GetSelectedFM());
             }
             else if (sender == OpenInDromEdMenuItem)
             {
-                var fm = GetSelectedFM();
+                var fm = _owner.FMsDGV.GetSelectedFM();
                 if (fm.Installed || await FMInstallAndPlay.InstallFM(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
             }
             else if (sender == ScanFMMenuItem)
             {
-                if (await FMScan.ScanFMs(new List<FanMission> { GetSelectedFM() }, hideBoxIfZip: true))
+                if (await FMScan.ScanFMs(new List<FanMission> { _owner.FMsDGV.GetSelectedFM() }, hideBoxIfZip: true))
                 {
                     _owner.RefreshSelectedFM();
                 }
             }
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
             {
-                var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
-                await FMAudio.ConvertToWAVs(GetSelectedFM(), convertType, true);
+                var convertType = sender == ConvertWAVsTo16BitMenuItem ? Misc.AudioConvert.WAVToWAV16 : Misc.AudioConvert.OGGToWAV;
+                await FMAudio.ConvertToWAVs(_owner.FMsDGV.GetSelectedFM(), convertType, true);
             }
         }
 
-        private void RatingMenuItems_Click(object sender, EventArgs e)
+        private static void RatingMenuItems_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < RatingMenuItem!.DropDownItems.Count; i++)
             {
                 if (RatingMenuItem.DropDownItems[i] == sender)
                 {
                     int rating = i - 1;
-                    GetSelectedFM().Rating = rating;
+                    _owner.FMsDGV.GetSelectedFM().Rating = rating;
                     _owner.RefreshSelectedFM(rowOnly: true);
                     _owner.UpdateRatingMenus(rating, disableEvents: true);
                     Ini.WriteFullFMDataIni();
@@ -554,7 +579,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void RatingRCMenuItems_CheckedChanged(object sender, EventArgs e)
+        private static void RatingRCMenuItems_CheckedChanged(object sender, EventArgs e)
         {
             var s = (ToolStripMenuItemCustom)sender;
             if (!s.Checked) return;
@@ -565,11 +590,11 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void FinishedOnMenuItems_Click(object sender, EventArgs e)
+        private static void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
             var senderItem = (ToolStripMenuItemCustom)sender;
 
-            var fm = GetSelectedFM();
+            var fm = _owner.FMsDGV.GetSelectedFM();
 
             fm.FinishedOn = 0;
             fm.FinishedOnUnknown = false;
@@ -599,12 +624,12 @@ namespace AngelLoader.Forms.CustomControls
             Ini.WriteFullFMDataIni();
         }
 
-        private void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)
+        private static void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             if (FinishedOnUnknownMenuItem!.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
-        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(GetSelectedFM().Title);
+        private static void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(_owner.FMsDGV.GetSelectedFM().Title);
 
         #endregion
     }

@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class ContextMenuStripCustom : ContextMenuStrip
+    public sealed class ContextMenuStripCustom : DarkUI.Controls.DarkContextMenu
     {
         private bool _preventClose;
         private ToolStripMenuItemCustom[]? _preventCloseItems;
@@ -12,6 +12,10 @@ namespace AngelLoader.Forms.CustomControls
         public ContextMenuStripCustom() { }
 
         public ContextMenuStripCustom(IContainer container) : base(container) { }
+
+        public ContextMenuStripCustom(bool darkModeEnabled) => DarkModeEnabled = darkModeEnabled;
+
+        public ContextMenuStripCustom(bool darkModeEnabled, IContainer container) : base(container) => DarkModeEnabled = darkModeEnabled;
 
         internal void SetPreventCloseOnClickItems(params ToolStripMenuItemCustom[] items) => _preventCloseItems = items;
 

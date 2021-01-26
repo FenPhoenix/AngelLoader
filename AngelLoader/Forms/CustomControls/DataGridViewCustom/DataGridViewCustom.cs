@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
+using static AngelLoader.Forms.ControlExtensions;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -39,27 +41,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        #region Private methods
-
-        private static void MakeColumnVisible(DataGridViewColumn column, bool visible)
-        {
-            column.Visible = visible;
-            // Fix for zero-height glitch when Rating column gets swapped out when all columns are hidden
-            try
-            {
-                column.Width++;
-                column.Width--;
-            }
-            // stupid OCD check in case adding 1 would take us over 65536
-            catch (ArgumentOutOfRangeException)
-            {
-                column.Width--;
-                column.Width++;
-            }
-        }
-
-        #endregion
-
         #region API methods
 
         #region Init
@@ -71,12 +52,10 @@ namespace AngelLoader.Forms.CustomControls
         internal void Localize()
         {
             ColumnHeaderLLMenu.SetMenuItemTextToLocalized();
-            SetFMMenuTextToLocalized();
+            FMsDGV_FM_LLMenu.SetFMMenuTextToLocalized();
         }
 
         #endregion
-
-        internal bool FMContextMenuVisible => FMContextMenu?.Visible == true;
 
         // We keep this non-static so we can call it with an instance syntax like everything else for consistency.
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
@@ -170,14 +149,14 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void SetContextMenuToColumnHeader()
         {
-            ColumnHeaderLLMenu.Construct(this);
+            ColumnHeaderLLMenu.Construct(_owner);
             ContextMenuStrip = ColumnHeaderLLMenu.GetContextMenu();
         }
 
         internal void SetContextMenuToFM()
         {
-            ConstructFMContextMenu();
-            ContextMenuStrip = FMContextMenu;
+            FMsDGV_FM_LLMenu.ConstructFMContextMenu(_owner);
+            ContextMenuStrip = FMsDGV_FM_LLMenu.FMContextMenu;
         }
 
         #endregion

@@ -154,5 +154,22 @@ namespace AngelLoader.Forms
             WM_CHANGEUISTATE,
             new IntPtr(SetControlFocusToHidden),
             new IntPtr(0));
+
+        internal static void MakeColumnVisible(DataGridViewColumn column, bool visible)
+        {
+            column.Visible = visible;
+            // Fix for zero-height glitch when Rating column gets swapped out when all columns are hidden
+            try
+            {
+                column.Width++;
+                column.Width--;
+            }
+            // stupid OCD check in case adding 1 would take us over 65536
+            catch (ArgumentOutOfRangeException)
+            {
+                column.Width--;
+                column.Width++;
+            }
+        }
     }
 }
