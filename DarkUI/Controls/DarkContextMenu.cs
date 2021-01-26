@@ -21,8 +21,6 @@ namespace DarkUI.Controls
 
         #region Constructors
 
-        // TODO: If we set dark mode after construct, we end up with our submenus not properly changed
-
         public DarkContextMenu() => SetUpTheme();
 
         public DarkContextMenu(IContainer container) : base(container) => SetUpTheme();
@@ -35,24 +33,37 @@ namespace DarkUI.Controls
 
         private void SetUpTheme()
         {
-            if (_darkModeEnabled)
+            void SetMenuTheme(ToolStripDropDown menu)
             {
-                Renderer = new DarkMenuRenderer();
-            }
-            else
-            {
-                RenderMode = ToolStripRenderMode.ManagerRenderMode;
-
-                // Prevents wrong back color on separators
-                BackColor = SystemColors.Control;
-
-                // Prevents wrong back/fore color on items
-                foreach (ToolStripItem item in Items)
+                if (_darkModeEnabled)
                 {
-                    item.BackColor = SystemColors.Control;
-                    item.ForeColor = SystemColors.ControlText;
+                    menu.Renderer = new DarkMenuRenderer();
+                }
+                else
+                {
+                    menu.RenderMode = ToolStripRenderMode.ManagerRenderMode;
+
+                    // Prevents wrong back color on separators
+                    menu.BackColor = SystemColors.Control;
+
+                    // Prevents wrong back/fore color on items
+                    foreach (ToolStripItem item in menu.Items)
+                    {
+                        item.BackColor = SystemColors.Control;
+                        item.ForeColor = SystemColors.ControlText;
+                    }
+                }
+
+                foreach (ToolStripItem item in menu.Items)
+                {
+                    if (item is ToolStripMenuItem menuItem && menuItem.DropDown != null)
+                    {
+                        SetMenuTheme(menuItem.DropDown);
+                    }
                 }
             }
+
+            SetMenuTheme(this);
         }
     }
 }
