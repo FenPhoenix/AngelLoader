@@ -31,7 +31,7 @@ namespace DarkUI.Controls
             set
             {
                 base.Text = value;
-                Invalidate();
+                InvalidateIfDark();
             }
         }
 
@@ -41,7 +41,7 @@ namespace DarkUI.Controls
             set
             {
                 base.Enabled = value;
-                Invalidate();
+                InvalidateIfDark();
             }
         }
 
@@ -54,7 +54,7 @@ namespace DarkUI.Controls
             set
             {
                 _style = value;
-                Invalidate();
+                InvalidateIfDark();
             }
         }
 
@@ -67,7 +67,7 @@ namespace DarkUI.Controls
             set
             {
                 _imagePadding = value;
-                Invalidate();
+                InvalidateIfDark();
             }
         }
 
@@ -75,12 +75,12 @@ namespace DarkUI.Controls
 
         #region Code Property Region
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool AutoEllipsis
-        {
-            get { return false; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new bool AutoEllipsis
+        //{
+        //    get { return false; }
+        //}
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -89,66 +89,101 @@ namespace DarkUI.Controls
             get { return _buttonState; }
         }
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new ContentAlignment ImageAlign
-        {
-            get { return base.ImageAlign; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new ContentAlignment ImageAlign
+        //{
+        //    get { return base.ImageAlign; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool FlatAppearance
-        {
-            get { return false; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new bool FlatAppearance
+        //{
+        //    get { return false; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new FlatStyle FlatStyle
-        {
-            get { return base.FlatStyle; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new FlatStyle FlatStyle
+        //{
+        //    get { return base.FlatStyle; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new ContentAlignment TextAlign
-        {
-            get { return base.TextAlign; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new ContentAlignment TextAlign
+        //{
+        //    get { return base.TextAlign; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool UseCompatibleTextRendering
-        {
-            get { return false; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new bool UseCompatibleTextRendering
+        //{
+        //    get { return false; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool UseVisualStyleBackColor
-        {
-            get { return false; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new bool UseVisualStyleBackColor
+        //{
+        //    get { return false; }
+        //}
 
         #endregion
 
-        #region Constructor Region
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                SetUpTheme();
+            }
+        }
 
-        public DarkButton()
+        private void SetUpTheme()
         {
             SetStyle(ControlStyles.OptimizedDoubleBuffer |
                      ControlStyles.ResizeRedraw |
                      ControlStyles.UserPaint, true);
 
-            base.UseVisualStyleBackColor = false;
+            // Everything needs to be just like this, or else there are cases where the appearance is wrong
+
             base.UseCompatibleTextRendering = false;
 
-            SetButtonState(DarkControlState.Normal);
-            Padding = new Padding(_padding);
+            if (_darkModeEnabled)
+            {
+                base.UseVisualStyleBackColor = !_darkModeEnabled;
+                SetButtonState(DarkControlState.Normal);
+                Invalidate();
+                //Padding = new Padding(_padding);
+            }
+            else
+            {
+                // Need to set these explicitly because in some cases (not all) they don't get set back automatically
+                ForeColor = SystemColors.ControlText;
+                BackColor = SystemColors.Control;
+                base.UseVisualStyleBackColor = true;
+                FlatStyle = FlatStyle.Standard;
+            }
+        }
+
+        #region Constructor Region
+
+        public DarkButton()
+        {
+            SetUpTheme();
         }
 
         #endregion
+
+        private void InvalidateIfDark()
+        {
+            if (_darkModeEnabled) Invalidate();
+        }
 
         #region Method Region
 
@@ -157,7 +192,7 @@ namespace DarkUI.Controls
             if (_buttonState != buttonState)
             {
                 _buttonState = buttonState;
-                Invalidate();
+                InvalidateIfDark();
             }
         }
 
@@ -168,6 +203,8 @@ namespace DarkUI.Controls
         protected override void OnCreateControl()
         {
             base.OnCreateControl();
+
+            if (!_darkModeEnabled) return;
 
             var form = FindForm();
             if (form != null)
@@ -180,6 +217,8 @@ namespace DarkUI.Controls
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed)
                 return;
@@ -201,6 +240,8 @@ namespace DarkUI.Controls
         {
             base.OnMouseDown(e);
 
+            if (!_darkModeEnabled) return;
+
             if (!ClientRectangle.Contains(e.Location))
                 return;
 
@@ -210,6 +251,8 @@ namespace DarkUI.Controls
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
+
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed)
                 return;
@@ -221,6 +264,8 @@ namespace DarkUI.Controls
         {
             base.OnMouseLeave(e);
 
+            if (!_darkModeEnabled) return;
+
             if (_spacePressed)
                 return;
 
@@ -230,6 +275,8 @@ namespace DarkUI.Controls
         protected override void OnMouseCaptureChanged(EventArgs e)
         {
             base.OnMouseCaptureChanged(e);
+
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed)
                 return;
@@ -244,12 +291,16 @@ namespace DarkUI.Controls
         {
             base.OnGotFocus(e);
 
-            Invalidate();
+            if (!_darkModeEnabled) return;
+
+            InvalidateIfDark();
         }
 
         protected override void OnLostFocus(EventArgs e)
         {
             base.OnLostFocus(e);
+
+            if (!_darkModeEnabled) return;
 
             _spacePressed = false;
 
@@ -265,6 +316,8 @@ namespace DarkUI.Controls
         {
             base.OnKeyDown(e);
 
+            if (!_darkModeEnabled) return;
+
             if (e.KeyCode == Keys.Space)
             {
                 _spacePressed = true;
@@ -275,6 +328,8 @@ namespace DarkUI.Controls
         protected override void OnKeyUp(KeyEventArgs e)
         {
             base.OnKeyUp(e);
+
+            if (!_darkModeEnabled) return;
 
             if (e.KeyCode == Keys.Space)
             {
@@ -293,19 +348,31 @@ namespace DarkUI.Controls
         {
             base.NotifyDefault(value);
 
+            if (!_darkModeEnabled) return;
+
             if (!DesignMode)
                 return;
 
             _isDefault = value;
-            Invalidate();
+            InvalidateIfDark();
         }
 
         #endregion
 
         #region Paint Region
 
+        // Need our own event because we can't fire base.OnPaint() or it overrides our own painting
+        public PaintEventHandler PaintCustom;
+
         protected override void OnPaint(PaintEventArgs e)
         {
+            if (!_darkModeEnabled)
+            {
+                base.OnPaint(e);
+                PaintCustom?.Invoke(this, e);
+                return;
+            }
+
             var g = e.Graphics;
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
@@ -414,6 +481,8 @@ namespace DarkUI.Controls
 
                 g.DrawString(Text, Font, b, modRect, stringFormat);
             }
+
+            PaintCustom?.Invoke(this, e);
         }
 
         #endregion

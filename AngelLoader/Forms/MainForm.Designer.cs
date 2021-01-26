@@ -46,7 +46,7 @@ namespace AngelLoader.Forms
             this.BottomLeftButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new System.Windows.Forms.Button();
             this.PlayOriginalGameButton = new System.Windows.Forms.Button();
-            this.WebSearchButton = new System.Windows.Forms.Button();
+            this.WebSearchButton = new DarkUI.Controls.DarkButton();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
@@ -336,7 +336,7 @@ namespace AngelLoader.Forms
             this.WebSearchButton.Text = "Web search";
             this.WebSearchButton.UseVisualStyleBackColor = true;
             this.WebSearchButton.Click += new System.EventHandler(this.WebSearchButton_Click);
-            this.WebSearchButton.Paint += new System.Windows.Forms.PaintEventHandler(this.WebSearchButton_Paint);
+            this.WebSearchButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.WebSearchButton_Paint);
             // 
             // EverythingPanel
             // 
@@ -2001,7 +2001,7 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.Label EditFMRatingLabel;
         internal System.Windows.Forms.Button EditFMFinishedOnButton;
         internal System.Windows.Forms.Button ReadmeFullScreenButton;
-        internal System.Windows.Forms.Button WebSearchButton;
+        internal DarkUI.Controls.DarkButton WebSearchButton;
         internal AngelLoader.Forms.CustomControls.ArrowButton FilterBarScrollRightButton;
         internal AngelLoader.Forms.CustomControls.ArrowButton FilterBarScrollLeftButton;
         internal System.Windows.Forms.TextBox EditFMTitleTextBox;

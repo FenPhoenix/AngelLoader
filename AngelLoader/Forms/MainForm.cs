@@ -40,6 +40,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -182,14 +183,20 @@ namespace AngelLoader.Forms
 
                 Type controlType = control.GetType();
 
-                if (controlType == typeof(Button))
+                if (controlType == typeof(DarkButton))
                 {
-                    Button button = (Button)control;
-                    button.UseVisualStyleBackColor = false;
-                    button.FlatStyle = FlatStyle.Flat;
-                    button.FlatAppearance.BorderColor = DarkUI.Config.Colors.GreyHighlight;
-                    button.FlatAppearance.MouseOverBackColor = DarkUI.Config.Colors.BlueBackground;
-                    button.FlatAppearance.MouseDownBackColor = DarkUI.Config.Colors.DarkBackground;
+                    DarkButton button = (DarkButton)control;
+                    button.DarkModeEnabled = !button.DarkModeEnabled;
+                    return;
+                }
+                else if (controlType == typeof(Button))
+                {
+                    //Button button = (Button)control;
+                    //button.UseVisualStyleBackColor = false;
+                    //button.FlatStyle = FlatStyle.Flat;
+                    //button.FlatAppearance.BorderColor = DarkUI.Config.Colors.GreyHighlight;
+                    //button.FlatAppearance.MouseOverBackColor = DarkUI.Config.Colors.BlueBackground;
+                    //button.FlatAppearance.MouseDownBackColor = DarkUI.Config.Colors.DarkBackground;
                 }
                 else if (controlType == typeof(ComboBoxCustom))
                 {

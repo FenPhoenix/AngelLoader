@@ -49,7 +49,7 @@ namespace AngelLoader.Forms
             BottomLeftButtonsFLP = new FlowLayoutPanel();
             PlayFMButton = new Button();
             PlayOriginalGameButton = new Button();
-            WebSearchButton = new Button();
+            WebSearchButton = new DarkUI.Controls.DarkButton();
             EverythingPanel = new Panel();
             MainSplitContainer = new SplitContainerCustom();
             TopSplitContainer = new SplitContainerCustom();
@@ -332,7 +332,7 @@ namespace AngelLoader.Forms
             WebSearchButton.TabIndex = 60;
             WebSearchButton.UseVisualStyleBackColor = true;
             WebSearchButton.Click += WebSearchButton_Click;
-            WebSearchButton.Paint += WebSearchButton_Paint;
+            WebSearchButton.PaintCustom += WebSearchButton_Paint;
             // 
             // EverythingPanel
             // 
