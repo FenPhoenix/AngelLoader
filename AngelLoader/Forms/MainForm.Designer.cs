@@ -308,19 +308,17 @@ namespace AngelLoader.Forms
             // 
             this.PlayOriginalGameButton.AutoSize = true;
             this.PlayOriginalGameButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PlayOriginalGameButton.Image = global::AngelLoader.Properties.Resources.Play_Original_24;
-            this.PlayOriginalGameButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.PlayOriginalGameButton.Location = new System.Drawing.Point(100, 3);
             this.PlayOriginalGameButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.PlayOriginalGameButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
-            this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
             this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);
             this.PlayOriginalGameButton.TabIndex = 57;
             this.PlayOriginalGameButton.Text = "Play original game...";
-            this.PlayOriginalGameButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
             this.PlayOriginalGameButton.Click += new System.EventHandler(this.PlayOriginalGameButton_Click);
+            this.PlayOriginalGameButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGameButton_Paint);
             // 
             // WebSearchButton
             // 

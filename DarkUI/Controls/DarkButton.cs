@@ -242,6 +242,8 @@ namespace DarkUI.Controls
 
             if (!_darkModeEnabled) return;
 
+            if (e.Button != MouseButtons.Left) return;
+
             if (!ClientRectangle.Contains(e.Location))
                 return;
 
@@ -253,6 +255,8 @@ namespace DarkUI.Controls
             base.OnMouseUp(e);
 
             if (!_darkModeEnabled) return;
+
+            if (e.Button != MouseButtons.Left) return;
 
             if (_spacePressed)
                 return;

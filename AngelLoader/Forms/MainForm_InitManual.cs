@@ -312,14 +312,12 @@ namespace AngelLoader.Forms
             PlayOriginalGameButton.AutoSize = true;
             PlayOriginalGameButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             PlayOriginalGameButton.MinimumSize = new Size(0, 36);
-            PlayOriginalGameButton.Image = Resources.Play_Original_24;
-            PlayOriginalGameButton.ImageAlign = ContentAlignment.MiddleLeft;
             PlayOriginalGameButton.Margin = new Padding(3, 3, 0, 3);
-            PlayOriginalGameButton.Padding = new Padding(6, 0, 6, 0);
+            PlayOriginalGameButton.Padding = new Padding(33, 0, 6, 0);
             PlayOriginalGameButton.TabIndex = 57;
-            PlayOriginalGameButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             PlayOriginalGameButton.UseVisualStyleBackColor = true;
             PlayOriginalGameButton.Click += PlayOriginalGameButton_Click;
+            PlayOriginalGameButton.PaintCustom += PlayOriginalGameButton_Paint;
             // 
             // 
             // WebSearchButton

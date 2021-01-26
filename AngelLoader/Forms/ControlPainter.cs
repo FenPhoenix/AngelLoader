@@ -420,6 +420,11 @@ namespace AngelLoader.Forms
             e.Graphics.FillPolygon(button.Enabled ? _playArrowBrush : SystemBrushes.ControlDark, _playArrowPoints);
         }
 
+        internal static void PaintPlayOriginalGameButton(Button button, PaintEventArgs e)
+        {
+            e.Graphics.DrawImage(button.Enabled ? Images.PlayOriginalGame : Images.PlayOriginalGame_Disabled, 10, 6);
+        }
+
         internal static void PaintPlusButton(Button button, PaintEventArgs e)
         {
             var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, button.ClientRectangle.Height / 2, 10, 2);
