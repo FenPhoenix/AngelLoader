@@ -76,6 +76,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DarkUI\DarkUI.csproj" />
     <ProjectReference Include="..\FMScanner\FMScanner.csproj" />
   </ItemGroup>
 
