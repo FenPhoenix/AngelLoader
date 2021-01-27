@@ -6,7 +6,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class ArrowButton : Button
+    public sealed class ArrowButton : DarkUI.Controls.DarkButton
     {
         private Direction _arrowDirection;
         private readonly Point[] _arrowPolygon = new Point[3];

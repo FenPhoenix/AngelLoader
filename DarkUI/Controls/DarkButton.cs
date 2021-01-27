@@ -21,6 +21,11 @@ namespace DarkUI.Controls
         private int _padding = Consts.Padding / 2;
         private int _imagePadding = 5; // Consts.Padding / 2
 
+        private FlatStyle? _originalFlatStyle;
+        private int? _originalBorderSize;
+
+        private Size? _originalSize;
+
         #endregion
 
         #region Designer Property Region
@@ -71,6 +76,11 @@ namespace DarkUI.Controls
             }
         }
 
+        [Category("Appearance")]
+        [Description("Performs a small size and position adjustment in dark mode to attempt to keep precise UI layouts the same as in classic mode.")]
+        [DefaultValue(false)]
+        public bool AdjustSizeAndPosForDarkMode { get; set; }
+
         #endregion
 
         #region Code Property Region
@@ -103,12 +113,19 @@ namespace DarkUI.Controls
         //    get { return false; }
         //}
 
-        //[Browsable(false)]
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        //public new FlatStyle FlatStyle
-        //{
-        //    get { return base.FlatStyle; }
-        //}
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new FlatStyle FlatStyle
+        {
+            get => base.FlatStyle;
+            set
+            {
+                base.FlatStyle = value;
+                ButtonStyle = value == FlatStyle.Flat
+                    ? DarkButtonStyle.Flat
+                    : DarkButtonStyle.Normal;
+            }
+        }
 
         //[Browsable(false)]
         //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -156,10 +173,20 @@ namespace DarkUI.Controls
 
             if (_darkModeEnabled)
             {
+                if (AdjustSizeAndPosForDarkMode)
+                {
+                    if (_originalSize == null) _originalSize = Size;
+                    MinimumSize = Size.Subtract(MinimumSize, new Size(2, 2));
+                    Size = Size.Subtract((Size)_originalSize, new Size(2, 2));
+                    Location = new Point(Location.X + 1, Location.Y + 1);
+                }
+
+                _originalFlatStyle = base.FlatStyle;
+                _originalBorderSize = FlatAppearance.BorderSize;
                 base.UseVisualStyleBackColor = !_darkModeEnabled;
                 SetButtonState(DarkControlState.Normal);
+
                 Invalidate();
-                //Padding = new Padding(_padding);
             }
             else
             {
@@ -167,7 +194,15 @@ namespace DarkUI.Controls
                 ForeColor = SystemColors.ControlText;
                 BackColor = SystemColors.Control;
                 base.UseVisualStyleBackColor = true;
-                FlatStyle = FlatStyle.Standard;
+                base.FlatStyle = _originalFlatStyle ?? base.FlatStyle;
+                FlatAppearance.BorderSize = _originalBorderSize ?? FlatAppearance.BorderSize;
+                
+                if (AdjustSizeAndPosForDarkMode && _originalSize != null)
+                {
+                    MinimumSize = Size.Add(MinimumSize, new Size(2, 2));
+                    Size = (Size)_originalSize;
+                    Location = new Point(Location.X - 1, Location.Y - 1);
+                }
             }
         }
 

@@ -50,7 +50,7 @@ namespace AngelLoader.Forms
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
-            this.MainMenuButton = new System.Windows.Forms.Button();
+            this.MainMenuButton = new DarkUI.Controls.DarkButton();
             this.FilterBarScrollRightButton = new AngelLoader.Forms.CustomControls.ArrowButton();
             this.FilterBarScrollLeftButton = new AngelLoader.Forms.CustomControls.ArrowButton();
             this.FMsDGV = new AngelLoader.Forms.CustomControls.DataGridViewCustom();
@@ -91,17 +91,17 @@ namespace AngelLoader.Forms
             this.RefreshFromDiskButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.RefreshFiltersButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.ClearFiltersButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
-            this.ResetLayoutButton = new System.Windows.Forms.Button();
+            this.ResetLayoutButton = new DarkUI.Controls.DarkButton();
             this.GamesTabControl = new System.Windows.Forms.TabControl();
             this.Thief1TabPage = new System.Windows.Forms.TabPage();
             this.Thief2TabPage = new System.Windows.Forms.TabPage();
             this.Thief3TabPage = new System.Windows.Forms.TabPage();
             this.SS2TabPage = new System.Windows.Forms.TabPage();
-            this.TopRightMenuButton = new System.Windows.Forms.Button();
+            this.TopRightMenuButton = new DarkUI.Controls.DarkButton();
             this.TopRightCollapseButton = new AngelLoader.Forms.CustomControls.ArrowButton();
             this.TopRightTabControl = new AngelLoader.Forms.CustomControls.TabControlCustom();
             this.StatisticsTabPage = new System.Windows.Forms.TabPage();
-            this.StatsScanCustomResourcesButton = new System.Windows.Forms.Button();
+            this.StatsScanCustomResourcesButton = new DarkUI.Controls.DarkButton();
             this.StatsCheckBoxesPanel = new System.Windows.Forms.Panel();
             this.CR_MapCheckBox = new System.Windows.Forms.CheckBox();
             this.CR_MoviesCheckBox = new System.Windows.Forms.CheckBox();
@@ -115,16 +115,16 @@ namespace AngelLoader.Forms
             this.CR_ObjectsCheckBox = new System.Windows.Forms.CheckBox();
             this.CustomResourcesLabel = new System.Windows.Forms.Label();
             this.EditFMTabPage = new System.Windows.Forms.TabPage();
-            this.EditFMScanLanguagesButton = new System.Windows.Forms.Button();
+            this.EditFMScanLanguagesButton = new DarkUI.Controls.DarkButton();
             this.EditFMLanguageLabel = new System.Windows.Forms.Label();
             this.EditFMLanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
-            this.EditFMScanForReadmesButton = new System.Windows.Forms.Button();
-            this.EditFMScanReleaseDateButton = new System.Windows.Forms.Button();
-            this.EditFMScanAuthorButton = new System.Windows.Forms.Button();
-            this.EditFMScanTitleButton = new System.Windows.Forms.Button();
+            this.EditFMScanForReadmesButton = new DarkUI.Controls.DarkButton();
+            this.EditFMScanReleaseDateButton = new DarkUI.Controls.DarkButton();
+            this.EditFMScanAuthorButton = new DarkUI.Controls.DarkButton();
+            this.EditFMScanTitleButton = new DarkUI.Controls.DarkButton();
             this.EditFMAltTitlesArrowButton = new AngelLoader.Forms.CustomControls.ArrowButton();
             this.EditFMTitleTextBox = new System.Windows.Forms.TextBox();
-            this.EditFMFinishedOnButton = new System.Windows.Forms.Button();
+            this.EditFMFinishedOnButton = new DarkUI.Controls.DarkButton();
             this.EditFMRatingComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
             this.EditFMRatingLabel = new System.Windows.Forms.Label();
             this.EditFMLastPlayedDateTimePicker = new System.Windows.Forms.DateTimePicker();
@@ -140,11 +140,11 @@ namespace AngelLoader.Forms
             this.CommentTabPage = new System.Windows.Forms.TabPage();
             this.CommentTextBox = new System.Windows.Forms.TextBox();
             this.TagsTabPage = new System.Windows.Forms.TabPage();
-            this.AddTagButton = new System.Windows.Forms.Button();
+            this.AddTagButton = new DarkUI.Controls.DarkButton();
             this.AddTagTextBox = new AngelLoader.Forms.CustomControls.TextBoxCustom();
             this.AddRemoveTagFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.RemoveTagButton = new System.Windows.Forms.Button();
-            this.AddTagFromListButton = new System.Windows.Forms.Button();
+            this.RemoveTagButton = new DarkUI.Controls.DarkButton();
+            this.AddTagFromListButton = new DarkUI.Controls.DarkButton();
             this.TagsTreeView = new System.Windows.Forms.TreeView();
             this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
             this.PatchTabPage = new System.Windows.Forms.TabPage();
@@ -152,9 +152,9 @@ namespace AngelLoader.Forms
             this.PatchDMLsPanel = new System.Windows.Forms.Panel();
             this.PatchDMLPatchesLabel = new System.Windows.Forms.Label();
             this.PatchDMLsListBox = new System.Windows.Forms.ListBox();
-            this.PatchRemoveDMLButton = new System.Windows.Forms.Button();
-            this.PatchAddDMLButton = new System.Windows.Forms.Button();
-            this.PatchOpenFMFolderButton = new System.Windows.Forms.Button();
+            this.PatchRemoveDMLButton = new DarkUI.Controls.DarkButton();
+            this.PatchAddDMLButton = new DarkUI.Controls.DarkButton();
+            this.PatchOpenFMFolderButton = new DarkUI.Controls.DarkButton();
             this.PatchFMNotInstalledLabel = new System.Windows.Forms.Label();
             this.ReadmeFullScreenButton = new System.Windows.Forms.Button();
             this.ReadmeZoomInButton = new System.Windows.Forms.Button();
@@ -409,7 +409,7 @@ namespace AngelLoader.Forms
             this.MainMenuButton.Size = new System.Drawing.Size(24, 24);
             this.MainMenuButton.TabIndex = 14;
             this.MainMenuButton.UseVisualStyleBackColor = true;
-            this.MainMenuButton.Paint += new System.Windows.Forms.PaintEventHandler(this.MainMenuButton_Paint);
+            this.MainMenuButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.MainMenuButton_Paint);
             this.MainMenuButton.Click += new System.EventHandler(this.MainMenuButton_Click);
             this.MainMenuButton.Enter += new System.EventHandler(this.MainMenuButton_Enter);
             // 
@@ -978,7 +978,7 @@ namespace AngelLoader.Forms
             this.MainToolTip.SetToolTip(this.ResetLayoutButton, "Reset layout");
             this.ResetLayoutButton.UseVisualStyleBackColor = true;
             this.ResetLayoutButton.Click += new System.EventHandler(this.ResetLayoutButton_Click);
-            this.ResetLayoutButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ResetLayoutButton_Paint);
+            this.ResetLayoutButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ResetLayoutButton_Paint);
             // 
             // GamesTabControl
             // 
@@ -1050,7 +1050,7 @@ namespace AngelLoader.Forms
             this.TopRightMenuButton.TabIndex = 13;
             this.TopRightMenuButton.UseVisualStyleBackColor = true;
             this.TopRightMenuButton.Click += new System.EventHandler(this.TopRightMenuButton_Click);
-            this.TopRightMenuButton.Paint += new System.Windows.Forms.PaintEventHandler(this.TopRightMenuButton_Paint);
+            this.TopRightMenuButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.TopRightMenuButton_Paint);
             // 
             // TopRightCollapseButton
             // 
@@ -1062,7 +1062,7 @@ namespace AngelLoader.Forms
             this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.TopRightCollapseButton.Location = new System.Drawing.Point(533, 20);
             this.TopRightCollapseButton.Name = "TopRightCollapseButton";
-            this.TopRightCollapseButton.Size = new System.Drawing.Size(18, 287);
+            this.TopRightCollapseButton.Size = new System.Drawing.Size(18, 289);
             this.TopRightCollapseButton.TabIndex = 14;
             this.TopRightCollapseButton.UseVisualStyleBackColor = true;
             this.TopRightCollapseButton.Click += new System.EventHandler(this.TopRightCollapseButton_Click);
@@ -1098,6 +1098,7 @@ namespace AngelLoader.Forms
             // 
             // StatsScanCustomResourcesButton
             // 
+            this.StatsScanCustomResourcesButton.AdjustSizeAndPosForDarkMode = true;
             this.StatsScanCustomResourcesButton.AutoSize = true;
             this.StatsScanCustomResourcesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 200);
@@ -1109,7 +1110,7 @@ namespace AngelLoader.Forms
             this.StatsScanCustomResourcesButton.Text = "Rescan custom resources";
             this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
             this.StatsScanCustomResourcesButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
-            this.StatsScanCustomResourcesButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.StatsScanCustomResourcesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // StatsCheckBoxesPanel
             // 
@@ -1282,16 +1283,6 @@ namespace AngelLoader.Forms
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
             // 
-            // EditFMScanLanguagesButton
-            // 
-            this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 261);
-            this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
-            this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
-            this.EditFMScanLanguagesButton.TabIndex = 33;
-            this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
-            this.EditFMScanLanguagesButton.Click += new System.EventHandler(this.EditFMScanLanguagesButton_Click);
-            this.EditFMScanLanguagesButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            // 
             // EditFMLanguageLabel
             // 
             this.EditFMLanguageLabel.AutoSize = true;
@@ -1311,8 +1302,20 @@ namespace AngelLoader.Forms
             this.EditFMLanguageComboBox.TabIndex = 32;
             this.EditFMLanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMLanguageComboBox_SelectedIndexChanged);
             // 
+            // EditFMScanLanguagesButton
+            // 
+            this.EditFMScanLanguagesButton.AdjustSizeAndPosForDarkMode = true;
+            this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 261);
+            this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
+            this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
+            this.EditFMScanLanguagesButton.TabIndex = 33;
+            this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
+            this.EditFMScanLanguagesButton.Click += new System.EventHandler(this.EditFMScanLanguagesButton_Click);
+            this.EditFMScanLanguagesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            // 
             // EditFMScanForReadmesButton
             // 
+            this.EditFMScanForReadmesButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMScanForReadmesButton.AutoSize = true;
             this.EditFMScanForReadmesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 299);
@@ -1324,45 +1327,49 @@ namespace AngelLoader.Forms
             this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
             this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
-            this.EditFMScanForReadmesButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.EditFMScanForReadmesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // EditFMScanReleaseDateButton
             // 
+            this.EditFMScanReleaseDateButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMScanReleaseDateButton.Location = new System.Drawing.Point(136, 105);
             this.EditFMScanReleaseDateButton.Name = "EditFMScanReleaseDateButton";
             this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanReleaseDateButton.TabIndex = 22;
             this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
             this.EditFMScanReleaseDateButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
-            this.EditFMScanReleaseDateButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.EditFMScanReleaseDateButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // EditFMScanAuthorButton
             // 
+            this.EditFMScanAuthorButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(455, 63);
+            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(493, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 19;
             this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
             this.EditFMScanAuthorButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
-            this.EditFMScanAuthorButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.EditFMScanAuthorButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // EditFMScanTitleButton
             // 
+            this.EditFMScanTitleButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(455, 23);
+            this.EditFMScanTitleButton.Location = new System.Drawing.Point(493, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 16;
             this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
             this.EditFMScanTitleButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
-            this.EditFMScanTitleButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.EditFMScanTitleButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // EditFMAltTitlesArrowButton
             // 
+            this.EditFMAltTitlesArrowButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
-            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(439, 23);
+            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(477, 23);
             this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
             this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesArrowButton.TabIndex = 15;
@@ -1375,13 +1382,14 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(431, 20);
+            this.EditFMTitleTextBox.Size = new System.Drawing.Size(469, 20);
             this.EditFMTitleTextBox.TabIndex = 14;
             this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
             this.EditFMTitleTextBox.Leave += new System.EventHandler(this.EditFMTitleTextBox_Leave);
             // 
             // EditFMFinishedOnButton
             // 
+            this.EditFMFinishedOnButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMFinishedOnButton.AutoSize = true;
             this.EditFMFinishedOnButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.EditFMFinishedOnButton.Location = new System.Drawing.Point(184, 144);
@@ -1487,7 +1495,7 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
-            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(483, 20);
+            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(507, 20);
             this.EditFMDisabledModsTextBox.TabIndex = 29;
             this.EditFMDisabledModsTextBox.TextChanged += new System.EventHandler(this.EditFMDisabledModsTextBox_TextChanged);
             this.EditFMDisabledModsTextBox.Leave += new System.EventHandler(this.EditFMDisabledModsTextBox_Leave);
@@ -1507,7 +1515,7 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(447, 20);
+            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(485, 20);
             this.EditFMAuthorTextBox.TabIndex = 18;
             this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
             this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
@@ -1571,6 +1579,7 @@ namespace AngelLoader.Forms
             // 
             // AddTagButton
             // 
+            this.AddTagButton.AdjustSizeAndPosForDarkMode = true;
             this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagButton.AutoSize = true;
             this.AddTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -1611,6 +1620,7 @@ namespace AngelLoader.Forms
             // 
             // RemoveTagButton
             // 
+            this.RemoveTagButton.AdjustSizeAndPosForDarkMode = true;
             this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RemoveTagButton.AutoSize = true;
             this.RemoveTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -1627,6 +1637,7 @@ namespace AngelLoader.Forms
             // 
             // AddTagFromListButton
             // 
+            this.AddTagFromListButton.AdjustSizeAndPosForDarkMode = true;
             this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagFromListButton.AutoSize = true;
             this.AddTagFromListButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -1714,26 +1725,29 @@ namespace AngelLoader.Forms
             // 
             // PatchRemoveDMLButton
             // 
+            this.PatchRemoveDMLButton.AdjustSizeAndPosForDarkMode = true;
             this.PatchRemoveDMLButton.Location = new System.Drawing.Point(122, 94);
             this.PatchRemoveDMLButton.Name = "PatchRemoveDMLButton";
             this.PatchRemoveDMLButton.Size = new System.Drawing.Size(23, 23);
             this.PatchRemoveDMLButton.TabIndex = 42;
             this.PatchRemoveDMLButton.UseVisualStyleBackColor = true;
             this.PatchRemoveDMLButton.Click += new System.EventHandler(this.PatchRemoveDMLButton_Click);
-            this.PatchRemoveDMLButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PatchRemoveDMLButton_Paint);
+            this.PatchRemoveDMLButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PatchRemoveDMLButton_Paint);
             // 
             // PatchAddDMLButton
             // 
+            this.PatchAddDMLButton.AdjustSizeAndPosForDarkMode = true;
             this.PatchAddDMLButton.Location = new System.Drawing.Point(146, 94);
             this.PatchAddDMLButton.Name = "PatchAddDMLButton";
             this.PatchAddDMLButton.Size = new System.Drawing.Size(23, 23);
             this.PatchAddDMLButton.TabIndex = 43;
             this.PatchAddDMLButton.UseVisualStyleBackColor = true;
             this.PatchAddDMLButton.Click += new System.EventHandler(this.PatchAddDMLButton_Click);
-            this.PatchAddDMLButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PatchAddDMLButton_Paint);
+            this.PatchAddDMLButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PatchAddDMLButton_Paint);
             // 
             // PatchOpenFMFolderButton
             // 
+            this.PatchOpenFMFolderButton.AdjustSizeAndPosForDarkMode = true;
             this.PatchOpenFMFolderButton.AutoSize = true;
             this.PatchOpenFMFolderButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 128);
@@ -1967,11 +1981,11 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.TextBox CommentTextBox;
         internal System.Windows.Forms.TabPage TagsTabPage;
         internal System.Windows.Forms.TreeView TagsTreeView;
-        internal System.Windows.Forms.Button ResetLayoutButton;
+        internal DarkUI.Controls.DarkButton ResetLayoutButton;
         internal System.Windows.Forms.ToolTip MainToolTip;
-        internal System.Windows.Forms.Button RemoveTagButton;
-        internal System.Windows.Forms.Button AddTagButton;
-        internal System.Windows.Forms.Button AddTagFromListButton;
+        internal DarkUI.Controls.DarkButton RemoveTagButton;
+        internal DarkUI.Controls.DarkButton AddTagButton;
+        internal DarkUI.Controls.DarkButton AddTagFromListButton;
         internal AngelLoader.Forms.CustomControls.TextBoxCustom AddTagTextBox;
         internal AngelLoader.Forms.CustomControls.TextBoxCustom FilterAuthorTextBox;
         internal System.Windows.Forms.Label FilterAuthorLabel;
@@ -1993,7 +2007,7 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.CheckBox EditFMReleaseDateCheckBox;
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom EditFMRatingComboBox;
         internal System.Windows.Forms.Label EditFMRatingLabel;
-        internal System.Windows.Forms.Button EditFMFinishedOnButton;
+        internal DarkUI.Controls.DarkButton EditFMFinishedOnButton;
         internal System.Windows.Forms.Button ReadmeFullScreenButton;
         internal DarkUI.Controls.DarkButton WebSearchButton;
         internal AngelLoader.Forms.CustomControls.ArrowButton FilterBarScrollRightButton;
@@ -2018,20 +2032,20 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.Button ReadmeZoomInButton;
         internal System.Windows.Forms.Button ReadmeZoomOutButton;
         internal System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
-        internal System.Windows.Forms.Button EditFMScanReleaseDateButton;
-        internal System.Windows.Forms.Button EditFMScanAuthorButton;
-        internal System.Windows.Forms.Button EditFMScanTitleButton;
-        internal System.Windows.Forms.Button EditFMScanForReadmesButton;
-        internal System.Windows.Forms.Button StatsScanCustomResourcesButton;
+        internal DarkUI.Controls.DarkButton EditFMScanReleaseDateButton;
+        internal DarkUI.Controls.DarkButton EditFMScanAuthorButton;
+        internal DarkUI.Controls.DarkButton EditFMScanTitleButton;
+        internal DarkUI.Controls.DarkButton EditFMScanForReadmesButton;
+        internal DarkUI.Controls.DarkButton StatsScanCustomResourcesButton;
         internal System.Windows.Forms.TabPage PatchTabPage;
         internal System.Windows.Forms.ListBox PatchDMLsListBox;
-        internal System.Windows.Forms.Button PatchRemoveDMLButton;
-        internal System.Windows.Forms.Button PatchAddDMLButton;
+        internal DarkUI.Controls.DarkButton PatchRemoveDMLButton;
+        internal DarkUI.Controls.DarkButton PatchAddDMLButton;
         internal System.Windows.Forms.Label PatchDMLPatchesLabel;
         internal System.Windows.Forms.Panel PatchDMLsPanel;
         internal System.Windows.Forms.Label PatchFMNotInstalledLabel;
         internal System.Windows.Forms.Panel PatchMainPanel;
-        internal System.Windows.Forms.Button PatchOpenFMFolderButton;
+        internal DarkUI.Controls.DarkButton PatchOpenFMFolderButton;
         internal AngelLoader.Forms.CustomControls.ArrowButton TopRightCollapseButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
         internal System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
@@ -2048,15 +2062,15 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
-        internal System.Windows.Forms.Button TopRightMenuButton;
+        internal DarkUI.Controls.DarkButton TopRightMenuButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterBySS2Button;
         internal System.Windows.Forms.TabPage SS2TabPage;
         internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom EditFMLanguageComboBox;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
-        internal System.Windows.Forms.Button EditFMScanLanguagesButton;
+        internal DarkUI.Controls.DarkButton EditFMScanLanguagesButton;
         internal System.Windows.Forms.Label EditFMLanguageLabel;
-        internal System.Windows.Forms.Button MainMenuButton;
+        internal DarkUI.Controls.DarkButton MainMenuButton;
         internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
     }
 }

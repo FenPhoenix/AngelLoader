@@ -179,7 +179,8 @@ namespace DarkUI.Controls
                                                 rect.Width - icon.Width - (Consts.Padding / 2) - (padding * 2),
                                                 rect.Height - (padding * 2));
 
-                    TextRenderer.DrawText(g, text, Font, modRect, b.Color, _textFormat);
+                    // Explicitly set the fill color so that the antialiasing/ClearType looks right
+                    TextRenderer.DrawText(g, text, Font, modRect, b.Color, fillColor, _textFormat);
                 }
             }
         }
@@ -236,7 +237,8 @@ namespace DarkUI.Controls
                         rect.Width - (padding * 2),
                         rect.Height - (padding * 2));
 
-                    TextRenderer.DrawText(g, text, Font, modRect, b.Color, _textFormat);
+                    // Explicitly set the fill color so that the antialiasing/ClearType looks right
+                    TextRenderer.DrawText(g, text, Font, modRect, b.Color, fillColor, _textFormat);
                 }
             }
         }

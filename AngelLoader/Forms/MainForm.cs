@@ -185,7 +185,13 @@ namespace AngelLoader.Forms
 
                 Type controlType = control.GetType();
 
-                if (controlType == typeof(DarkButton))
+                if (controlType == typeof(ArrowButton))
+                {
+                    ArrowButton button = (ArrowButton)control;
+                    button.DarkModeEnabled = !button.DarkModeEnabled;
+                    return;
+                }
+                else if (controlType == typeof(DarkButton))
                 {
                     DarkButton button = (DarkButton)control;
                     button.DarkModeEnabled = !button.DarkModeEnabled;
