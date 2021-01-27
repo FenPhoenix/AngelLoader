@@ -4333,7 +4333,17 @@ namespace AngelLoader.Forms
 
         private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlayFMButton(PlayFMButton, e);
 
-        private void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlayOriginalGameButton(PlayOriginalGameButton, e);
+        private void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintBitmapButton(
+            PlayOriginalGameButton,
+            e,
+            PlayOriginalGameButton.Enabled ? Images.PlayOriginalGame : Images.PlayOriginalGame_Disabled,
+            x: 10);
+
+        private void SettingsButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintBitmapButton(
+            SettingsButton,
+            e,
+            SettingsButton.Enabled ? Images.Settings : Images.Settings_Disabled,
+            x: 10);
 
         private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlusButton(PatchAddDMLButton, e);
 

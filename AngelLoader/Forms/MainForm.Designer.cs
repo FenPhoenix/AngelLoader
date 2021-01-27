@@ -41,7 +41,7 @@ namespace AngelLoader.Forms
             this.ScanAllFMsButton = new System.Windows.Forms.Button();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.BottomRightButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.SettingsButton = new System.Windows.Forms.Button();
+            this.SettingsButton = new DarkUI.Controls.DarkButton();
             this.ImportButton = new System.Windows.Forms.Button();
             this.BottomLeftButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new System.Windows.Forms.Button();
@@ -245,18 +245,17 @@ namespace AngelLoader.Forms
             // 
             this.SettingsButton.AutoSize = true;
             this.SettingsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SettingsButton.Image = global::AngelLoader.Properties.Resources.Settings_24;
-            this.SettingsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.SettingsButton.Location = new System.Drawing.Point(123, 3);
             this.SettingsButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.SettingsButton.Name = "SettingsButton";
-            this.SettingsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.SettingsButton.Padding = new System.Windows.Forms.Padding(30, 0, 6, 0);
             this.SettingsButton.Size = new System.Drawing.Size(100, 36);
             this.SettingsButton.TabIndex = 62;
             this.SettingsButton.Text = "Settings...";
-            this.SettingsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.SettingsButton.UseVisualStyleBackColor = true;
             this.SettingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
+            this.SettingsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.SettingsButton_Paint);
+
             // 
             // ImportButton
             // 
@@ -1944,7 +1943,7 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.Button ScanAllFMsButton;
         internal AngelLoader.Forms.CustomControls.SplitContainerCustom TopSplitContainer;
         internal System.Windows.Forms.Panel EverythingPanel;
-        internal System.Windows.Forms.Button SettingsButton;
+        internal DarkUI.Controls.DarkButton SettingsButton;
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom ChooseReadmeComboBox;
         internal System.Windows.Forms.Button ReadmeResetZoomButton;
         internal System.Windows.Forms.Label FilterTitleLabel;

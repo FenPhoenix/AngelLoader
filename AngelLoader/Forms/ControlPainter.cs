@@ -420,9 +420,15 @@ namespace AngelLoader.Forms
             e.Graphics.FillPolygon(button.Enabled ? _playArrowBrush : SystemBrushes.ControlDark, _playArrowPoints);
         }
 
-        internal static void PaintPlayOriginalGameButton(Button button, PaintEventArgs e)
+        internal static void PaintBitmapButton(
+            Button button,
+            PaintEventArgs e,
+            Image img,
+            int x = 0,
+            int? y = null)
         {
-            e.Graphics.DrawImage(button.Enabled ? Images.PlayOriginalGame : Images.PlayOriginalGame_Disabled, 10, 6);
+            y ??= (button.Height - img.Height) / 2;
+            e.Graphics.DrawImage(img, x, (int)y);
         }
 
         internal static void PaintPlusButton(Button button, PaintEventArgs e)

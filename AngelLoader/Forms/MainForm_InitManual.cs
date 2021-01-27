@@ -44,7 +44,7 @@ namespace AngelLoader.Forms
             ScanAllFMsButton = new Button();
             BottomPanel = new Panel();
             BottomRightButtonsFLP = new FlowLayoutPanel();
-            SettingsButton = new Button();
+            SettingsButton = new DarkUI.Controls.DarkButton();
             ImportButton = new Button();
             BottomLeftButtonsFLP = new FlowLayoutPanel();
             PlayFMButton = new Button();
@@ -263,13 +263,11 @@ namespace AngelLoader.Forms
             SettingsButton.AutoSize = true;
             SettingsButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             SettingsButton.MinimumSize = new Size(0, 36);
-            SettingsButton.Image = Resources.Settings_24;
-            SettingsButton.ImageAlign = ContentAlignment.MiddleLeft;
-            SettingsButton.Padding = new Padding(6, 0, 6, 0);
+            SettingsButton.Padding = new Padding(30, 0, 6, 0);
             SettingsButton.TabIndex = 62;
-            SettingsButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             SettingsButton.UseVisualStyleBackColor = true;
             SettingsButton.Click += SettingsButton_Click;
+            SettingsButton.PaintCustom += SettingsButton_Paint;
             // 
             // ImportButton
             // 

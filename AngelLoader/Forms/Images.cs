@@ -306,13 +306,19 @@ namespace AngelLoader.Forms
         public static Image PlayOriginalGame => _playOriginalGame ??= Resources.Play_Original_24;
 
         private static Image? _playOriginalGame_Disabled;
-        public static Image PlayOriginalGame_Disabled => _playOriginalGame_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.Play_Original_24);
+        public static Image PlayOriginalGame_Disabled => _playOriginalGame_Disabled ??= ToolStripRenderer.CreateDisabledImage(PlayOriginalGame);
 
         private static Bitmap? _install_24;
         public static Bitmap Install_24 => _install_24 ??= Resources.Install_24;
 
         private static Bitmap? _uninstall_24;
         public static Bitmap Uninstall_24 => _uninstall_24 ??= Resources.Uninstall_24;
+
+        private static Image? _settings;
+        public static Image Settings => _settings ??= Resources.Settings_24;
+
+        private static Image? _settings_Disabled;
+        public static Image Settings_Disabled => _settings_Disabled ??= ToolStripRenderer.CreateDisabledImage(Settings);
 
         #region Zoom
 
