@@ -4345,6 +4345,21 @@ namespace AngelLoader.Forms
             PlayOriginalGameButton.Enabled ? Images.PlayOriginalGame : Images.PlayOriginalGame_Disabled,
             x: 10);
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+        internal void InstallUninstall_Play_Buttons_Paint(object sender, PaintEventArgs e)
+        {
+            DarkButton button = InstallUninstallFMLLButton.Button;
+            bool enabled = button.Enabled;
+
+            ControlPainter.PaintBitmapButton(
+                button,
+                e,
+                InstallUninstallFMLLButton.SayInstallState
+                    ? enabled ? Images.Install_24 : Images.Install_24_Disabled
+                    : enabled ? Images.Uninstall_24 : Images.Uninstall_24_Disabled,
+                10);
+        }
+
         private void ImportButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintBitmapButton(
             ImportButton,
             e,

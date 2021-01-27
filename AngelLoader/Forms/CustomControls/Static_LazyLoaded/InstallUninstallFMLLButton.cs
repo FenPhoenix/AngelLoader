@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Controls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -11,7 +12,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static bool _sayInstall;
         private static bool _enabled;
 
-        internal static Button Button = null!;
+        internal static bool SayInstallState => _sayInstall;
+
+        internal static DarkButton Button = null!;
 
         internal static void Construct(MainForm owner)
         {
@@ -23,21 +26,20 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             // Otherwise, it's impossible that this would work, because we construct but only explicitly call
             // Show() in OpenSettings()...
             // 2020-12-30: No, it's because we call Localize() and that calls Show().
-            Button = new Button { Visible = false };
+            Button = new DarkButton { Visible = false };
 
             container.Controls.Add(Button);
             container.Controls.SetChildIndex(Button, 2);
 
             Button.AutoSize = true;
             Button.AutoSizeMode = AutoSizeMode.GrowOnly;
-            Button.ImageAlign = ContentAlignment.MiddleLeft;
-            Button.Margin = new Padding(3, 3, 0, 3);
-            Button.Padding = new Padding(6, 0, 6, 0);
+            Button.Margin = new Padding(6, 3, 0, 3);
+            Button.Padding = new Padding(30, 0, 6, 0);
             Button.MinimumSize = new Size(0, 36);
             Button.TabIndex = 58;
-            Button.TextImageRelation = TextImageRelation.ImageBeforeText;
             Button.UseVisualStyleBackColor = true;
             Button.Click += owner.InstallUninstall_Play_Buttons_Click;
+            Button.PaintCustom += owner.InstallUninstall_Play_Buttons_Paint;
 
             Button.Enabled = _enabled;
             SetSayInstallState(_sayInstall);
@@ -99,7 +101,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             // Special-cased; don't autosize this one
             Button.Text = value ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
-            Button.Image = value ? Images.Install_24 : Images.Uninstall_24;
+            Button.Invalidate();
         }
     }
 }

@@ -308,12 +308,21 @@ namespace AngelLoader.Forms
         private static Image? _playOriginalGame_Disabled;
         public static Image PlayOriginalGame_Disabled => _playOriginalGame_Disabled ??= ToolStripRenderer.CreateDisabledImage(PlayOriginalGame);
 
-        private static Bitmap? _install_24;
-        public static Bitmap Install_24 => _install_24 ??= Resources.Install_24;
+        #region Install / uninstall
 
-        private static Bitmap? _uninstall_24;
-        public static Bitmap Uninstall_24 => _uninstall_24 ??= Resources.Uninstall_24;
+        private static Image? _install_24;
+        public static Image Install_24 => _install_24 ??= Resources.Install_24;
 
+        private static Image? _install_24_Disabled;
+        public static Image Install_24_Disabled => _install_24_Disabled ??= ToolStripRenderer.CreateDisabledImage(Install_24);
+
+        private static Image? _uninstall_24;
+        public static Image Uninstall_24 => _uninstall_24 ??= Resources.Uninstall_24;
+
+        private static Image? _uninstall_24_Disabled;
+        public static Image Uninstall_24_Disabled => _uninstall_24_Disabled ??= ToolStripRenderer.CreateDisabledImage(Uninstall_24);
+
+        #endregion
 
         private static Image? _import;
         public static Image Import => _import ??= Resources.Import_24;
