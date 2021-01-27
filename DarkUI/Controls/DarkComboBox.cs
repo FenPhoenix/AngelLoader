@@ -1,14 +1,20 @@
-﻿using DarkUI.Config;
-using DarkUI.Icons;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Config;
 
 namespace DarkUI.Controls
 {
     public class DarkComboBox : ComboBox
     {
+        private const TextFormatFlags _textFormat =
+            TextFormatFlags.Default |
+            TextFormatFlags.VerticalCenter |
+            TextFormatFlags.EndEllipsis |
+            TextFormatFlags.NoPrefix |
+            TextFormatFlags.SingleLine;
+
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
         {
@@ -173,15 +179,7 @@ namespace DarkUI.Controls
                                                 rect.Width - icon.Width - (Consts.Padding / 2) - (padding * 2),
                                                 rect.Height - (padding * 2));
 
-                    var stringFormat = new StringFormat
-                    {
-                        LineAlignment = StringAlignment.Center,
-                        Alignment = StringAlignment.Near,
-                        FormatFlags = StringFormatFlags.NoWrap,
-                        Trimming = StringTrimming.EllipsisCharacter
-                    };
-
-                    g.DrawString(text, Font, b, modRect, stringFormat);
+                    TextRenderer.DrawText(g, text, Font, modRect, b.Color, _textFormat);
                 }
             }
         }
@@ -238,15 +236,7 @@ namespace DarkUI.Controls
                         rect.Width - (padding * 2),
                         rect.Height - (padding * 2));
 
-                    var stringFormat = new StringFormat
-                    {
-                        LineAlignment = StringAlignment.Center,
-                        Alignment = StringAlignment.Near,
-                        FormatFlags = StringFormatFlags.NoWrap,
-                        Trimming = StringTrimming.EllipsisCharacter
-                    };
-
-                    g.DrawString(text, Font, b, modRect, stringFormat);
+                    TextRenderer.DrawText(g, text, Font, modRect, b.Color, _textFormat);
                 }
             }
         }

@@ -175,6 +175,7 @@ namespace DarkUI.Controls
 
         public DarkButton()
         {
+            UseMnemonic = false;
             SetUpTheme();
         }
 
@@ -496,7 +497,8 @@ namespace DarkUI.Controls
                 const TextFormatFlags textFormat =
                     TextFormatFlags.HorizontalCenter |
                     TextFormatFlags.VerticalCenter |
-                    TextFormatFlags.EndEllipsis;
+                    TextFormatFlags.EndEllipsis |
+                    TextFormatFlags.NoPrefix;
 
                 // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
                 TextRenderer.DrawText(g, Text, Font, modRect, b.Color, textFormat);
