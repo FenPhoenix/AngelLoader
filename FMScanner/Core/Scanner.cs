@@ -463,7 +463,7 @@ namespace FMScanner
                         }
                         try
                         {
-                            scannedFM = ScanCurrentFM(rtfConverter);
+                            scannedFM = ScanCurrentFM(rtfConverter, missions[i].CachePath);
                         }
                         catch (Exception ex)
                         {
@@ -494,7 +494,7 @@ namespace FMScanner
             return scannedFMDataList;
         }
 
-        private ScannedFMData? ScanCurrentFM(RtfToTextConverter rtfConverter)
+        private ScannedFMData? ScanCurrentFM(RtfToTextConverter rtfConverter, string cachePath)
         {
 #if DEBUG
             _overallTimer.Restart();
@@ -543,6 +543,67 @@ namespace FMScanner
                     // Third party thing, doesn't tell you what exceptions it can throw, whatever
                     DeleteFMWorkingPath(_fmWorkingPath);
                     return UnsupportedZip(_archivePath);
+                }
+
+                if (!cachePath.IsEmpty())
+                {
+                    void CacheReadmes()
+                    {
+                        Directory.CreateDirectory(cachePath);
+
+                        var readmes = new List<(string Source, string Dest)>();
+
+                        foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
+                        {
+                            if (f.IsValidReadme())
+                            {
+                                // If any HTML files found, give up - we don't have the facility to do a recursive
+                                // linked-file scan here at the moment
+                                if (f.ExtIsHtml()) return;
+
+                                readmes.Add((f, Path.Combine(cachePath, Path.GetFileName(f))));
+                            }
+                        }
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            string readmeDir = i == 0 ? FMDirs.T3FMExtras1S : FMDirs.T3FMExtras2S;
+                            string readmePathFull = Path.Combine(_fmWorkingPath, readmeDir);
+
+                            if (Directory.Exists(readmePathFull))
+                            {
+                                Directory.CreateDirectory(Path.Combine(cachePath, readmeDir));
+
+                                foreach (string f in Directory.GetFiles(readmePathFull, "*", SearchOption.TopDirectoryOnly))
+                                {
+                                    if (f.IsValidReadme())
+                                    {
+                                        // Ditto the above
+                                        if (f.ExtIsHtml()) return;
+
+                                        readmes.Add((f, Path.Combine(cachePath, readmeDir, Path.GetFileName(f))));
+                                    }
+                                }
+                            }
+                        }
+
+                        if (readmes.Count > 0)
+                        {
+                            foreach (var (source, dest) in readmes)
+                            {
+                                File.Copy(source, dest, overwrite: true);
+                            }
+                        }
+                    }
+
+                    try
+                    {
+                        CacheReadmes();
+                    }
+                    catch
+                    {
+                        // ignore for now
+                    }
                 }
             }
 

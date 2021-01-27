@@ -177,6 +177,11 @@ namespace FMScanner
     {
         public string Path = "";
         public bool ForceFullScan;
+        /// <summary>
+        /// Optional cache path to place extracted readme files for .7z archives, for performance.
+        /// Ignored for all other FM package types.
+        /// </summary>
+        public string CachePath = "";
     }
 
     // NULL_TODO (Scanner - FMData)

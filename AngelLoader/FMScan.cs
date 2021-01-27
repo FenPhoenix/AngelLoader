@@ -26,8 +26,12 @@ namespace AngelLoader
         /// <param name="scanFullIfNew"></param>
         /// <param name="hideBoxIfZip"></param>
         /// <returns></returns>
-        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions? scanOptions = null,
-                                                 bool scanFullIfNew = false, bool hideBoxIfZip = false)
+        internal static async Task<bool> ScanFMs(
+            List<FanMission> fmsToScan,
+            FMScanner.ScanOptions? scanOptions = null,
+            bool scanFullIfNew = false,
+            bool hideBoxIfZip = false,
+            bool cacheReadmesFor7zFMs = true)
         {
             #region Local functions
 
@@ -312,7 +316,10 @@ namespace AngelLoader
             // Just in case
             fmsViewListUnscanned.Clear();
 
-            return ScanFMs(fmsToScan, FMScanner.ScanOptions.FalseDefault(scanGameType: true), scanFullIfNew: true);
+            return ScanFMs(fmsToScan,
+                FMScanner.ScanOptions.FalseDefault(scanGameType: true),
+                scanFullIfNew: true,
+                cacheReadmesFor7zFMs: true);
         }
     }
 }
