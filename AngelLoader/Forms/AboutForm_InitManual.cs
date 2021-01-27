@@ -31,6 +31,7 @@ namespace AngelLoader.Forms
             LogoTextPictureBox = new PictureBox();
             OKFlowLayoutPanel = new FlowLayoutPanel();
             BuildDateLabel = new Label();
+            DarkUILinkLabel = new LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(LogoTextPictureBox)).BeginInit();
             OKFlowLayoutPanel.SuspendLayout();
@@ -184,6 +185,15 @@ namespace AngelLoader.Forms
             BuildDateLabel.Location = new Point(352, 50);
             BuildDateLabel.TabIndex = 2;
             // 
+            // DarkUILinkLabel
+            // 
+            DarkUILinkLabel.AutoSize = true;
+            DarkUILinkLabel.Location = new global::System.Drawing.Point(232, 388);
+            DarkUILinkLabel.TabIndex = 14;
+            DarkUILinkLabel.TabStop = true;
+            DarkUILinkLabel.Text = "DarkUI";
+            DarkUILinkLabel.LinkClicked += LinkLabels_LinkClicked;
+            // 
             // AboutForm
             // 
             AutoScaleDimensions = new SizeF(6F, 13F);
@@ -203,6 +213,7 @@ namespace AngelLoader.Forms
             Controls.Add(FFmpegDotNetLinkLabel);
             Controls.Add(FFmpegLinkLabel);
             Controls.Add(SevenZipSharpLinkLabel);
+            Controls.Add(DarkUILinkLabel);
             Controls.Add(SevenZipLinkLabel);
             Controls.Add(LicenseTextBox);
             Controls.Add(GitHubLinkLabel);

@@ -46,6 +46,7 @@
             this.LogoTextPictureBox = new System.Windows.Forms.PictureBox();
             this.OKFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.BuildDateLabel = new System.Windows.Forms.Label();
+            this.DarkUILinkLabel = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LogoTextPictureBox)).BeginInit();
             this.OKFlowLayoutPanel.SuspendLayout();
@@ -66,7 +67,7 @@
             this.VersionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.VersionLabel.Location = new System.Drawing.Point(352, 26);
             this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(43, 21);
+            this.VersionLabel.Size = new System.Drawing.Size(71, 21);
             this.VersionLabel.TabIndex = 1;
             this.VersionLabel.Text = "[version]";
             // 
@@ -235,6 +236,17 @@
             this.BuildDateLabel.TabIndex = 2;
             this.BuildDateLabel.Text = "[date]";
             // 
+            // DarkUILinkLabel
+            // 
+            this.DarkUILinkLabel.AutoSize = true;
+            this.DarkUILinkLabel.Location = new System.Drawing.Point(232, 388);
+            this.DarkUILinkLabel.Name = "DarkUILinkLabel";
+            this.DarkUILinkLabel.Size = new System.Drawing.Size(41, 13);
+            this.DarkUILinkLabel.TabIndex = 14;
+            this.DarkUILinkLabel.TabStop = true;
+            this.DarkUILinkLabel.Text = "DarkUI";
+            this.DarkUILinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
+            // 
             // AboutForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -254,6 +266,7 @@
             this.Controls.Add(this.FFmpegDotNetLinkLabel);
             this.Controls.Add(this.FFmpegLinkLabel);
             this.Controls.Add(this.SevenZipSharpLinkLabel);
+            this.Controls.Add(this.DarkUILinkLabel);
             this.Controls.Add(this.SevenZipLinkLabel);
             this.Controls.Add(this.LicenseTextBox);
             this.Controls.Add(this.GitHubLinkLabel);
@@ -293,5 +306,6 @@
         private System.Windows.Forms.PictureBox LogoTextPictureBox;
         private System.Windows.Forms.FlowLayoutPanel OKFlowLayoutPanel;
         private System.Windows.Forms.Label BuildDateLabel;
+        private System.Windows.Forms.LinkLabel DarkUILinkLabel;
     }
 }

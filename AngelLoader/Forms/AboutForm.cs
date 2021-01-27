@@ -118,6 +118,10 @@ namespace AngelLoader.Forms
             {
                 link = "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression";
             }
+            else if (sender == DarkUILinkLabel)
+            {
+                link = "https://github.com/RobinPerris/DarkUI";
+            }
 
             try
             {
