@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Controls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -8,11 +9,25 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         private static bool _constructed;
 
-        private static Button Button = null!;
+        private static DarkButton Button = null!;
+
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (!_constructed) return;
+
+                Button!.DarkModeEnabled = value;
+            }
+        }
 
         internal static void Localize()
         {
-            if (_constructed) Button.Text = LText.Global.Exit;
+            if (!_constructed) return;
+            Button.Text = LText.Global.Exit;
         }
 
         internal static void SetVisible(MainForm owner, bool enabled)
@@ -23,13 +38,14 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 {
                     var container = owner.BottomRightButtonsFLP;
 
-                    Button = new Button();
+                    Button = new DarkButton();
 
                     container.Controls.Add(Button);
                     container.Controls.SetChildIndex(Button, 0);
 
                     Button.AutoSize = true;
                     Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+                    Button.DarkModeEnabled = _darkModeEnabled;
                     Button.MinimumSize = new Size(36, 36);
                     Button.TabIndex = 63;
                     Button.UseVisualStyleBackColor = true;

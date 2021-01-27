@@ -189,19 +189,16 @@ namespace AngelLoader.Forms
                 {
                     ArrowButton button = (ArrowButton)control;
                     button.DarkModeEnabled = !button.DarkModeEnabled;
-                    return;
                 }
                 else if (controlType == typeof(DarkButton))
                 {
                     DarkButton button = (DarkButton)control;
                     button.DarkModeEnabled = !button.DarkModeEnabled;
-                    return;
                 }
                 else if (controlType == typeof(DarkableButton))
                 {
                     var button = (DarkableButton)control;
                     button.DarkModeEnabled = !button.DarkModeEnabled;
-                    return;
                     //Button button = (Button)control;
                     //button.UseVisualStyleBackColor = false;
                     //button.FlatStyle = FlatStyle.Flat;
@@ -213,16 +210,12 @@ namespace AngelLoader.Forms
                 {
                     var cb = (DarkComboBox)control;
                     cb.DarkModeEnabled = !cb.DarkModeEnabled;
-                    return;
                 }
-                else if (controlType == typeof(ToolStripItem) ||
-                         controlType == typeof(ToolStripDropDownMenu))
+                else
                 {
-                    return;
+                    control.BackColor = Color.FromArgb(32, 32, 32);
+                    control.ForeColor = Color.FromArgb(200, 200, 200);
                 }
-
-                control.BackColor = Color.FromArgb(32, 32, 32);
-                control.ForeColor = Color.FromArgb(200, 200, 200);
 
                 for (int i = 0; i < control.Controls.Count; i++)
                 {
@@ -241,7 +234,8 @@ namespace AngelLoader.Forms
             AltTitlesLLMenu.DarkModeEnabled = !AltTitlesLLMenu.DarkModeEnabled;
             FilterControlsLLMenu.DarkModeEnabled = !FilterControlsLLMenu.DarkModeEnabled;
             PlayOriginalGameLLMenu.DarkModeEnabled = !PlayOriginalGameLLMenu.DarkModeEnabled;
-            //Trace.WriteLine(nameof(stackCounter) + "=" + stackCounter);
+            InstallUninstallFMLLButton.DarkModeEnabled = !InstallUninstallFMLLButton.DarkModeEnabled;
+            ExitLLButton.DarkModeEnabled = !ExitLLButton.DarkModeEnabled;
         }
 
         private void Test2Button_Click(object sender, EventArgs e)

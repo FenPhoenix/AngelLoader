@@ -16,6 +16,19 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static DarkButton Button = null!;
 
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (!Constructed) return;
+
+                Button!.DarkModeEnabled = value;
+            }
+        }
+
         internal static void Construct(MainForm owner)
         {
             if (Constructed) return;
@@ -33,6 +46,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             Button.AutoSize = true;
             Button.AutoSizeMode = AutoSizeMode.GrowOnly;
+            Button.DarkModeEnabled = _darkModeEnabled;
             Button.Margin = new Padding(6, 3, 0, 3);
             Button.Padding = new Padding(30, 0, 6, 0);
             Button.MinimumSize = new Size(0, 36);
