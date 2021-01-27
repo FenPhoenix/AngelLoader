@@ -314,6 +314,13 @@ namespace AngelLoader.Forms
         private static Bitmap? _uninstall_24;
         public static Bitmap Uninstall_24 => _uninstall_24 ??= Resources.Uninstall_24;
 
+
+        private static Image? _import;
+        public static Image Import => _import ??= Resources.Import_24;
+
+        private static Image? __import_Disabled;
+        public static Image Import_Disabled => __import_Disabled ??= ToolStripRenderer.CreateDisabledImage(Import);
+
         private static Image? _settings;
         public static Image Settings => _settings ??= Resources.Settings_24;
 

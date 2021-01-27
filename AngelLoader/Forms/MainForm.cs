@@ -4339,6 +4339,12 @@ namespace AngelLoader.Forms
             PlayOriginalGameButton.Enabled ? Images.PlayOriginalGame : Images.PlayOriginalGame_Disabled,
             x: 10);
 
+        private void ImportButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintBitmapButton(
+            ImportButton,
+            e,
+            ImportButton.Enabled ? Images.Import : Images.Import_Disabled,
+            x: 10);
+
         private void SettingsButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintBitmapButton(
             SettingsButton,
             e,

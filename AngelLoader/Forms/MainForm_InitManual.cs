@@ -45,7 +45,7 @@ namespace AngelLoader.Forms
             BottomPanel = new Panel();
             BottomRightButtonsFLP = new FlowLayoutPanel();
             SettingsButton = new DarkUI.Controls.DarkButton();
-            ImportButton = new Button();
+            ImportButton = new DarkUI.Controls.DarkButton();
             BottomLeftButtonsFLP = new FlowLayoutPanel();
             PlayFMButton = new Button();
             PlayOriginalGameButton = new DarkUI.Controls.DarkButton();
@@ -274,13 +274,11 @@ namespace AngelLoader.Forms
             ImportButton.AutoSize = true;
             ImportButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ImportButton.MinimumSize = new Size(0, 36);
-            ImportButton.Image = Resources.Import_24;
-            ImportButton.ImageAlign = ContentAlignment.MiddleLeft;
-            ImportButton.Padding = new Padding(6, 0, 6, 0);
+            ImportButton.Padding = new Padding(30, 0, 6, 0);
             ImportButton.TabIndex = 61;
-            ImportButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             ImportButton.UseVisualStyleBackColor = true;
             ImportButton.Click += ImportButton_Click;
+            ImportButton.PaintCustom += ImportButton_Paint;
             // 
             // BottomLeftButtonsFLP
             // 
