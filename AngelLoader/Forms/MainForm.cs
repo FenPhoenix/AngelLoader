@@ -172,6 +172,9 @@ namespace AngelLoader.Forms
 
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
+        private Color _recentHighlightColor = Color.LightGoldenrodYellow;
+        private Color _defaultRowBackColor = SystemColors.Window;
+
         private void TestButton_Click(object sender, EventArgs e)
         {
             //WebSearchButton.DarkModeEnabled = !WebSearchButton.DarkModeEnabled;
@@ -180,9 +183,9 @@ namespace AngelLoader.Forms
             // IMPORTANT: We use DarkButton because it properly colors disabled button text
 
             //int stackCounter = 0;
-            static void DarkenControls(
+            void DarkenControls(
                 Control control,
-                bool darkMode,
+                bool darkMode_,
                 Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors)
             {
                 //stackCounter++;
@@ -193,17 +196,38 @@ namespace AngelLoader.Forms
                 if (controlType == typeof(ArrowButton))
                 {
                     ArrowButton button = (ArrowButton)control;
-                    button.DarkModeEnabled = darkMode;
+                    button.DarkModeEnabled = darkMode_;
                 }
                 else if (controlType == typeof(DarkButton))
                 {
                     DarkButton button = (DarkButton)control;
-                    button.DarkModeEnabled = darkMode;
+                    button.DarkModeEnabled = darkMode_;
                 }
                 else if (controlType == typeof(ComboBoxCustom))
                 {
                     var cb = (DarkComboBox)control;
-                    cb.DarkModeEnabled = darkMode;
+                    cb.DarkModeEnabled = darkMode_;
+                }
+                else if (control == FMsDGV)
+                {
+                    if (darkMode_)
+                    {
+                        FMsDGV.RowsDefaultCellStyle.ForeColor = Color.FromArgb(200, 200, 200);
+                        FMsDGV.GridColor = Color.FromArgb(64, 64, 64);
+                        //FMsDGV.RowsDefaultCellStyle.BackColor = Color.FromArgb(32, 32, 32);
+                        _recentHighlightColor = Color.FromArgb(64, 64, 72);
+                        _defaultRowBackColor = Color.FromArgb(32, 32, 32);
+                    }
+                    else
+                    {
+                        FMsDGV.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+                        FMsDGV.GridColor = SystemColors.ControlDark;
+                        _recentHighlightColor = Color.LightGoldenrodYellow;
+                        _defaultRowBackColor = SystemColors.Window;
+                        //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+                    }
+
+                    RefreshFMsListKeepSelection();
                 }
                 else
                 {
@@ -212,7 +236,7 @@ namespace AngelLoader.Forms
                         controlColors[control] = (control.ForeColor, control.BackColor);
                     }
 
-                    if (darkMode)
+                    if (darkMode_)
                     {
                         control.ForeColor = Color.FromArgb(200, 200, 200);
                         control.BackColor = Color.FromArgb(32, 32, 32);
@@ -226,7 +250,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < control.Controls.Count; i++)
                 {
-                    DarkenControls(control.Controls[i], darkMode, controlColors);
+                    DarkenControls(control.Controls[i], darkMode_, controlColors);
                 }
             }
 
@@ -3131,7 +3155,35 @@ namespace AngelLoader.Forms
 
             var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
-            FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedRecent ? Color.LightGoldenrodYellow : SystemColors.Window;
+            FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedRecent ? _recentHighlightColor : _defaultRowBackColor;
+        }
+
+        private void FMsDGV_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            // TODO: @DarkMode: This is for having different colored grid lines in recent-highlighted rows
+            // That way, we can get a good, visible separator color for all cases by just having two.
+            // But we need to figure this out exactly because it doesn't work properly as is.
+            // https://stackoverflow.com/a/32170212
+
+            return;
+
+            if (Config.VisualTheme == VisualTheme.Classic || _cellValueNeededDisabled ||
+                FMsDGV.FilterShownIndexList.Count == 0 || !FMsDGV.GetFMFromIndex(e.RowIndex).MarkedRecent)
+            {
+                e.Paint(e.ClipBounds, DataGridViewPaintParts.All);
+                e.Handled = true;
+                return;
+            }
+
+            e.Paint(e.ClipBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.Border);
+            e.Graphics.DrawRectangle(Pens.Black, new Rectangle(e.CellBounds.Left, e.CellBounds.Top, e.CellBounds.Width - 1, e.CellBounds.Height - 1));
+            //e.Graphics.DrawLine(
+            //    Pens.Black,
+            //    e.CellBounds.Left,
+            //    e.CellBounds.Top,
+            //    e.CellBounds.Right,
+            //    e.CellBounds.Top);
+            e.Handled = true;
         }
 
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)

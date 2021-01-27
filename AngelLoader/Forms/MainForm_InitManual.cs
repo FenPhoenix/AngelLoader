@@ -466,6 +466,7 @@ namespace AngelLoader.Forms
             FMsDGV.KeyDown += FMsDGV_KeyDown;
             FMsDGV.KeyPress += FMsDGV_KeyPress;
             FMsDGV.MouseDown += FMsDGV_MouseDown;
+            FMsDGV.CellPainting += FMsDGV_CellPainting;
             // 
             // GameTypeColumn
             // 
