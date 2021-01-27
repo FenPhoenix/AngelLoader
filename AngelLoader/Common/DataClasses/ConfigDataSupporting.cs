@@ -61,6 +61,8 @@ namespace AngelLoader.DataClasses
 
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
+    internal enum VisualTheme { Classic, Dark }
+
     #region Top-right tabs
 
     internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch }
@@ -114,7 +116,7 @@ namespace AngelLoader.DataClasses
                 set[i] = Tabs[i].DisplayIndex;
             }
 
-            breakout:
+        breakout:
 
             #endregion
 

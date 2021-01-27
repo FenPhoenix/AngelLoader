@@ -170,6 +170,8 @@ namespace AngelLoader.Forms
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
 
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+
         private void TestButton_Click(object sender, EventArgs e)
         {
             //WebSearchButton.DarkModeEnabled = !WebSearchButton.DarkModeEnabled;
@@ -178,7 +180,10 @@ namespace AngelLoader.Forms
             // IMPORTANT: We use DarkButton because it properly colors disabled button text
 
             //int stackCounter = 0;
-            void DarkenControls(Control control)
+            static void DarkenControls(
+                Control control,
+                bool darkMode,
+                Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors)
             {
                 //stackCounter++;
                 //if (stackCounter > 10000) return;
@@ -188,54 +193,60 @@ namespace AngelLoader.Forms
                 if (controlType == typeof(ArrowButton))
                 {
                     ArrowButton button = (ArrowButton)control;
-                    button.DarkModeEnabled = !button.DarkModeEnabled;
+                    button.DarkModeEnabled = darkMode;
                 }
                 else if (controlType == typeof(DarkButton))
                 {
                     DarkButton button = (DarkButton)control;
-                    button.DarkModeEnabled = !button.DarkModeEnabled;
-                }
-                else if (controlType == typeof(DarkableButton))
-                {
-                    var button = (DarkableButton)control;
-                    button.DarkModeEnabled = !button.DarkModeEnabled;
-                    //Button button = (Button)control;
-                    //button.UseVisualStyleBackColor = false;
-                    //button.FlatStyle = FlatStyle.Flat;
-                    //button.FlatAppearance.BorderColor = DarkUI.Config.Colors.GreyHighlight;
-                    //button.FlatAppearance.MouseOverBackColor = DarkUI.Config.Colors.BlueBackground;
-                    //button.FlatAppearance.MouseDownBackColor = DarkUI.Config.Colors.DarkBackground;
+                    button.DarkModeEnabled = darkMode;
                 }
                 else if (controlType == typeof(ComboBoxCustom))
                 {
                     var cb = (DarkComboBox)control;
-                    cb.DarkModeEnabled = !cb.DarkModeEnabled;
+                    cb.DarkModeEnabled = darkMode;
                 }
                 else
                 {
-                    control.BackColor = Color.FromArgb(32, 32, 32);
-                    control.ForeColor = Color.FromArgb(200, 200, 200);
+                    if (!controlColors.ContainsKey(control))
+                    {
+                        controlColors[control] = (control.ForeColor, control.BackColor);
+                    }
+
+                    if (darkMode)
+                    {
+                        control.ForeColor = Color.FromArgb(200, 200, 200);
+                        control.BackColor = Color.FromArgb(32, 32, 32);
+                    }
+                    else if (controlColors.TryGetValue(control, out var result))
+                    {
+                        control.ForeColor = result.ForeColor;
+                        control.BackColor = result.BackColor;
+                    }
                 }
 
                 for (int i = 0; i < control.Controls.Count; i++)
                 {
-                    DarkenControls(control.Controls[i]);
+                    DarkenControls(control.Controls[i], darkMode, controlColors);
                 }
             }
 
-            DarkenControls(this);
+            Config.VisualTheme = Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic;
 
-            MainLLMenu.DarkModeEnabled = !MainLLMenu.DarkModeEnabled;
-            FMsDGV_FM_LLMenu.DarkModeEnabled = !FMsDGV_FM_LLMenu.DarkModeEnabled;
-            FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = !FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled;
-            ImportFromLLMenu.DarkModeEnabled = !ImportFromLLMenu.DarkModeEnabled;
-            TopRightLLMenu.DarkModeEnabled = !TopRightLLMenu.DarkModeEnabled;
-            AddTagLLMenu.DarkModeEnabled = !AddTagLLMenu.DarkModeEnabled;
-            AltTitlesLLMenu.DarkModeEnabled = !AltTitlesLLMenu.DarkModeEnabled;
-            FilterControlsLLMenu.DarkModeEnabled = !FilterControlsLLMenu.DarkModeEnabled;
-            PlayOriginalGameLLMenu.DarkModeEnabled = !PlayOriginalGameLLMenu.DarkModeEnabled;
-            InstallUninstallFMLLButton.DarkModeEnabled = !InstallUninstallFMLLButton.DarkModeEnabled;
-            ExitLLButton.DarkModeEnabled = !ExitLLButton.DarkModeEnabled;
+            bool darkMode = Config.VisualTheme == VisualTheme.Dark;
+
+            DarkenControls(this, darkMode, _controlColors);
+
+            MainLLMenu.DarkModeEnabled = darkMode;
+            FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
+            FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
+            ImportFromLLMenu.DarkModeEnabled = darkMode;
+            TopRightLLMenu.DarkModeEnabled = darkMode;
+            AddTagLLMenu.DarkModeEnabled = darkMode;
+            AltTitlesLLMenu.DarkModeEnabled = darkMode;
+            FilterControlsLLMenu.DarkModeEnabled = darkMode;
+            PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
+            InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
+            ExitLLButton.DarkModeEnabled = darkMode;
         }
 
         private void Test2Button_Click(object sender, EventArgs e)

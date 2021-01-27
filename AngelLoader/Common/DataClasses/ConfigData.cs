@@ -396,6 +396,8 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
+        internal VisualTheme VisualTheme = VisualTheme.Classic;
+
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed = false;
