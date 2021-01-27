@@ -38,13 +38,13 @@ namespace AngelLoader.Forms
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
-            this.ScanAllFMsButton = new System.Windows.Forms.Button();
+            this.ScanAllFMsButton = new DarkUI.Controls.DarkButton();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.BottomRightButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SettingsButton = new DarkUI.Controls.DarkButton();
             this.ImportButton = new DarkUI.Controls.DarkButton();
             this.BottomLeftButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.PlayFMButton = new System.Windows.Forms.Button();
+            this.PlayFMButton = new DarkUI.Controls.DarkButton();
             this.PlayOriginalGameButton = new DarkUI.Controls.DarkButton();
             this.WebSearchButton = new DarkUI.Controls.DarkButton();
             this.EverythingPanel = new System.Windows.Forms.Panel();
@@ -216,7 +216,7 @@ namespace AngelLoader.Forms
             this.ScanAllFMsButton.Text = "Scan all FMs...";
             this.ScanAllFMsButton.UseVisualStyleBackColor = true;
             this.ScanAllFMsButton.Click += new System.EventHandler(this.ScanAllFMsButton_Click);
-            this.ScanAllFMsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanAllFMsButton_Paint);
+            this.ScanAllFMsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanAllFMsButton_Paint);
             // 
             // BottomPanel
             // 
@@ -298,7 +298,7 @@ namespace AngelLoader.Forms
             this.PlayFMButton.Text = "Play FM";
             this.PlayFMButton.UseVisualStyleBackColor = true;
             this.PlayFMButton.Click += new System.EventHandler(this.InstallUninstall_Play_Buttons_Click);
-            this.PlayFMButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PlayFMButton_Paint);
+            this.PlayFMButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayFMButton_Paint);
             // 
             // PlayOriginalGameButton
             // 
@@ -1935,9 +1935,9 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
         internal System.Windows.Forms.Panel BottomPanel;
         internal AngelLoader.Forms.CustomControls.DataGridViewCustom FMsDGV;
-        internal System.Windows.Forms.Button PlayFMButton;
+        internal DarkUI.Controls.DarkButton PlayFMButton;
         internal AngelLoader.Forms.CustomControls.RichTextBoxCustom ReadmeRichTextBox;
-        internal System.Windows.Forms.Button ScanAllFMsButton;
+        internal DarkUI.Controls.DarkButton ScanAllFMsButton;
         internal AngelLoader.Forms.CustomControls.SplitContainerCustom TopSplitContainer;
         internal System.Windows.Forms.Panel EverythingPanel;
         internal DarkUI.Controls.DarkButton SettingsButton;

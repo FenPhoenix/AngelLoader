@@ -41,13 +41,13 @@ namespace AngelLoader.Forms
             #region Instantiation
 
             GameTabsImageList = new ImageList(components);
-            ScanAllFMsButton = new Button();
+            ScanAllFMsButton = new DarkUI.Controls.DarkButton();
             BottomPanel = new Panel();
             BottomRightButtonsFLP = new FlowLayoutPanel();
             SettingsButton = new DarkUI.Controls.DarkButton();
             ImportButton = new DarkUI.Controls.DarkButton();
             BottomLeftButtonsFLP = new FlowLayoutPanel();
-            PlayFMButton = new Button();
+            PlayFMButton = new DarkUI.Controls.DarkButton();
             PlayOriginalGameButton = new DarkUI.Controls.DarkButton();
             WebSearchButton = new DarkUI.Controls.DarkButton();
             EverythingPanel = new Panel();
@@ -235,7 +235,7 @@ namespace AngelLoader.Forms
             ScanAllFMsButton.TabIndex = 59;
             ScanAllFMsButton.UseVisualStyleBackColor = true;
             ScanAllFMsButton.Click += ScanAllFMsButton_Click;
-            ScanAllFMsButton.Paint += ScanAllFMsButton_Paint;
+            ScanAllFMsButton.PaintCustom += ScanAllFMsButton_Paint;
             // 
             // BottomPanel
             // 
@@ -301,7 +301,7 @@ namespace AngelLoader.Forms
             PlayFMButton.TabIndex = 56;
             PlayFMButton.UseVisualStyleBackColor = true;
             PlayFMButton.Click += InstallUninstall_Play_Buttons_Click;
-            PlayFMButton.Paint += PlayFMButton_Paint;
+            PlayFMButton.PaintCustom += PlayFMButton_Paint;
             // 
             // PlayOriginalGameButton
             // 
@@ -314,7 +314,6 @@ namespace AngelLoader.Forms
             PlayOriginalGameButton.UseVisualStyleBackColor = true;
             PlayOriginalGameButton.Click += PlayOriginalGameButton_Click;
             PlayOriginalGameButton.PaintCustom += PlayOriginalGameButton_Paint;
-            // 
             // 
             // WebSearchButton
             // 
