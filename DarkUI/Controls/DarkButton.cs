@@ -173,6 +173,13 @@ namespace DarkUI.Controls
 
             if (_darkModeEnabled)
             {
+                // BUG: @DarkMode: DarkButton - position/size bug
+                // AddTagButton is inching along to the left with every toggle due to it being anchored right
+                // (doesn't happen when anchored left). We need to account for all possible anchorings here.
+                // Also:
+                // If a number is 0 and we subtract and then add again, we might end up with different final
+                // values(?) We should just store all the values as previous and restore them back exactly.
+
                 if (AdjustSizeAndPosForDarkMode)
                 {
                     if (_originalSize == null) _originalSize = Size;
@@ -196,7 +203,7 @@ namespace DarkUI.Controls
                 base.UseVisualStyleBackColor = true;
                 base.FlatStyle = _originalFlatStyle ?? base.FlatStyle;
                 FlatAppearance.BorderSize = _originalBorderSize ?? FlatAppearance.BorderSize;
-                
+
                 if (AdjustSizeAndPosForDarkMode && _originalSize != null)
                 {
                     MinimumSize = Size.Add(MinimumSize, new Size(2, 2));

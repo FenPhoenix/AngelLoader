@@ -245,6 +245,8 @@ namespace AngelLoader.Forms
                     {
                         control.ForeColor = result.ForeColor;
                         control.BackColor = result.BackColor;
+                        //control.ForeColor = SystemColors.ControlText;
+                        //control.BackColor = SystemColors.Control;
                     }
                 }
 
