@@ -372,7 +372,6 @@ namespace DarkUI.Controls
                 using (var b = new SolidBrush(fillColor))
                 using (var p = new Pen(b, 1.6f))
                 {
-
                     SmoothingMode oldSmoothingMode = g.SmoothingMode;
 
                     g.SmoothingMode = SmoothingMode.HighQuality;
