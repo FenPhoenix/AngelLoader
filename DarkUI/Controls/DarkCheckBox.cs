@@ -5,6 +5,9 @@ using DarkUI.Config;
 
 namespace DarkUI.Controls
 {
+    // TODO: @DarkMode(DarkCheckBox):
+    // -Make it draw a checkmark instead of a square (a square normally means "indeterminate"!)
+    // -Add support for putting the checkbox on the right-hand side
     public class DarkCheckBox : CheckBox, IDarkable
     {
         #region Field Region
