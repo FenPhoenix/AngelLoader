@@ -393,9 +393,11 @@ namespace DarkUI.Controls
 
             var g = e.Graphics;
 
-            // Slightly modified rectangle to account for Flat style being slightly larger than classic mode,
-            // this matches us visually in size and position to classic mode
-            var rect = new Rectangle(1, 1, ClientSize.Width - 2, ClientSize.Height - 3);
+            var rect = ButtonStyle == DarkButtonStyle.Normal
+                // Slightly modified rectangle to account for Flat style being slightly larger than classic mode,
+                // this matches us visually in size and position to classic mode
+                ? new Rectangle(1, 1, ClientSize.Width - 2, ClientSize.Height - 3)
+                : new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
             var textColor = Colors.LightText;
             var borderColor = Colors.GreySelection;
@@ -527,14 +529,17 @@ namespace DarkUI.Controls
             // the visual size and positioning of the classic theme.
             // Draw this AFTER everything else, so that we draw on top so everything looks right.
 
-            Control parent = Parent;
-
-            if (parent != null)
+            if (ButtonStyle == DarkButtonStyle.Normal)
             {
-                using (var pen = new Pen(parent.BackColor))
+                Control parent = Parent;
+
+                if (parent != null)
                 {
-                    var bgRect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
-                    g.DrawRectangle(pen, bgRect);
+                    using (var pen = new Pen(parent.BackColor))
+                    {
+                        var bgRect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
+                        g.DrawRectangle(pen, bgRect);
+                    }
                 }
             }
 
