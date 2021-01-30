@@ -4,6 +4,13 @@ namespace DarkUI.Config
 {
     public sealed class Colors
     {
+        #region Fen
+
+        public static Color Fen_DarkBackground => Color.FromArgb(32, 32, 32);
+        public static Color Fen_DarkForeground => Color.FromArgb(200, 200, 200);
+
+        #endregion
+
         public static Color GreyBackground
         {
             get { return Color.FromArgb(60, 63, 65); }

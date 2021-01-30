@@ -193,7 +193,14 @@ namespace AngelLoader.Forms
 
                 Type controlType = control.GetType();
 
-                if (controlType == typeof(ArrowButton))
+                if (control == ReadmeZoomInButton ||
+                    control == ReadmeZoomOutButton ||
+                    control == ReadmeResetZoomButton ||
+                    control == ReadmeFullScreenButton)
+                {
+                    SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible);
+                }
+                else if (controlType == typeof(ArrowButton))
                 {
                     ArrowButton button = (ArrowButton)control;
                     button.DarkModeEnabled = darkMode_;
@@ -212,11 +219,11 @@ namespace AngelLoader.Forms
                 {
                     if (darkMode_)
                     {
-                        FMsDGV.RowsDefaultCellStyle.ForeColor = Color.FromArgb(200, 200, 200);
+                        FMsDGV.RowsDefaultCellStyle.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
                         FMsDGV.GridColor = Color.FromArgb(64, 64, 64);
-                        //FMsDGV.RowsDefaultCellStyle.BackColor = Color.FromArgb(32, 32, 32);
+                        //FMsDGV.RowsDefaultCellStyle.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
                         _recentHighlightColor = Color.FromArgb(64, 64, 72);
-                        _defaultRowBackColor = Color.FromArgb(32, 32, 32);
+                        _defaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
                     }
                     else
                     {
@@ -238,8 +245,8 @@ namespace AngelLoader.Forms
 
                     if (darkMode_)
                     {
-                        control.ForeColor = Color.FromArgb(200, 200, 200);
-                        control.BackColor = Color.FromArgb(32, 32, 32);
+                        control.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                        control.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
                     }
                     else if (controlColors.TryGetValue(control, out var result))
                     {
@@ -3665,15 +3672,28 @@ namespace AngelLoader.Forms
         {
             ReadmeRichTextBox.Visible = enabled;
 
-            Color backColor = enabled ? SystemColors.Window : SystemColors.Control;
-            ReadmeZoomInButton.BackColor = backColor;
-            ReadmeZoomOutButton.BackColor = backColor;
-            ReadmeResetZoomButton.BackColor = backColor;
-            ReadmeFullScreenButton.BackColor = backColor;
+            SetReadmeButtonsBackColor(enabled);
 
             // In case the cursor is already over the readme when we do this
             // (cause it won't show automatically if it is)
             ShowReadmeControls(enabled && CursorOverReadmeArea());
+        }
+
+        private void SetReadmeButtonsBackColor(bool enabled)
+        {
+            Color backColor =
+                Config.VisualTheme == VisualTheme.Dark
+                    ? enabled
+                        ? DarkUI.Config.Colors.Fen_DarkBackground
+                        : MainSplitContainer.Panel2.BackColor
+                    : enabled
+                        ? SystemColors.Window
+                        : SystemColors.Control;
+
+            ReadmeZoomInButton.BackColor = backColor;
+            ReadmeZoomOutButton.BackColor = backColor;
+            ReadmeResetZoomButton.BackColor = backColor;
+            ReadmeFullScreenButton.BackColor = backColor;
         }
 
         private void ShowReadmeControls(bool enabled)
