@@ -174,98 +174,109 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-            //WebSearchButton.DarkModeEnabled = !WebSearchButton.DarkModeEnabled;
-            //return;
-
             // IMPORTANT: We use DarkButton because it properly colors disabled button text
 
-            //int stackCounter = 0;
-            void DarkenControls(
+            static void DarkenControls(
                 Control control,
-                bool darkMode_,
-                Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors)
+                Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
+                int stackCounter)
             {
-                //stackCounter++;
-                //if (stackCounter > 10000) return;
+                const int maxStackCount = 10;
+
+                if (!controlColors.ContainsKey(control))
+                {
+                    controlColors[control] = (control.ForeColor, control.BackColor);
+                }
+
+                stackCounter++;
+
+                AssertR(
+                    stackCounter <= maxStackCount,
+                    nameof(DarkenControls) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
+
+                for (int i = 0; i < control.Controls.Count; i++)
+                {
+                    DarkenControls(control.Controls[i], controlColors, stackCounter);
+                }
+
+                stackCounter--;
+            }
+
+            Config.VisualTheme = Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic;
+            bool darkMode = Config.VisualTheme == VisualTheme.Dark;
+
+            DarkenControls(this, _controlColors, 0);
+
+            #region Automatic sets
+
+            foreach (var item in _controlColors)
+            {
+                Control control = item.Key;
 
                 Type controlType = control.GetType();
 
                 if (control == ReadmeZoomInButton ||
                     control == ReadmeZoomOutButton ||
                     control == ReadmeResetZoomButton ||
-                    control == ReadmeFullScreenButton)
+                    control == ReadmeFullScreenButton ||
+                    control == FMsDGV)
                 {
-                    SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible);
+                    continue;
                 }
-                else if (controlType == typeof(ArrowButton))
+
+                if (controlType == typeof(ArrowButton))
                 {
                     ArrowButton button = (ArrowButton)control;
-                    button.DarkModeEnabled = darkMode_;
+                    button.DarkModeEnabled = darkMode;
                 }
                 else if (controlType == typeof(DarkButton))
                 {
                     DarkButton button = (DarkButton)control;
-                    button.DarkModeEnabled = darkMode_;
+                    button.DarkModeEnabled = darkMode;
                 }
                 else if (controlType == typeof(ComboBoxCustom))
                 {
                     var cb = (DarkComboBox)control;
-                    cb.DarkModeEnabled = darkMode_;
-                }
-                else if (control == FMsDGV)
-                {
-                    if (darkMode_)
-                    {
-                        FMsDGV.RowsDefaultCellStyle.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
-                        FMsDGV.GridColor = Color.FromArgb(64, 64, 64);
-                        //FMsDGV.RowsDefaultCellStyle.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
-                        _recentHighlightColor = Color.FromArgb(64, 64, 72);
-                        _defaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
-                    }
-                    else
-                    {
-                        FMsDGV.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                        FMsDGV.GridColor = SystemColors.ControlDark;
-                        _recentHighlightColor = Color.LightGoldenrodYellow;
-                        _defaultRowBackColor = SystemColors.Window;
-                        //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-                    }
-
-                    RefreshFMsListKeepSelection();
+                    cb.DarkModeEnabled = darkMode;
                 }
                 else
                 {
-                    if (!controlColors.ContainsKey(control))
-                    {
-                        controlColors[control] = (control.ForeColor, control.BackColor);
-                    }
-
-                    if (darkMode_)
+                    if (darkMode)
                     {
                         control.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
                         control.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
                     }
-                    else if (controlColors.TryGetValue(control, out var result))
+                    else
                     {
-                        control.ForeColor = result.ForeColor;
-                        control.BackColor = result.BackColor;
-                        //control.ForeColor = SystemColors.ControlText;
-                        //control.BackColor = SystemColors.Control;
+                        control.ForeColor = item.Value.ForeColor;
+                        control.BackColor = item.Value.BackColor;
                     }
-                }
-
-                for (int i = 0; i < control.Controls.Count; i++)
-                {
-                    DarkenControls(control.Controls[i], darkMode_, controlColors);
                 }
             }
 
-            Config.VisualTheme = Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic;
+            #endregion
 
-            bool darkMode = Config.VisualTheme == VisualTheme.Dark;
+            #region Manual sets
 
-            DarkenControls(this, darkMode, _controlColors);
+            SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible);
+            if (darkMode)
+            {
+                FMsDGV.RowsDefaultCellStyle.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                FMsDGV.GridColor = Color.FromArgb(64, 64, 64);
+                //FMsDGV.RowsDefaultCellStyle.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                _recentHighlightColor = Color.FromArgb(64, 64, 72);
+                _defaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+            }
+            else
+            {
+                FMsDGV.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+                FMsDGV.GridColor = SystemColors.ControlDark;
+                _recentHighlightColor = Color.LightGoldenrodYellow;
+                _defaultRowBackColor = SystemColors.Window;
+                //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+            }
 
+            RefreshFMsListKeepSelection();
             MainLLMenu.DarkModeEnabled = darkMode;
             FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
             FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
@@ -278,6 +289,8 @@ namespace AngelLoader.Forms
             InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
             ExitLLButton.DarkModeEnabled = darkMode;
             ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
+
+            #endregion
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
