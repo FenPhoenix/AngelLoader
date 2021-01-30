@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using DarkUI.Config;
 
@@ -328,14 +329,14 @@ namespace DarkUI.Controls
 
             var textColor = Colors.LightText;
             var borderColor = Colors.LightText;
-            var fillColor = Colors.LightestBackground;
+            var fillColor = Colors.LightText;
 
             if (Enabled)
             {
                 if (Focused)
                 {
                     borderColor = Colors.BlueHighlight;
-                    fillColor = Colors.BlueSelection;
+                    fillColor = Colors.BlueHighlight;
                 }
 
                 if (_controlState == DarkControlState.Hover)
@@ -361,17 +362,44 @@ namespace DarkUI.Controls
                 g.FillRectangle(b, rect);
             }
 
+            var outlineBoxRect = new Rectangle(0, (rect.Height / 2) - (size / 2), size, size);
             using (var p = new Pen(borderColor))
             {
-                var boxRect = new Rectangle(0, (rect.Height / 2) - (size / 2), size, size);
-                g.DrawRectangle(p, boxRect);
+                g.DrawRectangle(p, outlineBoxRect);
             }
 
-            if (Checked)
+            if (CheckState == CheckState.Checked)
+            {
+                using (var b = new SolidBrush(fillColor))
+                using (var p = new Pen(b, 1.6f))
+                {
+
+                    SmoothingMode oldSmoothingMode = g.SmoothingMode;
+
+                    g.SmoothingMode = SmoothingMode.HighQuality;
+
+                    // First half of checkmark
+                    g.DrawLine(p,
+                        outlineBoxRect.Left + 1.5f,
+                        outlineBoxRect.Top + 6,
+                        outlineBoxRect.Left + 4.5f,
+                        outlineBoxRect.Top + 9);
+
+                    // Second half of checkmark
+                    g.DrawLine(p,
+                        outlineBoxRect.Left + 4.5f,
+                        outlineBoxRect.Top + 9,
+                        outlineBoxRect.Left + 10.5f,
+                        outlineBoxRect.Top + 3);
+
+                    g.SmoothingMode = oldSmoothingMode;
+                }
+            }
+            else if (CheckState == CheckState.Indeterminate)
             {
                 using (var b = new SolidBrush(fillColor))
                 {
-                    Rectangle boxRect = new Rectangle(2, (rect.Height / 2) - ((size - 4) / 2), size - 3, size - 3);
+                    Rectangle boxRect = new Rectangle(3, ((rect.Height / 2) - ((size - 4) / 2)) + 1, size - 5, size - 5);
                     g.FillRectangle(b, boxRect);
                 }
             }
