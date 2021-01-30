@@ -194,11 +194,14 @@ namespace DarkUI.Controls
                 return;
             }
 
-            if (_buffer == null)
-                PaintCombobox();
+            //if (_buffer == null) PaintCombobox();
+            // Just paint it always, because we already check for a null buffer and initialize it in PaintComboBox()
+            // and while we exit before then if !_darkModeEnabled, we already will have exited this method anyway
+            // if that's the case, so we know dark mode is enabled by the time we get here.
+            // Fixes the glitchy drawing bug.
+            PaintCombobox();
 
-            var g = e.Graphics;
-            g.DrawImageUnscaled(_buffer, Point.Empty);
+            e.Graphics.DrawImageUnscaled(_buffer, Point.Empty);
         }
 
         protected override void OnDrawItem(DrawItemEventArgs e)
