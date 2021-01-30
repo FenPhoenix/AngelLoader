@@ -280,6 +280,7 @@ namespace AngelLoader.Forms
             PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
             InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
             ExitLLButton.DarkModeEnabled = darkMode;
+            ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
         }
 
         private void Test2Button_Click(object sender, EventArgs e)

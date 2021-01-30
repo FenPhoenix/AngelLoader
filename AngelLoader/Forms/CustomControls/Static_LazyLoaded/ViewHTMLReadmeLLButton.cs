@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Controls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -7,7 +8,20 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     internal static class ViewHTMLReadmeLLButton
     {
         private static bool _constructed;
-        private static Button Button = null!;
+        private static DarkButton Button = null!;
+
+        private static bool _darkModeEnabled;
+        public static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (!_constructed) return;
+
+                Button!.DarkModeEnabled = value;
+            }
+        }
 
         internal static void Localize()
         {
@@ -32,10 +46,11 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 var container = owner.MainSplitContainer.Panel2;
 
-                Button = new Button();
+                Button = new DarkButton();
                 container.Controls.Add(Button);
                 Button.Anchor = AnchorStyles.None;
                 Button.AutoSize = true;
+                Button.DarkModeEnabled = _darkModeEnabled;
                 // This thing gets centered later so no location is specified here
                 Button.Padding = new Padding(6, 0, 6, 0);
                 Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
