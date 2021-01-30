@@ -488,12 +488,12 @@ namespace AngelLoader.Forms
 #endif
 
 #if !ReleaseBeta && !ReleasePublic
-            ForceWindowedCheckBox = new CheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "Force windowed" };
+            ForceWindowedCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "Force windowed" };
             BottomRightButtonsFLP.Controls.Add(ForceWindowedCheckBox);
             ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
 
-            T1ScreenShotModeCheckBox = new CheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 SSM" };
-            T2ScreenShotModeCheckBox = new CheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 SSM" };
+            T1ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 SSM" };
+            T2ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 SSM" };
             // Add in reverse order because the flow layout panel is right-to-left I guess?
             BottomRightButtonsFLP.Controls.Add(T2ScreenShotModeCheckBox);
             BottomRightButtonsFLP.Controls.Add(T1ScreenShotModeCheckBox);

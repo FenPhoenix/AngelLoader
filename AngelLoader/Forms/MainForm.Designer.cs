@@ -103,16 +103,16 @@ namespace AngelLoader.Forms
             this.StatisticsTabPage = new System.Windows.Forms.TabPage();
             this.StatsScanCustomResourcesButton = new DarkUI.Controls.DarkButton();
             this.StatsCheckBoxesPanel = new System.Windows.Forms.Panel();
-            this.CR_MapCheckBox = new System.Windows.Forms.CheckBox();
-            this.CR_MoviesCheckBox = new System.Windows.Forms.CheckBox();
-            this.CR_MotionsCheckBox = new System.Windows.Forms.CheckBox();
-            this.CR_SoundsCheckBox = new System.Windows.Forms.CheckBox();
-            this.CR_CreaturesCheckBox = new System.Windows.Forms.CheckBox();
-            this.CR_TexturesCheckBox = new System.Windows.Forms.CheckBox();
-            this.CR_AutomapCheckBox = new System.Windows.Forms.CheckBox();
-            this.CR_ScriptsCheckBox = new System.Windows.Forms.CheckBox();
-            this.CR_SubtitlesCheckBox = new System.Windows.Forms.CheckBox();
-            this.CR_ObjectsCheckBox = new System.Windows.Forms.CheckBox();
+            this.CR_MapCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.CR_MoviesCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.CR_MotionsCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.CR_SoundsCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.CR_CreaturesCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.CR_TexturesCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.CR_AutomapCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.CR_ScriptsCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.CR_SubtitlesCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.CR_ObjectsCheckBox = new DarkUI.Controls.DarkCheckBox();
             this.CustomResourcesLabel = new System.Windows.Forms.Label();
             this.EditFMTabPage = new System.Windows.Forms.TabPage();
             this.EditFMScanLanguagesButton = new DarkUI.Controls.DarkButton();
@@ -129,9 +129,9 @@ namespace AngelLoader.Forms
             this.EditFMRatingLabel = new System.Windows.Forms.Label();
             this.EditFMLastPlayedDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.EditFMReleaseDateDateTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.EditFMLastPlayedCheckBox = new System.Windows.Forms.CheckBox();
-            this.EditFMReleaseDateCheckBox = new System.Windows.Forms.CheckBox();
-            this.EditFMDisableAllModsCheckBox = new System.Windows.Forms.CheckBox();
+            this.EditFMLastPlayedCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.EditFMReleaseDateCheckBox = new DarkUI.Controls.DarkCheckBox();
+            this.EditFMDisableAllModsCheckBox = new DarkUI.Controls.DarkCheckBox();
             this.EditFMDisabledModsTextBox = new DarkUI.Controls.DarkTextBox();
             this.EditFMDisabledModsLabel = new System.Windows.Forms.Label();
             this.EditFMAuthorTextBox = new DarkUI.Controls.DarkTextBox();
@@ -1934,9 +1934,9 @@ namespace AngelLoader.Forms
 #endif
 
 #if !ReleaseBeta && !ReleasePublic
-        internal readonly System.Windows.Forms.CheckBox ForceWindowedCheckBox;
-        internal readonly System.Windows.Forms.CheckBox T1ScreenShotModeCheckBox;
-        internal readonly System.Windows.Forms.CheckBox T2ScreenShotModeCheckBox;
+        internal readonly DarkUI.Controls.DarkCheckBox ForceWindowedCheckBox;
+        internal readonly DarkUI.Controls.DarkCheckBox T1ScreenShotModeCheckBox;
+        internal readonly DarkUI.Controls.DarkCheckBox T2ScreenShotModeCheckBox;
 #endif
 
         internal AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
@@ -1960,16 +1960,16 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.TabControlCustom TopRightTabControl;
         internal System.Windows.Forms.TabPage StatisticsTabPage;
         internal System.Windows.Forms.Label CustomResourcesLabel;
-        internal System.Windows.Forms.CheckBox CR_MotionsCheckBox;
-        internal System.Windows.Forms.CheckBox CR_CreaturesCheckBox;
-        internal System.Windows.Forms.CheckBox CR_MapCheckBox;
-        internal System.Windows.Forms.CheckBox CR_ScriptsCheckBox;
-        internal System.Windows.Forms.CheckBox CR_ObjectsCheckBox;
-        internal System.Windows.Forms.CheckBox CR_SubtitlesCheckBox;
-        internal System.Windows.Forms.CheckBox CR_AutomapCheckBox;
-        internal System.Windows.Forms.CheckBox CR_TexturesCheckBox;
-        internal System.Windows.Forms.CheckBox CR_SoundsCheckBox;
-        internal System.Windows.Forms.CheckBox CR_MoviesCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_MotionsCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_CreaturesCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_MapCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_ScriptsCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_ObjectsCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_SubtitlesCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_AutomapCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_TexturesCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_SoundsCheckBox;
+        internal DarkUI.Controls.DarkCheckBox CR_MoviesCheckBox;
         internal System.Windows.Forms.TabPage CommentTabPage;
         internal DarkUI.Controls.DarkTextBox CommentTextBox;
         internal System.Windows.Forms.TabPage TagsTabPage;
@@ -1988,7 +1988,7 @@ namespace AngelLoader.Forms
         internal DarkUI.Controls.DarkTextBox EditFMAuthorTextBox;
         internal System.Windows.Forms.Label EditFMAuthorLabel;
         internal System.Windows.Forms.Label EditFMTitleLabel;
-        internal System.Windows.Forms.CheckBox EditFMDisableAllModsCheckBox;
+        internal DarkUI.Controls.DarkCheckBox EditFMDisableAllModsCheckBox;
         internal DarkUI.Controls.DarkTextBox EditFMDisabledModsTextBox;
         internal System.Windows.Forms.Label EditFMDisabledModsLabel;
         internal System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
@@ -1996,8 +1996,8 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByThief1Button;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByThief2Button;
         internal System.Windows.Forms.Panel StatsCheckBoxesPanel;
-        internal System.Windows.Forms.CheckBox EditFMLastPlayedCheckBox;
-        internal System.Windows.Forms.CheckBox EditFMReleaseDateCheckBox;
+        internal DarkUI.Controls.DarkCheckBox EditFMLastPlayedCheckBox;
+        internal DarkUI.Controls.DarkCheckBox EditFMReleaseDateCheckBox;
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom EditFMRatingComboBox;
         internal System.Windows.Forms.Label EditFMRatingLabel;
         internal DarkUI.Controls.DarkButton EditFMFinishedOnButton;

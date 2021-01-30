@@ -1,12 +1,11 @@
-﻿using DarkUI.Config;
-using System;
-using System.ComponentModel;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Config;
 
 namespace DarkUI.Controls
 {
-    public class DarkCheckBox : CheckBox
+    public class DarkCheckBox : CheckBox, IDarkable
     {
         #region Field Region
 
@@ -16,119 +15,130 @@ namespace DarkUI.Controls
 
         #endregion
 
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                Invalidate();
+            }
+        }
+
         #region Property Region
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new Appearance Appearance
-        {
-            get { return base.Appearance; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new Appearance Appearance
+        //{
+        //    get { return base.Appearance; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool AutoEllipsis
-        {
-            get { return base.AutoEllipsis; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new bool AutoEllipsis
+        //{
+        //    get { return base.AutoEllipsis; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new Image BackgroundImage
-        {
-            get { return base.BackgroundImage; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new Image BackgroundImage
+        //{
+        //    get { return base.BackgroundImage; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new ImageLayout BackgroundImageLayout
-        {
-            get { return base.BackgroundImageLayout; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new ImageLayout BackgroundImageLayout
+        //{
+        //    get { return base.BackgroundImageLayout; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool FlatAppearance
-        {
-            get { return false; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new bool FlatAppearance
+        //{
+        //    get { return false; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new FlatStyle FlatStyle
-        {
-            get { return base.FlatStyle; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new FlatStyle FlatStyle
+        //{
+        //    get { return base.FlatStyle; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new Image Image
-        {
-            get { return base.Image; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new Image Image
+        //{
+        //    get { return base.Image; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new ContentAlignment ImageAlign
-        {
-            get { return base.ImageAlign; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new ContentAlignment ImageAlign
+        //{
+        //    get { return base.ImageAlign; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new int ImageIndex
-        {
-            get { return base.ImageIndex; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new int ImageIndex
+        //{
+        //    get { return base.ImageIndex; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new string ImageKey
-        {
-            get { return base.ImageKey; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new string ImageKey
+        //{
+        //    get { return base.ImageKey; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new ImageList ImageList
-        {
-            get { return base.ImageList; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new ImageList ImageList
+        //{
+        //    get { return base.ImageList; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new ContentAlignment TextAlign
-        {
-            get { return base.TextAlign; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new ContentAlignment TextAlign
+        //{
+        //    get { return base.TextAlign; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new TextImageRelation TextImageRelation
-        {
-            get { return base.TextImageRelation; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new TextImageRelation TextImageRelation
+        //{
+        //    get { return base.TextImageRelation; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool ThreeState
-        {
-            get { return base.ThreeState; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new bool ThreeState
+        //{
+        //    get { return base.ThreeState; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool UseCompatibleTextRendering
-        {
-            get { return false; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new bool UseCompatibleTextRendering
+        //{
+        //    get { return false; }
+        //}
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool UseVisualStyleBackColor
-        {
-            get { return false; }
-        }
+        //[Browsable(false)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        //public new bool UseVisualStyleBackColor
+        //{
+        //    get { return false; }
+        //}
 
         #endregion
 
@@ -136,13 +146,20 @@ namespace DarkUI.Controls
 
         public DarkCheckBox()
         {
+            // Always true
             SetStyle(ControlStyles.SupportsTransparentBackColor |
                      ControlStyles.OptimizedDoubleBuffer |
                      ControlStyles.ResizeRedraw |
                      ControlStyles.UserPaint, true);
+            UseMnemonic = false;
         }
 
         #endregion
+
+        private void InvalidateIfDark()
+        {
+            if (_darkModeEnabled) Invalidate();
+        }
 
         #region Method Region
 
@@ -151,7 +168,7 @@ namespace DarkUI.Controls
             if (_controlState != controlState)
             {
                 _controlState = controlState;
-                Invalidate();
+                InvalidateIfDark();
             }
         }
 
@@ -162,6 +179,8 @@ namespace DarkUI.Controls
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed)
                 return;
@@ -183,6 +202,8 @@ namespace DarkUI.Controls
         {
             base.OnMouseDown(e);
 
+            if (!_darkModeEnabled) return;
+
             if (!ClientRectangle.Contains(e.Location))
                 return;
 
@@ -192,6 +213,8 @@ namespace DarkUI.Controls
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
+
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed)
                 return;
@@ -203,6 +226,8 @@ namespace DarkUI.Controls
         {
             base.OnMouseLeave(e);
 
+            if (!_darkModeEnabled) return;
+
             if (_spacePressed)
                 return;
 
@@ -212,6 +237,8 @@ namespace DarkUI.Controls
         protected override void OnMouseCaptureChanged(EventArgs e)
         {
             base.OnMouseCaptureChanged(e);
+
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed)
                 return;
@@ -226,12 +253,16 @@ namespace DarkUI.Controls
         {
             base.OnGotFocus(e);
 
-            Invalidate();
+            if (!_darkModeEnabled) return;
+
+            InvalidateIfDark();
         }
 
         protected override void OnLostFocus(EventArgs e)
         {
             base.OnLostFocus(e);
+
+            if (!_darkModeEnabled) return;
 
             _spacePressed = false;
 
@@ -247,6 +278,8 @@ namespace DarkUI.Controls
         {
             base.OnKeyDown(e);
 
+            if (!_darkModeEnabled) return;
+
             if (e.KeyCode == Keys.Space)
             {
                 _spacePressed = true;
@@ -257,6 +290,8 @@ namespace DarkUI.Controls
         protected override void OnKeyUp(KeyEventArgs e)
         {
             base.OnKeyUp(e);
+
+            if (!_darkModeEnabled) return;
 
             if (e.KeyCode == Keys.Space)
             {
@@ -277,6 +312,12 @@ namespace DarkUI.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            if (!_darkModeEnabled)
+            {
+                base.OnPaint(e);
+                return;
+            }
+
             var g = e.Graphics;
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
@@ -312,7 +353,7 @@ namespace DarkUI.Controls
                 fillColor = Colors.GreySelection;
             }
 
-            using (var b = new SolidBrush(Colors.GreyBackground))
+            using (var b = new SolidBrush(Parent?.BackColor ?? Colors.GreyBackground))
             {
                 g.FillRectangle(b, rect);
             }
@@ -334,14 +375,13 @@ namespace DarkUI.Controls
 
             using (var b = new SolidBrush(textColor))
             {
-                var stringFormat = new StringFormat
-                {
-                    LineAlignment = StringAlignment.Center,
-                    Alignment = StringAlignment.Near
-                };
+                const TextFormatFlags textFormatFlags =
+                    TextFormatFlags.VerticalCenter |
+                    TextFormatFlags.NoPrefix |
+                    TextFormatFlags.Default;
 
                 var modRect = new Rectangle(size + 4, 0, rect.Width - size, rect.Height);
-                g.DrawString(Text, Font, b, modRect, stringFormat);
+                TextRenderer.DrawText(g, Text, Font, modRect, b.Color, textFormatFlags);
             }
         }
 
