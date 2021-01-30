@@ -120,8 +120,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private DataGridViewImageColumn? RatingImageColumn;
-
         public bool EventsDisabled { get; set; }
         public bool KeyPressesDisabled { get; set; }
 
@@ -137,15 +135,14 @@ namespace AngelLoader.Forms
         #region Test / debug
 
 #if !ReleaseBeta && !ReleasePublic
-        private readonly CheckBox ForceWindowedCheckBox;
         private void ForceWindowedCheckBox_CheckedChanged(object sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
-        private readonly CheckBox T1ScreenShotModeCheckBox;
-        private readonly CheckBox T2ScreenShotModeCheckBox;
+
         private void T1ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             GameConfigFiles.SetScreenShotMode(Thief1, T1ScreenShotModeCheckBox.Checked);
         }
+
         private void T2ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
@@ -530,6 +527,16 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            // The other Rating column, there has to be two, one for text and one for images
+            RatingImageColumn = new DataGridViewImageColumn
+            {
+                ImageLayout = DataGridViewImageCellLayout.Zoom,
+                ReadOnly = true,
+                Width = _ratingImageColumnWidth,
+                Resizable = DataGridViewTriState.False,
+                SortMode = DataGridViewColumnSortMode.Programmatic
+            };
+
             MainMenuButton.HideFocusRectangle();
 
             //Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -718,16 +725,6 @@ namespace AngelLoader.Forms
             #region Columns
 
             FinishedColumn.Width = _finishedColumnWidth;
-
-            // The other Rating column, there has to be two, one for text and one for images
-            RatingImageColumn = new DataGridViewImageColumn
-            {
-                ImageLayout = DataGridViewImageCellLayout.Zoom,
-                ReadOnly = true,
-                Width = _ratingImageColumnWidth,
-                Resizable = DataGridViewTriState.False,
-                SortMode = DataGridViewColumnSortMode.Programmatic
-            };
 
             UpdateRatingListsAndColumn(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel, startup: true);
 

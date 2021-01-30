@@ -1933,6 +1933,12 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.Label DebugLabel2;
 #endif
 
+#if !ReleaseBeta && !ReleasePublic
+        internal readonly System.Windows.Forms.CheckBox ForceWindowedCheckBox;
+        internal readonly System.Windows.Forms.CheckBox T1ScreenShotModeCheckBox;
+        internal readonly System.Windows.Forms.CheckBox T2ScreenShotModeCheckBox;
+#endif
+
         internal AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
         internal System.Windows.Forms.Panel BottomPanel;
         internal AngelLoader.Forms.CustomControls.DataGridViewCustom FMsDGV;
@@ -2042,6 +2048,7 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.DataGridViewTextBoxColumn AuthorColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn SizeColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn RatingTextColumn;
+        internal System.Windows.Forms.DataGridViewImageColumn RatingImageColumn;
         internal System.Windows.Forms.DataGridViewImageColumn FinishedColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn ReleaseDateColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn LastPlayedColumn;
