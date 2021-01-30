@@ -718,7 +718,7 @@ namespace AngelLoader.Forms
             ChangeGameOrganization(startup: true);
 
             // PERF: If we're in the classic theme, we don't need to do anything
-            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme);
+            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme, startup: true);
         }
 
         // This one can't be multithreaded because it depends on the FMs list
@@ -1321,7 +1321,9 @@ namespace AngelLoader.Forms
             if (!startup) RefreshFMsListKeepSelection();
         }
 
-        public void SetTheme(VisualTheme theme)
+        public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false);
+
+        private void SetTheme(VisualTheme theme, bool startup)
         {
             // IMPORTANT: We use DarkButton because it properly colors disabled button text
 
@@ -1355,78 +1357,87 @@ namespace AngelLoader.Forms
 
             if (_controlColors.Count == 0) FillControlDict(this, _controlColors);
 
-            #region Automatic sets
-
-            foreach (var item in _controlColors)
+            try
             {
-                Control control = item.Key;
+                if (!startup) this.SuspendDrawing();
 
-                // Excludes - we handle these manually
-                if (control == ReadmeZoomInButton ||
-                    control == ReadmeZoomOutButton ||
-                    control == ReadmeResetZoomButton ||
-                    control == ReadmeFullScreenButton ||
-                    control == FMsDGV)
-                {
-                    continue;
-                }
+                #region Automatic sets
 
-                if (control is IDarkable darkableControl)
+                foreach (var item in _controlColors)
                 {
-                    darkableControl.DarkModeEnabled = darkMode;
-                }
-                else
-                {
-                    if (darkMode)
+                    Control control = item.Key;
+
+                    // Excludes - we handle these manually
+                    if (control == ReadmeZoomInButton ||
+                        control == ReadmeZoomOutButton ||
+                        control == ReadmeResetZoomButton ||
+                        control == ReadmeFullScreenButton ||
+                        control == FMsDGV)
                     {
-                        control.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
-                        control.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                        continue;
+                    }
+
+                    if (control is IDarkable darkableControl)
+                    {
+                        darkableControl.DarkModeEnabled = darkMode;
                     }
                     else
                     {
-                        control.ForeColor = item.Value.ForeColor;
-                        control.BackColor = item.Value.BackColor;
+                        if (darkMode)
+                        {
+                            control.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                            control.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                        }
+                        else
+                        {
+                            control.ForeColor = item.Value.ForeColor;
+                            control.BackColor = item.Value.BackColor;
+                        }
                     }
                 }
+
+                #endregion
+
+                #region Manual sets
+
+                SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible);
+                if (darkMode)
+                {
+                    FMsDGV.RowsDefaultCellStyle.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                    FMsDGV.GridColor = Color.FromArgb(64, 64, 64);
+                    //FMsDGV.RowsDefaultCellStyle.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                    _recentHighlightColor = Color.FromArgb(64, 64, 72);
+                    _defaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                }
+                else
+                {
+                    FMsDGV.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+                    FMsDGV.GridColor = SystemColors.ControlDark;
+                    _recentHighlightColor = Color.LightGoldenrodYellow;
+                    _defaultRowBackColor = SystemColors.Window;
+                    //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+                }
+
+                RefreshFMsListKeepSelection();
+                MainLLMenu.DarkModeEnabled = darkMode;
+                FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
+                FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
+                ImportFromLLMenu.DarkModeEnabled = darkMode;
+                TopRightLLMenu.DarkModeEnabled = darkMode;
+                AddTagLLMenu.DarkModeEnabled = darkMode;
+                AltTitlesLLMenu.DarkModeEnabled = darkMode;
+                FilterControlsLLMenu.DarkModeEnabled = darkMode;
+                PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
+                InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
+                ExitLLButton.DarkModeEnabled = darkMode;
+                ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
+
+                #endregion
             }
-
-            #endregion
-
-            #region Manual sets
-
-            SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible);
-            if (darkMode)
+            finally
             {
-                FMsDGV.RowsDefaultCellStyle.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
-                FMsDGV.GridColor = Color.FromArgb(64, 64, 64);
-                //FMsDGV.RowsDefaultCellStyle.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
-                _recentHighlightColor = Color.FromArgb(64, 64, 72);
-                _defaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                if (!startup) this.ResumeDrawing();
             }
-            else
-            {
-                FMsDGV.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                FMsDGV.GridColor = SystemColors.ControlDark;
-                _recentHighlightColor = Color.LightGoldenrodYellow;
-                _defaultRowBackColor = SystemColors.Window;
-                //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-            }
-
-            RefreshFMsListKeepSelection();
-            MainLLMenu.DarkModeEnabled = darkMode;
-            FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
-            FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
-            ImportFromLLMenu.DarkModeEnabled = darkMode;
-            TopRightLLMenu.DarkModeEnabled = darkMode;
-            AddTagLLMenu.DarkModeEnabled = darkMode;
-            AltTitlesLLMenu.DarkModeEnabled = darkMode;
-            FilterControlsLLMenu.DarkModeEnabled = darkMode;
-            PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
-            InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
-            ExitLLButton.DarkModeEnabled = darkMode;
-            ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
-
-            #endregion
         }
 
         #endregion
