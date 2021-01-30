@@ -517,7 +517,8 @@ namespace DarkUI.Controls
                     TextFormatFlags.HorizontalCenter |
                     TextFormatFlags.VerticalCenter |
                     TextFormatFlags.EndEllipsis |
-                    TextFormatFlags.NoPrefix;
+                    TextFormatFlags.NoPrefix |
+                    TextFormatFlags.NoClipping;
 
                 // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
                 TextRenderer.DrawText(g, Text, Font, modRect, b.Color, textFormat);

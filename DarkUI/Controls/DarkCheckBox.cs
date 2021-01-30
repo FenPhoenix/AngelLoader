@@ -378,7 +378,8 @@ namespace DarkUI.Controls
                 const TextFormatFlags textFormatFlags =
                     TextFormatFlags.VerticalCenter |
                     TextFormatFlags.NoPrefix |
-                    TextFormatFlags.Default;
+                    TextFormatFlags.Default |
+                    TextFormatFlags.NoClipping;
 
                 var modRect = new Rectangle(size + 4, 0, rect.Width - size, rect.Height);
                 TextRenderer.DrawText(g, Text, Font, modRect, b.Color, textFormatFlags);

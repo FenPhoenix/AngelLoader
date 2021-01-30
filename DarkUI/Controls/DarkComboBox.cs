@@ -6,14 +6,15 @@ using DarkUI.Config;
 
 namespace DarkUI.Controls
 {
-    public class DarkComboBox : ComboBox
+    public class DarkComboBox : ComboBox, IDarkable
     {
         private const TextFormatFlags _textFormat =
             TextFormatFlags.Default |
             TextFormatFlags.VerticalCenter |
             TextFormatFlags.EndEllipsis |
             TextFormatFlags.NoPrefix |
-            TextFormatFlags.SingleLine;
+            TextFormatFlags.SingleLine |
+            TextFormatFlags.NoClipping;
 
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
