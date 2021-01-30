@@ -34,7 +34,7 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
-        private readonly ILocalizable? _ownerForm;
+        private readonly IPreviewable? _ownerForm;
 
         private readonly bool _startup;
         private readonly bool _cleanStart;
@@ -82,7 +82,7 @@ namespace AngelLoader.Forms
         public readonly ConfigData OutConfig;
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        internal SettingsForm(ILocalizable? ownerForm, ConfigData config, bool startup, bool cleanStart)
+        internal SettingsForm(IPreviewable? ownerForm, ConfigData config, bool startup, bool cleanStart)
         {
 #if DEBUG
             InitializeComponent();

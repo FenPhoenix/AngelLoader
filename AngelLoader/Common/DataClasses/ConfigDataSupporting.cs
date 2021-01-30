@@ -61,7 +61,7 @@ namespace AngelLoader.DataClasses
 
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
-    internal enum VisualTheme { Classic, Dark }
+    public enum VisualTheme { Classic, Dark }
 
     #region Top-right tabs
 
