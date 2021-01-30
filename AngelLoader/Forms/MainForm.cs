@@ -179,9 +179,9 @@ namespace AngelLoader.Forms
             static void DarkenControls(
                 Control control,
                 Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
-                int stackCounter)
+                int stackCounter = 0)
             {
-                const int maxStackCount = 10;
+                const int maxStackCount = 100;
 
                 if (!controlColors.ContainsKey(control))
                 {
@@ -205,7 +205,7 @@ namespace AngelLoader.Forms
             Config.VisualTheme = Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic;
             bool darkMode = Config.VisualTheme == VisualTheme.Dark;
 
-            DarkenControls(this, _controlColors, 0);
+            DarkenControls(this, _controlColors);
 
             #region Automatic sets
 
@@ -466,20 +466,26 @@ namespace AngelLoader.Forms
                 int wParam = (int)m.WParam;
                 if (wParam == (int)Keys.F1 && CanFocus)
                 {
-                    int stackCounter = 0;
-                    bool AnyControlFocusedIn(Control control)
+                    static bool AnyControlFocusedIn(Control control, int stackCounter = 0)
                     {
-                        stackCounter++;
-                        if (stackCounter > 100) return false;
-
-                        if (control.Focused) return true;
-
-                        for (int i = 0; i < control.Controls.Count; i++)
+                        try
                         {
-                            if (AnyControlFocusedIn(control.Controls[i])) return true;
-                        }
+                            stackCounter++;
+                            if (stackCounter > 100) return false;
 
-                        return false;
+                            if (control.Focused) return true;
+
+                            for (int i = 0; i < control.Controls.Count; i++)
+                            {
+                                if (AnyControlFocusedIn(control.Controls[i], stackCounter)) return true;
+                            }
+
+                            return false;
+                        }
+                        finally
+                        {
+                            stackCounter--;
+                        }
                     }
 
                     bool AnyControlFocusedInTabPage(TabPage tabPage) =>
