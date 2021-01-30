@@ -1,20 +1,51 @@
-﻿using DarkUI.Config;
+﻿using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Config;
 
 namespace DarkUI.Controls
 {
-    public class DarkTextBox : TextBox
+    public class DarkTextBox : TextBox, IDarkable
     {
-        #region Constructor Region
+        private bool _origValuesStored;
+        private Color _origForeColor;
+        private Color _origBackColor;
+        private Padding _origPadding;
+        private BorderStyle _origBorderStyle;
 
-        public DarkTextBox()
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
         {
-            BackColor = Colors.LightBackground;
-            ForeColor = Colors.LightText;
-            Padding = new Padding(2, 2, 2, 2);
-            BorderStyle = BorderStyle.FixedSingle;
-        }
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (_darkModeEnabled)
+                {
+                    if (!_origValuesStored)
+                    {
+                        _origForeColor = ForeColor;
+                        _origBackColor = BackColor;
+                        _origPadding = Padding;
+                        _origBorderStyle = BorderStyle;
+                        _origValuesStored = true;
+                    }
 
-        #endregion
+                    BackColor = Colors.LightBackground;
+                    ForeColor = Colors.LightText;
+                    Padding = new Padding(2, 2, 2, 2);
+                    BorderStyle = BorderStyle.FixedSingle;
+                }
+                else
+                {
+                    if (_origValuesStored)
+                    {
+                        BackColor = _origBackColor;
+                        ForeColor = _origForeColor;
+                        Padding = _origPadding;
+                        BorderStyle = _origBorderStyle;
+                    }
+                }
+            }
+        }
     }
 }

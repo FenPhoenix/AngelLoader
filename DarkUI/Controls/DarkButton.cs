@@ -8,7 +8,7 @@ namespace DarkUI.Controls
 {
     [ToolboxBitmap(typeof(Button))]
     [DefaultEvent("Click")]
-    public class DarkButton : Button
+    public class DarkButton : Button, IDarkable
     {
         #region Field Region
 

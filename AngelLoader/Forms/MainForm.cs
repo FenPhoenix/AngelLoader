@@ -1361,8 +1361,7 @@ namespace AngelLoader.Forms
             {
                 Control control = item.Key;
 
-                Type controlType = control.GetType();
-
+                // Excludes - we handle these manually
                 if (control == ReadmeZoomInButton ||
                     control == ReadmeZoomOutButton ||
                     control == ReadmeResetZoomButton ||
@@ -1372,20 +1371,9 @@ namespace AngelLoader.Forms
                     continue;
                 }
 
-                if (controlType == typeof(ArrowButton))
+                if (control is IDarkable darkableControl)
                 {
-                    ArrowButton button = (ArrowButton)control;
-                    button.DarkModeEnabled = darkMode;
-                }
-                else if (controlType == typeof(DarkButton))
-                {
-                    DarkButton button = (DarkButton)control;
-                    button.DarkModeEnabled = darkMode;
-                }
-                else if (controlType == typeof(ComboBoxCustom))
-                {
-                    var cb = (DarkComboBox)control;
-                    cb.DarkModeEnabled = darkMode;
+                    darkableControl.DarkModeEnabled = darkMode;
                 }
                 else
                 {

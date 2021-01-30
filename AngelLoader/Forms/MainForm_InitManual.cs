@@ -125,7 +125,7 @@ namespace AngelLoader.Forms
             EditFMScanAuthorButton = new DarkUI.Controls.DarkButton();
             EditFMScanTitleButton = new DarkUI.Controls.DarkButton();
             EditFMAltTitlesArrowButton = new ArrowButton();
-            EditFMTitleTextBox = new TextBox();
+            EditFMTitleTextBox = new DarkUI.Controls.DarkTextBox();
             EditFMFinishedOnButton = new DarkUI.Controls.DarkButton();
             EditFMRatingComboBox = new ComboBoxCustom();
             EditFMRatingLabel = new Label();
@@ -134,13 +134,13 @@ namespace AngelLoader.Forms
             EditFMLastPlayedCheckBox = new CheckBox();
             EditFMReleaseDateCheckBox = new CheckBox();
             EditFMDisableAllModsCheckBox = new CheckBox();
-            EditFMDisabledModsTextBox = new TextBox();
+            EditFMDisabledModsTextBox = new DarkUI.Controls.DarkTextBox();
             EditFMDisabledModsLabel = new Label();
-            EditFMAuthorTextBox = new TextBox();
+            EditFMAuthorTextBox = new DarkUI.Controls.DarkTextBox();
             EditFMAuthorLabel = new Label();
             EditFMTitleLabel = new Label();
             CommentTabPage = new TabPage();
-            CommentTextBox = new TextBox();
+            CommentTextBox = new DarkUI.Controls.DarkTextBox();
             TagsTabPage = new TabPage();
             AddTagButton = new DarkUI.Controls.DarkButton();
             AddTagTextBox = new TextBoxCustom();
