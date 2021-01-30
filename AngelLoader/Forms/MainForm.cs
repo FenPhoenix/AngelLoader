@@ -3684,6 +3684,10 @@ namespace AngelLoader.Forms
             Color backColor =
                 Config.VisualTheme == VisualTheme.Dark
                     ? enabled
+                        // Explicitly set to our dark background color, because when we eventually make RTF
+                        // backgrounds darkable, we'll have to do it through the RTF itself and we may end up
+                        // not setting the RichTextBox control's background color itself, so we can't just pick
+                        // it up in here.
                         ? DarkUI.Config.Colors.Fen_DarkBackground
                         : MainSplitContainer.Panel2.BackColor
                     : enabled
