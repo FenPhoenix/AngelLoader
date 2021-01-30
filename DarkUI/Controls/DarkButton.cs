@@ -1,8 +1,8 @@
-﻿using DarkUI.Config;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Config;
 
 namespace DarkUI.Controls
 {
@@ -23,8 +23,6 @@ namespace DarkUI.Controls
 
         private FlatStyle? _originalFlatStyle;
         private int? _originalBorderSize;
-
-        private Size? _originalSize;
 
         #endregion
 
@@ -75,11 +73,6 @@ namespace DarkUI.Controls
                 InvalidateIfDark();
             }
         }
-
-        [Category("Appearance")]
-        [Description("Performs a small size and position adjustment in dark mode to attempt to keep precise UI layouts the same as in classic mode.")]
-        [DefaultValue(false)]
-        public bool AdjustSizeAndPosForDarkMode { get; set; }
 
         #endregion
 
@@ -173,21 +166,6 @@ namespace DarkUI.Controls
 
             if (_darkModeEnabled)
             {
-                // BUG: @DarkMode: DarkButton - position/size bug
-                // AddTagButton is inching along to the left with every toggle due to it being anchored right
-                // (doesn't happen when anchored left). We need to account for all possible anchorings here.
-                // Also:
-                // If a number is 0 and we subtract and then add again, we might end up with different final
-                // values(?) We should just store all the values as previous and restore them back exactly.
-
-                if (AdjustSizeAndPosForDarkMode)
-                {
-                    if (_originalSize == null) _originalSize = Size;
-                    MinimumSize = Size.Subtract(MinimumSize, new Size(2, 2));
-                    Size = Size.Subtract((Size)_originalSize, new Size(2, 2));
-                    Location = new Point(Location.X + 1, Location.Y + 1);
-                }
-
                 _originalFlatStyle = base.FlatStyle;
                 _originalBorderSize = FlatAppearance.BorderSize;
                 base.UseVisualStyleBackColor = !_darkModeEnabled;
@@ -203,13 +181,6 @@ namespace DarkUI.Controls
                 base.UseVisualStyleBackColor = true;
                 base.FlatStyle = _originalFlatStyle ?? base.FlatStyle;
                 FlatAppearance.BorderSize = _originalBorderSize ?? FlatAppearance.BorderSize;
-
-                if (AdjustSizeAndPosForDarkMode && _originalSize != null)
-                {
-                    MinimumSize = Size.Add(MinimumSize, new Size(2, 2));
-                    Size = (Size)_originalSize;
-                    Location = new Point(Location.X - 1, Location.Y - 1);
-                }
             }
         }
 
@@ -421,7 +392,10 @@ namespace DarkUI.Controls
             }
 
             var g = e.Graphics;
-            var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+
+            // Slightly modified rectangle to account for Flat style being slightly larger than classic mode,
+            // this matches us visually in size and position to classic mode
+            var rect = new Rectangle(1, 1, ClientSize.Width - 2, ClientSize.Height - 3);
 
             var textColor = Colors.LightText;
             var borderColor = Colors.GreySelection;
@@ -475,7 +449,8 @@ namespace DarkUI.Controls
             {
                 using (var p = new Pen(borderColor, 1))
                 {
-                    var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
+                    // Again, match us visually to size and position of classic mode
+                    var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height);
 
                     g.DrawRectangle(p, modRect);
                 }
@@ -545,6 +520,25 @@ namespace DarkUI.Controls
                 // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
                 TextRenderer.DrawText(g, Text, Font, modRect, b.Color, textFormat);
             }
+
+            #region Draw "transparent" (parent-control-backcolor-matching) border
+
+            // This gets rid of the surrounding garbage from us modifying our draw position slightly to match
+            // the visual size and positioning of the classic theme.
+            // Draw this AFTER everything else, so that we draw on top so everything looks right.
+
+            Control parent = Parent;
+
+            if (parent != null)
+            {
+                using (var pen = new Pen(parent.BackColor))
+                {
+                    var bgRect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
+                    g.DrawRectangle(pen, bgRect);
+                }
+            }
+
+            #endregion
 
             PaintCustom?.Invoke(this, e);
         }

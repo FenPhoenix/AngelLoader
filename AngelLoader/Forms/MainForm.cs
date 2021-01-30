@@ -539,7 +539,6 @@ namespace AngelLoader.Forms
             BottomPanel.Controls.Add(DebugLabel);
             BottomPanel.Controls.Add(DebugLabel2);
 
-            TestButton.AdjustSizeAndPosForDarkMode = true;
             TestButton.Location = new Point(650, 0);
             TestButton.Size = new Size(75, 22);
             TestButton.TabIndex = 999;
@@ -547,7 +546,6 @@ namespace AngelLoader.Forms
             TestButton.UseVisualStyleBackColor = true;
             TestButton.Click += TestButton_Click;
 
-            Test2Button.AdjustSizeAndPosForDarkMode = true;
             Test2Button.Location = new Point(650, 21);
             Test2Button.Size = new Size(75, 22);
             Test2Button.TabIndex = 999;

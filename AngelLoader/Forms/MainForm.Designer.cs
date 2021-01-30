@@ -1099,7 +1099,6 @@ namespace AngelLoader.Forms
             // 
             // StatsScanCustomResourcesButton
             // 
-            this.StatsScanCustomResourcesButton.AdjustSizeAndPosForDarkMode = true;
             this.StatsScanCustomResourcesButton.AutoSize = true;
             this.StatsScanCustomResourcesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 200);
@@ -1305,7 +1304,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanLanguagesButton
             // 
-            this.EditFMScanLanguagesButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 261);
             this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
             this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
@@ -1316,7 +1314,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanForReadmesButton
             // 
-            this.EditFMScanForReadmesButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMScanForReadmesButton.AutoSize = true;
             this.EditFMScanForReadmesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 299);
@@ -1332,7 +1329,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanReleaseDateButton
             // 
-            this.EditFMScanReleaseDateButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMScanReleaseDateButton.Location = new System.Drawing.Point(136, 105);
             this.EditFMScanReleaseDateButton.Name = "EditFMScanReleaseDateButton";
             this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
@@ -1343,7 +1339,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanAuthorButton
             // 
-            this.EditFMScanAuthorButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMScanAuthorButton.Location = new System.Drawing.Point(493, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
@@ -1355,7 +1350,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanTitleButton
             // 
-            this.EditFMScanTitleButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMScanTitleButton.Location = new System.Drawing.Point(493, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
@@ -1367,7 +1361,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMAltTitlesArrowButton
             // 
-            this.EditFMAltTitlesArrowButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
             this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(477, 23);
@@ -1390,7 +1383,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMFinishedOnButton
             // 
-            this.EditFMFinishedOnButton.AdjustSizeAndPosForDarkMode = true;
             this.EditFMFinishedOnButton.AutoSize = true;
             this.EditFMFinishedOnButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.EditFMFinishedOnButton.Location = new System.Drawing.Point(184, 144);
@@ -1580,7 +1572,6 @@ namespace AngelLoader.Forms
             // 
             // AddTagButton
             // 
-            this.AddTagButton.AdjustSizeAndPosForDarkMode = true;
             this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagButton.AutoSize = true;
             this.AddTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -1621,7 +1612,6 @@ namespace AngelLoader.Forms
             // 
             // RemoveTagButton
             // 
-            this.RemoveTagButton.AdjustSizeAndPosForDarkMode = true;
             this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RemoveTagButton.AutoSize = true;
             this.RemoveTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -1638,7 +1628,6 @@ namespace AngelLoader.Forms
             // 
             // AddTagFromListButton
             // 
-            this.AddTagFromListButton.AdjustSizeAndPosForDarkMode = true;
             this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagFromListButton.AutoSize = true;
             this.AddTagFromListButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -1726,7 +1715,6 @@ namespace AngelLoader.Forms
             // 
             // PatchRemoveDMLButton
             // 
-            this.PatchRemoveDMLButton.AdjustSizeAndPosForDarkMode = true;
             this.PatchRemoveDMLButton.Location = new System.Drawing.Point(122, 94);
             this.PatchRemoveDMLButton.Name = "PatchRemoveDMLButton";
             this.PatchRemoveDMLButton.Size = new System.Drawing.Size(23, 23);
@@ -1737,7 +1725,6 @@ namespace AngelLoader.Forms
             // 
             // PatchAddDMLButton
             // 
-            this.PatchAddDMLButton.AdjustSizeAndPosForDarkMode = true;
             this.PatchAddDMLButton.Location = new System.Drawing.Point(146, 94);
             this.PatchAddDMLButton.Name = "PatchAddDMLButton";
             this.PatchAddDMLButton.Size = new System.Drawing.Size(23, 23);
@@ -1748,7 +1735,6 @@ namespace AngelLoader.Forms
             // 
             // PatchOpenFMFolderButton
             // 
-            this.PatchOpenFMFolderButton.AdjustSizeAndPosForDarkMode = true;
             this.PatchOpenFMFolderButton.AutoSize = true;
             this.PatchOpenFMFolderButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 128);

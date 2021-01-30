@@ -915,7 +915,6 @@ namespace AngelLoader.Forms
             // 
             // StatsScanCustomResourcesButton
             // 
-            StatsScanCustomResourcesButton.AdjustSizeAndPosForDarkMode = true;
             StatsScanCustomResourcesButton.AutoSize = true;
             StatsScanCustomResourcesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             StatsScanCustomResourcesButton.MinimumSize = new Size(0, 23);
@@ -1076,7 +1075,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanLanguagesButton
             // 
-            EditFMScanLanguagesButton.AdjustSizeAndPosForDarkMode = true;
             EditFMScanLanguagesButton.Location = new Point(137, 261);
             EditFMScanLanguagesButton.Size = new Size(22, 23);
             EditFMScanLanguagesButton.TabIndex = 33;
@@ -1086,7 +1084,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanForReadmesButton
             // 
-            EditFMScanForReadmesButton.AdjustSizeAndPosForDarkMode = true;
             EditFMScanForReadmesButton.AutoSize = true;
             EditFMScanForReadmesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             EditFMScanForReadmesButton.MinimumSize = new Size(130, 23);
@@ -1099,7 +1096,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanReleaseDateButton
             // 
-            EditFMScanReleaseDateButton.AdjustSizeAndPosForDarkMode = true;
             EditFMScanReleaseDateButton.Location = new Point(136, 105);
             EditFMScanReleaseDateButton.Size = new Size(22, 22);
             EditFMScanReleaseDateButton.TabIndex = 22;
@@ -1109,7 +1105,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanAuthorButton
             // 
-            EditFMScanAuthorButton.AdjustSizeAndPosForDarkMode = true;
             EditFMScanAuthorButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             EditFMScanAuthorButton.Location = new Point(493, 63);
             EditFMScanAuthorButton.Size = new Size(22, 22);
@@ -1120,7 +1115,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanTitleButton
             // 
-            EditFMScanTitleButton.AdjustSizeAndPosForDarkMode = true;
             EditFMScanTitleButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             EditFMScanTitleButton.Location = new Point(493, 23);
             EditFMScanTitleButton.Size = new Size(22, 22);
@@ -1131,7 +1125,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMAltTitlesArrowButton
             // 
-            EditFMAltTitlesArrowButton.AdjustSizeAndPosForDarkMode = true;
             EditFMAltTitlesArrowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             EditFMAltTitlesArrowButton.ArrowDirection = Direction.Down;
             EditFMAltTitlesArrowButton.Location = new Point(477, 23);
@@ -1151,7 +1144,6 @@ namespace AngelLoader.Forms
             // 
             // EditFMFinishedOnButton
             // 
-            EditFMFinishedOnButton.AdjustSizeAndPosForDarkMode = true;
             EditFMFinishedOnButton.AutoSize = true;
             EditFMFinishedOnButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             EditFMFinishedOnButton.MinimumSize = new Size(138, 23);
@@ -1301,7 +1293,6 @@ namespace AngelLoader.Forms
             // 
             // AddTagButton
             // 
-            AddTagButton.AdjustSizeAndPosForDarkMode = true;
             AddTagButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             AddTagButton.AutoSize = true;
             AddTagButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -1336,7 +1327,6 @@ namespace AngelLoader.Forms
             // 
             // RemoveTagButton
             // 
-            RemoveTagButton.AdjustSizeAndPosForDarkMode = true;
             RemoveTagButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             RemoveTagButton.AutoSize = true;
             RemoveTagButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -1350,7 +1340,6 @@ namespace AngelLoader.Forms
             // 
             // AddTagFromListButton
             // 
-            AddTagFromListButton.AdjustSizeAndPosForDarkMode = true;
             AddTagFromListButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             AddTagFromListButton.AutoSize = true;
             AddTagFromListButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -1416,7 +1405,6 @@ namespace AngelLoader.Forms
             // 
             // PatchRemoveDMLButton
             // 
-            PatchRemoveDMLButton.AdjustSizeAndPosForDarkMode = true;
             PatchRemoveDMLButton.Location = new Point(122, 94);
             PatchRemoveDMLButton.Size = new Size(23, 23);
             PatchRemoveDMLButton.TabIndex = 42;
@@ -1426,7 +1414,6 @@ namespace AngelLoader.Forms
             // 
             // PatchAddDMLButton
             // 
-            PatchAddDMLButton.AdjustSizeAndPosForDarkMode = true;
             PatchAddDMLButton.Location = new Point(146, 94);
             PatchAddDMLButton.Size = new Size(23, 23);
             PatchAddDMLButton.TabIndex = 43;
@@ -1436,7 +1423,6 @@ namespace AngelLoader.Forms
             // 
             // PatchOpenFMFolderButton
             // 
-            PatchOpenFMFolderButton.AdjustSizeAndPosForDarkMode = true;
             PatchOpenFMFolderButton.AutoSize = true;
             PatchOpenFMFolderButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             PatchOpenFMFolderButton.MinimumSize = new Size(162, 23);
