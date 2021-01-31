@@ -169,9 +169,6 @@ namespace AngelLoader.Forms
 
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
-        private Color _recentHighlightColor = Color.LightGoldenrodYellow;
-        private Color _defaultRowBackColor = SystemColors.Window;
-
         private void TestButton_Click(object sender, EventArgs e)
         {
             Config.VisualTheme = Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic;
@@ -180,17 +177,6 @@ namespace AngelLoader.Forms
 
         private void Test2Button_Click(object sender, EventArgs e)
         {
-            var c = new ScrollBarVisualOnly();
-            c.OwnerHandle = FMsDGV.VerticalScrollBar.Handle;
-            FMsDGV.Controls.Add(c);
-            //TopSplitContainer.Panel1.Controls.Add(c);
-            c.Size = new Size(SystemInformation.VerticalScrollBarWidth, 64);
-            //c.Location = new Point(FMsDGV.ClientSize.Width - (SystemInformation.VerticalScrollBarWidth + 1), 1);
-            c.Location = FMsDGV.VerticalScrollBar.Location;
-            c.Size = FMsDGV.VerticalScrollBar.Size;
-            c.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
-            c.BringToFront();
-
             return;
 
             Width = 1305;
@@ -1361,8 +1347,7 @@ namespace AngelLoader.Forms
                     if (control == ReadmeZoomInButton ||
                         control == ReadmeZoomOutButton ||
                         control == ReadmeResetZoomButton ||
-                        control == ReadmeFullScreenButton ||
-                        control == FMsDGV
+                        control == ReadmeFullScreenButton
                         /*||control.EqualsIfNotNull(InstallUninstallFMLLButton.Button)*/
                         )
                     {
@@ -1393,22 +1378,6 @@ namespace AngelLoader.Forms
                 #region Manual sets
 
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible);
-                if (darkMode)
-                {
-                    FMsDGV.RowsDefaultCellStyle.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
-                    FMsDGV.GridColor = Color.FromArgb(64, 64, 64);
-                    //FMsDGV.RowsDefaultCellStyle.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
-                    _recentHighlightColor = Color.FromArgb(64, 64, 72);
-                    _defaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
-                }
-                else
-                {
-                    FMsDGV.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                    FMsDGV.GridColor = SystemColors.ControlDark;
-                    _recentHighlightColor = Color.LightGoldenrodYellow;
-                    _defaultRowBackColor = SystemColors.Window;
-                    //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-                }
 
                 RefreshFMsListKeepSelection();
                 MainLLMenu.DarkModeEnabled = darkMode;
@@ -3180,7 +3149,9 @@ namespace AngelLoader.Forms
 
             var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
-            FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedRecent ? _recentHighlightColor : _defaultRowBackColor;
+            FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedRecent
+                ? FMsDGV.RecentHighlightColor
+                : FMsDGV.DefaultRowBackColor;
         }
 
         private void FMsDGV_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
@@ -196,6 +197,19 @@ namespace AngelLoader.Forms
             {
                 FillControlDict(control.Controls[i], controlColors, stackCounter);
             }
+        }
+
+        internal static void SetVisible(this ScrollBarVisualOnly visualScrollBar, ScrollBar realScrollBar, bool visible)
+        {
+            if (visible)
+            {
+                visualScrollBar.Location = realScrollBar.Location;
+                visualScrollBar.Size = realScrollBar.Size;
+                visualScrollBar.Anchor = realScrollBar.Anchor;
+                visualScrollBar.BringToFront();
+            }
+
+            visualScrollBar.Visible = realScrollBar.Visible;
         }
     }
 }

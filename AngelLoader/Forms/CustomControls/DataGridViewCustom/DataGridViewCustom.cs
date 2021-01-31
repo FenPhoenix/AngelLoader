@@ -8,12 +8,13 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
+using DarkUI.Controls;
 using static AngelLoader.Forms.ControlExtensions;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed partial class DataGridViewCustom : DataGridView
+    public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     {
         #region Private fields
 
@@ -43,6 +44,42 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #endregion
+
+        internal Color DefaultRowBackColor { get; private set; } = SystemColors.Window;
+        internal Color RecentHighlightColor { get; private set; } = Color.LightGoldenrodYellow;
+
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+
+                if (_darkModeEnabled)
+                {
+                    RowsDefaultCellStyle.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                    GridColor = Color.FromArgb(64, 64, 64);
+                    //FMsDGV.RowsDefaultCellStyle.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                    RecentHighlightColor = Color.FromArgb(64, 64, 72);
+                    DefaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+
+                    VerticalVisualScrollBar.SetVisible(VerticalScrollBar, true);
+                    HorizontalVisualScrollBar.SetVisible(HorizontalScrollBar, true);
+                }
+                else
+                {
+                    RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+                    GridColor = SystemColors.ControlDark;
+                    RecentHighlightColor = Color.LightGoldenrodYellow;
+                    DefaultRowBackColor = SystemColors.Window;
+                    //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+
+                    VerticalVisualScrollBar.Hide();
+                    HorizontalVisualScrollBar.Hide();
+                }
+            }
+        }
 
         #region API methods
 
@@ -76,9 +113,17 @@ namespace AngelLoader.Forms.CustomControls
             public int[] rgstate;
         }
 
+        private readonly ScrollBarVisualOnly VerticalVisualScrollBar = new ScrollBarVisualOnly { Visible = false };
+        private readonly ScrollBarVisualOnly HorizontalVisualScrollBar = new ScrollBarVisualOnly { Visible = false };
+
         public DataGridViewCustom()
         {
             DoubleBuffered = true;
+
+            VerticalVisualScrollBar.OwnerHandle = VerticalScrollBar.Handle;
+            Controls.Add(VerticalVisualScrollBar);
+            HorizontalVisualScrollBar.OwnerHandle = HorizontalScrollBar.Handle;
+            Controls.Add(HorizontalVisualScrollBar);
 
             /*
             TODO: @DarkMode(Scroll bars): The plan:
