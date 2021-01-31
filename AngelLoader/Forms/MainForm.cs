@@ -1379,7 +1379,7 @@ namespace AngelLoader.Forms
 
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible);
 
-                RefreshFMsListKeepSelection();
+                //RefreshFMsListKeepSelection();
                 MainLLMenu.DarkModeEnabled = darkMode;
                 FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
                 FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
@@ -2393,6 +2393,8 @@ namespace AngelLoader.Forms
             {
                 FMsDGV.Refresh();
                 FMsDGV.Rows[selectedRow].Selected = true;
+                // TODO: This pops our position back to put selected FM in view - but do we really need to run this here?
+                // Alternatively, maybe SelectProperly() should pop us back to where we were after it's done?
                 FMsDGV.SelectProperly();
             }
         }

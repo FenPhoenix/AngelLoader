@@ -70,7 +70,7 @@ namespace AngelLoader.Forms.CustomControls
                 //if (parent != null && parent.IsHandleCreated)
                 if (OwnerHandle != null)
                 {
-                    Trace.WriteLine(_rnd.Next() + "hittest");
+                    //Trace.WriteLine(_rnd.Next() + "hittest");
                     InteropMisc.PostMessage((IntPtr)OwnerHandle, m.Msg, m.WParam, m.LParam);
                     m.Result = IntPtr.Zero;
                 }

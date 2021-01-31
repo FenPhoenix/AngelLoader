@@ -64,8 +64,22 @@ namespace AngelLoader.Forms.CustomControls
                     RecentHighlightColor = Color.FromArgb(64, 64, 72);
                     DefaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
 
-                    VerticalVisualScrollBar.SetVisible(VerticalScrollBar, true);
-                    HorizontalVisualScrollBar.SetVisible(HorizontalScrollBar, true);
+                    VerticalVisualScrollBar.MatchVisibility(VerticalScrollBar);
+                    HorizontalVisualScrollBar.MatchVisibility(HorizontalScrollBar);
+
+                    // Custom refresh routine, because we don't want to run SelectProperly() as that will pop us
+                    // back up put our selection in view, but we don't want to do anything at all other than change
+                    // the look, leaving everything exactly as it was functionally.
+                    if (RowCount > 0)
+                    {
+                        int selectedRow = SelectedRows[0].Index;
+
+                        using (new DisableEvents(_owner))
+                        {
+                            Refresh();
+                            Rows[selectedRow].Selected = true;
+                        }
+                    }
                 }
                 else
                 {

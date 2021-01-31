@@ -199,9 +199,9 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static void SetVisible(this ScrollBarVisualOnly visualScrollBar, ScrollBar realScrollBar, bool visible)
+        internal static void MatchVisibility(this ScrollBarVisualOnly visualScrollBar, ScrollBar realScrollBar)
         {
-            if (visible)
+            if (realScrollBar.Visible)
             {
                 visualScrollBar.Location = realScrollBar.Location;
                 visualScrollBar.Size = realScrollBar.Size;
