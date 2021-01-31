@@ -11,5 +11,52 @@ namespace DarkUI.Win32
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         internal static extern IntPtr SendMessage(IntPtr hWnd, UInt32 msg, IntPtr wParam, IntPtr lParam);
+
+        #region Fen
+
+        #region Mouse
+
+        // NC prefix means the mouse was over a non-client area
+
+        internal const int WM_SETCURSOR = 0x20;
+
+        internal const int WM_MOUSEWHEEL = 0x20A;
+        internal const int WM_MOUSEHWHEEL = 0x020E; // Mousewheel tilt
+
+        internal const int WM_MOUSEMOVE = 0x200;
+        internal const int WM_NCMOUSEMOVE = 0xA0;
+
+        internal const int WM_MOUSELEAVE = 0x02A3;
+
+        internal const int WM_LBUTTONUP = 0x202;
+        internal const int WM_NCLBUTTONUP = 0x00A2;
+        internal const int WM_MBUTTONUP = 0x208;
+        internal const int WM_NCMBUTTONUP = 0xA8;
+        internal const int WM_RBUTTONUP = 0x205;
+        internal const int WM_NCRBUTTONUP = 0xA5;
+
+        internal const int WM_LBUTTONDOWN = 0x201;
+        internal const int WM_NCLBUTTONDOWN = 0x00A1;
+        internal const int WM_MBUTTONDOWN = 0x207;
+        internal const int WM_NCMBUTTONDOWN = 0xA7;
+        internal const int WM_RBUTTONDOWN = 0x204;
+        internal const int WM_NCRBUTTONDOWN = 0xA4;
+
+        internal const int WM_XBUTTONDOWN = 0x020B;
+        //internal const int WM_NCXBUTTONDOWN = 0x0AB;
+
+        internal const int WM_LBUTTONDBLCLK = 0x203;
+        internal const int WM_NCLBUTTONDBLCLK = 0xA3;
+        internal const int WM_MBUTTONDBLCLK = 0x209;
+        internal const int WM_NCMBUTTONDBLCLK = 0xA9;
+        internal const int WM_RBUTTONDBLCLK = 0x206;
+        internal const int WM_NCRBUTTONDBLCLK = 0xA6;
+
+        #endregion
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+        #endregion
     }
 }

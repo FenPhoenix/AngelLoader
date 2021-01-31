@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using AngelLoader.WinAPI;
+using DarkUI.Win32;
 
-namespace AngelLoader.Forms.CustomControls
+namespace DarkUI.Controls
 {
     public sealed class ScrollBarVisualOnly : Control
     {
@@ -45,25 +40,25 @@ namespace AngelLoader.Forms.CustomControls
             //    if (OwnerHandle != null)
             //    {
             //        Trace.WriteLine(_rnd.Next() + "hittest");
-            //        InteropMisc.PostMessage((IntPtr)OwnerHandle, m.Msg, m.WParam, m.LParam);
+            //        Native.PostMessage((IntPtr)OwnerHandle, m.Msg, m.WParam, m.LParam);
             //        m.Result = IntPtr.Zero;
             //    }
 
             //}
-            if (m.Msg == InteropMisc.WM_LBUTTONDOWN || m.Msg == InteropMisc.WM_NCLBUTTONDOWN ||
-                m.Msg == InteropMisc.WM_MBUTTONDOWN || m.Msg == InteropMisc.WM_NCMBUTTONDOWN ||
-                m.Msg == InteropMisc.WM_RBUTTONDOWN || m.Msg == InteropMisc.WM_NCRBUTTONDOWN ||
-                m.Msg == InteropMisc.WM_LBUTTONDBLCLK || m.Msg == InteropMisc.WM_NCLBUTTONDBLCLK ||
-                m.Msg == InteropMisc.WM_MBUTTONDBLCLK || m.Msg == InteropMisc.WM_NCMBUTTONDBLCLK ||
-                m.Msg == InteropMisc.WM_RBUTTONDBLCLK || m.Msg == InteropMisc.WM_NCRBUTTONDBLCLK ||
-                m.Msg == InteropMisc.WM_LBUTTONUP || m.Msg == InteropMisc.WM_NCLBUTTONUP ||
-                m.Msg == InteropMisc.WM_MBUTTONUP || m.Msg == InteropMisc.WM_NCMBUTTONUP ||
-                m.Msg == InteropMisc.WM_RBUTTONUP || m.Msg == InteropMisc.WM_NCRBUTTONUP ||
+            if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN ||
+                m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN ||
+                m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
+                m.Msg == Native.WM_LBUTTONDBLCLK || m.Msg == Native.WM_NCLBUTTONDBLCLK ||
+                m.Msg == Native.WM_MBUTTONDBLCLK || m.Msg == Native.WM_NCMBUTTONDBLCLK ||
+                m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK ||
+                m.Msg == Native.WM_LBUTTONUP || m.Msg == Native.WM_NCLBUTTONUP ||
+                m.Msg == Native.WM_MBUTTONUP || m.Msg == Native.WM_NCMBUTTONUP ||
+                m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP ||
 
-                m.Msg == InteropMisc.WM_MOUSEMOVE || m.Msg == InteropMisc.WM_NCMOUSEMOVE //||
+                m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE //||
 
                 // Don't handle mouse wheel or mouse wheel tilt for now - mousewheel at least breaks on FMsDGV
-                //m.Msg == InteropMisc.WM_MOUSEWHEEL || m.Msg == InteropMisc.WM_MOUSEHWHEEL
+                //m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL
                 )
             {
                 //var parent = Parent;
@@ -71,7 +66,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (OwnerHandle != null)
                 {
                     //Trace.WriteLine(_rnd.Next() + "hittest");
-                    InteropMisc.PostMessage((IntPtr)OwnerHandle, m.Msg, m.WParam, m.LParam);
+                    Native.PostMessage((IntPtr)OwnerHandle, m.Msg, m.WParam, m.LParam);
                     m.Result = IntPtr.Zero;
                 }
             }

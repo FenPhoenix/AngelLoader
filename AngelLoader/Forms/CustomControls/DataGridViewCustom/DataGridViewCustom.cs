@@ -14,7 +14,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed partial class DataGridViewCustom : DataGridView, IDarkable
+    public sealed partial class DataGridViewCustom : DataGridView, IDarkableScrollable
     {
         #region Private fields
 
@@ -64,21 +64,15 @@ namespace AngelLoader.Forms.CustomControls
                     RecentHighlightColor = Color.FromArgb(64, 64, 72);
                     DefaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
 
-                    VerticalVisualScrollBar.MatchVisibility(VerticalScrollBar);
-                    HorizontalVisualScrollBar.MatchVisibility(HorizontalScrollBar);
-
                     // Custom refresh routine, because we don't want to run SelectProperly() as that will pop us
                     // back up put our selection in view, but we don't want to do anything at all other than change
                     // the look, leaving everything exactly as it was functionally.
-                    if (RowCount > 0)
-                    {
-                        int selectedRow = SelectedRows[0].Index;
+                    int selectedRow = RowCount > 0 ? SelectedRows[0].Index : -1;
 
-                        using (new DisableEvents(_owner))
-                        {
-                            Refresh();
-                            Rows[selectedRow].Selected = true;
-                        }
+                    using (new DisableEvents(_owner))
+                    {
+                        Refresh();
+                        if (selectedRow > -1) Rows[selectedRow].Selected = true;
                     }
                 }
                 else
@@ -88,9 +82,6 @@ namespace AngelLoader.Forms.CustomControls
                     RecentHighlightColor = Color.LightGoldenrodYellow;
                     DefaultRowBackColor = SystemColors.Window;
                     //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
-
-                    VerticalVisualScrollBar.Hide();
-                    HorizontalVisualScrollBar.Hide();
                 }
             }
         }
@@ -127,8 +118,11 @@ namespace AngelLoader.Forms.CustomControls
             public int[] rgstate;
         }
 
-        private readonly ScrollBarVisualOnly VerticalVisualScrollBar = new ScrollBarVisualOnly { Visible = false };
-        private readonly ScrollBarVisualOnly HorizontalVisualScrollBar = new ScrollBarVisualOnly { Visible = false };
+        public new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
+        public new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
+
+        public ScrollBarVisualOnly VerticalVisualScrollBar { get; } = new ScrollBarVisualOnly { Visible = false };
+        public ScrollBarVisualOnly HorizontalVisualScrollBar { get; } = new ScrollBarVisualOnly { Visible = false };
 
         public DataGridViewCustom()
         {
@@ -182,9 +176,6 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         internal void InjectOwner(MainForm owner) => _owner = owner;
-
-        internal new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
-        internal new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
 
         internal void Localize()
         {
@@ -436,13 +427,10 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (_darkModeEnabled)
-            {
-                VerticalVisualScrollBar.MatchVisibility(VerticalScrollBar);
-                HorizontalVisualScrollBar.MatchVisibility(HorizontalScrollBar);
-            }
-
             base.OnPaint(e);
+
+            // Must come after base.OnPaint(e)
+            ControlPainter.PaintDarkScrollBars(this, e);
         }
 
         #endregion

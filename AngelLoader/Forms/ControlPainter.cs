@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using DarkUI.Controls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -673,6 +674,44 @@ namespace AngelLoader.Forms
 
             Brush brush = enabled ? SystemBrushes.ControlText : SystemBrushes.ControlDark;
             e.Graphics.FillPolygon(brush, _arrowPolygon);
+        }
+
+        internal static void PaintDarkScrollBars(IDarkableScrollable control, PaintEventArgs e)
+        {
+            if (control.DarkModeEnabled)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    var realScrollBar = i == 0 ? control.VerticalScrollBar : control.HorizontalScrollBar;
+                    var visualScrollBar = i == 0 ? control.VerticalVisualScrollBar : control.HorizontalVisualScrollBar;
+
+                    if (realScrollBar.Visible)
+                    {
+                        visualScrollBar.Location = realScrollBar.Location;
+                        visualScrollBar.Size = realScrollBar.Size;
+                        visualScrollBar.Anchor = realScrollBar.Anchor;
+                        visualScrollBar.BringToFront();
+                    }
+
+                    visualScrollBar.Visible = realScrollBar.Visible;
+                }
+
+                if (control.VerticalScrollBar.Visible && control.HorizontalScrollBar.Visible)
+                {
+                    // Draw the corner in between the two scroll bars
+                    using var b = new SolidBrush(DarkUI.Config.Colors.Fen_DarkBackground);
+                    e.Graphics.FillRectangle(b, new Rectangle(
+                        control.VerticalScrollBar.Location.X,
+                        control.HorizontalScrollBar.Location.Y,
+                        control.VerticalScrollBar.Width,
+                        control.HorizontalScrollBar.Height));
+                }
+            }
+            else
+            {
+                control.VerticalVisualScrollBar.Hide();
+                control.HorizontalVisualScrollBar.Hide();
+            }
         }
     }
 }
