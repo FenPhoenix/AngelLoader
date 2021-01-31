@@ -97,6 +97,7 @@ namespace AngelLoader.Forms.CustomControls
             Windows versions support WS_EX_LAYERED only for top-level windows."
             Damn... so we can't do this on 7, which we otherwise support.
             -Handle NCHITTEST / return HTTRANSPARENT - might work instead?
+            -Handle all mouse events and pass them along with PostMessage() - this works, we'll use it
             */
             /*
             this.Paint += (sender, e) =>
@@ -122,6 +123,9 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         internal void InjectOwner(MainForm owner) => _owner = owner;
+
+        internal new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
+        internal new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
 
         internal void Localize()
         {

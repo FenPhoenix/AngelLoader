@@ -180,6 +180,19 @@ namespace AngelLoader.Forms
 
         private void Test2Button_Click(object sender, EventArgs e)
         {
+            var c = new ScrollBarVisualOnly();
+            c.OwnerHandle = FMsDGV.VerticalScrollBar.Handle;
+            FMsDGV.Controls.Add(c);
+            //TopSplitContainer.Panel1.Controls.Add(c);
+            c.Size = new Size(SystemInformation.VerticalScrollBarWidth, 64);
+            //c.Location = new Point(FMsDGV.ClientSize.Width - (SystemInformation.VerticalScrollBarWidth + 1), 1);
+            c.Location = FMsDGV.VerticalScrollBar.Location;
+            c.Size = FMsDGV.VerticalScrollBar.Size;
+            c.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
+            c.BringToFront();
+
+            return;
+
             Width = 1305;
             Height = 750;
         }
