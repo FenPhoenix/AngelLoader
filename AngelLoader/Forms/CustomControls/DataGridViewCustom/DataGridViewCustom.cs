@@ -434,6 +434,17 @@ namespace AngelLoader.Forms.CustomControls
             base.OnLeave(e);
         }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (_darkModeEnabled)
+            {
+                VerticalVisualScrollBar.MatchVisibility(VerticalScrollBar);
+                HorizontalVisualScrollBar.MatchVisibility(HorizontalScrollBar);
+            }
+
+            base.OnPaint(e);
+        }
+
         #endregion
     }
 }
