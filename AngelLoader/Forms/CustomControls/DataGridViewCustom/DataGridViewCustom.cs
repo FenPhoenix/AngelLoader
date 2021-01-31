@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
@@ -45,7 +48,71 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Init
 
-        public DataGridViewCustom() => DoubleBuffered = true;
+        public struct RECT
+        {
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
+        }
+
+        private const uint OBJID_HSCROLL = 0xFFFFFFFA;
+        private const uint OBJID_VSCROLL = 0xFFFFFFFB;
+        private const uint OBJID_CLIENT = 0xFFFFFFFC;
+
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
+        private static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SCROLLBARINFO
+        {
+            public int cbSize;
+            public RECT rcScrollBar;
+            public int dxyLineButton;
+            public int xyThumbTop;
+            public int xyThumbBottom;
+            public int reserved;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+            public int[] rgstate;
+        }
+
+        public DataGridViewCustom()
+        {
+            DoubleBuffered = true;
+
+            /*
+            TODO: @DarkMode(Scroll bars): The plan:
+            -Create a custom control that looks like a scroll bar and place it overtop of the real scroll bar(s),
+             showing and hiding as the real scroll bars do. Dock and anchor so the size and position always matches
+             the real scroll bar. Apply the style here https://stackoverflow.com/a/50245502 to make clicks fall
+             through to the real scroll bar underneath.
+            -On Paint of whatever control contains the scroll bars, call GetScrollBarInfo() to get the top and
+             bottom of the scroll thumb, and paint our themed scroll bar to match.
+            -On mouse events of the real scroll bar, detect cursor position (is it on the arrow, the thumb, etc.?)
+             and paint ourselves appropriately to show arrow pressed states etc.
+            */
+            /*
+            this.Paint += (sender, e) =>
+            {
+                //e.Graphics.FillRectangle(Brushes.Red, 0, 0, Size.Width, Size.Height);
+
+                //Trace.WriteLine(_rnd.Next() + " dgv vscrolled");
+                SCROLLBARINFO psbi = new SCROLLBARINFO();
+                psbi.cbSize = Marshal.SizeOf(psbi);
+                int result = GetScrollBarInfo(this.VerticalScrollBar.Handle, OBJID_CLIENT, ref psbi);
+                if (result == 0)
+                {
+                    Trace.WriteLine("***ERROR: " + Marshal.GetLastWin32Error());
+                }
+                else
+                {
+                    Trace.WriteLine(nameof(psbi.dxyLineButton) + ": " + psbi.dxyLineButton);
+                    Trace.WriteLine(nameof(psbi.xyThumbTop) + ": " + psbi.xyThumbTop);
+                    Trace.WriteLine(nameof(psbi.xyThumbBottom) + ": " + psbi.xyThumbBottom);
+                }
+            };
+            */
+        }
 
         internal void InjectOwner(MainForm owner) => _owner = owner;
 
