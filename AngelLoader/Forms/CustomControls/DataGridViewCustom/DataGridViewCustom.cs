@@ -90,6 +90,13 @@ namespace AngelLoader.Forms.CustomControls
              bottom of the scroll thumb, and paint our themed scroll bar to match.
             -On mouse events of the real scroll bar, detect cursor position (is it on the arrow, the thumb, etc.?)
              and paint ourselves appropriately to show arrow pressed states etc.
+
+            Notes:
+            MSDN:
+            "Beginning with Windows 8, WS_EX_LAYERED can be used with child windows and top-level windows. Previous
+            Windows versions support WS_EX_LAYERED only for top-level windows."
+            Damn... so we can't do this on 7, which we otherwise support.
+            -Handle NCHITTEST / return HTTRANSPARENT - might work instead?
             */
             /*
             this.Paint += (sender, e) =>
