@@ -768,5 +768,27 @@ namespace FMScanner
         }
 
         #endregion
+
+        /// <summary>
+        /// Returns the number of directory separators in a string, earlying-out once it's counted <paramref name="maxToCount"/>
+        /// occurrences.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="maxToCount">The maximum number of occurrences to count before earlying-out.</param>
+        /// <returns></returns>
+        internal static int CountDirSepsUpToAmount(this string value, int maxToCount)
+        {
+            int foundCount = 0;
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i].IsDirSep())
+                {
+                    foundCount++;
+                    if (foundCount == maxToCount) break;
+                }
+            }
+
+            return foundCount;
+        }
     }
 }
