@@ -1327,35 +1327,9 @@ namespace AngelLoader.Forms
         {
             // IMPORTANT: We use DarkButton because it properly colors disabled button text
 
-            static void FillControlDict(
-                Control control,
-                Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
-                int stackCounter = 0)
-            {
-                const int maxStackCount = 100;
-
-                if (!controlColors.ContainsKey(control))
-                {
-                    controlColors[control] = (control.ForeColor, control.BackColor);
-                }
-
-                stackCounter++;
-
-                AssertR(
-                    stackCounter <= maxStackCount,
-                    nameof(FillControlDict) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
-
-                for (int i = 0; i < control.Controls.Count; i++)
-                {
-                    FillControlDict(control.Controls[i], controlColors, stackCounter);
-                }
-
-                stackCounter--;
-            }
-
             bool darkMode = theme == VisualTheme.Dark;
 
-            if (_controlColors.Count == 0) FillControlDict(this, _controlColors);
+            if (_controlColors.Count == 0) ControlExtensions.FillControlDict(this, _controlColors);
 
             try
             {
@@ -1367,12 +1341,17 @@ namespace AngelLoader.Forms
                 {
                     Control control = item.Key;
 
+                    // TODO: @DarkMode(SetTheme excludes): We need to exclude lazy-loaded controls also.
+                    // Figure out some way to just say "if a control is part of a lazy-loaded class" so we don't
+                    // have to write them out manually here again and keep both places in sync.
                     // Excludes - we handle these manually
                     if (control == ReadmeZoomInButton ||
                         control == ReadmeZoomOutButton ||
                         control == ReadmeResetZoomButton ||
                         control == ReadmeFullScreenButton ||
-                        control == FMsDGV)
+                        control == FMsDGV
+                        /*||control.EqualsIfNotNull(InstallUninstallFMLLButton.Button)*/
+                        )
                     {
                         continue;
                     }

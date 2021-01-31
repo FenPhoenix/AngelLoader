@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AngelLoader.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.Forms
@@ -169,6 +171,30 @@ namespace AngelLoader.Forms
             {
                 column.Width--;
                 column.Width++;
+            }
+        }
+
+        internal static void FillControlDict(
+            Control control,
+            Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
+            int stackCounter = 0)
+        {
+            const int maxStackCount = 100;
+
+            if (!controlColors.ContainsKey(control))
+            {
+                controlColors[control] = (control.ForeColor, control.BackColor);
+            }
+
+            stackCounter++;
+
+            AssertR(
+                stackCounter <= maxStackCount,
+                nameof(FillControlDict) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
+
+            for (int i = 0; i < control.Controls.Count; i++)
+            {
+                FillControlDict(control.Controls[i], controlColors, stackCounter);
             }
         }
     }
