@@ -190,5 +190,29 @@ namespace AngelLoader.WinAPI
         }
 
         #endregion
+
+        #region Color
+
+        /// <summary>
+        /// <paramref name="RGB"/> - create it with ColorTranslator.ToWin32(Color)
+        /// </summary>
+        /// <param name="RGB"></param>
+        /// <param name="H"></param>
+        /// <param name="L"></param>
+        /// <param name="S"></param>
+        [DllImport("shlwapi.dll")]
+        internal static extern void ColorRGBToHLS(int RGB, ref int H, ref int L, ref int S);
+
+        /// <summary>
+        /// ColorTranslator.FromWin32 on return int value
+        /// </summary>
+        /// <param name="H"></param>
+        /// <param name="L"></param>
+        /// <param name="S"></param>
+        /// <returns></returns>
+        [DllImport("shlwapi.dll")]
+        internal static extern int ColorHLSToRGB(int H, int L, int S);
+
+        #endregion
     }
 }

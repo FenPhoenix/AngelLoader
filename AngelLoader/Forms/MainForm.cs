@@ -412,6 +412,8 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private Label BrightnessInversionTestLabel;
+
         #region Init / load / show
 
         // InitializeComponent() (and stuff that doesn't do anything) only - for everything else use the init
@@ -482,6 +484,18 @@ namespace AngelLoader.Forms
             DebugLabel2.Size = new Size(77, 13);
             DebugLabel2.TabIndex = 32;
             DebugLabel2.Text = "[DebugLabel2]";
+
+            BrightnessInversionTestLabel = new Label
+            {
+                AutoSize = true,
+                BackColor = SystemColors.Window,
+                ForeColor = Color.FromArgb(200, 0, 0),
+                Text = "Brightness inversion!",
+                Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0),
+                Location = new Point(1500, 80)
+            };
+            MainSplitContainer.Panel2.Controls.Add(BrightnessInversionTestLabel);
+            BrightnessInversionTestLabel.BringToFront();
 
             #endregion
 #endif
@@ -1349,6 +1363,7 @@ namespace AngelLoader.Forms
                         control == ReadmeResetZoomButton ||
                         control == ReadmeFullScreenButton
                         /*||control.EqualsIfNotNull(InstallUninstallFMLLButton.Button)*/
+                        || control == BrightnessInversionTestLabel
                         )
                     {
                         continue;
@@ -1392,6 +1407,41 @@ namespace AngelLoader.Forms
                 InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
                 ExitLLButton.DarkModeEnabled = darkMode;
                 ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
+
+                if (darkMode)
+                {
+                    /*
+                    @DarkMode(Brightness inversion test) notes:
+                    -max l (luminance) is 240 for some reason. Confirmed 240 l maps to 255/255/255 (full white).
+                     Any higher and it wraps back to black.
+                    -According to https://developer.rhino3d.com/api/rhinoscript/utility_methods/colorrgbtohls.htm,
+                     ALL ColorRGBToHLS values are 0-240. Sure why not.
+                    -Fen_DarkBackground (32,32,32) = 30 luminance. It's possible we may want to account for the
+                     background being brighter than black (because the white background is exactly white) when
+                     doing the invert? Only if it doesn't look good enough already though.
+                    */
+
+                    //BrightnessInversionTestLabel.ForeColor = Color.FromArgb(0, 0, 0);
+                    BrightnessInversionTestLabel.ForeColor = Color.FromArgb(100, 0, 0);
+                    int rgb = ColorTranslator.ToWin32(BrightnessInversionTestLabel.ForeColor);
+                    int h = 0, l = 0, s = 0;
+                    InteropMisc.ColorRGBToHLS(rgb, ref h, ref l, ref s);
+
+                    l = 240 - l;
+
+                    Trace.WriteLine(l);
+
+                    //l += 5;
+
+                    rgb = InteropMisc.ColorHLSToRGB(h, l, s);
+                    BrightnessInversionTestLabel.ForeColor = ColorTranslator.FromWin32(rgb);
+                    BrightnessInversionTestLabel.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                }
+                else
+                {
+                    BrightnessInversionTestLabel.BackColor = SystemColors.Window;
+                    BrightnessInversionTestLabel.ForeColor = Color.FromArgb(100, 0, 0);
+                }
 
                 #endregion
             }
