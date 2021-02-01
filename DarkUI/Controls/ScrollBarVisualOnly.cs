@@ -26,9 +26,7 @@ namespace DarkUI.Controls
             #region Set up scroll bar arrows
 
             _upArrow.RotateFlip(RotateFlipType.Rotate180FlipNone);
-
             _leftArrow.RotateFlip(RotateFlipType.Rotate90FlipNone);
-
             _rightArrow.RotateFlip(RotateFlipType.Rotate270FlipNone);
 
             #endregion
@@ -157,8 +155,8 @@ namespace DarkUI.Controls
 
             #region Arrows
 
-            var w = SystemInformation.VerticalScrollBarWidth;
-            var h = SystemInformation.VerticalScrollBarArrowHeight;
+            int w = SystemInformation.VerticalScrollBarWidth;
+            int h = SystemInformation.VerticalScrollBarArrowHeight;
 
             if (isVertical)
             {
@@ -195,25 +193,23 @@ namespace DarkUI.Controls
                 _xyThumbTop = psbi.xyThumbTop;
                 _xyThumbBottom = psbi.xyThumbBottom;
 
+                if (isVertical)
                 {
-                    if (isVertical)
-                    {
-                        g.FillRectangle(
-                            _paintBrush,
-                            1,
-                            psbi.xyThumbTop,
-                            Width - 2,
-                            psbi.xyThumbBottom - psbi.xyThumbTop);
-                    }
-                    else
-                    {
-                        g.FillRectangle(
-                            _paintBrush,
-                            psbi.xyThumbTop,
-                            1,
-                            psbi.xyThumbBottom - psbi.xyThumbTop,
-                            Height - 2);
-                    }
+                    g.FillRectangle(
+                        _paintBrush,
+                        1,
+                        psbi.xyThumbTop,
+                        Width - 2,
+                        psbi.xyThumbBottom - psbi.xyThumbTop);
+                }
+                else
+                {
+                    g.FillRectangle(
+                        _paintBrush,
+                        psbi.xyThumbTop,
+                        1,
+                        psbi.xyThumbBottom - psbi.xyThumbTop,
+                        Height - 2);
                 }
             }
 
