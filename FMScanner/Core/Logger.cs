@@ -1,5 +1,4 @@
-﻿//#define logEnabled
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -10,12 +9,13 @@ namespace FMScanner
 {
     internal static class Logger
     {
-        private static readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
-        [Conditional("logEnabled")]
         private static void ClearLogFile(string logFile)
         {
-            Lock.EnterWriteLock();
+            if (logFile.IsEmpty()) return;
+
+            _lock.EnterWriteLock();
             try
             {
                 File.Delete(logFile);
@@ -28,7 +28,7 @@ namespace FMScanner
             {
                 try
                 {
-                    Lock.ExitWriteLock();
+                    _lock.ExitWriteLock();
                 }
                 catch (Exception ex)
                 {
@@ -37,7 +37,6 @@ namespace FMScanner
             }
         }
 
-        [Conditional("logEnabled")]
         internal static void Log(string logFile,
             string message, Exception? ex = null, bool stackTrace = false, bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
@@ -46,7 +45,7 @@ namespace FMScanner
 
             try
             {
-                Lock.EnterReadLock();
+                _lock.EnterReadLock();
                 if (File.Exists(logFile) && new FileInfo(logFile).Length > ByteSize.MB * 50) ClearLogFile(logFile);
             }
             catch (Exception logEx)
@@ -55,12 +54,12 @@ namespace FMScanner
             }
             finally
             {
-                Lock.ExitReadLock();
+                _lock.ExitReadLock();
             }
 
             try
             {
-                Lock.EnterWriteLock();
+                _lock.EnterWriteLock();
                 using var sw = new StreamWriter(logFile, append: true);
                 var st = new StackTrace(1);
                 string methodNameStr = methodName ? callerMemberName + "\r\n" : "";
@@ -79,7 +78,7 @@ namespace FMScanner
             {
                 try
                 {
-                    Lock.ExitWriteLock();
+                    _lock.ExitWriteLock();
                 }
                 catch (Exception logEx)
                 {
