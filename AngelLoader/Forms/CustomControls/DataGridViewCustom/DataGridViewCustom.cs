@@ -405,12 +405,11 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (BorderStyle == BorderStyle.FixedSingle)
                 {
+                    // TODO: @DarkMode: Extract this pen...
                     using var p = new Pen(DarkUI.Config.Colors.GreySelection);
                     e.Graphics.DrawRectangle(p, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
                 }
             }
-
-            // TODO: @DarkMode: Extract this pen...
         }
 
         protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
