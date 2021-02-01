@@ -13,10 +13,11 @@ namespace DarkUI.Controls
         private readonly Color _greySelection;
         private readonly SolidBrush _paintBrush;
 
-        private readonly Bitmap _upArrow;
-        private readonly Bitmap _downArrow;
-        private readonly Bitmap _leftArrow;
-        private readonly Bitmap _rightArrow;
+        // We want them separate, not all pointing to the same reference
+        private readonly Bitmap _upArrow = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _downArrow = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _leftArrow = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _rightArrow = ScrollIcons.scrollbar_arrow_small_standard;
 
         public ScrollBarVisualOnly(ScrollBar owner)
         {
@@ -24,15 +25,10 @@ namespace DarkUI.Controls
 
             #region Set up scroll bar arrows
 
-            _upArrow = ScrollIcons.scrollbar_arrow_small_standard;
             _upArrow.RotateFlip(RotateFlipType.Rotate180FlipNone);
 
-            _downArrow = ScrollIcons.scrollbar_arrow_small_standard;
-
-            _leftArrow = _upArrow;
             _leftArrow.RotateFlip(RotateFlipType.Rotate90FlipNone);
 
-            _rightArrow = _downArrow;
             _rightArrow.RotateFlip(RotateFlipType.Rotate270FlipNone);
 
             #endregion
