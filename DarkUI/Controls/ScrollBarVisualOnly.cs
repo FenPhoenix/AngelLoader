@@ -106,6 +106,39 @@ namespace DarkUI.Controls
             base.WndProc(ref m);
         }
 
+        private int? _xyThumbTop;
+        private int? _xyThumbBottom;
+
+        public void RefreshIfNeeded()
+        {
+            var psbi = GetCurrentScrollBarInfo();
+            if (_xyThumbTop == null)
+            {
+                _xyThumbTop = psbi.xyThumbTop;
+                _xyThumbBottom = psbi.xyThumbBottom;
+                Trace.WriteLine(Name);
+                Refresh();
+            }
+            else
+            {
+                if (psbi.xyThumbTop != _xyThumbTop || psbi.xyThumbBottom != _xyThumbBottom)
+                {
+                    Refresh();
+                }
+            }
+        }
+
+        private Native.SCROLLBARINFO GetCurrentScrollBarInfo()
+        {
+            Native.SCROLLBARINFO psbi = new Native.SCROLLBARINFO();
+            psbi.cbSize = Marshal.SizeOf(psbi);
+            if (OwnerHandle != null)
+            {
+                int result = Native.GetScrollBarInfo((IntPtr)OwnerHandle, Native.OBJID_CLIENT, ref psbi);
+            }
+            return psbi;
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             if (OwnerHandle != null)
@@ -122,6 +155,9 @@ namespace DarkUI.Controls
                 }
                 else
                 {
+                    _xyThumbTop = psbi.xyThumbTop;
+                    _xyThumbBottom = psbi.xyThumbBottom;
+
                     //Trace.WriteLine(nameof(psbi.dxyLineButton) + ": " + psbi.dxyLineButton);
                     //Trace.WriteLine(nameof(psbi.xyThumbTop) + ": " + psbi.xyThumbTop);
                     //Trace.WriteLine(nameof(psbi.xyThumbBottom) + ": " + psbi.xyThumbBottom);

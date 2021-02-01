@@ -106,7 +106,7 @@ namespace AngelLoader.Forms.CustomControls
                     }
                     else
                     {
-                        VerticalVisualScrollBar.Refresh();
+                        VerticalVisualScrollBar.RefreshIfNeeded();
                     }
                 }
                 if (HorizontalVisualScrollBar.Visible)
@@ -117,7 +117,7 @@ namespace AngelLoader.Forms.CustomControls
                     }
                     else
                     {
-                        HorizontalVisualScrollBar.Refresh();
+                        HorizontalVisualScrollBar.RefreshIfNeeded();
                     }
                 }
             }
