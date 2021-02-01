@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -11,6 +12,7 @@ using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using DarkUI.Controls;
 using static AngelLoader.Forms.ControlExtensions;
 using static AngelLoader.Misc;
+using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -88,35 +90,40 @@ namespace AngelLoader.Forms.CustomControls
 
         #region API methods
 
+        private void RefreshScrollBars(bool invalidate = false)
+        {
+            if (_darkModeEnabled)
+            {
+                // Use Refresh(), because Invalidate() introduces lag when you move the mouse fast enough
+                // TODO: PERF: @DarkMode(DGV.RefreshScrollBars):
+                // Refreshing both is laggy, so make a caching system where we only update if a scroll bar's value
+                // has changed.
+                if (VerticalVisualScrollBar.Visible)
+                {
+                    if (invalidate)
+                    {
+                        VerticalScrollBar.Invalidate();
+                    }
+                    else
+                    {
+                        VerticalVisualScrollBar.Refresh();
+                    }
+                }
+                if (HorizontalVisualScrollBar.Visible)
+                {
+                    if (invalidate)
+                    {
+                        HorizontalVisualScrollBar.Invalidate();
+                    }
+                    else
+                    {
+                        HorizontalVisualScrollBar.Refresh();
+                    }
+                }
+            }
+        }
+
         #region Init
-
-        public struct RECT
-        {
-            public int left;
-            public int top;
-            public int right;
-            public int bottom;
-        }
-
-        private const uint OBJID_HSCROLL = 0xFFFFFFFA;
-        private const uint OBJID_VSCROLL = 0xFFFFFFFB;
-        private const uint OBJID_CLIENT = 0xFFFFFFFC;
-
-        [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
-        private static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct SCROLLBARINFO
-        {
-            public int cbSize;
-            public RECT rcScrollBar;
-            public int dxyLineButton;
-            public int xyThumbTop;
-            public int xyThumbBottom;
-            public int reserved;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-            public int[] rgstate;
-        }
 
         public new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
         public new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
@@ -127,11 +134,28 @@ namespace AngelLoader.Forms.CustomControls
         public DataGridViewCustom()
         {
             DoubleBuffered = true;
+            /*
+             Dim methodInfo As System.Reflection.MethodInfo = VScrollBar1.GetType().GetMethod("SetStyle", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
+             methodInfo.Invoke(VScrollBar1, {ControlStyles.UserPaint, True})
+            */
+
+            //var methodInfo = VerticalScrollBar.GetType().GetMethod("SetStyle", BindingFlags.Instance | BindingFlags.NonPublic);
+            //methodInfo.Invoke(VerticalScrollBar, new object[] { ControlStyles.UserPaint, false });
 
             VerticalVisualScrollBar.OwnerHandle = VerticalScrollBar.Handle;
             Controls.Add(VerticalVisualScrollBar);
             HorizontalVisualScrollBar.OwnerHandle = HorizontalScrollBar.Handle;
             Controls.Add(HorizontalVisualScrollBar);
+
+            VerticalScrollBar.Scroll += (sender, e) =>
+            {
+                RefreshScrollBars();
+            };
+
+            //VerticalScrollBar.ValueChanged += (sender, e) =>
+            //{
+            //    RefreshScrollBars();
+            //};
 
             /*
             TODO: @DarkMode(Scroll bars): The plan:
@@ -431,6 +455,33 @@ namespace AngelLoader.Forms.CustomControls
 
             // Must come after base.OnPaint(e)
             ControlPainter.PaintDarkScrollBars(this, e);
+        }
+
+        protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
+        {
+            RefreshScrollBars();
+            base.OnCellPainting(e);
+        }
+
+        //internal new int RowCount
+        //{
+        //    get => base.RowCount;
+        //    set
+        //    {
+        //        bool refreshScrollBars = false;
+        //        if (base.RowCount != value)
+        //        {
+        //            refreshScrollBars = true;
+        //        }
+        //        base.RowCount = value;
+        //        if (refreshScrollBars) RefreshScrollBars();
+        //    }
+        //}
+
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            RefreshScrollBars();
+            base.OnSizeChanged(e);
         }
 
         #endregion

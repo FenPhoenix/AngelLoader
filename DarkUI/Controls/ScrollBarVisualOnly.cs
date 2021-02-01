@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using DarkUI.Win32;
 
@@ -7,12 +9,37 @@ namespace DarkUI.Controls
 {
     public sealed class ScrollBarVisualOnly : Control
     {
+
+        private Color _greySelection;
+        private SolidBrush _paintBrush;
+
         public ScrollBarVisualOnly()
         {
-            BackColor = Color.Aqua;
+            BackColor = Config.Colors.Fen_DarkBackground;
+            DoubleBuffered = true;
+
+            _greySelection = Config.Colors.GreySelection;
+            _paintBrush = new SolidBrush(_greySelection);
+
+            SetStyle(
+                ControlStyles.UserPaint |
+                //ControlStyles.OptimizedDoubleBuffer |
+                ControlStyles.AllPaintingInWmPaint |
+                ControlStyles.CacheText,
+                true);
+            //SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.DoubleBuffer, false);
         }
 
-        public IntPtr? OwnerHandle;
+        private IntPtr? _ownerHandle;
+        public IntPtr? OwnerHandle
+        {
+            get => _ownerHandle;
+            set
+            {
+                _ownerHandle = value;
+                //_thumb.OwnerHandle = value;
+            }
+        }
 
         private const int WM_NCHITTEST = 0x0084;
         private const int WS_EX_NOACTIVATE = 134_217_728;
@@ -28,7 +55,7 @@ namespace DarkUI.Controls
             }
         }
 
-        private Random _rnd = new Random();
+        //private Random _rnd = new Random();
 
         protected override void WndProc(ref Message m)
         {
@@ -44,6 +71,12 @@ namespace DarkUI.Controls
             //        m.Result = IntPtr.Zero;
             //    }
 
+            //}
+            //if (m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE)
+            //{
+            //    Trace.WriteLine("Sdfdsfds f");
+            //    Invalidate();
+            //    m.Result = IntPtr.Zero;
             //}
             if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN ||
                 m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN ||
@@ -71,6 +104,42 @@ namespace DarkUI.Controls
                 }
             }
             base.WndProc(ref m);
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (OwnerHandle != null)
+            {
+                //e.Graphics.FillRectangle(Brushes.Red, 0, 0, Size.Width, Size.Height);
+
+                //Trace.WriteLine(_rnd.Next() + " dgv vscrolled");
+                Native.SCROLLBARINFO psbi = new Native.SCROLLBARINFO();
+                psbi.cbSize = Marshal.SizeOf(psbi);
+                int result = Native.GetScrollBarInfo((IntPtr)OwnerHandle, Native.OBJID_CLIENT, ref psbi);
+                if (result == 0)
+                {
+                    //Trace.WriteLine("***ERROR: " + Marshal.GetLastWin32Error());
+                }
+                else
+                {
+                    //Trace.WriteLine(nameof(psbi.dxyLineButton) + ": " + psbi.dxyLineButton);
+                    //Trace.WriteLine(nameof(psbi.xyThumbTop) + ": " + psbi.xyThumbTop);
+                    //Trace.WriteLine(nameof(psbi.xyThumbBottom) + ": " + psbi.xyThumbBottom);
+
+                    var g = e.Graphics;
+                    //using (var b = new SolidBrush(Config.Colors.GreySelection))
+                    {
+                        g.FillRectangle(_paintBrush, 1, psbi.xyThumbTop, Width - 2, psbi.xyThumbBottom - psbi.xyThumbTop);
+                        //g.FillRectangle(b,
+                        //    psbi.rcScrollBar.left,
+                        //    psbi.rcScrollBar.top,
+                        //    psbi.rcScrollBar.right - psbi.rcScrollBar.left,
+                        //    psbi.rcScrollBar.bottom - psbi.rcScrollBar.top);
+                    }
+                }
+            }
+
+            base.OnPaint(e);
         }
     }
 }

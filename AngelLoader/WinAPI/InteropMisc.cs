@@ -158,5 +158,37 @@ namespace AngelLoader.WinAPI
         internal static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
         #endregion
+
+        #region Scroll bars
+
+        public struct RECT
+        {
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
+        }
+
+        public const uint OBJID_HSCROLL = 0xFFFFFFFA;
+        public const uint OBJID_VSCROLL = 0xFFFFFFFB;
+        public const uint OBJID_CLIENT = 0xFFFFFFFC;
+
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
+        public static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SCROLLBARINFO
+        {
+            public int cbSize;
+            public RECT rcScrollBar;
+            public int dxyLineButton;
+            public int xyThumbTop;
+            public int xyThumbBottom;
+            public int reserved;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+            public int[] rgstate;
+        }
+
+        #endregion
     }
 }
