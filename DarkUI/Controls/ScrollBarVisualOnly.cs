@@ -10,12 +10,32 @@ namespace DarkUI.Controls
     public sealed class ScrollBarVisualOnly : Control
     {
 
-        private Color _greySelection;
-        private SolidBrush _paintBrush;
+        private readonly Color _greySelection;
+        private readonly SolidBrush _paintBrush;
+
+        private readonly Bitmap _upArrow;
+        private readonly Bitmap _downArrow;
+        private readonly Bitmap _leftArrow;
+        private readonly Bitmap _rightArrow;
 
         public ScrollBarVisualOnly(ScrollBar owner)
         {
             _owner = owner;
+
+            #region Set up scroll bar arrows
+
+            _upArrow = ScrollIcons.scrollbar_arrow_small_standard;
+            _upArrow.RotateFlip(RotateFlipType.Rotate180FlipNone);
+
+            _downArrow = ScrollIcons.scrollbar_arrow_small_standard;
+
+            _leftArrow = _upArrow;
+            _leftArrow.RotateFlip(RotateFlipType.Rotate90FlipNone);
+
+            _rightArrow = _downArrow;
+            _rightArrow.RotateFlip(RotateFlipType.Rotate270FlipNone);
+
+            #endregion
 
             BackColor = Config.Colors.Fen_DarkBackground;
             DoubleBuffered = true;
@@ -135,40 +155,73 @@ namespace DarkUI.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            bool isVertical = _owner is VScrollBar;
+
+            var g = e.Graphics;
+
+            #region Arrows
+
+            var w = SystemInformation.VerticalScrollBarWidth;
+            var h = SystemInformation.VerticalScrollBarArrowHeight;
+
+            if (isVertical)
+            {
+                g.DrawImageUnscaled(
+                    _upArrow,
+                    (w / 2) - (_upArrow.Width / 2),
+                    (h / 2) - (_upArrow.Height / 2));
+
+                g.DrawImageUnscaled(
+                    _downArrow,
+                    (w / 2) - (_upArrow.Width / 2),
+                    (Height - h) + ((h / 2) - (_upArrow.Height / 2)));
+            }
+            else
+            {
+                g.DrawImageUnscaled(
+                    _leftArrow,
+                    (w / 2) - (_leftArrow.Width / 2),
+                    (h / 2) - (_leftArrow.Height / 2));
+
+                g.DrawImageUnscaled(
+                    _rightArrow,
+                    Width - w + (w / 2) - (_leftArrow.Width / 2),
+                    (h / 2) - (_leftArrow.Height / 2));
+            }
+
+            #endregion
+
+            #region Thumb
+
             if (_owner.IsHandleCreated)
             {
-                //e.Graphics.FillRectangle(Brushes.Red, 0, 0, Size.Width, Size.Height);
+                var psbi = GetCurrentScrollBarInfo();
+                _xyThumbTop = psbi.xyThumbTop;
+                _xyThumbBottom = psbi.xyThumbBottom;
 
-                //Trace.WriteLine(_rnd.Next() + " dgv vscrolled");
-                Native.SCROLLBARINFO psbi = new Native.SCROLLBARINFO();
-                psbi.cbSize = Marshal.SizeOf(psbi);
-                int result = Native.GetScrollBarInfo((IntPtr)_owner.Handle, Native.OBJID_CLIENT, ref psbi);
-                if (result == 0)
                 {
-                    //Trace.WriteLine("***ERROR: " + Marshal.GetLastWin32Error());
-                }
-                else
-                {
-                    _xyThumbTop = psbi.xyThumbTop;
-                    _xyThumbBottom = psbi.xyThumbBottom;
-
-                    //Trace.WriteLine(nameof(psbi.dxyLineButton) + ": " + psbi.dxyLineButton);
-                    //Trace.WriteLine(nameof(psbi.xyThumbTop) + ": " + psbi.xyThumbTop);
-                    //Trace.WriteLine(nameof(psbi.xyThumbBottom) + ": " + psbi.xyThumbBottom);
-
-                    var g = e.Graphics;
+                    if (isVertical)
                     {
-                        if (_owner is VScrollBar)
-                        {
-                            g.FillRectangle(_paintBrush, 1, psbi.xyThumbTop, Width - 2, psbi.xyThumbBottom - psbi.xyThumbTop);
-                        }
-                        else
-                        {
-                            g.FillRectangle(_paintBrush, psbi.xyThumbTop, 1, psbi.xyThumbBottom - psbi.xyThumbTop, Height - 2);
-                        }
+                        g.FillRectangle(
+                            _paintBrush,
+                            1,
+                            psbi.xyThumbTop,
+                            Width - 2,
+                            psbi.xyThumbBottom - psbi.xyThumbTop);
+                    }
+                    else
+                    {
+                        g.FillRectangle(
+                            _paintBrush,
+                            psbi.xyThumbTop,
+                            1,
+                            psbi.xyThumbBottom - psbi.xyThumbTop,
+                            Height - 2);
                     }
                 }
             }
+
+            #endregion
 
             base.OnPaint(e);
         }
