@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using DarkUI.Controls;
 using static AngelLoader.Forms.ControlExtensions;
 using static AngelLoader.Misc;
-using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -67,8 +63,8 @@ namespace AngelLoader.Forms.CustomControls
                     DefaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
 
                     // Custom refresh routine, because we don't want to run SelectProperly() as that will pop us
-                    // back up put our selection in view, but we don't want to do anything at all other than change
-                    // the look, leaving everything exactly as it was functionally.
+                    // back up and put our selection in view, but we don't want to do anything at all other than
+                    // change the look, leaving everything exactly as it was functionally.
                     int selectedRow = RowCount > 0 ? SelectedRows[0].Index : -1;
 
                     using (new DisableEvents(_owner))
@@ -90,36 +86,17 @@ namespace AngelLoader.Forms.CustomControls
 
         #region API methods
 
-        private void RefreshScrollBars(bool invalidate = false)
+        private void RefreshScrollBars()
         {
-            if (_darkModeEnabled)
+            if (!_darkModeEnabled) return;
+
+            if (VerticalVisualScrollBar.Visible)
             {
-                // Use Refresh(), because Invalidate() introduces lag when you move the mouse fast enough
-                // TODO: PERF: @DarkMode(DGV.RefreshScrollBars):
-                // Refreshing both is laggy, so make a caching system where we only update if a scroll bar's value
-                // has changed.
-                if (VerticalVisualScrollBar.Visible)
-                {
-                    if (invalidate)
-                    {
-                        VerticalScrollBar.Invalidate();
-                    }
-                    else
-                    {
-                        VerticalVisualScrollBar.RefreshIfNeeded();
-                    }
-                }
-                if (HorizontalVisualScrollBar.Visible)
-                {
-                    if (invalidate)
-                    {
-                        HorizontalVisualScrollBar.Invalidate();
-                    }
-                    else
-                    {
-                        HorizontalVisualScrollBar.RefreshIfNeeded();
-                    }
-                }
+                VerticalVisualScrollBar.RefreshIfNeeded();
+            }
+            if (HorizontalVisualScrollBar.Visible)
+            {
+                HorizontalVisualScrollBar.RefreshIfNeeded();
             }
         }
 
@@ -134,13 +111,6 @@ namespace AngelLoader.Forms.CustomControls
         public DataGridViewCustom()
         {
             DoubleBuffered = true;
-            /*
-             Dim methodInfo As System.Reflection.MethodInfo = VScrollBar1.GetType().GetMethod("SetStyle", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
-             methodInfo.Invoke(VScrollBar1, {ControlStyles.UserPaint, True})
-            */
-
-            //var methodInfo = VerticalScrollBar.GetType().GetMethod("SetStyle", BindingFlags.Instance | BindingFlags.NonPublic);
-            //methodInfo.Invoke(VerticalScrollBar, new object[] { ControlStyles.UserPaint, false });
 
             VerticalVisualScrollBar = new ScrollBarVisualOnly(VerticalScrollBar) { Visible = false };
             HorizontalVisualScrollBar = new ScrollBarVisualOnly(HorizontalScrollBar) { Visible = false };
@@ -148,18 +118,13 @@ namespace AngelLoader.Forms.CustomControls
             Controls.Add(VerticalVisualScrollBar);
             Controls.Add(HorizontalVisualScrollBar);
 
-            VerticalScrollBar.Scroll += (sender, e) =>
-            {
-                RefreshScrollBars();
-            };
-
-            //VerticalScrollBar.ValueChanged += (sender, e) =>
-            //{
-            //    RefreshScrollBars();
-            //};
+            VerticalScrollBar.Scroll += (_, _) => RefreshScrollBars();
 
             /*
-            TODO: @DarkMode(Scroll bars): The plan:
+            TODO: @DarkMode(Scroll bars): The original plan:
+            
+            *** remove only after scroll bars are 100% complete and working to my satisfaction
+            
             -Create a custom control that looks like a scroll bar and place it overtop of the real scroll bar(s),
              showing and hiding as the real scroll bars do. Dock and anchor so the size and position always matches
              the real scroll bar. Apply the style here https://stackoverflow.com/a/50245502 to make clicks fall
@@ -176,27 +141,6 @@ namespace AngelLoader.Forms.CustomControls
             Damn... so we can't do this on 7, which we otherwise support.
             -Handle NCHITTEST / return HTTRANSPARENT - might work instead?
             -Handle all mouse events and pass them along with PostMessage() - this works, we'll use it
-            */
-            /*
-            this.Paint += (sender, e) =>
-            {
-                //e.Graphics.FillRectangle(Brushes.Red, 0, 0, Size.Width, Size.Height);
-
-                //Trace.WriteLine(_rnd.Next() + " dgv vscrolled");
-                SCROLLBARINFO psbi = new SCROLLBARINFO();
-                psbi.cbSize = Marshal.SizeOf(psbi);
-                int result = GetScrollBarInfo(this.VerticalScrollBar.Handle, OBJID_CLIENT, ref psbi);
-                if (result == 0)
-                {
-                    Trace.WriteLine("***ERROR: " + Marshal.GetLastWin32Error());
-                }
-                else
-                {
-                    Trace.WriteLine(nameof(psbi.dxyLineButton) + ": " + psbi.dxyLineButton);
-                    Trace.WriteLine(nameof(psbi.xyThumbTop) + ": " + psbi.xyThumbTop);
-                    Trace.WriteLine(nameof(psbi.xyThumbBottom) + ": " + psbi.xyThumbBottom);
-                }
-            };
             */
         }
 
@@ -463,21 +407,6 @@ namespace AngelLoader.Forms.CustomControls
             RefreshScrollBars();
             base.OnCellPainting(e);
         }
-
-        //internal new int RowCount
-        //{
-        //    get => base.RowCount;
-        //    set
-        //    {
-        //        bool refreshScrollBars = false;
-        //        if (base.RowCount != value)
-        //        {
-        //            refreshScrollBars = true;
-        //        }
-        //        base.RowCount = value;
-        //        if (refreshScrollBars) RefreshScrollBars();
-        //    }
-        //}
 
         protected override void OnSizeChanged(EventArgs e)
         {
