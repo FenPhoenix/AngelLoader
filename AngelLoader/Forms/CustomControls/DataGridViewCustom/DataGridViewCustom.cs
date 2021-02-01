@@ -400,6 +400,17 @@ namespace AngelLoader.Forms.CustomControls
 
             // Must come after base.OnPaint(e)
             ControlPainter.PaintDarkScrollBars(this, e);
+
+            if (_darkModeEnabled)
+            {
+                if (BorderStyle == BorderStyle.FixedSingle)
+                {
+                    using var p = new Pen(DarkUI.Config.Colors.GreySelection);
+                    e.Graphics.DrawRectangle(p, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
+                }
+            }
+
+            // TODO: @DarkMode: Extract this pen...
         }
 
         protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
