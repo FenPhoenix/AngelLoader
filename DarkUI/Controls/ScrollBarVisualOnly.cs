@@ -13,8 +13,10 @@ namespace DarkUI.Controls
         private Color _greySelection;
         private SolidBrush _paintBrush;
 
-        public ScrollBarVisualOnly()
+        public ScrollBarVisualOnly(ScrollBar owner)
         {
+            _owner = owner;
+
             BackColor = Config.Colors.Fen_DarkBackground;
             DoubleBuffered = true;
 
@@ -30,16 +32,7 @@ namespace DarkUI.Controls
             //SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.DoubleBuffer, false);
         }
 
-        private IntPtr? _ownerHandle;
-        public IntPtr? OwnerHandle
-        {
-            get => _ownerHandle;
-            set
-            {
-                _ownerHandle = value;
-                //_thumb.OwnerHandle = value;
-            }
-        }
+        private readonly ScrollBar _owner;
 
         private const int WM_NCHITTEST = 0x0084;
         private const int WS_EX_NOACTIVATE = 134_217_728;
@@ -96,10 +89,10 @@ namespace DarkUI.Controls
             {
                 //var parent = Parent;
                 //if (parent != null && parent.IsHandleCreated)
-                if (OwnerHandle != null)
+                if (_owner.IsHandleCreated)
                 {
                     //Trace.WriteLine(_rnd.Next() + "hittest");
-                    Native.PostMessage((IntPtr)OwnerHandle, m.Msg, m.WParam, m.LParam);
+                    Native.PostMessage((IntPtr)_owner.Handle, m.Msg, m.WParam, m.LParam);
                     m.Result = IntPtr.Zero;
                 }
             }
@@ -111,6 +104,7 @@ namespace DarkUI.Controls
 
         public void RefreshIfNeeded()
         {
+            // Refresh only if our thumb's size/position is stale. Otherwise, we get unacceptable lag.
             var psbi = GetCurrentScrollBarInfo();
             if (_xyThumbTop == null)
             {
@@ -132,23 +126,23 @@ namespace DarkUI.Controls
         {
             Native.SCROLLBARINFO psbi = new Native.SCROLLBARINFO();
             psbi.cbSize = Marshal.SizeOf(psbi);
-            if (OwnerHandle != null)
+            if (_owner.IsHandleCreated)
             {
-                int result = Native.GetScrollBarInfo((IntPtr)OwnerHandle, Native.OBJID_CLIENT, ref psbi);
+                int result = Native.GetScrollBarInfo((IntPtr)_owner.Handle, Native.OBJID_CLIENT, ref psbi);
             }
             return psbi;
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (OwnerHandle != null)
+            if (_owner.IsHandleCreated)
             {
                 //e.Graphics.FillRectangle(Brushes.Red, 0, 0, Size.Width, Size.Height);
 
                 //Trace.WriteLine(_rnd.Next() + " dgv vscrolled");
                 Native.SCROLLBARINFO psbi = new Native.SCROLLBARINFO();
                 psbi.cbSize = Marshal.SizeOf(psbi);
-                int result = Native.GetScrollBarInfo((IntPtr)OwnerHandle, Native.OBJID_CLIENT, ref psbi);
+                int result = Native.GetScrollBarInfo((IntPtr)_owner.Handle, Native.OBJID_CLIENT, ref psbi);
                 if (result == 0)
                 {
                     //Trace.WriteLine("***ERROR: " + Marshal.GetLastWin32Error());
@@ -163,14 +157,15 @@ namespace DarkUI.Controls
                     //Trace.WriteLine(nameof(psbi.xyThumbBottom) + ": " + psbi.xyThumbBottom);
 
                     var g = e.Graphics;
-                    //using (var b = new SolidBrush(Config.Colors.GreySelection))
                     {
-                        g.FillRectangle(_paintBrush, 1, psbi.xyThumbTop, Width - 2, psbi.xyThumbBottom - psbi.xyThumbTop);
-                        //g.FillRectangle(b,
-                        //    psbi.rcScrollBar.left,
-                        //    psbi.rcScrollBar.top,
-                        //    psbi.rcScrollBar.right - psbi.rcScrollBar.left,
-                        //    psbi.rcScrollBar.bottom - psbi.rcScrollBar.top);
+                        if (_owner is VScrollBar)
+                        {
+                            g.FillRectangle(_paintBrush, 1, psbi.xyThumbTop, Width - 2, psbi.xyThumbBottom - psbi.xyThumbTop);
+                        }
+                        else
+                        {
+                            g.FillRectangle(_paintBrush, psbi.xyThumbTop, 1, psbi.xyThumbBottom - psbi.xyThumbTop, Height - 2);
+                        }
                     }
                 }
             }

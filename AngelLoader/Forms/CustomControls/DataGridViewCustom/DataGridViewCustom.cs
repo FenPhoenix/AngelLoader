@@ -128,8 +128,8 @@ namespace AngelLoader.Forms.CustomControls
         public new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
         public new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
 
-        public ScrollBarVisualOnly VerticalVisualScrollBar { get; } = new ScrollBarVisualOnly { Visible = false };
-        public ScrollBarVisualOnly HorizontalVisualScrollBar { get; } = new ScrollBarVisualOnly { Visible = false };
+        public ScrollBarVisualOnly VerticalVisualScrollBar { get; }
+        public ScrollBarVisualOnly HorizontalVisualScrollBar { get; }
 
         public DataGridViewCustom()
         {
@@ -142,9 +142,10 @@ namespace AngelLoader.Forms.CustomControls
             //var methodInfo = VerticalScrollBar.GetType().GetMethod("SetStyle", BindingFlags.Instance | BindingFlags.NonPublic);
             //methodInfo.Invoke(VerticalScrollBar, new object[] { ControlStyles.UserPaint, false });
 
-            VerticalVisualScrollBar.OwnerHandle = VerticalScrollBar.Handle;
+            VerticalVisualScrollBar = new ScrollBarVisualOnly(VerticalScrollBar) { Visible = false };
+            HorizontalVisualScrollBar = new ScrollBarVisualOnly(HorizontalScrollBar) { Visible = false };
+
             Controls.Add(VerticalVisualScrollBar);
-            HorizontalVisualScrollBar.OwnerHandle = HorizontalScrollBar.Handle;
             Controls.Add(HorizontalVisualScrollBar);
 
             VerticalScrollBar.Scroll += (sender, e) =>
