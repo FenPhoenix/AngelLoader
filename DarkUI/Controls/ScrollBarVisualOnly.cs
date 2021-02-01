@@ -39,11 +39,9 @@ namespace DarkUI.Controls
 
             SetStyle(
                 ControlStyles.UserPaint |
-                //ControlStyles.OptimizedDoubleBuffer |
                 ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.CacheText,
                 true);
-            //SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.DoubleBuffer, false);
         }
 
         private readonly ScrollBar _owner;
@@ -62,29 +60,8 @@ namespace DarkUI.Controls
             }
         }
 
-        //private Random _rnd = new Random();
-
         protected override void WndProc(ref Message m)
         {
-            //if (m.Msg == WM_NCHITTEST)
-            //{
-            //    //m.Result = new IntPtr(HTTRANSPARENT);
-            //    var parent = Parent;
-            //    //if (parent != null && parent.IsHandleCreated)
-            //    if (OwnerHandle != null)
-            //    {
-            //        Trace.WriteLine(_rnd.Next() + "hittest");
-            //        Native.PostMessage((IntPtr)OwnerHandle, m.Msg, m.WParam, m.LParam);
-            //        m.Result = IntPtr.Zero;
-            //    }
-
-            //}
-            //if (m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE)
-            //{
-            //    Trace.WriteLine("Sdfdsfds f");
-            //    Invalidate();
-            //    m.Result = IntPtr.Zero;
-            //}
             if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN ||
                 m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN ||
                 m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
@@ -101,12 +78,9 @@ namespace DarkUI.Controls
                 //m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL
                 )
             {
-                //var parent = Parent;
-                //if (parent != null && parent.IsHandleCreated)
                 if (_owner.IsHandleCreated)
                 {
-                    //Trace.WriteLine(_rnd.Next() + "hittest");
-                    Native.PostMessage((IntPtr)_owner.Handle, m.Msg, m.WParam, m.LParam);
+                    Native.PostMessage(_owner.Handle, m.Msg, m.WParam, m.LParam);
                     m.Result = IntPtr.Zero;
                 }
             }
@@ -124,7 +98,6 @@ namespace DarkUI.Controls
             {
                 _xyThumbTop = psbi.xyThumbTop;
                 _xyThumbBottom = psbi.xyThumbBottom;
-                Trace.WriteLine(Name);
                 Refresh();
             }
             else
@@ -216,6 +189,20 @@ namespace DarkUI.Controls
             #endregion
 
             base.OnPaint(e);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _upArrow.Dispose();
+                _downArrow.Dispose();
+                _leftArrow.Dispose();
+                _rightArrow.Dispose();
+
+                _paintBrush.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
