@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -9,22 +11,36 @@ namespace AngelLoader.Forms.CustomControls
 {
     internal sealed partial class RichTextBoxCustom
     {
-        private static string GLMLToRTF(string glml)
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        [SuppressMessage("ReSharper", "CommentTypo")]
+        private string GLMLToRTF(string glml)
         {
-            // ReSharper disable StringLiteralTypo
-            // ReSharper disable CommentTypo
+            static string AddColorToTable(string table, Color color) => table + @"\red" + color.R + @"\green" + color.G + @"\blue" + color.B + ";";
 
-            const string rtfHeader =
+            string colorTable = @"{\colortbl ";
+            colorTable = _darkModeEnabled
+                ? AddColorToTable(colorTable, DarkUI.Config.Colors.Fen_DarkForeground)
+                : colorTable + ";";
+            // TODO: @DarkMode: Full red is legible on dark, but not ideal... do we want to use the lightened version?
+            colorTable += _darkModeEnabled
+                //? @"\red255\green106\blue106;"
+                ? @"\red255\green0\blue0;"
+                : @"\red255\green0\blue0;";
+            colorTable += "}";
+
+            string rtfHeader =
                 // RTF identifier
                 @"{\rtf1" +
                 // Character encoding (not sure if this matters since we're escaping all non-ASCII chars anyway)
                 @"\ansi\ansicpg1252" +
                 // Fonts (use a pleasant sans-serif)
                 @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fcharset0 Arial;}{\f2\fnil\fcharset0 Calibri;}}" +
-                // Set up red color
-                @"{\colortbl ;\red255\green0\blue0;}" +
+                // Set up red color and dark mode text colors
+                colorTable +
                 // viewkind4 = normal, uc1 = 1 char Unicode fallback (don't worry about it), f0 = use font 0 I guess?
                 @"\viewkind4\uc1\f0 ";
+
+            #region Horizontal line setup
 
             // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
             // and scale the width out.
@@ -34,19 +50,32 @@ namespace AngelLoader.Forms.CustomControls
             // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc. (at 96 dpi)
             // picscalex is in percent
             // max value for anything is 32767
-            const string horizontalLine =
-                @"{\pict\wmetafile8\picw30\pich285\picwgoal32767\pichgoal285\picscalex1600 " +
-                @"0100090000039000000000006700000000000400000003010800050000000b0200000000050000" +
-                @"000c0213000200030000001e000400000007010400040000000701040067000000410b2000cc00" +
-                @"130002000000000013000200000000002800000002000000130000000100040000000000000000" +
-                @"000000000000000000000000000000000000000000ffffff006666660000000000000000000000" +
-                @"000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                @"0000001101d503110100001101d503110100001101bafd11010000110100001101000011010000" +
-                @"2202000011010000110100001101000011010000110100001101803f1101803f1101803f1101c0" +
-                @"42040000002701ffff030000000000}\line ";
+            const string horizontalLine_Header =
+                @"{\pict\pngblip\picw30\pich285\picwgoal32767\pichgoal285\picscalex1600 ";
 
-            // ReSharper restore CommentTypo
-            // ReSharper restore StringLiteralTypo
+            const string horizontalLine_Footer = @"}\line ";
+
+            // These are raw hex bytes straight out of the original png files. Too bad they're pngs and thus we
+            // can't easily modify their colors on the fly without writing a png creator, but I don't think RTF
+            // supports transparency on anything uncompressed.
+            // TODO: Try a bitmap with alpha channel on the million-to-one chance that works
+            const string horizontalLine_LightMode =
+                horizontalLine_Header +
+                @"89504E470D0A1A0A0000000D4948445200000002000000130806000000BA3CDC1A00000020494441" +
+                @"5478DA62FCFFFF3F030830314001850CC6909010B0898CD4361920C0009E400819AEAF5DA1000000" +
+                @"0049454E44AE426082" +
+                horizontalLine_Footer;
+
+            const string horizontalLine_DarkMode =
+                horizontalLine_Header +
+                @"89504E470D0A1A0A0000000D4948445200000002000000130806000000BA3CDC1A00000025494441" +
+                @"5478DA62FAFFFF3F030833314001850C9693274FFE07311841A652C140380320C00005DF0C79948E" +
+                @"11520000000049454E44AE426082" +
+                horizontalLine_Footer;
+
+            string horizontalLine = _darkModeEnabled ? horizontalLine_DarkMode : horizontalLine_LightMode;
+
+            #endregion
 
             // In quick testing, smallest final rtf size was ~8K chars and largest was ~38K chars. Preallocating
             // 16K chars reduces GC time substantially. 40K or something may be fine but this works for now.
@@ -60,6 +89,10 @@ namespace AngelLoader.Forms.CustomControls
             var subSB = new StringBuilder(16);
 
             sb.Append(rtfHeader);
+
+            // Have to explicitly say this, otherwise text defaults to black even though our "auto color" should
+            // be 240 white, until we give another explicit "\cf0" word, which we do after [GLWARNING] tags.
+            if (_darkModeEnabled) sb.Append(@"\cf0");
 
             #region Parse and copy
 
@@ -304,6 +337,11 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             #endregion
+
+            if (_darkModeEnabled)
+            {
+                sb.Append(CreateBGColorRTFCode(DarkUI.Config.Colors.Fen_DarkBackground));
+            }
 
             sb.Append('}');
 
