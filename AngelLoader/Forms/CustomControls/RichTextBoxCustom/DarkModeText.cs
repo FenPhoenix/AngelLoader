@@ -280,8 +280,6 @@ namespace AngelLoader.Forms.CustomControls
                 darkModeBytes.LastIndexOf((byte)'}'),
                 CreateBGColorRTFCode_Bytes(DarkUI.Config.Colors.Fen_DarkBackground));
 
-            File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes.ToArray());
-
             return darkModeBytes.ToArray();
         }
 
