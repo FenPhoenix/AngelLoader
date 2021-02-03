@@ -226,6 +226,20 @@ namespace AngelLoader.Forms
 
             l = 240 - l;
 
+            // Crappy hack to work around the "blue dip" where humans can't see blue on dark backgrounds very
+            // well. These ranges were eyeballed in Photoshop and work well enough. There's probably some actual
+            // math that would elegantly solve this but I don't know it, so meh.
+            // TODO: @DarkMode: Research if there's actual math that would elegantly solve this
+            // This solves the hyperlink problem too, turns out those were just using an explicitly defined blue
+            // (0,0,255) rather than some default, so we don't need to mess with the RTF after all!
+            if ((h > 150 && h < 171) &&
+                (s > 190) &&
+                (l > 110 && l < 130))
+            {
+                l += 30;
+                h -= 20;
+            }
+
             Color retColor = ColorTranslator.FromWin32(ColorHLSToRGB(h, l, s));
 
             // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be 254 or
