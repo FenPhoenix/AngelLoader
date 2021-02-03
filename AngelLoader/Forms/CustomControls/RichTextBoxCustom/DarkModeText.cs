@@ -123,6 +123,8 @@ namespace AngelLoader.Forms.CustomControls
         private byte[] GetDarkModeBytes()
         {
             // TODO: @DarkMode: We should recolor hyperlinks in all cases too, look into how to do it
+            // Solution: add a \cfN to the "{\fldrslt { \blah\blah\blah www.example.com }}" right before the URL,
+            // so like "{\fldrslt { \blah\blah\blah \cf0 www.example.com }}"
 
             var darkModeBytes = _currentRTFBytes.ToList();
 
