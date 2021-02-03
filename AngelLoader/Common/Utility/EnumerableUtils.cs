@@ -97,5 +97,28 @@ namespace AngelLoader
         }
 
         #endregion
+
+        internal static int FindIndexOfByteSequence(List<byte> input, byte[] pattern, int start = 0)
+        {
+            byte firstByte = pattern[0];
+            int index = input.IndexOf(firstByte, start);
+
+            while (index > -1)
+            {
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    if (index + i >= input.Count) return -1;
+                    if (pattern[i] != input[index + i])
+                    {
+                        if ((index = input.IndexOf(firstByte, index + i)) == -1) return -1;
+                        break;
+                    }
+
+                    if (i == pattern.Length - 1) return index;
+                }
+            }
+
+            return -1;
+        }
     }
 }

@@ -340,6 +340,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_darkModeEnabled)
             {
+                // Background code at the end again, cause why not, it works
                 sb.Append(CreateBGColorRTFCode(DarkUI.Config.Colors.Fen_DarkBackground));
             }
 

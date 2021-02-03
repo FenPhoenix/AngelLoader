@@ -38,8 +38,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private byte[] _currentRTFBytes = Array.Empty<byte>();
-
         private ReadmeType _currentReadmeType = ReadmeType.PlainText;
 
         #endregion
@@ -83,95 +81,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        // Cheap, cheesy, effective
-        private static string CreateBGColorRTFCode(Color color) =>
-            @"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv " +
-            ColorTranslator.ToWin32(color) +
-            @"}}}}}";
-
-        private byte[] GetDarkModeBytes()
-        {
-            string newRTF = Encoding.UTF8.GetString(_currentRTFBytes);
-
-            var sb = new StringBuilder(newRTF, newRTF.Length + 1024);
-
-            // Insert us at the end, so we override any other backgrounds that may be set.
-            sb.Insert(newRTF.LastIndexOf('}'), CreateBGColorRTFCode(DarkUI.Config.Colors.Fen_DarkBackground));
-
-            // TODO: @DARKMODE: Recalculate and modify color table
-
-            return Encoding.UTF8.GetBytes(sb.ToString());
-        }
-
-        private void SetForeAndBackColorState(ReadmeType readmeType)
-        {
-            _currentReadmeType = readmeType;
-
-            if (readmeType == ReadmeType.PlainText)
-            {
-                (BackColor, ForeColor) = _darkModeEnabled
-                    ? (DarkUI.Config.Colors.Fen_DarkBackground, DarkUI.Config.Colors.Fen_DarkForeground)
-                    : (SystemColors.Window, SystemColors.WindowText);
-            }
-            else
-            {
-                (BackColor, ForeColor) = (SystemColors.Window, SystemColors.WindowText);
-            }
-        }
-
-        private void RefreshDarkModeState(bool skipSuspend = false)
-        {
-            if (_currentReadmeType == ReadmeType.PlainText) return;
-
-            RichTextBoxCustom_Interop.SCROLLINFO si = GetCurrentScrollInfo(Handle);
-            try
-            {
-                if (!skipSuspend)
-                {
-                    SaveZoom();
-                    this.SuspendDrawing();
-                    ReadOnly = false;
-                }
-
-                if (_currentReadmeType == ReadmeType.RichText)
-                {
-                    using var ms = new MemoryStream(_darkModeEnabled ? GetDarkModeBytes() : _currentRTFBytes);
-                    LoadFile(ms, RichTextBoxStreamType.RichText);
-                }
-                else // GLML
-                {
-                    Rtf = GLMLToRTF(Encoding.UTF8.GetString(_currentRTFBytes));
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(nameof(RichTextBoxCustom) + ": Couldn't set dark mode to " + _darkModeEnabled, ex);
-            }
-            finally
-            {
-                if (!skipSuspend)
-                {
-                    ReadOnly = true;
-                    RestoreZoom();
-                    RepositionScroll(Handle, si);
-                    this.ResumeDrawing();
-                }
-            }
-        }
-
         #endregion
-
-        private bool _darkModeEnabled;
-        public bool DarkModeEnabled
-        {
-            get => _darkModeEnabled;
-            set
-            {
-                _darkModeEnabled = value;
-                SetForeAndBackColorState(_currentReadmeType);
-                RefreshDarkModeState();
-            }
-        }
 
         #region API methods
 
