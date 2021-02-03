@@ -224,8 +224,6 @@ namespace AngelLoader.Forms.CustomControls
             var parser = new RtfColorTableParser();
             (bool success, List<Color> colorTable, _, int _) = parser.GetColorTable(darkModeBytes);
 
-            List<byte> colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
-
             if (success)
             {
                 #region Write new color table
@@ -233,6 +231,8 @@ namespace AngelLoader.Forms.CustomControls
                 // Some files don't have a color table, so in that case just add the default black color that we
                 // would normally expect to be there.
                 if (colorTable.Count == 0) colorTable.Add(Color.FromArgb(0, 0, 0));
+                
+                List<byte> colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
 
                 // Fortunately, only the first color table is used, so we can just stick ourselves right at the
                 // start and not even have to awkwardly delete the old color table.
