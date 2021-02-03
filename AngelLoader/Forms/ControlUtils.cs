@@ -206,9 +206,6 @@ namespace AngelLoader.Forms
              Any higher and it wraps back to black.
             -According to https://developer.rhino3d.com/api/rhinoscript/utility_methods/colorrgbtohls.htm,
              ALL ColorRGBToHLS values are 0-240. Sure why not.
-            -Fen_DarkBackground (32,32,32) = 30 luminance. It's possible we may want to account for the
-             background being brighter than black (because the white background is exactly white) when
-             doing the invert? Only if it doesn't look good enough already though.
             */
 
             // Set pure black to custom-white (not pure white), otherwise it would invert around to pure white
@@ -221,10 +218,52 @@ namespace AngelLoader.Forms
                 }
             }
 
+            // ReSharper disable once JoinDeclarationAndInitializer
+            Color retColor;
+
+            // Option 1:
+            #region RGB shift low-contrast (https://github.com/vn971/linux-color-inversion)
+
+            // This one doesn't provide the "blue boost" we need... so using the other formula for now
+
+            /*
+            const float whiteBias = 0.17f;
+
+            float r = color.R / 255f;
+            float g = color.G / 255f;
+            float b = color.B / 255f;
+            float a = color.A / 255f;
+
+            const float m = 1.0f + whiteBias;
+            float shift = whiteBias + a - Math.Min(r, Math.Min(g, b)) - Math.Max(r, Math.Max(g, b));
+            float fr = (shift + r) / m;
+            float fg = (shift + g) / m;
+            float fb = (shift + b) / m;
+            float fa = a;
+
+            retColor = Color.FromArgb(
+                (int)Math.Round(fa * 255).Clamp(0, 255),
+                (int)Math.Round(fr * 255).Clamp(0, 255),
+                (int)Math.Round(fg * 255).Clamp(0, 255),
+                (int)Math.Round(fb * 255).Clamp(0, 255)
+            );
+            */
+
+            #endregion
+
+            // Option 2:
+            #region RGB->HSL, luminance invert + bg luminance, manual blue boost
+
             int h = 0, l = 0, s = 0;
             ColorRGBToHLS(ColorTranslator.ToWin32(color), ref h, ref l, ref s);
 
             l = 240 - l;
+
+            // Bump up our luminance by the luminance of our background, to keep the distance between the fore
+            // and back colors relatively the same (or as close as possible)
+            int bgH = 0, bgL = 0, bgS = 0;
+            ColorRGBToHLS(ColorTranslator.ToWin32(DarkUI.Config.Colors.Fen_DarkBackground), ref bgH, ref bgL, ref bgS);
+            int finalL = l + bgL;
 
             // Crappy hack to work around the "blue dip" where humans can't see blue on dark backgrounds very
             // well. These ranges were eyeballed in Photoshop and work well enough. There's probably some actual
@@ -236,11 +275,12 @@ namespace AngelLoader.Forms
                 (s > 190) &&
                 (l > 110 && l < 130))
             {
-                l += 30;
                 h -= 20;
             }
 
-            Color retColor = ColorTranslator.FromWin32(ColorHLSToRGB(h, l, s));
+            retColor = ColorTranslator.FromWin32(ColorHLSToRGB(h, finalL, s));
+
+            #endregion
 
             // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be 254 or
             // less... don't ask me
