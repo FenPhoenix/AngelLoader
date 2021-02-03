@@ -819,6 +819,11 @@ namespace AngelLoader.Forms
 
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
+            if (_nominalWindowState != WindowState)
+            {
+                RefreshAllThemedScrollBars();
+            }
+
             // TODO: Make it so window docking doesn't count as changing the normal window dimensions
             if (WindowState != FormWindowState.Minimized)
             {
