@@ -213,6 +213,8 @@ namespace DarkUI.Controls
                 _rightArrow.Dispose();
 
                 _thumbNormalBrush.Dispose();
+
+                _timer.Dispose();
             }
             base.Dispose(disposing);
         }
