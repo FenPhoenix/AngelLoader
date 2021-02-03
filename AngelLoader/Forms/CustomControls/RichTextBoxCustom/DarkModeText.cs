@@ -14,7 +14,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields
 
-        private bool _disabledProgrammatically;
+        private bool _isDisabled;
 
         private byte[] _currentRTFBytes = Array.Empty<byte>();
 
@@ -388,6 +388,7 @@ namespace AngelLoader.Forms.CustomControls
         // Sometimes this changes the font size when disabling, even being affected by the scroll position on
         // whether it does it(?!)
         // Need to find some way to fix this...
+        // NOTE: I think I fixed it by adding missing checks for _isDisabled, but keep an eye on it.
         private void SetPlainTextEnabledState()
         {
             #region Local functions
@@ -409,72 +410,75 @@ namespace AngelLoader.Forms.CustomControls
 
             #endregion
 
-            if (!_darkModeEnabled || _currentReadmeType != ReadmeType.PlainText)
+            if (!_darkModeEnabled || _currentReadmeType != ReadmeType.PlainText || _isDisabled)
             {
                 return;
             }
 
             if (!Enabled)
             {
-                _disabledProgrammatically = true;
+                if (!_isDisabled)
+                {
+                    _isDisabled = true;
 
-                _originalPlainTextBytes = Encoding.UTF8.GetBytes(Text);
+                    _originalPlainTextBytes = Encoding.UTF8.GetBytes(Text);
 
-                var currentRTFBytesList = Encoding.UTF8.GetBytes(Rtf).ToList();
+                    var currentRTFBytesList = Encoding.UTF8.GetBytes(Rtf).ToList();
 
-                // We don't need this as it puts the colors in the stream for us already, but just in case we
-                // ever need it in the future...
-                /*
-                List<byte> colorTableBytes = CreateColorTableRTFBytes(
-                    new List<Color>
+                    // We don't need this as it puts the colors in the stream for us already, but just in case we
+                    // ever need it in the future...
+                    /*
+                    List<byte> colorTableBytes = CreateColorTableRTFBytes(
+                        new List<Color>
+                        {
+                            DarkUI.Config.Colors.Fen_DarkForeground
+                        });
+
+                    currentRTFBytesList.InsertRange(
+                        FindIndexOfByteSequence(currentRTFBytesList, RTFHeaderBytes) + RTFHeaderBytes.Length,
+                        colorTableBytes);
+                    */
+
+                    // Background color
+                    currentRTFBytesList.InsertRange(
+                        currentRTFBytesList.LastIndexOf((byte)'}'),
+                        CreateBGColorRTFCode_Bytes(DarkUI.Config.Colors.Fen_DarkBackground));
+
+                    SCROLLINFO si = GetCurrentScrollInfo(Handle);
+                    try
                     {
-                        DarkUI.Config.Colors.Fen_DarkForeground
-                    });
+                        PlainTextSetDisabledState_Enter();
 
-                currentRTFBytesList.InsertRange(
-                    FindIndexOfByteSequence(currentRTFBytesList, RTFHeaderBytes) + RTFHeaderBytes.Length,
-                    colorTableBytes);
-                */
+                        // Need to save and restore the font, or else it sometimes jarringly changes size, and we
+                        // don't want anyone to know how absolutely god-awful we're being to make this work.
+                        // EDIT: It still happens sometimes.
+                        Font oldFont = (Font)Font.Clone();
 
-                // Background color
-                currentRTFBytesList.InsertRange(
-                    currentRTFBytesList.LastIndexOf((byte)'}'),
-                    CreateBGColorRTFCode_Bytes(DarkUI.Config.Colors.Fen_DarkBackground));
+                        using var ms = new MemoryStream(currentRTFBytesList.ToArray());
+                        LoadFile(ms, RichTextBoxStreamType.RichText);
 
-                SCROLLINFO si = GetCurrentScrollInfo(Handle);
-                try
-                {
-                    PlainTextSetDisabledState_Enter();
-
-                    // Need to save and restore the font, or else it sometimes jarringly changes size, and we
-                    // don't want anyone to know how absolutely god-awful we're being to make this work.
-                    // EDIT: It still happens sometimes.
-                    Font oldFont = (Font)Font.Clone();
-
-                    using var ms = new MemoryStream(currentRTFBytesList.ToArray());
-                    LoadFile(ms, RichTextBoxStreamType.RichText);
-
-                    Font = oldFont;
-                    // Doesn't seem to help
-                    //ZoomFactor = _storedZoomFactor;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(
-                        nameof(RichTextBoxCustom) +
-                        ": Couldn't load plaintext readme bytes for disabled mode coloring. " +
-                        nameof(_darkModeEnabled) + " == " + _darkModeEnabled, ex);
-                }
-                finally
-                {
-                    PlainTextSetDisabledState_Exit(ref si);
+                        Font = oldFont;
+                        // Doesn't seem to help
+                        //ZoomFactor = _storedZoomFactor;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(
+                            nameof(RichTextBoxCustom) +
+                            ": Couldn't load plaintext readme bytes for disabled mode coloring. " +
+                            nameof(_darkModeEnabled) + " == " + _darkModeEnabled, ex);
+                    }
+                    finally
+                    {
+                        PlainTextSetDisabledState_Exit(ref si);
+                    }
                 }
             }
             else
             {
-                if (_disabledProgrammatically)
+                if (_isDisabled)
                 {
-                    _disabledProgrammatically = false;
+                    _isDisabled = false;
 
                     SCROLLINFO si = GetCurrentScrollInfo(Handle);
                     try
