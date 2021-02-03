@@ -31,6 +31,19 @@ namespace AngelLoader.Forms.CustomControls
             (byte)'l'
         };
 
+        private byte[] _fonttbl =
+        {
+            (byte)'{',
+            (byte)'\\',
+            (byte)'f',
+            (byte)'o',
+            (byte)'n',
+            (byte)'t',
+            (byte)'t',
+            (byte)'b',
+            (byte)'l'
+        };
+
         private readonly byte[] _redFieldBytes = { (byte)'\\', (byte)'r', (byte)'e', (byte)'d' };
         private readonly byte[] _greenFieldBytes = { (byte)'\\', (byte)'g', (byte)'r', (byte)'e', (byte)'e', (byte)'n' };
         private readonly byte[] _blueFieldBytes = { (byte)'\\', (byte)'b', (byte)'l', (byte)'u', (byte)'e' };
@@ -120,6 +133,37 @@ namespace AngelLoader.Forms.CustomControls
             return ret;
         }
 
+        /// <summary>
+        /// Returns the index directly after the last closing curly brace in the given rtf group.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="groupControlWord">Must start with '{', for example "{\fonttbl"</param>
+        /// <returns></returns>
+        private static int FindEndOfGroup(List<byte> input, byte[] groupControlWord)
+        {
+            int index = FindIndexOfByteSequence(input, groupControlWord);
+            if (index == -1) return -1;
+
+            int braceLevel = 1;
+
+            for (int i = index + 1; i < input.Count; i++)
+            {
+                byte b = input[i];
+                if (b == (byte)'{')
+                {
+                    braceLevel++;
+                }
+                else if (b == (byte)'}')
+                {
+                    braceLevel--;
+                }
+
+                if (braceLevel < 1) return i + 1;
+            }
+
+            return -1;
+        }
+
         private byte[] GetDarkModeBytes()
         {
             var darkModeBytes = _currentRTFBytes.ToList();
@@ -181,10 +225,21 @@ namespace AngelLoader.Forms.CustomControls
                 #endregion
             }
 
-            // TODO: @DarkMode: Insert a \cf0 right after the \fonttbl group
-            // Just in case we don't encounter a \pard, \plain or \sectd before any text.
-
             #region Insert \cf0 control words as needed
+
+            // Insert a \cf0 right after the \fonttbl group, in case we don't encounter a \pard, \plain, or \sectd
+            // before any text.
+            int fonttbl_EndIndex = FindEndOfGroup(darkModeBytes, _fonttbl);
+            if (fonttbl_EndIndex > -1) darkModeBytes.InsertRange(fonttbl_EndIndex, cf0);
+
+            /*
+            TODO: @DarkMode: Insert \cf0 after every single one of these in case it ends up being the last one in the header
+            I mean that's just being paranoid, but still...
+
+            \rtf1 \fbidis? <character set> <from>? <deffont> <deflang> <fonttbl>? <filetbl>? 
+            <colortbl>? <stylesheet>? <stylerestrictions>? <listtables>? <revtbl>? <rsidtable>? 
+            <mathprops>? <generator>? 
+            */
 
             // Despite extensive trying with EM_SETCHARFORMAT to tell it to set a new default text color, it just
             // doesn't want to work (best it can do is make ALL the text the default color, rather than just the
