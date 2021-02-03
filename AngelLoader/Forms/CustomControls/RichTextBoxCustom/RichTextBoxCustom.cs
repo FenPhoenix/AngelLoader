@@ -42,6 +42,8 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        // TODO: @DarkMode: Figure out how to make it not draw classic-mode disabled colors when disabled in plaintext mode
+
         public RichTextBoxCustom() => InitWorkarounds();
 
         #region Private methods
