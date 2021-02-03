@@ -332,7 +332,7 @@ namespace DarkUI.Controls
 
             if (Enabled)
             {
-                if (Focused)
+                if (AutoCheck && Focused)
                 {
                     borderColor = Colors.BlueHighlight;
                     fillColor = Colors.BlueHighlight;
