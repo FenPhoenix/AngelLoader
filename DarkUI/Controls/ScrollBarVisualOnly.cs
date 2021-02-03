@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -11,7 +10,7 @@ namespace DarkUI.Controls
     {
 
         private readonly Color _greySelection;
-        private readonly SolidBrush _paintBrush;
+        private readonly SolidBrush _thumbNormalBrush;
 
         // We want them separate, not all pointing to the same reference
         private readonly Bitmap _upArrow = ScrollIcons.scrollbar_arrow_small_standard;
@@ -35,7 +34,7 @@ namespace DarkUI.Controls
             DoubleBuffered = true;
 
             _greySelection = Config.Colors.GreySelection;
-            _paintBrush = new SolidBrush(_greySelection);
+            _thumbNormalBrush = new SolidBrush(_greySelection);
 
             SetStyle(
                 ControlStyles.UserPaint |
@@ -169,7 +168,7 @@ namespace DarkUI.Controls
                 if (isVertical)
                 {
                     g.FillRectangle(
-                        _paintBrush,
+                        _thumbNormalBrush,
                         1,
                         psbi.xyThumbTop,
                         Width - 2,
@@ -178,7 +177,7 @@ namespace DarkUI.Controls
                 else
                 {
                     g.FillRectangle(
-                        _paintBrush,
+                        _thumbNormalBrush,
                         psbi.xyThumbTop,
                         1,
                         psbi.xyThumbBottom - psbi.xyThumbTop,
@@ -200,7 +199,7 @@ namespace DarkUI.Controls
                 _leftArrow.Dispose();
                 _rightArrow.Dispose();
 
-                _paintBrush.Dispose();
+                _thumbNormalBrush.Dispose();
             }
             base.Dispose(disposing);
         }
