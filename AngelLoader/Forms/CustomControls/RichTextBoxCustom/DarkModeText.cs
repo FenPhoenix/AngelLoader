@@ -122,6 +122,8 @@ namespace AngelLoader.Forms.CustomControls
 
         private byte[] GetDarkModeBytes()
         {
+            // TODO: @DarkMode: We should recolor hyperlinks in all cases too, look into how to do it
+
             var darkModeBytes = _currentRTFBytes.ToList();
 
             var parser = new RtfColorTableParser();
