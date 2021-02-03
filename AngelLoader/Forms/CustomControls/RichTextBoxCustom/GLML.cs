@@ -24,7 +24,8 @@ namespace AngelLoader.Forms.CustomControls
             // TODO: @DarkMode: Full red is legible on dark, but not ideal... do we want to use the lightened version?
             colorTable += _darkModeEnabled
                 //? @"\red255\green106\blue106;"
-                ? @"\red255\green0\blue0;"
+                ? @"\red255\green80\blue80;"
+                //? @"\red255\green0\blue0;"
                 : @"\red255\green0\blue0;";
             colorTable += "}";
 
