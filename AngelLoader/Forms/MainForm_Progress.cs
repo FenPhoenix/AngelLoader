@@ -13,6 +13,20 @@ namespace AngelLoader.Forms
         // Progress box not being null does not necessarily mean it's fully constructed.
         private bool _progressBoxConstructed;
 
+        private bool _progressBoxDarkModeEnabled;
+
+        private bool ProgressBoxDarkModeEnabled
+        {
+            get => _progressBoxDarkModeEnabled;
+            set
+            {
+                _progressBoxDarkModeEnabled = value;
+                if (!_progressBoxConstructed) return;
+
+                ProgressBox!.DarkModeEnabled = value;
+            }
+        }
+
         private void ConstructProgressBox()
         {
             if (_progressBoxConstructed) return;
@@ -22,6 +36,7 @@ namespace AngelLoader.Forms
             ProgressBox.Inject(this);
             ProgressBox.Localize();
             ProgressBox.Anchor = AnchorStyles.None;
+            ProgressBox.DarkModeEnabled = _progressBoxDarkModeEnabled;
 
             _progressBoxConstructed = true;
         }

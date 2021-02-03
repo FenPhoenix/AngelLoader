@@ -1350,6 +1350,8 @@ namespace AngelLoader.Forms
                         || control == ReadmeZoomOutButton
                         || control == ReadmeResetZoomButton
                         || control == ReadmeFullScreenButton
+                        || control.EqualsIfNotNull(ProgressBox)
+                        || _progressBoxConstructed && ProgressBox!.Controls.Contains(control)
                         //|| control.EqualsIfNotNull(InstallUninstallFMLLButton.Button)
                         //|| control == ReadmeRichTextBox
                         )
@@ -1394,6 +1396,7 @@ namespace AngelLoader.Forms
                 InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
                 ExitLLButton.DarkModeEnabled = darkMode;
                 ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
+                ProgressBoxDarkModeEnabled = darkMode;
 
                 #endregion
             }

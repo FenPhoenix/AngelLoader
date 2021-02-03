@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.WinAPI.Taskbar;
+using DarkUI.Controls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed partial class ProgressPanel : UserControl
+    public sealed partial class ProgressPanel : UserControl, IDarkable
     {
         // TODO: The way this works is no longer really tenable - rework it to be cleaner
 
@@ -15,6 +17,45 @@ namespace AngelLoader.Forms.CustomControls
         private ProgressTask _progressTask;
 
         #endregion
+
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                SetUpTheme();
+            }
+        }
+
+        private void SetUpTheme()
+        {
+            ProgressCancelButton.DarkModeEnabled = _darkModeEnabled;
+
+            Color back, fore;
+
+            if (_darkModeEnabled)
+            {
+                // Use a lighter background so make it easy to see we're supposed to be in front and modal
+                back = DarkUI.Config.Colors.LightBackground;
+                fore = DarkUI.Config.Colors.Fen_DarkForeground;
+            }
+            else
+            {
+                back = SystemColors.Control;
+                fore = SystemColors.ControlText;
+            }
+
+            BackColor = back;
+            ForeColor = fore;
+            CurrentThingLabel.BackColor = back;
+            CurrentThingLabel.ForeColor = fore;
+            ProgressMessageLabel.ForeColor = fore;
+            ProgressMessageLabel.ForeColor = fore;
+            ProgressPercentLabel.ForeColor = fore;
+            ProgressPercentLabel.ForeColor = fore;
+        }
 
         public ProgressPanel()
         {
@@ -34,6 +75,11 @@ namespace AngelLoader.Forms.CustomControls
             _progressTask = progressTask;
 
             this.CenterHV(_owner!, clientSize: true);
+
+            ProgressMessageLabel.CenterH(this);
+            CurrentThingLabel.CenterH(this);
+            ProgressPercentLabel.CenterH(this);
+            ProgressBar.CenterH(this);
 
             ProgressMessageLabel.Text = progressTask switch
             {
@@ -173,6 +219,21 @@ namespace AngelLoader.Forms.CustomControls
                 case ProgressTask.InstallFM:
                     FMInstallAndPlay.CancelInstallFM();
                     break;
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            if (_darkModeEnabled)
+            {
+                if (BorderStyle == BorderStyle.FixedSingle)
+                {
+                    // TODO: @DarkMode: Extract this pen...
+                    using var p = new Pen(DarkUI.Config.Colors.GreySelection);
+                    e.Graphics.DrawRectangle(p, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
+                }
             }
         }
     }

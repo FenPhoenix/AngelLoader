@@ -6,7 +6,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         private void InitComponentManual()
         {
-            ProgressCancelButton = new Button();
+            ProgressCancelButton = new DarkUI.Controls.DarkButton();
             ProgressPercentLabel = new Label();
             ProgressMessageLabel = new Label();
             CurrentThingLabel = new Label();
@@ -26,22 +26,22 @@ namespace AngelLoader.Forms.CustomControls
             // 
             // ProgressPercentLabel
             // 
-            ProgressPercentLabel.Location = new System.Drawing.Point(1, 40);
-            ProgressPercentLabel.Size = new System.Drawing.Size(422, 13);
+            ProgressPercentLabel.Location = new System.Drawing.Point(2, 40);
+            ProgressPercentLabel.Size = new System.Drawing.Size(418, 13);
             ProgressPercentLabel.TabIndex = 2;
             ProgressPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // ProgressMessageLabel
             // 
-            ProgressMessageLabel.Location = new System.Drawing.Point(1, 8);
-            ProgressMessageLabel.Size = new System.Drawing.Size(422, 13);
+            ProgressMessageLabel.Location = new System.Drawing.Point(2, 8);
+            ProgressMessageLabel.Size = new System.Drawing.Size(418, 13);
             ProgressMessageLabel.TabIndex = 0;
             ProgressMessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // CurrentThingLabel
             // 
-            CurrentThingLabel.Location = new System.Drawing.Point(1, 24);
-            CurrentThingLabel.Size = new System.Drawing.Size(422, 13);
+            CurrentThingLabel.Location = new System.Drawing.Point(2, 24);
+            CurrentThingLabel.Size = new System.Drawing.Size(418, 13);
             CurrentThingLabel.TabIndex = 1;
             CurrentThingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 

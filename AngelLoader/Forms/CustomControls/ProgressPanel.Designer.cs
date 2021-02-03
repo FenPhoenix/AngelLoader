@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.ProgressCancelButton = new System.Windows.Forms.Button();
+            this.ProgressCancelButton = new DarkUI.Controls.DarkButton();
             this.ProgressPercentLabel = new System.Windows.Forms.Label();
             this.ProgressMessageLabel = new System.Windows.Forms.Label();
             this.CurrentThingLabel = new System.Windows.Forms.Label();
@@ -39,39 +39,43 @@
             // 
             this.ProgressCancelButton.AutoSize = true;
             this.ProgressCancelButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ProgressCancelButton.MinimumSize = new System.Drawing.Size(88, 23);
+            this.ProgressCancelButton.BackColor = System.Drawing.SystemColors.Control;
+            this.ProgressCancelButton.DarkModeEnabled = false;
+            this.ProgressCancelButton.ForeColor = System.Drawing.SystemColors.ControlText;
             this.ProgressCancelButton.Location = new System.Drawing.Point(168, 88);
+            this.ProgressCancelButton.MinimumSize = new System.Drawing.Size(88, 23);
             this.ProgressCancelButton.Name = "ProgressCancelButton";
             this.ProgressCancelButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ProgressCancelButton.Size = new System.Drawing.Size(88, 23);
             this.ProgressCancelButton.TabIndex = 4;
             this.ProgressCancelButton.Text = "Cancel";
+            this.ProgressCancelButton.UseMnemonic = false;
             this.ProgressCancelButton.UseVisualStyleBackColor = true;
             this.ProgressCancelButton.Click += new System.EventHandler(this.ProgressCancelButton_Click);
             // 
             // ProgressPercentLabel
             // 
-            this.ProgressPercentLabel.Location = new System.Drawing.Point(1, 40);
+            this.ProgressPercentLabel.Location = new System.Drawing.Point(2, 40);
             this.ProgressPercentLabel.Name = "ProgressPercentLabel";
-            this.ProgressPercentLabel.Size = new System.Drawing.Size(422, 13);
+            this.ProgressPercentLabel.Size = new System.Drawing.Size(418, 13);
             this.ProgressPercentLabel.TabIndex = 2;
             this.ProgressPercentLabel.Text = "%";
             this.ProgressPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // ProgressMessageLabel
             // 
-            this.ProgressMessageLabel.Location = new System.Drawing.Point(1, 8);
+            this.ProgressMessageLabel.Location = new System.Drawing.Point(2, 8);
             this.ProgressMessageLabel.Name = "ProgressMessageLabel";
-            this.ProgressMessageLabel.Size = new System.Drawing.Size(422, 13);
+            this.ProgressMessageLabel.Size = new System.Drawing.Size(418, 13);
             this.ProgressMessageLabel.TabIndex = 0;
             this.ProgressMessageLabel.Text = "Message";
             this.ProgressMessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // CurrentThingLabel
             // 
-            this.CurrentThingLabel.Location = new System.Drawing.Point(1, 24);
+            this.CurrentThingLabel.Location = new System.Drawing.Point(2, 24);
             this.CurrentThingLabel.Name = "CurrentThingLabel";
-            this.CurrentThingLabel.Size = new System.Drawing.Size(422, 13);
+            this.CurrentThingLabel.Size = new System.Drawing.Size(418, 13);
             this.CurrentThingLabel.TabIndex = 1;
             this.CurrentThingLabel.Text = "Current thing";
             this.CurrentThingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -102,7 +106,7 @@
 
         #endregion
 #endif
-        private System.Windows.Forms.Button ProgressCancelButton;
+        private DarkUI.Controls.DarkButton ProgressCancelButton;
         private System.Windows.Forms.Label ProgressPercentLabel;
         private System.Windows.Forms.Label ProgressMessageLabel;
         private System.Windows.Forms.Label CurrentThingLabel;
