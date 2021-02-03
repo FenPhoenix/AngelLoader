@@ -248,18 +248,28 @@ namespace AngelLoader.Forms.CustomControls
             // Ugly, but at this point whatever. Of _course_ we have to do this, but it's fast enough and works,
             // so meh.
 
-            // TODO: @DarkMode(Rtf/DarkTextMode): Image-as-first-item issue with the \cf0 inserts
-            // If we put a \cf0 before a transparent image, it makes the background of it white.
-            // See 2006-09-18_WC_WhatLiesBelow_v1
-            // Not a huge deal really - lots of readmes end up with bright images due to non-transparency, and
-            // WLB's transparent title image doesn't look good in dark mode anyway, but, you know...
+            /*
+            TODO: @DarkMode(RTF/DarkTextMode) issues/quirks/etc:
+            -Image-as-first-item issue with the \cf0 inserts
+             If we put a \cf0 before a transparent image, it makes the background of it white.
+             See 2006-09-18_WC_WhatLiesBelow_v1
+             Not a huge deal really - lots of readmes end up with bright images due to non-transparency, and
+             WLB's transparent title image doesn't look good in dark mode anyway, but, you know...
 
+            -Maybe don't invert if we're already light...?
+             See: LostSouls14
+
+            -Mysterious Invitation:
+             Readme has a section with a \pard but the red color stays active until the next \cf0
+             NOTE: Solution is to only insert \cf0 after \plain control words and not any of the others, but:
+             TODO: @DarkMode: Check all rtf files to make sure it doesn't break any others!
+            */
             int index = 0;
-            while ((index = FindIndexOfByteSequence(darkModeBytes, pard, index)) > -1)
-            {
-                darkModeBytes.InsertRange(index + pard.Length, cf0);
-                index += pard.Length + cf0.Length;
-            }
+            //while ((index = FindIndexOfByteSequence(darkModeBytes, pard, index)) > -1)
+            //{
+            //    darkModeBytes.InsertRange(index + pard.Length, cf0);
+            //    index += pard.Length + cf0.Length;
+            //}
 
             index = 0;
             while ((index = FindIndexOfByteSequence(darkModeBytes, plain, index)) > -1)
@@ -268,16 +278,16 @@ namespace AngelLoader.Forms.CustomControls
                 index += plain.Length + cf0.Length;
             }
 
-            index = 0;
-            while ((index = FindIndexOfByteSequence(darkModeBytes, sectd, index)) > -1)
-            {
-                // Hack: don't match \sectdefaultcl
-                if (darkModeBytes[index + sectd.Length] != (byte)'e')
-                {
-                    darkModeBytes.InsertRange(index + sectd.Length, cf0);
-                }
-                index += sectd.Length + cf0.Length;
-            }
+            //index = 0;
+            //while ((index = FindIndexOfByteSequence(darkModeBytes, sectd, index)) > -1)
+            //{
+            //    // Hack: don't match \sectdefaultcl
+            //    if (darkModeBytes[index + sectd.Length] != (byte)'e')
+            //    {
+            //        //darkModeBytes.InsertRange(index + sectd.Length, cf0);
+            //    }
+            //    index += sectd.Length + cf0.Length;
+            //}
 
             #endregion
 
