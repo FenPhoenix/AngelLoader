@@ -8,7 +8,7 @@ using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.Forms
 {
-    internal static class ControlExtensions
+    internal static class ControlUtils
     {
         #region Suspend/resume drawing
 

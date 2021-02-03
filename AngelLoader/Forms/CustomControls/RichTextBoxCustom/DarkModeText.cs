@@ -154,7 +154,7 @@ namespace AngelLoader.Forms.CustomControls
                     }
                     else
                     {
-                        invertedColor = ControlExtensions.InvertBrightness(colorTable[i], blackToCustomWhite: true, preventFullWhite: true);
+                        invertedColor = ControlUtils.InvertBrightness(colorTable[i], blackToCustomWhite: true, preventFullWhite: true);
                     }
 
                     colorEntriesBytesList.AddRange(_redFieldBytes);

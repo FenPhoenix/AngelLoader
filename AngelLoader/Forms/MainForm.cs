@@ -1330,7 +1330,7 @@ namespace AngelLoader.Forms
 
             bool darkMode = theme == VisualTheme.Dark;
 
-            if (_controlColors.Count == 0) ControlExtensions.FillControlDict(this, _controlColors);
+            if (_controlColors.Count == 0) ControlUtils.FillControlDict(this, _controlColors);
 
             try
             {

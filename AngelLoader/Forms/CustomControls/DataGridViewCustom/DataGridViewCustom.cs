@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using DarkUI.Controls;
-using static AngelLoader.Forms.ControlExtensions;
+using static AngelLoader.Forms.ControlUtils;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
