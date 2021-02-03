@@ -700,6 +700,14 @@ namespace AngelLoader
                         config.FMsListFontSizeInPoints = result;
                     }
                 }
+                else if (lineTS.StartsWithFast_NoNullChecks("VisualTheme="))
+                {
+                    var field = typeof(VisualTheme).GetField(val, _bFlagsEnum);
+                    if (field != null)
+                    {
+                        config.VisualTheme = (VisualTheme)field.GetValue(null);
+                    }
+                }
             }
 
             // Vital, don't remove!
@@ -800,6 +808,8 @@ namespace AngelLoader
             sb.Append("Language=").AppendLine(config.Language);
             sb.Append("WebSearchUrl=").AppendLine(config.WebSearchUrl);
             sb.Append("ConfirmPlayOnDCOrEnter=").Append(config.ConfirmPlayOnDCOrEnter).AppendLine();
+
+            sb.Append("VisualTheme=").Append(config.VisualTheme).AppendLine();
 
             #endregion
 
