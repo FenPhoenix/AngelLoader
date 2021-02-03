@@ -142,10 +142,11 @@ namespace AngelLoader.Forms.CustomControls
         /// <param name="text"></param>
         internal void SetText(string text)
         {
-            SaveZoom();
-
             try
             {
+                _currentRTFBytes = Array.Empty<byte>();
+
+                SaveZoom();
                 this.SuspendDrawing();
 
                 // Blank the text to reset the scroll position to the top
@@ -221,6 +222,8 @@ namespace AngelLoader.Forms.CustomControls
                     case ReadmeType.PlainText:
                         ContentIsPlainText = true;
 
+                        _currentRTFBytes = Array.Empty<byte>();
+
                         // Load the file ourselves so we can do encoding detection. Otherwise it just loads with
                         // frigging whatever (default system encoding maybe?)
                         using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -248,6 +251,14 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #endregion
+
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            // Putting this first prevents a large flicker on plaintext restore
+            base.OnEnabledChanged(e);
+
+            SetPlainTextEnabledState();
+        }
 
         protected override void Dispose(bool disposing)
         {

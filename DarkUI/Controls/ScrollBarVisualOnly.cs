@@ -22,6 +22,8 @@ namespace DarkUI.Controls
         {
             _owner = owner;
 
+            ResizeRedraw = true;
+
             #region Set up scroll bar arrows
 
             _upArrow.RotateFlip(RotateFlipType.Rotate180FlipNone);
