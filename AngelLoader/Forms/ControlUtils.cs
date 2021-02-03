@@ -263,7 +263,7 @@ namespace AngelLoader.Forms
             // and back colors relatively the same (or as close as possible)
             int bgH = 0, bgL = 0, bgS = 0;
             ColorRGBToHLS(ColorTranslator.ToWin32(DarkUI.Config.Colors.Fen_DarkBackground), ref bgH, ref bgL, ref bgS);
-            int finalL = l + bgL;
+            int finalL = l + 20;//+ bgL;
 
             // Crappy hack to work around the "blue dip" where humans can't see blue on dark backgrounds very
             // well. These ranges were eyeballed in Photoshop and work well enough. There's probably some actual
@@ -275,6 +275,7 @@ namespace AngelLoader.Forms
                 (s > 190) &&
                 (l > 110 && l < 130))
             {
+                finalL += 10;
                 h -= 20;
             }
 
