@@ -157,7 +157,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             finally
             {
-                SetForeAndBackColorState(ReadmeType.PlainText);
+                SetReadmeTypeAndColorState(ReadmeType.PlainText);
                 this.ResumeDrawing();
             }
         }
@@ -186,7 +186,7 @@ namespace AngelLoader.Forms.CustomControls
                 Clear();
                 ResetScrollInfo();
 
-                SetForeAndBackColorState(fileType);
+                SetReadmeTypeAndColorState(fileType);
 
                 switch (fileType)
                 {

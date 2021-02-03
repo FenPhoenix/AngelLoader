@@ -83,7 +83,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _darkModeEnabled = value;
-                SetForeAndBackColorState(_currentReadmeType);
+                SetReadmeTypeAndColorState(_currentReadmeType);
                 RefreshDarkModeState();
             }
         }
@@ -223,7 +223,7 @@ namespace AngelLoader.Forms.CustomControls
             return darkModeBytes.ToArray();
         }
 
-        private void SetForeAndBackColorState(ReadmeType readmeType)
+        private void SetReadmeTypeAndColorState(ReadmeType readmeType)
         {
             _currentReadmeType = readmeType;
 
