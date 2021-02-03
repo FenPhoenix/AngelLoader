@@ -85,6 +85,9 @@ namespace AngelLoader.Forms.CustomControls
             (byte)'d'
         };
 
+        private static readonly byte[] _background = Encoding.ASCII.GetBytes(@"\*\background");
+        private static readonly byte[] _backgroundBlanked = Encoding.ASCII.GetBytes(@"\*\xxxxxxxxxx");
+
         #endregion
 
         #endregion
@@ -167,6 +170,13 @@ namespace AngelLoader.Forms.CustomControls
         private byte[] GetDarkModeBytes()
         {
             var darkModeBytes = _currentRTFBytes.ToList();
+
+            // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts
+            // where the background stays the old color but turns to our new color when portions of the readme
+            // get painted (see Thork).
+            // NOTE: Thork's readme is actually just weirdly broken, the background is sometimes yellow but paints
+            // over with white even on classic mode. So oh well.
+            ReplaceByteSequence(darkModeBytes, _background, _backgroundBlanked);
 
             var parser = new RtfColorTableParser();
             (bool success, List<Color> colorTable, _, int _) = parser.GetColorTable(darkModeBytes);
