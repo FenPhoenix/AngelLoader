@@ -248,6 +248,12 @@ namespace AngelLoader.Forms.CustomControls
             // Ugly, but at this point whatever. Of _course_ we have to do this, but it's fast enough and works,
             // so meh.
 
+            // TODO: @DarkMode(Rtf/DarkTextMode): Image-as-first-item issue with the \cf0 inserts
+            // If we put a \cf0 before a transparent image, it makes the background of it white.
+            // See 2006-09-18_WC_WhatLiesBelow_v1
+            // Not a huge deal really - lots of readmes end up with bright images due to non-transparency, and
+            // WLB's transparent title image doesn't look good in dark mode anyway, but, you know...
+
             int index = 0;
             while ((index = FindIndexOfByteSequence(darkModeBytes, pard, index)) > -1)
             {
@@ -279,6 +285,9 @@ namespace AngelLoader.Forms.CustomControls
             darkModeBytes.InsertRange(
                 darkModeBytes.LastIndexOf((byte)'}'),
                 CreateBGColorRTFCode_Bytes(DarkUI.Config.Colors.Fen_DarkBackground));
+
+            // Keep this for debug...
+            //File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes.ToArray());
 
             return darkModeBytes.ToArray();
         }
