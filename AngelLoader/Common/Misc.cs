@@ -219,7 +219,6 @@ namespace AngelLoader
         {
             void Localize();
             void SetTheme(VisualTheme theme);
-            void RefreshAllThemedScrollBars();
         }
 
         #endregion

@@ -18,9 +18,14 @@ namespace DarkUI.Controls
         private readonly Bitmap _leftArrow = ScrollIcons.scrollbar_arrow_small_standard;
         private readonly Bitmap _rightArrow = ScrollIcons.scrollbar_arrow_small_standard;
 
+        private readonly Timer _timer = new Timer();
+
         public ScrollBarVisualOnly(ScrollBar owner)
         {
             _owner = owner;
+
+            _timer.Interval = 1;
+            _timer.Tick += (sender, e) => RefreshIfNeeded();
 
             ResizeRedraw = true;
 
@@ -190,6 +195,20 @@ namespace DarkUI.Controls
             #endregion
 
             base.OnPaint(e);
+        }
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            if (Visible)
+            {
+                _timer.Start();
+            }
+            else
+            {
+                _timer.Stop();
+            }
+
+            base.OnVisibleChanged(e);
         }
 
         protected override void Dispose(bool disposing)
