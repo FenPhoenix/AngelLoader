@@ -215,10 +215,11 @@ namespace AngelLoader
 
         #endregion
 
-        internal interface IPreviewable
+        internal interface IThemeableWindow
         {
             void Localize();
             void SetTheme(VisualTheme theme);
+            void RefreshAllThemedScrollBars();
         }
 
         #endregion

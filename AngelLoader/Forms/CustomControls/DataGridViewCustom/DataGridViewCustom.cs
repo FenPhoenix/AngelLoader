@@ -84,30 +84,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        #region API methods
-
-        private void RefreshScrollBars()
-        {
-            if (!_darkModeEnabled) return;
-
-            if (VerticalVisualScrollBar.Visible)
-            {
-                VerticalVisualScrollBar.RefreshIfNeeded();
-            }
-            if (HorizontalVisualScrollBar.Visible)
-            {
-                HorizontalVisualScrollBar.RefreshIfNeeded();
-            }
-        }
-
-        #region Init
-
-        public new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
-        public new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
-
-        public ScrollBarVisualOnly VerticalVisualScrollBar { get; }
-        public ScrollBarVisualOnly HorizontalVisualScrollBar { get; }
-
         public DataGridViewCustom()
         {
             DoubleBuffered = true;
@@ -119,6 +95,12 @@ namespace AngelLoader.Forms.CustomControls
             Controls.Add(HorizontalVisualScrollBar);
 
             VerticalScrollBar.Scroll += (_, _) => RefreshScrollBars();
+            HorizontalScrollBar.Scroll += (_, _) => RefreshScrollBars();
+            VerticalScrollBar.ValueChanged += (_, _) => RefreshScrollBars();
+            HorizontalScrollBar.ValueChanged += (_, _) => RefreshScrollBars();
+
+            //VerticalScrollBar.SizeChanged += (_, _) => RefreshScrollBars();
+            //HorizontalScrollBar.SizeChanged += (_, _) => RefreshScrollBars();
 
             /*
             TODO: @DarkMode(Scroll bars): The original plan:
@@ -143,6 +125,42 @@ namespace AngelLoader.Forms.CustomControls
             -Handle all mouse events and pass them along with PostMessage() - this works, we'll use it
             */
         }
+
+        #region API methods
+
+        /// <summary>
+        /// Refreshes the visual scroll bars, and optionally the real scroll bars.
+        /// </summary>
+        /// <param name="forceRefreshRealScrollBars">
+        /// Only use this is you need it, because you take a massive performance hit if you do it constantly.
+        /// </param>
+        public void RefreshScrollBars(bool forceRefreshRealScrollBars = false)
+        {
+            if (!_darkModeEnabled) return;
+
+            if (forceRefreshRealScrollBars)
+            {
+                VerticalScrollBar.Refresh();
+                HorizontalScrollBar.Refresh();
+            }
+
+            if (VerticalScrollBar.Visible || VerticalVisualScrollBar.Visible)
+            {
+                VerticalVisualScrollBar.RefreshIfNeeded();
+            }
+            if (HorizontalScrollBar.Visible || HorizontalVisualScrollBar.Visible)
+            {
+                HorizontalVisualScrollBar.RefreshIfNeeded();
+            }
+        }
+
+        #region Init
+
+        public new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
+        public new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
+
+        public ScrollBarVisualOnly VerticalVisualScrollBar { get; }
+        public ScrollBarVisualOnly HorizontalVisualScrollBar { get; }
 
         internal void InjectOwner(MainForm owner) => _owner = owner;
 
@@ -412,16 +430,37 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        // Don't refresh twice in a row needlessly
+        private bool _sizeChangeRefreshing;
+        private bool _cellPaintChangeRefreshing;
+
         protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
         {
-            RefreshScrollBars();
+            if (!_sizeChangeRefreshing)
+            {
+                _cellPaintChangeRefreshing = true;
+                RefreshScrollBars();
+                _cellPaintChangeRefreshing = false;
+            }
             base.OnCellPainting(e);
         }
 
         protected override void OnSizeChanged(EventArgs e)
         {
-            RefreshScrollBars();
+            if (!_cellPaintChangeRefreshing)
+            {
+                _sizeChangeRefreshing = true;
+                RefreshScrollBars();
+                _sizeChangeRefreshing = false;
+            }
             base.OnSizeChanged(e);
+        }
+
+        // Required to get the scrollbar thumbs to show up on first load if we've set dark mode on startup
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            if (Visible) RefreshScrollBars(forceRefreshRealScrollBars: true);
+            base.OnVisibleChanged(e);
         }
 
         #endregion

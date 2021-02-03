@@ -13,5 +13,6 @@ namespace DarkUI.Controls
         ScrollBarVisualOnly HorizontalVisualScrollBar { get; }
         ScrollBar VerticalScrollBar { get; }
         ScrollBar HorizontalScrollBar { get; }
+        void RefreshScrollBars(bool forceRefreshRealScrollBars = false);
     }
 }

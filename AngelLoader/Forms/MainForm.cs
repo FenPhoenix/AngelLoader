@@ -1635,6 +1635,17 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        public void RefreshAllThemedScrollBars()
+        {
+            foreach (var item in _controlColors)
+            {
+                if (item.Key is IDarkableScrollable control)
+                {
+                    control.RefreshScrollBars(forceRefreshRealScrollBars: true);
+                }
+            }
+        }
+
         #endregion
 
         #region Main menu
@@ -2198,6 +2209,7 @@ namespace AngelLoader.Forms
             MainSplitContainer.ResetSplitterPercent();
             TopSplitContainer.ResetSplitterPercent();
             if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
+            RefreshAllThemedScrollBars();
         }
 
         #endregion
@@ -2867,6 +2879,7 @@ namespace AngelLoader.Forms
         {
             TopSplitContainer.ToggleFullScreen();
             SetTopRightCollapsedState();
+            RefreshAllThemedScrollBars();
         }
 
         private void SetTopRightCollapsedState()
@@ -3657,6 +3670,7 @@ namespace AngelLoader.Forms
         {
             MainSplitContainer.ToggleFullScreen();
             ShowReadmeControls(CursorOverReadmeArea());
+            RefreshAllThemedScrollBars();
         }
 
         private void SetReadmeVisible(bool enabled)
