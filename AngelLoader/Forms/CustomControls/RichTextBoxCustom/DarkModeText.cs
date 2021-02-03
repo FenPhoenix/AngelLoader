@@ -131,6 +131,10 @@ namespace AngelLoader.Forms.CustomControls
             {
                 #region Write new color table
 
+                // Some files don't have a color table, so in that case just add the default black color that we
+                // would normally expect to be there.
+                if (colorTable.Count == 0) colorTable.Add(Color.FromArgb(0, 0, 0));
+
                 const int maxColorEntryStringLength = 25; // "\red255\green255\blue255;" = 25 chars
 
                 // Size us large enough that we don't reallocate
@@ -177,6 +181,9 @@ namespace AngelLoader.Forms.CustomControls
                 #endregion
             }
 
+            // TODO: @DarkMode: Insert a \cf0 right after the \fonttbl group
+            // Just in case we don't encounter a \pard, \plain or \sectd before any text.
+
             #region Insert \cf0 control words as needed
 
             // Despite extensive trying with EM_SETCHARFORMAT to tell it to set a new default text color, it just
@@ -217,6 +224,8 @@ namespace AngelLoader.Forms.CustomControls
             darkModeBytes.InsertRange(
                 darkModeBytes.LastIndexOf((byte)'}'),
                 CreateBGColorRTFCode_Bytes(DarkUI.Config.Colors.Fen_DarkBackground));
+
+            File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes.ToArray());
 
             return darkModeBytes.ToArray();
         }
