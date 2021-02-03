@@ -121,7 +121,7 @@ namespace DarkUI.Controls
             psbi.cbSize = Marshal.SizeOf(psbi);
             if (_owner.IsHandleCreated)
             {
-                int result = Native.GetScrollBarInfo((IntPtr)_owner.Handle, Native.OBJID_CLIENT, ref psbi);
+                int result = Native.GetScrollBarInfo(_owner.Handle, Native.OBJID_CLIENT, ref psbi);
             }
             return psbi;
         }
@@ -199,15 +199,7 @@ namespace DarkUI.Controls
 
         protected override void OnVisibleChanged(EventArgs e)
         {
-            if (Visible)
-            {
-                _timer.Start();
-            }
-            else
-            {
-                _timer.Stop();
-            }
-
+            _timer.Enabled = Visible;
             base.OnVisibleChanged(e);
         }
 
