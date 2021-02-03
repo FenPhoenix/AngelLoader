@@ -254,10 +254,9 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnEnabledChanged(EventArgs e)
         {
-            // Putting this first prevents a large flicker on plaintext restore
-            base.OnEnabledChanged(e);
-
-            SetPlainTextEnabledState();
+            if (!_darkModeEnabled) base.OnEnabledChanged(e);
+            // Just suppress the base method call and done, no recoloring. Argh! I totally didn't make a huge
+            // ridiculous system for getting around it! I totally knew all along!
         }
 
         protected override void Dispose(bool disposing)

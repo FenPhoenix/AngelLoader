@@ -14,11 +14,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields
 
-        private bool _isDisabled;
-
         private byte[] _currentRTFBytes = Array.Empty<byte>();
-
-        private byte[] _originalPlainTextBytes = Array.Empty<byte>();
 
         #region RTF text coloring byte array nonsense
 
@@ -376,130 +372,6 @@ namespace AngelLoader.Forms.CustomControls
                     RestoreZoom();
                     RepositionScroll(Handle, si);
                     this.ResumeDrawing();
-                }
-            }
-        }
-
-        // For plain text, we can't control the disabled background and foreground colors, so if we're in dark
-        // mode and we get disabled, we render with a blinding "classic light mode disabled colors" scheme.
-        // So we do a variation on the rtf dark-mode color switch, where we convert the plaintext to rtf and load
-        // it back in so that we can control the colors again. Yeesh.
-        // TODO: @DarkMode(SetPlainTextEnabledState):
-        // Sometimes this changes the font size when disabling, even being affected by the scroll position on
-        // whether it does it(?!)
-        // Need to find some way to fix this...
-        // NOTE: I think I fixed it by adding missing checks for _isDisabled, but keep an eye on it.
-        private void SetPlainTextEnabledState()
-        {
-            #region Local functions
-
-            void PlainTextSetDisabledState_Enter()
-            {
-                SaveZoom();
-                this.SuspendDrawing();
-                ReadOnly = false;
-            }
-
-            void PlainTextSetDisabledState_Exit(ref SCROLLINFO si)
-            {
-                ReadOnly = true;
-                RestoreZoom();
-                RepositionScroll(Handle, si);
-                this.ResumeDrawing();
-            }
-
-            #endregion
-
-            if (!_darkModeEnabled || _currentReadmeType != ReadmeType.PlainText || _isDisabled)
-            {
-                return;
-            }
-
-            if (!Enabled)
-            {
-                if (!_isDisabled)
-                {
-                    _isDisabled = true;
-
-                    _originalPlainTextBytes = Encoding.UTF8.GetBytes(Text);
-
-                    var currentRTFBytesList = Encoding.UTF8.GetBytes(Rtf).ToList();
-
-                    // We don't need this as it puts the colors in the stream for us already, but just in case we
-                    // ever need it in the future...
-                    /*
-                    List<byte> colorTableBytes = CreateColorTableRTFBytes(
-                        new List<Color>
-                        {
-                            DarkUI.Config.Colors.Fen_DarkForeground
-                        });
-
-                    currentRTFBytesList.InsertRange(
-                        FindIndexOfByteSequence(currentRTFBytesList, RTFHeaderBytes) + RTFHeaderBytes.Length,
-                        colorTableBytes);
-                    */
-
-                    // Background color
-                    currentRTFBytesList.InsertRange(
-                        currentRTFBytesList.LastIndexOf((byte)'}'),
-                        CreateBGColorRTFCode_Bytes(DarkUI.Config.Colors.Fen_DarkBackground));
-
-                    SCROLLINFO si = GetCurrentScrollInfo(Handle);
-                    try
-                    {
-                        PlainTextSetDisabledState_Enter();
-
-                        // Need to save and restore the font, or else it sometimes jarringly changes size, and we
-                        // don't want anyone to know how absolutely god-awful we're being to make this work.
-                        // EDIT: It still happens sometimes.
-                        Font oldFont = (Font)Font.Clone();
-
-                        using var ms = new MemoryStream(currentRTFBytesList.ToArray());
-                        LoadFile(ms, RichTextBoxStreamType.RichText);
-
-                        Font = oldFont;
-                        // Doesn't seem to help
-                        //ZoomFactor = _storedZoomFactor;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(
-                            nameof(RichTextBoxCustom) +
-                            ": Couldn't load plaintext readme bytes for disabled mode coloring. " +
-                            nameof(_darkModeEnabled) + " == " + _darkModeEnabled, ex);
-                    }
-                    finally
-                    {
-                        PlainTextSetDisabledState_Exit(ref si);
-                    }
-                }
-            }
-            else
-            {
-                if (_isDisabled)
-                {
-                    _isDisabled = false;
-
-                    SCROLLINFO si = GetCurrentScrollInfo(Handle);
-                    try
-                    {
-                        PlainTextSetDisabledState_Enter();
-
-                        using var ms = new MemoryStream(_originalPlainTextBytes);
-                        LoadFile(ms, RichTextBoxStreamType.PlainText);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(
-                            nameof(RichTextBoxCustom) +
-                            ": Couldn't load plaintext readme bytes for enabled mode coloring. " +
-                            nameof(_darkModeEnabled) + " == " + _darkModeEnabled, ex);
-                    }
-                    finally
-                    {
-                        _originalPlainTextBytes = Array.Empty<byte>();
-                        PlainTextSetDisabledState_Exit(ref si);
-                    }
                 }
             }
         }
