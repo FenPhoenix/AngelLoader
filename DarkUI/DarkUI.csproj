@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -120,9 +121,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\DarkTreeNode.cs" />
-    <Compile Include="Controls\ScrollBarVisualOnly.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Controls\ScrollBarVisualOnly.cs" />
     <Compile Include="Controls\ScrollValueEventArgs.cs" />
     <Compile Include="Docking\DarkDockArea.cs" />
     <Compile Include="Docking\DarkDockContent.cs">
