@@ -263,7 +263,10 @@ namespace AngelLoader.Forms
             // and back colors relatively the same (or as close as possible)
             int bgH = 0, bgL = 0, bgS = 0;
             ColorRGBToHLS(ColorTranslator.ToWin32(DarkUI.Config.Colors.Fen_DarkBackground), ref bgH, ref bgL, ref bgS);
-            int finalL = l + 20;//+ bgL;
+            // Clamp to make sure we don't go over the max when we bump the luminance!
+            // TODO: @DarkMode: We clamp to a bit less than 240 in order to keep brightness from being blinding
+            // Test if this looks good across all readmes
+            int finalL = (l + 20).Clamp(0, 200);//+ bgL;
 
             // Crappy hack to work around the "blue dip" where humans can't see blue on dark backgrounds very
             // well. These ranges were eyeballed in Photoshop and work well enough. There's probably some actual

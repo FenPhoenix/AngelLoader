@@ -11,6 +11,8 @@ using static AngelLoader.Misc;
 //  as possible.
 // -Till then... IMPORTANT: Always use Encoding.UTF8.Get* because ASCII will break the char conversion for GLML!
 
+// TODO: BUG: .wri files are not displayed right. See if a simple binary header-and-footer strip can be done
+
 namespace AngelLoader.Forms.CustomControls
 {
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable

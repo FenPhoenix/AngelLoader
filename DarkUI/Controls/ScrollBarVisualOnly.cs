@@ -98,7 +98,7 @@ namespace DarkUI.Controls
             posAlong -= thumbSize / 2;
 
             double posPercent = GetPercentFromValue(posAlong, _isVertical ? rect.Height : rect.Width).Clamp(0, 100);
-            // Important that we use this formula (nMax - max(nPage -1, 0) or else our position is always
+            // Important that we use this formula (nMax - max(nPage -1, 0)) or else our position is always
             // infuriatingly not-quite-right.
             int finalValue = GetValueFromPercent(posPercent, _owner.Maximum - Math.Max(_owner.LargeChange - 1, 0));
 

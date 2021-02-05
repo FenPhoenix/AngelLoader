@@ -18,7 +18,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region RTF text coloring byte array nonsense
 
-        private byte[] _colortbl =
+        private readonly byte[] _colortbl =
         {
             (byte)'{',
             (byte)'\\',
@@ -32,7 +32,7 @@ namespace AngelLoader.Forms.CustomControls
             (byte)'l'
         };
 
-        private byte[] _fonttbl =
+        private readonly byte[] _fonttbl =
         {
             (byte)'{',
             (byte)'\\',
@@ -45,11 +45,34 @@ namespace AngelLoader.Forms.CustomControls
             (byte)'l'
         };
 
-        private readonly byte[] _redFieldBytes = { (byte)'\\', (byte)'r', (byte)'e', (byte)'d' };
-        private readonly byte[] _greenFieldBytes = { (byte)'\\', (byte)'g', (byte)'r', (byte)'e', (byte)'e', (byte)'n' };
-        private readonly byte[] _blueFieldBytes = { (byte)'\\', (byte)'b', (byte)'l', (byte)'u', (byte)'e' };
+        private readonly byte[] _redFieldBytes =
+        {
+            (byte)'\\',
+            (byte)'r',
+            (byte)'e',
+            (byte)'d'
+        };
 
-        private byte[] cf0 =
+        private readonly byte[] _greenFieldBytes =
+        {
+            (byte)'\\',
+            (byte)'g',
+            (byte)'r',
+            (byte)'e',
+            (byte)'e',
+            (byte)'n'
+        };
+
+        private readonly byte[] _blueFieldBytes =
+        {
+            (byte)'\\',
+            (byte)'b',
+            (byte)'l',
+            (byte)'u',
+            (byte)'e'
+        };
+
+        private readonly byte[] cf0 =
         {
             (byte)'\\',
             (byte)'c',
@@ -57,16 +80,7 @@ namespace AngelLoader.Forms.CustomControls
             (byte)'0'
         };
 
-        private byte[] pard =
-        {
-            (byte)'\\',
-            (byte)'p',
-            (byte)'a',
-            (byte)'r',
-            (byte)'d'
-        };
-
-        private byte[] plain =
+        private readonly byte[] plain =
         {
             (byte)'\\',
             (byte)'p',
@@ -76,18 +90,39 @@ namespace AngelLoader.Forms.CustomControls
             (byte)'n'
         };
 
-        private byte[] sectd =
+        private readonly byte[] _background =
         {
             (byte)'\\',
-            (byte)'s',
-            (byte)'e',
+            (byte)'*',
+            (byte)'\\',
+            (byte)'b',
+            (byte)'a',
             (byte)'c',
-            (byte)'t',
+            (byte)'k',
+            (byte)'g',
+            (byte)'r',
+            (byte)'o',
+            (byte)'u',
+            (byte)'n',
             (byte)'d'
         };
 
-        private static readonly byte[] _background = Encoding.ASCII.GetBytes(@"\*\background");
-        private static readonly byte[] _backgroundBlanked = Encoding.ASCII.GetBytes(@"\*\xxxxxxxxxx");
+        private readonly byte[] _backgroundBlanked =
+        {
+            (byte)'\\',
+            (byte)'*',
+            (byte)'\\',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x'
+        };
 
         #endregion
 
@@ -231,7 +266,7 @@ namespace AngelLoader.Forms.CustomControls
                 // Some files don't have a color table, so in that case just add the default black color that we
                 // would normally expect to be there.
                 if (colorTable.Count == 0) colorTable.Add(Color.FromArgb(0, 0, 0));
-                
+
                 List<byte> colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
 
                 // Fortunately, only the first color table is used, so we can just stick ourselves right at the
@@ -245,8 +280,7 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Insert \cf0 control words as needed
 
-            // Insert a \cf0 right after the \fonttbl group, in case we don't encounter a \pard, \plain, or \sectd
-            // before any text.
+            // Insert a \cf0 right after the \fonttbl group, in case we don't encounter a \plain before any text.
             int fonttbl_EndIndex = FindEndOfGroup(darkModeBytes, _fonttbl);
             if (fonttbl_EndIndex > -1) darkModeBytes.InsertRange(fonttbl_EndIndex, cf0);
 
@@ -261,10 +295,9 @@ namespace AngelLoader.Forms.CustomControls
 
             // Despite extensive trying with EM_SETCHARFORMAT to tell it to set a new default text color, it just
             // doesn't want to work (best it can do is make ALL the text the default color, rather than just the
-            // default text). So we just insert \cf0 directly after each \pard, \plain, and \sectd (which reset
-            // the paragraph, character, and section properties, respectively).
-            // Ugly, but at this point whatever. Of _course_ we have to do this, but it's fast enough and works,
-            // so meh.
+            // default text). So we just insert \cf0 directly after each \plain (which resets the character
+            // properties). Ugly, but at this point whatever. Of _course_ we have to do this, but it's fast enough
+            // and works, so meh.
 
             /*
             TODO: @DarkMode(RTF/DarkTextMode) issues/quirks/etc:
@@ -276,36 +309,13 @@ namespace AngelLoader.Forms.CustomControls
 
             -Maybe don't invert if we're already light...?
              See: LostSouls14
-
-            -Mysterious Invitation:
-             Readme has a section with a \pard but the red color stays active until the next \cf0
-             NOTE: Solution is to only insert \cf0 after \plain control words and not any of the others, but:
-             TODO: @DarkMode: Check all rtf files to make sure it doesn't break any others!
             */
             int index = 0;
-            //while ((index = FindIndexOfByteSequence(darkModeBytes, pard, index)) > -1)
-            //{
-            //    darkModeBytes.InsertRange(index + pard.Length, cf0);
-            //    index += pard.Length + cf0.Length;
-            //}
-
-            index = 0;
             while ((index = FindIndexOfByteSequence(darkModeBytes, plain, index)) > -1)
             {
                 darkModeBytes.InsertRange(index + plain.Length, cf0);
                 index += plain.Length + cf0.Length;
             }
-
-            //index = 0;
-            //while ((index = FindIndexOfByteSequence(darkModeBytes, sectd, index)) > -1)
-            //{
-            //    // Hack: don't match \sectdefaultcl
-            //    if (darkModeBytes[index + sectd.Length] != (byte)'e')
-            //    {
-            //        //darkModeBytes.InsertRange(index + sectd.Length, cf0);
-            //    }
-            //    index += sectd.Length + cf0.Length;
-            //}
 
             #endregion
 
