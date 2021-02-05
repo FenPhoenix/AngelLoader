@@ -278,7 +278,9 @@ namespace AngelLoader.Forms
                 (s > 190) &&
                 (l > 110 && l < 130))
             {
-                finalL += 10;
+                // Allow this bump to go up to max I guess(?)
+                // Because of the 200-clamp up there, I guess this won't ever be above 210
+                finalL = (finalL + 10).Clamp(0, 240);
                 h -= 20;
             }
 
