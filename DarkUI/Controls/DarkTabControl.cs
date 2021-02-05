@@ -25,7 +25,9 @@ namespace DarkUI.Controls
 
         protected void SetUpTheme()
         {
-            SetStyle(ControlStyles.UserPaint, _darkModeEnabled);
+            SetStyle(ControlStyles.UserPaint
+                     | ControlStyles.AllPaintingInWmPaint,
+                _darkModeEnabled);
 
             if (_darkModeEnabled)
             {

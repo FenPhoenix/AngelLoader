@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Resources;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Channels;
 using System.Windows.Forms;
 using DarkUI.Win32;
 
 namespace DarkUI.Controls
 {
+
+    // TODO: Get rid of this when we combine projects of course
     internal static class Extensions
     {
         internal static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> =>
@@ -18,6 +18,12 @@ namespace DarkUI.Controls
 
     public sealed class ScrollBarVisualOnly : Control
     {
+        #region Private fields
+
+        private readonly ScrollBar _owner;
+
+        private int? _xyThumbTop;
+        private int? _xyThumbBottom;
 
         private readonly Color _greySelection;
         private readonly SolidBrush _thumbNormalBrush;
@@ -30,224 +36,138 @@ namespace DarkUI.Controls
 
         private readonly Timer _timer = new Timer();
 
-        private readonly Orientation _orientation;
+        private readonly bool _isVertical;
 
-        private readonly DarkContextMenu _menu;
+        private readonly DarkContextMenu Menu;
 
-        private ToolStripMenuItem _scrollHereMenuItem;
+        private readonly ToolStripMenuItem ScrollHereMenuItem;
 
-        private ToolStripMenuItem _minMenuItem;
-        private ToolStripMenuItem _maxMenuItem;
+        private readonly ToolStripMenuItem MinMenuItem;
+        private readonly ToolStripMenuItem MaxMenuItem;
 
-        private ToolStripMenuItem _pageBackMenuItem;
-        private ToolStripMenuItem _pageForwardMenuItem;
+        private readonly ToolStripMenuItem PageBackMenuItem;
+        private readonly ToolStripMenuItem PageForwardMenuItem;
 
-        private ToolStripMenuItem _scrollBackMenuItem;
-        private ToolStripMenuItem _scrollForwardMenuItem;
+        private readonly ToolStripMenuItem ScrollBackMenuItem;
+        private readonly ToolStripMenuItem ScrollForwardMenuItem;
 
-        internal static double GetPercentFromValue(int current, int total) => (double)(100 * current) / total;
-        //internal static int GetValueFromPercent(int percent, int total) => (percent / 100) * total;
-        internal static int GetValueFromPercent(double percent, int total) =>
-            (int)((percent / 100) * total);
-        //(int)Math.Round((percent / 100) * total);
+        private Point _storedCursorPosition = Point.Empty;
 
-        private const int SB_CTL = 2;
-
-        [DllImport("user32.dll")]
-        public static extern int SetScrollPos(IntPtr hWnd, int nBar, int nPos, bool bRedraw);
-
-        internal const int WM_USER = 0x0400;
-        internal const int WM_REFLECT = 8192;
+        private const int WM_REFLECT = 0x2000;
         private const int WM_HSCROLL = 0x0114;
         private const int WM_VSCROLL = 0x0115;
 
-        private const int SB_LINEUP = 0;
-        private const int SB_LINELEFT = 0;
-        private const int SB_LINEDOWN = 1;
-        private const int SB_LINERIGHT = 1;
-        private const int SB_PAGEUP = 2;
-        private const int SB_PAGELEFT = 2;
-        private const int SB_PAGEDOWN = 3;
-        private const int SB_PAGERIGHT = 3;
-        private const int SB_THUMBPOSITION = 4;
         private const int SB_THUMBTRACK = 5;
-        private const int SB_TOP = 6;
-        private const int SB_LEFT = 6;
-        private const int SB_BOTTOM = 7;
-        private const int SB_RIGHT = 7;
-        private const int SB_ENDSCROLL = 8;
 
-        private const int SIF_RANGE = 0x0001;
-        private const int SIF_PAGE = 0x0002;
-        private const int SIF_POS = 0x0004;
-        private const int SIF_DISABLENOSCROLL = 0x0008;
-        private const int SIF_TRACKPOS = 0x0010;
-        private const int SIF_ALL = (SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS);
+        private const int WS_EX_NOACTIVATE = 0x8000000;
 
-        [Serializable, StructLayout(LayoutKind.Sequential)]
-        struct SCROLLINFO
+        #endregion
+
+        private static double GetPercentFromValue(int current, int total) => (double)(100 * current) / total;
+        private static int GetValueFromPercent(double percent, int total) => (int)((percent / 100) * total);
+        private void SetOwnerValue(int value)
         {
-            public uint cbSize;
-            public uint fMask;
-            public int nMin;
-            public int nMax;
-            public uint nPage;
-            public int nPos;
-            public int nTrackPos;
+            _owner.Value = value.Clamp(_owner.Minimum, _owner.Maximum);
+
+            // We have to explicitly send this message, or else the scroll bar's parent control doesn't
+            // actually update itself in accordance with the scroll bar thumb position (at least with the
+            // DataGridView anyway).
+            uint msg = (uint)(_isVertical ? WM_VSCROLL : WM_HSCROLL);
+            Native.SendMessage(_owner.Handle, WM_REFLECT + msg, (IntPtr)SB_THUMBTRACK, IntPtr.Zero);
         }
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
+        #region Menu item event handlers
 
-        [DllImport("user32.dll")]
-        static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
+        private void ScrollHereMenuItem_Click(object sender, EventArgs e)
+        {
+            var sbi = GetCurrentScrollBarInfo();
+            int thumbSize = sbi.xyThumbBottom - sbi.xyThumbTop;
+
+            int arrowMargin = _isVertical
+                ? SystemInformation.VerticalScrollBarArrowHeight
+                : SystemInformation.HorizontalScrollBarArrowWidth;
+
+            var rect = _isVertical
+                ? new Rectangle(0, arrowMargin, Width, (Height - (arrowMargin * 2)) - thumbSize)
+                : new Rectangle(arrowMargin, 0, (Width - (arrowMargin * 2)) - thumbSize, Height);
+
+            int posAlong = _isVertical ? _storedCursorPosition.Y : +_storedCursorPosition.X;
+
+            posAlong -= arrowMargin;
+
+            posAlong -= thumbSize / 2;
+
+            double posPercent = GetPercentFromValue(posAlong, _isVertical ? rect.Height : rect.Width).Clamp(0, 100);
+            // Important that we use this formula (nMax - max(nPage -1, 0) or else our position is always
+            // infuriatingly not-quite-right.
+            int finalValue = GetValueFromPercent(posPercent, _owner.Maximum - Math.Max(_owner.LargeChange - 1, 0));
+
+            SetOwnerValue(finalValue);
+        }
+
+        private void MinMenuItem_Click(object sender, EventArgs e) => SetOwnerValue(0);
+
+        private void MaxMenuItem_Click(object sender, EventArgs e) => SetOwnerValue(_owner.Maximum);
+
+        private void PageBackMenuItem_Click(object sender, EventArgs e) => SetOwnerValue(_owner.Value - _owner.LargeChange.Clamp(_owner.Minimum, _owner.Maximum));
+
+        private void PageForwardMenuItem_Click(object sender, EventArgs e) => SetOwnerValue(_owner.Value + _owner.LargeChange.Clamp(_owner.Minimum, _owner.Maximum));
+
+        private void ScrollBackMenuItem_Click(object sender, EventArgs e) => SetOwnerValue(_owner.Value - _owner.SmallChange.Clamp(_owner.Minimum, _owner.Maximum));
+
+        private void ScrollForwardMenuItem_Click(object sender, EventArgs e) => SetOwnerValue(_owner.Value + _owner.SmallChange.Clamp(_owner.Minimum, _owner.Maximum));
+
+        #endregion
+
+        #region Constructor / init
 
         public ScrollBarVisualOnly(ScrollBar owner)
         {
             _owner = owner;
 
-            _orientation = owner is VScrollBar ? Orientation.Vertical : Orientation.Horizontal;
+            _isVertical = owner is VScrollBar;
 
-            _menu = new DarkContextMenu(darkModeEnabled: true)
+            DoubleBuffered = true;
+            ResizeRedraw = true;
+
+            #region Set up menu
+
+            Menu = new DarkContextMenu(darkModeEnabled: true)
             {
                 Items =
                 {
-                    (_scrollHereMenuItem = new ToolStripMenuItem()),
+                    (ScrollHereMenuItem = new ToolStripMenuItem()),
                     new ToolStripSeparator(),
-                    (_minMenuItem = new ToolStripMenuItem()),
-                    (_maxMenuItem = new ToolStripMenuItem()),
+                    (MinMenuItem = new ToolStripMenuItem()),
+                    (MaxMenuItem = new ToolStripMenuItem()),
                     new ToolStripSeparator(),
-                    (_pageBackMenuItem = new ToolStripMenuItem()),
-                    (_pageForwardMenuItem = new ToolStripMenuItem()),
+                    (PageBackMenuItem = new ToolStripMenuItem()),
+                    (PageForwardMenuItem = new ToolStripMenuItem()),
                     new ToolStripSeparator(),
-                    (_scrollBackMenuItem = new ToolStripMenuItem()),
-                    (_scrollForwardMenuItem = new ToolStripMenuItem())
+                    (ScrollBackMenuItem = new ToolStripMenuItem()),
+                    (ScrollForwardMenuItem = new ToolStripMenuItem())
                 }
             };
 
-            //_owner.ValueChanged += (sender, e) =>
-            //{
-            //    Trace.WriteLine("value: " + _owner.Value);
-            //};
+            ScrollHereMenuItem.Click += ScrollHereMenuItem_Click;
 
-            Trace.WriteLine(_owner.Maximum);
+            MinMenuItem.Click += MinMenuItem_Click;
+            MaxMenuItem.Click += MaxMenuItem_Click;
 
-            _scrollHereMenuItem.Click += (sender, e) =>
-            {
-                Trace.WriteLine("----------------");
+            PageBackMenuItem.Click += PageBackMenuItem_Click;
+            PageForwardMenuItem.Click += PageForwardMenuItem_Click;
 
-                Trace.WriteLine("_owner.Value: " + _owner.Value);
-                Trace.WriteLine("_owner.Maximum: " + _owner.Maximum);
+            ScrollBackMenuItem.Click += ScrollBackMenuItem_Click;
+            ScrollForwardMenuItem.Click += ScrollForwardMenuItem_Click;
 
-                var si = GetCurrentScrollBarInfo();
-                int thumbSize = si.xyThumbBottom - si.xyThumbTop;
+            #endregion
 
-                Trace.WriteLine(si.dxyLineButton);
-
-                Trace.WriteLine(si.rcScrollBar.left);
-                Trace.WriteLine(si.rcScrollBar.top);
-                Trace.WriteLine(si.rcScrollBar.right);
-                Trace.WriteLine(si.rcScrollBar.bottom);
-
-
-                var si2 = new SCROLLINFO();
-                si2.cbSize = (uint)Marshal.SizeOf(si2);
-                si2.fMask = SIF_PAGE;
-                GetScrollInfo(_owner.Handle, SB_CTL, ref si2);
-
-                Trace.WriteLine(si2.nPage);
-
-                //si.xyThumbTop = 0;
-                //si.xyThumbBottom = 100;
-                //SetScrollBarInfo(_owner.Handle, SB_CTL,ref si, true);
-
-                int arrowMargin = _orientation == Orientation.Vertical
-                    ? SystemInformation.VerticalScrollBarArrowHeight
-                    : SystemInformation.HorizontalScrollBarArrowWidth;
-
-                Trace.WriteLine(nameof(arrowMargin) + ": " + arrowMargin);
-
-                var rect = new Rectangle(0, arrowMargin, Width, (Height - (arrowMargin * 2)) - thumbSize);
-
-                double divisor = (double)_owner.Maximum / rect.Height;
-                int thumbSizeInValueUnits = (int)Math.Round(thumbSize * divisor, MidpointRounding.AwayFromZero);
-                //int thumbSizeInValueUnits = 2592;
-
-                //int posY = PointToClient(Cursor.Position).Y;
-
-                int posY = _storedCursorPosition.Y;
-
-                Trace.WriteLine("initial posY: " + posY);
-
-                posY -= arrowMargin;
-
-                //posY = posY.Clamp(0, (Height - (arrowMargin * 2)) - thumbSize);
-
-                //posY = (((Height - (arrowMargin * 2))-thumbSize)/2);
-                Trace.WriteLine("pos.Y: " + posY);
-
-                //Trace.WriteLine(Height - arrowMargin);
-
-                Trace.WriteLine(nameof(thumbSize) + ": " + thumbSize);
-
-                //Point menuLoc = _menu.PointToClient(_menu.PointToScreen(_menu.Location));
-                //Point menuLoc = _menu.PointToScreen(_menu.Location);
-                Point menuLoc = _menu.Location;
-
-                Trace.WriteLine("menu pos: " + menuLoc);
-
-                Trace.WriteLine(rect);
-
-                Trace.WriteLine("Height " + Height);
-                Trace.WriteLine("Adjusted height: " + ((Height - (arrowMargin * 2)) - thumbSize).ToString());
-
-                //posY += thumbSize / 2;
-
-                //posY = 141;
-
-                //posY = rect.Height / 2;
-
-                //double posPercent = GetPercentFromValue(posY, (Height - (arrowMargin * 2)) - (thumbSize));
-                double posPercent = GetPercentFromValue(posY, rect.Height).Clamp(0, 100);
-                int finalValue = GetValueFromPercent(posPercent, (int)(_owner.Maximum - Math.Max(si2.nPage - 1, 0)));
-                //finalValue -= thumbSizeInValueUnits / 2;
-
-                //System.Windows.Controls.Primitives.ScrollBar
-
-                //finalValue -= thumbSize / 2;
-
-                Trace.WriteLine(nameof(posPercent) + ": " + posPercent);
-
-                Trace.WriteLine(nameof(finalValue) + ": " + finalValue);
-
-                //finalValue = (int)(35772 * .75f);
-
-                _owner.Value = finalValue.Clamp(_owner.Minimum, _owner.Maximum);
-
-                //SetScrollPos(_owner.Handle, SB_CTL, finalValue, true);
-
-                //SetScrollPos(_owner.Handle, SB_CTL, 35772/2, true);
-
-                Trace.WriteLine("_owner.Value: " + _owner.Value);
-
-                uint msg = (uint)(_orientation == Orientation.Vertical ? WM_VSCROLL : WM_HSCROLL);
-                Native.SendMessage(_owner.Handle, WM_REFLECT + msg, (IntPtr)SB_THUMBTRACK, IntPtr.Zero);
-            };
-
-            _minMenuItem.Click += (sender, e) => { };
-            _maxMenuItem.Click += (sender, e) => { };
-
-            _pageBackMenuItem.Click += (sender, e) => { };
-            _pageForwardMenuItem.Click += (sender, e) => { };
-
-            _scrollBackMenuItem.Click += (sender, e) => { };
-            _scrollForwardMenuItem.Click += (sender, e) => { };
+            #region Set up refresh timer
 
             _timer.Interval = 1;
             _timer.Tick += (sender, e) => RefreshIfNeeded();
 
-            ResizeRedraw = true;
+            #endregion
 
             #region Set up scroll bar arrows
 
@@ -258,7 +178,6 @@ namespace DarkUI.Controls
             #endregion
 
             BackColor = Config.Colors.Fen_DarkBackground;
-            DoubleBuffered = true;
 
             _greySelection = Config.Colors.GreySelection;
             _thumbNormalBrush = new SolidBrush(_greySelection);
@@ -270,74 +189,31 @@ namespace DarkUI.Controls
                 true);
         }
 
-        private readonly ScrollBar _owner;
-
-        private const int WM_NCHITTEST = 0x0084;
-        private const int WS_EX_NOACTIVATE = 134_217_728;
-        private const int HTTRANSPARENT = -1;
-
-        //protected override CreateParams CreateParams
-        //{
-        //    get
-        //    {
-        //        var cp = base.CreateParams;
-        //        cp.ExStyle |= WS_EX_NOACTIVATE;
-        //        return cp;
-        //    }
-        //}
-
-        private Random _rnd = new Random();
-
-        protected override void WndProc(ref Message m)
+        protected override CreateParams CreateParams
         {
-            void SendToOwner(ref Message _m)
+            get
             {
-                if (_owner.IsHandleCreated)
-                {
-                    Native.PostMessage(_owner.Handle, _m.Msg, _m.WParam, _m.LParam);
-                    _m.Result = IntPtr.Zero;
-                }
-            }
-
-            if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
-                || m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN
-                || m.Msg == Native.WM_LBUTTONDBLCLK || m.Msg == Native.WM_NCLBUTTONDBLCLK
-                || m.Msg == Native.WM_MBUTTONDBLCLK || m.Msg == Native.WM_NCMBUTTONDBLCLK
-                || m.Msg == Native.WM_LBUTTONUP || m.Msg == Native.WM_NCLBUTTONUP
-                || m.Msg == Native.WM_MBUTTONUP || m.Msg == Native.WM_NCMBUTTONUP
-
-                || m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
-
-                // Don't handle mouse wheel or mouse wheel tilt for now - mousewheel at least breaks on FMsDGV
-                //|| m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL
-                )
-            {
-                SendToOwner(ref m);
-            }
-            else if (m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
-                     m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK)
-            {
-                if (GetMenuStrings() == null) SendToOwner(ref m);
-            }
-            else if (m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP)
-            {
-                if (!ShowDarkMenu()) SendToOwner(ref m);
-            }
-            else
-            {
-                // Intentional - we want to block the mouse messages up there because we're already sending them
-                // to owner if necessary, and if we don't block them we get incorrect behavior with menu showing
-                // (showing the FM context menu instead of our menu etc.)
-                base.WndProc(ref m);
+                var cp = base.CreateParams;
+                cp.ExStyle |= WS_EX_NOACTIVATE;
+                return cp;
             }
         }
 
-        private bool SafeToShowDarkMenu()
-        {
-            string[] temp = GetMenuStrings();
-            if (temp == null) return false;
+        #endregion
 
-            return true;
+        #region Private methods
+
+        private Native.SCROLLBARINFO GetCurrentScrollBarInfo()
+        {
+            var sbi = new Native.SCROLLBARINFO();
+            sbi.cbSize = Marshal.SizeOf(sbi);
+
+            if (_owner.IsHandleCreated)
+            {
+                Native.GetScrollBarInfo(_owner.Handle, Native.OBJID_CLIENT, ref sbi);
+            }
+
+            return sbi;
         }
 
         private string[] GetMenuStrings()
@@ -352,9 +228,12 @@ namespace DarkUI.Controls
                 // IMPORTANT: Because we get these from WPF, we need to reference PresentationFramework or we fail!
                 var rm = new ResourceManager("ExceptionStringTable", typeof(System.Windows.Application).Assembly);
 
+                CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo("fr-CA");
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("fr-CA");
+
                 ret[0] = rm.GetString("ScrollBar_ContextMenu_ScrollHere", CultureInfo.CurrentCulture);
 
-                if (_orientation == Orientation.Vertical)
+                if (_isVertical)
                 {
                     ret[1] = rm.GetString("ScrollBar_ContextMenu_Top", CultureInfo.CurrentCulture);
                     ret[2] = rm.GetString("ScrollBar_ContextMenu_Bottom", CultureInfo.CurrentCulture);
@@ -391,64 +270,56 @@ namespace DarkUI.Controls
             }
         }
 
-        private Point _storedCursorPosition = Point.Empty;
-
         private bool ShowDarkMenu()
         {
             string[] items = GetMenuStrings();
             if (items == null) return false;
 
-            _scrollHereMenuItem.Text = items[0];
-            _minMenuItem.Text = items[1];
-            _maxMenuItem.Text = items[2];
-            _pageBackMenuItem.Text = items[3];
-            _pageForwardMenuItem.Text = items[4];
-            _scrollBackMenuItem.Text = items[5];
-            _scrollForwardMenuItem.Text = items[6];
+            ScrollHereMenuItem.Text = items[0];
+            MinMenuItem.Text = items[1];
+            MaxMenuItem.Text = items[2];
+            PageBackMenuItem.Text = items[3];
+            PageForwardMenuItem.Text = items[4];
+            ScrollBackMenuItem.Text = items[5];
+            ScrollForwardMenuItem.Text = items[6];
 
+            // Store the cursor position because the menu just does not want to give us its control-relative
+            // position, returning its screen-relative position every time. Meh.
             _storedCursorPosition = PointToClient(Cursor.Position);
-            _menu.Show(this, _storedCursorPosition);
+            Menu.Show(this, _storedCursorPosition);
 
             return true;
         }
 
-        private int? _xyThumbTop;
-        private int? _xyThumbBottom;
+        #endregion
+
+        #region Public methods
 
         public void RefreshIfNeeded()
         {
             // Refresh only if our thumb's size/position is stale. Otherwise, we get unacceptable lag.
-            var psbi = GetCurrentScrollBarInfo();
+            var sbi = GetCurrentScrollBarInfo();
             if (_xyThumbTop == null)
             {
-                _xyThumbTop = psbi.xyThumbTop;
-                _xyThumbBottom = psbi.xyThumbBottom;
+                _xyThumbTop = sbi.xyThumbTop;
+                _xyThumbBottom = sbi.xyThumbBottom;
                 Refresh();
             }
             else
             {
-                if (psbi.xyThumbTop != _xyThumbTop || psbi.xyThumbBottom != _xyThumbBottom)
+                if (sbi.xyThumbTop != _xyThumbTop || sbi.xyThumbBottom != _xyThumbBottom)
                 {
                     Refresh();
                 }
             }
         }
 
-        private Native.SCROLLBARINFO GetCurrentScrollBarInfo()
-        {
-            Native.SCROLLBARINFO psbi = new Native.SCROLLBARINFO();
-            psbi.cbSize = Marshal.SizeOf(psbi);
-            if (_owner.IsHandleCreated)
-            {
-                int result = Native.GetScrollBarInfo(_owner.Handle, Native.OBJID_CLIENT, ref psbi);
-            }
-            return psbi;
-        }
+        #endregion
+
+        #region Event overrides
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            bool isVertical = _orientation == Orientation.Vertical;
-
             var g = e.Graphics;
 
             #region Arrows
@@ -456,7 +327,7 @@ namespace DarkUI.Controls
             int w = SystemInformation.VerticalScrollBarWidth;
             int h = SystemInformation.VerticalScrollBarArrowHeight;
 
-            if (isVertical)
+            if (_isVertical)
             {
                 g.DrawImageUnscaled(
                     _upArrow,
@@ -487,26 +358,26 @@ namespace DarkUI.Controls
 
             if (_owner.IsHandleCreated)
             {
-                var psbi = GetCurrentScrollBarInfo();
-                _xyThumbTop = psbi.xyThumbTop;
-                _xyThumbBottom = psbi.xyThumbBottom;
+                var sbi = GetCurrentScrollBarInfo();
+                _xyThumbTop = sbi.xyThumbTop;
+                _xyThumbBottom = sbi.xyThumbBottom;
 
-                if (isVertical)
+                if (_isVertical)
                 {
                     g.FillRectangle(
                         _thumbNormalBrush,
                         1,
-                        psbi.xyThumbTop,
+                        sbi.xyThumbTop,
                         Width - 2,
-                        psbi.xyThumbBottom - psbi.xyThumbTop);
+                        sbi.xyThumbBottom - sbi.xyThumbTop);
                 }
                 else
                 {
                     g.FillRectangle(
                         _thumbNormalBrush,
-                        psbi.xyThumbTop,
+                        sbi.xyThumbTop,
                         1,
-                        psbi.xyThumbBottom - psbi.xyThumbTop,
+                        sbi.xyThumbBottom - sbi.xyThumbTop,
                         Height - 2);
                 }
             }
@@ -522,6 +393,54 @@ namespace DarkUI.Controls
             base.OnVisibleChanged(e);
         }
 
+        #endregion
+
+        protected override void WndProc(ref Message m)
+        {
+            void SendToOwner(ref Message _m)
+            {
+                if (_owner.IsHandleCreated)
+                {
+                    Native.PostMessage(_owner.Handle, _m.Msg, _m.WParam, _m.LParam);
+                    _m.Result = IntPtr.Zero;
+                }
+            }
+
+            if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
+                || m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN
+                || m.Msg == Native.WM_LBUTTONDBLCLK || m.Msg == Native.WM_NCLBUTTONDBLCLK
+                || m.Msg == Native.WM_MBUTTONDBLCLK || m.Msg == Native.WM_NCMBUTTONDBLCLK
+                || m.Msg == Native.WM_LBUTTONUP || m.Msg == Native.WM_NCLBUTTONUP
+                || m.Msg == Native.WM_MBUTTONUP || m.Msg == Native.WM_NCMBUTTONUP
+
+                || m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
+
+                // Don't handle mouse wheel or mouse wheel tilt for now - mousewheel at least breaks on FMsDGV
+                //|| m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL
+                // TODO: @DarkMode: Test wheel tilt with this system!
+                // (do I still have that spare Logitech mouse that works?)
+                )
+            {
+                SendToOwner(ref m);
+            }
+            else if (m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
+                     m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK)
+            {
+                if (GetMenuStrings() == null) SendToOwner(ref m);
+            }
+            else if (m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP)
+            {
+                if (!ShowDarkMenu()) SendToOwner(ref m);
+            }
+            else
+            {
+                // Intentional - we want to block the mouse messages up there because we're already sending them
+                // to owner if necessary, and if we don't block them we get incorrect behavior with menu showing
+                // (showing the FM context menu instead of our menu etc.)
+                base.WndProc(ref m);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -535,7 +454,7 @@ namespace DarkUI.Controls
 
                 _timer.Dispose();
 
-                _menu.Dispose();
+                Menu.Dispose();
             }
             base.Dispose(disposing);
         }
