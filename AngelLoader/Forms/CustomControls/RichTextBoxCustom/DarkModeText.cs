@@ -226,7 +226,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 else
                 {
-                    invertedColor = ControlUtils.InvertBrightness(colorTable[i], blackToCustomWhite: true, preventFullWhite: true);
+                    invertedColor = ControlUtils.InvertBrightness(colorTable[i]);
                 }
 
                 colorEntriesBytesList.AddRange(_redFieldBytes);
@@ -309,6 +309,7 @@ namespace AngelLoader.Forms.CustomControls
 
             -Maybe don't invert if we're already light...?
              See: LostSouls14
+             But note LostSouls14 is now fixed with the upper clamp
             */
             int index = 0;
             while ((index = FindIndexOfByteSequence(darkModeBytes, plain, index)) > -1)

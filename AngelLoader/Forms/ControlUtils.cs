@@ -198,24 +198,15 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Color InvertBrightness(Color color, bool preventFullWhite = false, bool blackToCustomWhite = false)
+        internal static Color InvertBrightness(Color color)
         {
-            /*
-            @DarkMode(Brightness inversion test) notes:
-            -max l (luminance) is 240 for some reason. Confirmed 240 l maps to 255/255/255 (full white).
-             Any higher and it wraps back to black.
-            -According to https://developer.rhino3d.com/api/rhinoscript/utility_methods/colorrgbtohls.htm,
-             ALL ColorRGBToHLS values are 0-240. Sure why not.
-            */
+            // NOTE: HSL values are 0-240, not 0-255 as RGB colors are.
 
             // Set pure black to custom-white (not pure white), otherwise it would invert around to pure white
             // and that's a bit too bright.
-            if (blackToCustomWhite)
+            if (color.R == 0 && color.G == 0 && color.B == 0)
             {
-                if (color.R == 0 && color.G == 0 && color.B == 0)
-                {
-                    return DarkUI.Config.Colors.Fen_DarkForeground;
-                }
+                return DarkUI.Config.Colors.Fen_DarkForeground;
             }
 
             // ReSharper disable once JoinDeclarationAndInitializer
@@ -291,12 +282,9 @@ namespace AngelLoader.Forms
 
             // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be 254 or
             // less... don't ask me
-            if (preventFullWhite)
+            if (retColor.R == 255 && retColor.G == 255 && retColor.B == 255)
             {
-                if (retColor.R == 255 && retColor.G == 255 && retColor.B == 255)
-                {
-                    retColor = Color.FromArgb(254, 254, 254);
-                }
+                retColor = Color.FromArgb(254, 254, 254);
             }
 
             return retColor;
