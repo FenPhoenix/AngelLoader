@@ -10,6 +10,8 @@ namespace DarkUI.Controls
 {
     public class DarkTabControl : TabControl, IDarkable
     {
+        private Font _originalFont;
+        
         public DarkTabControl() { }
 
         private bool _darkModeEnabled;
@@ -22,7 +24,7 @@ namespace DarkUI.Controls
                 SetUpTheme();
             }
         }
-
+        
         protected void SetUpTheme()
         {
             SetStyle(ControlStyles.UserPaint
@@ -31,11 +33,11 @@ namespace DarkUI.Controls
 
             if (_darkModeEnabled)
             {
-
+                _originalFont = (Font)Font.Clone();
             }
             else
             {
-
+                Font = (Font)_originalFont.Clone();
             }
             Refresh();
         }
