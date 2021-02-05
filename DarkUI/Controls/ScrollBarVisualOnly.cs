@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Resources;
@@ -25,12 +26,12 @@ namespace DarkUI.Controls
         private int? _xyThumbTop;
         private int? _xyThumbBottom;
 
-        private SolidBrush _thumbCurrentBrush;
-
         private readonly Pen _greySelectionPen = new Pen(Config.Colors.GreySelection);
 
+        private SolidBrush _thumbCurrentBrush;
         private readonly SolidBrush _thumbNormalBrush;
         private readonly SolidBrush _thumbHighlightedBrush;
+        private readonly SolidBrush _thumbPressedBrush;
 
         // We want them separate, not all pointing to the same reference
         private readonly Bitmap _upArrow = ScrollIcons.scrollbar_arrow_small_standard;
@@ -187,6 +188,8 @@ namespace DarkUI.Controls
 
             _thumbNormalBrush = new SolidBrush(Config.Colors.GreySelection);
             _thumbHighlightedBrush = new SolidBrush(Config.Colors.GreyHighlight);
+            //_thumbPressedBrush = new SolidBrush(Config.Colors.DarkGreySelection);
+            _thumbPressedBrush = new SolidBrush(Color.Red);
             _thumbCurrentBrush = _thumbNormalBrush;
 
             SetStyle(
@@ -366,27 +369,9 @@ namespace DarkUI.Controls
             if (_owner.IsHandleCreated)
             {
                 var sbi = GetCurrentScrollBarInfo();
-                _xyThumbTop = sbi.xyThumbTop;
-                _xyThumbBottom = sbi.xyThumbBottom;
+                var rect = GetThumbRect(sbi);
 
-                if (_isVertical)
-                {
-                    g.FillRectangle(
-                        _thumbCurrentBrush,
-                        1,
-                        sbi.xyThumbTop,
-                        Width - 2,
-                        sbi.xyThumbBottom - sbi.xyThumbTop);
-                }
-                else
-                {
-                    g.FillRectangle(
-                        _thumbCurrentBrush,
-                        sbi.xyThumbTop,
-                        1,
-                        sbi.xyThumbBottom - sbi.xyThumbTop,
-                        Height - 2);
-                }
+                g.FillRectangle(_thumbCurrentBrush, rect);
             }
 
             #endregion
@@ -396,20 +381,49 @@ namespace DarkUI.Controls
 
         private bool _cursorOverThumb;
 
+        private Rectangle GetThumbRect(Native.SCROLLBARINFO sbi)
+        {
+            return _isVertical
+                ? new Rectangle(0, sbi.xyThumbTop, Width, sbi.xyThumbBottom - sbi.xyThumbTop)
+                : new Rectangle(sbi.xyThumbTop, 0, sbi.xyThumbBottom - sbi.xyThumbTop, Height);
+        }
+
+        private Rectangle GetArrowRect(bool second = false)
+        {
+            var vertArrowHeight = SystemInformation.VerticalScrollBarArrowHeight;
+            var horzArrowWidth = SystemInformation.HorizontalScrollBarArrowWidth;
+
+            return !second
+                ? _isVertical
+                    ? new Rectangle(0, 0, Width, vertArrowHeight)
+                    : new Rectangle(0, 0, horzArrowWidth, Height)
+                : _isVertical
+                    ? new Rectangle(0, Height - vertArrowHeight, Width, vertArrowHeight)
+                    : new Rectangle(Width - horzArrowWidth, 0, horzArrowWidth, Height);
+        }
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             var sbi = GetCurrentScrollBarInfo();
-
-            var thumbRect = _isVertical
-                ? new Rectangle(0, sbi.xyThumbTop, Width, sbi.xyThumbBottom - sbi.xyThumbTop)
-                : new Rectangle(sbi.xyThumbTop, 0, sbi.xyThumbBottom - sbi.xyThumbTop, Height);
+            var thumbRect = GetThumbRect(sbi);
 
             bool cursorOverThumbNow = thumbRect.Contains(e.Location);
 
             // Perf: don't refresh if we don't need to
-            if (_cursorOverThumb != cursorOverThumbNow)
+            //if (_cursorOverThumb != cursorOverThumbNow)
             {
-                _thumbCurrentBrush = cursorOverThumbNow ? _thumbHighlightedBrush : _thumbNormalBrush;
+                if (!cursorOverThumbNow)
+                {
+                    _thumbCurrentBrush = _thumbNormalBrush;
+                }
+                else
+                {
+                    Trace.WriteLine(e.Button == MouseButtons.Left);
+                    _thumbCurrentBrush = e.Button == MouseButtons.Left
+                        ? _thumbPressedBrush
+                        : _thumbHighlightedBrush;
+                }
+
                 _cursorOverThumb = cursorOverThumbNow;
                 Refresh();
             }
@@ -436,18 +450,22 @@ namespace DarkUI.Controls
 
         protected override void WndProc(ref Message m)
         {
-            void SendToOwner(ref Message _m)
+            // TODO: @DarkMode: We have to handle this stuff here because we need to send the message (not e) to _owner
+            // But then _owner sets the message as handled, so we don't detect our pressed buttons properly in
+            // our own event overrides. We need to handle mouse move/down/up etc. here, extracting the values
+            // from wParam/lParam and all...
+            void SendToOwner(ref Message _m, bool setHandled = true)
             {
                 if (_owner.IsHandleCreated)
                 {
                     Native.PostMessage(_owner.Handle, _m.Msg, _m.WParam, _m.LParam);
-                    _m.Result = IntPtr.Zero;
+                    if (setHandled) _m.Result = IntPtr.Zero;
                 }
             }
 
             if (m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE)
             {
-                SendToOwner(ref m);
+                SendToOwner(ref m, setHandled: false);
                 base.WndProc(ref m);
             }
             else if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
@@ -465,7 +483,8 @@ namespace DarkUI.Controls
                 // (do I still have that spare Logitech mouse that works?)
                 )
             {
-                SendToOwner(ref m);
+                SendToOwner(ref m, setHandled: false);
+                base.WndProc(ref m);
             }
             else if (m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
                      m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK)
@@ -507,6 +526,7 @@ namespace DarkUI.Controls
 
                 _thumbNormalBrush.Dispose();
                 _thumbHighlightedBrush.Dispose();
+                _thumbPressedBrush.Dispose();
                 _thumbCurrentBrush.Dispose();
 
                 _timer.Dispose();
