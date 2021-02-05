@@ -173,8 +173,7 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-            Config.VisualTheme = Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic;
-            SetTheme(Config.VisualTheme);
+            SetTheme(Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic);
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
@@ -1326,6 +1325,8 @@ namespace AngelLoader.Forms
 
         private void SetTheme(VisualTheme theme, bool startup)
         {
+            Config.VisualTheme = theme;
+
             // IMPORTANT: We use DarkButton because it properly colors disabled button text
 
             bool darkMode = theme == VisualTheme.Dark;
@@ -1354,6 +1355,7 @@ namespace AngelLoader.Forms
                         || _progressBoxConstructed && ProgressBox!.Controls.Contains(control)
                         //|| control.EqualsIfNotNull(InstallUninstallFMLLButton.Button)
                         //|| control == ReadmeRichTextBox
+                        || control is ScrollBarVisualOnly
                         )
                     {
                         continue;
@@ -1397,6 +1399,7 @@ namespace AngelLoader.Forms
                 ExitLLButton.DarkModeEnabled = darkMode;
                 ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
                 ProgressBoxDarkModeEnabled = darkMode;
+                ControlPainter.DarkModeEnabled = darkMode;
 
                 #endregion
             }

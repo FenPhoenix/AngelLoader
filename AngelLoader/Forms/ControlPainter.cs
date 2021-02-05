@@ -402,13 +402,45 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private static bool _darkModeEnabled;
+        internal static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (_darkModeEnabled)
+                {
+                    _blackForegroundBrush = new SolidBrush(DarkUI.Config.Colors.Fen_DarkForeground);
+
+                    // This one is the same color as the DarkComboBox arrow, but being smaller, is less visible
+                    //_arrowButtonEnabledBrush = new SolidBrush(DarkUI.Config.Colors.GreyHighlight);
+
+                    // This one looks reasonably visible but not overbearing
+                    _arrowButtonEnabledBrush = new SolidBrush(Color.FromArgb(150, 156, 160));
+
+                    // This one looks very visible but possibly distracting
+                    //_arrowButtonEnabledBrush = new SolidBrush(DarkUI.Config.Colors.Fen_DarkForeground);
+                }
+                else
+                {
+                    _blackForegroundBrush = Brushes.Black;
+                    _arrowButtonEnabledBrush = SystemBrushes.ControlText;
+                }
+            }
+        }
+
+        private static Brush _blackForegroundBrush = Brushes.Black;
+        private static Brush _darkForegroundBrush = SystemBrushes.ControlText;
+        private static Brush _arrowButtonEnabledBrush = SystemBrushes.ControlText;
+
         #region Buttons
 
         internal static void PaintZoomButtons(Button button, PaintEventArgs e, Zoom zoomType)
         {
             SetSmoothingMode(e, SmoothingMode.AntiAlias);
 
-            Brush brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
+            Brush brush = button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark;
 
             var gPath = GetZoomImageComplete(zoomType);
             FitRectInBounds(e.Graphics, gPath.GetBounds(), button.ClientRectangle);
@@ -437,13 +469,13 @@ namespace AngelLoader.Forms
             var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, button.ClientRectangle.Height / 2, 10, 2);
             var vRect = new Rectangle(button.ClientRectangle.Width / 2, (button.ClientRectangle.Height / 2) - 4, 2, 10);
             (_plusRects[0], _plusRects[1]) = (hRect, vRect);
-            e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, _plusRects);
+            e.Graphics.FillRectangles(button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark, _plusRects);
         }
 
         internal static void PaintMinusButton(Button button, PaintEventArgs e)
         {
             var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, button.ClientRectangle.Height / 2, 10, 2);
-            e.Graphics.FillRectangle(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, hRect);
+            e.Graphics.FillRectangle(button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark, hRect);
         }
 
         internal static void PaintExButton(Button button, PaintEventArgs e)
@@ -474,17 +506,17 @@ namespace AngelLoader.Forms
             };
 
             SetSmoothingMode(e, SmoothingMode.AntiAlias);
-            e.Graphics.FillPolygon(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, ps);
+            e.Graphics.FillPolygon(button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark, ps);
         }
 
         internal static void PaintHamburgerMenuButton16(Button button, PaintEventArgs e)
         {
-            e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, _hamRects16);
+            e.Graphics.FillRectangles(button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark, _hamRects16);
         }
 
         internal static void PaintHamburgerMenuButton24(Button button, PaintEventArgs e)
         {
-            e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, _hamRects24);
+            e.Graphics.FillRectangles(button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark, _hamRects24);
         }
 
         internal static void PaintWebSearchButton(Button button, PaintEventArgs e)
@@ -500,7 +532,7 @@ namespace AngelLoader.Forms
 
         internal static void PaintReadmeFullScreenButton(Button button, PaintEventArgs e)
         {
-            Brush brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
+            Brush brush = button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark;
 
             e.Graphics.FillPolygon(brush, _readmeFullScreenTopLeft);
             e.Graphics.FillPolygon(brush, _readmeFullScreenTopRight);
@@ -672,7 +704,7 @@ namespace AngelLoader.Forms
                     break;
             }
 
-            Brush brush = enabled ? SystemBrushes.ControlText : SystemBrushes.ControlDark;
+            Brush brush = enabled ? _arrowButtonEnabledBrush : SystemBrushes.ControlDark;
             e.Graphics.FillPolygon(brush, _arrowPolygon);
         }
 
@@ -699,7 +731,8 @@ namespace AngelLoader.Forms
                 if (control.VerticalScrollBar.Visible && control.HorizontalScrollBar.Visible)
                 {
                     // Draw the corner in between the two scroll bars
-                    using var b = new SolidBrush(DarkUI.Config.Colors.Fen_DarkBackground);
+                    // TODO: @DarkMode: Also cache this brush
+                    using var b = new SolidBrush(control.VerticalVisualScrollBar.BackColor);
                     e.Graphics.FillRectangle(b, new Rectangle(
                         control.VerticalScrollBar.Location.X,
                         control.HorizontalScrollBar.Location.Y,

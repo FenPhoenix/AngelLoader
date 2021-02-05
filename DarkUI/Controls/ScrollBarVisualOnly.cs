@@ -25,8 +25,12 @@ namespace DarkUI.Controls
         private int? _xyThumbTop;
         private int? _xyThumbBottom;
 
-        private readonly Color _greySelection;
+        private SolidBrush _thumbCurrentBrush;
+
+        private readonly Pen _greySelectionPen = new Pen(Config.Colors.GreySelection);
+
         private readonly SolidBrush _thumbNormalBrush;
+        private readonly SolidBrush _thumbHighlightedBrush;
 
         // We want them separate, not all pointing to the same reference
         private readonly Bitmap _upArrow = ScrollIcons.scrollbar_arrow_small_standard;
@@ -177,10 +181,13 @@ namespace DarkUI.Controls
 
             #endregion
 
-            BackColor = Config.Colors.Fen_DarkBackground;
+            //BackColor = Config.Colors.Fen_DarkBackground;
+            //BackColor = Color.FromArgb(44, 44, 44);
+            BackColor = Config.Colors.DarkBackground;
 
-            _greySelection = Config.Colors.GreySelection;
-            _thumbNormalBrush = new SolidBrush(_greySelection);
+            _thumbNormalBrush = new SolidBrush(Config.Colors.GreySelection);
+            _thumbHighlightedBrush = new SolidBrush(Config.Colors.GreyHighlight);
+            _thumbCurrentBrush = _thumbNormalBrush;
 
             SetStyle(
                 ControlStyles.UserPaint |
@@ -365,7 +372,7 @@ namespace DarkUI.Controls
                 if (_isVertical)
                 {
                     g.FillRectangle(
-                        _thumbNormalBrush,
+                        _thumbCurrentBrush,
                         1,
                         sbi.xyThumbTop,
                         Width - 2,
@@ -374,7 +381,7 @@ namespace DarkUI.Controls
                 else
                 {
                     g.FillRectangle(
-                        _thumbNormalBrush,
+                        _thumbCurrentBrush,
                         sbi.xyThumbTop,
                         1,
                         sbi.xyThumbBottom - sbi.xyThumbTop,
@@ -385,6 +392,38 @@ namespace DarkUI.Controls
             #endregion
 
             base.OnPaint(e);
+        }
+
+        private bool _cursorOverThumb;
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            var sbi = GetCurrentScrollBarInfo();
+
+            var thumbRect = _isVertical
+                ? new Rectangle(0, sbi.xyThumbTop, Width, sbi.xyThumbBottom - sbi.xyThumbTop)
+                : new Rectangle(sbi.xyThumbTop, 0, sbi.xyThumbBottom - sbi.xyThumbTop, Height);
+
+            bool cursorOverThumbNow = thumbRect.Contains(e.Location);
+
+            // Perf: don't refresh if we don't need to
+            if (_cursorOverThumb != cursorOverThumbNow)
+            {
+                _thumbCurrentBrush = cursorOverThumbNow ? _thumbHighlightedBrush : _thumbNormalBrush;
+                _cursorOverThumb = cursorOverThumbNow;
+                Refresh();
+            }
+
+            base.OnMouseMove(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            _cursorOverThumb = false;
+            _thumbCurrentBrush = _thumbNormalBrush;
+            Refresh();
+
+            base.OnMouseLeave(e);
         }
 
         protected override void OnVisibleChanged(EventArgs e)
@@ -406,14 +445,19 @@ namespace DarkUI.Controls
                 }
             }
 
-            if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
+            if (m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE)
+            {
+                SendToOwner(ref m);
+                base.WndProc(ref m);
+            }
+            else if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
                 || m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN
                 || m.Msg == Native.WM_LBUTTONDBLCLK || m.Msg == Native.WM_NCLBUTTONDBLCLK
                 || m.Msg == Native.WM_MBUTTONDBLCLK || m.Msg == Native.WM_NCMBUTTONDBLCLK
                 || m.Msg == Native.WM_LBUTTONUP || m.Msg == Native.WM_NCLBUTTONUP
                 || m.Msg == Native.WM_MBUTTONUP || m.Msg == Native.WM_NCMBUTTONUP
 
-                || m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
+                //|| m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
 
                 // Don't handle mouse wheel or mouse wheel tilt for now - mousewheel at least breaks on FMsDGV
                 //|| m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL
@@ -426,11 +470,20 @@ namespace DarkUI.Controls
             else if (m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
                      m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK)
             {
-                if (GetMenuStrings() == null) SendToOwner(ref m);
+                // Disabled the dark mode menu as the scroll up/down don't even work with the DataGridView and
+                // this is just stupid anyway, nobody right-clicks the scroll bars to click options in a menu,
+                // and if they do, then oh well, they get a non-dark menu.
+                //if (GetMenuStrings() == null)
+                {
+                    SendToOwner(ref m);
+                }
             }
             else if (m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP)
             {
-                if (!ShowDarkMenu()) SendToOwner(ref m);
+                //if (!ShowDarkMenu())
+                {
+                    SendToOwner(ref m);
+                }
             }
             else
             {
@@ -450,7 +503,11 @@ namespace DarkUI.Controls
                 _leftArrow.Dispose();
                 _rightArrow.Dispose();
 
+                _greySelectionPen.Dispose();
+
                 _thumbNormalBrush.Dispose();
+                _thumbHighlightedBrush.Dispose();
+                _thumbCurrentBrush.Dispose();
 
                 _timer.Dispose();
 
