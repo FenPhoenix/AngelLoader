@@ -261,8 +261,9 @@ namespace AngelLoader.Forms
 
             // Bump up our luminance by the luminance of our background, to keep the distance between the fore
             // and back colors relatively the same (or as close as possible)
-            int bgH = 0, bgL = 0, bgS = 0;
-            ColorRGBToHLS(ColorTranslator.ToWin32(DarkUI.Config.Colors.Fen_DarkBackground), ref bgH, ref bgL, ref bgS);
+            //int bgH = 0, bgL = 0, bgS = 0;
+            //ColorRGBToHLS(ColorTranslator.ToWin32(DarkUI.Config.Colors.Fen_DarkBackground), ref bgH, ref bgL, ref bgS);
+
             // Clamp to make sure we don't go over the max when we bump the luminance!
             // TODO: @DarkMode: We clamp to a bit less than 240 in order to keep brightness from being blinding
             // Test if this looks good across all readmes
