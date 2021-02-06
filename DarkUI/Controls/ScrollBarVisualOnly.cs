@@ -29,16 +29,36 @@ namespace DarkUI.Controls
 
         private readonly Pen _greySelectionPen = new Pen(Config.Colors.GreySelection);
 
-        private SolidBrush _thumbCurrentBrush;
         private readonly SolidBrush _thumbNormalBrush;
-        private readonly SolidBrush _thumbHighlightedBrush;
+        private readonly SolidBrush _thumbHotBrush;
         private readonly SolidBrush _thumbPressedBrush;
 
         // We want them separate, not all pointing to the same reference
-        private readonly Bitmap _upArrow = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _downArrow = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _leftArrow = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _rightArrow = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _upArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _downArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _leftArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _rightArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
+
+        private readonly Bitmap _upArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _downArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _leftArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _rightArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+
+        private readonly Bitmap _upArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
+        private readonly Bitmap _downArrowHighlighted = ScrollIcons.scrollbar_arrow_small_hot;
+        private readonly Bitmap _leftArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
+        private readonly Bitmap _rightArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
+
+        private enum State
+        {
+            Normal,
+            Hot,
+            Pressed
+        }
+
+        private State _thumbState;
+        private State _firstArrowState;
+        private State _secondArrowState;
 
         private readonly Timer _timer = new Timer();
 
@@ -132,9 +152,17 @@ namespace DarkUI.Controls
 
             #region Set up scroll bar arrows
 
-            _upArrow.RotateFlip(RotateFlipType.Rotate180FlipNone);
-            _leftArrow.RotateFlip(RotateFlipType.Rotate90FlipNone);
-            _rightArrow.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            _upArrowNormal.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            _leftArrowNormal.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            _rightArrowNormal.RotateFlip(RotateFlipType.Rotate270FlipNone);
+
+            _upArrowHot.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            _leftArrowHot.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            _rightArrowHot.RotateFlip(RotateFlipType.Rotate270FlipNone);
+
+            _upArrowPressed.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            _leftArrowPressed.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            _rightArrowPressed.RotateFlip(RotateFlipType.Rotate270FlipNone);
 
             #endregion
 
@@ -143,10 +171,8 @@ namespace DarkUI.Controls
             BackColor = Config.Colors.DarkBackground;
 
             _thumbNormalBrush = new SolidBrush(Config.Colors.GreySelection);
-            _thumbHighlightedBrush = new SolidBrush(Config.Colors.GreyHighlight);
+            _thumbHotBrush = new SolidBrush(Config.Colors.GreyHighlight);
             _thumbPressedBrush = new SolidBrush(Config.Colors.DarkGreySelection);
-            //_thumbPressedBrush = new SolidBrush(Color.Red);
-            _thumbCurrentBrush = _thumbNormalBrush;
 
             SetStyle(
                 ControlStyles.UserPaint |
@@ -215,26 +241,52 @@ namespace DarkUI.Controls
 
         // MouseMove doesn't send the buttons, despite having a Button field. The field is just always empty.
         // So we just store the value here.
-        private bool _leftButtonPressed;
+        private bool _leftButtonPressedOnThumb;
+        private bool _leftButtonPressedOnLeftArrow;
+        private bool _leftButtonPressedOnRightArrow;
 
         // TODO: @DarkMode(Scrollbars): Match all this up exactly with stock in terms of mouse state/colors
         // Like, scroll bar should stay pressed when we move off it unless we've released the left mouse button etc.
         private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
-            _leftButtonPressed = true;
+            var sbi = GetCurrentScrollBarInfo();
+            var thumbRect = GetThumbRect(ref sbi);
+            var firstArrowRect = GetArrowRect();
+            var secondArrowRect = GetArrowRect(second: true);
 
-            if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
+            if (cursorOverThumb)
             {
-                var sbi = GetCurrentScrollBarInfo();
-                var thumbRect = GetThumbRect(ref sbi);
-
-                bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
-
-                if (cursorOverThumb && e.Button == MouseButtons.Left)
+                if (e.Button == MouseButtons.Left)
                 {
-                    if (_thumbCurrentBrush != _thumbPressedBrush)
+                    _leftButtonPressedOnThumb = true;
+                    if (_thumbState != State.Pressed)
                     {
-                        _thumbCurrentBrush = _thumbPressedBrush;
+                        _thumbState = State.Pressed;
+                        Refresh();
+                    }
+                }
+            }
+            else if (firstArrowRect.Contains(PointToClient(e.Location)))
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    _leftButtonPressedOnLeftArrow = true;
+                    if (_firstArrowState != State.Pressed)
+                    {
+                        _firstArrowState = State.Pressed;
+                        Refresh();
+                    }
+                }
+            }
+            else if (secondArrowRect.Contains(PointToClient(e.Location)))
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    _leftButtonPressedOnRightArrow = true;
+                    if (_secondArrowState != State.Pressed)
+                    {
+                        _secondArrowState = State.Pressed;
                         Refresh();
                     }
                 }
@@ -243,69 +295,97 @@ namespace DarkUI.Controls
 
         private void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
         {
-            _leftButtonPressed = false;
-            //if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
-            //if (_leftButtonPressed)
+            bool refresh = false;
+
+            var sbi = GetCurrentScrollBarInfo();
+            var thumbRect = GetThumbRect(ref sbi);
+            var leftArrowRect = GetArrowRect();
+            var rightArrowRect = GetArrowRect(second: true);
+
+            bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
+
+            if (cursorOverThumb)
             {
-                var sbi = GetCurrentScrollBarInfo();
-                var thumbRect = GetThumbRect(ref sbi);
-
-                bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
-
-                if (cursorOverThumb)
+                _leftButtonPressedOnThumb = false;
+                _leftButtonPressedOnLeftArrow = false;
+                _leftButtonPressedOnRightArrow = false;
+                if (_thumbState != State.Hot)
                 {
-                    if (_thumbCurrentBrush != _thumbHighlightedBrush)
-                    {
-                        _thumbCurrentBrush = _thumbHighlightedBrush;
-                        Refresh();
-                    }
+                    _thumbState = State.Hot;
+                    refresh = true;
                 }
-                else
+                if (_firstArrowState != State.Normal)
                 {
-                    if (_thumbCurrentBrush != _thumbNormalBrush)
-                    {
-                        _thumbCurrentBrush = _thumbNormalBrush;
-                        Refresh();
-                    }
+                    _firstArrowState = State.Normal;
+                    refresh = true;
+                }
+                if (_secondArrowState != State.Normal)
+                {
+                    _secondArrowState = State.Normal;
+                    refresh = true;
                 }
             }
+            else
+            {
+                _leftButtonPressedOnThumb = false;
+                if (_thumbState != State.Normal)
+                {
+                    _thumbState = State.Normal;
+                    refresh = true;
+                }
+
+                var cursorOverFirstArrow = leftArrowRect.Contains(PointToClient(e.Location));
+                var cursorOverSecondArrow = rightArrowRect.Contains(PointToClient(e.Location));
+
+                if (_leftButtonPressedOnLeftArrow)
+                {
+                    _leftButtonPressedOnLeftArrow = false;
+                    _firstArrowState = cursorOverFirstArrow ? State.Hot : State.Normal;
+                    refresh = true;
+                }
+                else if (_leftButtonPressedOnRightArrow)
+                {
+                    _leftButtonPressedOnRightArrow = false;
+                    _secondArrowState = cursorOverSecondArrow ? State.Hot : State.Normal;
+                    refresh = true;
+                }
+            }
+
+            if (refresh) Refresh();
         }
 
         private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
         {
-            //if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            var sbi = GetCurrentScrollBarInfo();
+            var thumbRect = GetThumbRect(ref sbi);
+
+            bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
+
+            if (cursorOverThumb)
             {
-                var sbi = GetCurrentScrollBarInfo();
-                var thumbRect = GetThumbRect(ref sbi);
-
-                bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
-
-                if (cursorOverThumb)
+                if (_leftButtonPressedOnThumb)
                 {
-                    if (_leftButtonPressed)
+                    if (_thumbState != State.Pressed)
                     {
-                        if (_thumbCurrentBrush != _thumbPressedBrush)
-                        {
-                            _thumbCurrentBrush = _thumbPressedBrush;
-                            Refresh();
-                        }
-                    }
-                    else
-                    {
-                        if (_thumbCurrentBrush != _thumbHighlightedBrush)
-                        {
-                            _thumbCurrentBrush = _thumbHighlightedBrush;
-                            Refresh();
-                        }
+                        _thumbState = State.Pressed;
+                        Refresh();
                     }
                 }
                 else
                 {
-                    if (!_leftButtonPressed && _thumbCurrentBrush != _thumbNormalBrush)
+                    if (_thumbState != State.Hot)
                     {
-                        _thumbCurrentBrush = _thumbNormalBrush;
+                        _thumbState = State.Hot;
                         Refresh();
                     }
+                }
+            }
+            else
+            {
+                if (!_leftButtonPressedOnThumb && _thumbState != State.Normal)
+                {
+                    _thumbState = State.Normal;
+                    Refresh();
                 }
             }
         }
@@ -323,27 +403,51 @@ namespace DarkUI.Controls
 
             if (_isVertical)
             {
-                g.DrawImageUnscaled(
-                    _upArrow,
-                    (w / 2) - (_upArrow.Width / 2),
-                    (h / 2) - (_upArrow.Height / 2));
+                Bitmap upArrow = _firstArrowState == State.Normal
+                    ? _upArrowNormal
+                    : _firstArrowState == State.Hot
+                    ? _upArrowHot
+                    : _upArrowPressed;
+
+                Bitmap downArrow = _secondArrowState == State.Normal
+                    ? _downArrowNormal
+                    : _secondArrowState == State.Hot
+                    ? _downArrowHighlighted
+                    : _downArrowPressed;
 
                 g.DrawImageUnscaled(
-                    _downArrow,
-                    (w / 2) - (_upArrow.Width / 2),
-                    (Height - h) + ((h / 2) - (_upArrow.Height / 2)));
+                    upArrow,
+                    (w / 2) - (_upArrowNormal.Width / 2),
+                    (h / 2) - (_upArrowNormal.Height / 2));
+
+                g.DrawImageUnscaled(
+                    downArrow,
+                    (w / 2) - (_downArrowNormal.Width / 2),
+                    (Height - h) + ((h / 2) - (_downArrowNormal.Height / 2)));
             }
             else
             {
-                g.DrawImageUnscaled(
-                    _leftArrow,
-                    (w / 2) - (_leftArrow.Width / 2),
-                    (h / 2) - (_leftArrow.Height / 2));
+                Bitmap leftArrow = _firstArrowState == State.Normal
+                    ? _leftArrowNormal
+                    : _firstArrowState == State.Hot
+                    ? _leftArrowHot
+                    : _leftArrowPressed;
+
+                Bitmap rightArrow = _secondArrowState == State.Normal
+                    ? _rightArrowNormal
+                    : _secondArrowState == State.Hot
+                    ? _rightArrowHot
+                    : _rightArrowPressed;
 
                 g.DrawImageUnscaled(
-                    _rightArrow,
-                    Width - w + (w / 2) - (_leftArrow.Width / 2),
-                    (h / 2) - (_leftArrow.Height / 2));
+                    leftArrow,
+                    (w / 2) - (_leftArrowNormal.Width / 2),
+                    (h / 2) - (_leftArrowNormal.Height / 2));
+
+                g.DrawImageUnscaled(
+                    rightArrow,
+                    Width - w + (w / 2) - (_rightArrowNormal.Width / 2),
+                    (h / 2) - (_rightArrowNormal.Height / 2));
             }
 
             #endregion
@@ -357,7 +461,13 @@ namespace DarkUI.Controls
                 _xyThumbTop = sbi.xyThumbTop;
                 _xyThumbBottom = sbi.xyThumbBottom;
 
-                g.FillRectangle(_thumbCurrentBrush, GetThumbRect(ref sbi));
+                SolidBrush thumbBrush = _thumbState == State.Normal
+                    ? _thumbNormalBrush
+                    : _thumbState == State.Hot
+                    ? _thumbHotBrush
+                    : _thumbPressedBrush;
+
+                g.FillRectangle(thumbBrush, GetThumbRect(ref sbi));
             }
 
             #endregion
@@ -439,17 +549,16 @@ namespace DarkUI.Controls
         {
             if (disposing)
             {
-                _upArrow.Dispose();
-                _downArrow.Dispose();
-                _leftArrow.Dispose();
-                _rightArrow.Dispose();
+                _upArrowNormal.Dispose();
+                _downArrowNormal.Dispose();
+                _leftArrowNormal.Dispose();
+                _rightArrowNormal.Dispose();
 
                 _greySelectionPen.Dispose();
 
                 _thumbNormalBrush.Dispose();
-                _thumbHighlightedBrush.Dispose();
+                _thumbHotBrush.Dispose();
                 _thumbPressedBrush.Dispose();
-                _thumbCurrentBrush.Dispose();
 
                 _timer.Dispose();
 
