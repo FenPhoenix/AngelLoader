@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -244,6 +245,7 @@ namespace DarkUI.Controls
         {
             _leftButtonPressed = false;
             //if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            //if (_leftButtonPressed)
             {
                 var sbi = GetCurrentScrollBarInfo();
                 var thumbRect = GetThumbRect(ref sbi);
@@ -299,7 +301,7 @@ namespace DarkUI.Controls
                 }
                 else
                 {
-                    if (_thumbCurrentBrush != _thumbNormalBrush)
+                    if (!_leftButtonPressed && _thumbCurrentBrush != _thumbNormalBrush)
                     {
                         _thumbCurrentBrush = _thumbNormalBrush;
                         Refresh();
