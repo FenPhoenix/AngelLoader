@@ -6,6 +6,7 @@ using System.Resources;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using DarkUI.Win32;
+using Gma.System.MouseKeyHook;
 
 namespace DarkUI.Controls
 {
@@ -124,6 +125,32 @@ namespace DarkUI.Controls
 
         #endregion
 
+        private IMouseEvents _Hook;
+
+        private void Subscribe()
+        {
+            _Hook = Hook.AppEvents();
+            _Hook.MouseDownExt += (sender, e) =>
+            {
+                Trace.WriteLine("hook down");
+                Trace.WriteLine(e.Location);
+            };
+            _Hook.MouseUpExt += (sender, e) =>
+            {
+                Trace.WriteLine("hook up");
+                Trace.WriteLine(e.Location);
+            };
+            _Hook.MouseMoveExt += (sender, e) =>
+            {
+                Trace.WriteLine("hook move");
+            };
+        }
+
+        private void Unsubscribe()
+        {
+            _Hook = null;
+        }
+
         #region Constructor / init
 
         public ScrollBarVisualOnly(ScrollBar owner)
@@ -197,6 +224,8 @@ namespace DarkUI.Controls
                 ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.CacheText,
                 true);
+
+            Subscribe();
         }
 
         protected override CreateParams CreateParams
@@ -410,7 +439,7 @@ namespace DarkUI.Controls
             bool cursorOverThumbNow = thumbRect.Contains(e.Location);
 
             // Perf: don't refresh if we don't need to
-            //if (_cursorOverThumb != cursorOverThumbNow)
+            if (_cursorOverThumb != cursorOverThumbNow)
             {
                 if (!cursorOverThumbNow)
                 {
@@ -418,7 +447,7 @@ namespace DarkUI.Controls
                 }
                 else
                 {
-                    Trace.WriteLine(e.Button == MouseButtons.Left);
+                    //Trace.WriteLine(e.Button == MouseButtons.Left);
                     _thumbCurrentBrush = e.Button == MouseButtons.Left
                         ? _thumbPressedBrush
                         : _thumbHighlightedBrush;
@@ -517,6 +546,7 @@ namespace DarkUI.Controls
         {
             if (disposing)
             {
+                Unsubscribe();
                 _upArrow.Dispose();
                 _downArrow.Dispose();
                 _leftArrow.Dispose();
