@@ -10,7 +10,6 @@ using Gma.System.MouseKeyHook;
 
 namespace DarkUI.Controls
 {
-
     // TODO: Get rid of this when we combine projects of course
     internal static class Extensions
     {
@@ -47,19 +46,6 @@ namespace DarkUI.Controls
         private readonly Timer _timer = new Timer();
 
         private readonly bool _isVertical;
-
-        private readonly DarkContextMenu Menu;
-
-        private readonly ToolStripMenuItem ScrollHereMenuItem;
-
-        private readonly ToolStripMenuItem MinMenuItem;
-        private readonly ToolStripMenuItem MaxMenuItem;
-
-        private readonly ToolStripMenuItem PageBackMenuItem;
-        private readonly ToolStripMenuItem PageForwardMenuItem;
-
-        private readonly ToolStripMenuItem ScrollBackMenuItem;
-        private readonly ToolStripMenuItem ScrollForwardMenuItem;
 
         private Point _storedCursorPosition = Point.Empty;
 
@@ -140,38 +126,6 @@ namespace DarkUI.Controls
             DoubleBuffered = true;
             ResizeRedraw = true;
 
-            #region Set up menu
-
-            Menu = new DarkContextMenu(darkModeEnabled: true)
-            {
-                Items =
-                {
-                    (ScrollHereMenuItem = new ToolStripMenuItem()),
-                    new ToolStripSeparator(),
-                    (MinMenuItem = new ToolStripMenuItem()),
-                    (MaxMenuItem = new ToolStripMenuItem()),
-                    new ToolStripSeparator(),
-                    (PageBackMenuItem = new ToolStripMenuItem()),
-                    (PageForwardMenuItem = new ToolStripMenuItem()),
-                    new ToolStripSeparator(),
-                    (ScrollBackMenuItem = new ToolStripMenuItem()),
-                    (ScrollForwardMenuItem = new ToolStripMenuItem())
-                }
-            };
-
-            ScrollHereMenuItem.Click += ScrollHereMenuItem_Click;
-
-            MinMenuItem.Click += MinMenuItem_Click;
-            MaxMenuItem.Click += MaxMenuItem_Click;
-
-            PageBackMenuItem.Click += PageBackMenuItem_Click;
-            PageForwardMenuItem.Click += PageForwardMenuItem_Click;
-
-            ScrollBackMenuItem.Click += ScrollBackMenuItem_Click;
-            ScrollForwardMenuItem.Click += ScrollForwardMenuItem_Click;
-
-            #endregion
-
             #region Set up refresh timer
 
             _timer.Interval = 1;
@@ -193,8 +147,8 @@ namespace DarkUI.Controls
 
             _thumbNormalBrush = new SolidBrush(Config.Colors.GreySelection);
             _thumbHighlightedBrush = new SolidBrush(Config.Colors.GreyHighlight);
-            //_thumbPressedBrush = new SolidBrush(Config.Colors.DarkGreySelection);
-            _thumbPressedBrush = new SolidBrush(Color.Red);
+            _thumbPressedBrush = new SolidBrush(Config.Colors.DarkGreySelection);
+            //_thumbPressedBrush = new SolidBrush(Color.Red);
             _thumbCurrentBrush = _thumbNormalBrush;
 
             SetStyle(
@@ -266,8 +220,16 @@ namespace DarkUI.Controls
 
         #endregion
 
+        // MouseMove doesn't send the buttons, despite having a Button field. The field is just always empty.
+        // So we just store the value here.
+        private bool _leftButtonPressed;
+
+        // TODO: @DarkMode(Scrollbars): Match all this up exactly with stock in terms of mouse state/colors
+        // Like, scroll bar should stay pressed when we move off it unless we've released the left mouse button etc.
         private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
+            _leftButtonPressed = true;
+
             if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
                 var sbi = GetCurrentScrollBarInfo();
@@ -288,64 +250,69 @@ namespace DarkUI.Controls
 
         private void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
         {
-            if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            _leftButtonPressed = false;
+            //if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
                 var sbi = GetCurrentScrollBarInfo();
                 var thumbRect = GetThumbRect(sbi);
 
                 bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
 
-                if (_thumbCurrentBrush == _thumbPressedBrush)
+                if (cursorOverThumb)
                 {
-                    _thumbCurrentBrush = cursorOverThumb ? _thumbHighlightedBrush : _thumbNormalBrush;
+                    if (_thumbCurrentBrush != _thumbHighlightedBrush)
+                    {
+                        _thumbCurrentBrush = _thumbHighlightedBrush;
+                        Refresh();
+                    }
+                }
+                else
+                {
+                    if (_thumbCurrentBrush != _thumbNormalBrush)
+                    {
+                        _thumbCurrentBrush = _thumbNormalBrush;
+                        Refresh();
+                    }
                 }
             }
         }
 
         private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
         {
-            //Trace.WriteLine("move");
-            if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            //if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
                 var sbi = GetCurrentScrollBarInfo();
                 var thumbRect = GetThumbRect(sbi);
 
                 bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
-                //Trace.WriteLine("yes");
 
-                //Trace.WriteLine(nameof(cursorOverThumb) + ": " + cursorOverThumb);
                 if (cursorOverThumb)
                 {
-                    if ((e.Button == MouseButtons.Left && _thumbCurrentBrush == _thumbPressedBrush) ||
-                        _thumbCurrentBrush == _thumbHighlightedBrush)
+                    if (_leftButtonPressed)
                     {
-                        return;
+                        if (_thumbCurrentBrush != _thumbPressedBrush)
+                        {
+                            _thumbCurrentBrush = _thumbPressedBrush;
+                            Refresh();
+                        }
                     }
-                    //Trace.WriteLine("refreshing top");
-                    Refresh();
+                    else
+                    {
+                        if (_thumbCurrentBrush != _thumbHighlightedBrush)
+                        {
+                            _thumbCurrentBrush = _thumbHighlightedBrush;
+                            Refresh();
+                        }
+                    }
                 }
-                else if (_thumbCurrentBrush != _thumbNormalBrush)
+                else
                 {
-                    _thumbCurrentBrush = _thumbNormalBrush;
-                    //Trace.WriteLine("refreshing bottom");
-                    Refresh();
+                    if (_thumbCurrentBrush != _thumbNormalBrush)
+                    {
+                        _thumbCurrentBrush = _thumbNormalBrush;
+                        Refresh();
+                    }
                 }
-
-                // Perf: don't refresh if we don't need to
-                //if (_cursorOverThumb != cursorOverThumb)
-                //{
-                //    if (cursorOverThumb)
-                //    {
-                //        _thumbCurrentBrush = e.Button == MouseButtons.Left ? _thumbPressedBrush : _thumbHighlightedBrush;
-                //    }
-                //    else
-                //    {
-                //        _thumbCurrentBrush = _thumbNormalBrush;
-                //    }
-
-                //    _cursorOverThumb = cursorOverThumb;
-                //    Refresh();
-                //}
             }
         }
 
@@ -402,8 +369,6 @@ namespace DarkUI.Controls
             base.OnPaint(e);
         }
 
-        private bool _cursorOverThumb;
-
         private Rectangle GetThumbRect(Native.SCROLLBARINFO sbi)
         {
             return _isVertical
@@ -425,25 +390,6 @@ namespace DarkUI.Controls
                     : new Rectangle(Width - horzArrowWidth, 0, horzArrowWidth, Height);
         }
 
-        //protected override void OnMouseLeave(EventArgs e)
-        //{
-        //    if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
-        //    {
-        //        base.OnMouseLeave(e);
-        //        return;
-        //    }
-
-        //    _cursorOverThumb = false;
-
-        //    Trace.WriteLine("leave");
-        //    _thumbCurrentBrush = _thumbNormalBrush;
-        //    Refresh();
-
-        //    base.OnMouseLeave(e);
-        //}
-
-        private bool _leftButtonPressed;
-
         protected override void OnVisibleChanged(EventArgs e)
         {
             _timer.Enabled = Visible;
@@ -454,33 +400,28 @@ namespace DarkUI.Controls
 
         protected override void WndProc(ref Message m)
         {
-            // TODO: @DarkMode: We have to handle this stuff here because we need to send the message (not e) to _owner
-            // But then _owner sets the message as handled, so we don't detect our pressed buttons properly in
-            // our own event overrides. We need to handle mouse move/down/up etc. here, extracting the values
-            // from wParam/lParam and all...
-            void SendToOwner(ref Message _m, bool setHandled = true)
+            void SendToOwner(ref Message _m)
             {
                 if (_owner.IsHandleCreated)
                 {
                     Native.PostMessage(_owner.Handle, _m.Msg, _m.WParam, _m.LParam);
-                    if (setHandled) _m.Result = IntPtr.Zero;
+                    _m.Result = IntPtr.Zero;
                 }
             }
 
-            if (m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE)
-            {
-                //Trace.WriteLine(m.Msg);
-                //SendToOwner(ref m, setHandled: false);
-                base.WndProc(ref m);
-            }
-            else if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
-                || m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN
-                || m.Msg == Native.WM_LBUTTONDBLCLK || m.Msg == Native.WM_NCLBUTTONDBLCLK
-                || m.Msg == Native.WM_MBUTTONDBLCLK || m.Msg == Native.WM_NCMBUTTONDBLCLK
+            if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
                 || m.Msg == Native.WM_LBUTTONUP || m.Msg == Native.WM_NCLBUTTONUP
-                || m.Msg == Native.WM_MBUTTONUP || m.Msg == Native.WM_NCMBUTTONUP
+                || m.Msg == Native.WM_LBUTTONDBLCLK || m.Msg == Native.WM_NCLBUTTONDBLCLK
 
-                //|| m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
+                || m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN
+                || m.Msg == Native.WM_MBUTTONUP || m.Msg == Native.WM_NCMBUTTONUP
+                || m.Msg == Native.WM_MBUTTONDBLCLK || m.Msg == Native.WM_NCMBUTTONDBLCLK
+
+                || m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN
+                || m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP
+                || m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK
+
+                || m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
 
                 // Don't handle mouse wheel or mouse wheel tilt for now - mousewheel at least breaks on FMsDGV
                 //|| m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL
@@ -488,50 +429,10 @@ namespace DarkUI.Controls
                 // (do I still have that spare Logitech mouse that works?)
                 )
             {
-                //if (m.Msg == Native.WM_LBUTTONDOWN)
-                //{
-                //    Trace.WriteLine("WndProc down");
-
-                //    var sbi = GetCurrentScrollBarInfo();
-                //    var thumbRect = GetThumbRect(sbi);
-
-                //    bool cursorOverThumbNow = thumbRect.Contains(PointToClient(Cursor.Position));
-
-                //    _thumbCurrentBrush = cursorOverThumbNow ? _thumbPressedBrush : _thumbNormalBrush;
-                //    _leftButtonPressed = cursorOverThumbNow;
-                //}
-
-                //Trace.WriteLine(m.Msg);
-                SendToOwner(ref m, setHandled: false);
-                base.WndProc(ref m);
+                SendToOwner(ref m);
             }
-            else if (m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
-                     m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK)
-            {
-                //Trace.WriteLine(m.Msg);
-                // Disabled the dark mode menu as the scroll up/down don't even work with the DataGridView and
-                // this is just stupid anyway, nobody right-clicks the scroll bars to click options in a menu,
-                // and if they do, then oh well, they get a non-dark menu.
-                //if (GetMenuStrings() == null)
-                {
-                    SendToOwner(ref m);
-                }
-            }
-            else if (m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP)
-            {
-                //Trace.WriteLine(m.Msg);
-                //if (!ShowDarkMenu())
-                {
-                    SendToOwner(ref m);
-                }
-            }
-            else
-            {
-                // Intentional - we want to block the mouse messages up there because we're already sending them
-                // to owner if necessary, and if we don't block them we get incorrect behavior with menu showing
-                // (showing the FM context menu instead of our menu etc.)
-                base.WndProc(ref m);
-            }
+
+            base.WndProc(ref m);
         }
 
         protected override void Dispose(bool disposing)
@@ -551,8 +452,6 @@ namespace DarkUI.Controls
                 _thumbCurrentBrush.Dispose();
 
                 _timer.Dispose();
-
-                Menu.Dispose();
 
                 // Get rid of event hookups
                 _mouseHook = null;
