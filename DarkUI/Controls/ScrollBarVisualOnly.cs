@@ -241,81 +241,6 @@ namespace DarkUI.Controls
             return sbi;
         }
 
-        private string[] GetMenuStrings()
-        {
-            const int count = 7;
-
-            string[] ret = new string[count];
-            try
-            {
-                // WinForms doesn't have these strings in it, because it just calls the Win32 menu and the strings
-                // are in Windows itself. We don't want to mess with that, so we cheat and just grab them from WPF.
-                // IMPORTANT: Because we get these from WPF, we need to reference PresentationFramework or we fail!
-                var rm = new ResourceManager("ExceptionStringTable", typeof(System.Windows.Application).Assembly);
-
-                CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo("fr-CA");
-                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("fr-CA");
-
-                ret[0] = rm.GetString("ScrollBar_ContextMenu_ScrollHere", CultureInfo.CurrentCulture);
-
-                if (_isVertical)
-                {
-                    ret[1] = rm.GetString("ScrollBar_ContextMenu_Top", CultureInfo.CurrentCulture);
-                    ret[2] = rm.GetString("ScrollBar_ContextMenu_Bottom", CultureInfo.CurrentCulture);
-                    ret[3] = rm.GetString("ScrollBar_ContextMenu_PageUp", CultureInfo.CurrentCulture);
-                    ret[4] = rm.GetString("ScrollBar_ContextMenu_PageDown", CultureInfo.CurrentCulture);
-                    ret[5] = rm.GetString("ScrollBar_ContextMenu_ScrollUp", CultureInfo.CurrentCulture);
-                    ret[6] = rm.GetString("ScrollBar_ContextMenu_ScrollDown", CultureInfo.CurrentCulture);
-                }
-                else
-                {
-                    ret[1] = rm.GetString("ScrollBar_ContextMenu_LeftEdge", CultureInfo.CurrentCulture);
-                    ret[2] = rm.GetString("ScrollBar_ContextMenu_RightEdge", CultureInfo.CurrentCulture);
-                    ret[3] = rm.GetString("ScrollBar_ContextMenu_PageLeft", CultureInfo.CurrentCulture);
-                    ret[4] = rm.GetString("ScrollBar_ContextMenu_PageRight", CultureInfo.CurrentCulture);
-                    ret[5] = rm.GetString("ScrollBar_ContextMenu_ScrollLeft", CultureInfo.CurrentCulture);
-                    ret[6] = rm.GetString("ScrollBar_ContextMenu_ScrollRight", CultureInfo.CurrentCulture);
-                }
-
-                for (int i = 0; i < count; i++)
-                {
-                    if (ret[i] == null || ret[i] == "")
-                    {
-                        return null;
-                    }
-                }
-
-                return ret;
-            }
-            catch
-            {
-                // If we couldn't get the strings, we're just going to give up and tell the caller to show the
-                // normal, un-dark-mode menu. Better than nothing.
-                return null;
-            }
-        }
-
-        private bool ShowDarkMenu()
-        {
-            string[] items = GetMenuStrings();
-            if (items == null) return false;
-
-            ScrollHereMenuItem.Text = items[0];
-            MinMenuItem.Text = items[1];
-            MaxMenuItem.Text = items[2];
-            PageBackMenuItem.Text = items[3];
-            PageForwardMenuItem.Text = items[4];
-            ScrollBackMenuItem.Text = items[5];
-            ScrollForwardMenuItem.Text = items[6];
-
-            // Store the cursor position because the menu just does not want to give us its control-relative
-            // position, returning its screen-relative position every time. Meh.
-            _storedCursorPosition = PointToClient(Cursor.Position);
-            Menu.Show(this, _storedCursorPosition);
-
-            return true;
-        }
-
         #endregion
 
         #region Public methods
@@ -339,11 +264,25 @@ namespace DarkUI.Controls
             }
         }
 
+        #endregion
+
         private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
             if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
-                // add code here
+                var sbi = GetCurrentScrollBarInfo();
+                var thumbRect = GetThumbRect(sbi);
+
+                bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
+
+                if (cursorOverThumb && e.Button == MouseButtons.Left)
+                {
+                    if (_thumbCurrentBrush != _thumbPressedBrush)
+                    {
+                        _thumbCurrentBrush = _thumbPressedBrush;
+                        Refresh();
+                    }
+                }
             }
         }
 
@@ -351,19 +290,64 @@ namespace DarkUI.Controls
         {
             if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
-                // add code here
+                var sbi = GetCurrentScrollBarInfo();
+                var thumbRect = GetThumbRect(sbi);
+
+                bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
+
+                if (_thumbCurrentBrush == _thumbPressedBrush)
+                {
+                    _thumbCurrentBrush = cursorOverThumb ? _thumbHighlightedBrush : _thumbNormalBrush;
+                }
             }
         }
 
         private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
         {
+            //Trace.WriteLine("move");
             if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
-                // add code here
+                var sbi = GetCurrentScrollBarInfo();
+                var thumbRect = GetThumbRect(sbi);
+
+                bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
+                //Trace.WriteLine("yes");
+
+                //Trace.WriteLine(nameof(cursorOverThumb) + ": " + cursorOverThumb);
+                if (cursorOverThumb)
+                {
+                    if ((e.Button == MouseButtons.Left && _thumbCurrentBrush == _thumbPressedBrush) ||
+                        _thumbCurrentBrush == _thumbHighlightedBrush)
+                    {
+                        return;
+                    }
+                    //Trace.WriteLine("refreshing top");
+                    Refresh();
+                }
+                else if (_thumbCurrentBrush != _thumbNormalBrush)
+                {
+                    _thumbCurrentBrush = _thumbNormalBrush;
+                    //Trace.WriteLine("refreshing bottom");
+                    Refresh();
+                }
+
+                // Perf: don't refresh if we don't need to
+                //if (_cursorOverThumb != cursorOverThumb)
+                //{
+                //    if (cursorOverThumb)
+                //    {
+                //        _thumbCurrentBrush = e.Button == MouseButtons.Left ? _thumbPressedBrush : _thumbHighlightedBrush;
+                //    }
+                //    else
+                //    {
+                //        _thumbCurrentBrush = _thumbNormalBrush;
+                //    }
+
+                //    _cursorOverThumb = cursorOverThumb;
+                //    Refresh();
+                //}
             }
         }
-
-        #endregion
 
         #region Event overrides
 
@@ -441,60 +425,22 @@ namespace DarkUI.Controls
                     : new Rectangle(Width - horzArrowWidth, 0, horzArrowWidth, Height);
         }
 
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            bool leftButtonWasPressed = false;
-            Trace.WriteLine("move");
-            if (_leftButtonPressed)
-            {
-                leftButtonWasPressed = true;
-                Trace.WriteLine("OnMouseMove up");
-                _leftButtonPressed = false;
-            }
+        //protected override void OnMouseLeave(EventArgs e)
+        //{
+        //    if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+        //    {
+        //        base.OnMouseLeave(e);
+        //        return;
+        //    }
 
-            var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(sbi);
+        //    _cursorOverThumb = false;
 
-            bool cursorOverThumbNow = thumbRect.Contains(e.Location);
+        //    Trace.WriteLine("leave");
+        //    _thumbCurrentBrush = _thumbNormalBrush;
+        //    Refresh();
 
-            // Perf: don't refresh if we don't need to
-            //if (_cursorOverThumb != cursorOverThumbNow)
-            {
-                if (cursorOverThumbNow)
-                {
-                    Trace.WriteLine("cursor over thumb");
-                    //Trace.WriteLine(e.Button == MouseButtons.Left);
-                    _thumbCurrentBrush = leftButtonWasPressed ? _thumbPressedBrush : _thumbHighlightedBrush;
-                }
-                else
-                {
-                    Trace.WriteLine("!cursor over thumb");
-                    _thumbCurrentBrush = _thumbNormalBrush;
-                }
-
-                _cursorOverThumb = cursorOverThumbNow;
-                Refresh();
-            }
-
-            base.OnMouseMove(e);
-        }
-
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
-            {
-                base.OnMouseLeave(e);
-                return;
-            }
-
-            _cursorOverThumb = false;
-
-            Trace.WriteLine("leave");
-            _thumbCurrentBrush = _thumbNormalBrush;
-            Refresh();
-
-            base.OnMouseLeave(e);
-        }
+        //    base.OnMouseLeave(e);
+        //}
 
         private bool _leftButtonPressed;
 
@@ -542,18 +488,18 @@ namespace DarkUI.Controls
                 // (do I still have that spare Logitech mouse that works?)
                 )
             {
-                if (m.Msg == Native.WM_LBUTTONDOWN)
-                {
-                    Trace.WriteLine("WndProc down");
+                //if (m.Msg == Native.WM_LBUTTONDOWN)
+                //{
+                //    Trace.WriteLine("WndProc down");
 
-                    var sbi = GetCurrentScrollBarInfo();
-                    var thumbRect = GetThumbRect(sbi);
+                //    var sbi = GetCurrentScrollBarInfo();
+                //    var thumbRect = GetThumbRect(sbi);
 
-                    bool cursorOverThumbNow = thumbRect.Contains(PointToClient(Cursor.Position));
+                //    bool cursorOverThumbNow = thumbRect.Contains(PointToClient(Cursor.Position));
 
-                    _thumbCurrentBrush = cursorOverThumbNow ? _thumbPressedBrush : _thumbNormalBrush;
-                    _leftButtonPressed = cursorOverThumbNow;
-                }
+                //    _thumbCurrentBrush = cursorOverThumbNow ? _thumbPressedBrush : _thumbNormalBrush;
+                //    _leftButtonPressed = cursorOverThumbNow;
+                //}
 
                 //Trace.WriteLine(m.Msg);
                 SendToOwner(ref m, setHandled: false);
