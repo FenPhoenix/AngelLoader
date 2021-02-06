@@ -208,6 +208,14 @@ namespace DarkUI.Controls
                     : new Rectangle(Width - horzArrowWidth, 0, horzArrowWidth, Height);
         }
 
+        private static bool ChangeStateAndAskIfRefreshRequired(ref State state1, State state2)
+        {
+            if (state1 == state2) return false;
+
+            state1 = state2;
+            return true;
+        }
+
         private void RefreshIfNeeded()
         {
             // Refresh only if our thumb's size/position is stale. Otherwise, we get unacceptable lag.
@@ -235,46 +243,36 @@ namespace DarkUI.Controls
         {
             if (!Visible || !Enabled) return;
 
+            if (e.Button != MouseButtons.Left) return;
+
+            Point cursorLoc = PointToClient(e.Location);
+
             var sbi = GetCurrentScrollBarInfo();
             var thumbRect = GetThumbRect(ref sbi);
-            var firstArrowRect = GetArrowRect();
-            var secondArrowRect = GetArrowRect(second: true);
+            bool cursorOverThumb = thumbRect.Contains(cursorLoc);
 
-            bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
             if (cursorOverThumb)
             {
-                if (e.Button == MouseButtons.Left)
+                _leftButtonPressedOnThumb = true;
+                if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, State.Pressed))
                 {
-                    _leftButtonPressedOnThumb = true;
-                    if (_thumbState != State.Pressed)
-                    {
-                        _thumbState = State.Pressed;
-                        Refresh();
-                    }
+                    Refresh();
                 }
             }
-            else if (firstArrowRect.Contains(PointToClient(e.Location)))
+            else if (GetArrowRect().Contains(cursorLoc))
             {
-                if (e.Button == MouseButtons.Left)
+                _leftButtonPressedOnFirstArrow = true;
+                if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, State.Pressed))
                 {
-                    _leftButtonPressedOnFirstArrow = true;
-                    if (_firstArrowState != State.Pressed)
-                    {
-                        _firstArrowState = State.Pressed;
-                        Refresh();
-                    }
+                    Refresh();
                 }
             }
-            else if (secondArrowRect.Contains(PointToClient(e.Location)))
+            else if (GetArrowRect(second: true).Contains(cursorLoc))
             {
-                if (e.Button == MouseButtons.Left)
+                _leftButtonPressedOnSecondArrow = true;
+                if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, State.Pressed))
                 {
-                    _leftButtonPressedOnSecondArrow = true;
-                    if (_secondArrowState != State.Pressed)
-                    {
-                        _secondArrowState = State.Pressed;
-                        Refresh();
-                    }
+                    Refresh();
                 }
             }
         }
@@ -290,53 +288,53 @@ namespace DarkUI.Controls
             var leftArrowRect = GetArrowRect();
             var rightArrowRect = GetArrowRect(second: true);
 
-            bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
+            Point cursorPos = PointToClient(e.Location);
+
+            bool cursorOverThumb = thumbRect.Contains(cursorPos);
 
             if (cursorOverThumb)
             {
                 _leftButtonPressedOnThumb = false;
                 _leftButtonPressedOnFirstArrow = false;
                 _leftButtonPressedOnSecondArrow = false;
-                if (_thumbState != State.Hot)
+
+                if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, State.Hot))
                 {
-                    _thumbState = State.Hot;
                     refresh = true;
                 }
-                if (_firstArrowState != State.Normal)
+                if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, State.Normal))
                 {
-                    _firstArrowState = State.Normal;
                     refresh = true;
                 }
-                if (_secondArrowState != State.Normal)
+                if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, State.Normal))
                 {
-                    _secondArrowState = State.Normal;
                     refresh = true;
                 }
             }
             else
             {
-                _leftButtonPressedOnThumb = false;
-                if (_thumbState != State.Normal)
+                if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, State.Normal))
                 {
-                    _thumbState = State.Normal;
                     refresh = true;
                 }
 
-                var cursorOverFirstArrow = leftArrowRect.Contains(PointToClient(e.Location));
-                var cursorOverSecondArrow = rightArrowRect.Contains(PointToClient(e.Location));
+                var cursorOverFirstArrow = leftArrowRect.Contains(cursorPos);
+                var cursorOverSecondArrow = rightArrowRect.Contains(cursorPos);
 
-                if (_leftButtonPressedOnFirstArrow)
+                if (_leftButtonPressedOnFirstArrow || _leftButtonPressedOnThumb)
                 {
                     _leftButtonPressedOnFirstArrow = false;
                     _firstArrowState = cursorOverFirstArrow ? State.Hot : State.Normal;
                     refresh = true;
                 }
-                else if (_leftButtonPressedOnSecondArrow)
+                if (_leftButtonPressedOnSecondArrow || _leftButtonPressedOnThumb)
                 {
                     _leftButtonPressedOnSecondArrow = false;
                     _secondArrowState = cursorOverSecondArrow ? State.Hot : State.Normal;
                     refresh = true;
                 }
+
+                _leftButtonPressedOnThumb = false;
             }
 
             if (refresh) Refresh();
@@ -351,79 +349,79 @@ namespace DarkUI.Controls
             var leftArrowRect = GetArrowRect();
             var rightArrowRect = GetArrowRect(second: true);
 
-            bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
+            Point cursorPos = PointToClient(e.Location);
+
+            bool cursorOverThumb = thumbRect.Contains(cursorPos);
+
+            var cursorOverFirstArrow = leftArrowRect.Contains(cursorPos);
+            var cursorOverSecondArrow = rightArrowRect.Contains(cursorPos);
+
+            bool refresh = false;
 
             if (cursorOverThumb)
             {
-                if (_leftButtonPressedOnThumb)
+                State stateToChangeTo = _leftButtonPressedOnThumb ? State.Pressed : State.Hot;
+                if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, stateToChangeTo))
                 {
-                    if (_thumbState != State.Pressed)
-                    {
-                        _thumbState = State.Pressed;
-                        Refresh();
-                    }
+                    refresh = true;
                 }
-                else
+                if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, State.Normal))
                 {
-                    if (_thumbState != State.Hot)
-                    {
-                        _thumbState = State.Hot;
-                        Refresh();
-                    }
+                    refresh = true;
+                }
+                if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, State.Normal))
+                {
+                    refresh = true;
                 }
             }
             else
             {
-                bool refresh = false;
-
-                if (!_leftButtonPressedOnThumb && _thumbState != State.Normal)
+                if (!_leftButtonPressedOnThumb)
                 {
-                    _thumbState = State.Normal;
-                    refresh = true;
+                    if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, State.Normal))
+                    {
+                        refresh = true;
+                    }
                 }
-
-                var cursorOverFirstArrow = leftArrowRect.Contains(PointToClient(e.Location));
-                var cursorOverSecondArrow = rightArrowRect.Contains(PointToClient(e.Location));
 
                 if (!cursorOverFirstArrow)
                 {
-                    if (_firstArrowState != State.Normal)
+                    if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, State.Normal))
                     {
-                        _firstArrowState = State.Normal;
                         refresh = true;
                     }
                 }
 
                 if (!cursorOverSecondArrow)
                 {
-                    if (_secondArrowState != State.Normal)
+                    if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, State.Normal))
                     {
-                        _secondArrowState = State.Normal;
                         refresh = true;
                     }
                 }
 
-                if (cursorOverFirstArrow)
+                if (!_leftButtonPressedOnThumb)
                 {
-                    var firstArrowState = _leftButtonPressedOnFirstArrow ? State.Pressed : State.Hot;
-                    if (firstArrowState != _firstArrowState)
+                    if (cursorOverFirstArrow)
                     {
-                        _firstArrowState = firstArrowState;
-                        refresh = true;
+                        var firstArrowState = _leftButtonPressedOnFirstArrow ? State.Pressed : State.Hot;
+                        if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, firstArrowState))
+                        {
+                            refresh = true;
+                        }
+                    }
+                    else if (cursorOverSecondArrow)
+                    {
+                        var secondArrowState = _leftButtonPressedOnSecondArrow ? State.Pressed : State.Hot;
+                        if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, secondArrowState))
+                        {
+                            refresh = true;
+                        }
                     }
                 }
-                else if (cursorOverSecondArrow)
-                {
-                    var secondArrowState = _leftButtonPressedOnSecondArrow ? State.Pressed : State.Hot;
-                    if (secondArrowState != _secondArrowState)
-                    {
-                        _secondArrowState = secondArrowState;
-                        refresh = true;
-                    }
-                }
-
-                if (refresh) Refresh();
             }
+
+            if (refresh) Refresh();
         }
 
         #endregion
