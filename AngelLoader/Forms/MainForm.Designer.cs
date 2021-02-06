@@ -156,10 +156,10 @@ namespace AngelLoader.Forms
             this.PatchAddDMLButton = new DarkUI.Controls.DarkButton();
             this.PatchOpenFMFolderButton = new DarkUI.Controls.DarkButton();
             this.PatchFMNotInstalledLabel = new System.Windows.Forms.Label();
-            this.ReadmeFullScreenButton = new System.Windows.Forms.Button();
-            this.ReadmeZoomInButton = new System.Windows.Forms.Button();
-            this.ReadmeZoomOutButton = new System.Windows.Forms.Button();
-            this.ReadmeResetZoomButton = new System.Windows.Forms.Button();
+            this.ReadmeFullScreenButton = new DarkUI.Controls.DarkButton();
+            this.ReadmeZoomInButton = new DarkUI.Controls.DarkButton();
+            this.ReadmeZoomOutButton = new DarkUI.Controls.DarkButton();
+            this.ReadmeResetZoomButton = new DarkUI.Controls.DarkButton();
             this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -1760,6 +1760,7 @@ namespace AngelLoader.Forms
             // 
             this.ReadmeFullScreenButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeFullScreenButton.BackColor = System.Drawing.SystemColors.Window;
+            this.ReadmeFullScreenButton.DarkModeBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
             this.ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
             this.ReadmeFullScreenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeFullScreenButton.Location = new System.Drawing.Point(1616, 8);
@@ -1770,7 +1771,7 @@ namespace AngelLoader.Forms
             this.ReadmeFullScreenButton.UseVisualStyleBackColor = false;
             this.ReadmeFullScreenButton.Visible = false;
             this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeFullScreenButton_Click);
-            this.ReadmeFullScreenButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ReadmeFullScreenButton_Paint);
+            this.ReadmeFullScreenButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ReadmeFullScreenButton_Paint);
             this.ReadmeFullScreenButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeZoomInButton
@@ -1778,6 +1779,7 @@ namespace AngelLoader.Forms
             this.ReadmeZoomInButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeZoomInButton.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeZoomInButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ReadmeZoomInButton.DarkModeBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
             this.ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
             this.ReadmeZoomInButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeZoomInButton.Location = new System.Drawing.Point(1534, 8);
@@ -1788,7 +1790,7 @@ namespace AngelLoader.Forms
             this.ReadmeZoomInButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomInButton.Visible = false;
             this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeZoomInButton_Click);
-            this.ReadmeZoomInButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ZoomInButtons_Paint);
+            this.ReadmeZoomInButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomInButtons_Paint);
             this.ReadmeZoomInButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeZoomOutButton
@@ -1796,6 +1798,7 @@ namespace AngelLoader.Forms
             this.ReadmeZoomOutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeZoomOutButton.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeZoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ReadmeZoomOutButton.DarkModeBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
             this.ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
             this.ReadmeZoomOutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeZoomOutButton.Location = new System.Drawing.Point(1559, 8);
@@ -1806,7 +1809,7 @@ namespace AngelLoader.Forms
             this.ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomOutButton.Visible = false;
             this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeZoomOutButton_Click);
-            this.ReadmeZoomOutButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ZoomOutButtons_Paint);
+            this.ReadmeZoomOutButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomOutButtons_Paint);
             this.ReadmeZoomOutButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeResetZoomButton
@@ -1814,6 +1817,7 @@ namespace AngelLoader.Forms
             this.ReadmeResetZoomButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeResetZoomButton.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeResetZoomButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ReadmeResetZoomButton.DarkModeBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
             this.ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
             this.ReadmeResetZoomButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeResetZoomButton.Location = new System.Drawing.Point(1584, 8);
@@ -1824,7 +1828,7 @@ namespace AngelLoader.Forms
             this.ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             this.ReadmeResetZoomButton.Visible = false;
             this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeResetZoomButton_Click);
-            this.ReadmeResetZoomButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ZoomResetButtons_Paint);
+            this.ReadmeResetZoomButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomResetButtons_Paint);
             this.ReadmeResetZoomButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ChooseReadmeComboBox
@@ -1949,7 +1953,7 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.Panel EverythingPanel;
         internal DarkUI.Controls.DarkButton SettingsButton;
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom ChooseReadmeComboBox;
-        internal System.Windows.Forms.Button ReadmeResetZoomButton;
+        internal DarkUI.Controls.DarkButton ReadmeResetZoomButton;
         internal System.Windows.Forms.Label FilterTitleLabel;
         internal AngelLoader.Forms.CustomControls.TextBoxCustom FilterTitleTextBox;
         internal DarkUI.Controls.DarkButton PlayOriginalGameButton;
@@ -2001,7 +2005,7 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom EditFMRatingComboBox;
         internal System.Windows.Forms.Label EditFMRatingLabel;
         internal DarkUI.Controls.DarkButton EditFMFinishedOnButton;
-        internal System.Windows.Forms.Button ReadmeFullScreenButton;
+        internal DarkUI.Controls.DarkButton ReadmeFullScreenButton;
         internal DarkUI.Controls.DarkButton WebSearchButton;
         internal AngelLoader.Forms.CustomControls.ArrowButton FilterBarScrollRightButton;
         internal AngelLoader.Forms.CustomControls.ArrowButton FilterBarScrollLeftButton;
@@ -2022,8 +2026,8 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFLP;
         internal System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFLP;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
-        internal System.Windows.Forms.Button ReadmeZoomInButton;
-        internal System.Windows.Forms.Button ReadmeZoomOutButton;
+        internal DarkUI.Controls.DarkButton ReadmeZoomInButton;
+        internal DarkUI.Controls.DarkButton ReadmeZoomOutButton;
         internal System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
         internal DarkUI.Controls.DarkButton EditFMScanReleaseDateButton;
         internal DarkUI.Controls.DarkButton EditFMScanAuthorButton;

@@ -1341,11 +1341,7 @@ namespace AngelLoader.Forms
                     // Figure out some way to just say "if a control is part of a lazy-loaded class" so we don't
                     // have to write them out manually here again and keep both places in sync.
                     // Excludes - we handle these manually
-                    if (control == ReadmeZoomInButton
-                        || control == ReadmeZoomOutButton
-                        || control == ReadmeResetZoomButton
-                        || control == ReadmeFullScreenButton
-                        || control.EqualsIfNotNull(ProgressBox)
+                    if (control.EqualsIfNotNull(ProgressBox)
                         || _progressBoxConstructed && ProgressBox!.Controls.Contains(control)
                         //|| control.EqualsIfNotNull(InstallUninstallFMLLButton.Button)
                         //|| control == ReadmeRichTextBox
@@ -3679,19 +3675,9 @@ namespace AngelLoader.Forms
 
         private void SetReadmeButtonsBackColor(bool enabled)
         {
-            Color backColor =
-                Config.VisualTheme == VisualTheme.Dark
-                    ? enabled
-                        // Explicitly set to our dark background color, because when we eventually make RTF
-                        // backgrounds darkable, we'll have to do it through the RTF itself and we may end up
-                        // not setting the RichTextBox control's background color itself, so we can't just pick
-                        // it up in here.
-                        ? DarkUI.Config.Colors.Fen_DarkBackground
-                        : MainSplitContainer.Panel2.BackColor
-                    : enabled
-                        ? SystemColors.Window
-                        : SystemColors.Control;
+            if (Config.VisualTheme == VisualTheme.Dark) return;
 
+            Color backColor = enabled ? SystemColors.Window : SystemColors.Control;
             ReadmeZoomInButton.BackColor = backColor;
             ReadmeZoomOutButton.BackColor = backColor;
             ReadmeResetZoomButton.BackColor = backColor;

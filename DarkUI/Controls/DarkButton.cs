@@ -28,6 +28,8 @@ namespace DarkUI.Controls
 
         #region Designer Property Region
 
+        public Color? DarkModeBackColor { get; set; }
+
         public new string Text
         {
             get { return base.Text; }
@@ -401,7 +403,7 @@ namespace DarkUI.Controls
 
             var textColor = Colors.LightText;
             var borderColor = Colors.GreySelection;
-            var fillColor = _isDefault ? Colors.DarkBlueBackground : Colors.LightBackground;
+            var fillColor = DarkModeBackColor ?? (_isDefault ? Colors.DarkBlueBackground : Colors.LightBackground);
 
             if (Enabled)
             {
@@ -425,7 +427,7 @@ namespace DarkUI.Controls
                     switch (ButtonState)
                     {
                         case DarkControlState.Normal:
-                            fillColor = Colors.GreyBackground;
+                            fillColor = DarkModeBackColor ?? Colors.GreyBackground;
                             break;
                         case DarkControlState.Hover:
                             fillColor = Colors.MediumBackground;
@@ -439,7 +441,7 @@ namespace DarkUI.Controls
             else
             {
                 textColor = Colors.DisabledText;
-                fillColor = Colors.DarkGreySelection;
+                fillColor = DarkModeBackColor ?? Colors.DarkGreySelection;
             }
 
             using (var b = new SolidBrush(fillColor))

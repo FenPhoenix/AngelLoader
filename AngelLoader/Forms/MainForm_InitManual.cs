@@ -158,10 +158,10 @@ namespace AngelLoader.Forms
             PatchAddDMLButton = new DarkUI.Controls.DarkButton();
             PatchOpenFMFolderButton = new DarkUI.Controls.DarkButton();
             PatchFMNotInstalledLabel = new Label();
-            ReadmeFullScreenButton = new Button();
-            ReadmeZoomInButton = new Button();
-            ReadmeZoomOutButton = new Button();
-            ReadmeResetZoomButton = new Button();
+            ReadmeFullScreenButton = new DarkUI.Controls.DarkButton();
+            ReadmeZoomInButton = new DarkUI.Controls.DarkButton();
+            ReadmeZoomOutButton = new DarkUI.Controls.DarkButton();
+            ReadmeResetZoomButton = new DarkUI.Controls.DarkButton();
             ChooseReadmeComboBox = new ComboBoxCustom();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
@@ -1440,12 +1440,13 @@ namespace AngelLoader.Forms
 
             #region Readme control buttons
 
-            // BackColor for these gets set when the readme box is shown or hidden
+            // BackColor for these gets set when the readme box is shown or hidden (for classic mode)
 
             // 
             // ReadmeFullScreenButton
             // 
             ReadmeFullScreenButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ReadmeFullScreenButton.DarkModeBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
             ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
             ReadmeFullScreenButton.FlatStyle = FlatStyle.Flat;
             ReadmeFullScreenButton.Location = new Point(1616, 8);
@@ -1454,13 +1455,13 @@ namespace AngelLoader.Forms
             ReadmeFullScreenButton.UseVisualStyleBackColor = false;
             ReadmeFullScreenButton.Visible = false;
             ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
-            ReadmeFullScreenButton.Paint += ReadmeFullScreenButton_Paint;
+            ReadmeFullScreenButton.PaintCustom += ReadmeFullScreenButton_Paint;
             ReadmeFullScreenButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
-            // ZoomInButton
+            // ReadmeZoomInButton
             // 
             ReadmeZoomInButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ReadmeZoomInButton.BackgroundImageLayout = ImageLayout.Zoom;
+            ReadmeZoomInButton.DarkModeBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
             ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
             ReadmeZoomInButton.FlatStyle = FlatStyle.Flat;
             ReadmeZoomInButton.Location = new Point(1534, 8);
@@ -1469,14 +1470,14 @@ namespace AngelLoader.Forms
             ReadmeZoomInButton.UseVisualStyleBackColor = false;
             ReadmeZoomInButton.Visible = false;
             ReadmeZoomInButton.Click += ReadmeZoomInButton_Click;
-            ReadmeZoomInButton.Paint += ZoomInButtons_Paint;
+            ReadmeZoomInButton.PaintCustom += ZoomInButtons_Paint;
             ReadmeZoomInButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
-            // ZoomOutButton
+            // ReadmeZoomOutButton
             // 
             ReadmeZoomOutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             ReadmeZoomOutButton.BackColor = SystemColors.Window;
-            ReadmeZoomOutButton.BackgroundImageLayout = ImageLayout.Zoom;
+            ReadmeZoomOutButton.DarkModeBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
             ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
             ReadmeZoomOutButton.FlatStyle = FlatStyle.Flat;
             ReadmeZoomOutButton.Location = new Point(1559, 8);
@@ -1485,13 +1486,13 @@ namespace AngelLoader.Forms
             ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             ReadmeZoomOutButton.Visible = false;
             ReadmeZoomOutButton.Click += ReadmeZoomOutButton_Click;
-            ReadmeZoomOutButton.Paint += ZoomOutButtons_Paint;
+            ReadmeZoomOutButton.PaintCustom += ZoomOutButtons_Paint;
             ReadmeZoomOutButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
-            // ResetZoomButton
+            // ReadmeResetZoomButton
             // 
             ReadmeResetZoomButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ReadmeResetZoomButton.BackgroundImageLayout = ImageLayout.Zoom;
+            ReadmeResetZoomButton.DarkModeBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
             ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
             ReadmeResetZoomButton.FlatStyle = FlatStyle.Flat;
             ReadmeResetZoomButton.Location = new Point(1584, 8);
@@ -1500,7 +1501,7 @@ namespace AngelLoader.Forms
             ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             ReadmeResetZoomButton.Visible = false;
             ReadmeResetZoomButton.Click += ReadmeResetZoomButton_Click;
-            ReadmeResetZoomButton.Paint += ZoomResetButtons_Paint;
+            ReadmeResetZoomButton.PaintCustom += ZoomResetButtons_Paint;
             ReadmeResetZoomButton.MouseLeave += ReadmeArea_MouseLeave;
 
             #endregion
