@@ -713,44 +713,7 @@ namespace AngelLoader.Forms
 
             // PERF: If we're in the classic theme, we don't need to do anything
             if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme, startup: true);
-
-            if (!_hookSubscribed)
-            {
-                _mouseHook = Hook.AppEvents();
-                _mouseHook.MouseDownExt += MouseDownExt_Handler;
-                _mouseHook.MouseUpExt += MouseUpExt_Handler;
-                _mouseHook.MouseMoveExt += MouseMoveExt_Handler;
-                _hookSubscribed = true;
-            }
         }
-
-        private bool _hookSubscribed;
-
-        private static void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
-        {
-            if (TryGetControlFromMousePos(e.Location, out Control? control) && control is ScrollBarVisualOnly darkScrollable)
-            {
-                darkScrollable.Hook_MouseDown(e);
-            }
-        }
-
-        private static void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
-        {
-            if (TryGetControlFromMousePos(e.Location, out Control? control) && control is ScrollBarVisualOnly darkScrollable)
-            {
-                darkScrollable.Hook_MouseUp(e);
-            }
-        }
-
-        private static void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
-        {
-            if (TryGetControlFromMousePos(e.Location, out Control? control) && control is ScrollBarVisualOnly darkScrollable)
-            {
-                darkScrollable.Hook_MouseMove(e);
-            }
-        }
-
-        private IMouseEvents _mouseHook;
 
         // This one can't be multithreaded because it depends on the FMs list
         public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned)
@@ -1677,20 +1640,6 @@ namespace AngelLoader.Forms
             Point pos = new Point(msg.LParam.ToInt32() & 0xffff, msg.LParam.ToInt32() >> 16);
             result = InteropMisc.WindowFromPoint(pos);
             return result != IntPtr.Zero && Control.FromHandle(result) != null;
-        }
-
-        private static bool TryGetControlFromMousePos(Point pos, [NotNullWhen(true)] out Control? control)
-        {
-            var hWnd = InteropMisc.WindowFromPoint(pos);
-            if (hWnd != IntPtr.Zero && (control = Control.FromHandle(hWnd)) != null)
-            {
-                return true;
-            }
-            else
-            {
-                control = null;
-                return false;
-            }
         }
 
         #endregion

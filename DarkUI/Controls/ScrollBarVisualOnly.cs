@@ -20,6 +20,10 @@ namespace DarkUI.Controls
 
     public sealed class ScrollBarVisualOnly : Control
     {
+        // Only one copy of the hook
+        private static bool _hookInitialized;
+        private static IMouseEvents _mouseHook;
+
         #region Private fields
 
         private readonly ScrollBar _owner;
@@ -198,6 +202,16 @@ namespace DarkUI.Controls
                 ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.CacheText,
                 true);
+
+            if (!_hookInitialized)
+            {
+                _mouseHook = Hook.AppEvents();
+                _hookInitialized = true;
+            }
+
+            _mouseHook.MouseDownExt += MouseDownExt_Handler;
+            _mouseHook.MouseUpExt += MouseUpExt_Handler;
+            _mouseHook.MouseMoveExt += MouseMoveExt_Handler;
         }
 
         protected override CreateParams CreateParams
@@ -325,19 +339,28 @@ namespace DarkUI.Controls
             }
         }
 
-        public void Hook_MouseDown(MouseEventExtArgs e)
+        private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
-
+            if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            {
+                // add code here
+            }
         }
 
-        public void Hook_MouseUp(MouseEventExtArgs e)
+        private void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
         {
-
+            if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            {
+                // add code here
+            }
         }
 
-        public void Hook_MouseMove(MouseEventExtArgs e)
+        private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
         {
-
+            if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            {
+                // add code here
+            }
         }
 
         #endregion
@@ -584,7 +607,11 @@ namespace DarkUI.Controls
                 _timer.Dispose();
 
                 Menu.Dispose();
+
+                // Get rid of event hookups
+                _mouseHook = null;
             }
+
             base.Dispose(disposing);
         }
     }
