@@ -88,14 +88,8 @@ namespace AngelLoader.Forms.CustomControls
         {
             DoubleBuffered = true;
 
-            VerticalVisualScrollBar = new ScrollBarVisualOnly(VerticalScrollBar) { Visible = false };
-            HorizontalVisualScrollBar = new ScrollBarVisualOnly(HorizontalScrollBar) { Visible = false };
-
-            VerticalVisualScrollBar.BringToFront();
-            HorizontalVisualScrollBar.BringToFront();
-
-            Controls.Add(VerticalVisualScrollBar);
-            Controls.Add(HorizontalVisualScrollBar);
+            VerticalVisualScrollBar = new ScrollBarVisualOnly(VerticalScrollBar);
+            HorizontalVisualScrollBar = new ScrollBarVisualOnly(HorizontalScrollBar);
 
             /*
             TODO: @DarkMode(Scroll bars): The original plan:

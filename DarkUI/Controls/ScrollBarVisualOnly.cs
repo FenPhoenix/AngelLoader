@@ -138,6 +138,14 @@ namespace DarkUI.Controls
         {
             _owner = owner;
 
+            Visible = false;
+
+            if (_owner.Parent != null)
+            {
+                _owner.Parent.Controls.Add(this);
+                BringToFront();
+            }
+
             _owner.VisibleChanged += (sender, e) => { if (_owner.Visible) BringToFront(); };
             _owner.Scroll += (sender, e) => { if (_owner.Visible || Visible) RefreshIfNeeded(); };
 
