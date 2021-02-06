@@ -20,7 +20,6 @@ namespace DarkUI.Controls
     public sealed class ScrollBarVisualOnly : Control
     {
         // Only one copy of the hook
-        private static bool _hookInitialized;
         private static IMouseEvents _mouseHook;
 
         #region Private fields
@@ -157,26 +156,22 @@ namespace DarkUI.Controls
                 ControlStyles.CacheText,
                 true);
 
-            if (!_hookInitialized)
-            {
-                _mouseHook = Hook.AppEvents();
-                _hookInitialized = true;
-            }
+            if (_mouseHook == null) _mouseHook = Hook.AppEvents();
 
             _mouseHook.MouseDownExt += MouseDownExt_Handler;
             _mouseHook.MouseUpExt += MouseUpExt_Handler;
             _mouseHook.MouseMoveExt += MouseMoveExt_Handler;
         }
 
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                var cp = base.CreateParams;
-                cp.ExStyle |= WS_EX_NOACTIVATE;
-                return cp;
-            }
-        }
+        //protected override CreateParams CreateParams
+        //{
+        //    get
+        //    {
+        //        var cp = base.CreateParams;
+        //        cp.ExStyle |= WS_EX_NOACTIVATE;
+        //        return cp;
+        //    }
+        //}
 
         #endregion
 
@@ -228,6 +223,7 @@ namespace DarkUI.Controls
         // Like, scroll bar should stay pressed when we move off it unless we've released the left mouse button etc.
         private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
+            return;
             _leftButtonPressed = true;
 
             if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
@@ -250,6 +246,7 @@ namespace DarkUI.Controls
 
         private void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
         {
+            return;
             _leftButtonPressed = false;
             //if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
@@ -279,6 +276,7 @@ namespace DarkUI.Controls
 
         private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
         {
+            return;
             //if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
                 var sbi = GetCurrentScrollBarInfo();
@@ -405,7 +403,7 @@ namespace DarkUI.Controls
                 if (_owner.IsHandleCreated)
                 {
                     Native.PostMessage(_owner.Handle, _m.Msg, _m.WParam, _m.LParam);
-                    _m.Result = IntPtr.Zero;
+                    //_m.Result = IntPtr.Zero;
                 }
             }
 
@@ -421,7 +419,7 @@ namespace DarkUI.Controls
                 || m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP
                 || m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK
 
-                || m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
+                //|| m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
 
                 // Don't handle mouse wheel or mouse wheel tilt for now - mousewheel at least breaks on FMsDGV
                 //|| m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL
@@ -431,8 +429,12 @@ namespace DarkUI.Controls
             {
                 SendToOwner(ref m);
             }
-
+            else
+            {
             base.WndProc(ref m);
+
+            }
+
         }
 
         protected override void Dispose(bool disposing)
@@ -453,8 +455,9 @@ namespace DarkUI.Controls
 
                 _timer.Dispose();
 
-                // Get rid of event hookups
-                _mouseHook = null;
+                _mouseHook.MouseDownExt -= MouseDownExt_Handler;
+                _mouseHook.MouseUpExt -= MouseUpExt_Handler;
+                _mouseHook.MouseMoveExt -= MouseMoveExt_Handler;
             }
 
             base.Dispose(disposing);
