@@ -717,15 +717,18 @@ namespace AngelLoader.Forms
                     var realScrollBar = i == 0 ? control.VerticalScrollBar : control.HorizontalScrollBar;
                     var visualScrollBar = i == 0 ? control.VerticalVisualScrollBar : control.HorizontalVisualScrollBar;
 
+                    // PERF: Check if we need to set expensive properties before setting expensive properties
                     if (realScrollBar.Visible)
                     {
                         visualScrollBar.Location = realScrollBar.Location;
                         visualScrollBar.Size = realScrollBar.Size;
                         visualScrollBar.Anchor = realScrollBar.Anchor;
-                        visualScrollBar.BringToFront();
                     }
 
-                    visualScrollBar.Visible = realScrollBar.Visible;
+                    if (realScrollBar.Visible != visualScrollBar.Visible)
+                    {
+                        visualScrollBar.Visible = realScrollBar.Visible;
+                    }
                 }
 
                 if (control.VerticalScrollBar.Visible && control.HorizontalScrollBar.Visible)

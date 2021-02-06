@@ -91,11 +91,11 @@ namespace AngelLoader.Forms.CustomControls
             VerticalVisualScrollBar = new ScrollBarVisualOnly(VerticalScrollBar) { Visible = false };
             HorizontalVisualScrollBar = new ScrollBarVisualOnly(HorizontalScrollBar) { Visible = false };
 
+            VerticalVisualScrollBar.BringToFront();
+            HorizontalVisualScrollBar.BringToFront();
+
             Controls.Add(VerticalVisualScrollBar);
             Controls.Add(HorizontalVisualScrollBar);
-
-            VerticalScrollBar.Scroll += (_, _) => RefreshScrollBars();
-            HorizontalScrollBar.Scroll += (_, _) => RefreshScrollBars();
 
             /*
             TODO: @DarkMode(Scroll bars): The original plan:
@@ -122,20 +122,6 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         #region API methods
-
-        private void RefreshScrollBars()
-        {
-            if (!_darkModeEnabled) return;
-
-            if (VerticalScrollBar.Visible || VerticalVisualScrollBar.Visible)
-            {
-                VerticalVisualScrollBar.RefreshIfNeeded();
-            }
-            if (HorizontalScrollBar.Visible || HorizontalVisualScrollBar.Visible)
-            {
-                HorizontalVisualScrollBar.RefreshIfNeeded();
-            }
-        }
 
         #region Init
 

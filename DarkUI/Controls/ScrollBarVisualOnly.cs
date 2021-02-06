@@ -138,6 +138,9 @@ namespace DarkUI.Controls
         {
             _owner = owner;
 
+            _owner.VisibleChanged += (sender, e) => { if (_owner.Visible) BringToFront(); };
+            _owner.Scroll += (sender, e) => { if (_owner.Visible || Visible) RefreshIfNeeded(); };
+
             _isVertical = owner is VScrollBar;
 
             DoubleBuffered = true;
@@ -218,7 +221,7 @@ namespace DarkUI.Controls
 
         #region Public methods
 
-        public void RefreshIfNeeded()
+        private void RefreshIfNeeded()
         {
             // Refresh only if our thumb's size/position is stale. Otherwise, we get unacceptable lag.
             var sbi = GetCurrentScrollBarInfo();
@@ -249,6 +252,8 @@ namespace DarkUI.Controls
         // Like, scroll bar should stay pressed when we move off it unless we've released the left mouse button etc.
         private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
+            if (!Visible || !Enabled) return;
+
             var sbi = GetCurrentScrollBarInfo();
             var thumbRect = GetThumbRect(ref sbi);
             var firstArrowRect = GetArrowRect();
@@ -295,6 +300,8 @@ namespace DarkUI.Controls
 
         private void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
         {
+            if (!Visible || !Enabled) return;
+
             bool refresh = false;
 
             var sbi = GetCurrentScrollBarInfo();
@@ -356,6 +363,8 @@ namespace DarkUI.Controls
 
         private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
         {
+            if (!Visible || !Enabled) return;
+
             var sbi = GetCurrentScrollBarInfo();
             var thumbRect = GetThumbRect(ref sbi);
 
