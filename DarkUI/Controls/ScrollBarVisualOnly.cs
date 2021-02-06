@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
-using System.Resources;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using DarkUI.Win32;
@@ -163,15 +160,15 @@ namespace DarkUI.Controls
             _mouseHook.MouseMoveExt += MouseMoveExt_Handler;
         }
 
-        //protected override CreateParams CreateParams
-        //{
-        //    get
-        //    {
-        //        var cp = base.CreateParams;
-        //        cp.ExStyle |= WS_EX_NOACTIVATE;
-        //        return cp;
-        //    }
-        //}
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ExStyle |= WS_EX_NOACTIVATE;
+                return cp;
+            }
+        }
 
         #endregion
 
@@ -223,13 +220,12 @@ namespace DarkUI.Controls
         // Like, scroll bar should stay pressed when we move off it unless we've released the left mouse button etc.
         private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
-            return;
             _leftButtonPressed = true;
 
             if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
                 var sbi = GetCurrentScrollBarInfo();
-                var thumbRect = GetThumbRect(sbi);
+                var thumbRect = GetThumbRect(ref sbi);
 
                 bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
 
@@ -246,12 +242,11 @@ namespace DarkUI.Controls
 
         private void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
         {
-            return;
             _leftButtonPressed = false;
             //if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
                 var sbi = GetCurrentScrollBarInfo();
-                var thumbRect = GetThumbRect(sbi);
+                var thumbRect = GetThumbRect(ref sbi);
 
                 bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
 
@@ -276,11 +271,10 @@ namespace DarkUI.Controls
 
         private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
         {
-            return;
             //if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
                 var sbi = GetCurrentScrollBarInfo();
-                var thumbRect = GetThumbRect(sbi);
+                var thumbRect = GetThumbRect(ref sbi);
 
                 bool cursorOverThumb = thumbRect.Contains(PointToClient(e.Location));
 
@@ -357,9 +351,11 @@ namespace DarkUI.Controls
             if (_owner.IsHandleCreated)
             {
                 var sbi = GetCurrentScrollBarInfo();
-                var rect = GetThumbRect(sbi);
 
-                g.FillRectangle(_thumbCurrentBrush, rect);
+                _xyThumbTop = sbi.xyThumbTop;
+                _xyThumbBottom = sbi.xyThumbBottom;
+
+                g.FillRectangle(_thumbCurrentBrush, GetThumbRect(ref sbi));
             }
 
             #endregion
@@ -367,11 +363,11 @@ namespace DarkUI.Controls
             base.OnPaint(e);
         }
 
-        private Rectangle GetThumbRect(Native.SCROLLBARINFO sbi)
+        private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
         {
             return _isVertical
-                ? new Rectangle(0, sbi.xyThumbTop, Width, sbi.xyThumbBottom - sbi.xyThumbTop)
-                : new Rectangle(sbi.xyThumbTop, 0, sbi.xyThumbBottom - sbi.xyThumbTop, Height);
+                ? new Rectangle(1, sbi.xyThumbTop, Width - 2, sbi.xyThumbBottom - sbi.xyThumbTop)
+                : new Rectangle(sbi.xyThumbTop, 1, sbi.xyThumbBottom - sbi.xyThumbTop, Height - 2);
         }
 
         private Rectangle GetArrowRect(bool second = false)
@@ -431,7 +427,7 @@ namespace DarkUI.Controls
             }
             else
             {
-            base.WndProc(ref m);
+                base.WndProc(ref m);
 
             }
 
