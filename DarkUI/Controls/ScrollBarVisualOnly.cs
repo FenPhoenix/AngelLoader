@@ -125,34 +125,6 @@ namespace DarkUI.Controls
 
         #endregion
 
-        // TODO: @DarkMode: If you're going to use this overkill hook crap, make sure to only have one global one
-        // That'll probably be faster?!
-        private IMouseEvents _Hook;
-
-        private void Subscribe()
-        {
-            _Hook = Hook.AppEvents();
-            _Hook.MouseDownExt += (sender, e) =>
-            {
-                Trace.WriteLine("hook down");
-                Trace.WriteLine(e.Location);
-            };
-            _Hook.MouseUpExt += (sender, e) =>
-            {
-                Trace.WriteLine("hook up");
-                Trace.WriteLine(e.Location);
-            };
-            _Hook.MouseMoveExt += (sender, e) =>
-            {
-                Trace.WriteLine("hook move");
-            };
-        }
-
-        private void Unsubscribe()
-        {
-            _Hook = null;
-        }
-
         #region Constructor / init
 
         public ScrollBarVisualOnly(ScrollBar owner)
@@ -226,8 +198,6 @@ namespace DarkUI.Controls
                 ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.CacheText,
                 true);
-
-            Subscribe();
         }
 
         protected override CreateParams CreateParams
@@ -355,6 +325,21 @@ namespace DarkUI.Controls
             }
         }
 
+        public void Hook_MouseDown(MouseEventExtArgs e)
+        {
+
+        }
+
+        public void Hook_MouseUp(MouseEventExtArgs e)
+        {
+
+        }
+
+        public void Hook_MouseMove(MouseEventExtArgs e)
+        {
+
+        }
+
         #endregion
 
         #region Event overrides
@@ -435,24 +420,33 @@ namespace DarkUI.Controls
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
+            bool leftButtonWasPressed = false;
+            Trace.WriteLine("move");
+            if (_leftButtonPressed)
+            {
+                leftButtonWasPressed = true;
+                Trace.WriteLine("OnMouseMove up");
+                _leftButtonPressed = false;
+            }
+
             var sbi = GetCurrentScrollBarInfo();
             var thumbRect = GetThumbRect(sbi);
 
             bool cursorOverThumbNow = thumbRect.Contains(e.Location);
 
             // Perf: don't refresh if we don't need to
-            if (_cursorOverThumb != cursorOverThumbNow)
+            //if (_cursorOverThumb != cursorOverThumbNow)
             {
-                if (!cursorOverThumbNow)
+                if (cursorOverThumbNow)
                 {
-                    _thumbCurrentBrush = _thumbNormalBrush;
+                    Trace.WriteLine("cursor over thumb");
+                    //Trace.WriteLine(e.Button == MouseButtons.Left);
+                    _thumbCurrentBrush = leftButtonWasPressed ? _thumbPressedBrush : _thumbHighlightedBrush;
                 }
                 else
                 {
-                    //Trace.WriteLine(e.Button == MouseButtons.Left);
-                    _thumbCurrentBrush = e.Button == MouseButtons.Left
-                        ? _thumbPressedBrush
-                        : _thumbHighlightedBrush;
+                    Trace.WriteLine("!cursor over thumb");
+                    _thumbCurrentBrush = _thumbNormalBrush;
                 }
 
                 _cursorOverThumb = cursorOverThumbNow;
@@ -464,12 +458,22 @@ namespace DarkUI.Controls
 
         protected override void OnMouseLeave(EventArgs e)
         {
+            if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            {
+                base.OnMouseLeave(e);
+                return;
+            }
+
             _cursorOverThumb = false;
+
+            Trace.WriteLine("leave");
             _thumbCurrentBrush = _thumbNormalBrush;
             Refresh();
 
             base.OnMouseLeave(e);
         }
+
+        private bool _leftButtonPressed;
 
         protected override void OnVisibleChanged(EventArgs e)
         {
@@ -496,7 +500,8 @@ namespace DarkUI.Controls
 
             if (m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE)
             {
-                SendToOwner(ref m, setHandled: false);
+                //Trace.WriteLine(m.Msg);
+                //SendToOwner(ref m, setHandled: false);
                 base.WndProc(ref m);
             }
             else if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
@@ -514,12 +519,27 @@ namespace DarkUI.Controls
                 // (do I still have that spare Logitech mouse that works?)
                 )
             {
+                if (m.Msg == Native.WM_LBUTTONDOWN)
+                {
+                    Trace.WriteLine("WndProc down");
+
+                    var sbi = GetCurrentScrollBarInfo();
+                    var thumbRect = GetThumbRect(sbi);
+
+                    bool cursorOverThumbNow = thumbRect.Contains(PointToClient(Cursor.Position));
+
+                    _thumbCurrentBrush = cursorOverThumbNow ? _thumbPressedBrush : _thumbNormalBrush;
+                    _leftButtonPressed = cursorOverThumbNow;
+                }
+
+                //Trace.WriteLine(m.Msg);
                 SendToOwner(ref m, setHandled: false);
                 base.WndProc(ref m);
             }
             else if (m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
                      m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK)
             {
+                //Trace.WriteLine(m.Msg);
                 // Disabled the dark mode menu as the scroll up/down don't even work with the DataGridView and
                 // this is just stupid anyway, nobody right-clicks the scroll bars to click options in a menu,
                 // and if they do, then oh well, they get a non-dark menu.
@@ -530,6 +550,7 @@ namespace DarkUI.Controls
             }
             else if (m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP)
             {
+                //Trace.WriteLine(m.Msg);
                 //if (!ShowDarkMenu())
                 {
                     SendToOwner(ref m);
@@ -548,7 +569,6 @@ namespace DarkUI.Controls
         {
             if (disposing)
             {
-                Unsubscribe();
                 _upArrow.Dispose();
                 _downArrow.Dispose();
                 _leftArrow.Dispose();
