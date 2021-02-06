@@ -125,6 +125,8 @@ namespace DarkUI.Controls
 
         #endregion
 
+        // TODO: @DarkMode: If you're going to use this overkill hook crap, make sure to only have one global one
+        // That'll probably be faster?!
         private IMouseEvents _Hook;
 
         private void Subscribe()
