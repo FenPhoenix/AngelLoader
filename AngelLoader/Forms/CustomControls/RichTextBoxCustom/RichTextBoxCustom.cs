@@ -13,6 +13,13 @@ using static AngelLoader.Misc;
 
 // TODO: BUG: .wri files are not displayed right. See if a simple binary header-and-footer strip can be done
 
+/*
+TODO: @DarkMode(RichTextBox, scrollbars):
+This one has native scrollbars, so to get the visibility/position, we'll need to call GetScrollBarInfo() with
+OBJID_VSCROLL (get control's built-in vertical scroll bar info).
+And we'll need a "this control has native scrollbars" version of ScrollBarVisualOnly too.
+*/
+
 namespace AngelLoader.Forms.CustomControls
 {
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
@@ -87,7 +94,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        #region API methods
+        #region Public methods
 
         #region Zoom stuff
 
