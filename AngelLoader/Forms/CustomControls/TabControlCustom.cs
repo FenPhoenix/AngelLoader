@@ -25,32 +25,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        /// <summary>
-        /// <para>
-        /// Unavailable. Don't try to use (you can't) or you will mess everything up (which is why you can't).
-        /// </para>
-        /// <para>
-        /// Use <see cref="SetTabsFull"/> to set tabs, or <see cref="ClearTabsFull"/> to remove all tabs.
-        /// </para>
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        [PublicAPI]
-        public new object TabPages => throw new InvalidOperationException();
-
-#if !DEBUG
-        /// <summary>
-        /// <para>
-        /// Unavailable. Don't try to use (you can't) or you will mess everything up (which is why you can't).
-        /// </para>
-        /// <para>
-        /// Use <see cref="SetTabsFull"/> to set tabs, or <see cref="ClearTabsFull"/> to remove all tabs.
-        /// </para>
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        [PublicAPI]
-        public new object Controls => throw new InvalidOperationException();
-#endif
-
         [PublicAPI]
         public TabControlCustom() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 

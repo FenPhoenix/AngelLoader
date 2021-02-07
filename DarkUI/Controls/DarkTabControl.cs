@@ -11,7 +11,7 @@ namespace DarkUI.Controls
     public class DarkTabControl : TabControl, IDarkable
     {
         private Font _originalFont;
-        
+
         public DarkTabControl() { }
 
         private bool _darkModeEnabled;
@@ -24,8 +24,8 @@ namespace DarkUI.Controls
                 SetUpTheme();
             }
         }
-        
-        protected void SetUpTheme()
+
+        private void SetUpTheme()
         {
             SetStyle(ControlStyles.UserPaint
                      | ControlStyles.AllPaintingInWmPaint,
@@ -37,36 +37,69 @@ namespace DarkUI.Controls
             }
             else
             {
-                Font = (Font)_originalFont.Clone();
+                if (_originalFont != null) Font = (Font)_originalFont.Clone();
             }
+
             Refresh();
         }
 
+        // TODO: @DarkMode(DarkTabControl): Implement hot-tracked coloring
         protected override void OnPaint(PaintEventArgs e)
         {
             if (_darkModeEnabled)
             {
-                // Test/proof of concept
+                var g = e.Graphics;
+
+                // Draw background
                 using (var b = new SolidBrush(Config.Colors.Fen_DarkBackground))
                 {
-                    e.Graphics.FillRectangle(b, ClientRectangle);
+                    g.FillRectangle(b, ClientRectangle);
                 }
 
-                Brush[] brushes =
+                if (TabPages.Count > 0)
                 {
-                    Brushes.Red,
-                    Brushes.Blue,
-                    Brushes.White,
-                    Brushes.Orange,
-                    Brushes.Purple
-                };
+                    // Draw page border
+                    var firstTabRect = GetTabRect(0);
+                    using (var p = new Pen(Config.Colors.LighterBackground))
+                    {
+                        g.DrawRectangle(p, ClientRectangle.X + firstTabRect.X,
+                            ClientRectangle.Y + firstTabRect.Y + firstTabRect.Height + 1,
+                            (ClientRectangle.Width - firstTabRect.X) - 2,
+                            (ClientRectangle.Height - (firstTabRect.Y + firstTabRect.Height + 1)) - 2);
+                    }
 
-                for (int i = 0; i < TabPages.Count; i++)
-                {
-                    TabPage tabPage = TabPages[i];
-                    Rectangle tabRect = GetTabRect(i);
+                    // Paint tabs
+                    for (int i = 0; i < TabPages.Count; i++)
+                    {
+                        TabPage tabPage = TabPages[i];
+                        Rectangle tabRect = GetTabRect(i);
 
-                    e.Graphics.FillRectangle(brushes[i], tabRect);
+                        bool focused = SelectedTab == tabPage;
+
+                        Color backColor = focused ? Config.Colors.GreySelection : Config.Colors.GreyBackground;
+
+                        // Draw tab background
+                        using (var b = new SolidBrush(backColor))
+                        {
+                            g.FillRectangle(b, Rectangle.Inflate(tabRect, 0, 1));
+                        }
+
+                        // Draw tab border
+                        using (var p = new Pen(Config.Colors.LighterBackground))
+                        {
+                            g.DrawRectangle(p, Rectangle.Inflate(tabRect, 0, 1));
+                        }
+
+                        const TextFormatFlags textFormat =
+                            TextFormatFlags.HorizontalCenter |
+                            TextFormatFlags.VerticalCenter |
+                            TextFormatFlags.EndEllipsis |
+                            TextFormatFlags.NoPrefix |
+                            TextFormatFlags.NoClipping;
+
+                        // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
+                        TextRenderer.DrawText(g, tabPage.Text, Font, tabRect, Config.Colors.Fen_DarkForeground, textFormat);
+                    }
                 }
             }
 

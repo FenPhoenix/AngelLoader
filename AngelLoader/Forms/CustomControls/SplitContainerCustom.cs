@@ -112,6 +112,11 @@ namespace AngelLoader.Forms.CustomControls
                     Panel2MinSize = CollapsedSize;
                     SplitterDistance = Width - CollapsedSize;
                     FullScreen = true;
+                    // Colossal hack (hiding dark tab control prevents white line on side)
+                    foreach (Control control in Panel2.Controls)
+                    {
+                        if (control is DarkUI.Controls.DarkTabControl) control.Hide();
+                    }
                     if (suspendResume) this.ResumeDrawing();
                 }
                 else
@@ -121,6 +126,11 @@ namespace AngelLoader.Forms.CustomControls
                     Panel2MinSize = _storedCollapsiblePanelMinSize;
                     FullScreen = false;
                     IsSplitterFixed = false;
+                    // Colossal hack (hiding dark tab control prevents white line on side)
+                    foreach (Control control in Panel2.Controls)
+                    {
+                        if (control is DarkUI.Controls.DarkTabControl) control.Show();
+                    }
                     if (suspendResume) this.ResumeDrawing();
                 }
             }

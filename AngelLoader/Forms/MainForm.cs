@@ -594,7 +594,7 @@ namespace AngelLoader.Forms
             var tabs = new List<TabPage>(sortedTabPages.Count);
             foreach (var item in sortedTabPages) tabs.Add(item.Value);
 
-            // This removes any existing tabs so it's fine even for debug
+            // This removes any existing tabs so it works even though we always add all tabs in component init now
             TopRightTabControl.SetTabsFull(tabs);
 
             for (int i = 0; i < TopRightTabsData.Count; i++)

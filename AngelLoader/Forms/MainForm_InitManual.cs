@@ -892,13 +892,15 @@ namespace AngelLoader.Forms
             // TopRightTabControl
             // 
             TopRightTabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            /* These tab pages get added as appropriate on startup
+
+            // We need to always add the tab pages to the Controls collection on init, because otherwise in dark
+            // mode the tabs have wrong sizes until you set it again after the UI is already shown(?!)
             TopRightTabControl.Controls.Add(StatisticsTabPage);
             TopRightTabControl.Controls.Add(EditFMTabPage);
             TopRightTabControl.Controls.Add(CommentTabPage);
             TopRightTabControl.Controls.Add(TagsTabPage);
             TopRightTabControl.Controls.Add(PatchTabPage);
-            */
+
             TopRightTabControl.Location = new Point(0, 0);
             TopRightTabControl.Size = new Size(534, 310);
             TopRightTabControl.TabIndex = 15;
