@@ -293,13 +293,12 @@ namespace DarkUI.Controls
 
             if (e.Button != MouseButtons.Left) return;
 
-            Point cursorLoc = PointToClient(e.Location);
+            Point cursorPos = PointToClient(e.Location);
 
             var sbi = GetCurrentScrollBarInfo();
             var thumbRect = GetThumbRect(ref sbi);
-            bool cursorOverThumb = thumbRect.Contains(cursorLoc);
 
-            if (cursorOverThumb)
+            if (thumbRect.Contains(cursorPos))
             {
                 _leftButtonPressedOnThumb = true;
                 if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, State.Pressed))
@@ -307,7 +306,7 @@ namespace DarkUI.Controls
                     Refresh();
                 }
             }
-            else if (GetArrowRect().Contains(cursorLoc))
+            else if (GetArrowRect().Contains(cursorPos))
             {
                 _leftButtonPressedOnFirstArrow = true;
                 if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, State.Pressed))
@@ -315,7 +314,7 @@ namespace DarkUI.Controls
                     Refresh();
                 }
             }
-            else if (GetArrowRect(second: true).Contains(cursorLoc))
+            else if (GetArrowRect(second: true).Contains(cursorPos))
             {
                 _leftButtonPressedOnSecondArrow = true;
                 if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, State.Pressed))
@@ -329,18 +328,18 @@ namespace DarkUI.Controls
         {
             if (!Visible || !Enabled) return;
 
+            if (e.Button != MouseButtons.Left) return;
+
             bool refresh = false;
 
             var sbi = GetCurrentScrollBarInfo();
             var thumbRect = GetThumbRect(ref sbi);
-            var leftArrowRect = GetArrowRect();
-            var rightArrowRect = GetArrowRect(second: true);
+            var firstArrowRect = GetArrowRect();
+            var secondArrowRect = GetArrowRect(second: true);
 
             Point cursorPos = PointToClient(e.Location);
 
-            bool cursorOverThumb = thumbRect.Contains(cursorPos);
-
-            if (cursorOverThumb)
+            if (thumbRect.Contains(cursorPos))
             {
                 _leftButtonPressedOnThumb = false;
                 _leftButtonPressedOnFirstArrow = false;
@@ -366,19 +365,17 @@ namespace DarkUI.Controls
                     refresh = true;
                 }
 
-                var cursorOverFirstArrow = leftArrowRect.Contains(cursorPos);
-                var cursorOverSecondArrow = rightArrowRect.Contains(cursorPos);
-
                 if (_leftButtonPressedOnFirstArrow || _leftButtonPressedOnThumb)
                 {
                     _leftButtonPressedOnFirstArrow = false;
-                    _firstArrowState = cursorOverFirstArrow ? State.Hot : State.Normal;
+
+                    _firstArrowState = firstArrowRect.Contains(cursorPos) ? State.Hot : State.Normal;
                     refresh = true;
                 }
                 if (_leftButtonPressedOnSecondArrow || _leftButtonPressedOnThumb)
                 {
                     _leftButtonPressedOnSecondArrow = false;
-                    _secondArrowState = cursorOverSecondArrow ? State.Hot : State.Normal;
+                    _secondArrowState = secondArrowRect.Contains(cursorPos) ? State.Hot : State.Normal;
                     refresh = true;
                 }
 
