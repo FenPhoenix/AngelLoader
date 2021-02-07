@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace DarkUI.Controls
 {
@@ -13,5 +14,18 @@ namespace DarkUI.Controls
         ScrollBarVisualOnly HorizontalVisualScrollBar { get; }
         ScrollBar VerticalScrollBar { get; }
         ScrollBar HorizontalScrollBar { get; }
+    }
+
+    public interface IDarkableScrollableNative : IDarkable
+    {
+        ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
+        ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+        bool IsHandleCreated { get; }
+        IntPtr Handle { get; }
+        event EventHandler Scroll;
+        event PaintEventHandler Paint;
+        bool VScrollVisible { get; }
+        bool HScrollVisible { get; }
+        void AddToControls(ScrollBarVisualOnly_Native visualScrollBar);
     }
 }

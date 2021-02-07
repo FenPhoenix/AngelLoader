@@ -88,11 +88,9 @@ namespace AngelLoader.Forms.CustomControls
         I don't like the "wait-and-hope" method at all, but hey... worst case, the auto-top-scroll will still
         happen, and that's no worse than it was before.
         */
-        protected override void OnVScroll(EventArgs e)
+        private void Workarounds_OnVScroll()
         {
             _scrollInfo = GetCurrentScrollInfo(Handle);
-
-            base.OnVScroll(e);
         }
 
         protected override async void OnEnter(EventArgs e)

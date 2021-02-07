@@ -22,7 +22,7 @@ And we'll need a "this control has native scrollbars" version of ScrollBarVisual
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
+    internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkableScrollableNative
     {
         #region Private fields / properties
 
@@ -51,9 +51,21 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        // TODO: @DarkMode: Figure out how to make it not draw classic-mode disabled colors when disabled in plaintext mode
+        public RichTextBoxCustom()
+        {
+            //VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this);
+            //HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this);
 
-        public RichTextBoxCustom() => InitWorkarounds();
+            InitWorkarounds();
+        }
+
+        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+        public event EventHandler? Scroll;
+        public bool VScrollVisible { get; }
+        public bool HScrollVisible { get; }
+
+        public void AddToControls(ScrollBarVisualOnly_Native visualScrollBar) => Controls.Add(visualScrollBar);
 
         #region Private methods
 
@@ -266,6 +278,19 @@ namespace AngelLoader.Forms.CustomControls
             if (!_darkModeEnabled) base.OnEnabledChanged(e);
             // Just suppress the base method call and done, no recoloring. Argh! I totally didn't make a huge
             // ridiculous system for getting around it! I totally knew all along!
+        }
+
+        protected override void OnHScroll(EventArgs e)
+        {
+            base.OnHScroll(e);
+            Scroll?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected override void OnVScroll(EventArgs e)
+        {
+            Workarounds_OnVScroll();
+            base.OnVScroll(e);
+            Scroll?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void Dispose(bool disposing)
