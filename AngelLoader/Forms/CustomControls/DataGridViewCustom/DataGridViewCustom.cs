@@ -379,9 +379,6 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnPaint(e);
 
-            // Must come after base.OnPaint(e)
-            ControlPainter.PaintDarkScrollBars(this, e);
-
             if (_darkModeEnabled)
             {
                 if (BorderStyle == BorderStyle.FixedSingle)
