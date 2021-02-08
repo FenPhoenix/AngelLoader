@@ -1364,6 +1364,10 @@ namespace AngelLoader.Forms
                             {
                                 control.BackColor = DarkUI.Config.Colors.GreySelection;
                             }
+                            else if (control == TopSplitContainer.Panel2)
+                            {
+                                control.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                            }
                             else
                             {
                                 control.BackColor = Color.FromArgb(44, 44, 44);
