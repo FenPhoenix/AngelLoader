@@ -58,14 +58,22 @@ namespace DarkUI.Controls
 
                 if (TabPages.Count > 0)
                 {
-                    // Draw page border
                     var firstTabRect = GetTabRect(0);
+                    var pageRect = new Rectangle(ClientRectangle.X,
+                        ClientRectangle.Y + firstTabRect.Y + firstTabRect.Height + 1,
+                        (ClientRectangle.Width - firstTabRect.X) - 1,
+                        (ClientRectangle.Height - (firstTabRect.Y + firstTabRect.Height + 1)) - 2);
+
+                    // Fill background (our actual area is slightly larger than gets filled by simply setting BackColor)
+                    using (var b = new SolidBrush(Color.FromArgb(44, 44, 44)))
+                    {
+                        g.FillRectangle(b, pageRect);
+                    }
+
+                    // Draw page border
                     using (var p = new Pen(Config.Colors.LighterBackground))
                     {
-                        g.DrawRectangle(p, ClientRectangle.X + firstTabRect.X,
-                            ClientRectangle.Y + firstTabRect.Y + firstTabRect.Height + 1,
-                            (ClientRectangle.Width - firstTabRect.X) - 2,
-                            (ClientRectangle.Height - (firstTabRect.Y + firstTabRect.Height + 1)) - 2);
+                        g.DrawRectangle(p, pageRect);
                     }
 
                     // Paint tabs

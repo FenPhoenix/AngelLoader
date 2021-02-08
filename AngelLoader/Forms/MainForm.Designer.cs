@@ -367,6 +367,7 @@ namespace AngelLoader.Forms
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeRichTextBox);
             this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             this.MainSplitContainer.Panel2MinSize = 38;
+            this.MainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MainSplitContainer.Size = new System.Drawing.Size(1671, 672);
             this.MainSplitContainer.SplitterDistance = 309;
             this.MainSplitContainer.TabIndex = 0;
@@ -1081,7 +1082,7 @@ namespace AngelLoader.Forms
             this.TopRightTabControl.Location = new System.Drawing.Point(0, 0);
             this.TopRightTabControl.Name = "TopRightTabControl";
             this.TopRightTabControl.SelectedIndex = 0;
-            this.TopRightTabControl.Size = new System.Drawing.Size(534, 310);
+            this.TopRightTabControl.Size = new System.Drawing.Size(535, 310);
             this.TopRightTabControl.TabIndex = 15;
             // 
             // StatisticsTabPage
@@ -1848,6 +1849,7 @@ namespace AngelLoader.Forms
             // ReadmeRichTextBox
             // 
             this.ReadmeRichTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.ReadmeRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ReadmeRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ReadmeRichTextBox.Location = new System.Drawing.Point(0, 0);
             this.ReadmeRichTextBox.Name = "ReadmeRichTextBox";

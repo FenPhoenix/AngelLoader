@@ -358,6 +358,7 @@ namespace AngelLoader.Forms
             MainSplitContainer.Panel2.Controls.Add(ReadmeRichTextBox);
             MainSplitContainer.Panel2.MouseLeave += ReadmeArea_MouseLeave;
             MainSplitContainer.Panel2MinSize = 38;
+            MainSplitContainer.Panel2.Padding = new Padding(2, 2, 2, 2);
             MainSplitContainer.Size = new Size(1671, 672);
             MainSplitContainer.SplitterDistance = 309;
             MainSplitContainer.TabIndex = 0;
@@ -902,7 +903,7 @@ namespace AngelLoader.Forms
             TopRightTabControl.Controls.Add(PatchTabPage);
 
             TopRightTabControl.Location = new Point(0, 0);
-            TopRightTabControl.Size = new Size(534, 310);
+            TopRightTabControl.Size = new Size(535, 310);
             TopRightTabControl.TabIndex = 15;
             // 
             // StatisticsTabPage
@@ -1524,6 +1525,7 @@ namespace AngelLoader.Forms
             // ReadmeRichTextBox
             // 
             ReadmeRichTextBox.BackColor = SystemColors.Window;
+            ReadmeRichTextBox.BorderStyle = BorderStyle.None;
             ReadmeRichTextBox.ReadOnly = true;
             ReadmeRichTextBox.Dock = DockStyle.Fill;
             ReadmeRichTextBox.TabIndex = 0;

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -66,9 +67,10 @@ namespace AngelLoader.Forms.CustomControls
             AutoScaleMode = AutoScaleMode.Dpi;
             DoubleBuffered = true;
             _storedCollapsiblePanelMinSize = IsMain() ? Panel1MinSize : Panel2MinSize;
+            Panel2.Paint += Panel2_Paint;
         }
 
-        #region API methods
+        #region Public methods
 
         internal void InjectSibling(SplitContainerCustom sibling) => _sibling = sibling;
 
@@ -185,6 +187,18 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #region Event overrides
+
+        // Draw the readme border here, because we can't draw it on the readme itself as it ignores padding, and
+        // we need it to be padded to accomodate the border so we just pad this and draw it here.
+        private void Panel2_Paint(object sender, PaintEventArgs e)
+        {
+            if (IsMain() && Config.VisualTheme == VisualTheme.Dark)
+            {
+                using var p = new Pen(DarkUI.Config.Colors.GreySelection);
+                var rect = Panel2.ClientRectangle;
+                e.Graphics.DrawRectangle(p, rect.X + 1, rect.Y + 1, rect.Width - 3, rect.Height - 3);
+            }
+        }
 
         protected override void OnMouseDown(MouseEventArgs e)
         {

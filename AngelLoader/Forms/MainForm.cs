@@ -1360,7 +1360,14 @@ namespace AngelLoader.Forms
                         if (darkMode)
                         {
                             control.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
-                            control.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                            if (control is SplitContainer)
+                            {
+                                control.BackColor = DarkUI.Config.Colors.GreySelection;
+                            }
+                            else
+                            {
+                                control.BackColor = Color.FromArgb(44, 44, 44);
+                            }
                         }
                         else
                         {
