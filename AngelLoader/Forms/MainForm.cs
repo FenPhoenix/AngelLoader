@@ -4454,7 +4454,7 @@ namespace AngelLoader.Forms
 
         private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintMinusButton(PatchRemoveDMLButton, e);
 
-        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton16(TopRightMenuButton, e);
+        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton_TopRight(TopRightMenuButton, e);
 
         private void MainMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton24(MainMenuButton, e);
 

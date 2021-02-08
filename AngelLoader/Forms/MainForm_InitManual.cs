@@ -870,8 +870,8 @@ namespace AngelLoader.Forms
             TopRightMenuButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             TopRightMenuButton.FlatAppearance.BorderSize = 0;
             TopRightMenuButton.FlatStyle = FlatStyle.Flat;
-            TopRightMenuButton.Location = new Point(534, 2);
-            TopRightMenuButton.Size = new Size(16, 16);
+            TopRightMenuButton.Location = new Point(533, 0);
+            TopRightMenuButton.Size = new Size(18, 20);
             TopRightMenuButton.TabIndex = 13;
             TopRightMenuButton.UseVisualStyleBackColor = true;
             TopRightMenuButton.Click += TopRightMenuButton_Click;

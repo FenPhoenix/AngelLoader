@@ -325,11 +325,11 @@ namespace AngelLoader.Forms
 
         #region Hamburger
 
-        private static readonly Rectangle[] _hamRects16 =
+        private static readonly Rectangle[] _hamRects_TopRightMenu =
         {
-            new Rectangle(1, 1, 14, 2),
-            new Rectangle(1, 7, 14, 2),
-            new Rectangle(1, 13, 14, 2)
+            new Rectangle(2, 3, 14, 2),
+            new Rectangle(2, 9, 14, 2),
+            new Rectangle(2, 15, 14, 2)
         };
 
         private static readonly Rectangle[] _hamRects24 =
@@ -509,9 +509,9 @@ namespace AngelLoader.Forms
             e.Graphics.FillPolygon(button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark, ps);
         }
 
-        internal static void PaintHamburgerMenuButton16(Button button, PaintEventArgs e)
+        internal static void PaintHamburgerMenuButton_TopRight(Button button, PaintEventArgs e)
         {
-            e.Graphics.FillRectangles(button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark, _hamRects16);
+            e.Graphics.FillRectangles(button.Enabled ? _blackForegroundBrush : SystemBrushes.ControlDark, _hamRects_TopRightMenu);
         }
 
         internal static void PaintHamburgerMenuButton24(Button button, PaintEventArgs e)

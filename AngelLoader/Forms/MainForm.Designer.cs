@@ -1046,9 +1046,9 @@ namespace AngelLoader.Forms
             this.TopRightMenuButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightMenuButton.FlatAppearance.BorderSize = 0;
             this.TopRightMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.TopRightMenuButton.Location = new System.Drawing.Point(534, 2);
+            this.TopRightMenuButton.Location = new System.Drawing.Point(533, 0);
             this.TopRightMenuButton.Name = "TopRightMenuButton";
-            this.TopRightMenuButton.Size = new System.Drawing.Size(16, 16);
+            this.TopRightMenuButton.Size = new System.Drawing.Size(18, 20);
             this.TopRightMenuButton.TabIndex = 13;
             this.TopRightMenuButton.UseVisualStyleBackColor = true;
             this.TopRightMenuButton.Click += new System.EventHandler(this.TopRightMenuButton_Click);
