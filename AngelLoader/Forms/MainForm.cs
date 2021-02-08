@@ -1370,7 +1370,7 @@ namespace AngelLoader.Forms
                             }
                             else
                             {
-                                control.BackColor = Color.FromArgb(44, 44, 44);
+                                control.BackColor = DarkUI.Config.Colors.Fen_ControlBackground;
                             }
                         }
                         else

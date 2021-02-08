@@ -9,6 +9,9 @@ namespace DarkUI.Config
         public static Color Fen_DarkBackground => Color.FromArgb(32, 32, 32);
         public static Color Fen_DarkForeground => Color.FromArgb(200, 200, 200);
 
+        public static Color Fen_ControlBackground => Color.FromArgb(48, 48, 48);
+        public static Color Fen_DeselectedTabBackground => Color.FromArgb(44, 44, 44);
+
         #endregion
 
         public static Color GreyBackground

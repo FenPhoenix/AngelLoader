@@ -65,7 +65,7 @@ namespace DarkUI.Controls
                         (ClientRectangle.Height - (firstTabRect.Y + firstTabRect.Height + 1)) - 2);
 
                     // Fill background (our actual area is slightly larger than gets filled by simply setting BackColor)
-                    using (var b = new SolidBrush(Color.FromArgb(44, 44, 44)))
+                    using (var b = new SolidBrush(Config.Colors.Fen_ControlBackground))
                     {
                         g.FillRectangle(b, pageRect);
                     }
@@ -84,7 +84,8 @@ namespace DarkUI.Controls
 
                         bool focused = SelectedTab == tabPage;
 
-                        Color backColor = focused ? Config.Colors.GreySelection : Config.Colors.GreyBackground;
+                        Color backColor = focused ? Config.Colors.LightBackground : Config.Colors.Fen_DeselectedTabBackground;
+                        //Color backColor = focused ? Config.Colors.Fen_ControlBackground : Config.Colors.Fen_DarkBackground;
 
                         // Draw tab background
                         using (var b = new SolidBrush(backColor))
@@ -106,7 +107,11 @@ namespace DarkUI.Controls
                             TextFormatFlags.NoClipping;
 
                         // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
-                        TextRenderer.DrawText(g, tabPage.Text, Font, tabRect, Config.Colors.Fen_DarkForeground, textFormat);
+                        Color textColor = SelectedTab == tabPage
+                            //? Color.FromArgb(220,220,220)
+                            ? Config.Colors.Fen_DarkForeground
+                            : Config.Colors.Fen_DarkForeground;
+                        TextRenderer.DrawText(g, tabPage.Text, Font, tabRect, textColor, textFormat);
                     }
                 }
             }
