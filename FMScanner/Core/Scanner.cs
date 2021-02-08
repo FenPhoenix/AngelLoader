@@ -178,11 +178,15 @@ namespace FMScanner
 #endif
         }
 
+        private readonly bool _useNewSevenZipMethod;
+
         [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        public Scanner()
+        public Scanner(bool useNewSevenZipMethod = false)
         {
+            _useNewSevenZipMethod = useNewSevenZipMethod;
+
             // Perf/size balance: we want to build these strings only once so we don't re-concat them a million
             // times during the scan, but we also want to lower file size by not having a bunch of duplicate
             // strings. So we build the string arrays dynamically only once here. That way we trade perf where it
@@ -541,11 +545,18 @@ namespace FMScanner
 
                 try
                 {
-                    _sevenZipArchive = new SevenZipExtractor(_archivePath) { PreserveDirectoryStructure = true };
-                    sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
+                    if (_useNewSevenZipMethod)
+                    {
+                        throw new NotImplementedException("new faster 7z method not implemented yet");
+                    }
+                    else
+                    {
+                        _sevenZipArchive = new SevenZipExtractor(_archivePath) { PreserveDirectoryStructure = true };
+                        sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
 
-                    // Disable this one later when we get the partial extract fully implemented
-                    _sevenZipArchive.ExtractArchive(_fmWorkingPath);
+                        // Disable this one later when we get the partial extract fully implemented
+                        _sevenZipArchive.ExtractArchive(_fmWorkingPath);
+                    }
 
                     //var filesToExtract = new List<string>();
 
