@@ -188,15 +188,23 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Event overrides
 
-        // Draw the readme border here, because we can't draw it on the readme itself as it ignores padding, and
-        // we need it to be padded to accomodate the border so we just pad this and draw it here.
+        // Draw a nice separator between the bottom of the readme and the bottom bar. Every other side is already
+        // visually separated enough.
         private void Panel2_Paint(object sender, PaintEventArgs e)
         {
-            if (IsMain() && Config.VisualTheme == VisualTheme.Dark)
+            if (IsMain())
             {
-                using var p = new Pen(DarkUI.Config.Colors.GreySelection);
-                var rect = Panel2.ClientRectangle;
-                e.Graphics.DrawRectangle(p, rect.X + 1, rect.Y + 1, rect.Width - 3, rect.Height - 3);
+                using (var b = new SolidBrush(DarkUI.Config.Colors.Fen_DarkBackground))
+                {
+                    e.Graphics.FillRectangle(b, Panel2.ClientRectangle);
+                }
+
+                using (var p = Config.VisualTheme == VisualTheme.Dark
+                    ? new Pen(DarkUI.Config.Colors.GreySelection)
+                    : new Pen(Color.FromArgb(210, 210, 210)))
+                {
+                    e.Graphics.DrawLine(p, Panel2.Left, Panel2.Height - 2, Panel2.Right, Panel2.Height - 2);
+                }
             }
         }
 

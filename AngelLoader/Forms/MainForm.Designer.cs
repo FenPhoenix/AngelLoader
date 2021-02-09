@@ -367,7 +367,7 @@ namespace AngelLoader.Forms
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeRichTextBox);
             this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             this.MainSplitContainer.Panel2MinSize = 38;
-            this.MainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(1, 1, 2, 2);
             this.MainSplitContainer.Size = new System.Drawing.Size(1671, 672);
             this.MainSplitContainer.SplitterDistance = 309;
             this.MainSplitContainer.TabIndex = 0;
