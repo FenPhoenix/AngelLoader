@@ -116,7 +116,7 @@ namespace AngelLoader.DataClasses
                 set[i] = Tabs[i].DisplayIndex;
             }
 
-        breakout:
+            breakout:
 
             #endregion
 

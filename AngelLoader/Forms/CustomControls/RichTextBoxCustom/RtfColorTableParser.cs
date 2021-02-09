@@ -10,6 +10,10 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
+    // TODO: @DarkMode: We can probably remove this and just use a search
+    // If we just search for "{\colortbl" we're extraordinarily unlikely to have it be intended as plain text.
+    // Then we can get rid of this slow (in a relative sense) parser.
+
     public sealed class RtfColorTableParser
     {
         #region Constants
@@ -1121,7 +1125,7 @@ namespace AngelLoader.Forms.CustomControls
 
             ClearReturnFields(Error.OK);
 
-            _colorTableStartIndex = (int)_rtfStream.CurrentPos;
+            _colorTableStartIndex = _rtfStream.CurrentPos;
 
             var numSB = new StringBuilder(5);
             var rgbNameSB = new StringBuilder(5);
@@ -1132,7 +1136,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (ch == '}')
                 {
                     _rtfStream.UnGetChar('}');
-                    _colorTableEndIndex = (int)_rtfStream.CurrentPos;
+                    _colorTableEndIndex = _rtfStream.CurrentPos;
                     break;
                 }
                 _colorTableSB.Append(ch);

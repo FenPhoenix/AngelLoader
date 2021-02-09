@@ -60,7 +60,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                         c.DisplayIndex = c.Index;
                         break;
                     case ColumnProperties.Width:
-                        if (c.Resizable == DataGridViewTriState.True) c.Width = Misc.Defaults.ColumnWidth;
+                        if (c.Resizable == DataGridViewTriState.True) c.Width = Defaults.ColumnWidth;
                         break;
                 }
 

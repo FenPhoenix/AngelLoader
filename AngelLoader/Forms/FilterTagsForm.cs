@@ -355,7 +355,7 @@ namespace AngelLoader.Forms
         {
             if (disposing)
             {
-                _arrowRightBmp?.Dispose();
+                _arrowRightBmp.Dispose();
                 components?.Dispose();
             }
             base.Dispose(disposing);

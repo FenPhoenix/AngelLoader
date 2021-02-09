@@ -228,7 +228,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             FanMission? selFM = _owner.FMsDGV.SelectedRows.Count > 0 ? _owner.FMsDGV.GetSelectedFM() : null;
             bool sayInstall = selFM == null || !selFM.Installed;
             // @GENGAMES - Localize FM context menu - "sayShockEd"
-            bool sayShockEd = selFM != null && selFM.Game == GameSupport.Game.SS2;
+            bool sayShockEd = selFM != null && selFM.Game == Game.SS2;
 
             #endregion
 
@@ -266,7 +266,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             FinishedOnMenuItem!.Text = LText.FMsList.FMMenu_FinishedOn;
 
-            SetGameSpecificFinishedOnMenuItemsText(selFM?.Game ?? GameSupport.Game.Null);
+            SetGameSpecificFinishedOnMenuItemsText(selFM?.Game ?? Game.Null);
             FinishedOnUnknownMenuItem!.Text = LText.Difficulties.Unknown;
 
             #endregion
@@ -498,7 +498,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
         // Thief 3 difficulties: Easy, Normal, Hard, Expert
         // SS2 difficulties: Easy, Normal, Hard, Impossible
-        internal static void SetGameSpecificFinishedOnMenuItemsText(GameSupport.Game game)
+        internal static void SetGameSpecificFinishedOnMenuItemsText(Game game)
         {
             if (!_constructed) return;
 
@@ -554,7 +554,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
             {
-                var convertType = sender == ConvertWAVsTo16BitMenuItem ? Misc.AudioConvert.WAVToWAV16 : Misc.AudioConvert.OGGToWAV;
+                var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
                 await FMAudio.ConvertToWAVs(_owner.FMsDGV.GetSelectedFM(), convertType, true);
             }
         }

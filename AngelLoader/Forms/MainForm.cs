@@ -59,7 +59,6 @@ using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using DarkUI.Controls;
-using Gma.System.MouseKeyHook;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
@@ -167,9 +166,9 @@ namespace AngelLoader.Forms
         }
 #endif
 
-#if DEBUG || (Release_Testing && !RT_StartupOnly)
-
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
 
         private void TestButton_Click(object sender, EventArgs e)
         {

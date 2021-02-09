@@ -193,7 +193,7 @@ namespace FMScanner
             "Last Updated",
             "Last updated",
             "Last Update",
-            "Last update",
+            "Last update"
         };
 
         private readonly string[] SA_ReleaseDateDetect =
@@ -265,7 +265,7 @@ namespace FMScanner
             "dd.M.yyyy",
 
             "d.MM.yyyy",
-            "dd.MM.yyyy",
+            "dd.MM.yyyy"
         };
 
         private readonly string[]
