@@ -1,9 +1,8 @@
-﻿using DarkUI.Config;
-using DarkUI.Controls;
-using DarkUI.Icons;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Config;
+using DarkUI.Icons;
 
 namespace DarkUI.Renderers
 {
@@ -102,6 +101,12 @@ namespace DarkUI.Renderers
             base.OnRenderArrow(e);
         }
 
+        protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
+        {
+            Color foreColor = e.Item.Enabled ? e.TextColor : Colors.DisabledText;
+            TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, foreColor, e.TextFormat);
+        }
+
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
         {
             var g = e.Graphics;
@@ -110,7 +115,7 @@ namespace DarkUI.Renderers
 
             if (e.Item.Enabled)
             {
-                
+
                 var bgColor = e.Item.Selected ? Colors.GreyHighlight : e.Item.BackColor;
 
                 // Normal item
