@@ -194,17 +194,18 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (IsMain())
             {
-                using (var b = new SolidBrush(DarkUI.Config.Colors.Fen_DarkBackground))
+                bool darkModeEnabled = Config.VisualTheme == VisualTheme.Dark;
+
+                if (darkModeEnabled)
                 {
+                    using var b = new SolidBrush(DarkUI.Config.Colors.Fen_DarkBackground);
                     e.Graphics.FillRectangle(b, Panel2.ClientRectangle);
                 }
 
-                using (var p = Config.VisualTheme == VisualTheme.Dark
+                using var p = darkModeEnabled
                     ? new Pen(DarkUI.Config.Colors.GreySelection)
-                    : new Pen(Color.FromArgb(210, 210, 210)))
-                {
-                    e.Graphics.DrawLine(p, Panel2.Left, Panel2.Height - 2, Panel2.Right, Panel2.Height - 2);
-                }
+                    : new Pen(Color.FromArgb(210, 210, 210));
+                e.Graphics.DrawLine(p, Panel2.Left, Panel2.Height - 2, Panel2.Right, Panel2.Height - 2);
             }
         }
 
