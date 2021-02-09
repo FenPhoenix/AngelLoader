@@ -205,7 +205,10 @@ namespace AngelLoader.Forms.CustomControls
                 using var p = darkModeEnabled
                     ? new Pen(DarkUI.Config.Colors.GreySelection)
                     : new Pen(Color.FromArgb(210, 210, 210));
-                e.Graphics.DrawLine(p, Panel2.Left, Panel2.Height - 2, Panel2.Right, Panel2.Height - 2);
+
+                int subtract = darkModeEnabled ? 1 : 2;
+
+                e.Graphics.DrawLine(p, Panel2.Left, Panel2.Height - subtract, Panel2.Right, Panel2.Height - subtract);
             }
         }
 
