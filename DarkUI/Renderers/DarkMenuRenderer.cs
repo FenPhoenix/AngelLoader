@@ -95,7 +95,8 @@ namespace DarkUI.Renderers
 
         protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
         {
-            e.ArrowColor = Colors.LightText;
+            // TODO: @DarkMode: Synchronize actual disabled text with disabled arrow color
+            e.ArrowColor = e.Item.Enabled ? Colors.LightText : Colors.DisabledText;
             e.ArrowRectangle = new Rectangle(new Point(e.ArrowRectangle.Left, e.ArrowRectangle.Top - 1), e.ArrowRectangle.Size);
 
             base.OnRenderArrow(e);
