@@ -29,6 +29,34 @@ namespace FMScanner
         private const char LeftDoubleQuote = '\u201C';
         private const char RightDoubleQuote = '\u201D';
 
+        private readonly string[] _monthNamesEnglish =
+        {
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+        };
+
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         private static class FMDirs
         {
@@ -155,6 +183,19 @@ namespace FMScanner
             "Fan Mission/Map Author"
         };
 
+        private readonly string[] SA_LatestUpdateDateDetect =
+        {
+            "Update Date",
+            "Updated Date",
+            "Update date",
+            "Updated date",
+            "Update", "Updated",
+            "Last Updated",
+            "Last updated",
+            "Last Update",
+            "Last update",
+        };
+
         private readonly string[] SA_ReleaseDateDetect =
         {
             "Date Of Release", "Date of Release",
@@ -216,6 +257,16 @@ namespace FMScanner
         private readonly Dictionary<string, string> LanguagesC;
 
         #endregion
+
+        private readonly string[]
+        DateFormatsEuropean =
+        {
+            "d.M.yyyy",
+            "dd.M.yyyy",
+
+            "d.MM.yyyy",
+            "dd.MM.yyyy",
+        };
 
         private readonly string[]
         DateFormats =

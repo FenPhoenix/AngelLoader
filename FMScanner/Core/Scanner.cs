@@ -88,7 +88,7 @@ namespace FMScanner
 
         private readonly FileEncoding _fileEncoding = new FileEncoding();
 
-        private readonly List<FileInfo> _fmDirFileInfos = new List<FileInfo>();
+        private readonly List<FileInfoCustom> _fmDirFileInfos = new List<FileInfoCustom>();
 
         private ScanOptions _scanOptions = new ScanOptions();
 
@@ -115,6 +115,41 @@ namespace FMScanner
         #endregion
 
         #region Private classes
+
+        private sealed class FileInfoCustom
+        {
+            private string? _name;
+            internal string Name => _name ??= Path.GetFileName(FullName);
+            internal readonly string FullName;
+            internal readonly long Length;
+
+            private readonly ArchiveFileInfo? _archiveFileInfo;
+
+            private DateTime? _lastWriteTime;
+            internal DateTime LastWriteTime
+            {
+                get
+                {
+                    if (_archiveFileInfo != null) _lastWriteTime = ((ArchiveFileInfo)_archiveFileInfo).LastWriteTime;
+                    return (DateTime)_lastWriteTime!;
+                }
+            }
+
+            internal FileInfoCustom(FileInfo fileInfo)
+            {
+                _name = fileInfo.Name;
+                FullName = fileInfo.FullName;
+                Length = fileInfo.Length;
+                _lastWriteTime = fileInfo.LastWriteTime;
+            }
+
+            internal FileInfoCustom(ArchiveFileInfo archiveFileInfo)
+            {
+                FullName = archiveFileInfo.FileName;
+                Length = (long)archiveFileInfo.Size;
+                _archiveFileInfo = archiveFileInfo;
+            }
+        }
 
         private sealed class ReadmeInternal
         {
@@ -178,15 +213,11 @@ namespace FMScanner
 #endif
         }
 
-        private readonly bool _useNewSevenZipMethod;
-
         [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        public Scanner(bool useNewSevenZipMethod = false)
+        public Scanner()
         {
-            _useNewSevenZipMethod = useNewSevenZipMethod;
-
             // Perf/size balance: we want to build these strings only once so we don't re-concat them a million
             // times during the scan, but we also want to lower file size by not having a bunch of duplicate
             // strings. So we build the string arrays dynamically only once here. That way we trade perf where it
@@ -469,6 +500,7 @@ namespace FMScanner
                             _tempScanOptions = _scanOptions.DeepCopy();
                             _scanOptions = FullScanOptions.DeepCopy();
                         }
+
                         try
                         {
                             scannedFM = ScanCurrentFM(rtfConverter, missions[i]);
@@ -480,6 +512,12 @@ namespace FMScanner
                             // Okay, we don't want to throw because that would stop the whole scan, but we want
                             // to continue scanning any further FMs that may be in the list. So just log.
                         }
+                        finally
+                        {
+                            if (!missions[i].Path.ExtIsZip()) DeleteFMWorkingPath();
+                        }
+
+
                         scannedFMDataList.Add(scannedFM);
                     }
                     finally
@@ -543,69 +581,68 @@ namespace FMScanner
                 _fmIsZip = false;
                 _fmIsSevenZip = true;
 
+                #region Partial 7z extract
+
+                // Rather than extracting everything, we only extract files we might need. We may still end up
+                // extracting more than we need, but it's WAY less than just dumbly doing the whole thing. Over
+                // my limited set of 45 7z files, this makes us about 4x faster on average. Certain individual
+                // FMs may still be about as slow depending on their structure and content, but meh. Improvement
+                // is improvement.
+
                 try
                 {
-                    if (_useNewSevenZipMethod)
+                    Directory.CreateDirectory(_fmWorkingPath);
+
+                    _sevenZipArchive = new SevenZipExtractor(_archivePath) { PreserveDirectoryStructure = true };
+                    sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
+
+                    var indexesList = new List<int>();
+                    uint extractorFilesCount = _sevenZipArchive.FilesCount;
+                    for (int i = 0; i < extractorFilesCount; i++)
                     {
-                        throw new NotImplementedException("new faster 7z method not implemented yet");
+                        var entry = _sevenZipArchive.ArchiveFileData[i];
+                        string fn = entry.FileName;
+                        int dirSeps;
+                        if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
+                            (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
+                              (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
+                               fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
+                             dirSeps == 0))
+                        {
+                            indexesList.Add(i);
+                        }
+                        else if (!entry.FileName.ContainsDirSep() &&
+                                 (entry.FileName.EndsWithI(".mis") ||
+                                  entry.FileName.EndsWithI(".gam")) ||
+                                 entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
+                                 entry.FileName.EqualsI(FMFiles.FMIni) ||
+                                 entry.FileName.EqualsI(FMFiles.ModIni))
+                        {
+                            indexesList.Add(i);
+                        }
+                        else if (entry.FileName.PathEndsWithI(FMFiles.SMissFlag) ||
+                                 entry.FileName.PathEndsWithI(FMFiles.SNewGameStr) ||
+                                 entry.FileName.PathEndsWithI("/titles.str") ||
+                                 entry.FileName.PathEndsWithI("/title.str"))
+                        {
+                            indexesList.Add(i);
+                        }
+
+                        _fmDirFileInfos.Add(new FileInfoCustom(entry));
                     }
-                    else
-                    {
-                        _sevenZipArchive = new SevenZipExtractor(_archivePath) { PreserveDirectoryStructure = true };
-                        sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
 
-                        // Disable this one later when we get the partial extract fully implemented
-                        _sevenZipArchive.ExtractArchive(_fmWorkingPath);
-                    }
-
-                    //var filesToExtract = new List<string>();
-
-                    //var indexesList = new List<int>();
-                    //uint extractorFilesCount = _sevenZipArchive.FilesCount;
-                    //for (int i = 0; i < extractorFilesCount; i++)
-                    //{
-                    //    var entry = _sevenZipArchive.ArchiveFileData[i];
-                    //    string fn = entry.FileName;
-                    //    int dirSeps;
-                    //    if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                    //        (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
-                    //          (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
-                    //           fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
-                    //         dirSeps == 0))
-                    //    {
-                    //        indexesList.Add(i);
-                    //        //filesToExtract.Add(entry.FileName);
-                    //    }
-                    //    else if (!entry.FileName.ContainsDirSep() &&
-
-                    //             (entry.FileName.EndsWithI(".mis") ||
-                    //              entry.FileName.EndsWith(".gam")) ||
-                    //             entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
-                    //             entry.FileName.EqualsI(FMFiles.FMIni) ||
-                    //             entry.FileName.EqualsI(FMFiles.ModIni))
-                    //    {
-                    //        //filesToExtract.Add(entry.FileName);
-                    //        indexesList.Add(i);
-                    //    }
-                    //    else if (entry.FileName.PathEndsWithI(FMFiles.SMissFlag) ||
-                    //             entry.FileName.PathEndsWithI(FMFiles.SNewGameStr) ||
-                    //             entry.FileName.PathEndsWithI("/titles.str") ||
-                    //             entry.FileName.PathEndsWithI("/title.str"))
-                    //    {
-                    //        indexesList.Add(i);
-                    //    }
-
-                    //    _sevenZipArchive.ExtractFiles(_fmWorkingPath, indexesList.ToArray());
-                    //    return UnsupportedDir();
-                    //}
+                    _sevenZipArchive.ExtractFiles(_fmWorkingPath, indexesList.ToArray());
                 }
                 catch (Exception ex)
                 {
                     // Third party thing, doesn't tell you what exceptions it can throw, whatever
                     Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in SevenZipExtractor construction or extraction", ex);
-                    DeleteFMWorkingPath(_fmWorkingPath);
                     return UnsupportedZip(_archivePath);
                 }
+
+                #endregion
+
+                #region Cache readmes if requested
 
                 string cachePath = fm.CachePath;
 
@@ -669,6 +706,8 @@ namespace FMScanner
                         // ignore for now
                     }
                 }
+
+                #endregion
             }
 
             #endregion
@@ -761,12 +800,18 @@ namespace FMScanner
                 }
                 else
                 {
-                    _fmDirFileInfos.Clear();
-                    // PERF: AddRange() is a fat slug, do Add() in a loop instead
-                    FileInfo[] fileInfos = new DirectoryInfo(_fmWorkingPath).GetFiles("*", SearchOption.AllDirectories);
-                    // Don't reduce capacity, as that causes a reallocation
-                    if (_fmDirFileInfos.Capacity < fileInfos.Length) _fmDirFileInfos.Capacity = fileInfos.Length;
-                    for (int i = 0; i < fileInfos.Length; i++) _fmDirFileInfos.Add(fileInfos[i]);
+                    if (_fmDirFileInfos.Count == 0)
+                    {
+                        _fmDirFileInfos.Clear();
+                        // PERF: AddRange() is a fat slug, do Add() in a loop instead
+                        FileInfo[] fileInfos = new DirectoryInfo(_fmWorkingPath).GetFiles("*", SearchOption.AllDirectories);
+                        // Don't reduce capacity, as that causes a reallocation
+                        if (_fmDirFileInfos.Capacity < fileInfos.Length) _fmDirFileInfos.Capacity = fileInfos.Length;
+                        for (int i = 0; i < fileInfos.Length; i++)
+                        {
+                            _fmDirFileInfos.Add(new FileInfoCustom(fileInfos[i]));
+                        }
+                    }
 
                     if (_fmIsSevenZip)
                     {
@@ -775,7 +820,7 @@ namespace FMScanner
                     else
                     {
                         long size = 0;
-                        foreach (FileInfo fi in _fmDirFileInfos) size += fi.Length;
+                        foreach (FileInfoCustom fi in _fmDirFileInfos) size += fi.Length;
                         fmData.Size = (ulong)size;
                     }
                 }
@@ -800,8 +845,6 @@ namespace FMScanner
 
             if (!success)
             {
-                if (_fmIsSevenZip) DeleteFMWorkingPath(_fmWorkingPath);
-
                 string ext = _fmIsZip ? "zip" : _fmIsSevenZip ? "7z" : "dir";
                 Log(LogFile,
                     _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is " + ext + ", " +
@@ -1124,8 +1167,6 @@ namespace FMScanner
                 fmData.HasMovies = null;
             }
 
-            if (_fmIsSevenZip) DeleteFMWorkingPath(_fmWorkingPath);
-
 #if DEBUG
             _overallTimer.Stop();
             Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
@@ -1134,11 +1175,35 @@ namespace FMScanner
             return fmData;
         }
 
+        // TODO: Do some bullshit where we compare the readme date vs. the date in the readme
+        // So we can do some guesswork on whether the readme dates are near enough to correct or not
         private DateTime? GetReleaseDate(bool fmIsT3, List<NameAndIndex> usedMisFiles)
         {
             // Look in the readme
-            string ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
-            if (!ds.IsEmpty() && StringToDate(ds, out DateTime? dt))
+            DateTime? topDT = GetReleaseDateFromTopOfReadmes();
+
+            // Search for updated dates FIRST, because they'll be the correct ones!
+            string ds = GetValueFromReadme(SpecialLogic.None, null, SA_LatestUpdateDateDetect);
+            DateTime? dt = null;
+            if (!ds.IsEmpty()) StringToDate(ds, out dt);
+
+            if (ds.IsEmpty() || dt == null)
+            {
+                ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
+            }
+
+            if (!ds.IsEmpty()) StringToDate(ds, out dt);
+            // Keep the newest of the dates, as it's most likely to be correct; after all, who puts a future date
+            // in their readme?
+            if (topDT != null && dt != null)
+            {
+                return DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0 ? topDT : dt;
+            }
+            else if (topDT != null)
+            {
+                return topDT;
+            }
+            else if (dt != null)
             {
                 return dt;
             }
@@ -1161,15 +1226,17 @@ namespace FMScanner
             }
             else
             {
-                if (_scanOptions.ScanSize && _fmDirFileInfos.Count > 0)
+                if (_fmDirFileInfos.Count > 0)
                 {
-                    string fn = _fmWorkingPath + usedMisFiles[0].Name;
+                    string fn =
+                        _fmIsSevenZip ? usedMisFiles[0].Name :
+                        _fmWorkingPath + usedMisFiles[0].Name;
                     // This loop is guaranteed to find something, because we will have quit early if we had no
                     // used .mis files.
-                    FileInfo? misFile = null;
+                    FileInfoCustom? misFile = null;
                     for (int i = 0; i < _fmDirFileInfos.Count; i++)
                     {
-                        FileInfo f = _fmDirFileInfos[i];
+                        FileInfoCustom f = _fmDirFileInfos[i];
                         if (f.FullName.PathEqualsI(fn))
                         {
                             misFile = f;
@@ -1306,13 +1373,15 @@ namespace FMScanner
                        (path[len - 1] == 'n' || path[len - 1] == 'N');
             }
 
-            if (_fmIsZip || _scanOptions.ScanSize)
+            if (_fmIsZip || _fmDirFileInfos.Count > 0)
             {
                 int filesCount = _fmIsZip ? _archive.Entries.Count : _fmDirFileInfos.Count;
                 for (int i = 0; i < filesCount; i++)
                 {
                     string fn = _fmIsZip
                         ? _archive.Entries[i].FullName
+                        : _fmIsSevenZip
+                        ? _fmDirFileInfos[i].FullName
                         : _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
 
 #if DEBUG_RANDOMIZE_DIR_SEPS
@@ -1470,34 +1539,14 @@ namespace FMScanner
                     }
                 }
             }
-            else // if we're extracted OR if we're like partially extracted cause we're 7-zip
+            else // Dir only; 7z is now handled up there as well
             {
-                //if (_fmIsSevenZip)
-                //{
-                //    foreach (var item in _sevenZipArchive.ArchiveFileData)
-                //    {
-                //        string fn = item.FileName;
-                //        if (fn.PathStartsWithI(FMDirs.T3DetectS) &&
-                //            fn.CountDirSeps(FMDirs.T3DetectSLen) == 0 &&
-                //            (fn.ExtIsIbt() ||
-                //             fn.ExtIsCbt() ||
-                //             fn.ExtIsGmp() ||
-                //             fn.ExtIsNed() ||
-                //             fn.ExtIsUnr()))
-                //        {
-                //            return true;
-                //        }
-                //    }
-                //}
-                //else
+                string t3DetectPath = Path.Combine(_fmWorkingPath, FMDirs.T3DetectS);
+                if (Directory.Exists(t3DetectPath) &&
+                    FastIO.FilesExistSearchTop(t3DetectPath, SA_T3DetectExtensions))
                 {
-                    string t3DetectPath = Path.Combine(_fmWorkingPath, FMDirs.T3DetectS);
-                    if (Directory.Exists(t3DetectPath) &&
-                        FastIO.FilesExistSearchTop(t3DetectPath, SA_T3DetectExtensions))
-                    {
-                        t3Found = true;
-                        fmd.Game = Game.Thief3;
-                    }
+                    t3Found = true;
+                    fmd.Game = Game.Thief3;
                 }
 
                 foreach (string f in EnumFiles("*", SearchOption.TopDirectoryOnly))
@@ -2062,12 +2111,12 @@ namespace FMScanner
                 if (_fmIsZip) readmeEntry = _archive.Entries[readmeFile.Index];
 
                 string? fullReadmeFileName = null;
-                FileInfo? readmeFI = null;
-                if (_fmDirFileInfos.Count > 0)
+                FileInfoCustom? readmeFI = null;
+                if (!_fmIsZip && _fmDirFileInfos.Count > 0)
                 {
                     for (int i = 0; i < _fmDirFileInfos.Count; i++)
                     {
-                        FileInfo f = _fmDirFileInfos[i];
+                        FileInfoCustom f = _fmDirFileInfos[i];
                         if (f.Name.PathEqualsI(fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)))
                         {
                             readmeFI = f;
@@ -2095,7 +2144,7 @@ namespace FMScanner
                 else
                 {
                     readmeFileOnDisk = fullReadmeFileName ?? Path.Combine(_fmWorkingPath, readmeFile.Name);
-                    FileInfo fi = readmeFI ?? new FileInfo(readmeFileOnDisk);
+                    FileInfoCustom fi = readmeFI ?? new FileInfoCustom(new FileInfo(readmeFileOnDisk));
                     fileName = fi.Name;
                     lastModifiedDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
                     readmeSize = fi.Length;
@@ -2486,6 +2535,41 @@ namespace FMScanner
             #endregion
 
             return ret;
+        }
+
+        private DateTime? GetReleaseDateFromTopOfReadmes()
+        {
+            if (_readmeFiles.Count == 0) return null;
+
+            const int maxTopLines = 5;
+
+            foreach (ReadmeInternal r in _readmeFiles)
+            {
+                if (!r.Scan) continue;
+
+                var lines = new List<string>();
+
+                for (int i = 0; i < r.Lines.Count; i++)
+                {
+                    string line = r.Lines[i];
+                    if (!line.IsWhiteSpace()) lines.Add(line);
+                    if (lines.Count == maxTopLines) break;
+                }
+
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    string lineT = lines[i].Trim();
+                    foreach (var item in _monthNamesEnglish)
+                    {
+                        if (lineT.ContainsI(item) && StringToDate(lineT, out DateTime? result))
+                        {
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
 
         #region Title(s) and mission names
@@ -3208,7 +3292,7 @@ namespace FMScanner
                         else
                         {
                             string? gamFullPath = null;
-                            FileInfo? gamFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
+                            FileInfoCustom? gamFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
                             length = gamFI?.Length ?? new FileInfo(gamFullPath ?? Path.Combine(_fmWorkingPath, gam.Name)).Length;
                         }
                         gamSizeList.Add((gam.Name, gam.Index, length));
@@ -3244,7 +3328,7 @@ namespace FMScanner
                     else
                     {
                         string? misFullPath = null;
-                        FileInfo? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
+                        FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
                     }
                     misSizeList.Add((mis.Name, mis.Index, length));
@@ -3568,14 +3652,21 @@ namespace FMScanner
         }
 #endif
 
-        private static void DeleteFMWorkingPath(string fmWorkingPath)
+        private void DeleteFMWorkingPath()
         {
             try
             {
-                var ds = Directory.GetDirectories(fmWorkingPath, "*", SearchOption.TopDirectoryOnly);
+                if ((_fmIsZip && !_fmIsSevenZip) ||
+                    _fmWorkingPath.IsEmpty() ||
+                    !Directory.Exists(_fmWorkingPath))
+                {
+                    return;
+                }
+
+                var ds = Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly);
                 for (int i = 0; i < ds.Length; i++) Directory.Delete(ds[i], true);
 
-                Directory.Delete(fmWorkingPath, recursive: true);
+                Directory.Delete(_fmWorkingPath, recursive: true);
             }
             catch
             {
@@ -3696,13 +3787,30 @@ namespace FMScanner
 
         #endregion
 
-        private bool StringToDate(string dateString, out DateTime? dateTime)
+        private bool StringToDate(string dateString, [NotNullWhen(true)] out DateTime? dateTime)
         {
-            dateString = dateString.Replace(",", " ");
+            // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
+            // to guessing about day/month order.
+            if (Regex.Match(dateString, @"[0123456789]{1,2}\.[0123456789]{1,2}\.([0123456789]{4}|[0123456789]{2})").Success)
+            {
+                if (DateTime.TryParseExact(
+                    dateString,
+                    DateFormatsEuropean,
+                    DateTimeFormatInfo.InvariantInfo,
+                    DateTimeStyles.None,
+                    out DateTime eurDateResult))
+                {
+                    dateTime = eurDateResult;
+                    return true;
+                }
+            }
+
+            dateString = Regex.Replace(dateString, @"\s*,\s*", " ");
             dateString = Regex.Replace(dateString, @"\s+", " ");
             dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
             dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
             dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
+            dateString = Regex.Replace(dateString, @"\s*\.\s*", "/");
 
             // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
             Match match = DaySuffixesRegex.Match(dateString);
@@ -3725,32 +3833,6 @@ namespace FMScanner
             dateTime = success ? (DateTime?)result : null;
             return success;
         }
-
-        //private bool DirectoryExists(string path)
-        //{
-        //    if (_fmIsSevenZip)
-        //    {
-        //        foreach (var item in _sevenZipArchive.ArchiveFileData)
-        //        {
-        //            //if (item.FileName.EndsWithI()) 
-        //            string fn = item.FileName;
-        //            if (fn.PathStartsWithI(FMDirs.T3DetectS) &&
-        //                fn.CountDirSeps(FMDirs.T3DetectSLen) == 0 &&
-        //                (fn.ExtIsIbt() ||
-        //                 fn.ExtIsCbt() ||
-        //                 fn.ExtIsGmp() ||
-        //                 fn.ExtIsNed() ||
-        //                 fn.ExtIsUnr()))
-        //            {
-        //                return true;
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return Directory.Exists(path);
-        //    }
-        //}
 
         #endregion
 
