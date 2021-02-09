@@ -445,6 +445,7 @@ namespace FMScanner
                     _fmIsZip = fm.ExtIsZip() || fm.ExtIs7z();
 
                     _archive?.Dispose();
+                    _sevenZipArchive?.Dispose();
 
                     if (_fmIsZip)
                     {
