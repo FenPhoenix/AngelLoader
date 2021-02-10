@@ -198,6 +198,253 @@ namespace AngelLoader.Forms
             }
         }
 
+        // Because color perception is complicated and not uniform, we just use a precomputed table of minimum
+        // lightness values per hue value, to try and get a readable and pleasant-looking result for all possible
+        // colors.
+        private static readonly int[] HueMinLightnessValues =
+        {
+            168,
+            169,
+            170,
+            171,
+            172,
+            173,
+            174,
+            175,
+            176,
+            177,
+            177,
+            178,
+            179,
+            180,
+            181,
+            182,
+            183,
+            183,
+            184,
+            185,
+            186,
+            187,
+            188,
+            189,
+            190,
+            190,
+            191,
+            192,
+            193,
+            194,
+            194,
+            195,
+            196,
+            197,
+            197,
+            198,
+            199,
+            199,
+            200,
+            200,
+            200,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            201,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            200,
+            199,
+            199,
+            199,
+            199,
+            199,
+            198,
+            198,
+            198,
+            197,
+            197,
+            197,
+            196,
+            196,
+            196,
+            196,
+            195,
+            195,
+            195,
+            195,
+            195,
+            195,
+            195,
+            196,
+            196,
+            196,
+            197,
+            197,
+            198,
+            198,
+            199,
+            200,
+            200,
+            201,
+            201,
+            202,
+            202,
+            202,
+            203,
+            203,
+            204,
+            204,
+            204,
+            205,
+            205,
+            205,
+            205,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            206,
+            205,
+            205,
+            205,
+            205,
+            205,
+            205,
+            205,
+            205,
+            205,
+            204,
+            204,
+            204,
+            204,
+            203,
+            203,
+            203,
+            202,
+            202,
+            201,
+            201,
+            200,
+            199,
+            198,
+            198,
+            197,
+            195,
+            194,
+            193,
+            192,
+            191,
+            189,
+            188,
+            186,
+            185,
+            183,
+            182,
+            180,
+            179,
+            177,
+            175,
+            174,
+            172,
+            171,
+            169
+        };
+
         internal static Color InvertBrightness(Color color)
         {
             // NOTE: HSL values are 0-240, not 0-255 as RGB colors are.
@@ -207,6 +454,12 @@ namespace AngelLoader.Forms
             if (color.R == 0 && color.G == 0 && color.B == 0)
             {
                 return DarkUI.Config.Colors.Fen_DarkForeground;
+            }
+            // One file had some hidden (white-on-white) text, so make that match our new background color to
+            // keep author intent (avoiding spoilers etc.)
+            else if (color.R == 255 && color.G == 255 && color.B == 255)
+            {
+                return DarkUI.Config.Colors.Fen_DarkBackground;
             }
 
             // ReSharper disable once JoinDeclarationAndInitializer
@@ -250,6 +503,8 @@ namespace AngelLoader.Forms
 
             l = 240 - l;
 
+            int finalL = l.Clamp(HueMinLightnessValues[h], 200);
+
             // Bump up our luminance by the luminance of our background, to keep the distance between the fore
             // and back colors relatively the same (or as close as possible)
             //int bgH = 0, bgL = 0, bgS = 0;
@@ -258,7 +513,7 @@ namespace AngelLoader.Forms
             // Clamp to make sure we don't go over the max when we bump the luminance!
             // TODO: @DarkMode: We clamp to a bit less than 240 in order to keep brightness from being blinding
             // Test if this looks good across all readmes
-            int finalL = (l + 20).Clamp(0, 200);//+ bgL;
+            //int finalL = (l + 20).Clamp(0, 200);//+ bgL;
 
             // Crappy hack to work around the "blue dip" where humans can't see blue on dark backgrounds very
             // well. These ranges were eyeballed in Photoshop and work well enough. There's probably some actual
@@ -266,15 +521,15 @@ namespace AngelLoader.Forms
             // TODO: @DarkMode: Research if there's actual math that would elegantly solve this
             // This solves the hyperlink problem too, turns out those were just using an explicitly defined blue
             // (0,0,255) rather than some default, so we don't need to mess with the RTF after all!
-            if ((h > 150 && h < 171) &&
-                (s > 190) &&
-                (l > 110 && l < 130))
-            {
-                // Allow this bump to go up to max I guess(?)
-                // Because of the 200-clamp up there, I guess this won't ever be above 210
-                finalL = (finalL + 10).Clamp(0, 240);
-                h -= 20;
-            }
+            //if ((h > 150 && h < 171) &&
+            //    (s > 190) &&
+            //    (l > 110 && l < 130))
+            //{
+            //    // Allow this bump to go up to max I guess(?)
+            //    // Because of the 200-clamp up there, I guess this won't ever be above 210
+            //    finalL = (finalL + 10).Clamp(0, 240);
+            //    h -= 20;
+            //}
 
             retColor = ColorTranslator.FromWin32(ColorHLSToRGB(h, finalL, s));
 
