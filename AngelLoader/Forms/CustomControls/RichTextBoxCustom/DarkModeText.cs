@@ -241,22 +241,15 @@ namespace AngelLoader.Forms.CustomControls
             for (int i = 0; i < colorTable.Count; i++)
             {
                 Color invertedColor;
-                if (_rtfColorStyle == RTFColorStyle.Auto)
+                if (i == 0 && colorTable[i].A == 0)
                 {
-                    if (i == 0 && colorTable[i].A == 0)
-                    {
-                        // Explicitly set color 0 to our desired default, so we can spam \cf0 everywhere to keep
-                        // our text looking right.
-                        invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
-                    }
-                    else
-                    {
-                        invertedColor = ControlUtils.InvertBrightness(colorTable[i]);
-                    }
+                    // Explicitly set color 0 to our desired default, so we can spam \cf0 everywhere to keep
+                    // our text looking right.
+                    invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
                 }
                 else
                 {
-                    invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                    invertedColor = ControlUtils.InvertBrightness(colorTable[i], _rtfColorStyle == RTFColorStyle.Monochrome);
                 }
 
                 colorEntriesBytesList.AddRange(_redFieldBytes);

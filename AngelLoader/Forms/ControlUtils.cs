@@ -446,7 +446,7 @@ namespace AngelLoader.Forms
             156
         };
 
-        internal static Color InvertBrightness(Color color)
+        internal static Color InvertBrightness(Color color, bool monochrome)
         {
             // NOTE: HSL values are 0-240, not 0-255 as RGB colors are.
 
@@ -456,11 +456,16 @@ namespace AngelLoader.Forms
             {
                 return DarkUI.Config.Colors.Fen_DarkForeground;
             }
-            // One file had some hidden (white-on-white) text, so make that match our new background color to
-            // keep author intent (avoiding spoilers etc.)
+            // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match
+            // our new background color to keep author intent (avoiding spoilers etc.)
             else if (color.R == 255 && color.G == 255 && color.B == 255)
             {
                 return DarkUI.Config.Colors.Fen_DarkBackground;
+            }
+
+            if (monochrome)
+            {
+                return DarkUI.Config.Colors.Fen_DarkForeground;
             }
 
             // ReSharper disable once JoinDeclarationAndInitializer
