@@ -63,6 +63,13 @@ namespace AngelLoader.DataClasses
 
     public enum VisualTheme { Classic, Dark }
 
+    public enum RTFColorStyle
+    {
+        Original,
+        Auto,
+        Monochrome
+    }
+
     #region Top-right tabs
 
     internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch }

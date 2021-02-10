@@ -177,6 +177,15 @@ namespace AngelLoader.Forms
 
         private void Test2Button_Click(object sender, EventArgs e)
         {
+            var cs = ReadmeRichTextBox.GetRTFColorStyle() switch
+            {
+                RTFColorStyle.Original => RTFColorStyle.Auto,
+                RTFColorStyle.Auto => RTFColorStyle.Monochrome,
+                _ => RTFColorStyle.Original,
+            };
+
+            ReadmeRichTextBox.SetRTFColorStyle(cs);
+
             return;
 
             Width = 1305;
@@ -638,6 +647,7 @@ namespace AngelLoader.Forms
             // You can't just save out StoredZoomFactor either because it doesn't change when the user zooms, as
             // there's no event for that. Fun.
             ReadmeRichTextBox.SetAndStoreZoomFactor(Config.ReadmeZoomFactor);
+            ReadmeRichTextBox.SetRTFColorStyle(Config.RTFThemedColorStyle, startup: true);
 
             #endregion
 
@@ -1603,7 +1613,8 @@ namespace AngelLoader.Forms
                 gameTab,
                 topRightTabs,
                 TopSplitContainer.FullScreen,
-                ReadmeRichTextBox.ZoomFactor);
+                ReadmeRichTextBox.ZoomFactor,
+                ReadmeRichTextBox.GetRTFColorStyle());
         }
 
         internal IContainer GetComponents() => components;

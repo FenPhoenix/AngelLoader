@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using static AngelLoader.Forms.CustomControls.RichTextBoxCustom_Interop;
 using static AngelLoader.Misc;
 
@@ -140,6 +141,28 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        private RTFColorStyle _rtfColorStyle;
+
+        internal RTFColorStyle GetRTFColorStyle() => _rtfColorStyle;
+
+        /// <summary>
+        /// Set startup to true to suppress refreshing the dark mode state, cause we'll already do that later
+        /// when we set the theme.
+        /// </summary>
+        /// <param name="style"></param>
+        /// <param name="startup"></param>
+        internal void SetRTFColorStyle(RTFColorStyle style, bool startup = false)
+        {
+            if (style == _rtfColorStyle) return;
+
+            _rtfColorStyle = style;
+
+            if (!startup && _darkModeEnabled && _currentReadmeType == ReadmeType.RichText)
+            {
+                RefreshDarkModeState();
+            }
+        }
+
         #region Methods
 
         // Cheap, cheesy, effective
@@ -218,15 +241,22 @@ namespace AngelLoader.Forms.CustomControls
             for (int i = 0; i < colorTable.Count; i++)
             {
                 Color invertedColor;
-                if (i == 0 && colorTable[i].A == 0)
+                if (_rtfColorStyle == RTFColorStyle.Auto)
                 {
-                    // Explicitly set color 0 to our desired default, so we can spam \cf0 everywhere to keep
-                    // our text looking right.
-                    invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                    if (i == 0 && colorTable[i].A == 0)
+                    {
+                        // Explicitly set color 0 to our desired default, so we can spam \cf0 everywhere to keep
+                        // our text looking right.
+                        invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                    }
+                    else
+                    {
+                        invertedColor = ControlUtils.InvertBrightness(colorTable[i]);
+                    }
                 }
                 else
                 {
-                    invertedColor = ControlUtils.InvertBrightness(colorTable[i]);
+                    invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
                 }
 
                 colorEntriesBytesList.AddRange(_redFieldBytes);
@@ -247,6 +277,8 @@ namespace AngelLoader.Forms.CustomControls
 
         private byte[] GetDarkModeRTFBytes()
         {
+            if (_rtfColorStyle == RTFColorStyle.Original) return _currentRTFBytes;
+
             var darkModeBytes = _currentRTFBytes.ToList();
 
             // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts
@@ -265,7 +297,12 @@ namespace AngelLoader.Forms.CustomControls
 
                 // Some files don't have a color table, so in that case just add the default black color that we
                 // would normally expect to be there.
-                if (colorTable.Count == 0) colorTable.Add(Color.FromArgb(0, 0, 0));
+                if (colorTable.Count == 0)
+                {
+                    colorTable.Add(_rtfColorStyle == RTFColorStyle.Monochrome
+                        ? DarkUI.Config.Colors.Fen_DarkForeground
+                        : Color.FromArgb(0, 0, 0));
+                }
 
                 List<byte> colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
 

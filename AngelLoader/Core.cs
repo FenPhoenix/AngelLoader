@@ -1515,7 +1515,8 @@ namespace AngelLoader
             GameIndex gameTab,
             TopRightTabsData topRightTabsData,
             bool topRightPanelCollapsed,
-            float readmeZoomFactor)
+            float readmeZoomFactor,
+            RTFColorStyle rtfColorStyle)
         {
             #region Main window state
 
@@ -1580,6 +1581,7 @@ namespace AngelLoader
             #endregion
 
             Config.ReadmeZoomFactor = readmeZoomFactor;
+            Config.RTFThemedColorStyle = rtfColorStyle;
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
