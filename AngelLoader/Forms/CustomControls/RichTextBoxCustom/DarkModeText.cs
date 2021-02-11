@@ -249,7 +249,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 else
                 {
-                    invertedColor = ColorUtils.InvertBrightness(colorTable[i], _rtfColorStyle == RTFColorStyle.Monochrome);
+                    invertedColor = ColorUtils.InvertLightness(colorTable[i], _rtfColorStyle == RTFColorStyle.Monochrome);
                 }
 
                 colorEntriesBytesList.AddRange(_redFieldBytes);

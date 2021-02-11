@@ -108,7 +108,7 @@ namespace AngelLoader
 
         #endregion
 
-        internal static Color InvertBrightness(Color color, bool monochrome)
+        internal static Color InvertLightness(Color color, bool monochrome)
         {
             #region Special cases
 
@@ -133,7 +133,7 @@ namespace AngelLoader
 
             #region Oklab lightness invert + slight boost
 
-            // We unfortunately still need janky tuning of brightness and desaturation for good visibility, but
+            // We unfortunately still need janky tuning of lightness and desaturation for good visibility, but
             // Oklab does give us a beautiful perceptual lightness scale (dark blue goes to light blue!) unlike
             // HSL, so awesome!
 
