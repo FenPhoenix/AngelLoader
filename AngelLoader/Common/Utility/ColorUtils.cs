@@ -24,6 +24,7 @@ namespace AngelLoader
             }
         }
 
+        // Lightness, chroma, hue
         private readonly struct LCh
         {
             internal readonly float L;
@@ -40,35 +41,31 @@ namespace AngelLoader
 
         private static Lab ColorToOklab(Color color)
         {
-            // Convert 0-255 to 0-1.0
+            // Convert 0-255 -> 0-1.0
             float r = color.R / 255.0f;
             float g = color.G / 255.0f;
             float b = color.B / 255.0f;
 
-            // Convert to linear sRGB
+            // Convert sRGB -> linear sRGB
             r = r > 0.04045 ? (float)Math.Pow((r + 0.055f) / 1.055f, 2.4f) : r / 12.92f;
             g = g > 0.04045 ? (float)Math.Pow((g + 0.055f) / 1.055f, 2.4f) : g / 12.92f;
             b = b > 0.04045 ? (float)Math.Pow((b + 0.055f) / 1.055f, 2.4f) : b / 12.92f;
 
-            float l = 0.4122214708f * r + 0.5363325363f * g + 0.0514459929f * b;
-            float m = 0.2119034982f * r + 0.6806995451f * g + 0.1073969566f * b;
-            float s = 0.0883024619f * r + 0.2817188376f * g + 0.6299787005f * b;
+            // Convert linear sRGB -> Oklab
+            float l = CubicRoot(0.4122214708f * r + 0.5363325363f * g + 0.0514459929f * b);
+            float m = CubicRoot(0.2119034982f * r + 0.6806995451f * g + 0.1073969566f * b);
+            float s = CubicRoot(0.0883024619f * r + 0.2817188376f * g + 0.6299787005f * b);
 
-            l = CubicRoot(l);
-            m = CubicRoot(m);
-            s = CubicRoot(s);
+            float l_ = 0.2104542553f * l + 0.7936177850f * m - 0.0040720468f * s;
+            float a_ = 1.9779984951f * l - 2.4285922050f * m + 0.4505937099f * s;
+            float b_ = 0.0259040371f * l + 0.7827717662f * m - 0.8086757660f * s;
 
-            var l2 = 0.2104542553f * l + 0.7936177850f * m - 0.0040720468f * s;
-            var a2 = 1.9779984951f * l - 2.4285922050f * m + 0.4505937099f * s;
-            var b2 = 0.0259040371f * l + 0.7827717662f * m - 0.8086757660f * s;
-
-            var ret = new Lab(l2, a2, b2);
-
-            return ret;
+            return new Lab(l_, a_, b_);
         }
 
         private static Color OklabToColor(Lab lab)
         {
+            // Convert Oklab -> linear sRGB
             float l = lab.L + 0.3963377774f * lab.a + 0.2158037573f * lab.b;
             float m = lab.L - 0.1055613458f * lab.a - 0.0638541728f * lab.b;
             float s = lab.L - 0.0894841775f * lab.a - 1.2914855480f * lab.b;
@@ -81,12 +78,12 @@ namespace AngelLoader
             double g = -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s;
             double b = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s;
 
-            // Convert to regular RGB
+            // Convert linear sRGB -> sRGB
             r = r > 0.0031308 ? 1.055 * Math.Pow(r, 1 / 2.4) - 0.055 : 12.92 * r;
             g = g > 0.0031308 ? 1.055 * Math.Pow(g, 1 / 2.4) - 0.055 : 12.92 * g;
             b = b > 0.0031308 ? 1.055 * Math.Pow(b, 1 / 2.4) - 0.055 : 12.92 * b;
 
-            // Convert from 0-1.0 to 0-255, and clamp (clamping seems to be a requirement, though not mentioned)
+            // Convert 0-1.0 -> 0-255, and clamp (clamping seems to be a requirement, though not mentioned)
             int cr = (int)(r * 255f).Clamp(0f, 255f);
             int cg = (int)(g * 255f).Clamp(0f, 255f);
             int cb = (int)(b * 255f).Clamp(0f, 255f);
@@ -94,6 +91,7 @@ namespace AngelLoader
             return Color.FromArgb(cr, cg, cb);
         }
 
+        // Converts LCh (lightness, chroma, hue) to Lab
         private static LCh OklabToLCh(Lab lab)
         {
             float C = (float)(Math.Sqrt((lab.a * lab.a) + (lab.b * lab.b)));
@@ -102,6 +100,7 @@ namespace AngelLoader
             return new LCh(lab.L, C, h);
         }
 
+        // Converts Lab to LCh (lightness, chroma, hue)
         private static Lab LChToOklab(LCh lch)
         {
             float a = (float)(lch.C * Math.Cos(lch.h));
