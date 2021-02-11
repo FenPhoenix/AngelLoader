@@ -134,7 +134,8 @@ namespace AngelLoader
 
         internal static bool FMHasResource(FanMission fm, CustomResources resource) => (fm.Resources & resource) == resource;
 
-        internal static bool FMNeedsScan(FanMission fm) => fm.Game == Game.Null || (fm.Game != Game.Unsupported && !fm.MarkedScanned);
+        internal static bool FMNeedsScan(FanMission fm) => !fm.MarkedUnavailable && (fm.Game == Game.Null ||
+                                                           (fm.Game != Game.Unsupported && !fm.MarkedScanned));
 
         /// <summary>
         /// Returns true if <paramref name="fm"/> is actually installed on disk. Specifically, it checks only if

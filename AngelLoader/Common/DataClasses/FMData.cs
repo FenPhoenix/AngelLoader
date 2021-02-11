@@ -30,6 +30,10 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         internal bool MarkedRecent;
 
+        // For FMs that have metadata but don't exist on disk
+        [FenGenIgnore]
+        internal bool MarkedUnavailable;
+
         // Disgusting hack to let an FM disappear from the list after being deleted. It will only be filtered out,
         // but on next run of the FM finder, it will be properly removed if the archive is no longer there.
         [FenGenIgnore]

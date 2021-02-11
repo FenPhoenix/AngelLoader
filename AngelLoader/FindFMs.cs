@@ -627,7 +627,10 @@ namespace AngelLoader
                     bool success = fmArchivesDict.TryGetValue(fm.Archive, out bool checkedThis);
                     if (!success || checkedThis)
                     {
-                        continue;
+                        //continue;
+                        // TODO: Unavailable FMs feature: This may reintroduce the duplicate bug
+                        // Test and fix if necessary
+                        fm.MarkedUnavailable = true;
                     }
                     else if (success && !checkedThis)
                     {

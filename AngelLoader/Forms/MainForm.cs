@@ -3177,7 +3177,9 @@ namespace AngelLoader.Forms
 
             var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
-            FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedRecent
+            FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedUnavailable
+                ? FMsDGV.UnavailableColor
+                : fm.MarkedRecent
                 ? FMsDGV.RecentHighlightColor
                 : FMsDGV.DefaultRowBackColor;
         }
@@ -3878,8 +3880,10 @@ namespace AngelLoader.Forms
             PlayFMButton.Enabled = false;
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(false);
+            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(false);
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(false);
+            FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(false);
 
             FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(false);
 
@@ -3988,32 +3992,35 @@ namespace AngelLoader.Forms
 
             bool gameIsSupported = GameIsKnownAndSupported(fm.Game);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(gameIsSupported);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
-            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(true);
+            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(!fm.MarkedUnavailable);
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(fmIsSS2);
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
+            FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!fm.MarkedUnavailable);
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
+            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!fm.MarkedUnavailable);
 
-            InstallUninstallFMLLButton.SetEnabled(gameIsSupported);
+            InstallUninstallFMLLButton.SetEnabled(gameIsSupported && !fm.MarkedUnavailable);
             InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
-            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(gameIsSupported);
-            PlayFMButton.Enabled = gameIsSupported;
+            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
+            PlayFMButton.Enabled = gameIsSupported && !fm.MarkedUnavailable;
 
-            FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(true);
+            FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!fm.MarkedUnavailable);
 
-            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(GameIsDark(fm.Game) && fm.Installed);
+            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(GameIsDark(fm.Game) && fm.Installed && !fm.MarkedUnavailable);
 
             WebSearchButton.Enabled = true;
+
+            StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 
             foreach (Control c in EditFMTabPage.Controls)
             {
                 if (c == EditFMLanguageLabel ||
-                    c == EditFMLanguageComboBox ||
-                    c == EditFMScanLanguagesButton)
+                    c == EditFMLanguageComboBox)
                 {
                     c.Enabled = !fmIsT3;
                 }
@@ -4022,6 +4029,12 @@ namespace AngelLoader.Forms
                     c.Enabled = true;
                 }
             }
+
+            EditFMScanTitleButton.Enabled = !fm.MarkedUnavailable;
+            EditFMScanAuthorButton.Enabled = !fm.MarkedUnavailable;
+            EditFMScanReleaseDateButton.Enabled = !fm.MarkedUnavailable;
+            EditFMScanLanguagesButton.Enabled = !fmIsT3 && !fm.MarkedUnavailable;
+            EditFMScanForReadmesButton.Enabled = !fm.MarkedUnavailable;
 
             CommentTextBox.Enabled = true;
             foreach (Control c in TagsTabPage.Controls) c.Enabled = true;

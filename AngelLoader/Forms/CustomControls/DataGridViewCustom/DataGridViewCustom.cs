@@ -45,6 +45,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal Color DefaultRowBackColor { get; private set; } = SystemColors.Window;
         internal Color RecentHighlightColor { get; private set; } = Color.LightGoldenrodYellow;
+        internal Color UnavailableColor { get; private set; } = Color.MistyRose;
 
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
@@ -60,6 +61,7 @@ namespace AngelLoader.Forms.CustomControls
                     GridColor = Color.FromArgb(64, 64, 64);
                     //FMsDGV.RowsDefaultCellStyle.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
                     RecentHighlightColor = Color.FromArgb(64, 64, 72);
+                    UnavailableColor = Color.FromArgb(64, 24, 24);
                     DefaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
 
                     // Custom refresh routine, because we don't want to run SelectProperly() as that will pop us
@@ -78,6 +80,7 @@ namespace AngelLoader.Forms.CustomControls
                     RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
                     GridColor = SystemColors.ControlDark;
                     RecentHighlightColor = Color.LightGoldenrodYellow;
+                    UnavailableColor = Color.MistyRose;
                     DefaultRowBackColor = SystemColors.Window;
                     //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
                 }

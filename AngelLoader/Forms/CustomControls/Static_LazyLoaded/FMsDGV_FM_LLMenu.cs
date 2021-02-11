@@ -22,7 +22,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static bool _scanFMMenuItemEnabled;
         private static bool _openInDromEdSepVisible;
         private static bool _openInDromEdMenuItemVisible;
+        private static bool _openInDromedMenuItemEnabled;
         private static bool _playFMInMPMenuItemVisible;
+        private static bool _playFMInMPMenuItemEnabled;
         private static bool _convertAudioSubMenuEnabled;
         private static bool _deleteFMMenuItemEnabled;
         private static int _rating = -1;
@@ -174,9 +176,11 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
             PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
             PlayFMInMPMenuItem.Visible = _playFMInMPMenuItemVisible;
+            PlayFMInMPMenuItem.Enabled = _playFMInMPMenuItemEnabled;
             ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
             OpenInDromEdSep.Visible = _openInDromEdSepVisible;
             OpenInDromEdMenuItem.Visible = _openInDromEdMenuItemVisible;
+            OpenInDromEdMenuItem.Enabled = _openInDromedMenuItemEnabled;
             ConvertAudioMenuItem.Enabled = _convertAudioSubMenuEnabled;
 
             #endregion
@@ -384,6 +388,18 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
+        internal static void SetPlayFMInMPMenuItemEnabled(bool value)
+        {
+            if (_constructed)
+            {
+                PlayFMInMPMenuItem!.Enabled = value;
+            }
+            else
+            {
+                _playFMInMPMenuItemEnabled = value;
+            }
+        }
+
         internal static void SetInstallUninstallMenuItemEnabled(bool value)
         {
             if (_constructed)
@@ -428,6 +444,18 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 _openInDromEdSepVisible = value;
                 _openInDromEdMenuItemVisible = value;
+            }
+        }
+
+        internal static void SetOpenInDromedEnabled(bool value)
+        {
+            if (_constructed)
+            {
+                OpenInDromEdMenuItem!.Enabled = value;
+            }
+            else
+            {
+                _openInDromedMenuItemEnabled = value;
             }
         }
 
