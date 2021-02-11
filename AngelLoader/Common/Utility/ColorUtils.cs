@@ -86,10 +86,7 @@ namespace AngelLoader
             g = g > 0.0031308 ? 1.055 * Math.Pow(g, 1 / 2.4) - 0.055 : 12.92 * g;
             b = b > 0.0031308 ? 1.055 * Math.Pow(b, 1 / 2.4) - 0.055 : 12.92 * b;
 
-            // Convert from 0-1.0 to 0-255
-            // TODO: We have to clamp these, otherwise they're often outside the range.
-            // The other implementations don't seem to do this. I checked and triple checked and couldn't find
-            // any mistakes, and the results look fine visually, so I dunno...?
+            // Convert from 0-1.0 to 0-255, and clamp (clamping seems to be a requirement, though not mentioned)
             int cr = (int)(r * 255f).Clamp(0f, 255f);
             int cg = (int)(g * 255f).Clamp(0f, 255f);
             int cb = (int)(b * 255f).Clamp(0f, 255f);
