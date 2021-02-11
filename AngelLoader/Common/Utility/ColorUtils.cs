@@ -81,13 +81,20 @@ namespace AngelLoader
             double g = -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s;
             double b = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s;
 
-            // Convert from linear sRGB and back to 0-255
-            double cr = (((r > 0.0031308) ? (1.055 * Math.Pow(r, 1 / 2.4) - 0.055) : (12.92 * r)) * 255.0).Clamp(0f, 255f);
-            double cg = (((g > 0.0031308) ? (1.055 * Math.Pow(g, 1 / 2.4) - 0.055) : (12.92 * g)) * 255.0).Clamp(0f, 255f);
-            double cb = (((b > 0.0031308) ? (1.055 * Math.Pow(b, 1 / 2.4) - 0.055) : (12.92 * b)) * 255.0).Clamp(0f, 255f);
+            // Convert to regular RGB
+            r = r > 0.0031308 ? 1.055 * Math.Pow(r, 1 / 2.4) - 0.055 : 12.92 * r;
+            g = g > 0.0031308 ? 1.055 * Math.Pow(g, 1 / 2.4) - 0.055 : 12.92 * g;
+            b = b > 0.0031308 ? 1.055 * Math.Pow(b, 1 / 2.4) - 0.055 : 12.92 * b;
 
-            var ret = Color.FromArgb((int)cr, (int)cg, (int)cb);
-            return ret;
+            // Convert from 0-1.0 to 0-255
+            // TODO: We have to clamp these, otherwise they're often outside the range.
+            // The other implementations don't seem to do this. I checked and triple checked and couldn't find
+            // any mistakes, and the results look fine visually, so I dunno...?
+            int cr = (int)(r * 255f).Clamp(0f, 255f);
+            int cg = (int)(g * 255f).Clamp(0f, 255f);
+            int cb = (int)(b * 255f).Clamp(0f, 255f);
+
+            return Color.FromArgb(cr, cg, cb);
         }
 
         private static LCh OklabToLCh(Lab lab)
