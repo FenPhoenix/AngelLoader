@@ -625,16 +625,20 @@ namespace AngelLoader
                     // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
                     // TODO: We shouldn't have duplicate archives, but importing might add different installed dirs...
                     bool success = fmArchivesDict.TryGetValue(fm.Archive, out bool checkedThis);
-                    if (!success || checkedThis)
+                    if (success)
                     {
-                        //continue;
-                        // TODO: Unavailable FMs feature: This may reintroduce the duplicate bug
-                        // Test and fix if necessary
-                        fm.MarkedUnavailable = true;
+                        if (checkedThis)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            fmArchivesDict[fm.Archive] = true;
+                        }
                     }
-                    else if (success && !checkedThis)
+                    else
                     {
-                        fmArchivesDict[fm.Archive] = true;
+                        fm.MarkedUnavailable = true;
                     }
                 }
 
