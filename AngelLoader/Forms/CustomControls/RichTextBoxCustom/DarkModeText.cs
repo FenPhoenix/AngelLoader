@@ -247,9 +247,13 @@ namespace AngelLoader.Forms.CustomControls
                     // our text looking right.
                     invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
                 }
+                else if (_rtfColorStyle == RTFColorStyle.Monochrome)
+                {
+                    invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                }
                 else
                 {
-                    invertedColor = ColorUtils.InvertLightness(colorTable[i], _rtfColorStyle == RTFColorStyle.Monochrome);
+                    invertedColor = ColorUtils.InvertLightness(colorTable[i]);
                 }
 
                 colorEntriesBytesList.AddRange(_redFieldBytes);

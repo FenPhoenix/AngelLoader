@@ -111,17 +111,13 @@ namespace AngelLoader
 
         #endregion
 
-        internal static Color InvertLightness(Color color, bool monochrome)
+        internal static Color InvertLightness(Color color)
         {
             #region Special cases
 
-            if (monochrome)
-            {
-                return DarkUI.Config.Colors.Fen_DarkForeground;
-            }
             // Set pure black to custom-white (not pure white), otherwise it would invert around to pure white
             // and that's a bit too bright.
-            else if (color.R == 0 && color.G == 0 && color.B == 0)
+            if (color.R == 0 && color.G == 0 && color.B == 0)
             {
                 return DarkUI.Config.Colors.Fen_DarkForeground;
             }
