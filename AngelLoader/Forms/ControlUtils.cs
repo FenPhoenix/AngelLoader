@@ -511,7 +511,7 @@ namespace AngelLoader.Forms
 
             int origS = s;
 
-            s = (s - 80).Clamp(0,240);
+            s = (s - 80).Clamp(0, 240);
 
             // Blue is the only color that appears to change hue when lightness-inverted - it looks more like a
             // light purple. So shift it more into the sky-blue range, which looks more intuitively "right" for
@@ -540,5 +540,92 @@ namespace AngelLoader.Forms
 
             return retColor;
         }
+
+        #region Oklab testing
+
+        // Oklab color space: public domain code ported from https://bottosson.github.io/posts/oklab/
+
+        internal struct RGB
+        {
+            internal float R { get; }
+            internal float G { get; }
+            internal float B { get; }
+
+            internal RGB(float R, float G, float B)
+            {
+                this.R = R;
+                this.G = G;
+                this.B = B;
+            }
+        }
+
+        internal struct Lab
+        {
+            internal float L { get; }
+            internal float a { get; }
+            internal float b { get; }
+
+            internal Lab(float L, float a, float b)
+            {
+                this.L = L;
+                this.a = a;
+                this.b = b;
+            }
+        }
+
+        private static float CubicRoot(float x) => ((float)Math.Pow(x, 1f / 3f));
+
+        internal static Lab ColorToOKLab(Color color)
+        {
+            float r = color.R / 255.0f;
+            float g = color.G / 255.0f;
+            float b = color.B / 255.0f;
+
+            // Convert to linear sRGB
+            r = r > 0.04045 ? (float)Math.Pow((r + 0.055f) / 1.055f, 2.4f) : r / 12.92f;
+            g = g > 0.04045 ? (float)Math.Pow((g + 0.055f) / 1.055f, 2.4f) : g / 12.92f;
+            b = b > 0.04045 ? (float)Math.Pow((b + 0.055f) / 1.055f, 2.4f) : b / 12.92f;
+
+            float l = 0.4122214708f * r + 0.5363325363f * g + 0.0514459929f * b;
+            float m = 0.2119034982f * r + 0.6806995451f * g + 0.1073969566f * b;
+            float s = 0.0883024619f * r + 0.2817188376f * g + 0.6299787005f * b;
+
+            l = CubicRoot(l);
+            m = CubicRoot(m);
+            s = CubicRoot(s);
+
+            var l2 = 0.2104542553f * l + 0.7936177850f * m - 0.0040720468f * s;
+            var a2 = 1.9779984951f * l - 2.4285922050f * m + 0.4505937099f * s;
+            var b2 = 0.0259040371f * l + 0.7827717662f * m - 0.8086757660f * s;
+
+            var ret = new Lab(l2, a2, b2);
+
+            return ret;
+        }
+
+        internal static Color OKLabToColor(Lab lab)
+        {
+            float l = lab.L + 0.3963377774f * lab.a + 0.2158037573f * lab.b;
+            float m = lab.L - 0.1055613458f * lab.a - 0.0638541728f * lab.b;
+            float s = lab.L - 0.0894841775f * lab.a - 1.2914855480f * lab.b;
+
+            l = l * l * l;
+            m = m * m * m;
+            s = s * s * s;
+
+            double r = +4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s;
+            double g = -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s;
+            double b = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s;
+
+            // Convert from linear sRGB
+            double cr = ((r > 0.0031308) ? (1.055 * Math.Pow(r, 1 / 2.4) - 0.055) : (12.92 * r)) * 255.0;
+            double cg = ((g > 0.0031308) ? (1.055 * Math.Pow(g, 1 / 2.4) - 0.055) : (12.92 * g)) * 255.0;
+            double cb = ((b > 0.0031308) ? (1.055 * Math.Pow(b, 1 / 2.4) - 0.055) : (12.92 * b)) * 255.0;
+
+            var ret = Color.FromArgb((int)cr, (int)cg, (int)cb);
+            return ret;
+        }
+
+        #endregion
     }
 }
