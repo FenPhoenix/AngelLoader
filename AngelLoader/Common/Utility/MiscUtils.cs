@@ -71,6 +71,8 @@ namespace AngelLoader
 
         #endregion
 
+        internal static float CubicRoot(float x) => ((float)Math.Pow(x, 1f / 3f));
+
         #endregion
 
         #region Set file attributes

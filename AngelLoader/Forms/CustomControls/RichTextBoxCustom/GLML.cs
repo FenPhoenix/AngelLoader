@@ -21,12 +21,8 @@ namespace AngelLoader.Forms.CustomControls
             colorTable = _darkModeEnabled
                 ? AddColorToTable(colorTable, DarkUI.Config.Colors.Fen_DarkForeground)
                 : colorTable + ";";
-            // TODO: @DarkMode: Full red is legible on dark, but not ideal... do we want to use the lightened version?
             colorTable += _darkModeEnabled
-                //? @"\red255\green106\blue106;"
-                //? @"\red255\green80\blue80;"
-                ? @"\red221\green87\blue87;"
-                //? @"\red255\green0\blue0;"
+                ? @"\red222\green73\blue64;"
                 : @"\red255\green0\blue0;";
             colorTable += "}";
 
