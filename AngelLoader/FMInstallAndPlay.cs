@@ -657,57 +657,149 @@ namespace AngelLoader
             {
                 Directory.CreateDirectory(fmInstalledPath);
 
-                using var extractor = new SevenZipExtractor(fmArchivePath);
+                int entriesCount;
 
-                extractor.Extracting += (sender, e) =>
+                using (var extractor = new SevenZipExtractor(fmArchivePath))
                 {
+                    entriesCount = extractor.ArchiveFileData.Count;
+                }
+
+                using var p = new Process { EnableRaisingEvents = true };
+                string error = "";
+
+                p.StartInfo.FileName = Path.Combine(Paths.Startup, "7z.exe");
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.RedirectStandardError = true;
+                p.StartInfo.RedirectStandardInput = true;
+                p.StartInfo.Arguments = "x \"" + fmArchivePath + "\" -o\"" + fmInstalledPath + "\" "
+                                        + "-aoa -y -bsp1 -bb1";
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.UseShellExecute = false;
+
+                p.OutputDataReceived += (sender, e) =>
+                {
+                    var proc = (Process)sender;
                     if (!canceled && _extractCts.Token.IsCancellationRequested)
                     {
                         canceled = true;
-                    }
-                    if (canceled)
-                    {
+
                         Core.View.InvokeSync(new Action(Core.View.SetCancelingFMInstall));
+                        try
+                        {
+                            proc.CancelErrorRead();
+                            proc.CancelOutputRead();
+                            // We should be sending Ctrl+C to it, but since that's deep-level black magic, we
+                            // just kill it. We're going to delete all its extracted files immediately afterward
+                            // anyway, so file corruption isn't an issue.
+                            proc.Kill();
+                        }
+                        catch
+                        {
+                            // Ignore, it's going to throw but work anyway (even on non-admin, tested)
+                        }
                         return;
                     }
-                    Core.View.InvokeSync(new Action(() => Core.View.ReportFMExtractProgress(e.PercentDone)));
+
+                    if (e.Data.IsEmpty()) return;
+
+                    using var sr = new StringReader(e.Data);
+
+                    string? line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string lineT = line.Trim();
+
+                        #region Get percent of entries extracted
+
+                        int pi = lineT.IndexOf('%');
+                        if (pi > -1)
+                        {
+                            int di;
+                            if (int.TryParse((di = lineT.IndexOf('-', pi + 1)) > -1
+                                    ? lineT.Substring(pi + 1, di)
+                                    : lineT.Substring(pi + 1), out int entriesDone))
+                            {
+                                int percent = GetPercentFromValue(entriesDone, entriesCount).Clamp(0, 100);
+                                Core.View.InvokeSync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
+                                return;
+                            }
+                        }
+
+                        #endregion
+
+                        #region Get percent of bytes extracted
+
+                        /*
+                        if (lineT.Contains("%"))
+                        {
+                            if (int.TryParse(lineT.Substring(0, lineT.IndexOf('%')), out int percent))
+                            {
+                                if (!canceled && _extractCts.Token.IsCancellationRequested)
+                                {
+                                    canceled = true;
+                                }
+                                if (canceled)
+                                {
+                                    Core.View.InvokeSync(new Action(Core.View.SetCancelingFMInstall));
+                                    try
+                                    {
+                                        p.Kill();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Trace.WriteLine("***********************");
+                                        Trace.WriteLine(ex);
+                                        const long test = 2147500037;
+                                    }
+                                    return;
+                                }
+                                Core.View.InvokeSync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
+                                return;
+                            }
+                        }
+                        */
+
+                        #endregion
+                    }
                 };
 
-                extractor.FileExtractionFinished += (sender, e) =>
+                p.ErrorDataReceived += (_, e) =>
                 {
-                    // We're extracting all the files, so we don't need to do an index check here.
-                    if (!e.FileInfo.IsDirectory)
-                    {
-                        // We don't need to set timestamps because we're using ExtractArchive(), but we
-                        // call this to remove the ReadOnly attribute
-                        // TODO: Unset readonly for directories too
-                        SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
-                    }
-
-                    if (_extractCts.Token.IsCancellationRequested)
-                    {
-                        Core.View.InvokeSync(new Action(Core.View.SetCancelingFMInstall));
-                        canceled = true;
-                        e.Cancel = true;
-                    }
+                    if (!e.Data.IsWhiteSpace()) error += "\r\n---" + e.Data;
                 };
 
-                try
+                p.Start();
+                p.BeginOutputReadLine();
+                p.BeginErrorReadLine();
+
+                p.WaitForExit();
+
+                if (!error.IsWhiteSpace())
                 {
-                    extractor.ExtractArchive(fmInstalledPath);
-                }
-                catch (Exception ex)
-                {
-                    // Throws a weird exception even if everything's fine
-                    Log("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
+                    Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n" + error);
+                    Core.View.InvokeSync(new Action(() =>
+                        Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                            LText.AlertMessages.Alert)));
+                    return !canceled;
                 }
             }
             catch (Exception ex)
             {
                 Log("Exception extracting 7z " + fmArchivePath + " to " + fmInstalledPath, ex);
                 Core.View.InvokeSync(new Action(() =>
-                   Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
-                       LText.AlertMessages.Alert)));
+                    Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                        LText.AlertMessages.Alert)));
+            }
+            finally
+            {
+                if (!canceled)
+                {
+                    foreach (string file in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
+                    {
+                        // TODO: Unset readonly for directories too
+                        File_UnSetReadOnly(file);
+                    }
+                }
             }
 
             return !canceled;
