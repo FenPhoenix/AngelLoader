@@ -686,11 +686,14 @@ namespace AngelLoader
             {
                 var fm = FMsViewList[i];
 
+                string titleTrimmed;
                 if (fm.MarkedRecent ||
                     titleIsWhitespace ||
                     fm.Title.ContainsI(viewFilter.Title) ||
                     (fm.Archive.ExtIsArchive()
-                        ? fm.Archive.IndexOf(viewFilter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
+                        ? (titleTrimmed = viewFilter.Title.Trim()).EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
+                            ? fm.Archive.EndsWithI(viewFilter.Title.Trim())
+                            : fm.Archive.IndexOf(viewFilter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
                         : fm.Archive.ContainsI(viewFilter.Title)))
                 {
                     filterShownIndexList.Add(i);
