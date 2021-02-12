@@ -348,6 +348,7 @@ namespace AngelLoader
         private static void SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
         {
             string listFile = "";
+            var fileNamesList = new List<string>();
             try
             {
                 // Critical
@@ -361,7 +362,6 @@ namespace AngelLoader
 
                 using var extractor = new SevenZipExtractor(fmArchivePath);
 
-                var fileNamesList = new List<string>();
                 uint extractorFilesCount = extractor.FilesCount;
                 for (int i = 0; i < extractorFilesCount; i++)
                 {
@@ -442,6 +442,8 @@ namespace AngelLoader
             }
             finally
             {
+                foreach (string file in fileNamesList) File_UnSetReadOnly(file);
+
                 if (!listFile.IsEmpty())
                 {
                     try
