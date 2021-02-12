@@ -657,7 +657,6 @@ namespace FMScanner
                     string error = "";
 
                     p.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(Scanner)).Location)!, "7z.exe");
-                    Trace.WriteLine(p.StartInfo.FileName);
                     //p.StartInfo.RedirectStandardOutput = true;
                     p.StartInfo.RedirectStandardError = true;
                     p.StartInfo.Arguments = "x \"" + _archivePath + "\" -o\"" + _fmWorkingPath + "\" "
@@ -680,9 +679,10 @@ namespace FMScanner
                                 string lineT = line.Trim();
                                 if (lineT.Contains("%"))
                                 {
-                                    if (int.TryParse(lineT.Substring(0, lineT.IndexOf('%')), out int result))
+                                    if (int.TryParse(lineT.Substring(0, lineT.IndexOf('%')), out int percent))
                                     {
-                                        Trace.WriteLine(result + "%");
+                                        Trace.WriteLine(percent + "%");
+                                        break;
                                     }
                                 }
                             }

@@ -47,6 +47,9 @@ namespace AngelLoader
         private static string? _fmScannerTemp;
         internal static string FMScannerTemp => _fmScannerTemp ??= PathCombineFast_NoChecks(_baseTemp, "FMScan");
 
+        private static string? _sevenZipListTemp;
+        internal static string SevenZipListTemp => _sevenZipListTemp ??= PathCombineFast_NoChecks(_baseTemp, "7zl");
+
         #endregion
 
         #region Stub

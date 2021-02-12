@@ -682,7 +682,7 @@ namespace AngelLoader.Forms
             this.FilterByThief1Button.Name = "FilterByThief1Button";
             this.FilterByThief1Button.Size = new System.Drawing.Size(25, 25);
             this.FilterByThief1Button.ToolTipText = "Thief 1";
-            this.FilterByThief1Button.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterByThief1Button.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterByThief2Button
             // 
@@ -695,7 +695,7 @@ namespace AngelLoader.Forms
             this.FilterByThief2Button.Name = "FilterByThief2Button";
             this.FilterByThief2Button.Size = new System.Drawing.Size(25, 25);
             this.FilterByThief2Button.ToolTipText = "Thief 2";
-            this.FilterByThief2Button.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterByThief2Button.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterByThief3Button
             // 
@@ -708,7 +708,7 @@ namespace AngelLoader.Forms
             this.FilterByThief3Button.Name = "FilterByThief3Button";
             this.FilterByThief3Button.Size = new System.Drawing.Size(25, 25);
             this.FilterByThief3Button.ToolTipText = "Thief 3";
-            this.FilterByThief3Button.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterByThief3Button.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterBySS2Button
             // 
@@ -721,7 +721,7 @@ namespace AngelLoader.Forms
             this.FilterBySS2Button.Name = "FilterBySS2Button";
             this.FilterBySS2Button.Size = new System.Drawing.Size(25, 25);
             this.FilterBySS2Button.ToolTipText = "System Shock 2";
-            this.FilterBySS2Button.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterBySS2Button.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterTitleLabel
             // 
@@ -740,7 +740,7 @@ namespace AngelLoader.Forms
             this.FilterTitleTextBox.Name = "FilterTitleTextBox";
             this.FilterTitleTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterTitleTextBox.TabIndex = 6;
-            this.FilterTitleTextBox.TextChanged += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterTitleTextBox.TextChanged += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterAuthorLabel
             // 
@@ -759,7 +759,7 @@ namespace AngelLoader.Forms
             this.FilterAuthorTextBox.Name = "FilterAuthorTextBox";
             this.FilterAuthorTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterAuthorTextBox.TabIndex = 8;
-            this.FilterAuthorTextBox.TextChanged += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterAuthorTextBox.TextChanged += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterIconButtonsToolStrip
             // 
@@ -840,7 +840,7 @@ namespace AngelLoader.Forms
             this.FilterByFinishedButton.Name = "FilterByFinishedButton";
             this.FilterByFinishedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByFinishedButton.ToolTipText = "Finished";
-            this.FilterByFinishedButton.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterByFinishedButton.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterByUnfinishedButton
             // 
@@ -854,7 +854,7 @@ namespace AngelLoader.Forms
             this.FilterByUnfinishedButton.Name = "FilterByUnfinishedButton";
             this.FilterByUnfinishedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByUnfinishedButton.ToolTipText = "Unfinished";
-            this.FilterByUnfinishedButton.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterByUnfinishedButton.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterByRatingButton
             // 
@@ -881,7 +881,7 @@ namespace AngelLoader.Forms
             this.FilterShowUnsupportedButton.Name = "FilterShowUnsupportedButton";
             this.FilterShowUnsupportedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterShowUnsupportedButton.ToolTipText = "Show FMs marked as \"unsupported game or non-FM archive\"";
-            this.FilterShowUnsupportedButton.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterShowUnsupportedButton.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterShowRecentAtTopButton
             // 
@@ -894,7 +894,7 @@ namespace AngelLoader.Forms
             this.FilterShowRecentAtTopButton.Name = "FilterShowRecentAtTopButton";
             this.FilterShowRecentAtTopButton.Size = new System.Drawing.Size(25, 25);
             this.FilterShowRecentAtTopButton.ToolTipText = "Show recent at top";
-            this.FilterShowRecentAtTopButton.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.FilterShowRecentAtTopButton.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterControlsShowHideButton
             // 
@@ -940,7 +940,7 @@ namespace AngelLoader.Forms
             this.RefreshFromDiskButton.Name = "RefreshFromDiskButton";
             this.RefreshFromDiskButton.Size = new System.Drawing.Size(25, 25);
             this.RefreshFromDiskButton.ToolTipText = "Refresh from disk";
-            this.RefreshFromDiskButton.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.RefreshFromDiskButton.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // RefreshFiltersButton
             // 
@@ -953,7 +953,7 @@ namespace AngelLoader.Forms
             this.RefreshFiltersButton.Name = "RefreshFiltersButton";
             this.RefreshFiltersButton.Size = new System.Drawing.Size(25, 25);
             this.RefreshFiltersButton.ToolTipText = "Refresh filtered list";
-            this.RefreshFiltersButton.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.RefreshFiltersButton.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // ClearFiltersButton
             // 
@@ -966,7 +966,7 @@ namespace AngelLoader.Forms
             this.ClearFiltersButton.Name = "ClearFiltersButton";
             this.ClearFiltersButton.Size = new System.Drawing.Size(25, 25);
             this.ClearFiltersButton.ToolTipText = "Clear filters";
-            this.ClearFiltersButton.Click += new System.EventHandler(this.SortAndSetFiltersButtons_Click);
+            this.ClearFiltersButton.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // ResetLayoutButton
             // 

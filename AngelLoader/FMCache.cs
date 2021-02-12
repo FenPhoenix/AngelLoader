@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -346,6 +347,7 @@ namespace AngelLoader
 
         private static void SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
         {
+            string listFile = "";
             try
             {
                 // Critical
@@ -359,7 +361,7 @@ namespace AngelLoader
 
                 using var extractor = new SevenZipExtractor(fmArchivePath);
 
-                var indexesList = new List<int>();
+                var fileNamesList = new List<string>();
                 uint extractorFilesCount = extractor.FilesCount;
                 for (int i = 0; i < extractorFilesCount; i++)
                 {
@@ -372,33 +374,66 @@ namespace AngelLoader
                            fn.PathStartsWithI(_t3ReadmeDir2S))) ||
                          dirSeps == 0))
                     {
-                        indexesList.Add(i);
+                        fileNamesList.Add(entry.FileName);
                         readmes.Add(entry.FileName);
                     }
                 }
 
-                if (indexesList.Count == 0) return;
+                if (fileNamesList.Count == 0) return;
 
-                extractor.FileExtractionFinished += (sender, e) =>
+                Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+
+                listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
+
+                File.WriteAllLines(listFile, fileNamesList);
+
+                using var p = new Process { EnableRaisingEvents = true };
+                string error = "";
+
+                p.StartInfo.FileName = Path.Combine(Paths.Startup, "7z.exe");
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.RedirectStandardError = true;
+                p.StartInfo.Arguments = "x \"" + fmArchivePath + "\" -o\"" + fmCachePath + "\" "
+                                        + "@" + listFile + " "
+                                        + "-r -aoa -y -bsp1";
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.UseShellExecute = false;
+
+                p.OutputDataReceived += (_, e) =>
                 {
-                    // This event gets fired for every file, even skipped files. So check if it's actually
-                    // one of ours.
-                    if (indexesList.Contains(e.FileInfo.Index))
-                    {
-                        SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
-                    }
+                    if (e.Data.IsEmpty()) return;
 
-                    var percent = GetPercentFromValue(e.FileInfo.Index, (int)extractorFilesCount);
-                    Core.View.InvokeSync(new Action(() => Core.View.ReportCachingProgress(percent)));
+                    using var sr = new StringReader(e.Data);
+
+                    string? line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string lineT = line.Trim();
+                        if (lineT.Contains("%"))
+                        {
+                            if (int.TryParse(lineT.Substring(0, lineT.IndexOf('%')), out int percent))
+                            {
+                                Core.View.InvokeSync(new Action(() => Core.View.ReportCachingProgress(percent)));
+                                break;
+                            }
+                        }
+                    }
                 };
 
-                try
+                p.ErrorDataReceived += (_, e) =>
                 {
-                    extractor.ExtractFiles(fmCachePath, indexesList.ToArray());
-                }
-                catch (Exception ex)
+                    if (!e.Data.IsWhiteSpace()) error += "\r\n---" + e.Data;
+                };
+
+                p.Start();
+                p.BeginOutputReadLine();
+                p.BeginErrorReadLine();
+
+                p.WaitForExit();
+
+                if (!error.IsWhiteSpace())
                 {
-                    Log("Exception in 7z ExtractFiles() call", ex);
+                    Log(fmCachePath + ": " + nameof(SevenZipExtract) + "(): fm is 7z, error in 7z.exe extraction:\r\n" + error);
                 }
             }
             catch (Exception ex)
@@ -407,6 +442,17 @@ namespace AngelLoader
             }
             finally
             {
+                if (!listFile.IsEmpty())
+                {
+                    try
+                    {
+                        File.Delete(listFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log(fmCachePath + ": " + nameof(SevenZipExtract) + "(): fm is 7z, exception attempting to delete 7z.exe list file " + listFile, ex);
+                    }
+                }
                 Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
             }
         }
