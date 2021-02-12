@@ -33,6 +33,7 @@ rem dll.config is for .NET Core 3
 rem "%system%xcopy" "%TargetDir%AngelLoader.dll.config" "%destDir%" /y
 rem exe.config is for .NET Framework
 "%system%xcopy" "%TargetDir%AngelLoader.exe.config" "%destDir%" /y
+"%system%xcopy" "%TargetDir%7z.exe" "%destDir%" /y
 
 "%system%xcopy" "%TargetDir%*.dll" "%destDir%" /y
 
