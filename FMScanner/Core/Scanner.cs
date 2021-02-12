@@ -98,6 +98,7 @@ namespace FMScanner
 
         private string _archivePath = "";
 
+        private string _tempPath = "";
         private string _fmWorkingPath = "";
 
         // Guess I'll leave this one global for reasons
@@ -416,6 +417,8 @@ namespace FMScanner
 
             #endregion
 
+            _tempPath = tempPath;
+
             var scannedFMDataList = new List<ScannedFMData?>();
 
             // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
@@ -591,79 +594,80 @@ namespace FMScanner
                 // FMs may still be about as slow depending on their structure and content, but meh. Improvement
                 // is improvement.
 
+                string listFile = "";
                 try
                 {
                     Directory.CreateDirectory(_fmWorkingPath);
 
+                    // We still use SevenZipSharp for merely getting the file names and metadata, as that doesn't
+                    // involve any decompression and shouldn't trigger any out-of-memory errors. We use this so
+                    // we can get last write times in DateTime format and not have to parse possible localized
+                    // text dates out of the output stream.
                     _sevenZipArchive = new SevenZipExtractor(_archivePath) { PreserveDirectoryStructure = true };
                     sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
 
-                    //var indexesList = new List<int>();
+                    var fileNamesList = new List<string>();
                     uint extractorFilesCount = _sevenZipArchive.FilesCount;
                     for (int i = 0; i < extractorFilesCount; i++)
                     {
                         var entry = _sevenZipArchive.ArchiveFileData[i];
-                        //string fn = entry.FileName;
-                        //int dirSeps;
-                        //if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                        //    (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
-                        //      (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
-                        //       fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
-                        //     dirSeps == 0))
-                        //{
-                        //    indexesList.Add(i);
-                        //}
-                        //else if (!entry.FileName.ContainsDirSep() &&
-                        //         (entry.FileName.EndsWithI(".mis") ||
-                        //          entry.FileName.EndsWithI(".gam")) ||
-                        //         entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
-                        //         entry.FileName.EqualsI(FMFiles.FMIni) ||
-                        //         entry.FileName.EqualsI(FMFiles.ModIni))
-                        //{
-                        //    indexesList.Add(i);
-                        //}
-                        //else if (entry.FileName.PathEndsWithI(FMFiles.SMissFlag) ||
-                        //         entry.FileName.PathEndsWithI(FMFiles.SNewGameStr) ||
-                        //         entry.FileName.PathEndsWithI("/titles.str") ||
-                        //         entry.FileName.PathEndsWithI("/title.str"))
-                        //{
-                        //    indexesList.Add(i);
-                        //}
+                        string fn = entry.FileName;
+                        int dirSeps;
+                        // TODO: Calculate these exactly like they are on use (eg. only get the first title.str/titles.str etc.)
+                        // That way we can shave a bit of time in theory.
+                        if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
+                            (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
+                              (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
+                               fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
+                             dirSeps == 0))
+                        {
+                            fileNamesList.Add(entry.FileName);
+                        }
+                        // Only extract these if we need them!
+                        else if (_scanOptions.ScanGameType &&
+                                 !entry.FileName.ContainsDirSep() &&
+                                 (entry.FileName.EndsWithI(".mis") ||
+                                  entry.FileName.EndsWithI(".gam")))
+                        {
+                            fileNamesList.Add(entry.FileName);
+                        }
+                        else if (!entry.FileName.ContainsDirSep() &&
+                                 entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
+                                 entry.FileName.EqualsI(FMFiles.FMIni) ||
+                                 entry.FileName.EqualsI(FMFiles.ModIni))
+                        {
+                            fileNamesList.Add(entry.FileName);
+                        }
+                        else if (entry.FileName.PathEndsWithI(FMFiles.SMissFlag) ||
+                                 entry.FileName.PathEndsWithI(FMFiles.SNewGameStr) ||
+                                 entry.FileName.PathEndsWithI("/titles.str") ||
+                                 entry.FileName.PathEndsWithI("/title.str"))
+                        {
+                            fileNamesList.Add(entry.FileName);
+                        }
 
                         _fmDirFileInfos.Add(new FileInfoCustom(entry));
                     }
 
-                    //_sevenZipArchive.ExtractFiles(_fmWorkingPath, indexesList.ToArray());
+                    listFile = Path.Combine(_tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
 
+                    File.WriteAllLines(listFile, fileNamesList);
+
+                    using var p = new Process { EnableRaisingEvents = true };
+                    string error = "";
+
+                    p.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(Scanner)).Location)!, "7z.exe");
+                    Trace.WriteLine(p.StartInfo.FileName);
+                    //p.StartInfo.RedirectStandardOutput = true;
+                    p.StartInfo.RedirectStandardError = true;
+                    p.StartInfo.Arguments = "x \"" + _archivePath + "\" -o\"" + _fmWorkingPath + "\" "
+                                            + "@" + listFile + " "
+                                            + "-r -aoa -y -bsp1";
+                    p.StartInfo.CreateNoWindow = true;
+                    p.StartInfo.UseShellExecute = false;
+
+                    // Uncomment this if we want to have a sub-progress-bar that tracks extraction only
                     /*
-                    TODO: 7z.exe extract:
-                    -Make a list file so we can tell it exactly which files to extract (not just wildcards)
-                    -Decide what files to extract based on what we're scanning for (no game type, no .mis/.gam
-                     files!)
-                    */
-                    using (var p = new Process { EnableRaisingEvents = true })
-                    {
-                        string error = "";
-
-                        // Only extract these if we need them!
-                        string misAndGam = _scanOptions.ScanGameType ? "*.mis *.gam " : "";
-
-                        p.StartInfo.FileName = (Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(Scanner)).Location)!, "7z.exe"));
-                        Trace.WriteLine(p.StartInfo.FileName);
-                        //p.StartInfo.RedirectStandardOutput = true;
-                        p.StartInfo.RedirectStandardError = true;
-                        p.StartInfo.Arguments = "x \"" + _archivePath + "\" -o\"" + _fmWorkingPath + "\" "
-                                                + FMDirs.T3FMExtras1S + "* "
-                                                + FMDirs.T3FMExtras2S + "* "
-                                                + misAndGam + "*.txt *.rtf *.wri *.glml *.htm *.html "
-                                                + FMFiles.FMInfoXml + " " + FMFiles.FMIni + " " + FMFiles.ModIni + " "
-                                                + "missflag.str newgame.str titles.str title.str "
-                                                + "-r -aoa -y -bsp1";
-                        p.StartInfo.CreateNoWindow = true;
-                        p.StartInfo.UseShellExecute = false;
-
-                        // Uncomment this if we want to have a sub-progress-bar that tracks extraction only
-                        /*
                         p.OutputDataReceived += (_, e) =>
                         {
                             if (e.Data.IsEmpty()) return;
@@ -685,28 +689,41 @@ namespace FMScanner
                         };
                         */
 
-                        p.ErrorDataReceived += (_, e) =>
-                        {
-                            if (!e.Data.IsWhiteSpace()) error += "\r\n---" + e.Data;
-                        };
+                    p.ErrorDataReceived += (_, e) =>
+                    {
+                        if (!e.Data.IsWhiteSpace()) error += "\r\n---" + e.Data;
+                    };
 
-                        p.Start();
-                        //p.BeginOutputReadLine();
-                        p.BeginErrorReadLine();
+                    p.Start();
+                    //p.BeginOutputReadLine();
+                    p.BeginErrorReadLine();
 
-                        p.WaitForExit();
+                    p.WaitForExit();
 
-                        if (!error.IsWhiteSpace())
-                        {
-                            Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, error in 7z.exe extraction:\r\n" + error);
-                            return UnsupportedZip(_archivePath);
-                        }
+                    if (!error.IsWhiteSpace())
+                    {
+                        Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, error in 7z.exe extraction:\r\n" + error);
+                        return UnsupportedZip(_archivePath);
                     }
                 }
                 catch (Exception ex)
                 {
                     Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction", ex);
                     return UnsupportedZip(_archivePath);
+                }
+                finally
+                {
+                    if (!listFile.IsEmpty())
+                    {
+                        try
+                        {
+                            File.Delete(listFile);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception attempting to delete 7z.exe list file " + listFile, ex);
+                        }
+                    }
                 }
 
                 #endregion
