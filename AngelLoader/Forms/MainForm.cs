@@ -2061,7 +2061,7 @@ namespace AngelLoader.Forms
         internal void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
 
         // A ton of things in one event handler to cut down on async/awaits
-        private async void SortAndSetFiltersButtons_Click(object sender, EventArgs e)
+        private async void Filters_Changed(object sender, EventArgs e)
         {
             if (sender == RefreshFromDiskButton)
             {
