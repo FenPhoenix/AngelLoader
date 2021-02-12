@@ -4,8 +4,8 @@
 # Fen custom
 *.exe
 ffmpeg/**
-BinReleaseOnly/**
 temp_transfer_bin/**
+!temp_transfer_bin/.gitkeep
 
 # User-specific files
 *.suo

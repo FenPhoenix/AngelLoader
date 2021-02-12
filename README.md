@@ -24,13 +24,7 @@ FM loaders have traditionally had FM scanning functionality, and AngelLoader's s
 In short, AngelLoader aims to be a complete successor to DarkLoader, being an all-in-one loader and manager with an intuitive interface, high performance, and many features both classic and modern.
 
 ## Building
-- Download a 32-bit build of [FFmpeg](https://www.gyan.dev/ffmpeg/builds/) (**must be 32-bit**) or use this [custom minimal build](https://www.dropbox.com/s/hguxwku13kf16zc/ffmpeg_minimal_AngelLoader.zip)
-    - For the regular build:
-        - Create a folder named "ffmpeg" in the solution base dir.
-        - Extract the ffmpeg archive. It should have a bin folder in it. Copy all files from the bin folder to the ffmpeg folder you just created.
-    - For the minimal build:
-        - Just extract the ffmpeg folder to the solution base dir.
-    - My custom build should be a NuGet package, but I can't figure out how to make a NuGet package consisting only of binaries, as no matter what I try it just gleefully vomits out an empty .dll along with the actual stuff
+- All dependencies now are either NuGet packages or are included in the bin_dependencies folder, so you should be able to just build with no fuss now.
 
 ## License
 AngelLoader's code is released under the MIT license, except portions which are otherwise specified.

@@ -33,7 +33,7 @@ rem dll.config is for .NET Core 3
 rem "%system%xcopy" "%TargetDir%AngelLoader.dll.config" "%destDir%" /y
 rem exe.config is for .NET Framework
 "%system%xcopy" "%TargetDir%AngelLoader.exe.config" "%destDir%" /y
-"%system%xcopy" "%TargetDir%7z.exe" "%destDir%" /y
+"%system%xcopy" "%SolutionDir%bin_dependencies\7z\*.*" "%destDir%" /y
 
 "%system%xcopy" "%TargetDir%*.dll" "%destDir%" /y
 
@@ -48,7 +48,7 @@ del /F "%destDir%testhost.dll"
 rem "%system%xcopy" "%SolutionDir%libs\x86\7z.dll" "%destDir%" /y
 rem "%system%xcopy" "%SolutionDir%\libs\x86\7z.dll" "%TargetDir%" /y
 
-"%system%xcopy" "%SolutionDir%ffmpeg" "%destDir%ffmpeg\" /y /i
+"%system%xcopy" "%SolutionDir%bin_dependencies\ffmpeg" "%destDir%ffmpeg\" /y /i
 
 if %ConfigurationName% == Release_Public (
 "%system%xcopy" "%ProjectDir%Languages\English.ini" "%destDir%Data\Languages\" /y
