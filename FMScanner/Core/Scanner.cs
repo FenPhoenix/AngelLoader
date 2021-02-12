@@ -659,9 +659,13 @@ namespace FMScanner
                     p.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(Scanner)).Location)!, "7z.exe");
                     //p.StartInfo.RedirectStandardOutput = true;
                     p.StartInfo.RedirectStandardError = true;
+                    // x     = Extract with full paths
+                    // -aoa  = Overwrite all existing files without prompt
+                    // -y    = Say yes to all prompts automatically
+                    // -bsp1 = Redirect progress information to stdout stream
                     p.StartInfo.Arguments = "x \"" + _archivePath + "\" -o\"" + _fmWorkingPath + "\" "
-                                            + "@" + listFile + " "
-                                            + "-r -aoa -y -bsp1";
+                                            + "@\"" + listFile + "\" "
+                                            + "-aoa -y -bsp1";
                     p.StartInfo.CreateNoWindow = true;
                     p.StartInfo.UseShellExecute = false;
 

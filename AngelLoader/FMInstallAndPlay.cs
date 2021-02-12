@@ -671,6 +671,11 @@ namespace AngelLoader
                 p.StartInfo.RedirectStandardOutput = true;
                 p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.RedirectStandardInput = true;
+                // x     = Extract with full paths
+                // -aoa  = Overwrite all existing files without prompt
+                // -y    = Say yes to all prompts automatically
+                // -bsp1 = Redirect progress information to stdout stream
+                // -bb1  = Show names of processed files in log (needed for smooth reporting of entries done count)
                 p.StartInfo.Arguments = "x \"" + fmArchivePath + "\" -o\"" + fmInstalledPath + "\" "
                                         + "-aoa -y -bsp1 -bb1";
                 p.StartInfo.CreateNoWindow = true;
