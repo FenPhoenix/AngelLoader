@@ -645,14 +645,17 @@ namespace FMScanner
                     {
                         string error = "";
 
-                        p.StartInfo.FileName = (Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(Scanner)).Location), "7z.exe"));
+                        // Only extract these if we need them!
+                        string misAndGam = _scanOptions.ScanGameType ? "*.mis *.gam " : "";
+
+                        p.StartInfo.FileName = (Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(Scanner)).Location)!, "7z.exe"));
                         Trace.WriteLine(p.StartInfo.FileName);
                         //p.StartInfo.RedirectStandardOutput = true;
                         p.StartInfo.RedirectStandardError = true;
                         p.StartInfo.Arguments = "x \"" + _archivePath + "\" -o\"" + _fmWorkingPath + "\" "
                                                 + FMDirs.T3FMExtras1S + "* "
                                                 + FMDirs.T3FMExtras2S + "* "
-                                                + "*.mis *.gam *.txt *.rtf *.wri *.glml *.htm *.html "
+                                                + misAndGam + "*.txt *.rtf *.wri *.glml *.htm *.html "
                                                 + FMFiles.FMInfoXml + " " + FMFiles.FMIni + " " + FMFiles.ModIni + " "
                                                 + "missflag.str newgame.str titles.str title.str "
                                                 + "-r -aoa -y -bsp1";
