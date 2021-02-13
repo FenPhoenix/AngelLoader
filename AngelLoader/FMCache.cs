@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
@@ -347,7 +347,6 @@ namespace AngelLoader
 
         private static void SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
         {
-            string listFile = "";
             var fileNamesList = new List<string>();
             try
             {
@@ -362,7 +361,7 @@ namespace AngelLoader
 
                 using var extractor = new SevenZipExtractor(fmArchivePath);
 
-                uint extractorFilesCount = extractor.FilesCount;
+                int extractorFilesCount = extractor.ArchiveFileData.Count;
                 for (int i = 0; i < extractorFilesCount; i++)
                 {
                     var entry = extractor.ArchiveFileData[i];
@@ -383,62 +382,38 @@ namespace AngelLoader
 
                 Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
 
-                listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
-
-                File.WriteAllLines(listFile, fileNamesList);
-
-                using var p = new Process { EnableRaisingEvents = true };
-                string error = "";
-
-                p.StartInfo.FileName = Paths.SevenZipExe;
-                p.StartInfo.WorkingDirectory = Paths.SevenZipPath;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.StartInfo.RedirectStandardError = true;
-                // x     = Extract with full paths
-                // -aoa  = Overwrite all existing files without prompt
-                // -y    = Say yes to all prompts automatically
-                // -bsp1 = Redirect progress information to stdout stream
-                p.StartInfo.Arguments = "x \"" + fmArchivePath + "\" -o\"" + fmCachePath + "\" "
-                                        + "@\"" + listFile + "\" "
-                                        + "-aoa -y -bsp1";
-                p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.UseShellExecute = false;
-
-                p.OutputDataReceived += (_, e) =>
+                static void ReportProgress(Fen7z.Fen7z.ProgressReport pr)
                 {
-                    if (e.Data.IsEmpty()) return;
+                    // For selective-file extracts, we want percent-of-bytes, otherwise if we ask for 3 files but
+                    // there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving us a
+                    // useless "percentage" value for this purpose.
+                    // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
+                    Core.View.InvokeSync(new Action(() => Core.View.ReportCachingProgress(pr.PercentOfBytes)));
+                }
 
-                    using var sr = new StringReader(e.Data);
+                var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
 
-                    string? line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        string lineT = line.Trim();
-                        if (lineT.Contains("%"))
-                        {
-                            if (int.TryParse(lineT.Substring(0, lineT.IndexOf('%')), out int percent))
-                            {
-                                Core.View.InvokeSync(new Action(() => Core.View.ReportCachingProgress(percent)));
-                                break;
-                            }
-                        }
-                    }
-                };
+                string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
 
-                p.ErrorDataReceived += (_, e) =>
+                var result = Fen7z.Fen7z.Extract(
+                    Paths.SevenZipPath,
+                    Paths.SevenZipExe,
+                    fmArchivePath,
+                    fmCachePath,
+                    extractorFilesCount,
+                    listFile,
+                    fileNamesList,
+                    CancellationToken.None,
+                    progress);
+
+                if (result.ErrorOccurred)
                 {
-                    if (!e.Data.IsWhiteSpace()) error += "\r\n---" + e.Data;
-                };
-
-                p.Start();
-                p.BeginOutputReadLine();
-                p.BeginErrorReadLine();
-
-                p.WaitForExit();
-
-                if (!error.IsWhiteSpace())
-                {
-                    Log(fmCachePath + ": " + nameof(SevenZipExtract) + "(): fm is 7z, error in 7z.exe extraction:\r\n" + error);
+                    Log("Readme caching (7z): " + fmCachePath + ":\r\n"
+                        + "Error in 7z.exe extraction:\r\n"
+                        + result.ErrorText + "\r\n"
+                        + (result.Exception?.ToString() ?? "") + "\r\n"
+                        + "ExitCode: " + result.ExitCode + "\r\n"
+                        + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
                 }
             }
             catch (Exception ex)
@@ -448,18 +423,6 @@ namespace AngelLoader
             finally
             {
                 foreach (string file in fileNamesList) File_UnSetReadOnly(file);
-
-                if (!listFile.IsEmpty())
-                {
-                    try
-                    {
-                        File.Delete(listFile);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(fmCachePath + ": " + nameof(SevenZipExtract) + "(): fm is 7z, exception attempting to delete 7z.exe list file " + listFile, ex);
-                    }
-                }
                 Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
             }
         }

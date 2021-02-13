@@ -651,58 +651,76 @@ namespace AngelLoader
 
         private static bool InstallFMSevenZip(string fmArchivePath, string fmInstalledPath)
         {
-            Directory.CreateDirectory(fmInstalledPath);
-            Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
-
-            int entriesCount;
-
-            using (var extractor = new SevenZipExtractor(fmArchivePath))
+            bool canceled = false;
+            try
             {
-                entriesCount = extractor.ArchiveFileData.Count;
+                Directory.CreateDirectory(fmInstalledPath);
+                Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+
+                int entriesCount;
+
+                using (var extractor = new SevenZipExtractor(fmArchivePath))
+                {
+                    entriesCount = extractor.ArchiveFileData.Count;
+                }
+
+                static void ReportProgress(Fen7z.Fen7z.ProgressReport pr) =>
+                    Core.View.InvokeSync(pr.Canceling
+                        ? new Action(Core.View.SetCancelingFMInstall)
+                        : new Action(() => Core.View.ReportFMExtractProgress(pr.PercentOfEntries)));
+
+                var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
+
+                var result = Fen7z.Fen7z.Extract(
+                    Paths.SevenZipPath,
+                    Paths.SevenZipExe,
+                    fmArchivePath,
+                    fmInstalledPath,
+                    entriesCount,
+                    listFile: "",
+                    new List<string>(),
+                    _extractCts.Token,
+                    progress
+                );
+
+                canceled = result.Canceled;
+
+                if (result.ErrorOccurred)
+                {
+                    Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n"
+                        + result.ErrorText + "\r\n"
+                        + (result.Exception?.ToString() ?? "") + "\r\n"
+                        + "ExitCode: " + result.ExitCode + "\r\n"
+                        + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
+
+                    Core.View.InvokeSync(new Action(() =>
+                        Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                            LText.AlertMessages.Alert)));
+
+                    return !result.Canceled;
+                }
+
+                if (!result.Canceled)
+                {
+                    foreach (string file in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
+                    {
+                        // TODO: Unset readonly for directories too
+                        File_UnSetReadOnly(file);
+                    }
+                }
+
+                return !result.Canceled;
             }
-
-            static void ReportProgress(Fen7z.Fen7z.ProgressReport pr) =>
-                Core.View.InvokeSync(pr.Canceling
-                    ? new Action(Core.View.SetCancelingFMInstall)
-                    : new Action(() => Core.View.ReportFMExtractProgress(pr.PercentOfEntries)));
-
-            var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
-
-            var result = Fen7z.Fen7z.Extract(
-                Paths.SevenZipPath,
-                Paths.SevenZipExe,
-                fmArchivePath,
-                fmInstalledPath,
-                entriesCount,
-                listFile: "",
-                new List<string>(),
-                _extractCts.Token,
-                progress
-            );
-
-            if (result.ErrorOccurred)
+            catch (Exception ex)
             {
-                Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n"
-                    + result.ErrorText + "\r\n"
-                    + (result.Exception?.ToString() ?? "") + "\r\n"
-                    + "ExitCode: " + result.ExitCode + "\r\n"
-                    + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
+                Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n", ex);
+
                 Core.View.InvokeSync(new Action(() =>
                     Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                         LText.AlertMessages.Alert)));
-                return !result.Canceled;
-            }
 
-            if (!result.Canceled)
-            {
-                foreach (string file in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
-                {
-                    // TODO: Unset readonly for directories too
-                    File_UnSetReadOnly(file);
-                }
+                return !canceled;
             }
-
-            return !result.Canceled;
         }
 
         internal static void CancelInstallFM() => _extractCts.CancelIfNotDisposed();
