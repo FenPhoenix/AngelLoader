@@ -651,164 +651,58 @@ namespace AngelLoader
 
         private static bool InstallFMSevenZip(string fmArchivePath, string fmInstalledPath)
         {
-            bool canceled = false;
+            Directory.CreateDirectory(fmInstalledPath);
+            Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
 
-            try
+            int entriesCount;
+
+            using (var extractor = new SevenZipExtractor(fmArchivePath))
             {
-                Directory.CreateDirectory(fmInstalledPath);
-
-                int entriesCount;
-
-                using (var extractor = new SevenZipExtractor(fmArchivePath))
-                {
-                    entriesCount = extractor.ArchiveFileData.Count;
-                }
-
-                using var p = new Process { EnableRaisingEvents = true };
-                string error = "";
-
-                p.StartInfo.FileName = Paths.SevenZipExe;
-                p.StartInfo.WorkingDirectory = Paths.SevenZipPath;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.StartInfo.RedirectStandardError = true;
-                p.StartInfo.RedirectStandardInput = true;
-                // x     = Extract with full paths
-                // -aoa  = Overwrite all existing files without prompt
-                // -y    = Say yes to all prompts automatically
-                // -bsp1 = Redirect progress information to stdout stream
-                // -bb1  = Show names of processed files in log (needed for smooth reporting of entries done count)
-                p.StartInfo.Arguments = "x \"" + fmArchivePath + "\" -o\"" + fmInstalledPath + "\" "
-                                        + "-aoa -y -bsp1 -bb1";
-                p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.UseShellExecute = false;
-
-                p.OutputDataReceived += (sender, e) =>
-                {
-                    var proc = (Process)sender;
-                    if (!canceled && _extractCts.Token.IsCancellationRequested)
-                    {
-                        canceled = true;
-
-                        Core.View.InvokeSync(new Action(Core.View.SetCancelingFMInstall));
-                        try
-                        {
-                            proc.CancelErrorRead();
-                            proc.CancelOutputRead();
-                            // We should be sending Ctrl+C to it, but since that's deep-level black magic, we
-                            // just kill it. We're going to delete all its extracted files immediately afterward
-                            // anyway, so file corruption isn't an issue.
-                            proc.Kill();
-                        }
-                        catch
-                        {
-                            // Ignore, it's going to throw but work anyway (even on non-admin, tested)
-                        }
-                        return;
-                    }
-
-                    if (e.Data.IsEmpty()) return;
-
-                    using var sr = new StringReader(e.Data);
-
-                    string? line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        string lineT = line.Trim();
-
-                        #region Get percent of entries extracted
-
-                        int pi = lineT.IndexOf('%');
-                        if (pi > -1)
-                        {
-                            int di;
-                            if (int.TryParse((di = lineT.IndexOf('-', pi + 1)) > -1
-                                    ? lineT.Substring(pi + 1, di)
-                                    : lineT.Substring(pi + 1), out int entriesDone))
-                            {
-                                int percent = GetPercentFromValue(entriesDone, entriesCount).Clamp(0, 100);
-                                Core.View.InvokeSync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
-                                return;
-                            }
-                        }
-
-                        #endregion
-
-                        #region Get percent of bytes extracted
-
-                        /*
-                        if (lineT.Contains("%"))
-                        {
-                            if (int.TryParse(lineT.Substring(0, lineT.IndexOf('%')), out int percent))
-                            {
-                                if (!canceled && _extractCts.Token.IsCancellationRequested)
-                                {
-                                    canceled = true;
-                                }
-                                if (canceled)
-                                {
-                                    Core.View.InvokeSync(new Action(Core.View.SetCancelingFMInstall));
-                                    try
-                                    {
-                                        p.Kill();
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Trace.WriteLine("***********************");
-                                        Trace.WriteLine(ex);
-                                        const long test = 2147500037;
-                                    }
-                                    return;
-                                }
-                                Core.View.InvokeSync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
-                                return;
-                            }
-                        }
-                        */
-
-                        #endregion
-                    }
-                };
-
-                p.ErrorDataReceived += (_, e) =>
-                {
-                    if (!e.Data.IsWhiteSpace()) error += "\r\n---" + e.Data;
-                };
-
-                p.Start();
-                p.BeginOutputReadLine();
-                p.BeginErrorReadLine();
-
-                p.WaitForExit();
-
-                if (!error.IsWhiteSpace())
-                {
-                    Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n" + error);
-                    Core.View.InvokeSync(new Action(() =>
-                        Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
-                            LText.AlertMessages.Alert)));
-                    return !canceled;
-                }
+                entriesCount = extractor.ArchiveFileData.Count;
             }
-            catch (Exception ex)
+
+            static void ReportProgress(Fen7z.Fen7z.ProgressReport pr) =>
+                Core.View.InvokeSync(pr.Canceling
+                    ? new Action(Core.View.SetCancelingFMInstall)
+                    : new Action(() => Core.View.ReportFMExtractProgress(pr.PercentOfEntries)));
+
+            var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
+
+            var result = Fen7z.Fen7z.Extract(
+                Paths.SevenZipPath,
+                Paths.SevenZipExe,
+                fmArchivePath,
+                fmInstalledPath,
+                entriesCount,
+                listFile: "",
+                new List<string>(),
+                _extractCts.Token,
+                progress
+            );
+
+            if (result.ErrorOccurred)
             {
-                Log("Exception extracting 7z " + fmArchivePath + " to " + fmInstalledPath, ex);
+                Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n"
+                    + result.ErrorText + "\r\n"
+                    + (result.Exception?.ToString() ?? "") + "\r\n"
+                    + "ExitCode: " + result.ExitCode + "\r\n"
+                    + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
                 Core.View.InvokeSync(new Action(() =>
                     Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                         LText.AlertMessages.Alert)));
+                return !result.Canceled;
             }
-            finally
+
+            if (!result.Canceled)
             {
-                if (!canceled)
+                foreach (string file in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
                 {
-                    foreach (string file in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
-                    {
-                        // TODO: Unset readonly for directories too
-                        File_UnSetReadOnly(file);
-                    }
+                    // TODO: Unset readonly for directories too
+                    File_UnSetReadOnly(file);
                 }
             }
 
-            return !canceled;
+            return !result.Canceled;
         }
 
         internal static void CancelInstallFM() => _extractCts.CancelIfNotDisposed();
