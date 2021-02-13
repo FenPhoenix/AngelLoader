@@ -56,6 +56,21 @@ namespace Fen7z
             public bool Canceled;
         }
 
+        /// <summary>
+        /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility, version 19.00
+        /// for speed, but without the out-of-memory exceptions you get with SevenZipSharp when using that version.
+        /// Hooray!
+        /// </summary>
+        /// <param name="sevenZipWorkingPath"></param>
+        /// <param name="sevenZipPathAndExe"></param>
+        /// <param name="archivePath"></param>
+        /// <param name="outputPath"></param>
+        /// <param name="entriesCount"></param>
+        /// <param name="listFile"></param>
+        /// <param name="fileNamesList"></param>
+        /// <param name="cancellationToken"></param>
+        /// <param name="progress"></param>
+        /// <returns></returns>
         public static Result Extract(
             string sevenZipWorkingPath,
             string sevenZipPathAndExe,
@@ -122,9 +137,11 @@ namespace Fen7z
                         {
                             proc.CancelErrorRead();
                             proc.CancelOutputRead();
-                            // We should be sending Ctrl+C to it, but since that's deep-level black magic, we
-                            // just kill it. We're going to delete all its extracted files immediately afterward
-                            // anyway, so file corruption isn't an issue.
+                            // We should be sending Ctrl+C to it, but since that's apparently deep-level black
+                            // magic on Windows, we just kill it. We expect the caller to understand that the
+                            // extracted files will be in an indeterminate state, and to delete them or do whatever
+                            // it deems fit.
+                            // TODO: If we can find a reliable way to send Ctrl+C to a process, we should switch to that.
                             proc.Kill();
                         }
                         catch
@@ -136,32 +153,38 @@ namespace Fen7z
 
                     if (e.Data.IsEmpty() || report.Canceling || progress == null) return;
 
-                    using var sr = new StringReader(e.Data);
-
-                    string? line;
-                    while ((line = sr.ReadLine()) != null)
+                    try
                     {
-                        string lineT = line.Trim();
-
-                        int pi = lineT.IndexOf('%');
-                        if (pi > -1)
+                        using var sr = new StringReader(e.Data);
+                        string? line;
+                        while ((line = sr.ReadLine()) != null)
                         {
-                            int di;
-                            if (int.TryParse((di = lineT.IndexOf('-', pi + 1)) > -1
-                                ? lineT.Substring(pi + 1, di)
-                                : lineT.Substring(pi + 1), out int entriesDone))
-                            {
-                                int filesPercent = GetPercentFromValue(entriesDone, entriesCount).Clamp(0, 100);
-                                report.PercentOfEntries = filesPercent;
-                            }
+                            string lineT = line.Trim();
 
-                            if (int.TryParse(lineT.Substring(0, pi), out int bytesPercent))
+                            int pi = lineT.IndexOf('%');
+                            if (pi > -1)
                             {
-                                report.PercentOfBytes = bytesPercent;
-                            }
+                                int di;
+                                if (int.TryParse((di = lineT.IndexOf('-', pi + 1)) > -1
+                                    ? lineT.Substring(pi + 1, di)
+                                    : lineT.Substring(pi + 1), out int entriesDone))
+                                {
+                                    int filesPercent = GetPercentFromValue(entriesDone, entriesCount).Clamp(0, 100);
+                                    report.PercentOfEntries = filesPercent;
+                                }
 
-                            progress?.Report(report);
+                                if (int.TryParse(lineT.Substring(0, pi), out int bytesPercent))
+                                {
+                                    report.PercentOfBytes = bytesPercent;
+                                }
+
+                                progress?.Report(report);
+                            }
                         }
+                    }
+                    catch
+                    {
+                        // ignore, it just means we won't report progress... meh
                     }
                 };
 
