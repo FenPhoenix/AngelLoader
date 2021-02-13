@@ -148,6 +148,13 @@ namespace AngelLoader
 
         #endregion
 
+        // Use a 64-bit version if possible for even more out-of-memory prevention...
+        internal static readonly string SevenZipPath = Environment.Is64BitOperatingSystem
+            ? PathCombineFast_NoChecks(Startup, "7z64")
+            : PathCombineFast_NoChecks(Startup, "7z32");
+
+        internal static string SevenZipExe => PathCombineFast_NoChecks(SevenZipPath, "7z.exe");
+
         #region Log files
 
         internal static readonly string LogFile = PathCombineFast_NoChecks(Startup, "AngelLoader_log.txt");

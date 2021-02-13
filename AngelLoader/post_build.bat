@@ -25,6 +25,7 @@ set "destDir=C:\AngelLoader_Public_Package\"
 set "destDir=C:\AngelLoader\"
 )
 
+rem Still copy this for SevenZipSharp's use
 "%system%xcopy" "%TargetDir%x86\7z.dll" "%destDir%" /y
 "%system%xcopy" "%TargetDir%x86\7z.dll" "%TargetDir%" /y
 
@@ -33,7 +34,8 @@ rem dll.config is for .NET Core 3
 rem "%system%xcopy" "%TargetDir%AngelLoader.dll.config" "%destDir%" /y
 rem exe.config is for .NET Framework
 "%system%xcopy" "%TargetDir%AngelLoader.exe.config" "%destDir%" /y
-"%system%xcopy" "%SolutionDir%bin_dependencies\7z\*.*" "%destDir%" /y
+"%system%xcopy" "%SolutionDir%bin_dependencies\7z32" "%destDir%\7z32\" /y /i
+"%system%xcopy" "%SolutionDir%bin_dependencies\7z64" "%destDir%\7z64\" /y /i
 
 "%system%xcopy" "%TargetDir%*.dll" "%destDir%" /y
 

@@ -667,7 +667,8 @@ namespace AngelLoader
                 using var p = new Process { EnableRaisingEvents = true };
                 string error = "";
 
-                p.StartInfo.FileName = Path.Combine(Paths.Startup, "7z.exe");
+                p.StartInfo.FileName = Paths.SevenZipExe;
+                p.StartInfo.WorkingDirectory = Paths.SevenZipPath;
                 p.StartInfo.RedirectStandardOutput = true;
                 p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.RedirectStandardInput = true;

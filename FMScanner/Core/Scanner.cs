@@ -87,6 +87,8 @@ namespace FMScanner
 
         private string _fmPathField = "";
 
+        private readonly string _sevenZipExePath;
+
         private readonly FileEncoding _fileEncoding = new FileEncoding();
 
         private readonly List<FileInfoCustom> _fmDirFileInfos = new List<FileInfoCustom>();
@@ -218,13 +220,15 @@ namespace FMScanner
         [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        public Scanner()
+        public Scanner(string sevenZipExePath)
         {
             // Perf/size balance: we want to build these strings only once so we don't re-concat them a million
             // times during the scan, but we also want to lower file size by not having a bunch of duplicate
             // strings. So we build the string arrays dynamically only once here. That way we trade perf where it
             // doesn't matter (this once-only build is mere noise) and keep it where it does, and also save file
             // size.
+
+            _sevenZipExePath = sevenZipExePath;
 
             int langsCount = Languages.Length;
             Languages_FS_Lang_FS = new string[langsCount];
@@ -653,10 +657,18 @@ namespace FMScanner
 
                     File.WriteAllLines(listFile, fileNamesList);
 
+                    /*
+                    TODO: 7z.exe todos:
+                    -Combine these 3 mostly-duplicate chunks of code into one API
+                    -Use try-finally instead of using, so we can make sure to ALWAYS kill the process if we leave
+                     the block for any reason before it's done
+                    -Check for error exit codes and act appropriately
+                    */
                     using var p = new Process { EnableRaisingEvents = true };
                     string error = "";
 
-                    p.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(Scanner)).Location)!, "7z.exe");
+                    p.StartInfo.FileName = _sevenZipExePath;
+                    p.StartInfo.WorkingDirectory = Path.GetDirectoryName(_sevenZipExePath);
                     //p.StartInfo.RedirectStandardOutput = true;
                     p.StartInfo.RedirectStandardError = true;
                     // x     = Extract with full paths

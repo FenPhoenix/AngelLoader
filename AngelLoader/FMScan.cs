@@ -153,7 +153,7 @@ namespace AngelLoader
 
                     await Task.Run(() => Paths.CreateOrClearTempPath(Paths.FMScannerTemp));
 
-                    using var scanner = new FMScanner.Scanner
+                    using var scanner = new FMScanner.Scanner(Paths.SevenZipExe)
                     {
                         FullScanOptions = GetDefaultScanOptions(),
                         LogFile = Paths.ScannerLogFile
