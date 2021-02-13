@@ -693,7 +693,8 @@ namespace AngelLoader
                     (fm.Archive.ExtIsArchive()
                         ? (titleTrimmed = viewFilter.Title.Trim()).EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
                             ? fm.Archive.EndsWithI(viewFilter.Title.Trim())
-                            : fm.Archive.IndexOf(viewFilter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
+                            : titleTrimmed.EqualsI(fm.Archive) ||
+                              fm.Archive.IndexOf(viewFilter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
                         : fm.Archive.ContainsI(viewFilter.Title)))
                 {
                     filterShownIndexList.Add(i);
