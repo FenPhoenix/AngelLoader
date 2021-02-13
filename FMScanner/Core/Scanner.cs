@@ -597,7 +597,6 @@ namespace FMScanner
                 // FMs may still be about as slow depending on their structure and content, but meh. Improvement
                 // is improvement.
 
-                string listFile = "";
                 try
                 {
                     Directory.CreateDirectory(_fmWorkingPath);
@@ -652,72 +651,27 @@ namespace FMScanner
                         _fmDirFileInfos.Add(new FileInfoCustom(entry));
                     }
 
-                    listFile = Path.Combine(_tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
+                    string listFile = Path.Combine(_tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
 
-                    File.WriteAllLines(listFile, fileNamesList);
+                    var result = Fen7z.Fen7z.Extract(
+                        Path.GetDirectoryName(_sevenZipExePath)!,
+                        _sevenZipExePath,
+                        _archivePath,
+                        _fmWorkingPath,
+                        (int)extractorFilesCount,
+                        listFile,
+                        fileNamesList);
 
-                    /*
-                    TODO: 7z.exe todos:
-                    -Combine these 3 mostly-duplicate chunks of code into one API
-                    -Use try-finally instead of using, so we can make sure to ALWAYS kill the process if we leave
-                     the block for any reason before it's done
-                    -Check for error exit codes and act appropriately
-                    */
-                    using var p = new Process { EnableRaisingEvents = true };
-                    string error = "";
-
-                    p.StartInfo.FileName = _sevenZipExePath;
-                    p.StartInfo.WorkingDirectory = Path.GetDirectoryName(_sevenZipExePath);
-                    //p.StartInfo.RedirectStandardOutput = true;
-                    p.StartInfo.RedirectStandardError = true;
-                    // x     = Extract with full paths
-                    // -aoa  = Overwrite all existing files without prompt
-                    // -y    = Say yes to all prompts automatically
-                    // -bsp1 = Redirect progress information to stdout stream
-                    p.StartInfo.Arguments = "x \"" + _archivePath + "\" -o\"" + _fmWorkingPath + "\" "
-                                            + "@\"" + listFile + "\" "
-                                            + "-aoa -y -bsp1";
-                    p.StartInfo.CreateNoWindow = true;
-                    p.StartInfo.UseShellExecute = false;
-
-                    // Uncomment this if we want to have a sub-progress-bar that tracks extraction only
-                    /*
-                        p.OutputDataReceived += (_, e) =>
-                        {
-                            if (e.Data.IsEmpty()) return;
-
-                            using var sr = new StringReader(e.Data);
-
-                            string? line;
-                            while ((line = sr.ReadLine()) != null)
-                            {
-                                string lineT = line.Trim();
-                                if (lineT.Contains("%"))
-                                {
-                                    if (int.TryParse(lineT.Substring(0, lineT.IndexOf('%')), out int percent))
-                                    {
-                                        Trace.WriteLine(percent + "%");
-                                        break;
-                                    }
-                                }
-                            }
-                        };
-                        */
-
-                    p.ErrorDataReceived += (_, e) =>
+                    if (result.ErrorOccurred)
                     {
-                        if (!e.Data.IsWhiteSpace()) error += "\r\n---" + e.Data;
-                    };
+                        Log(LogFile,
+                            _fmPathField + ": " + nameof(ScanCurrentFM) +
+                            "(): fm is 7z, error in 7z.exe extraction:\r\n"
+                            + result.ErrorText + "\r\n"
+                            + (result.Exception?.ToString() ?? "") + "\r\n"
+                            + "ExitCode: " + result.ExitCode + "\r\n"
+                            + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
 
-                    p.Start();
-                    //p.BeginOutputReadLine();
-                    p.BeginErrorReadLine();
-
-                    p.WaitForExit();
-
-                    if (!error.IsWhiteSpace())
-                    {
-                        Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, error in 7z.exe extraction:\r\n" + error);
                         return UnsupportedZip(_archivePath);
                     }
                 }
@@ -725,20 +679,6 @@ namespace FMScanner
                 {
                     Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction", ex);
                     return UnsupportedZip(_archivePath);
-                }
-                finally
-                {
-                    if (!listFile.IsEmpty())
-                    {
-                        try
-                        {
-                            File.Delete(listFile);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception attempting to delete 7z.exe list file " + listFile, ex);
-                        }
-                    }
                 }
 
                 #endregion

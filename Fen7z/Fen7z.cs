@@ -64,8 +64,8 @@ namespace Fen7z
             int entriesCount,
             string listFile,
             List<string> fileNamesList,
-            CancellationToken cancellationToken,
-            IProgress<ProgressReport> progress)
+            CancellationToken? cancellationToken = null,
+            IProgress<ProgressReport>? progress = null)
         {
             bool selectiveFiles = !listFile.IsWhiteSpace() && fileNamesList.Count > 0;
 
@@ -112,12 +112,12 @@ namespace Fen7z
                 p.OutputDataReceived += (sender, e) =>
                 {
                     var proc = (Process)sender;
-                    if (!canceled && cancellationToken.IsCancellationRequested)
+                    if (!canceled && cancellationToken != null && ((CancellationToken)cancellationToken).IsCancellationRequested)
                     {
                         canceled = true;
 
                         report.Canceling = true;
-                        progress.Report(report);
+                        progress?.Report(report);
                         try
                         {
                             proc.CancelErrorRead();
@@ -134,7 +134,7 @@ namespace Fen7z
                         return;
                     }
 
-                    if (e.Data.IsEmpty() || report.Canceling) return;
+                    if (e.Data.IsEmpty() || report.Canceling || progress == null) return;
 
                     using var sr = new StringReader(e.Data);
 
@@ -160,7 +160,7 @@ namespace Fen7z
                                 report.PercentOfBytes = bytesPercent;
                             }
 
-                            progress.Report(report);
+                            progress?.Report(report);
                         }
                     }
                 };

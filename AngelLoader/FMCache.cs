@@ -403,8 +403,7 @@ namespace AngelLoader
                     extractorFilesCount,
                     listFile,
                     fileNamesList,
-                    CancellationToken.None,
-                    progress);
+                    progress: progress);
 
                 if (result.ErrorOccurred)
                 {
