@@ -515,7 +515,7 @@ namespace FMScanner
                         }
                         catch (Exception ex)
                         {
-                            // TODO: Uh... we're swallowing all exceptions and not even logging them(!)
+                            // TODO: Uh... we're swallowing all exceptions (at least we're logging them now, but still)
                             Log(LogFile, missions[i].Path + ": Exception in FM scan", ex);
                             // Okay, we don't want to throw because that would stop the whole scan, but we want
                             // to continue scanning any further FMs that may be in the list. So just log.
