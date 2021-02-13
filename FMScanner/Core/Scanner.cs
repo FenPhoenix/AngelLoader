@@ -522,9 +522,8 @@ namespace FMScanner
                         }
                         finally
                         {
-                            if (!missions[i].Path.ExtIsZip()) DeleteFMWorkingPath();
+                            if (missions[i].Path.ExtIs7z()) DeleteFMWorkingPath();
                         }
-
 
                         scannedFMDataList.Add(scannedFM);
                     }
@@ -3697,7 +3696,9 @@ namespace FMScanner
         {
             try
             {
-                if ((_fmIsZip && !_fmIsSevenZip) ||
+                // IMPORTANT: _DO NOT_ delete the working path if we're a folder FM to start with!
+                // That means our working path is NOT temporary!!!
+                if (!_fmIsSevenZip ||
                     _fmWorkingPath.IsEmpty() ||
                     !Directory.Exists(_fmWorkingPath))
                 {
