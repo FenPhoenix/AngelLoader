@@ -228,6 +228,10 @@ namespace AngelLoader.Forms.CustomControls
 
         private List<byte> CreateColorTableRTFBytes(List<Color> colorTable)
         {
+            // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match
+            // our new background color to keep author intent (avoiding spoilers etc.)
+            static bool ColorIsTheSameAsBackground(Color color) => color.R == 255 && color.G == 255 && color.B == 255;
+
             const int maxColorEntryStringLength = 25; // "\red255\green255\blue255;" = 25 chars
 
             // Size us large enough that we don't reallocate
@@ -241,7 +245,8 @@ namespace AngelLoader.Forms.CustomControls
             for (int i = 0; i < colorTable.Count; i++)
             {
                 Color invertedColor;
-                if (i == 0 && colorTable[i].A == 0)
+                Color currentColor = colorTable[i];
+                if (i == 0 && currentColor.A == 0)
                 {
                     // Explicitly set color 0 to our desired default, so we can spam \cf0 everywhere to keep
                     // our text looking right.
@@ -249,11 +254,19 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 else if (_rtfColorStyle == RTFColorStyle.Monochrome)
                 {
-                    invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                    invertedColor = ColorIsTheSameAsBackground(currentColor)
+                        ? DarkUI.Config.Colors.Fen_DarkBackground
+                        : DarkUI.Config.Colors.Fen_DarkForeground;
                 }
-                else
+                else // auto-color
                 {
-                    invertedColor = ColorUtils.InvertLightness(colorTable[i]);
+                    // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
+                    // white and that's a bit too bright.
+                    invertedColor = currentColor.R == 0 && currentColor.G == 0 && currentColor.B == 0
+                        ? DarkUI.Config.Colors.Fen_DarkForeground
+                        : ColorIsTheSameAsBackground(currentColor)
+                        ? DarkUI.Config.Colors.Fen_DarkBackground
+                        : ColorUtils.InvertLightness(currentColor);
                 }
 
                 colorEntriesBytesList.AddRange(_redFieldBytes);

@@ -113,23 +113,6 @@ namespace AngelLoader
 
         internal static Color InvertLightness(Color color)
         {
-            #region Special cases
-
-            // Set pure black to custom-white (not pure white), otherwise it would invert around to pure white
-            // and that's a bit too bright.
-            if (color.R == 0 && color.G == 0 && color.B == 0)
-            {
-                return DarkUI.Config.Colors.Fen_DarkForeground;
-            }
-            // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match
-            // our new background color to keep author intent (avoiding spoilers etc.)
-            else if (color.R == 255 && color.G == 255 && color.B == 255)
-            {
-                return DarkUI.Config.Colors.Fen_DarkBackground;
-            }
-
-            #endregion
-
             #region Oklab lightness invert + slight boost
 
             // We unfortunately still need janky tuning of lightness and desaturation for good visibility, but
