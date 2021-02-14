@@ -22,9 +22,6 @@ namespace DarkUI.Controls
 
         #region Private fields
 
-        // Only one copy of the hook
-        private static IMouseEvents _mouseHook;
-
         private readonly ScrollBar _owner;
 
         private readonly bool _isVertical;
@@ -153,11 +150,11 @@ namespace DarkUI.Controls
 
             #region Set up mouse hook
 
-            if (_mouseHook == null) _mouseHook = Hook.AppEvents();
+            if (Global.MouseHook == null) Global.MouseHook = Hook.AppEvents();
 
-            _mouseHook.MouseDownExt += MouseDownExt_Handler;
-            _mouseHook.MouseUpExt += MouseUpExt_Handler;
-            _mouseHook.MouseMoveExt += MouseMoveExt_Handler;
+            Global.MouseHook.MouseDownExt += MouseDownExt_Handler;
+            Global.MouseHook.MouseUpExt += MouseUpExt_Handler;
+            Global.MouseHook.MouseMoveExt += MouseMoveExt_Handler;
 
             #endregion
         }
@@ -600,7 +597,6 @@ namespace DarkUI.Controls
                 base.WndProc(ref m);
 
             }
-
         }
 
         #endregion
@@ -611,9 +607,9 @@ namespace DarkUI.Controls
             {
                 _timer.Dispose();
 
-                _mouseHook.MouseDownExt -= MouseDownExt_Handler;
-                _mouseHook.MouseUpExt -= MouseUpExt_Handler;
-                _mouseHook.MouseMoveExt -= MouseMoveExt_Handler;
+                Global.MouseHook.MouseDownExt -= MouseDownExt_Handler;
+                Global.MouseHook.MouseUpExt -= MouseUpExt_Handler;
+                Global.MouseHook.MouseMoveExt -= MouseMoveExt_Handler;
 
                 _greySelectionPen.Dispose();
 

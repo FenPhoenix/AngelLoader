@@ -178,6 +178,7 @@
     <Compile Include="Forms\DarkTranslucentForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Global.cs" />
     <Compile Include="Icons\DockIcons.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -208,7 +209,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TreeViewIcons.resx</DependentUpon>
     </Compile>
-    <Compile Include="ScrollBarVisualOnly_Native.cs">
+    <Compile Include="Controls\ScrollBarVisualOnly_Native.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Win32\ControlScrollFilter.cs" />
