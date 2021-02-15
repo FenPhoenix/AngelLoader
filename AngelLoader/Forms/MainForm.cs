@@ -628,7 +628,11 @@ namespace AngelLoader.Forms
             TopSplitContainer.SetSplitterPercent(Config.TopSplitterPercent, suspendResume: false);
 
             MainSplitContainer.InjectSibling(TopSplitContainer);
+            MainSplitContainer.Panel1DarkBackColor = DarkUI.Config.Colors.Fen_ControlBackground;
+            MainSplitContainer.Panel2DarkBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
             TopSplitContainer.InjectSibling(MainSplitContainer);
+            TopSplitContainer.Panel1DarkBackColor = DarkUI.Config.Colors.Fen_ControlBackground;
+            TopSplitContainer.Panel2DarkBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
 
             #endregion
 
@@ -1364,6 +1368,7 @@ namespace AngelLoader.Forms
                         //|| control.EqualsIfNotNull(InstallUninstallFMLLButton.Button)
                         //|| control == ReadmeRichTextBox
                         || control is ScrollBarVisualOnly
+                        || control is SplitterPanel
                         )
                     {
                         continue;
@@ -1378,18 +1383,7 @@ namespace AngelLoader.Forms
                         if (darkMode)
                         {
                             control.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
-                            if (control is SplitContainer)
-                            {
-                                control.BackColor = DarkUI.Config.Colors.GreySelection;
-                            }
-                            else if (control == TopSplitContainer.Panel2)
-                            {
-                                control.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
-                            }
-                            else
-                            {
-                                control.BackColor = DarkUI.Config.Colors.Fen_ControlBackground;
-                            }
+                            control.BackColor = DarkUI.Config.Colors.Fen_ControlBackground;
                         }
                         else
                         {
@@ -4414,6 +4408,26 @@ namespace AngelLoader.Forms
 
         // Perf: Where feasible, it's way faster to simply draw images vector-style on-the-fly, rather than
         // pulling rasters from Resources, because Resources is a fat bloated hog with five headcrabs on it
+
+        // Draw a nice separator between the bottom of the readme and the bottom bar. Every other side is already
+        // visually separated enough.
+        private void MainSplitContainer_Panel2_Paint(object sender, PaintEventArgs e)
+        {
+            SplitterPanel panel2 = MainSplitContainer.Panel2;
+
+            if (MainSplitContainer.DarkModeEnabled)
+            {
+                using var p = new Pen(DarkUI.Config.Colors.GreySelection);
+                using var p2 = new Pen(DarkUI.Config.Colors.Fen_ControlBackground);
+                e.Graphics.DrawLine(p, panel2.Left, panel2.Height - 2, panel2.Right, panel2.Height - 2);
+                e.Graphics.DrawLine(p2, panel2.Left, panel2.Height - 1, panel2.Right, panel2.Height - 1);
+            }
+            else
+            {
+                using var p = new Pen(Color.FromArgb(210, 210, 210));
+                e.Graphics.DrawLine(p, panel2.Left, panel2.Height - 2, panel2.Right, panel2.Height - 2);
+            }
+        }
 
         private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintControlSeparators(e, 2, items: _bottomAreaSeparatedItems);
 

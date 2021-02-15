@@ -2,13 +2,13 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
+using DarkUI.Controls;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class SplitContainerCustom : SplitContainer
+    public sealed class SplitContainerCustom : SplitContainer, IDarkable
     {
         // Insightful Note:
         // Horizontal and Vertical are the opposite of what you expect them to mean...
@@ -36,14 +36,53 @@ namespace AngelLoader.Forms.CustomControls
         [Browsable(false)]
         private bool MouseOverCrossSection => _sibling != null && _mouseOverCrossSection;
 
+        private Color? _origBackColor;
+        private Color? _origPanel1BackColor;
+        private Color? _origPanel2BackColor;
+
         #endregion
 
-        #region API fields
+        private bool _darkModeEnabled;
+
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                SetUpTheme();
+            }
+        }
+
+        private void SetUpTheme()
+        {
+            if (_darkModeEnabled)
+            {
+                _origBackColor ??= BackColor;
+                _origPanel1BackColor ??= Panel1.BackColor;
+                _origPanel2BackColor ??= Panel2.BackColor;
+
+                BackColor = DarkUI.Config.Colors.GreySelection;
+                Panel1.BackColor = Panel1DarkBackColor;
+                Panel2.BackColor = Panel2DarkBackColor;
+            }
+            else
+            {
+                if (_origBackColor != null) BackColor = (Color)_origBackColor;
+                if (_origPanel1BackColor != null) Panel1.BackColor = (Color)_origPanel1BackColor;
+                if (_origPanel2BackColor != null) Panel2.BackColor = (Color)_origPanel2BackColor;
+            }
+        }
+
+        #region Public fields
 
         internal float SplitterPercentReal => FullScreen ? _storedSplitterPercent : SplitterPercent;
 
         internal bool FullScreen { get; private set; }
         internal int CollapsedSize = 0;
+
+        internal Color Panel1DarkBackColor { get; set; } = DarkUI.Config.Colors.Fen_ControlBackground;
+        internal Color Panel2DarkBackColor { get; set; } = DarkUI.Config.Colors.Fen_ControlBackground;
 
         #endregion
 
@@ -67,7 +106,6 @@ namespace AngelLoader.Forms.CustomControls
             AutoScaleMode = AutoScaleMode.Dpi;
             DoubleBuffered = true;
             _storedCollapsiblePanelMinSize = IsMain() ? Panel1MinSize : Panel2MinSize;
-            Panel2.Paint += Panel2_Paint;
         }
 
         #region Public methods
@@ -187,30 +225,6 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #region Event overrides
-
-        // Draw a nice separator between the bottom of the readme and the bottom bar. Every other side is already
-        // visually separated enough.
-        private void Panel2_Paint(object sender, PaintEventArgs e)
-        {
-            if (IsMain())
-            {
-                bool darkModeEnabled = Config.VisualTheme == VisualTheme.Dark;
-
-                if (darkModeEnabled)
-                {
-                    using var b = new SolidBrush(DarkUI.Config.Colors.Fen_DarkBackground);
-                    e.Graphics.FillRectangle(b, Panel2.ClientRectangle);
-                }
-
-                using var p = darkModeEnabled
-                    ? new Pen(DarkUI.Config.Colors.GreySelection)
-                    : new Pen(Color.FromArgb(210, 210, 210));
-
-                int subtract = darkModeEnabled ? 1 : 2;
-
-                e.Graphics.DrawLine(p, Panel2.Left, Panel2.Height - subtract, Panel2.Right, Panel2.Height - subtract);
-            }
-        }
 
         protected override void OnMouseDown(MouseEventArgs e)
         {

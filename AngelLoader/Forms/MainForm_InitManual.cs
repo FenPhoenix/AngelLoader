@@ -357,6 +357,7 @@ namespace AngelLoader.Forms
             MainSplitContainer.Panel2.Controls.Add(ChooseReadmeComboBox);
             MainSplitContainer.Panel2.Controls.Add(ReadmeRichTextBox);
             MainSplitContainer.Panel2.MouseLeave += ReadmeArea_MouseLeave;
+            MainSplitContainer.Panel2.Paint += MainSplitContainer_Panel2_Paint;
             MainSplitContainer.Panel2MinSize = 38;
             MainSplitContainer.Panel2.Padding = new Padding(1, 1, 2, 2);
             MainSplitContainer.Size = new Size(1671, 672);
