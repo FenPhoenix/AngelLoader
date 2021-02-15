@@ -19,38 +19,24 @@ namespace DarkUI.Controls
 
     public interface IDarkableScrollableNative : IDarkable, ISuspendResumable
     {
-        ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
-        ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
-        bool IsHandleCreated { get; }
-        IntPtr Handle { get; }
+        new bool IsHandleCreated { get; }
+        new IntPtr Handle { get; }
         event EventHandler Scroll;
-        event PaintEventHandler Paint;
-        bool VScrollVisible { get; }
-        bool HScrollVisible { get; }
-        void AddToControls(ScrollBarVisualOnly_Native visualScrollBar);
-        event EventHandler VScroll;
-        event EventHandler HScroll;
-        Point VScrollLocation { get; }
-        Point HScrollLocation { get; }
-        Size VScrollSize { get; }
-        Size HScrollSize { get; }
-        Point PointToClient(Point p);
         Point PointToScreen(Point p);
         Control Parent { get; }
         Point Location { get; set; }
         Size Size { get; set; }
-        bool Visible { get; set; }
-        event EventHandler ClientSizeChanged;
+        new bool Visible { get; set; }
         event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
         event EventHandler VisibilityChanged;
     }
 
     public interface ISuspendResumable
     {
-        Control[] ConceptualChildControls { get; }
         bool IsHandleCreated { get; }
         bool Visible { get; set; }
         IntPtr Handle { get; }
         void Refresh();
+        bool Suspended { get; set; }
     }
 }

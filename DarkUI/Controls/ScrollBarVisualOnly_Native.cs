@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
 using System.Windows.Forms;
 using DarkUI.Win32;
 using Gma.System.MouseKeyHook;
@@ -12,6 +10,10 @@ namespace DarkUI.Controls
 {
     public sealed class ScrollBarVisualOnly_Native : Control
     {
+        // TODO: @DarkMode(ScrollBarVisualOnly_Native):
+        // We're like one pixel not enough on either side of the scroll bar for click detection purposes. If we
+        // drag just at the very edge pixel, we get the "drag but the dark visual thumb doesn't update" behavior.
+
         #region Enums
 
         private enum State
@@ -29,6 +31,21 @@ namespace DarkUI.Controls
 
         private readonly bool _isVertical;
 
+        private readonly Dictionary<int, int> _WM_ClientToNonClient = new Dictionary<int, int>
+        {
+            { Native.WM_LBUTTONDOWN, Native.WM_NCLBUTTONDOWN },
+            { Native.WM_LBUTTONUP, Native.WM_NCLBUTTONUP },
+            { Native.WM_LBUTTONDBLCLK, Native.WM_NCLBUTTONDBLCLK },
+            { Native.WM_MBUTTONDOWN, Native.WM_NCMBUTTONDOWN },
+            { Native.WM_MBUTTONUP, Native.WM_NCMBUTTONUP },
+            { Native.WM_MBUTTONDBLCLK, Native.WM_NCMBUTTONDBLCLK },
+            { Native.WM_RBUTTONDOWN, Native.WM_NCRBUTTONDOWN },
+            { Native.WM_RBUTTONUP, Native.WM_NCRBUTTONUP },
+            { Native.WM_RBUTTONDBLCLK, Native.WM_NCRBUTTONDBLCLK }
+        };
+
+        private readonly bool _passMouseWheel;
+
         #region Stored state
 
         private int? _xyThumbTop;
@@ -43,6 +60,10 @@ namespace DarkUI.Controls
         private State _thumbState;
         private State _firstArrowState;
         private State _secondArrowState;
+
+        private bool _parentBarVisible;
+        private bool _clientSizeHookedUp;
+        private bool _addedToControls;
 
         #endregion
 
@@ -79,9 +100,7 @@ namespace DarkUI.Controls
 
         #region Constructor / init
 
-        private bool _addedToControls;
-
-        public ScrollBarVisualOnly_Native(IDarkableScrollableNative owner, bool isVertical)
+        public ScrollBarVisualOnly_Native(IDarkableScrollableNative owner, bool isVertical, bool passMouseWheel)
         {
             #region Set up self
 
@@ -89,8 +108,6 @@ namespace DarkUI.Controls
             DoubleBuffered = true;
             ResizeRedraw = true;
 
-            //BackColor = Config.Colors.Fen_DarkBackground;
-            //BackColor = Color.FromArgb(44, 44, 44);
             BackColor = Config.Colors.DarkBackground;
 
             SetStyle(
@@ -106,42 +123,22 @@ namespace DarkUI.Controls
             _owner = owner;
 
             _isVertical = isVertical;
+            _passMouseWheel = passMouseWheel;
 
-            //_owner.AddToControls(this);
             BringThisToFront();
-            //_owner.Paint += (sender, e) => PaintDarkScrollBars(_owner, e);
 
-            //_owner.VisibleChanged += (sender, e) => { if (_owner.Visible) BringThisToFront(); };
-            //_owner.Scroll += (sender, e) => { if (_owner.Visible || Visible) RefreshIfNeeded(); };
+            _owner.Scroll += (sender, e) => RefreshIfNeeded();
 
-            _owner.VScroll += (sender, e) =>
-            {
-                if (_owner.VScrollVisible || _owner.HScrollVisible || Visible) RefreshIfNeeded();
-            };
+            _owner.VisibilityChanged += (sender, e) => RefreshIfNeeded();
 
-            _owner.VisibilityChanged += (sender, e) =>
-            {
-                Visible = _owner.Visible;
-            };
-
-            _owner.DarkModeChanged += (sender, e) =>
-            {
-                if (_owner.IsHandleCreated && _owner.Parent != null)
-                {
-                    Visible = _owner.Visible && e.DarkModeEnabled;
-                }
-                RefreshIfNeeded();
-            };
+            _owner.DarkModeChanged += (sender, e) => RefreshIfNeeded();
 
             #endregion
 
             #region Set up refresh timer
 
             _timer.Interval = 1;
-            _timer.Tick += (sender, e) =>
-            {
-                RefreshIfNeeded();
-            };
+            _timer.Tick += (sender, e) => RefreshIfNeeded();
             _timer.Enabled = true;
 
             #endregion
@@ -220,23 +217,6 @@ namespace DarkUI.Controls
             return sbi;
         }
 
-        private int GetTrackingThumbTopPosition()
-        {
-            var si = new Native.SCROLLINFO();
-            si.cbSize = Marshal.SizeOf(si);
-            si.fMask = Native.SIF_TRACKPOS;
-
-            if (_owner.IsHandleCreated)
-            {
-                Native.GetScrollInfo(_owner.Handle, _isVertical ? Native.SB_VERT : Native.SB_HORZ, ref si);
-            }
-
-            return si.nTrackPos +
-                   (_isVertical
-                   ? SystemInformation.VerticalScrollBarArrowHeight
-                   : SystemInformation.HorizontalScrollBarArrowWidth);
-        }
-
         private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
         {
             return _isVertical
@@ -266,23 +246,10 @@ namespace DarkUI.Controls
             return true;
         }
 
-        private bool _parentBarVisible;
-
-        private bool _clientSizeHookedUp;
-
         private void RefreshIfNeeded()
         {
             if (_owner.Parent == null) return;
             if (!_owner.IsHandleCreated) return;
-
-            if (!_clientSizeHookedUp)
-            {
-                _owner.ClientSizeChanged += (sender, e) =>
-                {
-                    RefreshIfNeeded();
-                    _clientSizeHookedUp = true;
-                };
-            }
 
             if (!_owner.DarkModeEnabled)
             {
@@ -290,112 +257,42 @@ namespace DarkUI.Controls
                 return;
             }
 
-            // Refresh only if our thumb's size/position is stale. Otherwise, we get unacceptable lag.
             var sbi = GetCurrentScrollBarInfo();
 
-            bool oldParentBarVisible = _parentBarVisible;
+            if (_owner.Suspended && _xyThumbTop != null && _xyThumbBottom != null)
+            {
+                return;
+            }
+
             _parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
 
-            //Trace.WriteLine(_rnd.Next() + " " + nameof(_parentBarVisible) + "=" + _parentBarVisible);
+            Visible = !_owner.Suspended && _owner.Visible && _owner.DarkModeEnabled && _parentBarVisible;
 
-            if (oldParentBarVisible != _parentBarVisible)
+            if (Visible)
             {
-                if (_parentBarVisible)
-                {
-                    BringThisToFront();
+                BringThisToFront();
 
-                    var topLeft = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.left, sbi.rcScrollBar.top));
-                    var bottomRight = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.right, sbi.rcScrollBar.bottom));
+                var topLeft = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.left, sbi.rcScrollBar.top));
+                var bottomRight = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.right, sbi.rcScrollBar.bottom));
 
-                    var loc = new Rectangle(
-                        topLeft.X,
-                        topLeft.Y,
-                        bottomRight.X - topLeft.X,
-                        bottomRight.Y - topLeft.Y
-                    );
+                var loc = new Rectangle(
+                    topLeft.X,
+                    topLeft.Y,
+                    bottomRight.X - topLeft.X,
+                    bottomRight.Y - topLeft.Y
+                );
 
-                    Location = new Point(loc.X, loc.Y);
-                    Size = new Size(loc.Width, loc.Height);
-                    // TODO: @DarkMode: Support right-to-left modes(?)
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
+                Location = new Point(loc.X, loc.Y);
+                Size = new Size(loc.Width, loc.Height);
+                // TODO: @DarkMode: Support right-to-left modes(?)
+                Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
 
-                    //Trace.WriteLine("RefreshIfNeeded() Visible=true");
-                    Visible = _owner.Visible;
-
-                    //if (realScrollBar.Visible != visualScrollBar.Visible)
-                    //{
-                    //    visualScrollBar.Visible = realScrollBar.Visible;
-                    //}
-                }
-                else
-                {
-                    //Trace.WriteLine("RefreshIfNeeded() Visible=false");
-                    Visible = false;
-                }
-
-                //Refresh();
-            }
-            else if (_xyThumbTop == null)
-            {
                 _xyThumbTop = sbi.xyThumbTop;
                 _xyThumbBottom = sbi.xyThumbBottom;
-                Refresh();
-            }
-            else
-            {
-                if (_leftButtonPressedOnThumb ||
-                    sbi.xyThumbTop != _xyThumbTop || sbi.xyThumbBottom != _xyThumbBottom)
-                {
-                    Refresh();
-                }
+
+                if (Visible) Refresh();
             }
         }
-
-        /*
-        private static void PaintDarkScrollBars(IDarkableScrollableNative control)
-        {
-            if (control.DarkModeEnabled)
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    var realScrollBar = i == 0 ? control.VerticalScrollBar : control.HorizontalScrollBar;
-                    var visualScrollBar = i == 0 ? control.VerticalVisualScrollBar : control.HorizontalVisualScrollBar;
-
-                    // PERF: Check if we need to set expensive properties before setting expensive properties
-                    if (realScrollBar.Visible)
-                    {
-                        visualScrollBar.Location = realScrollBar.Location;
-                        visualScrollBar.Size = realScrollBar.Size;
-                        visualScrollBar.Anchor = realScrollBar.Anchor;
-                    }
-
-                    if (realScrollBar.Visible != visualScrollBar.Visible)
-                    {
-                        visualScrollBar.Visible = realScrollBar.Visible;
-                    }
-                }
-
-                //if (control.VerticalScrollBar.Visible && control.HorizontalScrollBar.Visible)
-                //{
-                //    // Draw the corner in between the two scroll bars
-                //    // TODO: @DarkMode: Also cache this brush
-                //    using (var b = new SolidBrush(control.VerticalVisualScrollBar.BackColor))
-                //    {
-                //        e.Graphics.FillRectangle(b, new Rectangle(
-                //            control.VerticalScrollBar.Location.X,
-                //            control.HorizontalScrollBar.Location.Y,
-                //            control.VerticalScrollBar.Width,
-                //            control.HorizontalScrollBar.Height));
-                //    }
-                //}
-            }
-            else
-            {
-                control.VerticalVisualScrollBar.Hide();
-                control.HorizontalVisualScrollBar.Hide();
-            }
-        }
-        */
 
         #endregion
 
@@ -585,42 +482,6 @@ namespace DarkUI.Controls
 
         #endregion
 
-
-        public static IntPtr FromLowHigh(int low, int high) => (IntPtr)ToInt(low, high);
-
-        //public static unsafe IntPtr FromLowHighUnsigned(int low, int high)
-        //    // Convert the int to an uint before converting it to a pointer type,
-        //    // which ensures the high dword being zero for 64-bit pointers.
-        //    // This corresponds to the logic of the MAKELPARAM/MAKEWPARAM/MAKELRESULT
-        //    // macros.
-        //    // TODO: Use nint (with 'unchecked') instead of void* when it is available.
-        //    => (IntPtr)(void*)unchecked((uint)ToInt(low, high));
-
-        public static int ToInt(int low, int high) => (high << 16) | (low & 0xffff);
-
-        public static int SignedHIWORD(int n) => (int)(short)HIWORD(n);
-
-        public static int SignedLOWORD(int n) => (int)(short)LOWORD(n);
-
-        public static int SignedHIWORD(IntPtr n) => SignedHIWORD(unchecked((int)(long)n));
-
-        public static int SignedLOWORD(IntPtr n) => SignedLOWORD(unchecked((int)(long)n));
-
-        public static int HIWORD(int n) => (n >> 16) & 0xffff;
-
-        public static int LOWORD(int n) => n & 0xffff;
-
-        public static int LOWORD(IntPtr n) => LOWORD(unchecked((int)(long)n));
-
-        public static int HIWORD(IntPtr n) => HIWORD(unchecked((int)(long)n));
-
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-        }
-
-        private readonly Random _rnd = new Random();
-
         #region Event overrides
 
         protected override void OnPaint(PaintEventArgs e)
@@ -720,9 +581,10 @@ namespace DarkUI.Controls
 
                     int thisExtent = _isVertical ? Height : Width;
 
-                    double percentAlong = GetPercentFromValue(thumbTop - scrollMargin, (int)(si.nMax - Math.Max(si.nPage - 1, 0)) - 0);
-
-                    int thumbTopPixels = GetValueFromPercent(percentAlong, thisExtent - (scrollMargin * 2) - (thumbLength));
+                    // Important that we use this formula (nMax - max(nPage -1, 0)) or else our position is always
+                    // infuriatingly not-quite-right.
+                    double percentAlong = Global.GetPercentFromValue(thumbTop - scrollMargin, (int)(si.nMax - Math.Max(si.nPage - 1, 0)) - 0);
+                    int thumbTopPixels = Global.GetValueFromPercent(percentAlong, thisExtent - (scrollMargin * 2) - (thumbLength));
 
                     var rect = _isVertical
                         ? new Rectangle(1, thumbTopPixels + scrollMargin, Width - 2, thumbLength)
@@ -747,85 +609,54 @@ namespace DarkUI.Controls
             base.OnPaint(e);
         }
 
-        private static double GetPercentFromValue(int current, int total) => (double)(100 * current) / total;
-        private static int GetValueFromPercent(double percent, int total) => (int)((percent / 100) * total);
-
-        //private void ScrollHereMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    var sbi = GetCurrentScrollBarInfo();
-        //    int thumbSize = sbi.xyThumbBottom - sbi.xyThumbTop;
-
-        //    int arrowMargin = _isVertical
-        //        ? SystemInformation.VerticalScrollBarArrowHeight
-        //        : SystemInformation.HorizontalScrollBarArrowWidth;
-
-        //    var rect = _isVertical
-        //        ? new Rectangle(0, arrowMargin, Width, (Height - (arrowMargin * 2)) - thumbSize)
-        //        : new Rectangle(arrowMargin, 0, (Width - (arrowMargin * 2)) - thumbSize, Height);
-
-        //    int posAlong = _isVertical ? _storedCursorPosition.Y : +_storedCursorPosition.X;
-
-        //    posAlong -= arrowMargin;
-
-        //    posAlong -= thumbSize / 2;
-
-        //    double posPercent = GetPercentFromValue(posAlong, _isVertical ? rect.Height : rect.Width).Clamp(0, 100);
-        //    // Important that we use this formula (nMax - max(nPage -1, 0)) or else our position is always
-        //    // infuriatingly not-quite-right.
-        //    int finalValue = GetValueFromPercent(posPercent, _owner.Maximum - Math.Max(_owner.LargeChange - 1, 0));
-
-        //    SetOwnerValue(finalValue);
-        //}
-
         protected override void OnVisibleChanged(EventArgs e)
         {
             _timer.Enabled = Visible;
             base.OnVisibleChanged(e);
         }
 
-        private readonly Dictionary<int, int> _WM_ClientToNonClient = new Dictionary<int, int>
-        {
-            { Native.WM_LBUTTONDOWN, Native.WM_NCLBUTTONDOWN },
-            { Native.WM_LBUTTONUP, Native.WM_NCLBUTTONUP },
-            { Native.WM_LBUTTONDBLCLK, Native.WM_NCLBUTTONDBLCLK },
-            { Native.WM_MBUTTONDOWN, Native.WM_NCMBUTTONDOWN },
-            { Native.WM_MBUTTONUP, Native.WM_NCMBUTTONUP },
-            { Native.WM_MBUTTONDBLCLK, Native.WM_NCMBUTTONDBLCLK },
-            { Native.WM_RBUTTONDOWN, Native.WM_NCRBUTTONDOWN },
-            { Native.WM_RBUTTONUP, Native.WM_NCRBUTTONUP },
-            { Native.WM_RBUTTONDBLCLK, Native.WM_NCRBUTTONDBLCLK }
-        };
-
         protected override void WndProc(ref Message m)
         {
             void SendToOwner(ref Message _m)
             {
                 if (!_owner.IsHandleCreated) return;
-                if (!_WM_ClientToNonClient.ContainsKey(_m.Msg)) return;
-
-                int wParam;
-                int x = SignedLOWORD(_m.LParam);
-                int y = SignedHIWORD(_m.LParam);
-                Point ownerScreenLoc = _owner.PointToScreen(_owner.Location);
-
-                if (_isVertical)
+                // We have to take our client messages and convert them to non-client messages to pass to our
+                // underlying scroll bar.
+                if (_WM_ClientToNonClient.ContainsKey(_m.Msg))
                 {
-                    int sbWidthOrHeight = SystemInformation.VerticalScrollBarWidth;
-                    x += (ownerScreenLoc.X + (_owner.Size.Width - sbWidthOrHeight)) - _owner.Parent.Padding.Left;
-                    y += ownerScreenLoc.Y - _owner.Parent.Padding.Top;
-                    wParam = Native.HTVSCROLL;
+                    // TODO: @DarkMode(ScrollBarVisualOnly_Native):
+                    // Test to make sure these params transfer their signedness! Use multiple monitors and see
+                    // if the value goes negative as it should, and works as it should.
+                    int wParam;
+                    int x = Global.SignedLOWORD(_m.LParam);
+                    int y = Global.SignedHIWORD(_m.LParam);
+                    Point ownerScreenLoc = _owner.PointToScreen(_owner.Location);
+
+                    if (_isVertical)
+                    {
+                        int sbWidthOrHeight = SystemInformation.VerticalScrollBarWidth;
+                        x += (ownerScreenLoc.X + (_owner.Size.Width - sbWidthOrHeight)) -
+                             _owner.Parent.Padding.Left;
+                        y += ownerScreenLoc.Y - _owner.Parent.Padding.Top;
+                        wParam = Native.HTVSCROLL;
+                    }
+                    else
+                    {
+                        int sbWidthOrHeight = SystemInformation.HorizontalScrollBarHeight;
+                        x += ownerScreenLoc.X - _owner.Parent.Padding.Left;
+                        y += (ownerScreenLoc.Y + (_owner.Size.Height - sbWidthOrHeight)) -
+                             _owner.Parent.Padding.Top;
+                        wParam = Native.HTHSCROLL;
+                    }
+
+                    Native.POINTS points = new Native.POINTS((short)x, (short)y);
+
+                    Native.PostMessage(_owner.Handle, _WM_ClientToNonClient[_m.Msg], (IntPtr)wParam, points);
                 }
-                else
+                else if (_m.Msg == Native.WM_MOUSEWHEEL || _m.Msg == Native.WM_MOUSEHWHEEL)
                 {
-                    int sbWidthOrHeight = SystemInformation.HorizontalScrollBarHeight;
-                    x += ownerScreenLoc.X - _owner.Parent.Padding.Left;
-                    y += (ownerScreenLoc.Y + (_owner.Size.Height - sbWidthOrHeight)) - _owner.Parent.Padding.Top;
-                    wParam = Native.HTHSCROLL;
+                    Native.SendMessage(_owner.Handle, _m.Msg, _m.WParam, _m.LParam);
                 }
-
-                Native.POINTS points = new Native.POINTS((short)x, (short)y);
-
-                Native.PostMessage(_owner.Handle, _WM_ClientToNonClient[_m.Msg], (IntPtr)wParam, points);
             }
 
             if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
@@ -842,8 +673,7 @@ namespace DarkUI.Controls
 
                 //|| m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
 
-                // Don't handle mouse wheel or mouse wheel tilt for now - mousewheel at least breaks on FMsDGV
-                //|| m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL
+                || (!_passMouseWheel || (m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL))
                 // TODO: @DarkMode: Test wheel tilt with this system!
                 // (do I still have that spare Logitech mouse that works?)
                 )

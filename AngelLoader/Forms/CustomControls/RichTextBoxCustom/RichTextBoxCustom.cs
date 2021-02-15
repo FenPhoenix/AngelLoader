@@ -54,36 +54,13 @@ namespace AngelLoader.Forms.CustomControls
 
         public RichTextBoxCustom()
         {
-            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true);
-            //HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false);
-            ConceptualChildControls = new Control[] { VerticalVisualScrollBar };
+            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
 
             InitWorkarounds();
-
-            //_testTimer.Tick += (sender, e) => { Trace.WriteLine(this.ScrollBars); };
-
-            VerticalVisualScrollBar.BringToFront();
-            //HorizontalVisualScrollBar.BringToFront();
         }
 
-        protected override void OnClientSizeChanged(EventArgs e)
-        {
-            Trace.WriteLine("client size changed");
-            base.OnClientSizeChanged(e);
-        }
-
-        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
-        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+        private ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
         public event EventHandler? Scroll;
-        public bool VScrollVisible { get; }
-        public bool HScrollVisible { get; }
-
-        public void AddToControls(ScrollBarVisualOnly_Native visualScrollBar) => Controls.Add(visualScrollBar);
-        public Point VScrollLocation { get; }
-        public Point HScrollLocation { get; }
-        public Size VScrollSize { get; }
-        public Size HScrollSize { get; }
-        public new Point PointToClient(Point p) => base.PointToClient(p);
         public new Point PointToScreen(Point p) => base.PointToScreen(p);
         public new Control Parent => base.Parent;
         public new Point Location
@@ -91,28 +68,14 @@ namespace AngelLoader.Forms.CustomControls
             get => base.Location;
             set => base.Location = value;
         }
-        public Control[] ConceptualChildControls { get; }
+        public new Size Size { get => base.Size; set => base.Size = value; }
 
-        public new Size Size
-        {
-            get => base.Size;
-            set => base.Size = value;
-        }
-        
-        public new bool Visible
-        {
-            get => base.Visible;
-            set => base.Visible = value;
-        }
+        public new bool Visible { get => base.Visible; set => base.Visible = value; }
 
-        public event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
-        public event EventHandler VisibilityChanged;
+        public bool Suspended { get; set; }
 
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            base.OnVisibleChanged(e);
-            VisibilityChanged?.Invoke(this, EventArgs.Empty);
-        }
+        public event EventHandler<DarkModeChangedEventArgs>? DarkModeChanged;
+        public event EventHandler? VisibilityChanged;
 
         #region Private methods
 
@@ -230,6 +193,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 SetReadmeTypeAndColorState(ReadmeType.PlainText);
                 this.ResumeDrawing_Native();
+                VisibilityChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -243,6 +207,8 @@ namespace AngelLoader.Forms.CustomControls
             AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
 
             SaveZoom();
+
+            Trace.WriteLine("");
 
             try
             {
@@ -313,6 +279,7 @@ namespace AngelLoader.Forms.CustomControls
                 ReadOnly = true;
                 RestoreZoom();
                 this.ResumeDrawing_Native();
+                VisibilityChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -320,7 +287,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        private Timer _testTimer = new Timer { Enabled = true, Interval = 1 };
+        #region Event overrides
 
         protected override void OnEnabledChanged(EventArgs e)
         {
@@ -342,12 +309,21 @@ namespace AngelLoader.Forms.CustomControls
             Scroll?.Invoke(this, EventArgs.Empty);
         }
 
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 DisposeWorkarounds();
                 _monospaceFont?.Dispose();
+                VerticalVisualScrollBar?.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -17,34 +17,15 @@ namespace AngelLoader.Forms
         {
             if (!control.IsHandleCreated || !control.Visible) return;
             SendMessage(control.Handle, WM_SETREDRAW, false, 0);
-
-            if (control.ConceptualChildControls != null)
-            {
-                for (int i = 0; i < control.ConceptualChildControls.Length; i++)
-                {
-                    Control child = control.ConceptualChildControls[i];
-                    if (!child.IsHandleCreated || !child.Visible) return;
-                    SendMessage(child.Handle, WM_SETREDRAW, false, 0);
-                }
-            }
+            control.Suspended = true;
         }
 
         internal static void ResumeDrawing_Native(this ISuspendResumable control)
         {
             if (!control.IsHandleCreated || !control.Visible) return;
             SendMessage(control.Handle, WM_SETREDRAW, true, 0);
+            control.Suspended = false;
             control.Refresh();
-
-            if (control.ConceptualChildControls != null)
-            {
-                for (int i = 0; i < control.ConceptualChildControls.Length; i++)
-                {
-                    Control child = control.ConceptualChildControls[i];
-                    if (!child.IsHandleCreated || !child.Visible) return;
-                    SendMessage(child.Handle, WM_SETREDRAW, true, 0);
-                    child.Refresh();
-                }
-            }
         }
 
         internal static void SuspendDrawing(this Control control)
