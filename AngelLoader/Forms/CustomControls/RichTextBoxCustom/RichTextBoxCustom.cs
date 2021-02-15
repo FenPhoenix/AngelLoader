@@ -54,17 +54,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
         public event EventHandler? Scroll;
-        public new Point PointToScreen(Point p) => base.PointToScreen(p);
-        public new Control Parent => base.Parent;
-        public new Point Location
-        {
-            get => base.Location;
-            set => base.Location = value;
-        }
-        public new Size Size { get => base.Size; set => base.Size = value; }
-
-        public new bool Visible { get => base.Visible; set => base.Visible = value; }
-
+        
         public bool Suspended { get; set; }
 
         public event EventHandler<DarkModeChangedEventArgs>? DarkModeChanged;

@@ -24,9 +24,9 @@ namespace DarkUI.Controls
         event EventHandler Scroll;
         Point PointToScreen(Point p);
         Control Parent { get; }
-        Point Location { get; set; }
-        Size Size { get; set; }
-        new bool Visible { get; set; }
+        Point Location { get; }
+        Size Size { get; }
+        new bool Visible { get; }
         event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
         event EventHandler VisibilityChanged;
     }
@@ -34,7 +34,7 @@ namespace DarkUI.Controls
     public interface ISuspendResumable
     {
         bool IsHandleCreated { get; }
-        bool Visible { get; set; }
+        bool Visible { get; }
         IntPtr Handle { get; }
         void Refresh();
         bool Suspended { get; set; }
