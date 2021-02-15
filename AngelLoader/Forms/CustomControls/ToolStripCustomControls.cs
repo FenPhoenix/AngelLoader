@@ -2,13 +2,29 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using DarkUI.Controls;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed class ToolStripCustom : ToolStrip
+    internal sealed class ToolStripCustom : ToolStrip, IDarkable
     {
+        private readonly SolidBrush _darkBackColorBrush = new SolidBrush(DarkUI.Config.Colors.Fen_ControlBackground);
+        private readonly Pen _darkBackColorPen = new Pen(DarkUI.Config.Colors.Fen_ControlBackground);
+
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_ControlBackground : SystemColors.Control;
+                Refresh();
+            }
+        }
+
         /// <summary>
         /// Fiddle this around to get the right-side garbage line to disappear again when Padding is set to something.
         /// </summary>
@@ -25,13 +41,29 @@ namespace AngelLoader.Forms.CustomControls
             // side if you don't do this.
             // Take margin into account to allow drawing past the left side of the first item or the right of the
             // last
-            var rect1 = new Rectangle(0, 0, Items[0].Bounds.X - Items[0].Margin.Left, Height);
+            var rectLeft = new Rectangle(0, 0, Items[0].Bounds.X - Items[0].Margin.Left, Height);
             var last = Items[Items.Count - 1];
             int rect2Start = last.Bounds.X + last.Bounds.Width + last.Margin.Right;
-            var rect2 = new Rectangle(rect2Start - PaddingDrawNudge, 0, (Width - rect2Start) + PaddingDrawNudge, Height);
+            var rectRight = new Rectangle(rect2Start - PaddingDrawNudge, 0, (Width - rect2Start) + PaddingDrawNudge, Height);
+            var rectBottom = new Rectangle(0, Height - 1, Width, 1);
 
-            e.Graphics.FillRectangle(SystemBrushes.Control, rect1);
-            e.Graphics.FillRectangle(SystemBrushes.Control, rect2);
+            var brush = _darkModeEnabled ? _darkBackColorBrush : SystemBrushes.Control;
+            var pen = _darkModeEnabled ? _darkBackColorPen : SystemPens.Control;
+
+            e.Graphics.FillRectangle(brush, rectLeft);
+            e.Graphics.FillRectangle(brush, rectRight);
+            e.Graphics.FillRectangle(brush, rectBottom);
+            e.Graphics.DrawLine(pen, Width - 2, Height - 2, Width - 1, Height - 2);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _darkBackColorBrush.Dispose();
+                _darkBackColorPen.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 
