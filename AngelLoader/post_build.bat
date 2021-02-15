@@ -22,7 +22,7 @@ set "destDir=C:\AngelLoader_Beta_Package\"
 ) else if %ConfigurationName% == Release_Public (
 set "destDir=C:\AngelLoader_Public_Package\"
 ) else (
-set "destDir=C:\AngelLoader\"
+set "destDir=C:\AngelLoader_dev_3053BA21\"
 )
 
 rem Still copy this for SevenZipSharp's use

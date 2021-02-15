@@ -282,7 +282,7 @@ namespace FenGen
             {
                 string englishIni = Path.Combine(ALProjectPath, @"Languages\English.ini");
                 string testLangIni = GenTaskActive(GenType.LanguageAndAlsoCreateTestIni)
-                    ? @"C:\AngelLoader\Data\Languages\TestLang.ini"
+                    ? @"C:\AngelLoader_dev_3053BA21\Data\Languages\TestLang.ini"
                     : "";
                 Language.Generate(
                     taggedFilesDict![GenFileTags.LocalizationSource],

@@ -15,11 +15,11 @@ namespace AngelLoader
         #region Startup path
 
 #if Release_Testing
-        internal const string Startup = @"C:\AngelLoader";
+        internal const string Startup = @"C:\AngelLoader_dev_3053BA21";
 #elif Release
         internal static readonly string Startup = System.Windows.Forms.Application.StartupPath;
 #else
-        internal const string Startup = @"C:\AngelLoader";
+        internal const string Startup = @"C:\AngelLoader_dev_3053BA21";
 #endif
 
         #endregion
