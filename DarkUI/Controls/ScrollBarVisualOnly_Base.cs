@@ -10,7 +10,7 @@ namespace DarkUI.Controls
     {
         #region Enums
 
-        protected enum State
+        private protected enum State
         {
             Normal,
             Hot,
@@ -19,22 +19,33 @@ namespace DarkUI.Controls
 
         #endregion
 
-        protected readonly bool _isVertical;
+        #region  Private / protected fields
+
+        private protected readonly bool _isVertical;
+        private readonly bool _passMouseWheel;
+
+        #endregion
 
         #region Stored state
 
-        protected int? _xyThumbTop;
-        protected int? _xyThumbBottom;
+        private protected int? _xyThumbTop;
+        private protected int? _xyThumbBottom;
 
         // MouseMove doesn't send the buttons, despite having a Button field. The field is just always empty.
         // So we just store the values here.
-        protected bool _leftButtonPressedOnThumb;
-        protected bool _leftButtonPressedOnFirstArrow;
-        protected bool _leftButtonPressedOnSecondArrow;
+        private protected bool _leftButtonPressedOnThumb;
+        private bool _leftButtonPressedOnFirstArrow;
+        private bool _leftButtonPressedOnSecondArrow;
 
-        protected State _thumbState;
-        protected State _firstArrowState;
-        protected State _secondArrowState;
+        private protected State _thumbState;
+        private protected State _firstArrowState;
+        private protected State _secondArrowState;
+
+        protected SolidBrush CurrentThumbBrush => _thumbState == State.Normal
+            ? _thumbNormalBrush
+            : _thumbState == State.Hot
+            ? _thumbHotBrush
+            : _thumbPressedBrush;
 
         #endregion
 
@@ -67,9 +78,12 @@ namespace DarkUI.Controls
 
         #endregion
 
-        protected ScrollBarVisualOnly_Base(bool isVertical)
+        #region Constructor / init
+
+        private protected ScrollBarVisualOnly_Base(bool isVertical, bool passMouseWheel)
         {
             _isVertical = isVertical;
+            _passMouseWheel = passMouseWheel;
         }
 
         protected override CreateParams CreateParams
@@ -102,14 +116,6 @@ namespace DarkUI.Controls
 
             #endregion
         }
-
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            _timer.Enabled = Visible;
-            base.OnVisibleChanged(e);
-        }
-
-        private protected virtual void RefreshIfNeeded() { }
 
         private protected void SetUpAfterOwner()
         {
@@ -155,14 +161,11 @@ namespace DarkUI.Controls
             #endregion
         }
 
-        internal virtual Native.SCROLLBARINFO GetCurrentScrollBarInfo()
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
         #region Mouse hook handlers
 
-        protected void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
+        private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
             if (!Visible || !Enabled) return;
 
@@ -199,7 +202,7 @@ namespace DarkUI.Controls
             }
         }
 
-        protected void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
+        private void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
         {
             if (!Visible || !Enabled) return;
 
@@ -260,7 +263,7 @@ namespace DarkUI.Controls
             if (refresh) Refresh();
         }
 
-        protected void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
+        private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
         {
             if (!Visible || !Enabled) return;
 
@@ -346,7 +349,13 @@ namespace DarkUI.Controls
 
         #endregion
 
-        internal Rectangle GetVisualThumbRect(ref Native.SCROLLBARINFO sbi)
+        #region Methods
+
+        private protected virtual void RefreshIfNeeded() { }
+
+        private protected virtual Native.SCROLLBARINFO GetCurrentScrollBarInfo() => throw new NotImplementedException();
+
+        private protected Rectangle GetVisualThumbRect(ref Native.SCROLLBARINFO sbi)
         {
             return _isVertical
                 ? new Rectangle(1, sbi.xyThumbTop, Width - 2, sbi.xyThumbBottom - sbi.xyThumbTop)
@@ -374,13 +383,112 @@ namespace DarkUI.Controls
                     : new Rectangle(Width - horzArrowWidth, 0, horzArrowWidth, Height);
         }
 
-        protected static bool ChangeStateAndAskIfRefreshRequired(ref State state1, State state2)
+        private protected static bool ChangeStateAndAskIfRefreshRequired(ref State state1, State state2)
         {
             if (state1 == state2) return false;
 
             state1 = state2;
             return true;
         }
+
+        private protected bool ShouldSendToOwner(int msg)
+        {
+            return
+                (msg == Native.WM_LBUTTONDOWN || msg == Native.WM_NCLBUTTONDOWN
+                || msg == Native.WM_LBUTTONUP || msg == Native.WM_NCLBUTTONUP
+                || msg == Native.WM_LBUTTONDBLCLK || msg == Native.WM_NCLBUTTONDBLCLK
+
+                || msg == Native.WM_MBUTTONDOWN || msg == Native.WM_NCMBUTTONDOWN
+                || msg == Native.WM_MBUTTONUP || msg == Native.WM_NCMBUTTONUP
+                || msg == Native.WM_MBUTTONDBLCLK || msg == Native.WM_NCMBUTTONDBLCLK
+
+                || msg == Native.WM_RBUTTONDOWN || msg == Native.WM_NCRBUTTONDOWN
+                || msg == Native.WM_RBUTTONUP || msg == Native.WM_NCRBUTTONUP
+                || msg == Native.WM_RBUTTONDBLCLK || msg == Native.WM_NCRBUTTONDBLCLK
+
+                //|| Msg == Native.WM_MOUSEMOVE || Msg == Native.WM_NCMOUSEMOVE
+
+                // TODO: @DarkMode: Test wheel tilt with this system!
+                // (do I still have that spare Logitech mouse that works?)
+                || (_passMouseWheel && (msg == Native.WM_MOUSEWHEEL || msg == Native.WM_MOUSEHWHEEL))
+                );
+        }
+
+        private protected void PaintArrows(Graphics g)
+        {
+            int w, h;
+            if (_isVertical)
+            {
+                w = SystemInformation.VerticalScrollBarWidth;
+                h = SystemInformation.VerticalScrollBarArrowHeight;
+            }
+            else
+            {
+                w = SystemInformation.HorizontalScrollBarHeight;
+                h = SystemInformation.HorizontalScrollBarArrowWidth;
+            }
+
+            if (_isVertical)
+            {
+                Bitmap upArrow = _firstArrowState == State.Normal
+                    ? _upArrowNormal
+                    : _firstArrowState == State.Hot
+                    ? _upArrowHot
+                    : _upArrowPressed;
+
+                Bitmap downArrow = _secondArrowState == State.Normal
+                    ? _downArrowNormal
+                    : _secondArrowState == State.Hot
+                    ? _downArrowHot
+                    : _downArrowPressed;
+
+                g.DrawImageUnscaled(
+                    upArrow,
+                    (w / 2) - (_upArrowNormal.Width / 2),
+                    (h / 2) - (_upArrowNormal.Height / 2));
+
+                g.DrawImageUnscaled(
+                    downArrow,
+                    (w / 2) - (_downArrowNormal.Width / 2),
+                    (Height - h) + ((h / 2) - (_downArrowNormal.Height / 2)));
+            }
+            else
+            {
+                Bitmap leftArrow = _firstArrowState == State.Normal
+                    ? _leftArrowNormal
+                    : _firstArrowState == State.Hot
+                    ? _leftArrowHot
+                    : _leftArrowPressed;
+
+                Bitmap rightArrow = _secondArrowState == State.Normal
+                    ? _rightArrowNormal
+                    : _secondArrowState == State.Hot
+                    ? _rightArrowHot
+                    : _rightArrowPressed;
+
+                g.DrawImageUnscaled(
+                    leftArrow,
+                    (w / 2) - (_leftArrowNormal.Width / 2),
+                    (h / 2) - (_leftArrowNormal.Height / 2));
+
+                g.DrawImageUnscaled(
+                    rightArrow,
+                    Width - w + (w / 2) - (_rightArrowNormal.Width / 2),
+                    (h / 2) - (_rightArrowNormal.Height / 2));
+            }
+        }
+
+        #endregion
+
+        #region Event overrides
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            _timer.Enabled = Visible;
+            base.OnVisibleChanged(e);
+        }
+
+        #endregion
 
         protected override void Dispose(bool disposing)
         {

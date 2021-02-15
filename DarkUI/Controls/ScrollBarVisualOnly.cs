@@ -15,7 +15,8 @@ namespace DarkUI.Controls
 
         #region Constructor / init
 
-        public ScrollBarVisualOnly(ScrollBar owner) : base(owner is VScrollBar)
+        public ScrollBarVisualOnly(ScrollBar owner, bool passMouseWheel = false)
+            : base(owner is VScrollBar, passMouseWheel)
         {
             SetUpSelf();
 
@@ -45,7 +46,7 @@ namespace DarkUI.Controls
 
         #region Private methods
 
-        internal override Native.SCROLLBARINFO GetCurrentScrollBarInfo()
+        private protected override Native.SCROLLBARINFO GetCurrentScrollBarInfo()
         {
             var sbi = new Native.SCROLLBARINFO();
             sbi.cbSize = Marshal.SizeOf(sbi);
@@ -129,70 +130,7 @@ namespace DarkUI.Controls
         {
             var g = e.Graphics;
 
-            #region Arrows
-
-            int w, h;
-            if (_isVertical)
-            {
-                w = SystemInformation.VerticalScrollBarWidth;
-                h = SystemInformation.VerticalScrollBarArrowHeight;
-            }
-            else
-            {
-                w = SystemInformation.HorizontalScrollBarHeight;
-                h = SystemInformation.HorizontalScrollBarArrowWidth;
-            }
-
-            if (_isVertical)
-            {
-                Bitmap upArrow = _firstArrowState == State.Normal
-                    ? _upArrowNormal
-                    : _firstArrowState == State.Hot
-                    ? _upArrowHot
-                    : _upArrowPressed;
-
-                Bitmap downArrow = _secondArrowState == State.Normal
-                    ? _downArrowNormal
-                    : _secondArrowState == State.Hot
-                    ? _downArrowHot
-                    : _downArrowPressed;
-
-                g.DrawImageUnscaled(
-                    upArrow,
-                    (w / 2) - (_upArrowNormal.Width / 2),
-                    (h / 2) - (_upArrowNormal.Height / 2));
-
-                g.DrawImageUnscaled(
-                    downArrow,
-                    (w / 2) - (_downArrowNormal.Width / 2),
-                    (Height - h) + ((h / 2) - (_downArrowNormal.Height / 2)));
-            }
-            else
-            {
-                Bitmap leftArrow = _firstArrowState == State.Normal
-                    ? _leftArrowNormal
-                    : _firstArrowState == State.Hot
-                    ? _leftArrowHot
-                    : _leftArrowPressed;
-
-                Bitmap rightArrow = _secondArrowState == State.Normal
-                    ? _rightArrowNormal
-                    : _secondArrowState == State.Hot
-                    ? _rightArrowHot
-                    : _rightArrowPressed;
-
-                g.DrawImageUnscaled(
-                    leftArrow,
-                    (w / 2) - (_leftArrowNormal.Width / 2),
-                    (h / 2) - (_leftArrowNormal.Height / 2));
-
-                g.DrawImageUnscaled(
-                    rightArrow,
-                    Width - w + (w / 2) - (_rightArrowNormal.Width / 2),
-                    (h / 2) - (_rightArrowNormal.Height / 2));
-            }
-
-            #endregion
+            PaintArrows(g);
 
             #region Thumb
 
@@ -203,13 +141,7 @@ namespace DarkUI.Controls
                 _xyThumbTop = sbi.xyThumbTop;
                 _xyThumbBottom = sbi.xyThumbBottom;
 
-                SolidBrush thumbBrush = _thumbState == State.Normal
-                    ? _thumbNormalBrush
-                    : _thumbState == State.Hot
-                    ? _thumbHotBrush
-                    : _thumbPressedBrush;
-
-                g.FillRectangle(thumbBrush, GetVisualThumbRect(ref sbi));
+                g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi));
             }
 
             #endregion
@@ -224,29 +156,10 @@ namespace DarkUI.Controls
                 if (_owner.IsHandleCreated)
                 {
                     Native.PostMessage(_owner.Handle, _m.Msg, _m.WParam, _m.LParam);
-                    //_m.Result = IntPtr.Zero;
                 }
             }
 
-            if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN
-                || m.Msg == Native.WM_LBUTTONUP || m.Msg == Native.WM_NCLBUTTONUP
-                || m.Msg == Native.WM_LBUTTONDBLCLK || m.Msg == Native.WM_NCLBUTTONDBLCLK
-
-                || m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN
-                || m.Msg == Native.WM_MBUTTONUP || m.Msg == Native.WM_NCMBUTTONUP
-                || m.Msg == Native.WM_MBUTTONDBLCLK || m.Msg == Native.WM_NCMBUTTONDBLCLK
-
-                || m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN
-                || m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP
-                || m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK
-
-                //|| m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE
-
-                // Don't handle mouse wheel or mouse wheel tilt for now - mousewheel at least breaks on FMsDGV
-                //|| m.Msg == Native.WM_MOUSEWHEEL || m.Msg == Native.WM_MOUSEHWHEEL
-                // TODO: @DarkMode: Test wheel tilt with this system!
-                // (do I still have that spare Logitech mouse that works?)
-                )
+            if (ShouldSendToOwner(m.Msg))
             {
                 SendToOwner(ref m);
             }
