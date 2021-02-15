@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -18,8 +19,87 @@ namespace AngelLoader.Forms.CustomControls
             InitReaderMode();
         }
 
+        public static IntPtr FromLowHigh(int low, int high) => (IntPtr)ToInt(low, high);
+
+        public static int ToInt(int low, int high) => (high << 16) | (low & 0xffff);
+
+        public static int SignedHIWORD(int n) => (int)(short)HIWORD(n);
+
+        public static int SignedLOWORD(int n) => (int)(short)LOWORD(n);
+
+        public static int SignedHIWORD(IntPtr n) => SignedHIWORD(unchecked((int)(long)n));
+
+        public static int SignedLOWORD(IntPtr n) => SignedLOWORD(unchecked((int)(long)n));
+
+        public static int HIWORD(int n) => (n >> 16) & 0xffff;
+
+        public static int LOWORD(int n) => n & 0xffff;
+
+        public const int SB_THUMBTRACK = 5;
+        public const int SB_THUMBPOSITION = 4;
+
         protected override void WndProc(ref Message m)
         {
+            //Trace.WriteLine("m.Msg: " + m.Msg);
+
+            //if (m.Msg == WM_LBUTTONDOWN)
+            //{
+            //    Trace.WriteLine("********* x: " + SignedLOWORD(m.LParam));
+            //    Trace.WriteLine("********* y: " + SignedHIWORD(m.LParam));
+            //}
+            //else if (m.Msg == WM_NCLBUTTONDOWN)
+            //{
+            //    Trace.WriteLine("NC ********* x: " + SignedLOWORD(m.LParam));
+            //    Trace.WriteLine("NC ********* y: " + SignedHIWORD(m.LParam));
+            //}
+
+            //if (m.Msg == WM_VSCROLL)
+            //{
+            //    int lowWord = LOWORD(m.WParam.ToInt32());
+            //    //Trace.WriteLine("WM_VSCROLL low word: " + lowWord);
+
+            //    if (lowWord == SB_THUMBTRACK)
+            //    {
+            //        int highWord = HIWORD(m.WParam.ToInt32());
+            //        Trace.WriteLine("ThumbTrack scroll box position: " + highWord);
+            //    }
+            //    else if (lowWord == SB_THUMBPOSITION)
+            //    {
+            //        int highWord = HIWORD(m.WParam.ToInt32());
+            //        Trace.WriteLine("ThumbTrack scroll box position: " + highWord);
+            //    }
+            //    else
+            //    {
+            //        Trace.WriteLine("up");
+            //    }
+            //}
+
+            if (m.Msg == WM_NCMOUSEMOVE)
+            {
+                //Trace.WriteLine("RTFBox NC_MOUSEMOVE x: " + SignedLOWORD(m.LParam));
+                //Trace.WriteLine("RTFBox NC_MOUSEMOVE y: " + SignedHIWORD(m.LParam));
+            }
+
+            if (m.Msg == WM_NCLBUTTONDOWN
+               || m.Msg == WM_NCLBUTTONUP
+                || m.Msg == WM_NCLBUTTONDBLCLK
+
+                || m.Msg == WM_NCMBUTTONDOWN
+                || m.Msg == WM_NCMBUTTONUP
+                || m.Msg == WM_NCMBUTTONDBLCLK
+
+                || m.Msg == WM_NCRBUTTONDOWN
+                || m.Msg == WM_NCRBUTTONUP
+                || m.Msg == WM_NCRBUTTONDBLCLK
+            )
+            {
+                //Trace.WriteLine("RTFBox: " + m.Msg);
+                //Trace.WriteLine("RTFBox x: " + SignedLOWORD(m.LParam));
+                //Trace.WriteLine("RTFBox y: " + SignedHIWORD(m.LParam));
+            }
+
+            //Trace.WriteLine("RTFBox msg: " + m.Msg);
+
             switch ((uint)m.Msg)
             {
                 case WM_MOUSEWHEEL:

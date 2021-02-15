@@ -42,6 +42,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -49,6 +50,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -223,12 +225,19 @@ namespace AngelLoader.Forms
             const bool BlockMessage = true;
             const bool PassMessageOn = false;
 
+            //{
+            //    Point pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
+            //    IntPtr handle = InteropMisc.WindowFromPoint(pos);
+            //    Trace.WriteLine("window under mouse: " + handle.ToString());
+            //}
 
             // Note: CanFocus will be false if there are modal windows open
 
             // This allows controls to be scrolled with the mousewheel when the mouse is over them, without
             // needing to actually be focused. Vital for a good user experience.
+
             #region Mouse
+
             if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
             {
                 // IMPORTANT (PreFilterMessage):

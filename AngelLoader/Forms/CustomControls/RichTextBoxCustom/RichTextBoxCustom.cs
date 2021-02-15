@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -53,10 +54,21 @@ namespace AngelLoader.Forms.CustomControls
 
         public RichTextBoxCustom()
         {
-            //VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this);
-            //HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this);
+            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true);
+            //HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false);
 
             InitWorkarounds();
+
+            //_testTimer.Tick += (sender, e) => { Trace.WriteLine(this.ScrollBars); };
+
+            VerticalVisualScrollBar.BringToFront();
+            //HorizontalVisualScrollBar.BringToFront();
+        }
+
+        protected override void OnClientSizeChanged(EventArgs e)
+        {
+            Trace.WriteLine("client size changed");
+            base.OnClientSizeChanged(e);
         }
 
         public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
@@ -66,6 +78,32 @@ namespace AngelLoader.Forms.CustomControls
         public bool HScrollVisible { get; }
 
         public void AddToControls(ScrollBarVisualOnly_Native visualScrollBar) => Controls.Add(visualScrollBar);
+        public Point VScrollLocation { get; }
+        public Point HScrollLocation { get; }
+        public Size VScrollSize { get; }
+        public Size HScrollSize { get; }
+        public new Point PointToClient(Point p) => base.PointToClient(p);
+        public new Point PointToScreen(Point p) => base.PointToScreen(p);
+        public new Control Parent => base.Parent;
+        public new Point Location
+        {
+            get => base.Location;
+            set => base.Location = value;
+        }
+
+        public new Size Size
+        {
+            get => base.Size;
+            set => base.Size = value;
+        }
+
+        public new bool Visible
+        {
+            get => base.Visible;
+            set => base.Visible = value;
+        }
+
+        public event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
 
         #region Private methods
 
@@ -272,6 +310,8 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #endregion
+
+        private Timer _testTimer = new Timer { Enabled = true, Interval = 1 };
 
         protected override void OnEnabledChanged(EventArgs e)
         {

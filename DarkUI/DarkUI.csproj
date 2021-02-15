@@ -53,6 +53,7 @@
     <Compile Include="Controls\DarkTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\EventArgs.cs" />
     <Compile Include="Controls\Interfaces.cs" />
     <Compile Include="Controls\DarkButtonStyle.cs" />
     <Compile Include="Controls\DarkCheckBox.cs">

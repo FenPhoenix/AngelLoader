@@ -476,8 +476,17 @@ namespace DarkUI.Controls
 
             #region Arrows
 
-            int w = SystemInformation.VerticalScrollBarWidth;
-            int h = SystemInformation.VerticalScrollBarArrowHeight;
+            int w, h;
+            if (_isVertical)
+            {
+                w = SystemInformation.VerticalScrollBarWidth;
+                h = SystemInformation.VerticalScrollBarArrowHeight;
+            }
+            else
+            {
+                w = SystemInformation.HorizontalScrollBarHeight;
+                h = SystemInformation.HorizontalScrollBarArrowWidth;
+            }
 
             if (_isVertical)
             {
@@ -595,7 +604,6 @@ namespace DarkUI.Controls
             else
             {
                 base.WndProc(ref m);
-
             }
         }
 

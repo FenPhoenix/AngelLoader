@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace DarkUI.Controls
@@ -27,5 +28,19 @@ namespace DarkUI.Controls
         bool VScrollVisible { get; }
         bool HScrollVisible { get; }
         void AddToControls(ScrollBarVisualOnly_Native visualScrollBar);
+        event EventHandler VScroll;
+        event EventHandler HScroll;
+        Point VScrollLocation { get; }
+        Point HScrollLocation { get; }
+        Size VScrollSize { get; }
+        Size HScrollSize { get; }
+        Point PointToClient(Point p);
+        Point PointToScreen(Point p);
+        Control Parent { get; }
+        Point Location { get; set; }
+        Size Size { get; set; }
+        bool Visible { get; set; }
+        event EventHandler ClientSizeChanged;
+        event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
@@ -11,6 +12,9 @@ namespace DarkUI.Win32
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         internal static extern IntPtr SendMessage(IntPtr hWnd, UInt32 msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
         #region Fen
 
@@ -54,8 +58,27 @@ namespace DarkUI.Win32
 
         #endregion
 
+        public struct POINTS
+        {
+            public short x;
+            public short y;
+
+            public POINTS(short x, short y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        public const int HTHSCROLL = 6;
+        public const int HTVSCROLL = 7;
+
         [DllImport("user32.dll")]
         internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, POINTS lParam);
 
         #region Scroll bars
 
@@ -70,6 +93,13 @@ namespace DarkUI.Win32
         public const uint OBJID_HSCROLL = 0xFFFFFFFA;
         public const uint OBJID_VSCROLL = 0xFFFFFFFB;
         public const uint OBJID_CLIENT = 0xFFFFFFFC;
+
+        public const uint SB_HORZ = 0;
+        public const uint SB_VERT = 1;
+        public const uint SB_CTL = 2;
+        public const uint SB_BOTH = 3;
+
+        public const int STATE_SYSTEM_INVISIBLE = 0x00008000;
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
         public static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
@@ -86,6 +116,28 @@ namespace DarkUI.Win32
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
             public int[] rgstate;
         }
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetScrollInfo(IntPtr hwnd, uint fnBar, ref SCROLLINFO lpsi);
+
+        public struct SCROLLINFO
+        {
+            public int cbSize;
+            public uint fMask;
+            public int nMin;
+            public int nMax;
+            public uint nPage;
+            public int nPos;
+            public int nTrackPos;
+        }
+
+        public const int SIF_RANGE = 0x0001;
+        public const int SIF_PAGE = 0x0002;
+        public const int SIF_POS = 0x0004;
+        public const int SIF_DISABLENOSCROLL = 0x0008;
+        public const int SIF_TRACKPOS = 0x0010;
+        public const int SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS;
 
         #endregion
 

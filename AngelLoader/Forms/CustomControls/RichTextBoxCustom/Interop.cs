@@ -118,7 +118,7 @@ namespace AngelLoader.Forms.CustomControls
             SIF_RANGE = 0x0001,
             SIF_PAGE = 0x0002,
             SIF_POS = 0x0004,
-            //SIF_DISABLENOSCROLL = 0x0008,
+            SIF_DISABLENOSCROLL = 0x0008,
             SIF_TRACKPOS = 0x0010,
             SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
         }

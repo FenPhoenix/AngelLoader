@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using DarkUI.Controls;
 using static AngelLoader.Forms.CustomControls.RichTextBoxCustom_Interop;
 using static AngelLoader.Misc;
 
@@ -138,6 +139,7 @@ namespace AngelLoader.Forms.CustomControls
                 _darkModeEnabled = value;
                 SetReadmeTypeAndColorState(_currentReadmeType);
                 RefreshDarkModeState();
+                DarkModeChanged?.Invoke(this, new DarkModeChangedEventArgs(_darkModeEnabled));
             }
         }
 
