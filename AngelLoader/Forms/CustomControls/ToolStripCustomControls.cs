@@ -110,8 +110,19 @@ namespace AngelLoader.Forms.CustomControls
     }
 
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
-    public sealed class ToolStripButtonCustom : ToolStripButton
+    public sealed class ToolStripButtonCustom : ToolStripButton, IDarkable
     {
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_DarkBackground : SystemColors.Control;
+            }
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             // Use the mouseover BackColor when it's checked, for a more visible checked experience
@@ -121,8 +132,19 @@ namespace AngelLoader.Forms.CustomControls
     }
 
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
-    public sealed class ToolStripArrowButton : ToolStripButton
+    public sealed class ToolStripArrowButton : ToolStripButton, IDarkable
     {
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_DarkBackground : SystemColors.Control;
+            }
+        }
+
         private Direction _arrowDirection;
         private readonly Point[] _arrowPolygon = new Point[3];
 
