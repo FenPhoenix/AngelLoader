@@ -131,9 +131,7 @@ namespace DarkUI.Controls
             BringThisToFront();
 
             _owner.Scroll += (sender, e) => RefreshIfNeeded();
-
             _owner.VisibilityChanged += (sender, e) => RefreshIfNeeded();
-
             _owner.DarkModeChanged += (sender, e) => RefreshIfNeeded();
 
             #endregion
@@ -142,7 +140,6 @@ namespace DarkUI.Controls
 
             _timer.Interval = 1;
             _timer.Tick += (sender, e) => RefreshIfNeeded();
-            _timer.Enabled = true;
 
             #endregion
 
@@ -538,14 +535,14 @@ namespace DarkUI.Controls
                 Bitmap upArrow = _firstArrowState == State.Normal
                     ? _upArrowNormal
                     : _firstArrowState == State.Hot
-                        ? _upArrowHot
-                        : _upArrowPressed;
+                    ? _upArrowHot
+                    : _upArrowPressed;
 
                 Bitmap downArrow = _secondArrowState == State.Normal
                     ? _downArrowNormal
                     : _secondArrowState == State.Hot
-                        ? _downArrowHot
-                        : _downArrowPressed;
+                    ? _downArrowHot
+                    : _downArrowPressed;
 
                 g.DrawImageUnscaled(
                     upArrow,
@@ -562,14 +559,14 @@ namespace DarkUI.Controls
                 Bitmap leftArrow = _firstArrowState == State.Normal
                     ? _leftArrowNormal
                     : _firstArrowState == State.Hot
-                        ? _leftArrowHot
-                        : _leftArrowPressed;
+                    ? _leftArrowHot
+                    : _leftArrowPressed;
 
                 Bitmap rightArrow = _secondArrowState == State.Normal
                     ? _rightArrowNormal
                     : _secondArrowState == State.Hot
-                        ? _rightArrowHot
-                        : _rightArrowPressed;
+                    ? _rightArrowHot
+                    : _rightArrowPressed;
 
                 g.DrawImageUnscaled(
                     leftArrow,

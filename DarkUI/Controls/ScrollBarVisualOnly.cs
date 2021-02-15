@@ -84,8 +84,6 @@ namespace DarkUI.Controls
             DoubleBuffered = true;
             ResizeRedraw = true;
 
-            //BackColor = Config.Colors.Fen_DarkBackground;
-            //BackColor = Color.FromArgb(44, 44, 44);
             BackColor = Config.Colors.DarkBackground;
 
             SetStyle(
