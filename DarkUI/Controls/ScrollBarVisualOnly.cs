@@ -186,11 +186,18 @@ namespace DarkUI.Controls
             return sbi;
         }
 
-        private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
+        private Rectangle GetVisualThumbRect(ref Native.SCROLLBARINFO sbi)
         {
             return _isVertical
                 ? new Rectangle(1, sbi.xyThumbTop, Width - 2, sbi.xyThumbBottom - sbi.xyThumbTop)
                 : new Rectangle(sbi.xyThumbTop, 1, sbi.xyThumbBottom - sbi.xyThumbTop, Height - 2);
+        }
+
+        private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
+        {
+            return _isVertical
+                ? new Rectangle(0, sbi.xyThumbTop, Width, sbi.xyThumbBottom - sbi.xyThumbTop)
+                : new Rectangle(sbi.xyThumbTop, 0, sbi.xyThumbBottom - sbi.xyThumbTop, Height);
         }
 
         private Rectangle GetArrowRect(bool second = false)
@@ -552,7 +559,7 @@ namespace DarkUI.Controls
                     ? _thumbHotBrush
                     : _thumbPressedBrush;
 
-                g.FillRectangle(thumbBrush, GetThumbRect(ref sbi));
+                g.FillRectangle(thumbBrush, GetVisualThumbRect(ref sbi));
             }
 
             #endregion

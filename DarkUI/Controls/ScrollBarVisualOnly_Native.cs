@@ -10,10 +10,6 @@ namespace DarkUI.Controls
 {
     public sealed class ScrollBarVisualOnly_Native : Control
     {
-        // TODO: @DarkMode(ScrollBarVisualOnly_Native):
-        // We're like one pixel not enough on either side of the scroll bar for click detection purposes. If we
-        // drag just at the very edge pixel, we get the "drag but the dark visual thumb doesn't update" behavior.
-
         #region Enums
 
         private enum State
@@ -222,7 +218,7 @@ namespace DarkUI.Controls
             var si = new Native.SCROLLINFO();
             si.cbSize = Marshal.SizeOf(si);
             si.fMask = mask;
-            
+
             if (_owner.IsHandleCreated)
             {
                 Native.GetScrollInfo(_owner.Handle, _isVertical ? Native.SB_VERT : Native.SB_HORZ, ref si);
@@ -231,11 +227,18 @@ namespace DarkUI.Controls
             return si;
         }
 
-        private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
+        private Rectangle GetVisualThumbRect(ref Native.SCROLLBARINFO sbi)
         {
             return _isVertical
                 ? new Rectangle(1, sbi.xyThumbTop, Width - 2, sbi.xyThumbBottom - sbi.xyThumbTop)
                 : new Rectangle(sbi.xyThumbTop, 1, sbi.xyThumbBottom - sbi.xyThumbTop, Height - 2);
+        }
+
+        private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
+        {
+            return _isVertical
+                ? new Rectangle(0, sbi.xyThumbTop, Width, sbi.xyThumbBottom - sbi.xyThumbTop)
+                : new Rectangle(sbi.xyThumbTop, 0, sbi.xyThumbBottom - sbi.xyThumbTop, Height);
         }
 
         private Rectangle GetArrowRect(bool second = false)
@@ -619,10 +622,10 @@ namespace DarkUI.Controls
                     SolidBrush thumbBrush = _thumbState == State.Normal
                         ? _thumbNormalBrush
                         : _thumbState == State.Hot
-                            ? _thumbHotBrush
-                            : _thumbPressedBrush;
+                        ? _thumbHotBrush
+                        : _thumbPressedBrush;
 
-                    g.FillRectangle(thumbBrush, GetThumbRect(ref sbi));
+                    g.FillRectangle(thumbBrush, GetVisualThumbRect(ref sbi));
                 }
             }
 
@@ -657,8 +660,7 @@ namespace DarkUI.Controls
                     if (_isVertical)
                     {
                         int sbWidthOrHeight = SystemInformation.VerticalScrollBarWidth;
-                        x += (ownerScreenLoc.X + (_owner.Size.Width - sbWidthOrHeight)) -
-                             _owner.Parent.Padding.Left;
+                        x += (ownerScreenLoc.X + (_owner.Size.Width - sbWidthOrHeight)) - _owner.Parent.Padding.Left;
                         y += ownerScreenLoc.Y - _owner.Parent.Padding.Top;
                         wParam = Native.HTVSCROLL;
                     }
@@ -666,8 +668,7 @@ namespace DarkUI.Controls
                     {
                         int sbWidthOrHeight = SystemInformation.HorizontalScrollBarHeight;
                         x += ownerScreenLoc.X - _owner.Parent.Padding.Left;
-                        y += (ownerScreenLoc.Y + (_owner.Size.Height - sbWidthOrHeight)) -
-                             _owner.Parent.Padding.Top;
+                        y += (ownerScreenLoc.Y + (_owner.Size.Height - sbWidthOrHeight)) - _owner.Parent.Padding.Top;
                         wParam = Native.HTHSCROLL;
                     }
 
