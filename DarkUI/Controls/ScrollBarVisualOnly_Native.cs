@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using DarkUI.Win32;
-using Gma.System.MouseKeyHook;
 
 namespace DarkUI.Controls
 {
@@ -46,21 +45,7 @@ namespace DarkUI.Controls
         public ScrollBarVisualOnly_Native(IDarkableScrollableNative owner, bool isVertical, bool passMouseWheel)
             : base(isVertical)
         {
-            #region Set up self
-
-            Visible = false;
-            DoubleBuffered = true;
-            ResizeRedraw = true;
-
-            BackColor = Config.Colors.DarkBackground;
-
-            SetStyle(
-                ControlStyles.UserPaint |
-                ControlStyles.AllPaintingInWmPaint |
-                ControlStyles.CacheText,
-                true);
-
-            #endregion
+            SetUpSelf();
 
             #region Setup involving owner
 
@@ -78,46 +63,7 @@ namespace DarkUI.Controls
 
             #endregion
 
-            #region Set up refresh timer
-
-            _timer.Interval = 1;
-            _timer.Tick += (sender, e) => RefreshIfNeeded();
-
-            #endregion
-
-            #region Set up scroll bar arrows
-
-            _upArrowNormal.RotateFlip(RotateFlipType.Rotate180FlipNone);
-            _upArrowHot.RotateFlip(RotateFlipType.Rotate180FlipNone);
-            _upArrowPressed.RotateFlip(RotateFlipType.Rotate180FlipNone);
-
-            _leftArrowNormal.RotateFlip(RotateFlipType.Rotate90FlipNone);
-            _leftArrowHot.RotateFlip(RotateFlipType.Rotate90FlipNone);
-            _leftArrowPressed.RotateFlip(RotateFlipType.Rotate90FlipNone);
-
-            _rightArrowNormal.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            _rightArrowHot.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            _rightArrowPressed.RotateFlip(RotateFlipType.Rotate270FlipNone);
-
-            #endregion
-
-            #region Set up thumb colors
-
-            _thumbNormalBrush = new SolidBrush(Config.Colors.GreySelection);
-            _thumbHotBrush = new SolidBrush(Config.Colors.GreyHighlight);
-            _thumbPressedBrush = new SolidBrush(Config.Colors.DarkGreySelection);
-
-            #endregion
-
-            #region Set up mouse hook
-
-            if (Global.MouseHook == null) Global.MouseHook = Hook.AppEvents();
-
-            Global.MouseHook.MouseDownExt += MouseDownExt_Handler;
-            Global.MouseHook.MouseUpExt += MouseUpExt_Handler;
-            Global.MouseHook.MouseMoveExt += MouseMoveExt_Handler;
-
-            #endregion
+            SetUpAfterOwner();
         }
 
         #endregion
@@ -161,7 +107,7 @@ namespace DarkUI.Controls
             return si;
         }
 
-        private void RefreshIfNeeded()
+        private protected override void RefreshIfNeeded()
         {
             if (_owner.Parent == null) return;
             if (!_owner.IsHandleCreated) return;
@@ -344,12 +290,6 @@ namespace DarkUI.Controls
             #endregion
 
             base.OnPaint(e);
-        }
-
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            _timer.Enabled = Visible;
-            base.OnVisibleChanged(e);
         }
 
         protected override void WndProc(ref Message m)
