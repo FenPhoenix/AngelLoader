@@ -50,6 +50,9 @@ namespace DarkUI.Controls
 
         private int? _xyThumbTop;
         private int? _xyThumbBottom;
+        private Size? _size;
+        private Rectangle? _thumbLoc;
+        private int _trackPos;
 
         // MouseMove doesn't send the buttons, despite having a Button field. The field is just always empty.
         // So we just store the values here.
@@ -61,8 +64,6 @@ namespace DarkUI.Controls
         private State _firstArrowState;
         private State _secondArrowState;
 
-        private bool _parentBarVisible;
-        private bool _clientSizeHookedUp;
         private bool _addedToControls;
 
         #endregion
@@ -121,6 +122,8 @@ namespace DarkUI.Controls
             #region Setup involving owner
 
             _owner = owner;
+
+            _size = Size;
 
             _isVertical = isVertical;
             _passMouseWheel = passMouseWheel;
@@ -217,6 +220,20 @@ namespace DarkUI.Controls
             return sbi;
         }
 
+        private Native.SCROLLINFO GetScrollInfo(uint mask)
+        {
+            var si = new Native.SCROLLINFO();
+            si.cbSize = Marshal.SizeOf(si);
+            si.fMask = mask;
+            
+            if (_owner.IsHandleCreated)
+            {
+                Native.GetScrollInfo(_owner.Handle, _isVertical ? Native.SB_VERT : Native.SB_HORZ, ref si);
+            }
+
+            return si;
+        }
+
         private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
         {
             return _isVertical
@@ -246,9 +263,6 @@ namespace DarkUI.Controls
             return true;
         }
 
-        // TODO: @DarkMode: IMPORTANT: Urgent perf
-        // Save the entire previous state, compare, and only refresh if needed. Right now, we're refreshing
-        // every timer tick!
         private void RefreshIfNeeded()
         {
             if (_owner.Parent == null) return;
@@ -267,14 +281,12 @@ namespace DarkUI.Controls
                 return;
             }
 
-            _parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
+            var parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
 
-            Visible = !_owner.Suspended && _owner.Visible && _owner.DarkModeEnabled && _parentBarVisible;
+            Visible = !_owner.Suspended && _owner.Visible && _owner.DarkModeEnabled && parentBarVisible;
 
             if (Visible)
             {
-                BringThisToFront();
-
                 var topLeft = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.left, sbi.rcScrollBar.top));
                 var bottomRight = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.right, sbi.rcScrollBar.bottom));
 
@@ -285,15 +297,31 @@ namespace DarkUI.Controls
                     bottomRight.Y - topLeft.Y
                 );
 
-                Location = new Point(loc.X, loc.Y);
-                Size = new Size(loc.Width, loc.Height);
-                // TODO: @DarkMode: Support right-to-left modes(?)
-                Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
+                var size = new Size(loc.Width, loc.Height);
 
-                _xyThumbTop = sbi.xyThumbTop;
-                _xyThumbBottom = sbi.xyThumbBottom;
+                var si = GetScrollInfo(Native.SIF_TRACKPOS);
 
-                if (Visible) Refresh();
+                // Only refresh when we need to
+                if ((_leftButtonPressedOnThumb && si.nTrackPos != _trackPos) ||
+                    _size != size || _thumbLoc != loc ||
+                    _xyThumbTop != sbi.xyThumbTop ||
+                    _xyThumbBottom != sbi.xyThumbBottom)
+                {
+                    BringThisToFront();
+                    Location = new Point(loc.X, loc.Y);
+                    // TODO: @DarkMode: Support right-to-left modes(?)
+                    Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
+
+                    Size = size;
+                    _size = size;
+                    _thumbLoc = loc;
+                    _trackPos = si.nTrackPos;
+
+                    _xyThumbTop = sbi.xyThumbTop;
+                    _xyThumbBottom = sbi.xyThumbBottom;
+
+                    Refresh();
+                }
             }
         }
 
@@ -561,16 +589,10 @@ namespace DarkUI.Controls
             if (_owner.IsHandleCreated)
             {
                 var sbi = GetCurrentScrollBarInfo();
-                _xyThumbTop = sbi.xyThumbTop;
-                _xyThumbBottom = sbi.xyThumbBottom;
 
                 if (_leftButtonPressedOnThumb)
                 {
-                    var si = new Native.SCROLLINFO();
-                    si.cbSize = Marshal.SizeOf(si);
-                    si.fMask = Native.SIF_TRACKPOS | Native.SIF_PAGE | Native.SIF_RANGE;
-
-                    Native.GetScrollInfo(_owner.Handle, _isVertical ? Native.SB_VERT : Native.SB_HORZ, ref si);
+                    var si = GetScrollInfo(Native.SIF_TRACKPOS | Native.SIF_PAGE | Native.SIF_RANGE);
 
                     int thumbTop = si.nTrackPos + (_isVertical
                         ? SystemInformation.VerticalScrollBarArrowHeight
