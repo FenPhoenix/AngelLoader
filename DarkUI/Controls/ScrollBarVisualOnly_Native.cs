@@ -246,6 +246,9 @@ namespace DarkUI.Controls
             return true;
         }
 
+        // TODO: @DarkMode: IMPORTANT: Urgent perf
+        // Save the entire previous state, compare, and only refresh if needed. Right now, we're refreshing
+        // every timer tick!
         private void RefreshIfNeeded()
         {
             if (_owner.Parent == null) return;
