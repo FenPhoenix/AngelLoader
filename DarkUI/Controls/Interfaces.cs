@@ -17,7 +17,7 @@ namespace DarkUI.Controls
         ScrollBar HorizontalScrollBar { get; }
     }
 
-    public interface IDarkableScrollableNative : IDarkable
+    public interface IDarkableScrollableNative : IDarkable, ISuspendResumable
     {
         ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
         ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
@@ -42,5 +42,15 @@ namespace DarkUI.Controls
         bool Visible { get; set; }
         event EventHandler ClientSizeChanged;
         event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
+        event EventHandler VisibilityChanged;
+    }
+
+    public interface ISuspendResumable
+    {
+        Control[] ConceptualChildControls { get; }
+        bool IsHandleCreated { get; }
+        bool Visible { get; set; }
+        IntPtr Handle { get; }
+        void Refresh();
     }
 }

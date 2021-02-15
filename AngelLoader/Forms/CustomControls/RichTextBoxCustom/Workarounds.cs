@@ -185,7 +185,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             SCROLLINFO si = _scrollInfo;
 
-            this.SuspendDrawing();
+            this.SuspendDrawing_Native();
             try
             {
                 await Task.Delay(20);
@@ -196,7 +196,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             finally
             {
-                this.ResumeDrawing();
+                this.ResumeDrawing_Native();
             }
         }
 

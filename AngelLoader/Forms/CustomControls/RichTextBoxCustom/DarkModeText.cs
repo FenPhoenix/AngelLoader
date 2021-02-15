@@ -406,7 +406,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (!skipSuspend)
                 {
                     SaveZoom();
-                    this.SuspendDrawing();
+                    this.SuspendDrawing_Native();
                     ReadOnly = false;
                 }
 
@@ -431,7 +431,7 @@ namespace AngelLoader.Forms.CustomControls
                     ReadOnly = true;
                     RestoreZoom();
                     RepositionScroll(Handle, si);
-                    this.ResumeDrawing();
+                    this.ResumeDrawing_Native();
                 }
             }
         }

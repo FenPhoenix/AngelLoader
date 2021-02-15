@@ -56,6 +56,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true);
             //HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false);
+            ConceptualChildControls = new Control[] { VerticalVisualScrollBar };
 
             InitWorkarounds();
 
@@ -90,13 +91,14 @@ namespace AngelLoader.Forms.CustomControls
             get => base.Location;
             set => base.Location = value;
         }
+        public Control[] ConceptualChildControls { get; }
 
         public new Size Size
         {
             get => base.Size;
             set => base.Size = value;
         }
-
+        
         public new bool Visible
         {
             get => base.Visible;
@@ -104,6 +106,13 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         public event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
+        public event EventHandler VisibilityChanged;
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
 
         #region Private methods
 
@@ -116,7 +125,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (outsideCall)
                 {
                     SaveZoom();
-                    this.SuspendDrawing();
+                    this.SuspendDrawing_Native();
                 }
 
                 Font = useFixed ? MonospaceFont : DefaultFont;
@@ -137,7 +146,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (outsideCall)
                 {
                     RestoreZoom();
-                    this.ResumeDrawing();
+                    this.ResumeDrawing_Native();
                 }
             }
         }
@@ -180,13 +189,13 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ResetZoomFactor()
         {
-            this.SuspendDrawing();
+            this.SuspendDrawing_Native();
 
             // We have to set another value first, or it won't take.
             ZoomFactor = 1.1f;
             ZoomFactor = 1.0f;
 
-            this.ResumeDrawing();
+            this.ResumeDrawing_Native();
         }
 
         #endregion
@@ -206,7 +215,7 @@ namespace AngelLoader.Forms.CustomControls
                 _currentRTFBytes = Array.Empty<byte>();
 
                 SaveZoom();
-                this.SuspendDrawing();
+                this.SuspendDrawing_Native();
 
                 // Blank the text to reset the scroll position to the top
                 Clear();
@@ -220,7 +229,7 @@ namespace AngelLoader.Forms.CustomControls
             finally
             {
                 SetReadmeTypeAndColorState(ReadmeType.PlainText);
-                this.ResumeDrawing();
+                this.ResumeDrawing_Native();
             }
         }
 
@@ -237,7 +246,7 @@ namespace AngelLoader.Forms.CustomControls
 
             try
             {
-                this.SuspendDrawing();
+                this.SuspendDrawing_Native();
 
                 // On Windows 10 at least, images don't display if we're ReadOnly. Sure why not. We need to be
                 // ReadOnly though - it doesn't make sense to let the user edit a readme - so un-set us just long
@@ -303,7 +312,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 ReadOnly = true;
                 RestoreZoom();
-                this.ResumeDrawing();
+                this.ResumeDrawing_Native();
             }
         }
 

@@ -119,11 +119,16 @@ namespace DarkUI.Controls
                 if (_owner.VScrollVisible || _owner.HScrollVisible || Visible) RefreshIfNeeded();
             };
 
+            _owner.VisibilityChanged += (sender, e) =>
+            {
+                Visible = _owner.Visible;
+            };
+
             _owner.DarkModeChanged += (sender, e) =>
             {
                 if (_owner.IsHandleCreated && _owner.Parent != null)
                 {
-                    Visible = e.DarkModeEnabled;
+                    Visible = _owner.Visible && e.DarkModeEnabled;
                 }
                 RefreshIfNeeded();
             };
@@ -315,7 +320,7 @@ namespace DarkUI.Controls
                     Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
 
                     //Trace.WriteLine("RefreshIfNeeded() Visible=true");
-                    Visible = true;
+                    Visible = _owner.Visible;
 
                     //if (realScrollBar.Visible != visualScrollBar.Visible)
                     //{

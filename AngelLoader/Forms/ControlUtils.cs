@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Controls;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
@@ -11,6 +12,40 @@ namespace AngelLoader.Forms
     internal static class ControlUtils
     {
         #region Suspend/resume drawing
+
+        internal static void SuspendDrawing_Native(this ISuspendResumable control)
+        {
+            if (!control.IsHandleCreated || !control.Visible) return;
+            SendMessage(control.Handle, WM_SETREDRAW, false, 0);
+
+            if (control.ConceptualChildControls != null)
+            {
+                for (int i = 0; i < control.ConceptualChildControls.Length; i++)
+                {
+                    Control child = control.ConceptualChildControls[i];
+                    if (!child.IsHandleCreated || !child.Visible) return;
+                    SendMessage(child.Handle, WM_SETREDRAW, false, 0);
+                }
+            }
+        }
+
+        internal static void ResumeDrawing_Native(this ISuspendResumable control)
+        {
+            if (!control.IsHandleCreated || !control.Visible) return;
+            SendMessage(control.Handle, WM_SETREDRAW, true, 0);
+            control.Refresh();
+
+            if (control.ConceptualChildControls != null)
+            {
+                for (int i = 0; i < control.ConceptualChildControls.Length; i++)
+                {
+                    Control child = control.ConceptualChildControls[i];
+                    if (!child.IsHandleCreated || !child.Visible) return;
+                    SendMessage(child.Handle, WM_SETREDRAW, true, 0);
+                    child.Refresh();
+                }
+            }
+        }
 
         internal static void SuspendDrawing(this Control control)
         {
