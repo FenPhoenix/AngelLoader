@@ -315,6 +315,12 @@ namespace AngelLoader.Forms.CustomControls
             VisibilityChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        protected override void OnClientSizeChanged(EventArgs e)
+        {
+            base.OnClientSizeChanged(e);
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         #endregion
 
         protected override void Dispose(bool disposing)
