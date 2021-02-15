@@ -8,24 +8,11 @@ using Gma.System.MouseKeyHook;
 
 namespace DarkUI.Controls
 {
-    public sealed class ScrollBarVisualOnly_Native : Control
+    public sealed class ScrollBarVisualOnly_Native : ScrollBarVisualOnly_Base
     {
-        #region Enums
-
-        private enum State
-        {
-            Normal,
-            Hot,
-            Pressed
-        }
-
-        #endregion
-
         #region Private fields
 
         private readonly IDarkableScrollableNative _owner;
-
-        private readonly bool _isVertical;
 
         private readonly Dictionary<int, int> _WM_ClientToNonClient = new Dictionary<int, int>
         {
@@ -44,52 +31,11 @@ namespace DarkUI.Controls
 
         #region Stored state
 
-        private int? _xyThumbTop;
-        private int? _xyThumbBottom;
         private Size? _size;
         private Rectangle? _thumbLoc;
         private int _trackPos;
 
-        // MouseMove doesn't send the buttons, despite having a Button field. The field is just always empty.
-        // So we just store the values here.
-        private bool _leftButtonPressedOnThumb;
-        private bool _leftButtonPressedOnFirstArrow;
-        private bool _leftButtonPressedOnSecondArrow;
-
-        private State _thumbState;
-        private State _firstArrowState;
-        private State _secondArrowState;
-
         private bool _addedToControls;
-
-        #endregion
-
-        #region Disposables
-
-        private readonly Timer _timer = new Timer();
-
-        private readonly Pen _greySelectionPen = new Pen(Config.Colors.GreySelection);
-
-        private readonly SolidBrush _thumbNormalBrush;
-        private readonly SolidBrush _thumbHotBrush;
-        private readonly SolidBrush _thumbPressedBrush;
-
-        // We want them separate, not all pointing to the same reference
-        private readonly Bitmap _upArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _upArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        private readonly Bitmap _upArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
-
-        private readonly Bitmap _downArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _downArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        private readonly Bitmap _downArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
-
-        private readonly Bitmap _leftArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _leftArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        private readonly Bitmap _leftArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
-
-        private readonly Bitmap _rightArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _rightArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        private readonly Bitmap _rightArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
 
         #endregion
 
@@ -98,6 +44,7 @@ namespace DarkUI.Controls
         #region Constructor / init
 
         public ScrollBarVisualOnly_Native(IDarkableScrollableNative owner, bool isVertical, bool passMouseWheel)
+            : base(isVertical)
         {
             #region Set up self
 
@@ -121,7 +68,6 @@ namespace DarkUI.Controls
 
             _size = Size;
 
-            _isVertical = isVertical;
             _passMouseWheel = passMouseWheel;
 
             BringThisToFront();
@@ -174,18 +120,6 @@ namespace DarkUI.Controls
             #endregion
         }
 
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                var cp = base.CreateParams;
-                const int WS_EX_NOACTIVATE = 0x8000000;
-                // This doesn't seem to change anything one way or the other, but meh
-                cp.ExStyle |= WS_EX_NOACTIVATE;
-                return cp;
-            }
-        }
-
         #endregion
 
         #region Private methods
@@ -200,7 +134,7 @@ namespace DarkUI.Controls
             if (_addedToControls) BringToFront();
         }
 
-        private Native.SCROLLBARINFO GetCurrentScrollBarInfo()
+        internal override Native.SCROLLBARINFO GetCurrentScrollBarInfo()
         {
             var sbi = new Native.SCROLLBARINFO();
             sbi.cbSize = Marshal.SizeOf(sbi);
@@ -225,42 +159,6 @@ namespace DarkUI.Controls
             }
 
             return si;
-        }
-
-        private Rectangle GetVisualThumbRect(ref Native.SCROLLBARINFO sbi)
-        {
-            return _isVertical
-                ? new Rectangle(1, sbi.xyThumbTop, Width - 2, sbi.xyThumbBottom - sbi.xyThumbTop)
-                : new Rectangle(sbi.xyThumbTop, 1, sbi.xyThumbBottom - sbi.xyThumbTop, Height - 2);
-        }
-
-        private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
-        {
-            return _isVertical
-                ? new Rectangle(0, sbi.xyThumbTop, Width, sbi.xyThumbBottom - sbi.xyThumbTop)
-                : new Rectangle(sbi.xyThumbTop, 0, sbi.xyThumbBottom - sbi.xyThumbTop, Height);
-        }
-
-        private Rectangle GetArrowRect(bool second = false)
-        {
-            var vertArrowHeight = SystemInformation.VerticalScrollBarArrowHeight;
-            var horzArrowWidth = SystemInformation.HorizontalScrollBarArrowWidth;
-
-            return !second
-                ? _isVertical
-                    ? new Rectangle(0, 0, Width, vertArrowHeight)
-                    : new Rectangle(0, 0, horzArrowWidth, Height)
-                : _isVertical
-                    ? new Rectangle(0, Height - vertArrowHeight, Width, vertArrowHeight)
-                    : new Rectangle(Width - horzArrowWidth, 0, horzArrowWidth, Height);
-        }
-
-        private static bool ChangeStateAndAskIfRefreshRequired(ref State state1, State state2)
-        {
-            if (state1 == state2) return false;
-
-            state1 = state2;
-            return true;
         }
 
         private void RefreshIfNeeded()
@@ -323,192 +221,6 @@ namespace DarkUI.Controls
                     Refresh();
                 }
             }
-        }
-
-        #endregion
-
-        #region Mouse hook handlers
-
-        private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
-        {
-            if (!Visible || !Enabled) return;
-
-            if (e.Button != MouseButtons.Left) return;
-
-            Point cursorPos = PointToClient(e.Location);
-
-            var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(ref sbi);
-
-            if (thumbRect.Contains(cursorPos))
-            {
-                _leftButtonPressedOnThumb = true;
-                if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, State.Pressed))
-                {
-                    Refresh();
-                }
-            }
-            else if (GetArrowRect().Contains(cursorPos))
-            {
-                _leftButtonPressedOnFirstArrow = true;
-                if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, State.Pressed))
-                {
-                    Refresh();
-                }
-            }
-            else if (GetArrowRect(second: true).Contains(cursorPos))
-            {
-                _leftButtonPressedOnSecondArrow = true;
-                if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, State.Pressed))
-                {
-                    Refresh();
-                }
-            }
-        }
-
-        private void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
-        {
-            if (!Visible || !Enabled) return;
-
-            if (e.Button != MouseButtons.Left) return;
-
-            bool refresh = false;
-
-            var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(ref sbi);
-            var firstArrowRect = GetArrowRect();
-            var secondArrowRect = GetArrowRect(second: true);
-
-            Point cursorPos = PointToClient(e.Location);
-
-            if (thumbRect.Contains(cursorPos))
-            {
-                _leftButtonPressedOnThumb = false;
-                _leftButtonPressedOnFirstArrow = false;
-                _leftButtonPressedOnSecondArrow = false;
-
-                if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, State.Hot))
-                {
-                    refresh = true;
-                }
-                if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, State.Normal))
-                {
-                    refresh = true;
-                }
-                if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, State.Normal))
-                {
-                    refresh = true;
-                }
-            }
-            else
-            {
-                if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, State.Normal))
-                {
-                    refresh = true;
-                }
-
-                if (_leftButtonPressedOnFirstArrow || _leftButtonPressedOnThumb)
-                {
-                    _leftButtonPressedOnFirstArrow = false;
-
-                    _firstArrowState = firstArrowRect.Contains(cursorPos) ? State.Hot : State.Normal;
-                    refresh = true;
-                }
-                if (_leftButtonPressedOnSecondArrow || _leftButtonPressedOnThumb)
-                {
-                    _leftButtonPressedOnSecondArrow = false;
-                    _secondArrowState = secondArrowRect.Contains(cursorPos) ? State.Hot : State.Normal;
-                    refresh = true;
-                }
-
-                _leftButtonPressedOnThumb = false;
-            }
-
-            if (refresh) Refresh();
-        }
-
-        private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
-        {
-            if (!Visible || !Enabled) return;
-
-            var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(ref sbi);
-            var leftArrowRect = GetArrowRect();
-            var rightArrowRect = GetArrowRect(second: true);
-
-            Point cursorPos = PointToClient(e.Location);
-
-            bool cursorOverThumb = thumbRect.Contains(cursorPos);
-
-            var cursorOverFirstArrow = leftArrowRect.Contains(cursorPos);
-            var cursorOverSecondArrow = rightArrowRect.Contains(cursorPos);
-
-            bool refresh = false;
-
-            if (cursorOverThumb)
-            {
-                State stateToChangeTo = _leftButtonPressedOnThumb ? State.Pressed : State.Hot;
-                if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, stateToChangeTo))
-                {
-                    refresh = true;
-                }
-                if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, State.Normal))
-                {
-                    refresh = true;
-                }
-                if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, State.Normal))
-                {
-                    refresh = true;
-                }
-            }
-            else
-            {
-                if (!_leftButtonPressedOnThumb)
-                {
-                    if (ChangeStateAndAskIfRefreshRequired(ref _thumbState, State.Normal))
-                    {
-                        refresh = true;
-                    }
-                }
-
-                if (!cursorOverFirstArrow)
-                {
-                    if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, State.Normal))
-                    {
-                        refresh = true;
-                    }
-                }
-
-                if (!cursorOverSecondArrow)
-                {
-                    if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, State.Normal))
-                    {
-                        refresh = true;
-                    }
-                }
-
-                if (!_leftButtonPressedOnThumb)
-                {
-                    if (cursorOverFirstArrow)
-                    {
-                        var firstArrowState = _leftButtonPressedOnFirstArrow ? State.Pressed : State.Hot;
-                        if (ChangeStateAndAskIfRefreshRequired(ref _firstArrowState, firstArrowState))
-                        {
-                            refresh = true;
-                        }
-                    }
-                    else if (cursorOverSecondArrow)
-                    {
-                        var secondArrowState = _leftButtonPressedOnSecondArrow ? State.Pressed : State.Hot;
-                        if (ChangeStateAndAskIfRefreshRequired(ref _secondArrowState, secondArrowState))
-                        {
-                            refresh = true;
-                        }
-                    }
-                }
-            }
-
-            if (refresh) Refresh();
         }
 
         #endregion
@@ -710,41 +422,5 @@ namespace DarkUI.Controls
         }
 
         #endregion
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _timer.Dispose();
-
-                Global.MouseHook.MouseDownExt -= MouseDownExt_Handler;
-                Global.MouseHook.MouseUpExt -= MouseUpExt_Handler;
-                Global.MouseHook.MouseMoveExt -= MouseMoveExt_Handler;
-
-                _greySelectionPen.Dispose();
-
-                _thumbNormalBrush.Dispose();
-                _thumbHotBrush.Dispose();
-                _thumbPressedBrush.Dispose();
-
-                _upArrowNormal.Dispose();
-                _upArrowHot.Dispose();
-                _upArrowPressed.Dispose();
-
-                _downArrowNormal.Dispose();
-                _downArrowHot.Dispose();
-                _downArrowPressed.Dispose();
-
-                _leftArrowNormal.Dispose();
-                _leftArrowHot.Dispose();
-                _leftArrowPressed.Dispose();
-
-                _rightArrowNormal.Dispose();
-                _rightArrowHot.Dispose();
-                _rightArrowPressed.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
     }
 }
