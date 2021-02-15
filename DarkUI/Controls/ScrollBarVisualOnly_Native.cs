@@ -121,6 +121,10 @@ namespace DarkUI.Controls
 
             _owner.DarkModeChanged += (sender, e) =>
             {
+                if (_owner.IsHandleCreated && _owner.Parent != null)
+                {
+                    Visible = e.DarkModeEnabled;
+                }
                 RefreshIfNeeded();
             };
 
@@ -275,11 +279,11 @@ namespace DarkUI.Controls
                 };
             }
 
-            //if (!_owner.DarkModeEnabled)
-            //{
-            //    Visible = false;
-            //    return;
-            //}
+            if (!_owner.DarkModeEnabled)
+            {
+                Visible = false;
+                return;
+            }
 
             // Refresh only if our thumb's size/position is stale. Otherwise, we get unacceptable lag.
             var sbi = GetCurrentScrollBarInfo();
