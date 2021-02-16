@@ -21,6 +21,7 @@ namespace DarkUI.Controls
     {
         ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
         ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+        ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
         new bool IsHandleCreated { get; }
         new IntPtr Handle { get; }
         event EventHandler Scroll;

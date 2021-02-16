@@ -129,6 +129,9 @@
     <Compile Include="Controls\ScrollBarVisualOnly_Base.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ScrollBarVisualOnly_Corner.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\ScrollValueEventArgs.cs" />
     <Compile Include="Docking\DarkDockArea.cs" />
     <Compile Include="Docking\DarkDockContent.cs">

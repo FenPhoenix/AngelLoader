@@ -72,6 +72,15 @@ namespace DarkUI.Controls
 
         #region Public methods
 
+        public void AddToParent()
+        {
+            if (!_addedToControls && _owner.ClosestAddableParent != null)
+            {
+                _owner.ClosestAddableParent.Controls.Add(this);
+                _addedToControls = true;
+            }
+        }
+
         public void ForceSetVisibleState()
         {
             if (_owner != null && _owner.IsHandleCreated)
@@ -85,15 +94,6 @@ namespace DarkUI.Controls
         #endregion
 
         #region Private methods
-
-        public void AddToParent()
-        {
-            if (!_addedToControls && _owner.ClosestAddableParent != null)
-            {
-                _owner.ClosestAddableParent.Controls.Add(this);
-                _addedToControls = true;
-            }
-        }
 
         private void BringThisToFront()
         {
@@ -191,6 +191,40 @@ namespace DarkUI.Controls
         #endregion
 
         #region Event overrides
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            if (_owner != null && _owner.IsHandleCreated && _owner.VisualScrollBarCorner != null)
+            {
+                if (_isVertical)
+                {
+                    if (Visible && _owner.HorizontalVisualScrollBar != null &&
+                        _owner.HorizontalVisualScrollBar.Visible)
+                    {
+                        _owner.VisualScrollBarCorner.BringToFront();
+                        _owner.VisualScrollBarCorner.Visible = true;
+                    }
+                    else
+                    {
+                        _owner.VisualScrollBarCorner.Visible = false;
+                    }
+                }
+                else
+                {
+                    if (Visible && _owner.VerticalVisualScrollBar != null &&
+                        _owner.VerticalVisualScrollBar.Visible)
+                    {
+                        _owner.VisualScrollBarCorner.BringToFront();
+                        _owner.VisualScrollBarCorner.Visible = true;
+                    }
+                    else
+                    {
+                        _owner.VisualScrollBarCorner.Visible = false;
+                    }
+                }
+            }
+            base.OnVisibleChanged(e);
+        }
 
         protected override void OnPaint(PaintEventArgs e)
         {

@@ -600,6 +600,7 @@ namespace AngelLoader.Forms
                 {
                     ids.VerticalVisualScrollBar?.AddToParent();
                     ids.HorizontalVisualScrollBar?.AddToParent();
+                    ids.VisualScrollBarCorner?.AddToParent();
                 }
             }
 

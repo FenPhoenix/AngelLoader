@@ -45,16 +45,9 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        public RichTextBoxCustom()
-        {
-            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
-            HorizontalVisualScrollBar = null!;
-
-            InitWorkarounds();
-        }
-
         public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
         public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
 
         public event EventHandler? Scroll;
 
@@ -64,6 +57,15 @@ namespace AngelLoader.Forms.CustomControls
         public event EventHandler? VisibilityChanged;
 
         public Control? ClosestAddableParent => Parent;
+
+        public RichTextBoxCustom()
+        {
+            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
+            HorizontalVisualScrollBar = null!;
+            VisualScrollBarCorner = null!;
+
+            InitWorkarounds();
+        }
 
         #region Private methods
 

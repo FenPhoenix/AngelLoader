@@ -19,7 +19,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled)
                 {
                     _origBackColor ??= BackColor;
-                    BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                    BackColor = DarkUI.Config.Colors.Fen_ControlBackground;
                 }
                 else
                 {
@@ -28,9 +28,10 @@ namespace AngelLoader.Forms.CustomControls
                 DarkModeChanged?.Invoke(this, new DarkModeChangedEventArgs(_darkModeEnabled));
             }
         }
-
+        
         public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
         public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
         public bool Suspended { get; set; }
         public new event EventHandler? Scroll;
         public event EventHandler<DarkModeChangedEventArgs>? DarkModeChanged;
@@ -41,6 +42,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
             HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
+            VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
         }
 
         protected override void OnScroll(ScrollEventArgs se)
