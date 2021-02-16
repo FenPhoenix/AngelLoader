@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -32,11 +31,13 @@ namespace DarkUI.Controls
 
         #region Stored state
 
+        private bool _addedToControls;
+
         private Size? _size;
         private Rectangle? _thumbLoc;
         private int _trackPos;
 
-        private bool _addedToControls;
+        private Size _ownerClientSize;
 
         #endregion
 
@@ -148,7 +149,7 @@ namespace DarkUI.Controls
 
             var parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
 
-            bool oldVisible = Visible;
+            bool oldCornerVisible = _owner.VisualScrollBarCorner?.Visible == true;
 
             Visible = !_owner.Suspended && _owner.Visible && _owner.DarkModeEnabled && parentBarVisible;
 
@@ -203,31 +204,29 @@ namespace DarkUI.Controls
                     refresh = true;
                 }
 
-                // TODO: @DarkMode: I think this needs to be up there in the check for the other scroll bar's visibility(?)
                 // Only refresh when we need to
-                if (!dontShowCorner&&
-                    /*oldVisible != Visible &&*/ _owner.VisualScrollBarCorner != null &&
+                if (!dontShowCorner &&
+                    _owner.VisualScrollBarCorner != null &&
                     _owner.VerticalVisualScrollBar != null &&
-                    _owner.HorizontalVisualScrollBar != null)
+                    _owner.HorizontalVisualScrollBar != null &&
+                    _owner.ClientSize != _ownerClientSize)
                 {
-                    //Trace.WriteLine(_random.Next() + " Setting corner visible");
+                    _ownerClientSize = _owner.ClientSize;
 
-                    _owner.VisualScrollBarCorner.Visible = true;
+                    if (oldCornerVisible != Visible) _owner.VisualScrollBarCorner.Visible = true;
 
                     _owner.VisualScrollBarCorner.Location = new Point(
                         _owner.VerticalVisualScrollBar.Visible
                             ? _owner.VerticalVisualScrollBar.Left
-                        : (_owner.Location.X + _owner.Size.Width) - SystemInformation.VerticalScrollBarWidth,
+                            : (_owner.HorizontalVisualScrollBar.Left + _owner.HorizontalVisualScrollBar.Width) - SystemInformation.HorizontalScrollBarArrowWidth,
                         _owner.HorizontalVisualScrollBar.Visible
-                        ? _owner.HorizontalVisualScrollBar.Top
-                        : (_owner.Location.Y + _owner.Size.Height) - SystemInformation.HorizontalScrollBarHeight
+                            ? _owner.HorizontalVisualScrollBar.Top
+                            : (_owner.VerticalVisualScrollBar.Top + _owner.VerticalVisualScrollBar.Height) - SystemInformation.VerticalScrollBarArrowHeight
                     );
 
                     var parentControls = _owner.ClosestAddableParent.Controls;
                     if (parentControls.GetChildIndex(_owner.VisualScrollBarCorner) != parentControls.GetChildIndex(this) - 1)
                     {
-                        //Trace.WriteLine(_random.Next() + " Refreshing corner");
-
                         parentControls.SetChildIndex(
                             _owner.VisualScrollBarCorner,
                             (parentControls.GetChildIndex(this) - 1).Clamp(0, parentControls.Count - 1));
@@ -239,8 +238,6 @@ namespace DarkUI.Controls
                 if (refresh) Refresh();
             }
         }
-
-        //private Random _random = new Random();
 
         #endregion
 

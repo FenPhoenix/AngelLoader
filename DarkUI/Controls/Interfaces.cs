@@ -28,6 +28,7 @@ namespace DarkUI.Controls
         Control Parent { get; }
         Control ClosestAddableParent { get; }
         Point Location { get; }
+        Size ClientSize { get; }
         Size Size { get; }
         new bool Visible { get; }
         event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
