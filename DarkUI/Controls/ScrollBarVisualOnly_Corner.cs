@@ -23,6 +23,7 @@ namespace DarkUI.Controls
             {
                 parent.Controls.Add(this);
                 Size = new Size(SystemInformation.VerticalScrollBarWidth, SystemInformation.HorizontalScrollBarHeight);
+                BringToFront();
                 _addedToControls = true;
             }
         }

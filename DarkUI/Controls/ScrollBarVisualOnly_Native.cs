@@ -58,8 +58,6 @@ namespace DarkUI.Controls
 
             _size = Size;
 
-            BringThisToFront();
-
             _owner.Scroll += (sender, e) => RefreshIfNeeded();
             _owner.VisibilityChanged += (sender, e) => RefreshIfNeeded();
             _owner.DarkModeChanged += (sender, e) => RefreshIfNeeded();
@@ -78,6 +76,7 @@ namespace DarkUI.Controls
             if (!_addedToControls && _owner.ClosestAddableParent != null)
             {
                 _owner.ClosestAddableParent.Controls.Add(this);
+                BringToFront();
                 _addedToControls = true;
             }
         }
@@ -95,12 +94,6 @@ namespace DarkUI.Controls
         #endregion
 
         #region Private methods
-
-        private void BringThisToFront()
-        {
-            AddToParent();
-            if (_addedToControls) BringToFront();
-        }
 
         private protected override Native.SCROLLBARINFO GetCurrentScrollBarInfo()
         {
@@ -149,9 +142,9 @@ namespace DarkUI.Controls
 
             var parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
 
-            bool oldCornerVisible = _owner.VisualScrollBarCorner?.Visible == true;
+            var newVisible = !_owner.Suspended && _owner.Visible && _owner.DarkModeEnabled && parentBarVisible;
 
-            Visible = !_owner.Suspended && _owner.Visible && _owner.DarkModeEnabled && parentBarVisible;
+            if (newVisible != Visible) Visible = newVisible;
 
             var otherScrollBar = _isVertical
                 ? _owner.HorizontalVisualScrollBar
@@ -190,7 +183,6 @@ namespace DarkUI.Controls
                     _xyThumbTop != sbi.xyThumbTop ||
                     _xyThumbBottom != sbi.xyThumbBottom)
                 {
-                    BringThisToFront();
                     Location = new Point(loc.X, loc.Y);
 
                     Size = size;
@@ -213,7 +205,7 @@ namespace DarkUI.Controls
                 {
                     _ownerClientSize = _owner.ClientSize;
 
-                    if (oldCornerVisible != Visible) _owner.VisualScrollBarCorner.Visible = true;
+                    if (!_owner.VisualScrollBarCorner.Visible) _owner.VisualScrollBarCorner.Visible = true;
 
                     _owner.VisualScrollBarCorner.Location = new Point(
                         _owner.VerticalVisualScrollBar.Visible
@@ -223,16 +215,6 @@ namespace DarkUI.Controls
                             ? _owner.HorizontalVisualScrollBar.Top
                             : (_owner.VerticalVisualScrollBar.Top + _owner.VerticalVisualScrollBar.Height) - SystemInformation.VerticalScrollBarArrowHeight
                     );
-
-                    var parentControls = _owner.ClosestAddableParent.Controls;
-                    if (parentControls.GetChildIndex(_owner.VisualScrollBarCorner) != parentControls.GetChildIndex(this) - 1)
-                    {
-                        parentControls.SetChildIndex(
-                            _owner.VisualScrollBarCorner,
-                            (parentControls.GetChildIndex(this) - 1).Clamp(0, parentControls.Count - 1));
-
-                        refresh = true;
-                    }
                 }
 
                 if (refresh) Refresh();
