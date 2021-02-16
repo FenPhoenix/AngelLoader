@@ -7,6 +7,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
     internal static class ChooseReadmeLLPanel
     {
+        // TODO: @DarkMode: Dark-mode-ize this (ChooseReadmeLLPanel)!
+
         private static bool _constructed;
 
         private static Panel Panel = null!;

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using DarkUI.Controls;
 
@@ -11,9 +7,6 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed class TabPageCustom : TabPage, IDarkableScrollableNative
     {
-        private readonly ScrollBarVisualOnly_Native VerticalVisualScrollBar;
-        private readonly ScrollBarVisualOnly_Native HorizontalVisualScrollBar;
-
         private Color? _origBackColor;
 
         private bool _darkModeEnabled;
@@ -36,6 +29,8 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
         public bool Suspended { get; set; }
         public new event EventHandler? Scroll;
         public event EventHandler<DarkModeChangedEventArgs>? DarkModeChanged;

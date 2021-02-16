@@ -14,6 +14,8 @@ using static AngelLoader.Misc;
 
 // TODO: BUG: .wri files are not displayed right. See if a simple binary header-and-footer strip can be done
 
+// TODO: @DarkMode(RichTextBoxCustom): Try to figure out the occasional flickering back in of the light scrollbar
+
 namespace AngelLoader.Forms.CustomControls
 {
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkableScrollableNative
@@ -48,13 +50,16 @@ namespace AngelLoader.Forms.CustomControls
         public RichTextBoxCustom()
         {
             VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
+            HorizontalVisualScrollBar = null!;
 
             InitWorkarounds();
         }
 
-        private readonly ScrollBarVisualOnly_Native VerticalVisualScrollBar;
+        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+
         public event EventHandler? Scroll;
-        
+
         public bool Suspended { get; set; }
 
         public event EventHandler<DarkModeChangedEventArgs>? DarkModeChanged;

@@ -19,6 +19,8 @@ namespace DarkUI.Controls
 
     public interface IDarkableScrollableNative : IDarkable, ISuspendResumable
     {
+        ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
+        ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
         new bool IsHandleCreated { get; }
         new IntPtr Handle { get; }
         event EventHandler Scroll;

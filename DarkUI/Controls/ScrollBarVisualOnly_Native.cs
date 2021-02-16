@@ -76,13 +76,18 @@ namespace DarkUI.Controls
 
         #region Private methods
 
-        private void BringThisToFront()
+        public void AddToParent()
         {
             if (!_addedToControls && _owner.ClosestAddableParent != null)
             {
                 _owner.ClosestAddableParent.Controls.Add(this);
                 _addedToControls = true;
             }
+        }
+
+        private void BringThisToFront()
+        {
+            AddToParent();
             if (_addedToControls) BringToFront();
         }
 

@@ -579,6 +579,31 @@ namespace AngelLoader.Forms
                 new Component[] { FilterShowUnsupportedButton },
                 new Component[] { FilterShowRecentAtTopButton }
             };
+
+            #region Add native dark scroll bars to their closest addable parents
+
+            // This prevents other controls in the collection from having their size/location bumped around if we
+            // were to just call this just-in-time while the user is dragging. We want to do it while everything
+            // is stationary.
+            // We could just add these scroll bars to each control manually at init-component time, but we want
+            // to avoid doing that as it's error-prone and easy to forget.
+
+            // TODO: @DarkMode(Add native dark scroll bars to their parents):
+            // Lazy-loaded controls will be a problem here. We should probably just convert any lazy-loaded
+            // scrollable controls back to immediately-loaded again.
+            // Menus and buttons are fine to stay lazy-loaded, but check list boxes and panels etc.
+
+            if (_controlColors.Count == 0) ControlUtils.FillControlDict(this, _controlColors);
+            foreach (Control c in _controlColors.Keys)
+            {
+                if (c is IDarkableScrollableNative ids)
+                {
+                    ids.VerticalVisualScrollBar?.AddToParent();
+                    ids.HorizontalVisualScrollBar?.AddToParent();
+                }
+            }
+
+            #endregion
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
