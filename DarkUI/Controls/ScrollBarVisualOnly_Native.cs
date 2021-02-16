@@ -181,6 +181,8 @@ namespace DarkUI.Controls
 
                 var si = GetScrollInfo(Native.SIF_TRACKPOS);
 
+                bool refresh = false;
+
                 // Only refresh when we need to
                 if ((_leftButtonPressedOnThumb && si.nTrackPos != _trackPos) ||
                     _size != size || _thumbLoc != loc ||
@@ -198,7 +200,7 @@ namespace DarkUI.Controls
                     _xyThumbTop = sbi.xyThumbTop;
                     _xyThumbBottom = sbi.xyThumbBottom;
 
-                    Refresh();
+                    refresh = true;
                 }
 
                 // Only refresh when we need to
@@ -224,9 +226,11 @@ namespace DarkUI.Controls
                             _owner.VisualScrollBarCorner,
                             (parentControls.GetChildIndex(this) - 1).Clamp(0, parentControls.Count - 1));
 
-                        Refresh();
+                        refresh = true;
                     }
                 }
+
+                if (refresh) Refresh();
             }
         }
 
