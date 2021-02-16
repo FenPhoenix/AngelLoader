@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -148,7 +149,21 @@ namespace DarkUI.Controls
 
             var parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
 
+            bool oldVisible = Visible;
+
             Visible = !_owner.Suspended && _owner.Visible && _owner.DarkModeEnabled && parentBarVisible;
+
+            if (!Visible)
+            {
+                var otherScrollBar = _isVertical
+                    ? _owner.HorizontalVisualScrollBar
+                    : _owner.VerticalVisualScrollBar;
+
+                if ((otherScrollBar == null || !otherScrollBar.Visible) && _owner.VisualScrollBarCorner != null)
+                {
+                    _owner.VisualScrollBarCorner.Visible = false;
+                }
+            }
 
             if (Visible)
             {
@@ -185,46 +200,41 @@ namespace DarkUI.Controls
 
                     Refresh();
                 }
+
+                // Only refresh when we need to
+                if (oldVisible != Visible && _owner.VisualScrollBarCorner != null &&
+                    _owner.VerticalVisualScrollBar != null &&
+                    _owner.HorizontalVisualScrollBar != null)
+                {
+                    //Trace.WriteLine(_random.Next() + " Setting corner visible");
+
+                    _owner.VisualScrollBarCorner.Visible = true;
+
+                    var parentControls = _owner.ClosestAddableParent.Controls;
+                    if (parentControls.GetChildIndex(_owner.VisualScrollBarCorner) != parentControls.GetChildIndex(this) - 1)
+                    {
+                        _owner.VisualScrollBarCorner.Location = new Point(
+                            _owner.VerticalVisualScrollBar.Left,
+                            _owner.HorizontalVisualScrollBar.Top
+                        );
+
+                        //Trace.WriteLine(_random.Next() + " Refreshing corner");
+
+                        parentControls.SetChildIndex(
+                            _owner.VisualScrollBarCorner,
+                            (parentControls.GetChildIndex(this) - 1).Clamp(0, parentControls.Count - 1));
+
+                        Refresh();
+                    }
+                }
             }
         }
+
+        //private Random _random = new Random();
 
         #endregion
 
         #region Event overrides
-
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            if (_owner != null && _owner.IsHandleCreated && _owner.VisualScrollBarCorner != null)
-            {
-                if (_isVertical)
-                {
-                    if (Visible && _owner.HorizontalVisualScrollBar != null &&
-                        _owner.HorizontalVisualScrollBar.Visible)
-                    {
-                        _owner.VisualScrollBarCorner.BringToFront();
-                        _owner.VisualScrollBarCorner.Visible = true;
-                    }
-                    else
-                    {
-                        _owner.VisualScrollBarCorner.Visible = false;
-                    }
-                }
-                else
-                {
-                    if (Visible && _owner.VerticalVisualScrollBar != null &&
-                        _owner.VerticalVisualScrollBar.Visible)
-                    {
-                        _owner.VisualScrollBarCorner.BringToFront();
-                        _owner.VisualScrollBarCorner.Visible = true;
-                    }
-                    else
-                    {
-                        _owner.VisualScrollBarCorner.Visible = false;
-                    }
-                }
-            }
-            base.OnVisibleChanged(e);
-        }
 
         protected override void OnPaint(PaintEventArgs e)
         {

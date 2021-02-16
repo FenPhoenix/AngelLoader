@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace DarkUI.Controls
@@ -26,20 +25,6 @@ namespace DarkUI.Controls
                 Size = new Size(SystemInformation.VerticalScrollBarWidth, SystemInformation.HorizontalScrollBarHeight);
                 _addedToControls = true;
             }
-        }
-
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            if (_owner?.ClosestAddableParent != null &&
-                _owner.VerticalVisualScrollBar != null &&
-                _owner.HorizontalVisualScrollBar != null)
-            {
-                Location = new Point(
-                    _owner.VerticalVisualScrollBar.Left,
-                    _owner.HorizontalVisualScrollBar.Top
-                );
-            }
-            base.OnVisibleChanged(e);
         }
     }
 }
