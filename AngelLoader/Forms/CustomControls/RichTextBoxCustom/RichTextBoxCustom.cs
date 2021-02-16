@@ -52,13 +52,15 @@ namespace AngelLoader.Forms.CustomControls
             InitWorkarounds();
         }
 
-        private ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
+        private readonly ScrollBarVisualOnly_Native VerticalVisualScrollBar;
         public event EventHandler? Scroll;
         
         public bool Suspended { get; set; }
 
         public event EventHandler<DarkModeChangedEventArgs>? DarkModeChanged;
         public event EventHandler? VisibilityChanged;
+
+        public Control? ClosestAddableParent => Parent;
 
         #region Private methods
 

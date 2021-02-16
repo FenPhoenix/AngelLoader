@@ -100,7 +100,7 @@ namespace AngelLoader.Forms
             this.TopRightMenuButton = new DarkUI.Controls.DarkButton();
             this.TopRightCollapseButton = new AngelLoader.Forms.CustomControls.ArrowButton();
             this.TopRightTabControl = new AngelLoader.Forms.CustomControls.TabControlCustom();
-            this.StatisticsTabPage = new System.Windows.Forms.TabPage();
+            this.StatisticsTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.StatsScanCustomResourcesButton = new DarkUI.Controls.DarkButton();
             this.StatsCheckBoxesPanel = new System.Windows.Forms.Panel();
             this.CR_MapCheckBox = new DarkUI.Controls.DarkCheckBox();
@@ -114,7 +114,7 @@ namespace AngelLoader.Forms
             this.CR_SubtitlesCheckBox = new DarkUI.Controls.DarkCheckBox();
             this.CR_ObjectsCheckBox = new DarkUI.Controls.DarkCheckBox();
             this.CustomResourcesLabel = new System.Windows.Forms.Label();
-            this.EditFMTabPage = new System.Windows.Forms.TabPage();
+            this.EditFMTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.EditFMScanLanguagesButton = new DarkUI.Controls.DarkButton();
             this.EditFMLanguageLabel = new System.Windows.Forms.Label();
             this.EditFMLanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
@@ -137,9 +137,9 @@ namespace AngelLoader.Forms
             this.EditFMAuthorTextBox = new DarkUI.Controls.DarkTextBox();
             this.EditFMAuthorLabel = new System.Windows.Forms.Label();
             this.EditFMTitleLabel = new System.Windows.Forms.Label();
-            this.CommentTabPage = new System.Windows.Forms.TabPage();
+            this.CommentTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.CommentTextBox = new DarkUI.Controls.DarkTextBox();
-            this.TagsTabPage = new System.Windows.Forms.TabPage();
+            this.TagsTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.AddTagButton = new DarkUI.Controls.DarkButton();
             this.AddTagTextBox = new AngelLoader.Forms.CustomControls.TextBoxCustom();
             this.AddRemoveTagFLP = new System.Windows.Forms.FlowLayoutPanel();
@@ -147,7 +147,7 @@ namespace AngelLoader.Forms
             this.AddTagFromListButton = new DarkUI.Controls.DarkButton();
             this.TagsTreeView = new System.Windows.Forms.TreeView();
             this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
-            this.PatchTabPage = new System.Windows.Forms.TabPage();
+            this.PatchTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.PatchMainPanel = new System.Windows.Forms.Panel();
             this.PatchDMLsPanel = new System.Windows.Forms.Panel();
             this.PatchDMLPatchesLabel = new System.Windows.Forms.Label();
@@ -1965,7 +1965,7 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.TabPage Thief2TabPage;
         internal System.Windows.Forms.ImageList GameTabsImageList;
         internal AngelLoader.Forms.CustomControls.TabControlCustom TopRightTabControl;
-        internal System.Windows.Forms.TabPage StatisticsTabPage;
+        internal AngelLoader.Forms.CustomControls.TabPageCustom StatisticsTabPage;
         internal System.Windows.Forms.Label CustomResourcesLabel;
         internal DarkUI.Controls.DarkCheckBox CR_MotionsCheckBox;
         internal DarkUI.Controls.DarkCheckBox CR_CreaturesCheckBox;
@@ -1977,9 +1977,9 @@ namespace AngelLoader.Forms
         internal DarkUI.Controls.DarkCheckBox CR_TexturesCheckBox;
         internal DarkUI.Controls.DarkCheckBox CR_SoundsCheckBox;
         internal DarkUI.Controls.DarkCheckBox CR_MoviesCheckBox;
-        internal System.Windows.Forms.TabPage CommentTabPage;
+        internal AngelLoader.Forms.CustomControls.TabPageCustom CommentTabPage;
         internal DarkUI.Controls.DarkTextBox CommentTextBox;
-        internal System.Windows.Forms.TabPage TagsTabPage;
+        internal AngelLoader.Forms.CustomControls.TabPageCustom TagsTabPage;
         internal System.Windows.Forms.TreeView TagsTreeView;
         internal DarkUI.Controls.DarkButton ResetLayoutButton;
         internal System.Windows.Forms.ToolTip MainToolTip;
@@ -1989,7 +1989,7 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.TextBoxCustom AddTagTextBox;
         internal AngelLoader.Forms.CustomControls.TextBoxCustom FilterAuthorTextBox;
         internal System.Windows.Forms.Label FilterAuthorLabel;
-        internal System.Windows.Forms.TabPage EditFMTabPage;
+        internal AngelLoader.Forms.CustomControls.TabPageCustom EditFMTabPage;
         internal System.Windows.Forms.DateTimePicker EditFMLastPlayedDateTimePicker;
         internal System.Windows.Forms.DateTimePicker EditFMReleaseDateDateTimePicker;
         internal DarkUI.Controls.DarkTextBox EditFMAuthorTextBox;
@@ -2037,7 +2037,7 @@ namespace AngelLoader.Forms
         internal DarkUI.Controls.DarkButton EditFMScanTitleButton;
         internal DarkUI.Controls.DarkButton EditFMScanForReadmesButton;
         internal DarkUI.Controls.DarkButton StatsScanCustomResourcesButton;
-        internal System.Windows.Forms.TabPage PatchTabPage;
+        internal AngelLoader.Forms.CustomControls.TabPageCustom PatchTabPage;
         internal System.Windows.Forms.ListBox PatchDMLsListBox;
         internal DarkUI.Controls.DarkButton PatchRemoveDMLButton;
         internal DarkUI.Controls.DarkButton PatchAddDMLButton;

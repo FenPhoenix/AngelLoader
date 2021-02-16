@@ -102,7 +102,7 @@ namespace AngelLoader.Forms
             TopRightMenuButton = new DarkUI.Controls.DarkButton();
             TopRightCollapseButton = new ArrowButton();
             TopRightTabControl = new TabControlCustom();
-            StatisticsTabPage = new TabPage();
+            StatisticsTabPage = new TabPageCustom();
             StatsScanCustomResourcesButton = new DarkUI.Controls.DarkButton();
             StatsCheckBoxesPanel = new Panel();
             CR_MapCheckBox = new DarkUI.Controls.DarkCheckBox();
@@ -116,7 +116,7 @@ namespace AngelLoader.Forms
             CR_SubtitlesCheckBox = new DarkUI.Controls.DarkCheckBox();
             CR_ObjectsCheckBox = new DarkUI.Controls.DarkCheckBox();
             CustomResourcesLabel = new Label();
-            EditFMTabPage = new TabPage();
+            EditFMTabPage = new TabPageCustom();
             EditFMScanLanguagesButton = new DarkUI.Controls.DarkButton();
             EditFMLanguageLabel = new Label();
             EditFMLanguageComboBox = new ComboBoxCustom();
@@ -139,9 +139,9 @@ namespace AngelLoader.Forms
             EditFMAuthorTextBox = new DarkUI.Controls.DarkTextBox();
             EditFMAuthorLabel = new Label();
             EditFMTitleLabel = new Label();
-            CommentTabPage = new TabPage();
+            CommentTabPage = new TabPageCustom();
             CommentTextBox = new DarkUI.Controls.DarkTextBox();
-            TagsTabPage = new TabPage();
+            TagsTabPage = new TabPageCustom();
             AddTagButton = new DarkUI.Controls.DarkButton();
             AddTagTextBox = new TextBoxCustom();
             AddRemoveTagFLP = new FlowLayoutPanel();
@@ -149,7 +149,7 @@ namespace AngelLoader.Forms
             AddTagFromListButton = new DarkUI.Controls.DarkButton();
             TagsTreeView = new TreeView();
             TagsTabAutoScrollMarker = new Control();
-            PatchTabPage = new TabPage();
+            PatchTabPage = new TabPageCustom();
             PatchMainPanel = new Panel();
             PatchDMLsPanel = new Panel();
             PatchDMLPatchesLabel = new Label();

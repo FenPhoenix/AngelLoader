@@ -9,6 +9,12 @@ namespace DarkUI.Controls
 {
     public sealed class ScrollBarVisualOnly_Native : ScrollBarVisualOnly_Base
     {
+        // TODO: @DarkMode(ScrollBarVisualOnly_Native):
+        // This thing bumps other controls in the parent around when shown. Probably due to adding itself to the
+        // parent's control collection after everything else already has been. Try switching to just adding these
+        // along with the regular InitializeComponent()/InitComponentManual(). That's less tidy, but meh, if it
+        // works...
+
         #region Private fields
 
         private readonly IDarkableScrollableNative _owner;
@@ -45,6 +51,10 @@ namespace DarkUI.Controls
         {
             SetUpSelf();
 
+            Anchor = _isVertical
+                ? AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom
+                : AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right;
+
             #region Setup involving owner
 
             _owner = owner;
@@ -68,9 +78,9 @@ namespace DarkUI.Controls
 
         private void BringThisToFront()
         {
-            if (!_addedToControls && _owner.Parent != null)
+            if (!_addedToControls && _owner.ClosestAddableParent != null)
             {
-                _owner.Parent.Controls.Add(this);
+                _owner.ClosestAddableParent.Controls.Add(this);
                 _addedToControls = true;
             }
             if (_addedToControls) BringToFront();
@@ -105,7 +115,7 @@ namespace DarkUI.Controls
 
         private protected override void RefreshIfNeeded()
         {
-            if (_owner.Parent == null) return;
+            if (_owner.ClosestAddableParent == null) return;
             if (!_owner.IsHandleCreated) return;
 
             if (!_owner.DarkModeEnabled)
@@ -149,8 +159,6 @@ namespace DarkUI.Controls
                 {
                     BringThisToFront();
                     Location = new Point(loc.X, loc.Y);
-                    // TODO: @DarkMode: Support right-to-left modes(?)
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
 
                     Size = size;
                     _size = size;
@@ -234,20 +242,20 @@ namespace DarkUI.Controls
                     int wParam;
                     int x = Global.SignedLOWORD(_m.LParam);
                     int y = Global.SignedHIWORD(_m.LParam);
-                    Point ownerScreenLoc = _owner.PointToScreen(_owner.Location);
+                    Point ownerScreenLoc = _owner.Parent.PointToScreen(_owner.Location);
 
                     if (_isVertical)
                     {
                         int sbWidthOrHeight = SystemInformation.VerticalScrollBarWidth;
-                        x += (ownerScreenLoc.X + (_owner.Size.Width - sbWidthOrHeight)) - _owner.Parent.Padding.Left;
-                        y += ownerScreenLoc.Y - _owner.Parent.Padding.Top;
+                        x += ownerScreenLoc.X + (_owner.Size.Width - sbWidthOrHeight);
+                        y += ownerScreenLoc.Y;
                         wParam = Native.HTVSCROLL;
                     }
                     else
                     {
                         int sbWidthOrHeight = SystemInformation.HorizontalScrollBarHeight;
-                        x += ownerScreenLoc.X - _owner.Parent.Padding.Left;
-                        y += (ownerScreenLoc.Y + (_owner.Size.Height - sbWidthOrHeight)) - _owner.Parent.Padding.Top;
+                        x += ownerScreenLoc.X;
+                        y += ownerScreenLoc.Y + (_owner.Size.Height - sbWidthOrHeight);
                         wParam = Native.HTHSCROLL;
                     }
 

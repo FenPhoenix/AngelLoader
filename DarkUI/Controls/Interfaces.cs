@@ -22,8 +22,8 @@ namespace DarkUI.Controls
         new bool IsHandleCreated { get; }
         new IntPtr Handle { get; }
         event EventHandler Scroll;
-        Point PointToScreen(Point p);
         Control Parent { get; }
+        Control ClosestAddableParent { get; }
         Point Location { get; }
         Size Size { get; }
         new bool Visible { get; }
