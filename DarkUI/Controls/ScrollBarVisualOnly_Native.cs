@@ -210,14 +210,14 @@ namespace DarkUI.Controls
 
                     _owner.VisualScrollBarCorner.Visible = true;
 
+                    _owner.VisualScrollBarCorner.Location = new Point(
+                        _owner.VerticalVisualScrollBar.Left,
+                        _owner.HorizontalVisualScrollBar.Top
+                    );
+
                     var parentControls = _owner.ClosestAddableParent.Controls;
                     if (parentControls.GetChildIndex(_owner.VisualScrollBarCorner) != parentControls.GetChildIndex(this) - 1)
                     {
-                        _owner.VisualScrollBarCorner.Location = new Point(
-                            _owner.VerticalVisualScrollBar.Left,
-                            _owner.HorizontalVisualScrollBar.Top
-                        );
-
                         //Trace.WriteLine(_random.Next() + " Refreshing corner");
 
                         parentControls.SetChildIndex(
