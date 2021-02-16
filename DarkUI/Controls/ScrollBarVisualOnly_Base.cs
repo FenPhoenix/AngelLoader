@@ -121,8 +121,19 @@ namespace DarkUI.Controls
         {
             #region Set up refresh timer
 
-            _timer.Interval = 1;
-            _timer.Tick += (sender, e) => RefreshIfNeeded();
+            if ((this is ScrollBarVisualOnly))
+            {
+                // TODO: @DarkMode(ScrollBarVisualOnly):
+                // See if we can hook up any event at all that will let us get rid of this timer for non-native.
+                _timer.Interval = 1;
+                _timer.Tick += (sender, e) => RefreshIfNeeded();
+            }
+            else
+            {
+                // @DarkMode(ScrollBarVisualOnly_Native):
+                // Timer not used at the moment as it's not apparently needed anymore.
+                _timer.Enabled = false;
+            }
 
             #endregion
 
@@ -484,7 +495,10 @@ namespace DarkUI.Controls
 
         protected override void OnVisibleChanged(EventArgs e)
         {
-            _timer.Enabled = Visible;
+            if (this is ScrollBarVisualOnly)
+            {
+                _timer.Enabled = Visible;
+            }
             base.OnVisibleChanged(e);
         }
 
