@@ -49,9 +49,7 @@ namespace DarkUI.Controls
         {
             SetUpSelf();
 
-            Anchor = _isVertical
-                ? AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom
-                : AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right;
+            // DON'T anchor it, or we get visual glitches and chaos
 
             #region Setup involving owner
 
@@ -154,16 +152,17 @@ namespace DarkUI.Controls
 
             Visible = !_owner.Suspended && _owner.Visible && _owner.DarkModeEnabled && parentBarVisible;
 
-            if (!Visible)
-            {
-                var otherScrollBar = _isVertical
-                    ? _owner.HorizontalVisualScrollBar
-                    : _owner.VerticalVisualScrollBar;
+            var otherScrollBar = _isVertical
+                ? _owner.HorizontalVisualScrollBar
+                : _owner.VerticalVisualScrollBar;
 
-                if ((otherScrollBar == null || !otherScrollBar.Visible) && _owner.VisualScrollBarCorner != null)
-                {
-                    _owner.VisualScrollBarCorner.Visible = false;
-                }
+            bool dontShowCorner = false;
+
+            if ((!Visible || (otherScrollBar == null || !otherScrollBar.Visible)) &&
+                _owner.VisualScrollBarCorner != null)
+            {
+                _owner.VisualScrollBarCorner.Visible = false;
+                dontShowCorner = true;
             }
 
             if (Visible)
@@ -206,7 +205,8 @@ namespace DarkUI.Controls
 
                 // TODO: @DarkMode: I think this needs to be up there in the check for the other scroll bar's visibility(?)
                 // Only refresh when we need to
-                if (oldVisible != Visible && _owner.VisualScrollBarCorner != null &&
+                if (!dontShowCorner&&
+                    /*oldVisible != Visible &&*/ _owner.VisualScrollBarCorner != null &&
                     _owner.VerticalVisualScrollBar != null &&
                     _owner.HorizontalVisualScrollBar != null)
                 {
@@ -215,8 +215,12 @@ namespace DarkUI.Controls
                     _owner.VisualScrollBarCorner.Visible = true;
 
                     _owner.VisualScrollBarCorner.Location = new Point(
-                        _owner.VerticalVisualScrollBar.Left,
-                        _owner.HorizontalVisualScrollBar.Top
+                        _owner.VerticalVisualScrollBar.Visible
+                            ? _owner.VerticalVisualScrollBar.Left
+                        : (_owner.Location.X + _owner.Size.Width) - SystemInformation.VerticalScrollBarWidth,
+                        _owner.HorizontalVisualScrollBar.Visible
+                        ? _owner.HorizontalVisualScrollBar.Top
+                        : (_owner.Location.Y + _owner.Size.Height) - SystemInformation.HorizontalScrollBarHeight
                     );
 
                     var parentControls = _owner.ClosestAddableParent.Controls;

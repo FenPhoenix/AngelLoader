@@ -13,7 +13,7 @@ namespace DarkUI.Controls
             Visible = false;
             _owner = owner;
             BackColor = Config.Colors.DarkBackground;
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            // DON'T anchor it bottom-right, or we get visual glitches and chaos
         }
 
         public void AddToParent()
