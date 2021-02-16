@@ -11,6 +11,7 @@ namespace DarkUI.Controls
     public sealed class ScrollBarVisualOnly_Native : ScrollBarVisualOnly_Base
     {
         // TODO: @DarkMode(ScrollBarVisualOnly_Native): Paint the corner between vert/horz scrollbars
+        // TODO: @DarkMode(ScrollBarVisualOnly_Native): There's a classic-bar flash on the vertical here but not the horizontal(?)
 
         #region Private fields
 
