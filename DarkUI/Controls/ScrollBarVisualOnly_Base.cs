@@ -8,6 +8,9 @@ namespace DarkUI.Controls
 {
     public class ScrollBarVisualOnly_Base : Control
     {
+        // TODO: @DarkMode(Scroll bars):
+        // See if we can recycle the structs we pass to the P/Invokes (GC avoidance on a huge number of calls)
+
         #region Enums
 
         private protected enum State
