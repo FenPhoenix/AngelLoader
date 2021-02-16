@@ -9,11 +9,7 @@ namespace DarkUI.Controls
 {
     public sealed class ScrollBarVisualOnly_Native : ScrollBarVisualOnly_Base
     {
-        // TODO: @DarkMode(ScrollBarVisualOnly_Native):
-        // This thing bumps other controls in the parent around when shown. Probably due to adding itself to the
-        // parent's control collection after everything else already has been. Try switching to just adding these
-        // along with the regular InitializeComponent()/InitComponentManual(). That's less tidy, but meh, if it
-        // works...
+        // TODO: @DarkMode(ScrollBarVisualOnly_Native): Paint the corner between vert/horz scrollbars
 
         #region Private fields
 
