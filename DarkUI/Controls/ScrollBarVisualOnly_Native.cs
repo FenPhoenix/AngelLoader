@@ -204,6 +204,7 @@ namespace DarkUI.Controls
                     refresh = true;
                 }
 
+                // TODO: @DarkMode: I think this needs to be up there in the check for the other scroll bar's visibility(?)
                 // Only refresh when we need to
                 if (oldVisible != Visible && _owner.VisualScrollBarCorner != null &&
                     _owner.VerticalVisualScrollBar != null &&
