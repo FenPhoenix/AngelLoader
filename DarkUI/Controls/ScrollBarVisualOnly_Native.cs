@@ -74,6 +74,20 @@ namespace DarkUI.Controls
 
         #endregion
 
+        #region Public methods
+
+        public void ForceSetVisibleState()
+        {
+            if (_owner != null && _owner.IsHandleCreated)
+            {
+                var sbi = GetCurrentScrollBarInfo();
+                var parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
+                Visible = _owner.DarkModeEnabled && parentBarVisible;
+            }
+        }
+
+        #endregion
+
         #region Private methods
 
         public void AddToParent()

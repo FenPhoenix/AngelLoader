@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using DarkUI.Controls;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 // TODO: @DarkMode(RichTextBoxCustom):
@@ -104,6 +104,34 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        private void SuspendState()
+        {
+            SaveZoom();
+            this.SuspendDrawing_Native();
+
+            // On Windows 10 at least, RTF images don't display if we're ReadOnly. Sure why not. We need to be
+            // ReadOnly though - it doesn't make sense to let the user edit a readme - so un-set us just long
+            // enough to load in the content correctly, then set us back again.
+            ReadOnly = false;
+
+            // Blank the text to reset the scroll position to the top
+            Clear();
+            ResetScrollInfo();
+        }
+
+        private void ResumeState()
+        {
+            ReadOnly = true;
+
+            RestoreZoom();
+            // Force visible state update before resuming to avoid a flicker of the classic bar showing up
+            VerticalVisualScrollBar.ForceSetVisibleState();
+            this.ResumeDrawing_Native();
+            // Invoke this after resuming to prevent the scroll bar from disappearing when you move through
+            // entries by holding down a key
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         #endregion
 
         #region Public methods
@@ -167,23 +195,15 @@ namespace AngelLoader.Forms.CustomControls
             {
                 _currentRTFBytes = Array.Empty<byte>();
 
-                SaveZoom();
-                this.SuspendDrawing_Native();
-
-                // Blank the text to reset the scroll position to the top
-                Clear();
-                ResetScrollInfo();
+                SuspendState();
 
                 ContentIsPlainText = true;
                 if (!text.IsEmpty()) Text = text;
-
-                RestoreZoom();
             }
             finally
             {
                 SetReadmeTypeAndColorState(ReadmeType.PlainText);
-                this.ResumeDrawing_Native();
-                VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                ResumeState();
             }
         }
 
@@ -196,22 +216,9 @@ namespace AngelLoader.Forms.CustomControls
         {
             AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
 
-            SaveZoom();
-
-            Trace.WriteLine("");
-
             try
             {
-                this.SuspendDrawing_Native();
-
-                // On Windows 10 at least, images don't display if we're ReadOnly. Sure why not. We need to be
-                // ReadOnly though - it doesn't make sense to let the user edit a readme - so un-set us just long
-                // enough to load in the content correctly, then set us back again.
-                ReadOnly = false;
-
-                // Blank the text to reset the scroll position to the top
-                Clear();
-                ResetScrollInfo();
+                SuspendState();
 
                 SetReadmeTypeAndColorState(fileType);
 
@@ -266,10 +273,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             finally
             {
-                ReadOnly = true;
-                RestoreZoom();
-                this.ResumeDrawing_Native();
-                VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                ResumeState();
             }
         }
 
@@ -309,6 +313,44 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnClientSizeChanged(e);
             VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Visible / Show / Hide overrides
+
+        [PublicAPI]
+        public new bool Visible
+        {
+            get => base.Visible;
+            set
+            {
+                if (value)
+                {
+                    // Do this before setting the Visible value to avoid the classic-bar-flicker
+                    VerticalVisualScrollBar.ForceSetVisibleState();
+                    base.Visible = value;
+                }
+                else
+                {
+                    base.Visible = value;
+                    VerticalVisualScrollBar.ForceSetVisibleState();
+                }
+            }
+        }
+
+        [PublicAPI]
+        public new void Show()
+        {
+            VerticalVisualScrollBar.ForceSetVisibleState();
+            base.Show();
+        }
+
+        [PublicAPI]
+        public new void Hide()
+        {
+            base.Hide();
+            VerticalVisualScrollBar.ForceSetVisibleState();
         }
 
         #endregion

@@ -3915,8 +3915,9 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(false);
 
-            // Hide instead of clear to avoid zoom factor pain
             SetReadmeVisible(false);
+            // Save memory
+            ReadmeRichTextBox.SetText("");
 
             ChooseReadmeLLPanel.ShowPanel(false);
             ViewHTMLReadmeLLButton.Hide();
