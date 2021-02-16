@@ -328,13 +328,13 @@ namespace AngelLoader.Forms.CustomControls
                 if (value)
                 {
                     // Do this before setting the Visible value to avoid the classic-bar-flicker
-                    VerticalVisualScrollBar.ForceSetVisibleState();
+                    VerticalVisualScrollBar.ForceSetVisibleState(true);
                     base.Visible = value;
                 }
                 else
                 {
                     base.Visible = value;
-                    VerticalVisualScrollBar.ForceSetVisibleState();
+                    VerticalVisualScrollBar.ForceSetVisibleState(false);
                 }
             }
         }
@@ -342,7 +342,7 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         public new void Show()
         {
-            VerticalVisualScrollBar.ForceSetVisibleState();
+            VerticalVisualScrollBar.ForceSetVisibleState(true);
             base.Show();
         }
 
@@ -350,7 +350,7 @@ namespace AngelLoader.Forms.CustomControls
         public new void Hide()
         {
             base.Hide();
-            VerticalVisualScrollBar.ForceSetVisibleState();
+            VerticalVisualScrollBar.ForceSetVisibleState(false);
         }
 
         #endregion

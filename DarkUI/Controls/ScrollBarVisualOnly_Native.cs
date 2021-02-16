@@ -81,13 +81,13 @@ namespace DarkUI.Controls
             }
         }
 
-        public void ForceSetVisibleState()
+        public void ForceSetVisibleState(bool? visible = null)
         {
-            if (_owner != null && _owner.IsHandleCreated)
+            if (_owner != null && _owner.IsHandleCreated && _owner.DarkModeEnabled)
             {
                 var sbi = GetCurrentScrollBarInfo();
                 var parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
-                Visible = _owner.DarkModeEnabled && parentBarVisible;
+                Visible = visible == null ? parentBarVisible : visible != false && parentBarVisible;
             }
         }
 
