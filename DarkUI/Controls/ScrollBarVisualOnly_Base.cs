@@ -51,30 +51,30 @@ namespace DarkUI.Controls
 
         #region Disposables
 
-        protected readonly Timer _timer = new Timer();
+        private readonly Timer _timer = new Timer();
 
-        protected readonly Pen _greySelectionPen = new Pen(Config.Colors.GreySelection);
+        private readonly Pen _greySelectionPen = new Pen(Config.Colors.GreySelection);
 
-        protected SolidBrush _thumbNormalBrush;
-        protected SolidBrush _thumbHotBrush;
+        private SolidBrush _thumbNormalBrush;
+        private SolidBrush _thumbHotBrush;
         protected SolidBrush _thumbPressedBrush;
 
         // We want them separate, not all pointing to the same reference
-        protected readonly Bitmap _upArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        protected readonly Bitmap _upArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        protected readonly Bitmap _upArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _upArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _upArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
+        private readonly Bitmap _upArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
 
-        protected readonly Bitmap _downArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        protected readonly Bitmap _downArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        protected readonly Bitmap _downArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _downArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _downArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
+        private readonly Bitmap _downArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
 
-        protected readonly Bitmap _leftArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        protected readonly Bitmap _leftArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        protected readonly Bitmap _leftArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _leftArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _leftArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
+        private readonly Bitmap _leftArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
 
-        protected readonly Bitmap _rightArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        protected readonly Bitmap _rightArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        protected readonly Bitmap _rightArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _rightArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
+        private readonly Bitmap _rightArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
+        private readonly Bitmap _rightArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
 
         #endregion
 
