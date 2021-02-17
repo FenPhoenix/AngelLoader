@@ -471,8 +471,8 @@ namespace AngelLoader.Forms
             Test2Button = new DarkButton();
             Test3Button = new DarkButton();
             Test4Button = new DarkButton();
-            DebugLabel = new Label();
-            DebugLabel2 = new Label();
+            DebugLabel = new LabelCustom();
+            DebugLabel2 = new LabelCustom();
 
             BottomPanel.Controls.Add(TestButton);
             BottomPanel.Controls.Add(Test2Button);
