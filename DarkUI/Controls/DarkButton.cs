@@ -382,7 +382,7 @@ namespace DarkUI.Controls
         #region Paint Region
 
         // Need our own event because we can't fire base.OnPaint() or it overrides our own painting
-        public PaintEventHandler PaintCustom;
+        public event PaintEventHandler PaintCustom;
 
         protected override void OnPaint(PaintEventArgs e)
         {
