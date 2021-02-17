@@ -212,6 +212,10 @@ namespace DarkUI.Controls
                 return;
             }
 
+            // Otherwise, we draw the text that's supposed to be in the drop-down overtop of the non-dropped-down
+            // item, briefly overwriting the text already there but we're bumped over slightly.
+            if (!DroppedDown) return;
+
             var g = e.Graphics;
             var rect = e.Bounds;
 
@@ -221,7 +225,9 @@ namespace DarkUI.Controls
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected ||
                 (e.State & DrawItemState.Focus) == DrawItemState.Focus ||
                 (e.State & DrawItemState.NoFocusRect) != DrawItemState.NoFocusRect)
+            {
                 fillColor = Colors.BlueSelection;
+            }
 
             using (var b = new SolidBrush(fillColor))
             {
