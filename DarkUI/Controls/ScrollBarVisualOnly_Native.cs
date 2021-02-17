@@ -9,8 +9,9 @@ namespace DarkUI.Controls
 {
     public sealed class ScrollBarVisualOnly_Native : ScrollBarVisualOnly_Base
     {
-        // TODO: @DarkMode(ScrollBarVisualOnly_Native): Paint the corner between vert/horz scrollbars
-        // TODO: @DarkMode(ScrollBarVisualOnly_Native): There's a classic-bar flash on the vertical here but not the horizontal(?)
+        // TODO: @DarkMode(ScrollBarVisualOnly_Native):
+        // For textboxes, when the vertical scroll is available, it's always visible (but disabled when unnecessary).
+        // But the horizontal one is only visible when necessary and invisible otherwise.
 
         #region Private fields
 
