@@ -914,6 +914,14 @@ namespace AngelLoader.Forms
 
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+            if (e.Control && e.KeyCode == Keys.E)
+            {
+                EnableEverything(!EverythingPanel.Enabled);
+                return;
+            }
+#endif
+
             if (KeyPressesDisabled) return;
 
             void SelectAndSuppress(int index)
