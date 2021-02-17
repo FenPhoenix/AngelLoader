@@ -1404,6 +1404,8 @@ namespace AngelLoader.Forms
             Config.VisualTheme = theme;
 
             // IMPORTANT: We use DarkButton because it properly colors disabled button text
+            // TODO: @DarkMode(SetTheme): Eventually just codegen the set of all darkable controls
+            // So we don't have to have this awkward dictionary fill/loop/manual-set system.
 
             bool darkMode = theme == VisualTheme.Dark;
 
@@ -1432,6 +1434,18 @@ namespace AngelLoader.Forms
                         )
                     {
                         continue;
+                    }
+
+                    // Separate if because a control could be IDarkable AND be a ToolStrip
+                    if (control is ToolStrip ts)
+                    {
+                        foreach (ToolStripItem tsItem in ts.Items)
+                        {
+                            if (tsItem is IDarkable darkableTSItem)
+                            {
+                                darkableTSItem.DarkModeEnabled = darkMode;
+                            }
+                        }
                     }
 
                     if (control is IDarkable darkableControl)

@@ -119,7 +119,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _darkModeEnabled = value;
-                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_DarkBackground : SystemColors.Control;
+                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_ControlBackground : SystemColors.Control;
             }
         }
 
@@ -141,7 +141,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _darkModeEnabled = value;
-                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_DarkBackground : SystemColors.Control;
+                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_ControlBackground : SystemColors.Control;
             }
         }
 
