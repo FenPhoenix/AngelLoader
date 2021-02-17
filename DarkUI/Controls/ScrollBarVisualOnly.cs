@@ -59,7 +59,7 @@ namespace DarkUI.Controls
             return sbi;
         }
 
-        private protected override void RefreshIfNeeded()
+        private protected override void RefreshIfNeeded(bool forceRefreshCorner = false)
         {
             // Refresh only if our thumb's size/position is stale. Otherwise, we get unacceptable lag.
             var sbi = GetCurrentScrollBarInfo();

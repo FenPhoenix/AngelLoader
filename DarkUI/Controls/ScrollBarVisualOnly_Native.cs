@@ -59,8 +59,8 @@ namespace DarkUI.Controls
             _size = Size;
 
             _owner.Scroll += (sender, e) => RefreshIfNeeded();
-            _owner.VisibilityChanged += (sender, e) => RefreshIfNeeded();
-            _owner.DarkModeChanged += (sender, e) => RefreshIfNeeded();
+            _owner.VisibilityChanged += (sender, e) => RefreshIfNeeded(forceRefreshCorner: true);
+            _owner.DarkModeChanged += (sender, e) => RefreshIfNeeded(forceRefreshCorner: true);
 
             #endregion
 
@@ -122,14 +122,18 @@ namespace DarkUI.Controls
             return si;
         }
 
-        private protected override void RefreshIfNeeded()
+        private protected override void RefreshIfNeeded(bool forceRefreshCorner = false)
         {
             if (_owner.ClosestAddableParent == null) return;
             if (!_owner.IsHandleCreated) return;
 
             if (!_owner.DarkModeEnabled)
             {
-                Visible = false;
+                if (Visible) Visible = false;
+                if (_owner.VisualScrollBarCorner?.Visible == true)
+                {
+                    _owner.VisualScrollBarCorner.Visible = false;
+                }
                 return;
             }
 
@@ -201,7 +205,7 @@ namespace DarkUI.Controls
                     _owner.VisualScrollBarCorner != null &&
                     _owner.VerticalVisualScrollBar != null &&
                     _owner.HorizontalVisualScrollBar != null &&
-                    _owner.ClientSize != _ownerClientSize)
+                    (forceRefreshCorner || _owner.ClientSize != _ownerClientSize))
                 {
                     _ownerClientSize = _owner.ClientSize;
 

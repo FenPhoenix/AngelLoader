@@ -365,7 +365,7 @@ namespace DarkUI.Controls
 
         #region Methods
 
-        private protected virtual void RefreshIfNeeded() { }
+        private protected virtual void RefreshIfNeeded(bool forceRefreshCorner = false) { }
 
         private protected virtual Native.SCROLLBARINFO GetCurrentScrollBarInfo() => throw new NotImplementedException();
 
