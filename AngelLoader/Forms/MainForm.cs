@@ -192,6 +192,16 @@ namespace AngelLoader.Forms
             Height = 750;
         }
 
+        private void Test3Button_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Test4Button_Click(object sender, EventArgs e)
+        {
+
+        }
+
 #endif
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -459,11 +469,15 @@ namespace AngelLoader.Forms
 
             TestButton = new DarkButton();
             Test2Button = new DarkButton();
+            Test3Button = new DarkButton();
+            Test4Button = new DarkButton();
             DebugLabel = new Label();
             DebugLabel2 = new Label();
 
             BottomPanel.Controls.Add(TestButton);
             BottomPanel.Controls.Add(Test2Button);
+            BottomPanel.Controls.Add(Test3Button);
+            BottomPanel.Controls.Add(Test4Button);
             BottomPanel.Controls.Add(DebugLabel);
             BottomPanel.Controls.Add(DebugLabel2);
 
@@ -481,14 +495,28 @@ namespace AngelLoader.Forms
             Test2Button.UseVisualStyleBackColor = true;
             Test2Button.Click += Test2Button_Click;
 
+            Test3Button.Location = new Point(725, 0);
+            Test3Button.Size = new Size(75, 22);
+            Test3Button.TabIndex = 999;
+            Test3Button.Text = "Test3";
+            Test3Button.UseVisualStyleBackColor = true;
+            Test3Button.Click += Test3Button_Click;
+
+            Test4Button.Location = new Point(725, 21);
+            Test4Button.Size = new Size(75, 22);
+            Test4Button.TabIndex = 999;
+            Test4Button.Text = "Test4";
+            Test4Button.UseVisualStyleBackColor = true;
+            Test4Button.Click += Test4Button_Click;
+
             DebugLabel.AutoSize = true;
-            DebugLabel.Location = new Point(730, 8);
+            DebugLabel.Location = new Point(804, 8);
             DebugLabel.Size = new Size(71, 13);
             DebugLabel.TabIndex = 29;
             DebugLabel.Text = "[DebugLabel]";
 
             DebugLabel2.AutoSize = true;
-            DebugLabel2.Location = new Point(730, 24);
+            DebugLabel2.Location = new Point(804, 24);
             DebugLabel2.Size = new Size(77, 13);
             DebugLabel2.TabIndex = 32;
             DebugLabel2.Text = "[DebugLabel2]";

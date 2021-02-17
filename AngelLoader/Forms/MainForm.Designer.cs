@@ -1936,6 +1936,8 @@ namespace AngelLoader.Forms
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
         internal DarkUI.Controls.DarkButton TestButton;
         internal DarkUI.Controls.DarkButton Test2Button;
+        internal DarkUI.Controls.DarkButton Test3Button;
+        internal DarkUI.Controls.DarkButton Test4Button;
         internal System.Windows.Forms.Label DebugLabel;
         internal System.Windows.Forms.Label DebugLabel2;
 #endif
