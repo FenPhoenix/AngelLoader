@@ -422,7 +422,8 @@ namespace DarkUI.Controls
                 || msg == Native.WM_RBUTTONUP || msg == Native.WM_NCRBUTTONUP
                 || msg == Native.WM_RBUTTONDBLCLK || msg == Native.WM_NCRBUTTONDBLCLK
 
-                //|| Msg == Native.WM_MOUSEMOVE || Msg == Native.WM_NCMOUSEMOVE
+                //|| msg == Native.WM_MOUSEMOVE || msg == Native.WM_NCMOUSEMOVE
+                || msg == Native.WM_MOUSELEAVE || msg == Native.WM_NCMOUSELEAVE
 
                 // TODO: @DarkMode: Test wheel tilt with this system!
                 // (do I still have that spare Logitech mouse that works?)

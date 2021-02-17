@@ -319,6 +319,15 @@ namespace DarkUI.Controls
                 {
                     Native.SendMessage(_owner.Handle, _m.Msg, _m.WParam, _m.LParam);
                 }
+                else if (_m.Msg == Native.WM_MOUSELEAVE || _m.Msg == Native.WM_NCMOUSELEAVE)
+                {
+                    // Prevents underlying scrollbar from remaining highlighted until re-moused-over when switched
+                    // to classic mode
+                    // TODO: @DarkMode: It can still happen in this case:
+                    // You mouseover in classic mode, you switch to dark mode, you switch back to light mode (all
+                    // while keeping the mouse over and only moving it away afterwards).
+                    Native.SendMessage(_owner.Handle, _m.Msg, _m.WParam, _m.LParam);
+                }
             }
 
             if (ShouldSendToOwner(m.Msg))

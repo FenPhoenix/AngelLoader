@@ -31,6 +31,9 @@ namespace DarkUI.Win32
         internal const int WM_NCMOUSEMOVE = 0xA0;
 
         internal const int WM_MOUSELEAVE = 0x02A3;
+        internal const int WM_NCMOUSELEAVE = 0x02A2;
+        internal const int WM_MOUSEHOVER = 0x02A1;
+        internal const int WM_NCMOUSEHOVER = 0x02A0;
 
         internal const int WM_LBUTTONUP = 0x202;
         internal const int WM_NCLBUTTONUP = 0x00A2;
