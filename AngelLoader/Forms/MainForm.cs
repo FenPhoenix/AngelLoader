@@ -632,6 +632,14 @@ namespace AngelLoader.Forms
                 }
             }
 
+            // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
+            // while running(?) meh, whatever
+            ReadmeZoomInButton.BringToFront();
+            ReadmeZoomOutButton.BringToFront();
+            ReadmeResetZoomButton.BringToFront();
+            ReadmeFullScreenButton.BringToFront();
+            ChooseReadmeComboBox.BringToFront();
+
             #endregion
         }
 
