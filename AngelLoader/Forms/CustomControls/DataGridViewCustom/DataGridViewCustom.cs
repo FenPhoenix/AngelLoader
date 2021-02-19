@@ -298,6 +298,52 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
+        {
+            base.OnCellPainting(e);
+
+            if (!_darkModeEnabled) return;
+
+            /*
+            TODO: @DarkMode(DGV headers):
+            -Implement mouse down/up coloring
+            -Draw separator lines
+            -Pad text to match classic mode
+            -Tune highlighting colors
+            */
+            if (e.RowIndex == -1)
+            {
+                bool mouseOver = e.CellBounds.Contains(PointToClient(Cursor.Position));
+
+                using (var b = new SolidBrush(mouseOver
+                    ? DarkUI.Config.Colors.BlueSelection
+                    : DarkUI.Config.Colors.GreyBackground))
+                {
+                    e.Graphics.FillRectangle(b, e.CellBounds);
+                }
+
+                if (e.Value is string headerText)
+                {
+                    const TextFormatFlags textFormatFlags =
+                        TextFormatFlags.VerticalCenter |
+                        TextFormatFlags.NoPrefix |
+                        TextFormatFlags.Default |
+                        TextFormatFlags.NoClipping |
+                        TextFormatFlags.EndEllipsis;
+
+                    TextRenderer.DrawText(
+                        e.Graphics,
+                        headerText,
+                        Font,
+                        e.CellBounds,
+                        RowsDefaultCellStyle.ForeColor,
+                        textFormatFlags);
+                }
+
+                e.Handled = true;
+            }
+        }
+
         /// <summary>
         /// If you don't have an actual cell selected (indicated by its header being blue) and you try to move
         /// with the keyboard, it pops back to the top item. This fixes that, and is called wherever appropriate.
