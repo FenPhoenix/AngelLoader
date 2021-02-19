@@ -354,6 +354,12 @@ namespace AngelLoader.Forms.CustomControls
             -Draw separator lines
             -Pad text to match classic mode
             -Tune highlighting colors
+            -Draw sort glyph
+            -Header painting appears to happen in DataGridViewColumnHeaderCell.PaintPrivate() - look here for
+             precise text bounds calculations etc.
+            -We're not painting the vestigial selected-column header color. We should see if we can owner-paint
+             the classic-mode one too, in a way that's indistinguishable from the original except that it has no
+             selected-column header blue color.
             */
             if (e.RowIndex == -1)
             {
