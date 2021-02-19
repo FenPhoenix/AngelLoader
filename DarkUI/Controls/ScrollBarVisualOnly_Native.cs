@@ -88,7 +88,7 @@ namespace DarkUI.Controls
             {
                 var sbi = GetCurrentScrollBarInfo();
                 var parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
-                Visible = visible == null ? parentBarVisible : visible != false && parentBarVisible;
+                Visible = visible == null ? parentBarVisible : visible == true && parentBarVisible;
             }
         }
 
@@ -287,7 +287,7 @@ namespace DarkUI.Controls
                 if (!_owner.IsHandleCreated) return;
                 // We have to take our client messages and convert them to non-client messages to pass to our
                 // underlying scroll bar.
-                if (_WM_ClientToNonClient.ContainsKey(_m.Msg))
+                if (_WM_ClientToNonClient.TryGetValue(_m.Msg, out int ncMsg))
                 {
                     // TODO: @DarkMode(ScrollBarVisualOnly_Native):
                     // Test to make sure these params transfer their signedness! Use multiple monitors and see
@@ -314,7 +314,7 @@ namespace DarkUI.Controls
 
                     Native.POINTS points = new Native.POINTS((short)x, (short)y);
 
-                    Native.PostMessage(_owner.Handle, _WM_ClientToNonClient[_m.Msg], (IntPtr)wParam, points);
+                    Native.PostMessage(_owner.Handle, ncMsg, (IntPtr)wParam, points);
                 }
                 else if (_m.Msg == Native.WM_MOUSEWHEEL || _m.Msg == Native.WM_MOUSEHWHEEL)
                 {
