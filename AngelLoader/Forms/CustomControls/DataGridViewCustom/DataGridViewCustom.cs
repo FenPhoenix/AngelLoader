@@ -22,6 +22,8 @@ namespace AngelLoader.Forms.CustomControls
         private Color RecentHighlightColor = Color.LightGoldenrodYellow;
         private Color UnavailableColor = Color.MistyRose;
 
+        private int _mouseDownOnHeader = -1;
+
         #endregion
 
         #region API fields
@@ -68,12 +70,6 @@ namespace AngelLoader.Forms.CustomControls
                     // back up and put our selection in view, but we don't want to do anything at all other than
                     // change the look, leaving everything exactly as it was functionally.
                     int selectedRow = RowCount > 0 ? SelectedRows[0].Index : -1;
-
-                    using (new DisableEvents(_owner))
-                    {
-                        Refresh();
-                        if (selectedRow > -1) Rows[selectedRow].Selected = true;
-                    }
                 }
                 else
                 {
@@ -350,9 +346,6 @@ namespace AngelLoader.Forms.CustomControls
 #endif
             /*
             TODO: @DarkMode(DGV headers):
-            -Implement mouse down/up coloring
-            -Draw separator lines
-            -Pad text to match classic mode
             -Tune highlighting colors
             -Draw sort glyph
             -Header painting appears to happen in DataGridViewColumnHeaderCell.PaintPrivate() - look here for
@@ -363,14 +356,67 @@ namespace AngelLoader.Forms.CustomControls
             */
             if (e.RowIndex == -1)
             {
+                int displayIndex = Columns[e.ColumnIndex].DisplayIndex;
+
                 bool mouseOver = e.CellBounds.Contains(PointToClient(Cursor.Position));
 
-                using (var b = new SolidBrush(mouseOver
-                    ? DarkUI.Config.Colors.BlueSelection
-                    : DarkUI.Config.Colors.GreyBackground))
+                // If we wanted to match classic mode, this is what we would use to start with
+                /*
+                var selectionRect = new Rectangle(
+                    e.CellBounds.X + 2,
+                    e.CellBounds.Y + 2,
+                    e.CellBounds.Width - 2,
+                    e.CellBounds.Height - 3);
+                */
+
+                // For now, we're just simplifying and not drawing all the fussy borders of the classic mode.
+                // This way looks perfectly fine in dark mode and saves work.
+                var selectionRect = new Rectangle(
+                    e.CellBounds.X,
+                    e.CellBounds.Y,
+                    e.CellBounds.Width,
+                    e.CellBounds.Height - 1);
+
+                using (var b = new SolidBrush(DarkUI.Config.Colors.GreyBackground))
                 {
                     e.Graphics.FillRectangle(b, e.CellBounds);
                 }
+
+                using (var p = new Pen(DarkUI.Config.Colors.GreySelection))
+                {
+                    if (!mouseOver)
+                    {
+                        e.Graphics.DrawLine(
+                            p,
+                            e.CellBounds.X + e.CellBounds.Width - 1,
+                            0,
+                            e.CellBounds.X + e.CellBounds.Width - 1,
+                            e.CellBounds.Y + e.CellBounds.Height - 1);
+                    }
+                    e.Graphics.DrawLine(
+                        p,
+                        e.CellBounds.X,
+                        e.CellBounds.Y + e.CellBounds.Height - 1,
+                        e.CellBounds.X + e.CellBounds.Width,
+                        e.CellBounds.Y + e.CellBounds.Height - 1);
+                }
+
+                if (mouseOver)
+                {
+                    using var b = new SolidBrush(_mouseDownOnHeader == e.ColumnIndex
+                        ? DarkUI.Config.Colors.BlueHighlight
+                        : DarkUI.Config.Colors.BlueSelection);
+                    e.Graphics.FillRectangle(b, selectionRect);
+                }
+
+                // The classic-themed bounds are complicated and difficult to discern, so we're just using
+                // measured constants here, which match classic mode in our particular case.
+                var textRect = new Rectangle(
+                    e.CellBounds.X + (displayIndex == 0 ? 6 : 4),
+                    e.CellBounds.Y,
+                    e.CellBounds.Width - (displayIndex == 0 ? 10 : 6),
+                    e.CellBounds.Height
+                );
 
                 if (e.Value is string headerText)
                 {
@@ -384,8 +430,8 @@ namespace AngelLoader.Forms.CustomControls
                     TextRenderer.DrawText(
                         e.Graphics,
                         headerText,
-                        Font,
-                        e.CellBounds,
+                        e.CellStyle.Font,
+                        textRect,
                         RowsDefaultCellStyle.ForeColor,
                         textFormatFlags);
                 }
@@ -441,12 +487,23 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
+            if (e.Button == MouseButtons.Left)
+            {
+                HitTestInfo ht = HitTest(e.X, e.Y);
+                if (ht.Type == DataGridViewHitTestType.ColumnHeader)
+                {
+                    _mouseDownOnHeader = ht.ColumnIndex;
+                }
+            }
+
             if (!StartColumnResize(e)) return;
             base.OnMouseDown(e);
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            if (e.Button == MouseButtons.Left) _mouseDownOnHeader = -1;
+
             if (!EndColumnResize(e)) return;
             base.OnMouseUp(e);
         }
