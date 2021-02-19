@@ -207,8 +207,9 @@ namespace DarkUI.Controls
 
             if (!_darkModeEnabled) return;
 
-            if (!ClientRectangle.Contains(e.Location))
-                return;
+            if (e.Button != MouseButtons.Left) return;
+
+            if (!ClientRectangle.Contains(e.Location)) return;
 
             SetControlState(DarkControlState.Pressed);
         }
@@ -219,8 +220,7 @@ namespace DarkUI.Controls
 
             if (!_darkModeEnabled) return;
 
-            if (_spacePressed)
-                return;
+            if (_spacePressed) return;
 
             SetControlState(DarkControlState.Normal);
         }
@@ -231,8 +231,7 @@ namespace DarkUI.Controls
 
             if (!_darkModeEnabled) return;
 
-            if (_spacePressed)
-                return;
+            if (_spacePressed) return;
 
             SetControlState(DarkControlState.Normal);
         }
@@ -243,13 +242,12 @@ namespace DarkUI.Controls
 
             if (!_darkModeEnabled) return;
 
-            if (_spacePressed)
-                return;
+            if (_spacePressed) return;
 
-            var location = Cursor.Position;
-
-            if (!ClientRectangle.Contains(location))
+            if (!ClientRectangle.Contains(Cursor.Position))
+            {
                 SetControlState(DarkControlState.Normal);
+            }
         }
 
         protected override void OnGotFocus(EventArgs e)
@@ -269,12 +267,9 @@ namespace DarkUI.Controls
 
             _spacePressed = false;
 
-            var location = Cursor.Position;
-
-            if (!ClientRectangle.Contains(location))
-                SetControlState(DarkControlState.Normal);
-            else
-                SetControlState(DarkControlState.Hover);
+            SetControlState(ClientRectangle.Contains(Cursor.Position)
+                ? DarkControlState.Hover
+                : DarkControlState.Normal);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -300,12 +295,9 @@ namespace DarkUI.Controls
             {
                 _spacePressed = false;
 
-                var location = Cursor.Position;
-
-                if (!ClientRectangle.Contains(location))
-                    SetControlState(DarkControlState.Normal);
-                else
-                    SetControlState(DarkControlState.Hover);
+                SetControlState(ClientRectangle.Contains(Cursor.Position)
+                    ? DarkControlState.Hover
+                    : DarkControlState.Normal);
             }
         }
 
