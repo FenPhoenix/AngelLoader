@@ -39,7 +39,7 @@ namespace FMScanner
             return 1.0 - ((double)vec2[string2.Length] / Math.Max(string1.Length, string2.Length));
         }
 
-        internal static int GetPercentFromValue(int current, int total) => (100 * current) / total;
+        internal static int GetPercentFromValue(int current, int total) => total == 0 ? 0 : (100 * current) / total;
 
         #region Readme validation
 

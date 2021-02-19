@@ -60,7 +60,7 @@ namespace DarkUI.Controls
 
         private SolidBrush _thumbNormalBrush;
         private SolidBrush _thumbHotBrush;
-        protected SolidBrush _thumbPressedBrush;
+        private protected SolidBrush _thumbPressedBrush;
 
         // We want them separate, not all pointing to the same reference
         private readonly Bitmap _upArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
@@ -431,7 +431,7 @@ namespace DarkUI.Controls
                 );
         }
 
-        private protected void PaintArrows(Graphics g)
+        private protected void PaintArrows(Graphics g, bool enabled)
         {
             int w, h;
             if (_isVertical)
@@ -447,13 +447,13 @@ namespace DarkUI.Controls
 
             if (_isVertical)
             {
-                Bitmap upArrow = _firstArrowState == State.Normal
+                Bitmap upArrow = !enabled || _firstArrowState == State.Normal
                     ? _upArrowNormal
                     : _firstArrowState == State.Hot
                     ? _upArrowHot
                     : _upArrowPressed;
 
-                Bitmap downArrow = _secondArrowState == State.Normal
+                Bitmap downArrow = !enabled || _secondArrowState == State.Normal
                     ? _downArrowNormal
                     : _secondArrowState == State.Hot
                     ? _downArrowHot
@@ -471,13 +471,13 @@ namespace DarkUI.Controls
             }
             else
             {
-                Bitmap leftArrow = _firstArrowState == State.Normal
+                Bitmap leftArrow = !enabled || _firstArrowState == State.Normal
                     ? _leftArrowNormal
                     : _firstArrowState == State.Hot
                     ? _leftArrowHot
                     : _leftArrowPressed;
 
-                Bitmap rightArrow = _secondArrowState == State.Normal
+                Bitmap rightArrow = !enabled || _secondArrowState == State.Normal
                     ? _rightArrowNormal
                     : _secondArrowState == State.Hot
                     ? _rightArrowHot

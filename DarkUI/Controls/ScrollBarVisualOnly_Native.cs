@@ -232,46 +232,54 @@ namespace DarkUI.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            var g = e.Graphics;
-
-            PaintArrows(g);
-
-            #region Thumb
-
             if (_owner.IsHandleCreated)
             {
                 var sbi = GetCurrentScrollBarInfo();
+                bool enabled = (sbi.rgstate[0] & Native.STATE_SYSTEM_UNAVAILABLE) != Native.STATE_SYSTEM_UNAVAILABLE;
 
-                if (_leftButtonPressedOnThumb)
+                var g = e.Graphics;
+
+                PaintArrows(g, enabled);
+
+                #region Thumb
+
+                if (enabled && _owner.Enabled)
                 {
-                    var si = GetScrollInfo(Native.SIF_TRACKPOS | Native.SIF_PAGE | Native.SIF_RANGE);
+                    if (_leftButtonPressedOnThumb)
+                    {
+                        var si = GetScrollInfo(Native.SIF_TRACKPOS | Native.SIF_PAGE | Native.SIF_RANGE);
 
-                    int thumbTop = si.nTrackPos + (_isVertical
-                        ? SystemInformation.VerticalScrollBarArrowHeight
-                        : SystemInformation.HorizontalScrollBarArrowWidth);
+                        int thumbTop = si.nTrackPos + (_isVertical
+                            ? SystemInformation.VerticalScrollBarArrowHeight
+                            : SystemInformation.HorizontalScrollBarArrowWidth);
 
-                    int thumbLength = sbi.xyThumbBottom - sbi.xyThumbTop;
+                        int thumbLength = sbi.xyThumbBottom - sbi.xyThumbTop;
 
-                    int scrollMargin = _isVertical
-                        ? SystemInformation.VerticalScrollBarArrowHeight
-                        : SystemInformation.HorizontalScrollBarArrowWidth;
+                        int scrollMargin = _isVertical
+                            ? SystemInformation.VerticalScrollBarArrowHeight
+                            : SystemInformation.HorizontalScrollBarArrowWidth;
 
-                    int thisExtent = _isVertical ? Height : Width;
+                        int thisExtent = _isVertical ? Height : Width;
 
-                    // Important that we use this formula (nMax - max(nPage - 1, 0)) or else our position is always
-                    // infuriatingly not-quite-right.
-                    double percentAlong = Global.GetPercentFromValue(thumbTop - scrollMargin, (int)(si.nMax - Math.Max(si.nPage - 1, 0)) - 0);
-                    int thumbTopPixels = Global.GetValueFromPercent(percentAlong, thisExtent - (scrollMargin * 2) - (thumbLength));
+                        // Important that we use this formula (nMax - max(nPage - 1, 0)) or else our position is
+                        // always infuriatingly not-quite-right.
+                        double percentAlong = Global.GetPercentFromValue(
+                            thumbTop - scrollMargin,
+                            (int)(si.nMax - Math.Max(si.nPage - 1, 0)));
+                        int thumbTopPixels = Global.GetValueFromPercent(
+                            percentAlong,
+                            thisExtent - (scrollMargin * 2) - (thumbLength));
 
-                    var rect = _isVertical
-                        ? new Rectangle(1, thumbTopPixels + scrollMargin, Width - 2, thumbLength)
-                        : new Rectangle(thumbTopPixels + scrollMargin, 1, thumbLength, Height - 2);
+                        var rect = _isVertical
+                            ? new Rectangle(1, thumbTopPixels + scrollMargin, Width - 2, thumbLength)
+                            : new Rectangle(thumbTopPixels + scrollMargin, 1, thumbLength, Height - 2);
 
-                    g.FillRectangle(_thumbPressedBrush, rect);
-                }
-                else
-                {
-                    g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi));
+                        g.FillRectangle(_thumbPressedBrush, rect);
+                    }
+                    else
+                    {
+                        g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi));
+                    }
                 }
             }
 

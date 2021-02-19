@@ -128,20 +128,23 @@ namespace DarkUI.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            var g = e.Graphics;
-
-            PaintArrows(g);
-
-            #region Thumb
-
             if (_owner.IsHandleCreated)
             {
                 var sbi = GetCurrentScrollBarInfo();
 
-                _xyThumbTop = sbi.xyThumbTop;
-                _xyThumbBottom = sbi.xyThumbBottom;
+                var g = e.Graphics;
 
-                g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi));
+                PaintArrows(g, _owner.Enabled);
+
+                #region Thumb
+
+                if (_owner.Enabled)
+                {
+                    _xyThumbTop = sbi.xyThumbTop;
+                    _xyThumbBottom = sbi.xyThumbBottom;
+
+                    g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi));
+                }
             }
 
             #endregion

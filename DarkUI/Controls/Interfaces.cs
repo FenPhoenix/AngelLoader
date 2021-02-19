@@ -30,6 +30,7 @@ namespace DarkUI.Controls
         Point Location { get; }
         Size ClientSize { get; }
         Size Size { get; }
+        bool Enabled { get; }
         new bool Visible { get; }
         event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
         event EventHandler VisibilityChanged;

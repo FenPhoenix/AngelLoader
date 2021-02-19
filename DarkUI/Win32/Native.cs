@@ -103,6 +103,7 @@ namespace DarkUI.Win32
         public const uint SB_BOTH = 3;
 
         public const int STATE_SYSTEM_INVISIBLE = 0x00008000;
+        public const int STATE_SYSTEM_UNAVAILABLE = 0x00000001;
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
         public static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);

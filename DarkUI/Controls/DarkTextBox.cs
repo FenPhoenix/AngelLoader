@@ -1,10 +1,11 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using DarkUI.Config;
 
 namespace DarkUI.Controls
 {
-    public class DarkTextBox : TextBox, IDarkable
+    public class DarkTextBox : TextBox, IDarkableScrollableNative
     {
         private bool _origValuesStored;
         private Color _origForeColor;
@@ -45,7 +46,78 @@ namespace DarkUI.Controls
                         BorderStyle = _origBorderStyle;
                     }
                 }
+                DarkModeChanged?.Invoke(this, new DarkModeChangedEventArgs(_darkModeEnabled));
             }
         }
+
+        public new bool Multiline
+        {
+            get => base.Multiline;
+            set
+            {
+                base.Multiline = value;
+                if (value && VerticalVisualScrollBar == null && HorizontalVisualScrollBar == null && VisualScrollBarCorner == null)
+                {
+                    VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
+                    HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
+                    VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
+                }
+            }
+        }
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected override void OnClientSizeChanged(EventArgs e)
+        {
+            base.OnClientSizeChanged(e);
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #region Visible / Show / Hide overrides
+
+        public new bool Visible
+        {
+            get => base.Visible;
+            set
+            {
+                if (value)
+                {
+                    // Do this before setting the Visible value to avoid the classic-bar-flicker
+                    VerticalVisualScrollBar.ForceSetVisibleState(true);
+                    base.Visible = value;
+                }
+                else
+                {
+                    base.Visible = value;
+                    VerticalVisualScrollBar.ForceSetVisibleState(false);
+                }
+            }
+        }
+
+        public new void Show()
+        {
+            VerticalVisualScrollBar.ForceSetVisibleState(true);
+            base.Show();
+        }
+
+        public new void Hide()
+        {
+            base.Hide();
+            VerticalVisualScrollBar.ForceSetVisibleState(false);
+        }
+
+        #endregion
+        public bool Suspended { get; set; }
+        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; private set; }
+        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; private set; }
+        public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; private set; }
+        public event EventHandler Scroll;
+        public Control ClosestAddableParent => Parent;
+        public event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
+        public event EventHandler VisibilityChanged;
     }
 }
