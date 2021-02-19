@@ -295,6 +295,105 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        /// <summary>
+        /// If you don't have an actual cell selected (indicated by its header being blue) and you try to move
+        /// with the keyboard, it pops back to the top item. This fixes that, and is called wherever appropriate.
+        /// </summary>
+        internal void SelectProperly(bool suspendResume = true)
+        {
+            if (Rows.Count == 0 || SelectedRows.Count == 0 || Columns.Count == 0) return;
+
+            // Crappy mitigation for losing horizontal scroll position, not perfect but better than nothing
+            int origHSO = HorizontalScrollingOffset;
+
+            try
+            {
+                // Note: we need to do this null check here, otherwise we get an exception that doesn't get caught(!!!)
+                SelectedRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
+            }
+            catch
+            {
+                // It can't be selected for whatever reason. Oh well.
+            }
+
+            try
+            {
+                if (suspendResume) this.SuspendDrawing();
+                if (HorizontalScrollBar.Visible && HorizontalScrollingOffset != origHSO)
+                {
+                    HorizontalScrollingOffset = origHSO;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+            finally
+            {
+                if (suspendResume) this.ResumeDrawing();
+            }
+        }
+
+        internal void SendKeyDown(KeyEventArgs e) => OnKeyDown(e);
+
+        #endregion
+
+        #region Event overrides
+
+        #region Mouse
+
+        protected override void OnMouseEnter(EventArgs e)
+        {
+            _mouseHere = true;
+            base.OnMouseEnter(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            _mouseHere = false;
+            base.OnMouseLeave(e);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                HitTestInfo ht = HitTest(e.X, e.Y);
+                if (ht.Type == DataGridViewHitTestType.ColumnHeader)
+                {
+                    _mouseDownOnHeader = ht.ColumnIndex;
+                }
+            }
+
+            if (!StartColumnResize(e)) return;
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left) _mouseDownOnHeader = -1;
+
+            if (!EndColumnResize(e)) return;
+            base.OnMouseUp(e);
+        }
+
+        protected override void OnDoubleClick(EventArgs e)
+        {
+            // This particular order of calls allows the double-click-to-autosize feature to work again. I don't
+            // know why it does really, but I'm willing to take what works at this point.
+            CancelColumnResize();
+            base.OnMouseDown((MouseEventArgs)e);
+            base.OnDoubleClick(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if (!DoColumnResize(e)) return;
+            base.OnMouseMove(e);
+        }
+
+        #endregion
+
         protected override void OnRowPrePaint(DataGridViewRowPrePaintEventArgs e)
         {
             base.OnRowPrePaint(e);
@@ -439,101 +538,6 @@ namespace AngelLoader.Forms.CustomControls
 
                 e.Handled = true;
             }
-        }
-
-        protected override void OnMouseEnter(EventArgs e)
-        {
-            _mouseHere = true;
-            base.OnMouseEnter(e);
-        }
-
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            _mouseHere = false;
-            base.OnMouseLeave(e);
-        }
-
-        /// <summary>
-        /// If you don't have an actual cell selected (indicated by its header being blue) and you try to move
-        /// with the keyboard, it pops back to the top item. This fixes that, and is called wherever appropriate.
-        /// </summary>
-        internal void SelectProperly(bool suspendResume = true)
-        {
-            if (Rows.Count == 0 || SelectedRows.Count == 0 || Columns.Count == 0) return;
-
-            // Crappy mitigation for losing horizontal scroll position, not perfect but better than nothing
-            int origHSO = HorizontalScrollingOffset;
-
-            try
-            {
-                // Note: we need to do this null check here, otherwise we get an exception that doesn't get caught(!!!)
-                SelectedRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
-            }
-            catch
-            {
-                // It can't be selected for whatever reason. Oh well.
-            }
-
-            try
-            {
-                if (suspendResume) this.SuspendDrawing();
-                if (HorizontalScrollBar.Visible && HorizontalScrollingOffset != origHSO)
-                {
-                    HorizontalScrollingOffset = origHSO;
-                }
-            }
-            catch
-            {
-                // ignore
-            }
-            finally
-            {
-                if (suspendResume) this.ResumeDrawing();
-            }
-        }
-
-        internal void SendKeyDown(KeyEventArgs e) => OnKeyDown(e);
-
-        #endregion
-
-        #region Event overrides
-
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                HitTestInfo ht = HitTest(e.X, e.Y);
-                if (ht.Type == DataGridViewHitTestType.ColumnHeader)
-                {
-                    _mouseDownOnHeader = ht.ColumnIndex;
-                }
-            }
-
-            if (!StartColumnResize(e)) return;
-            base.OnMouseDown(e);
-        }
-
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left) _mouseDownOnHeader = -1;
-
-            if (!EndColumnResize(e)) return;
-            base.OnMouseUp(e);
-        }
-
-        protected override void OnDoubleClick(EventArgs e)
-        {
-            // This particular order of calls allows the double-click-to-autosize feature to work again. I don't
-            // know why it does really, but I'm willing to take what works at this point.
-            CancelColumnResize();
-            base.OnMouseDown((MouseEventArgs)e);
-            base.OnDoubleClick(e);
-        }
-
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            if (!DoColumnResize(e)) return;
-            base.OnMouseMove(e);
         }
 
         // Cancel column resize operations if we lose focus. Otherwise, we end up still in drag mode with the
