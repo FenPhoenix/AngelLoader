@@ -126,7 +126,7 @@ namespace AngelLoader.Forms
 
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
         // middle of the operation
-        private bool _cellValueNeededDisabled;
+        internal bool CellValueNeededDisabled;
 
         private TransparentPanel? ViewBlockingPanel;
         private bool _viewBlocked;
@@ -1216,7 +1216,7 @@ namespace AngelLoader.Forms
 
                 #region FMs list
 
-                FMsDGV.Localize();
+                DataGridViewCustom.Localize();
 
                 Lazy_FMsListZoomButtons.Localize();
 
@@ -2421,7 +2421,7 @@ namespace AngelLoader.Forms
                     // thought I saw a suspend drawing command, and since drawing cells constitutes drawing, I
                     // just assumed you would understand that to suspend drawing means not to draw cells. I must
                     // be mistaken. No no, please.
-                    _cellValueNeededDisabled = true;
+                    CellValueNeededDisabled = true;
                 }
 
                 // Prevents:
@@ -2485,7 +2485,7 @@ namespace AngelLoader.Forms
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
                     if (!startup)
                     {
-                        _cellValueNeededDisabled = false;
+                        CellValueNeededDisabled = false;
                         FMsDGV.ResumeDrawing();
                     }
                 }
@@ -3252,54 +3252,9 @@ namespace AngelLoader.Forms
 
         #region FMsDGV event handlers
 
-        // Coloring the recent rows here because if we do it in _CellValueNeeded, we get a brief flash of the
-        // default while-background cell color before it changes.
-        private void FMsDGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            if (_cellValueNeededDisabled) return;
-
-            if (FMsDGV.FilterShownIndexList.Count == 0) return;
-
-            var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
-
-            FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedUnavailable
-                ? FMsDGV.UnavailableColor
-                : fm.MarkedRecent
-                ? FMsDGV.RecentHighlightColor
-                : FMsDGV.DefaultRowBackColor;
-        }
-
-        private void FMsDGV_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
-        {
-            // TODO: @DarkMode: This is for having different colored grid lines in recent-highlighted rows
-            // That way, we can get a good, visible separator color for all cases by just having two.
-            // But we need to figure this out exactly because it doesn't work properly as is.
-            // https://stackoverflow.com/a/32170212
-
-            return;
-
-            if (Config.VisualTheme == VisualTheme.Classic || _cellValueNeededDisabled ||
-                FMsDGV.FilterShownIndexList.Count == 0 || !FMsDGV.GetFMFromIndex(e.RowIndex).MarkedRecent)
-            {
-                e.Paint(e.ClipBounds, DataGridViewPaintParts.All);
-                e.Handled = true;
-                return;
-            }
-
-            e.Paint(e.ClipBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.Border);
-            e.Graphics.DrawRectangle(Pens.Black, new Rectangle(e.CellBounds.Left, e.CellBounds.Top, e.CellBounds.Width - 1, e.CellBounds.Height - 1));
-            //e.Graphics.DrawLine(
-            //    Pens.Black,
-            //    e.CellBounds.Left,
-            //    e.CellBounds.Top,
-            //    e.CellBounds.Right,
-            //    e.CellBounds.Top);
-            e.Handled = true;
-        }
-
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (_cellValueNeededDisabled) return;
+            if (CellValueNeededDisabled) return;
 
             // Lazy-load these in an attempt to save some kind of startup time
             // @LAZYLOAD: Try lazy-loading these at a more granular level
@@ -3333,7 +3288,7 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (_cellValueNeededDisabled) return;
+            if (CellValueNeededDisabled) return;
 
             if (FMsDGV.FilterShownIndexList.Count == 0) return;
 
@@ -3631,7 +3586,7 @@ namespace AngelLoader.Forms
             {
                 using (new DisableEvents(this))
                 {
-                    _cellValueNeededDisabled = true;
+                    CellValueNeededDisabled = true;
                     try
                     {
                         FMsDGV.Columns.RemoveAt((int)Column.Rating);
@@ -3639,7 +3594,7 @@ namespace AngelLoader.Forms
                     }
                     finally
                     {
-                        _cellValueNeededDisabled = false;
+                        CellValueNeededDisabled = false;
                     }
                 }
                 if (FMsDGV.CurrentSortedColumn == Column.Rating)

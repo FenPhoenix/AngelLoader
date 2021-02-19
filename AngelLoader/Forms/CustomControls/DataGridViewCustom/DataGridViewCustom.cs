@@ -18,6 +18,10 @@ namespace AngelLoader.Forms.CustomControls
 
         private MainForm _owner = null!;
 
+        private Color DefaultRowBackColor = SystemColors.Window;
+        private Color RecentHighlightColor = Color.LightGoldenrodYellow;
+        private Color UnavailableColor = Color.MistyRose;
+
         #endregion
 
         #region API fields
@@ -42,10 +46,6 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #endregion
-
-        internal Color DefaultRowBackColor { get; private set; } = SystemColors.Window;
-        internal Color RecentHighlightColor { get; private set; } = Color.LightGoldenrodYellow;
-        internal Color UnavailableColor { get; private set; } = Color.MistyRose;
 
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
@@ -130,7 +130,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void InjectOwner(MainForm owner) => _owner = owner;
 
-        internal void Localize()
+        internal static void Localize()
         {
             FMsDGV_ColumnHeaderLLMenu.SetMenuItemTextToLocalized();
             FMsDGV_FM_LLMenu.SetFMMenuTextToLocalized();
@@ -298,12 +298,56 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        protected override void OnRowPrePaint(DataGridViewRowPrePaintEventArgs e)
+        {
+            base.OnRowPrePaint(e);
+
+            // Coloring the recent rows here because if we do it in _CellValueNeeded, we get a brief flash of the
+            // default white-background cell color before it changes.
+            if (!_owner.CellValueNeededDisabled && FilterShownIndexList.Count > 0)
+            {
+                var fm = GetFMFromIndex(e.RowIndex);
+
+                Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedUnavailable
+                    ? UnavailableColor
+                    : fm.MarkedRecent
+                    ? RecentHighlightColor
+                    : DefaultRowBackColor;
+            }
+        }
+
         protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
         {
             base.OnCellPainting(e);
 
             if (!_darkModeEnabled) return;
 
+            // TODO: @DarkMode: This is for having different colored grid lines in recent-highlighted rows
+            // That way, we can get a good, visible separator color for all cases by just having two.
+            // But we need to figure this out exactly because it doesn't work properly as is.
+            // https://stackoverflow.com/a/32170212
+
+#if false
+
+            if (Config.VisualTheme == VisualTheme.Classic || _owner.CellValueNeededDisabled ||
+                FilterShownIndexList.Count == 0 || !GetFMFromIndex(e.RowIndex).MarkedRecent)
+            {
+                e.Paint(e.ClipBounds, DataGridViewPaintParts.All);
+                e.Handled = true;
+                return;
+            }
+
+            e.Paint(e.ClipBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.Border);
+            e.Graphics.DrawRectangle(Pens.Black, new Rectangle(e.CellBounds.Left, e.CellBounds.Top, e.CellBounds.Width - 1, e.CellBounds.Height - 1));
+            //e.Graphics.DrawLine(
+            //    Pens.Black,
+            //    e.CellBounds.Left,
+            //    e.CellBounds.Top,
+            //    e.CellBounds.Right,
+            //    e.CellBounds.Top);
+            e.Handled = true;
+
+#endif
             /*
             TODO: @DarkMode(DGV headers):
             -Implement mouse down/up coloring

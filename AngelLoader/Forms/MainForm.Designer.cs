@@ -510,12 +510,10 @@ namespace AngelLoader.Forms
             this.FMsDGV.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.FMsDGV_CellDoubleClick);
             this.FMsDGV.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.FMsDGV_CellValueNeeded_Initial);
             this.FMsDGV.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.FMsDGV_ColumnHeaderMouseClick);
-            this.FMsDGV.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.FMsDGV_RowPrePaint);
             this.FMsDGV.SelectionChanged += new System.EventHandler(this.FMsDGV_SelectionChanged);
             this.FMsDGV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FMsDGV_KeyDown);
             this.FMsDGV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FMsDGV_KeyPress);
             this.FMsDGV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FMsDGV_MouseDown);
-            this.FMsDGV.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.FMsDGV_CellPainting);
             // 
             // GameTypeColumn
             // 
