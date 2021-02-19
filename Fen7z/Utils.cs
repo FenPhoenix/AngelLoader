@@ -26,7 +26,7 @@ namespace Fen7z
 
         #endregion
 
-        internal static int GetPercentFromValue(int current, int total) => (100 * current) / total;
+        internal static int GetPercentFromValue(int current, int total) => total == 0 ? 0 : (100 * current) / total;
 
         internal static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> =>
             value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
