@@ -258,7 +258,7 @@ namespace DarkUI.Controls
 
                     int thisExtent = _isVertical ? Height : Width;
 
-                    // Important that we use this formula (nMax - max(nPage -1, 0)) or else our position is always
+                    // Important that we use this formula (nMax - max(nPage - 1, 0)) or else our position is always
                     // infuriatingly not-quite-right.
                     double percentAlong = Global.GetPercentFromValue(thumbTop - scrollMargin, (int)(si.nMax - Math.Max(si.nPage - 1, 0)) - 0);
                     int thumbTopPixels = Global.GetValueFromPercent(percentAlong, thisExtent - (scrollMargin * 2) - (thumbLength));
