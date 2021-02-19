@@ -22,6 +22,7 @@ namespace AngelLoader.Forms.CustomControls
         private Color RecentHighlightColor = Color.LightGoldenrodYellow;
         private Color UnavailableColor = Color.MistyRose;
 
+        private bool _mouseHere;
         private int _mouseDownOnHeader = -1;
 
         #endregion
@@ -401,7 +402,7 @@ namespace AngelLoader.Forms.CustomControls
                         e.CellBounds.Y + e.CellBounds.Height - 1);
                 }
 
-                if (mouseOver)
+                if (_mouseHere && mouseOver)
                 {
                     using var b = new SolidBrush(_mouseDownOnHeader == e.ColumnIndex
                         ? DarkUI.Config.Colors.BlueHighlight
@@ -438,6 +439,18 @@ namespace AngelLoader.Forms.CustomControls
 
                 e.Handled = true;
             }
+        }
+
+        protected override void OnMouseEnter(EventArgs e)
+        {
+            _mouseHere = true;
+            base.OnMouseEnter(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            _mouseHere = false;
+            base.OnMouseLeave(e);
         }
 
         /// <summary>
