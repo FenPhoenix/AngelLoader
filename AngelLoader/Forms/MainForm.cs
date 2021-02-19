@@ -80,7 +80,7 @@ namespace AngelLoader.Forms
         // To order them such that we can just look them up with an index
         private readonly TabPage[] _gameTabsInOrder;
         private readonly ToolStripButtonCustom[] _filterByGameButtonsInOrder;
-        private readonly TabPage[] _topRightTabsInOrder;
+        private readonly TabPageCustom[] _topRightTabsInOrder;
 
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
