@@ -68,13 +68,13 @@ namespace DarkUI.Controls
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);
-            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnClientSizeChanged(EventArgs e)
         {
             base.OnClientSizeChanged(e);
-            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #region Visible / Show / Hide overrides
@@ -87,27 +87,27 @@ namespace DarkUI.Controls
                 if (value)
                 {
                     // Do this before setting the Visible value to avoid the classic-bar-flicker
-                    VerticalVisualScrollBar.ForceSetVisibleState(true);
-                    base.Visible = value;
+                    if (_darkModeEnabled) VerticalVisualScrollBar?.ForceSetVisibleState(true);
+                    base.Visible = true;
                 }
                 else
                 {
-                    base.Visible = value;
-                    VerticalVisualScrollBar.ForceSetVisibleState(false);
+                    base.Visible = false;
+                    if (_darkModeEnabled) VerticalVisualScrollBar?.ForceSetVisibleState(false);
                 }
             }
         }
 
         public new void Show()
         {
-            VerticalVisualScrollBar.ForceSetVisibleState(true);
+            if (_darkModeEnabled) VerticalVisualScrollBar?.ForceSetVisibleState(true);
             base.Show();
         }
 
         public new void Hide()
         {
             base.Hide();
-            VerticalVisualScrollBar.ForceSetVisibleState(false);
+            if (_darkModeEnabled) VerticalVisualScrollBar?.ForceSetVisibleState(false);
         }
 
         #endregion
