@@ -13,6 +13,9 @@ namespace DarkUI.Controls
         // TODO: @DarkMode(ScrollBarVisualOnly_Native):
         // For textboxes, when the vertical scroll is available, it's always visible (but disabled when unnecessary).
         // But the horizontal one is only visible when necessary and invisible otherwise.
+        // TODO: @DarkMode(ScrollBarVisualOnly_Native):
+        // The scroll bar is still not right. It bumps upward when pressed, and at the very bottom we have a
+        // one-line change when going between light and dark modes...
 
         #region Private fields
 
