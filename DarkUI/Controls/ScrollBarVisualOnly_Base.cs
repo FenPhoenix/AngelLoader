@@ -375,7 +375,8 @@ namespace DarkUI.Controls
         private protected Rectangle GetVisualThumbRect(ref Native.SCROLLBARINFO sbi, bool clampToMin = false)
         {
             int thumbLength;
-            if (clampToMin)
+            //if (clampToMin)
+            if(false)
             {
                 int minThumbLength = _isVertical
                     ? SystemInformation.VerticalScrollBarThumbHeight
@@ -395,7 +396,8 @@ namespace DarkUI.Controls
         private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi, bool clampToMin = false)
         {
             int thumbLength;
-            if (clampToMin)
+            //if (clampToMin)
+            if (false)
             {
                 int minThumbLength = _isVertical
                     ? SystemInformation.VerticalScrollBarThumbHeight

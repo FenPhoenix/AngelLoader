@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -182,12 +183,12 @@ namespace DarkUI.Controls
 
                 var size = new Size(loc.Width, loc.Height);
 
-                var si = GetScrollInfo(Native.SIF_TRACKPOS);
+                //var si = GetScrollInfo(Native.SIF_TRACKPOS);
 
                 bool refresh = false;
 
                 // Only refresh when we need to
-                if ((_leftButtonPressedOnThumb && si.nTrackPos != _trackPos) ||
+                if ((_leftButtonPressedOnThumb /*&& si.nTrackPos != _trackPos*/) ||
                     _size != size || _thumbLoc != loc ||
                     _xyThumbTop != sbi.xyThumbTop ||
                     _xyThumbBottom != sbi.xyThumbBottom)
@@ -197,7 +198,7 @@ namespace DarkUI.Controls
                     Size = size;
                     _size = size;
                     _thumbLoc = loc;
-                    _trackPos = si.nTrackPos;
+                    //_trackPos = si.nTrackPos;
 
                     _xyThumbTop = sbi.xyThumbTop;
                     _xyThumbBottom = sbi.xyThumbBottom;
@@ -243,6 +244,12 @@ namespace DarkUI.Controls
 
                 var g = e.Graphics;
 
+                //if (_isVertical && _owner.HorizontalVisualScrollBar == null)
+                //{
+                //    var si0 = GetScrollInfo(Native.SIF_ALL);
+                //    Trace.WriteLine("nPage: " + si0.nPage);
+                //}
+
                 PaintArrows(g, enabled);
 
                 #region Thumb
@@ -258,7 +265,30 @@ namespace DarkUI.Controls
                         // even when tracking. Looks like it may do something with WndProc()/WmReflectScroll().
                         // See if we can replicate it!
 
-                        var si = GetScrollInfo(Native.SIF_TRACKPOS | Native.SIF_PAGE | Native.SIF_RANGE);
+                        // TODO: @DarkMode(ScrollBarVisualOnly_Native.OnPaint()):
+                        // If we set nPos from nTrackPos manually, we work exactly like the non-native version
+                        // with no further hacks necessary. YES! But we're still not being clamped to the minimum
+                        // thumb size. Figure that out and we're golden.
+                        var si = GetScrollInfo(Native.SIF_ALL);
+                        si.nPos = si.nTrackPos;
+                        //si.nMin = 0;
+                        //si.nMax = 100;
+                        //si.nPage = (uint)Math.Min(si.nPage, si.nMax - si.nMin + 1);
+                        si.nTrackPos = 0;
+                        Native.SetScrollInfo(_owner.Handle,
+                            (int)(_isVertical ? Native.SB_VERT : Native.SB_HORZ),
+                            ref si, true);
+
+                        sbi = GetCurrentScrollBarInfo();
+
+                        _xyThumbTop = sbi.xyThumbTop;
+                        _xyThumbBottom = sbi.xyThumbBottom;
+
+                        //Trace.WriteLine("Native xyThumbTop: " + sbi.xyThumbTop);
+
+                        g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi, clampToMin: true));
+
+                        return;
 
                         int thumbTop = si.nTrackPos;
 

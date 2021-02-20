@@ -17,11 +17,51 @@ namespace AngelLoader.WinAPI
         internal const int WM_NOTIFY = 0x004E;
         internal const int WM_SETREDRAW = 11;
 
+        internal const int OCM__BASE = 8192;
+        internal const int OCM_HSCROLL = (OCM__BASE + WM_HSCROLL);
+        internal const int OCM_VSCROLL = (OCM__BASE + WM_VSCROLL);
+
         internal const int HWND_BROADCAST = 0xffff;
 
         internal const int EN_LINK = 0x070b;
 
         internal const int WM_CHANGEUISTATE = 0x0127;
+
+        public const int SIF_RANGE = 0x0001;
+        public const int SIF_PAGE = 0x0002;
+        public const int SIF_POS = 0x0004;
+        public const int SIF_DISABLENOSCROLL = 0x0008;
+        public const int SIF_TRACKPOS = 0x0010;
+        public const int SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS;
+
+        public const uint OBJID_HSCROLL = 0xFFFFFFFA;
+        public const uint OBJID_VSCROLL = 0xFFFFFFFB;
+        public const uint OBJID_CLIENT = 0xFFFFFFFC;
+
+        public const uint SB_HORZ = 0;
+        public const uint SB_VERT = 1;
+        public const uint SB_CTL = 2;
+        public const uint SB_BOTH = 3;
+
+        public static int MAKELONG(int low, int high) => high << 16 | low & (int)ushort.MaxValue;
+
+        public static IntPtr MAKELPARAM(int low, int high) => (IntPtr)(high << 16 | low & (int)ushort.MaxValue);
+
+        public static int HIWORD(int n) => n >> 16 & (int)ushort.MaxValue;
+
+        public static int HIWORD(IntPtr n) => HIWORD((int)(long)n);
+
+        public static int LOWORD(int n) => n & (int)ushort.MaxValue;
+
+        public static int LOWORD(IntPtr n) => LOWORD((int)(long)n);
+
+        public static int SignedHIWORD(IntPtr n) => SignedHIWORD((int)(long)n);
+
+        public static int SignedLOWORD(IntPtr n) => SignedLOWORD((int)(long)n);
+
+        public static int SignedHIWORD(int n) => (int)(short)(n >> 16 & (int)ushort.MaxValue);
+
+        public static int SignedLOWORD(int n) => (int)(short)(n & (int)ushort.MaxValue);
 
         #region WM_CHANGEUISTATE
 
@@ -40,7 +80,8 @@ namespace AngelLoader.WinAPI
         #region Scrollbar
 
         internal const int WM_SCROLL = 276;
-        internal const int WM_VSCROLL = 277;
+        internal const int WM_VSCROLL = 0x115;
+        internal const int WM_HSCROLL = 0x114;
         //internal const int SB_LINEUP = 0;
         internal const int SB_LINELEFT = 0;
         //internal const int SB_LINEDOWN = 1;

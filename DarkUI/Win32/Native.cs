@@ -125,6 +125,9 @@ namespace DarkUI.Win32
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetScrollInfo(IntPtr hwnd, uint fnBar, ref SCROLLINFO lpsi);
 
+        [DllImport("user32.dll")]
+        public static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
+
         public struct SCROLLINFO
         {
             public int cbSize;
