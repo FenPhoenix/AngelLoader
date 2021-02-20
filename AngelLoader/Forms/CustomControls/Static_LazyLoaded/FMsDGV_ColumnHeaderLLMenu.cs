@@ -176,10 +176,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             _constructed = true;
 
-            SetMenuItemTextToLocalized();
+            Localize();
         }
 
-        internal static void SetMenuItemTextToLocalized()
+        internal static void Localize()
         {
             if (!_constructed) return;
 

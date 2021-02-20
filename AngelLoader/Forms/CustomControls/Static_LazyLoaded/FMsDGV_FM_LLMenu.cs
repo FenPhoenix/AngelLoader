@@ -18,16 +18,16 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         #region Backing fields
 
         private static bool _constructed;
-        private static bool _installUninstallMenuItemEnabled;
         private static bool _playFMMenuItemEnabled;
-        private static bool _scanFMMenuItemEnabled;
-        private static bool _openInDromEdSepVisible;
-        private static bool _openInDromEdMenuItemVisible;
-        private static bool _openInDromedMenuItemEnabled;
         private static bool _playFMInMPMenuItemVisible;
         private static bool _playFMInMPMenuItemEnabled;
-        private static bool _convertAudioSubMenuEnabled;
+        private static bool _installUninstallMenuItemEnabled;
         private static bool _deleteFMMenuItemEnabled;
+        private static bool _openInDromEdMenuItemVisible;
+        private static bool _openInDromedMenuItemEnabled;
+        private static bool _openFMFolderMenuItemVisible;
+        private static bool _scanFMMenuItemEnabled;
+        private static bool _convertAudioSubMenuEnabled;
         private static int _rating = -1;
         private static bool _finishedOnNormalChecked;
         private static bool _finishedOnHardChecked;
@@ -49,6 +49,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom? DeleteFMMenuItem;
         private static ToolStripSeparator? OpenInDromEdSep;
         private static ToolStripMenuItemCustom? OpenInDromEdMenuItem;
+        private static ToolStripSeparator? OpenFMFolderSep;
+        private static ToolStripMenuItemCustom? OpenFMFolderMenuItem;
         private static ToolStripMenuItemCustom? ScanFMMenuItem;
         private static ToolStripMenuItemCustom? ConvertAudioMenuItem;
         private static ToolStripMenuItemCustom? ConvertWAVsTo16BitMenuItem;
@@ -106,6 +108,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Resources.Trash_16 },
                 OpenInDromEdSep = new ToolStripSeparator(),
                 OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
+                OpenFMFolderSep = new ToolStripSeparator(),
+                OpenFMFolderMenuItem = new ToolStripMenuItemCustom(),
                 new ToolStripSeparator(),
                 ScanFMMenuItem = new ToolStripMenuItemCustom(),
                 ConvertAudioMenuItem = new ToolStripMenuItemCustom(),
@@ -150,6 +154,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             InstallUninstallMenuItem.Click += AsyncMenuItems_Click;
             DeleteFMMenuItem.Click += AsyncMenuItems_Click;
             OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
+            OpenFMFolderMenuItem.Click += AsyncMenuItems_Click;
             ScanFMMenuItem.Click += AsyncMenuItems_Click;
             ConvertWAVsTo16BitMenuItem.Click += AsyncMenuItems_Click;
             ConvertOGGsToWAVsMenuItem.Click += AsyncMenuItems_Click;
@@ -173,15 +178,23 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Set main menu item values
 
-            InstallUninstallMenuItem.Enabled = _installUninstallMenuItemEnabled;
-            DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
             PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
             PlayFMInMPMenuItem.Visible = _playFMInMPMenuItemVisible;
             PlayFMInMPMenuItem.Enabled = _playFMInMPMenuItemEnabled;
-            ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
-            OpenInDromEdSep.Visible = _openInDromEdSepVisible;
+
+            InstallUninstallMenuItem.Enabled = _installUninstallMenuItemEnabled;
+
+            DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
+
+            OpenInDromEdSep.Visible = _openInDromEdMenuItemVisible;
             OpenInDromEdMenuItem.Visible = _openInDromEdMenuItemVisible;
             OpenInDromEdMenuItem.Enabled = _openInDromedMenuItemEnabled;
+
+            OpenFMFolderSep.Visible = _openFMFolderMenuItemVisible;
+            OpenFMFolderMenuItem.Visible = _openFMFolderMenuItemVisible;
+
+            ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
+
             ConvertAudioMenuItem.Enabled = _convertAudioSubMenuEnabled;
 
             #endregion
@@ -201,7 +214,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             // These must come after the constructed bool gets set to true
             UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
             SetRatingMenuItemChecked(_rating);
-            SetFMMenuTextToLocalized();
+            Localize();
         }
 
         private static void UncheckFinishedOnMenuItemsExceptUnknown()
@@ -222,7 +235,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        internal static void SetFMMenuTextToLocalized()
+        internal static void Localize()
         {
             if (!_constructed) return;
 
@@ -249,6 +262,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             DeleteFMMenuItem!.Text = LText.FMsList.FMMenu_DeleteFM;
 
             SetOpenInDromEdMenuItemText(sayShockEd);
+
+            OpenFMFolderMenuItem!.Text = LText.FMsList.FMMenu_OpenFMFolder;
 
             ScanFMMenuItem!.Text = LText.FMsList.FMMenu_ScanFM;
 
@@ -443,7 +458,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
             else
             {
-                _openInDromEdSepVisible = value;
                 _openInDromEdMenuItemVisible = value;
             }
         }
@@ -467,6 +481,19 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             OpenInDromEdMenuItem!.Text = sayShockEd
                 ? LText.FMsList.FMMenu_OpenInShockEd
                 : LText.FMsList.FMMenu_OpenInDromEd;
+        }
+
+        internal static void SetOpenFMFolderVisible(bool value)
+        {
+            if (_constructed)
+            {
+                OpenFMFolderSep!.Visible = value;
+                OpenFMFolderMenuItem!.Visible = value;
+            }
+            else
+            {
+                _openFMFolderMenuItemVisible = value;
+            }
         }
 
         internal static void SetScanFMMenuItemEnabled(bool value)
@@ -573,6 +600,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 var fm = _owner.FMsDGV.GetSelectedFM();
                 if (fm.Installed || await FMInstallAndPlay.InstallFM(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
+            }
+            else if (sender == OpenFMFolderMenuItem)
+            {
+                Core.OpenFMFolder(_owner.FMsDGV.GetSelectedFM());
             }
             else if (sender == ScanFMMenuItem)
             {

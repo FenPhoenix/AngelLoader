@@ -128,12 +128,6 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void InjectOwner(MainForm owner) => _owner = owner;
 
-        internal static void Localize()
-        {
-            FMsDGV_ColumnHeaderLLMenu.SetMenuItemTextToLocalized();
-            FMsDGV_FM_LLMenu.SetFMMenuTextToLocalized();
-        }
-
         #endregion
 
         // We keep this non-static so we can call it with an instance syntax like everything else for consistency.

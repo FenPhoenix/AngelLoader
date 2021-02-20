@@ -1218,7 +1218,8 @@ namespace AngelLoader.Forms
 
                 #region FMs list
 
-                DataGridViewCustom.Localize();
+                FMsDGV_ColumnHeaderLLMenu.Localize();
+                FMsDGV_FM_LLMenu.Localize();
 
                 Lazy_FMsListZoomButtons.Localize();
 
@@ -3910,26 +3911,29 @@ namespace AngelLoader.Forms
         {
             if (FMsViewList.Count == 0) ScanAllFMsButton.Enabled = false;
 
+            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(false);
+            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(false);
+            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(false);
+
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(true);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(false);
+
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(false);
+
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(false);
+            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(false);
+            FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(false);
+
+            FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(false);
+            
+            FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(false);
+
+            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(false);
 
             InstallUninstallFMLLButton.SetSayInstall(true);
             InstallUninstallFMLLButton.SetEnabled(false);
 
-            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(false);
             PlayFMButton.Enabled = false;
-
-            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(false);
-            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(false);
-
-            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(false);
-            FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(false);
-
-            FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(false);
-
-            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(false);
 
             SetReadmeVisible(false);
             // Save memory
@@ -4035,26 +4039,30 @@ namespace AngelLoader.Forms
 
             bool gameIsSupported = GameIsKnownAndSupported(fm.Game);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
-            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(!fm.MarkedUnavailable);
-            FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(fmIsSS2);
-
-            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
-            FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!fm.MarkedUnavailable);
+            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!fm.MarkedUnavailable);
 
-            InstallUninstallFMLLButton.SetEnabled(gameIsSupported && !fm.MarkedUnavailable);
-            InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
 
-            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
-            PlayFMButton.Enabled = gameIsSupported && !fm.MarkedUnavailable;
+            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(!fm.MarkedUnavailable);
+
+            FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(fmIsSS2);
+            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
+            FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!fm.MarkedUnavailable);
+
+            FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(fm.Installed);
 
             FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!fm.MarkedUnavailable);
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(GameIsDark(fm.Game) && fm.Installed && !fm.MarkedUnavailable);
+
+            InstallUninstallFMLLButton.SetEnabled(gameIsSupported && !fm.MarkedUnavailable);
+            InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
+
+            PlayFMButton.Enabled = gameIsSupported && !fm.MarkedUnavailable;
 
             WebSearchButton.Enabled = true;
 
