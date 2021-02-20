@@ -251,32 +251,35 @@ namespace DarkUI.Controls
                 {
                     if (_leftButtonPressedOnThumb)
                     {
+                        // TODO: @DarkMode(ScrollBarVisualOnly_Native.OnPaint()): This whole thing is an approximation.
+                        // It works okay, but if we can figure out how we're SUPPOSED to translate the "units"
+                        // into pixels, we should switch to that immediately.
+
                         var si = GetScrollInfo(Native.SIF_TRACKPOS | Native.SIF_PAGE | Native.SIF_RANGE);
 
-                        int thumbTop = si.nTrackPos + (_isVertical
-                            ? SystemInformation.VerticalScrollBarArrowHeight
-                            : SystemInformation.HorizontalScrollBarArrowWidth);
+                        int thumbTop = si.nTrackPos;
 
-                        int thumbLength = sbi.xyThumbBottom - sbi.xyThumbTop;
+                        double percentAlong = GetPercentFromValue_Double(
+                            thumbTop,
+                            (int)(si.nMax - Math.Max(si.nPage - 1, 0)));
 
-                        int scrollMargin = _isVertical
-                            ? SystemInformation.VerticalScrollBarArrowHeight
-                            : SystemInformation.HorizontalScrollBarArrowWidth;
+                        if (percentAlong >= 99.5) percentAlong = 100;
 
                         int thisExtent = _isVertical ? Height : Width;
 
-                        // Important that we use this formula (nMax - max(nPage - 1, 0)) or else our position is
-                        // always infuriatingly not-quite-right.
-                        double percentAlong = GetPercentFromValue(
-                            thumbTop - scrollMargin,
-                            (int)(si.nMax - Math.Max(si.nPage - 1, 0)));
-                        int thumbTopPixels = GetValueFromPercent(
+                        int scrollMarginPX = _isVertical
+                            ? SystemInformation.VerticalScrollBarArrowHeight
+                            : SystemInformation.HorizontalScrollBarArrowWidth;
+
+                        int thumbLength = sbi.xyThumbBottom - sbi.xyThumbTop;
+
+                        int thumbTopPixels = GetValueFromPercent_Rounded(
                             percentAlong,
-                            thisExtent - (scrollMargin * 2) - (thumbLength));
+                            (thisExtent - (scrollMarginPX * 2)) - thumbLength);
 
                         var rect = _isVertical
-                            ? new Rectangle(1, thumbTopPixels + scrollMargin, Width - 2, thumbLength)
-                            : new Rectangle(thumbTopPixels + scrollMargin, 1, thumbLength, Height - 2);
+                            ? new Rectangle(1, thumbTopPixels + scrollMarginPX, Width - 2, thumbLength)
+                            : new Rectangle(thumbTopPixels + scrollMarginPX, 1, thumbLength, Height - 2);
 
                         g.FillRectangle(_thumbPressedBrush, rect);
                     }

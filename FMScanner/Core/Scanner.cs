@@ -486,7 +486,7 @@ namespace FMScanner
                     progressReport.FMName = missions[i].Path;
                     progressReport.FMNumber = i + 1;
                     progressReport.FMsTotal = missions.Count;
-                    progressReport.Percent = GetPercentFromValue(missions.Count == 1 ? 0 : i + 1, missions.Count);
+                    progressReport.Percent = GetPercentFromValue_Int(missions.Count == 1 ? 0 : i + 1, missions.Count);
                     progressReport.Finished = false;
 
                     progress.Report(progressReport);

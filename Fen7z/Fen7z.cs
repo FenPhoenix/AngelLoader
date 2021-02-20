@@ -170,7 +170,7 @@ namespace Fen7z
                                     ? lineT.Substring(pi + 1, di)
                                     : lineT.Substring(pi + 1), out int entriesDone))
                                 {
-                                    int filesPercent = GetPercentFromValue(entriesDone, entriesCount).Clamp(0, 100);
+                                    int filesPercent = GetPercentFromValue_Int(entriesDone, entriesCount).Clamp(0, 100);
                                     report.PercentOfEntries = filesPercent;
                                 }
 
