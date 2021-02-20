@@ -82,7 +82,7 @@ namespace AngelLoader.Forms
         // To order them such that we can just look them up with an index
         private readonly TabPage[] _gameTabsInOrder;
         private readonly ToolStripButtonCustom[] _filterByGameButtonsInOrder;
-        private readonly TabPageCustom[] _topRightTabsInOrder;
+        private readonly TabPage[] _topRightTabsInOrder;
 
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
@@ -561,7 +561,7 @@ namespace AngelLoader.Forms
             // Putting these into a list whose order matches the enum allows us to just iterate the list without
             // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
             // when we add new tab pages.
-            _topRightTabsInOrder = new[]
+            _topRightTabsInOrder = new TabPage[]
             {
                 StatisticsTabPage,
                 EditFMTabPage,
