@@ -7,6 +7,8 @@ namespace DarkUI.Controls
 {
     public class DarkTextBox : TextBox, IDarkableScrollableNative
     {
+        // TODO: @DarkMode: Make it so changing modes doesn't reset the scroll position of the textbox
+
         private bool _origValuesStored;
         private Color _origForeColor;
         private Color _origBackColor;
