@@ -254,6 +254,9 @@ namespace DarkUI.Controls
                         // TODO: @DarkMode(ScrollBarVisualOnly_Native.OnPaint()): This whole thing is an approximation.
                         // It works okay, but if we can figure out how we're SUPPOSED to translate the "units"
                         // into pixels, we should switch to that immediately.
+                        // The WinForms ScrollBars still report the xyThumbTop/xyThumbBottom values correctly
+                        // even when tracking. Looks like it may do something with WndProc()/WmReflectScroll().
+                        // See if we can replicate it!
 
                         var si = GetScrollInfo(Native.SIF_TRACKPOS | Native.SIF_PAGE | Native.SIF_RANGE);
 
@@ -271,7 +274,11 @@ namespace DarkUI.Controls
                             ? SystemInformation.VerticalScrollBarArrowHeight
                             : SystemInformation.HorizontalScrollBarArrowWidth;
 
-                        int thumbLength = sbi.xyThumbBottom - sbi.xyThumbTop;
+                        int minThumbLength = _isVertical
+                            ? SystemInformation.VerticalScrollBarThumbHeight
+                            : SystemInformation.HorizontalScrollBarThumbWidth;
+
+                        int thumbLength = (sbi.xyThumbBottom - sbi.xyThumbTop).Clamp(minThumbLength, int.MaxValue);
 
                         int thumbTopPixels = GetValueFromPercent_Rounded(
                             percentAlong,
@@ -285,7 +292,7 @@ namespace DarkUI.Controls
                     }
                     else
                     {
-                        g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi));
+                        g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi, clampToMin: true));
                     }
                 }
             }

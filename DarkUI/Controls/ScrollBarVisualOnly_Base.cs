@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using DarkUI.Win32;
 using Gma.System.MouseKeyHook;
 
@@ -190,7 +191,7 @@ namespace DarkUI.Controls
             Point cursorPos = PointToClient(e.Location);
 
             var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(ref sbi);
+            var thumbRect = GetThumbRect(ref sbi, clampToMin: true);
 
             if (thumbRect.Contains(cursorPos))
             {
@@ -227,7 +228,7 @@ namespace DarkUI.Controls
             bool refresh = false;
 
             var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(ref sbi);
+            var thumbRect = GetThumbRect(ref sbi, clampToMin: true);
             var firstArrowRect = GetArrowRect();
             var secondArrowRect = GetArrowRect(second: true);
 
@@ -284,7 +285,7 @@ namespace DarkUI.Controls
             if (!Visible || !Enabled) return;
 
             var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(ref sbi);
+            var thumbRect = GetThumbRect(ref sbi, clampToMin: true);
             var leftArrowRect = GetArrowRect();
             var rightArrowRect = GetArrowRect(second: true);
 
@@ -371,18 +372,44 @@ namespace DarkUI.Controls
 
         private protected virtual Native.SCROLLBARINFO GetCurrentScrollBarInfo() => throw new NotImplementedException();
 
-        private protected Rectangle GetVisualThumbRect(ref Native.SCROLLBARINFO sbi)
+        private protected Rectangle GetVisualThumbRect(ref Native.SCROLLBARINFO sbi, bool clampToMin = false)
         {
+            int thumbLength;
+            if (clampToMin)
+            {
+                int minThumbLength = _isVertical
+                    ? SystemInformation.VerticalScrollBarThumbHeight
+                    : SystemInformation.HorizontalScrollBarThumbWidth;
+                thumbLength = (sbi.xyThumbBottom - sbi.xyThumbTop).Clamp(minThumbLength, int.MaxValue);
+            }
+            else
+            {
+                thumbLength = sbi.xyThumbBottom - sbi.xyThumbTop;
+            }
+
             return _isVertical
-                ? new Rectangle(1, sbi.xyThumbTop, Width - 2, sbi.xyThumbBottom - sbi.xyThumbTop)
-                : new Rectangle(sbi.xyThumbTop, 1, sbi.xyThumbBottom - sbi.xyThumbTop, Height - 2);
+                ? new Rectangle(1, sbi.xyThumbTop, Width - 2, thumbLength)
+                : new Rectangle(sbi.xyThumbTop, 1, thumbLength, Height - 2);
         }
 
-        private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
+        private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi, bool clampToMin = false)
         {
+            int thumbLength;
+            if (clampToMin)
+            {
+                int minThumbLength = _isVertical
+                    ? SystemInformation.VerticalScrollBarThumbHeight
+                    : SystemInformation.HorizontalScrollBarThumbWidth;
+                thumbLength = (sbi.xyThumbBottom - sbi.xyThumbTop).Clamp(minThumbLength, int.MaxValue);
+            }
+            else
+            {
+                thumbLength = sbi.xyThumbBottom - sbi.xyThumbTop;
+            }
+
             return _isVertical
-                ? new Rectangle(0, sbi.xyThumbTop, Width, sbi.xyThumbBottom - sbi.xyThumbTop)
-                : new Rectangle(sbi.xyThumbTop, 0, sbi.xyThumbBottom - sbi.xyThumbTop, Height);
+                ? new Rectangle(0, sbi.xyThumbTop, Width, thumbLength)
+                : new Rectangle(sbi.xyThumbTop, 0, thumbLength, Height);
         }
 
         private Rectangle GetArrowRect(bool second = false)
