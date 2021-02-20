@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.WinAPI;
 using static AngelLoader.Forms.CustomControls.RichTextBoxCustom_Interop;
 using static AngelLoader.WinAPI.InteropMisc;

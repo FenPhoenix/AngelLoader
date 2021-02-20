@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using static AL_Common.CommonUtils;
 using static AngelLoader.Forms.ControlUtils;
 using static AngelLoader.Misc;
 

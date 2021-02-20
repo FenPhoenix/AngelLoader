@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using AngelLoader.DataClasses;
 
 namespace AngelLoader
@@ -89,22 +88,6 @@ namespace AngelLoader
 
             internal static readonly string GameVersions = "#game_versions";
         }
-
-        #endregion
-
-        #region Preset char arrays
-
-        internal static readonly byte[] RTFHeaderBytes = Encoding.ASCII.GetBytes(@"{\rtf1");
-
-        // Perf, for passing to Split(), Trim() etc. so we don't allocate all the time
-        internal static readonly char[] CA_Comma = { ',' };
-        internal static readonly char[] CA_Semicolon = { ';' };
-        internal static readonly char[] CA_CommaSemicolon = { ',', ';' };
-        internal static readonly char[] CA_CommaSpace = { ',', ' ' };
-        internal static readonly char[] CA_Backslash = { '\\' };
-        //internal static readonly char[] CA_ForwardSlash = { '/' };
-        internal static readonly char[] CA_BS_FS = { '\\', '/' };
-        internal static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
 
         #endregion
 

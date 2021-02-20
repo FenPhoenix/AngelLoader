@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
+using AL_Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 

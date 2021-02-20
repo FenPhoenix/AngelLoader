@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 

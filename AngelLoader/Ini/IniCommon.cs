@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using AngelLoader.DataClasses;
+using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;

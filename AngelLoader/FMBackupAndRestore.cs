@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
 using SevenZip;
+using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;

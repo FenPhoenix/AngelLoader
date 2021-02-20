@@ -3,8 +3,10 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
+using AL_Common;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
+using static AL_Common.CommonUtils;
 
 namespace FMScanner
 {
@@ -103,9 +105,6 @@ namespace FMScanner
                 "search patterns: " + spString + "\r\n" +
                 "current search pattern: '" + pattern + "'");
         }
-
-        // TODO: FastIO: One single 1-element static array for the convenience of not having to pass it every call
-        private static readonly char[] CA_Backslash = { '\\' };
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         private static bool FirstFileExists(FastIOSearchOption searchOption, string path, params string[] searchPatterns)

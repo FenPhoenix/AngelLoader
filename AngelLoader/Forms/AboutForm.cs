@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 

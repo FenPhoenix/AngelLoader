@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using AL_Common;
 using JetBrains.Annotations;
 
 namespace AngelLoader.WinAPI.Ookii.Dialogs

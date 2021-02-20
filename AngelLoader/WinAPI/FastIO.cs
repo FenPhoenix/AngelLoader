@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
-using static AngelLoader.Misc;
+using static AL_Common.CommonUtils;
 
 namespace AngelLoader.WinAPI
 {

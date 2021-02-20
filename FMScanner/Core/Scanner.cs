@@ -27,8 +27,8 @@ using FMScanner.SimpleHelpers;
 using JetBrains.Annotations;
 using SevenZip;
 using static System.StringComparison;
+using static AL_Common.CommonUtils;
 using static FMScanner.Logger;
-using static FMScanner.Utility;
 
 namespace FMScanner
 {

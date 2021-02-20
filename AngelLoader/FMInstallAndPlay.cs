@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
+using static AL_Common.CommonUtils;
 using static AngelLoader.FMBackupAndRestore;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;

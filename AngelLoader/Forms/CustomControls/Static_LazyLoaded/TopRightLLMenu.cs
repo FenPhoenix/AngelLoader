@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using static AL_Common.CommonUtils;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded

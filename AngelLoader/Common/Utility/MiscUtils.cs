@@ -4,9 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using SevenZip;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
@@ -31,34 +31,7 @@ namespace AngelLoader
 
         #region Numeric
 
-        #region Percent
-
-        internal static int GetPercentFromValue(int current, int total) => total == 0 ? 0 : (100 * current) / total;
-        //internal static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
-
-        #endregion
-
         #region Clamping
-
-        /// <summary>
-        /// Clamps a number to between min and max.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <returns></returns>
-        internal static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> =>
-            value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
-
-        /// <summary>
-        /// If <paramref name="value"/> is less than zero, returns zero. Otherwise, returns <paramref name="value"/>
-        /// unchanged.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static int ClampToZero(this int value) => Math.Max(value, 0);
-
-        internal static float ClampZeroToOne(this float value) => value.Clamp(0, 1.0f);
 
         internal static float ClampToRichTextBoxZoomMinMax(this float value) => value.Clamp(0.1f, 5.0f);
 
@@ -100,26 +73,6 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Unable to set directory attributes for " + dirOnDiskFullPath, ex);
-            }
-        }
-
-        internal static void SetFileAttributesFromSevenZipEntry(ArchiveFileInfo archiveFileInfo, string fileOnDiskFullPath)
-        {
-            // ExtractFile() doesn't set these, so we have to set them ourselves.
-            // ExtractArchive() sets them though, so we don't need to call this when using that.
-            try
-            {
-                _ = new FileInfo(fileOnDiskFullPath)
-                {
-                    IsReadOnly = false,
-                    LastWriteTime = archiveFileInfo.LastWriteTime,
-                    CreationTime = archiveFileInfo.CreationTime,
-                    LastAccessTime = archiveFileInfo.LastAccessTime
-                };
-            }
-            catch (Exception ex)
-            {
-                Log("Unable to set file attributes for " + fileOnDiskFullPath, ex);
             }
         }
 

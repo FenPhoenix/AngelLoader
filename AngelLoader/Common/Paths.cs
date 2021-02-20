@@ -3,6 +3,7 @@ using System.IO;
 using System.Security;
 using AngelLoader.WinAPI;
 using Microsoft.Win32;
+using static AL_Common.CommonUtils;
 using static AngelLoader.Logger;
 
 namespace AngelLoader
@@ -70,7 +71,7 @@ namespace AngelLoader
             #region Safety check
 
             // Make sure we never delete any paths that are not safely tucked in our temp folder
-            string baseTemp = _baseTemp.TrimEnd(Misc.CA_BS_FS_Space);
+            string baseTemp = _baseTemp.TrimEnd(CA_BS_FS_Space);
 
             // @DIRSEP: getting rid of this concat is more trouble than it's worth
             // This method is called rarely and only once in a row

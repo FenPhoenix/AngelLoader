@@ -3,6 +3,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
+using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using AL_Common;
 
 namespace AngelLoader.Forms.CustomControls
 {

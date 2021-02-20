@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using DarkUI.Win32;
+using static AL_Common.CommonUtils;
 
 namespace DarkUI.Controls
 {
@@ -263,10 +264,10 @@ namespace DarkUI.Controls
 
                         // Important that we use this formula (nMax - max(nPage - 1, 0)) or else our position is
                         // always infuriatingly not-quite-right.
-                        double percentAlong = Global.GetPercentFromValue(
+                        double percentAlong = GetPercentFromValue(
                             thumbTop - scrollMargin,
                             (int)(si.nMax - Math.Max(si.nPage - 1, 0)));
-                        int thumbTopPixels = Global.GetValueFromPercent(
+                        int thumbTopPixels = GetValueFromPercent(
                             percentAlong,
                             thisExtent - (scrollMargin * 2) - (thumbLength));
 

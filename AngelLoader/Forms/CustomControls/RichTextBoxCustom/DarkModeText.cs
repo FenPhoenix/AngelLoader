@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using DarkUI.Controls;
+using static AL_Common.CommonUtils;
 using static AngelLoader.Forms.CustomControls.RichTextBoxCustom_Interop;
 using static AngelLoader.Misc;
 

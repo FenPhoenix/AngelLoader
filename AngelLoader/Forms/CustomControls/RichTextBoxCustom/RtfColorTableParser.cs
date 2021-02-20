@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using AL_Common;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls

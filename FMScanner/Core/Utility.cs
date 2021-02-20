@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
+using AL_Common;
 using static System.StringComparison;
 
 namespace FMScanner
@@ -39,8 +37,6 @@ namespace FMScanner
             return 1.0 - ((double)vec2[string2.Length] / Math.Max(string1.Length, string2.Length));
         }
 
-        internal static int GetPercentFromValue(int current, int total) => total == 0 ? 0 : (100 * current) / total;
-
         #region Readme validation
 
         internal static bool IsEnglishReadme(this string value)
@@ -59,37 +55,6 @@ namespace FMScanner
             readme.ExtIsGlml() ||
             // We don't scan HTML files, but we may still need them to check their dates
             readme.ExtIsHtml();
-
-        #endregion
-
-        #region Count chars
-
-        /// <summary>
-        /// Returns the number of times a character appears in a string.
-        /// Avoids whatever silly overhead junk Count(predicate) is doing.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="character"></param>
-        /// <returns></returns>
-        internal static int CountChars(this string value, char character)
-        {
-            int count = 0;
-            for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
-
-            return count;
-        }
-
-        internal static bool CharCountIsAtLeast(this string value, char character, int count, int start = 0)
-        {
-            int foundCount = 0;
-            for (int i = start; i < value.Length; i++)
-            {
-                if (value[i] == character) foundCount++;
-                if (foundCount == count) return true;
-            }
-
-            return false;
-        }
 
         #endregion
 
@@ -122,247 +87,9 @@ namespace FMScanner
             return false;
         }
 
-        internal static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
-
-        /// <summary>
-        /// Determines whether a string contains a specified substring. Uses
-        /// <see cref="StringComparison.OrdinalIgnoreCase"/>.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="substring"></param>
-        /// <returns></returns>
-        internal static bool ContainsI(this string value, string substring) => value.IndexOf(substring, OrdinalIgnoreCase) >= 0;
-
-        /// <summary>
-        /// Determines whether a List&lt;string&gt; contains a specified element. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="substring"></param>
-        /// <returns></returns>
-        internal static bool ContainsI(this string[] value, string substring)
-        {
-            for (int i = 0; i < value.Length; i++) if (value[i].Equals(substring, OrdinalIgnoreCase)) return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Determines whether a string[] contains a specified element. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="substring"></param>
-        /// <returns></returns>
-        internal static bool ContainsI(this List<string> value, string substring)
-        {
-            for (int i = 0; i < value.Count; i++) if (value[i].Equals(substring, OrdinalIgnoreCase)) return true;
-            return false;
-        }
-
-        #endregion
-
-        #region Equals
-
-        /// <summary>
-        /// Determines whether this string and a specified <see langword="string"/> object have the same value.
-        /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
-        /// </summary>
-        internal static bool EqualsI(this string first, string second) => first.Equals(second, OrdinalIgnoreCase);
-
-        #endregion
-
-        #region Path-specific string queries (separator-agnostic)
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsDirSep(this char character) => character == '/' || character == '\\';
-
-        // Disabled until needed
-        /*
-        [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
-        */
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
-
-        // Note: We hardcode '/' and '\' for now because we can get paths from archive files too, where the dir
-        // sep chars are in no way guaranteed to match those of the OS.
-        // Not like any OS is likely to use anything other than '/' or '\' anyway.
-
-        // We hope not to have to call this too often, but it's here as a fallback.
-        private static string CanonicalizePath(string value) => value.Replace('/', '\\');
-
-        /// <summary>
-        /// Returns true if <paramref name="value"/> contains either directory separator character.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static bool ContainsDirSep(this string value)
-        {
-            for (int i = 0; i < value.Length; i++) if (value[i].IsDirSep()) return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="start"></param>
-        /// <returns></returns>
-        internal static int CountDirSeps(this string value, int start = 0)
-        {
-            int count = 0;
-            for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
-            return count;
-        }
-
-        internal static bool DirSepCountIsAtLeast(this string value, int count, int start = 0)
-        {
-            int foundCount = 0;
-            for (int i = start; i < value.Length; i++)
-            {
-                if (value[i].IsDirSep()) foundCount++;
-                if (foundCount == count) return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Returns the last index of either directory separator character in <paramref name="value"/>.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static int LastIndexOfDirSep(this string value)
-        {
-            int i1 = value.LastIndexOf('/');
-            int i2 = value.LastIndexOf('\\');
-
-            return i1 == -1 && i2 == -1 ? -1 : Math.Max(i1, i2);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool AsciiPathCharsConsideredEqual_Win(char char1, char char2) =>
-            char1 == char2 ||
-            (char1.IsDirSep() && char2.IsDirSep()) ||
-            (char1 >= 'A' && char1 <= 'Z' && char2 >= 'a' && char2 <= 'z' && char1 == char2 - 32) ||
-            (char1 >= 'a' && char1 <= 'z' && char2 >= 'A' && char2 <= 'Z' && char1 == char2 + 32);
-
-        /// <summary>
-        /// Path equality check ignoring case and directory separator differences.
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns></returns>
-        internal static bool PathEqualsI(this string first, string second)
-        {
-            if (first == second) return true;
-
-            int firstLen = first.Length;
-            if (firstLen != second.Length) return false;
-
-            for (int i = 0; i < firstLen; i++)
-            {
-                char fc = first[i];
-                char sc = second[i];
-
-                if (fc > 127 || sc > 127)
-                {
-                    // Non-ASCII slow path
-                    return first.Equals(second, OrdinalIgnoreCase) ||
-                           CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
-                }
-
-                if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Path starts-with check ignoring case and directory separator differences.
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns></returns>
-        internal static bool PathStartsWithI(this string first, string second)
-        {
-            if (first.Length < second.Length) return false;
-
-            for (int i = 0; i < second.Length; i++)
-            {
-                char fc = first[i];
-                char sc = second[i];
-
-                if (fc > 127 || sc > 127)
-                {
-                    // Non-ASCII slow path
-                    return first.StartsWith(second, OrdinalIgnoreCase) ||
-                           CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
-                }
-
-                if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Path ends-with check ignoring case and directory separator differences.
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns></returns>
-        internal static bool PathEndsWithI(this string first, string second)
-        {
-            if (first.Length < second.Length) return false;
-
-            for (int fi = first.Length - second.Length, si = 0; fi < first.Length; fi++, si++)
-            {
-                char fc = first[fi];
-                char sc = second[si];
-
-                if (fc > 127 || sc > 127)
-                {
-                    // Non-ASCII slow path
-                    return first.EndsWith(second, OrdinalIgnoreCase) ||
-                           CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);
-                }
-
-                if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
-            }
-
-            return true;
-        }
-
         #endregion
 
         #region File extensions
-
-        /// <summary>
-        /// Determines whether this string ends with a file extension. Obviously only makes sense for strings
-        /// that are supposed to be file names.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static bool HasFileExtension(this string value)
-        {
-            int lastDotIndex = value.LastIndexOf('.');
-            return lastDotIndex > value.LastIndexOf('/') ||
-                   lastDotIndex > value.LastIndexOf('\\');
-        }
-
-        /// <summary>
-        /// Just removes the extension from a filename, without the rather large overhead of
-        /// Path.GetFileNameWithoutExtension().
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        internal static string RemoveExtension(this string fileName)
-        {
-            int i = fileName.LastIndexOf('.');
-            return i > -1 && i > fileName.LastIndexOf('\\') && i > fileName.LastIndexOf('/')
-                ? fileName.Substring(0, i)
-                : fileName;
-        }
 
         #region Baked-in extension checks (generated)
 
@@ -549,12 +276,6 @@ namespace FMScanner
 
         #region StartsWith and EndsWith
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiUpper(this char c) => c >= 'A' && c <= 'Z';
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiLower(this char c) => c >= 'a' && c <= 'z';
-
         private enum CaseComparison
         {
             CaseSensitive,
@@ -657,11 +378,11 @@ namespace FMScanner
                     }
                 }
 
-                if (IsAsciiUpper(str[si]) && IsAsciiLower(value[vi]))
+                if (str[si].IsAsciiUpper() && value[vi].IsAsciiLower())
                 {
                     if (caseComparison == CaseComparison.GivenOrLower || str[si] != value[vi] - 32) return false;
                 }
-                else if (IsAsciiUpper(value[vi]) && IsAsciiLower(str[si]))
+                else if (value[vi].IsAsciiUpper() && str[si].IsAsciiLower())
                 {
                     if (caseComparison == CaseComparison.GivenOrUpper || str[si] != value[vi] + 32) return false;
                 }
@@ -673,26 +394,6 @@ namespace FMScanner
 
             return true;
         }
-
-        #endregion
-
-        #region Empty / whitespace checks
-
-        /// <summary>
-        /// Returns true if <paramref name="value"/> is null or empty.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        [ContractAnnotation("null => true")]
-        internal static bool IsEmpty([NotNullWhen(false)] this string? value) => string.IsNullOrEmpty(value);
-
-        /// <summary>
-        /// Returns true if <paramref name="value"/> is null, empty, or whitespace.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        [ContractAnnotation("null => true")]
-        internal static bool IsWhiteSpace([NotNullWhen(false)] this string? value) => string.IsNullOrWhiteSpace(value);
 
         #endregion
 
@@ -743,52 +444,5 @@ namespace FMScanner
             value[value.Length - 1] == '\"' ? value.Substring(0, value.Length - 1) : value;
 
         #endregion
-
-        #region Clear and add
-
-        // Disabled until needed
-        /*
-        internal static void ClearAndAdd<T>(this List<T> list, T item)
-        {
-            list.Clear();
-            list.Add(item);
-        }
-        */
-
-        internal static void ClearAndAdd<T>(this List<T> list, List<T> items)
-        {
-            list.Clear();
-            list.AddRange(items);
-        }
-
-        internal static void ClearAndAdd<T>(this List<T> list, T[] items)
-        {
-            list.Clear();
-            list.AddRange(items);
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Returns the number of directory separators in a string, earlying-out once it's counted <paramref name="maxToCount"/>
-        /// occurrences.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="maxToCount">The maximum number of occurrences to count before earlying-out.</param>
-        /// <returns></returns>
-        internal static int CountDirSepsUpToAmount(this string value, int maxToCount)
-        {
-            int foundCount = 0;
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (value[i].IsDirSep())
-                {
-                    foundCount++;
-                    if (foundCount == maxToCount) break;
-                }
-            }
-
-            return foundCount;
-        }
     }
 }

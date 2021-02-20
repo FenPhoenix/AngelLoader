@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
     <ProjectReference Include="..\Fen7z\Fen7z.csproj" />
   </ItemGroup>
 

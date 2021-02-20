@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using AngelLoader.WinAPI;

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using static Fen7z.Utils;
+using AL_Common;
+using static AL_Common.CommonUtils;
 
 namespace Fen7z
 {

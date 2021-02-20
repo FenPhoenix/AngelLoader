@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Properties;
 using DarkUI.Controls;

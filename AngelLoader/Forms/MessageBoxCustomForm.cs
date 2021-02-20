@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.Properties;
 using static AngelLoader.Misc;
 
