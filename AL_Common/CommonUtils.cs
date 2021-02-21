@@ -185,6 +185,7 @@ namespace AL_Common
         //public static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
         public static int GetValueFromPercent(double percent, int total) => (int)((percent / 100d) * total);
         public static int GetValueFromPercent_Rounded(double percent, int total) => (int)Math.Round((percent / 100d) * total, 1, MidpointRounding.AwayFromZero);
+        public static double GetValueFromPercent_Double(double percent, int total) => percent / 100d * total;
 
         #endregion
 

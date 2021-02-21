@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -11,13 +10,6 @@ namespace DarkUI.Controls
 {
     public sealed class ScrollBarVisualOnly_Native : ScrollBarVisualOnly_Base
     {
-        // TODO: @DarkMode(ScrollBarVisualOnly_Native):
-        // For textboxes, when the vertical scroll is available, it's always visible (but disabled when unnecessary).
-        // But the horizontal one is only visible when necessary and invisible otherwise.
-        // TODO: @DarkMode(ScrollBarVisualOnly_Native):
-        // The scroll bar is still not right. It bumps upward when pressed, and at the very bottom we have a
-        // one-line change when going between light and dark modes...
-
         #region Private fields
 
         private readonly IDarkableScrollableNative _owner;
@@ -41,7 +33,6 @@ namespace DarkUI.Controls
 
         private Size? _size;
         private Rectangle? _thumbLoc;
-        private int _trackPos;
 
         private Size _ownerClientSize;
 
@@ -109,6 +100,83 @@ namespace DarkUI.Controls
             if (_owner.IsHandleCreated)
             {
                 Native.GetScrollBarInfo(_owner.Handle, _isVertical ? Native.OBJID_VSCROLL : Native.OBJID_HSCROLL, ref sbi);
+
+                // When the thumb is smaller than the minimum size, it visually clamps (in classic mode) to min,
+                // but our thumb top and bottom area continues shrinking down past it, causing us to be desynced
+                // with the real thumb. This whole garbage is just to clamp our size. It's not 100% perfect, but
+                // it works well enough for what is probably an uncommon-ish situation.
+                // Note that the WinForms ScrollBar control - and by extension any control (like DataGridView)
+                // that uses it - somehow avoids this and keeps the thumb top/bottom values correct even when
+                // clamping its visual thumb size. I've dug into the code and messed around and can't figure out
+                // how it does it. I'm tired of this crap, so have a 99% perfect one instead.
+                (int minThumbLengthPX, int arrowMarginPX, _, int innerExtentPX)
+                    = GetMeasurements();
+
+                int thumbLengthPX = sbi.xyThumbBottom - sbi.xyThumbTop;
+
+                if (thumbLengthPX < minThumbLengthPX)
+                {
+                    // These count from the top of the arrow, but we want them to count from the top of the inner area
+                    int xyThumbTop = sbi.xyThumbTop - arrowMarginPX;
+                    int xyThumbBottom = sbi.xyThumbBottom - arrowMarginPX;
+
+                    #region Plus up
+
+                    double p1 = GetPercentFromValue_Double(
+                        xyThumbTop,
+                        innerExtentPX - thumbLengthPX);
+
+                    double plusUpDouble = GetValueFromPercent_Double(
+                        p1,
+                        minThumbLengthPX - thumbLengthPX);
+
+                    double plusUp_IntPortion = Math.Truncate(plusUpDouble);
+                    double plusUp_FractionalPortion = plusUpDouble - plusUp_IntPortion;
+
+                    int plusUp = plusUp_FractionalPortion >= 0.5
+                        ? (int)plusUp_IntPortion + 1
+                        : (int)plusUp_IntPortion;
+
+                    #endregion
+
+                    #region Plus down
+
+                    double p2 = GetPercentFromValue_Double(
+                        (innerExtentPX) - xyThumbBottom,
+                        innerExtentPX - thumbLengthPX);
+
+                    double plusDownDouble = GetValueFromPercent_Double(
+                        p2,
+                        minThumbLengthPX - thumbLengthPX);
+
+                    double plusDown_IntPortion = Math.Truncate(plusDownDouble);
+                    double plusDown_FractionalPortion = plusUpDouble - plusDown_IntPortion;
+
+                    int plusDown = plusDown_FractionalPortion >= 0.5
+                        ? (int)plusDown_IntPortion + 1
+                        : (int)plusDown_IntPortion;
+
+                    #endregion
+
+                    xyThumbTop -= plusUp;
+                    xyThumbBottom += plusDown;
+
+                    // We still get one-pixel-off positioning sometimes, but at least we stay the same size.
+                    // Good enough...
+                    int newThumbLength = xyThumbBottom - xyThumbTop;
+                    if (newThumbLength > arrowMarginPX)
+                    {
+                        xyThumbBottom--;
+                    }
+                    else if (newThumbLength < arrowMarginPX)
+                    {
+                        xyThumbBottom++;
+                    }
+
+                    // Add the arrow margin back on now to make the final value correct
+                    sbi.xyThumbTop = xyThumbTop + arrowMarginPX;
+                    sbi.xyThumbBottom = xyThumbBottom + arrowMarginPX;
+                }
             }
 
             return sbi;
@@ -128,6 +196,29 @@ namespace DarkUI.Controls
             return si;
         }
 
+        private (int MinThumbLengthPX, int ArrowMarginPX, int ExtentPX, int InnerExtentPX)
+        GetMeasurements()
+        {
+            int minThumbLengthPX;
+            int scrollMarginPX;
+            int thisExtentPX;
+            if (_isVertical)
+            {
+                minThumbLengthPX = SystemInformation.VerticalScrollBarThumbHeight;
+                scrollMarginPX = SystemInformation.VerticalScrollBarArrowHeight;
+                thisExtentPX = Height;
+            }
+            else
+            {
+                minThumbLengthPX = SystemInformation.HorizontalScrollBarThumbWidth;
+                scrollMarginPX = SystemInformation.HorizontalScrollBarArrowWidth;
+                thisExtentPX = Width;
+            }
+            int innerExtentPX = thisExtentPX - (scrollMarginPX * 2);
+
+            return (minThumbLengthPX, scrollMarginPX, thisExtentPX, innerExtentPX);
+        }
+
         private protected override void RefreshIfNeeded(bool forceRefreshCorner = false)
         {
             if (_owner.ClosestAddableParent == null) return;
@@ -143,13 +234,12 @@ namespace DarkUI.Controls
                 return;
             }
 
-            var sbi = GetCurrentScrollBarInfo();
-
             if (_owner.Suspended && _xyThumbTop != null && _xyThumbBottom != null)
             {
                 return;
             }
 
+            var sbi = GetCurrentScrollBarInfo();
             var parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
 
             var newVisible = !_owner.Suspended && _owner.Visible && _owner.DarkModeEnabled && parentBarVisible;
@@ -183,8 +273,6 @@ namespace DarkUI.Controls
 
                 var size = new Size(loc.Width, loc.Height);
 
-                //var si = GetScrollInfo(Native.SIF_TRACKPOS);
-
                 bool refresh = false;
 
                 // Only refresh when we need to
@@ -198,7 +286,6 @@ namespace DarkUI.Controls
                     Size = size;
                     _size = size;
                     _thumbLoc = loc;
-                    //_trackPos = si.nTrackPos;
 
                     _xyThumbTop = sbi.xyThumbTop;
                     _xyThumbBottom = sbi.xyThumbBottom;
@@ -244,12 +331,6 @@ namespace DarkUI.Controls
 
                 var g = e.Graphics;
 
-                //if (_isVertical && _owner.HorizontalVisualScrollBar == null)
-                //{
-                //    var si0 = GetScrollInfo(Native.SIF_ALL);
-                //    Trace.WriteLine("nPage: " + si0.nPage);
-                //}
-
                 PaintArrows(g, enabled);
 
                 #region Thumb
@@ -258,71 +339,26 @@ namespace DarkUI.Controls
                 {
                     if (_leftButtonPressedOnThumb)
                     {
-                        // TODO: @DarkMode(ScrollBarVisualOnly_Native.OnPaint()): This whole thing is an approximation.
-                        // It works okay, but if we can figure out how we're SUPPOSED to translate the "units"
-                        // into pixels, we should switch to that immediately.
-                        // The WinForms ScrollBars still report the xyThumbTop/xyThumbBottom values correctly
-                        // even when tracking. Looks like it may do something with WndProc()/WmReflectScroll().
-                        // See if we can replicate it!
-
-                        // TODO: @DarkMode(ScrollBarVisualOnly_Native.OnPaint()):
                         // If we set nPos from nTrackPos manually, we work exactly like the non-native version
-                        // with no further hacks necessary. YES! But we're still not being clamped to the minimum
-                        // thumb size. Figure that out and we're golden.
+                        // except that we still don't visually clamp our thumb length. But we handle that elsewhere.
                         var si = GetScrollInfo(Native.SIF_ALL);
                         si.nPos = si.nTrackPos;
-                        //si.nMin = 0;
-                        //si.nMax = 100;
-                        //si.nPage = (uint)Math.Min(si.nPage, si.nMax - si.nMin + 1);
                         si.nTrackPos = 0;
-                        Native.SetScrollInfo(_owner.Handle,
-                            (int)(_isVertical ? Native.SB_VERT : Native.SB_HORZ),
-                            ref si, true);
+
+                        Native.SetScrollInfo(_owner.Handle, (int)(_isVertical ? Native.SB_VERT : Native.SB_HORZ), ref si, true);
 
                         sbi = GetCurrentScrollBarInfo();
 
                         _xyThumbTop = sbi.xyThumbTop;
                         _xyThumbBottom = sbi.xyThumbBottom;
 
-                        //Trace.WriteLine("Native xyThumbTop: " + sbi.xyThumbTop);
-
-                        g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi, clampToMin: true));
-
-                        return;
-
-                        int thumbTop = si.nTrackPos;
-
-                        double percentAlong = GetPercentFromValue_Double(
-                            thumbTop,
-                            (int)(si.nMax - Math.Max(si.nPage - 1, 0)));
-
-                        if (percentAlong >= 99.5) percentAlong = 100;
-
-                        int thisExtent = _isVertical ? Height : Width;
-
-                        int scrollMarginPX = _isVertical
-                            ? SystemInformation.VerticalScrollBarArrowHeight
-                            : SystemInformation.HorizontalScrollBarArrowWidth;
-
-                        int minThumbLength = _isVertical
-                            ? SystemInformation.VerticalScrollBarThumbHeight
-                            : SystemInformation.HorizontalScrollBarThumbWidth;
-
-                        int thumbLength = (sbi.xyThumbBottom - sbi.xyThumbTop).Clamp(minThumbLength, int.MaxValue);
-
-                        int thumbTopPixels = GetValueFromPercent_Rounded(
-                            percentAlong,
-                            (thisExtent - (scrollMarginPX * 2)) - thumbLength);
-
-                        var rect = _isVertical
-                            ? new Rectangle(1, thumbTopPixels + scrollMarginPX, Width - 2, thumbLength)
-                            : new Rectangle(thumbTopPixels + scrollMarginPX, 1, thumbLength, Height - 2);
-
-                        g.FillRectangle(_thumbPressedBrush, rect);
                     }
-                    else
+
+                    (int minThumbLengthPX, _, _, int innerExtentPX) = GetMeasurements();
+
+                    if (innerExtentPX >= minThumbLengthPX)
                     {
-                        g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi, clampToMin: true));
+                        g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi));
                     }
                 }
             }
