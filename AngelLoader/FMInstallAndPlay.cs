@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -606,7 +607,8 @@ namespace AngelLoader
                 Directory.CreateDirectory(fmInstalledPath);
 
                 using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read, leaveOpen: false);
+                    ZipArchiveMode.Read, leaveOpen: false,
+                    Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
 
                 int filesCount = archive.Entries.Count;
                 for (int i = 0; i < filesCount; i++)

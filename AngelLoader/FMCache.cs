@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
@@ -214,7 +216,8 @@ namespace AngelLoader
             var htmlRefFiles = new List<NameAndIndex>();
 
             using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                ZipArchiveMode.Read, leaveOpen: false);
+                ZipArchiveMode.Read, leaveOpen: false,
+                Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
 
             foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
             {
@@ -300,7 +303,8 @@ namespace AngelLoader
             try
             {
                 using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read, leaveOpen: false);
+                    ZipArchiveMode.Read, leaveOpen: false,
+                    Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
 
                 for (int i = 0; i < archive.Entries.Count; i++)
                 {
