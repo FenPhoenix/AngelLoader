@@ -341,20 +341,20 @@ namespace AngelLoader.Forms
         private static readonly Bitmap?[] _zoomImages = new Bitmap?[ZoomTypesCount];
         // We can't use the Paint event to paint the image on ToolStrip crap, as it's tool strip crap, you know.
         // It just bugs out in various different ways. So we just paint on an image and set their image to that.
-        // Regenerate param is for when we're changing size/scale and need to redraw it.
-        public static Bitmap GetZoomImage(int width, int height, Zoom zoomType, bool regenerate = false)
+        public static Bitmap GetZoomImage(Rectangle rect, Zoom zoomType, bool regenerate = false)
         {
             int index = (int)zoomType;
             if (regenerate || _zoomImages[index] == null)
             {
-                _zoomImages[index] = new Bitmap(width, height);
+                _zoomImages[index]?.Dispose();
+                _zoomImages[index] = new Bitmap(rect.Width, rect.Height);
                 using var g = Graphics.FromImage(_zoomImages[index]!);
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 ControlPainter.FitRectInBounds(
                     g,
                     ControlPainter.GetZoomImageComplete(zoomType).GetBounds(),
-                    new RectangleF(0, 0, width, height));
-                g.FillPath(Brushes.Black, ControlPainter.GetZoomImageComplete(zoomType));
+                    new RectangleF(0, 0, rect.Width, rect.Height));
+                g.FillPath(ControlPainter.BlackForegroundBrush, ControlPainter.GetZoomImageComplete(zoomType));
             }
             return _zoomImages[index]!;
         }

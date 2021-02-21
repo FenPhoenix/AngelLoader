@@ -11,6 +11,32 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripButtonCustom ZoomOutButton = null!;
         private static ToolStripButtonCustom ResetZoomButton = null!;
 
+        private static bool _darkModeEnabled;
+        internal static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                _darkModeEnabled = value;
+                if (_constructed)
+                {
+                    RegeneratedButtonImages();
+                }
+            }
+        }
+
+        private static void RegeneratedButtonImages()
+        {
+            ZoomInButton.Image?.Dispose();
+            ZoomOutButton.Image?.Dispose();
+            ResetZoomButton.Image?.Dispose();
+
+            ZoomInButton.Image = Images.GetZoomImage(ZoomInButton.ContentRectangle, Zoom.In, regenerate: true);
+            ZoomOutButton.Image = Images.GetZoomImage(ZoomOutButton.ContentRectangle, Zoom.Out, regenerate: true);
+            ResetZoomButton.Image = Images.GetZoomImage(ResetZoomButton.ContentRectangle, Zoom.Reset, regenerate: true);
+
+        }
+
         private static void Construct(MainForm owner)
         {
             if (_constructed) return;
@@ -22,7 +48,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ResetZoomButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             ResetZoomButton.Margin = new Padding(0);
             ResetZoomButton.Size = new Size(25, 25);
-            ResetZoomButton.Image = Images.GetZoomImage(ResetZoomButton.ContentRectangle.Width, ResetZoomButton.ContentRectangle.Height, Zoom.Reset);
+            ResetZoomButton.Image = Images.GetZoomImage(ResetZoomButton.ContentRectangle, Zoom.Reset);
             ResetZoomButton.Click += owner.FMsListResetZoomButton_Click;
 
             ZoomOutButton = new ToolStripButtonCustom();
@@ -31,7 +57,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ZoomOutButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             ZoomOutButton.Margin = new Padding(0);
             ZoomOutButton.Size = new Size(25, 25);
-            ZoomOutButton.Image = Images.GetZoomImage(ZoomOutButton.ContentRectangle.Width, ZoomOutButton.ContentRectangle.Height, Zoom.Out);
+            ZoomOutButton.Image = Images.GetZoomImage(ZoomOutButton.ContentRectangle, Zoom.Out);
             ZoomOutButton.Click += owner.FMsListZoomOutButton_Click;
 
             ZoomInButton = new ToolStripButtonCustom();
@@ -40,7 +66,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ZoomInButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             ZoomInButton.Margin = new Padding(2, 0, 0, 0);
             ZoomInButton.Size = new Size(25, 25);
-            ZoomInButton.Image = Images.GetZoomImage(ZoomInButton.ContentRectangle.Width, ZoomInButton.ContentRectangle.Height, Zoom.In);
+            ZoomInButton.Image = Images.GetZoomImage(ZoomInButton.ContentRectangle, Zoom.In);
             ZoomInButton.Click += owner.FMsListZoomInButton_Click;
 
             _constructed = true;
