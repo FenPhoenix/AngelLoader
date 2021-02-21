@@ -24,6 +24,16 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch ((uint)m.Msg)
             {
+                case WM_NCPAINT:
+                    if (_darkModeEnabled)
+                    {
+                        VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                    }
+                    else
+                    {
+                        base.WndProc(ref m);
+                    }
+                    break;
                 case WM_MOUSEWHEEL:
                     // Intercept the mousewheel call and direct it to use the fixed scrolling
                     InterceptMousewheel(ref m);

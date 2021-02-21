@@ -59,11 +59,13 @@ namespace DarkUI.Controls
             return sbi;
         }
 
-        private protected override void RefreshIfNeeded(bool forceRefreshCorner = false)
+        public void RefreshScrollBar(bool force = false) => RefreshIfNeeded(forceRefreshAll: force);
+
+        private protected override void RefreshIfNeeded(bool forceRefreshAll = false, bool forceRefreshCorner = false)
         {
             // Refresh only if our thumb's size/position is stale. Otherwise, we get unacceptable lag.
             var sbi = GetCurrentScrollBarInfo();
-            if (_xyThumbTop == null)
+            if (forceRefreshAll || _xyThumbTop == null)
             {
                 _xyThumbTop = sbi.xyThumbTop;
                 _xyThumbBottom = sbi.xyThumbBottom;

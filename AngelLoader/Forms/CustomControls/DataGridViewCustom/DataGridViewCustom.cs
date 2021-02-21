@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
+using AngelLoader.WinAPI;
 using DarkUI.Controls;
 using static AngelLoader.Forms.ControlUtils;
 using static AngelLoader.Misc;
@@ -28,7 +29,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        #region API fields
+        #region Public fields
 
         #region Sort
 
@@ -559,5 +560,27 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         #endregion
+
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                case InteropMisc.WM_CTLCOLORSCROLLBAR:
+                    if (_darkModeEnabled)
+                    {
+                        // Needed for scrollbar thumbs to show up immediately without using a timer
+                        VerticalVisualScrollBar.RefreshScrollBar();
+                        HorizontalVisualScrollBar.RefreshScrollBar();
+                    }
+                    else
+                    {
+                        base.WndProc(ref m);
+                    }
+                    break;
+                default:
+                    base.WndProc(ref m);
+                    break;
+            }
+        }
     }
 }

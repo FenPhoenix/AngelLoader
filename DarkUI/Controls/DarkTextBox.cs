@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using DarkUI.Config;
+using DarkUI.Win32;
 
 namespace DarkUI.Controls
 {
@@ -79,6 +80,12 @@ namespace DarkUI.Controls
             if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        protected override void OnTextChanged(EventArgs e)
+        {
+            base.OnTextChanged(e);
+            if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         #region Visible / Show / Hide overrides
 
         public new bool Visible
@@ -113,6 +120,7 @@ namespace DarkUI.Controls
         }
 
         #endregion
+
         public bool Suspended { get; set; }
         public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; private set; }
         public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; private set; }
@@ -121,5 +129,25 @@ namespace DarkUI.Controls
         public Control ClosestAddableParent => Parent;
         public event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
         public event EventHandler VisibilityChanged;
+
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                case Native.WM_NCPAINT:
+                    if (_darkModeEnabled)
+                    {
+                        VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                    }
+                    else
+                    {
+                        base.WndProc(ref m);
+                    }
+                    break;
+                default:
+                    base.WndProc(ref m);
+                    break;
+            }
+        }
     }
 }

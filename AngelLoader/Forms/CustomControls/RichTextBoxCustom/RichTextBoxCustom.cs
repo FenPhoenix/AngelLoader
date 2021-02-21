@@ -301,7 +301,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             Workarounds_OnVScroll();
             base.OnVScroll(e);
-            Scroll?.Invoke(this, EventArgs.Empty);
+            //Scroll?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnVisibleChanged(EventArgs e)

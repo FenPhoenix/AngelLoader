@@ -55,13 +55,11 @@ namespace DarkUI.Controls
 
         #region Disposables
 
-        private readonly Timer _timer = new Timer();
-
         private readonly Pen _greySelectionPen = new Pen(Config.Colors.GreySelection);
 
         private SolidBrush _thumbNormalBrush;
         private SolidBrush _thumbHotBrush;
-        private protected SolidBrush _thumbPressedBrush;
+        private SolidBrush _thumbPressedBrush;
 
         // We want them separate, not all pointing to the same reference
         private readonly Bitmap _upArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
@@ -123,26 +121,6 @@ namespace DarkUI.Controls
 
         private protected void SetUpAfterOwner()
         {
-            #region Set up refresh timer
-
-            //if ((this is ScrollBarVisualOnly))
-            if (true)
-            {
-                // TODO: @DarkMode(ScrollBarVisualOnly):
-                // See if we can hook up any event at all that will let us get rid of this timer for non-native.
-                // Maybe we can just catch messages in WndProc()...
-                _timer.Interval = 1;
-                _timer.Tick += (sender, e) => RefreshIfNeeded();
-            }
-            else
-            {
-                // @DarkMode(ScrollBarVisualOnly_Native):
-                // Timer not used at the moment as it's not apparently needed anymore.
-                _timer.Enabled = false;
-            }
-
-            #endregion
-
             #region Set up scroll bar arrows
 
             _upArrowNormal.RotateFlip(RotateFlipType.Rotate180FlipNone);
@@ -368,7 +346,7 @@ namespace DarkUI.Controls
 
         #region Methods
 
-        private protected virtual void RefreshIfNeeded(bool forceRefreshCorner = false) { }
+        private protected virtual void RefreshIfNeeded(bool forceRefreshAll = false, bool forceRefreshCorner = false) { }
 
         private protected virtual Native.SCROLLBARINFO GetCurrentScrollBarInfo() => throw new NotImplementedException();
 
@@ -523,25 +501,10 @@ namespace DarkUI.Controls
 
         #endregion
 
-        #region Event overrides
-
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            //if (this is ScrollBarVisualOnly)
-            {
-                _timer.Enabled = Visible;
-            }
-            base.OnVisibleChanged(e);
-        }
-
-        #endregion
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _timer.Dispose();
-
                 Global.MouseHook.MouseDownExt -= MouseDownExt_Handler;
                 Global.MouseHook.MouseUpExt -= MouseUpExt_Handler;
                 Global.MouseHook.MouseMoveExt -= MouseMoveExt_Handler;

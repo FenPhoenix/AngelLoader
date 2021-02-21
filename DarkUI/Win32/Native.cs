@@ -61,6 +61,9 @@ namespace DarkUI.Win32
 
         #endregion
 
+        public const int WM_NCPAINT = 0x0085;
+        public const int WM_CTLCOLORSCROLLBAR = 0x0137;
+
         public struct POINTS
         {
             public short x;

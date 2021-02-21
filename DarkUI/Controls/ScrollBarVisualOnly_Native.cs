@@ -88,6 +88,8 @@ namespace DarkUI.Controls
             }
         }
 
+        public void RefreshScrollBar(bool force = false) => RefreshIfNeeded(forceRefreshAll: force);
+
         #endregion
 
         #region Private methods
@@ -196,7 +198,7 @@ namespace DarkUI.Controls
             return si;
         }
 
-        private protected override void RefreshIfNeeded(bool forceRefreshCorner = false)
+        private protected override void RefreshIfNeeded(bool forceRefreshAll = false, bool forceRefreshCorner = false)
         {
             if (_owner.ClosestAddableParent == null) return;
             if (!_owner.IsHandleCreated) return;
@@ -253,7 +255,7 @@ namespace DarkUI.Controls
                 bool refresh = false;
 
                 // Only refresh when we need to
-                if ((_leftButtonPressedOnThumb /*&& si.nTrackPos != _trackPos*/) ||
+                if (forceRefreshAll || (_leftButtonPressedOnThumb /*&& si.nTrackPos != _trackPos*/) ||
                     _size != size || _thumbLoc != loc ||
                     _xyThumbTop != sbi.xyThumbTop ||
                     _xyThumbBottom != sbi.xyThumbBottom)
@@ -275,7 +277,7 @@ namespace DarkUI.Controls
                     _owner.VisualScrollBarCorner != null &&
                     _owner.VerticalVisualScrollBar != null &&
                     _owner.HorizontalVisualScrollBar != null &&
-                    (forceRefreshCorner || _owner.ClientSize != _ownerClientSize))
+                    (forceRefreshAll || forceRefreshCorner || _owner.ClientSize != _ownerClientSize))
                 {
                     _ownerClientSize = _owner.ClientSize;
 
