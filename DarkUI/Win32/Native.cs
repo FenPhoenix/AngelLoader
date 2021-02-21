@@ -63,6 +63,8 @@ namespace DarkUI.Win32
 
         public const int WM_NCPAINT = 0x0085;
         public const int WM_CTLCOLORSCROLLBAR = 0x0137;
+        public const int WM_VSCROLL = 0x115;
+        public const int WM_PAINT = 0x000F;
 
         public struct POINTS
         {

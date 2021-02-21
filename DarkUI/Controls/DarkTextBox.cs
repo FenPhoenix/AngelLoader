@@ -134,6 +134,15 @@ namespace DarkUI.Controls
         {
             switch (m.Msg)
             {
+                case Native.WM_PAINT:
+                case Native.WM_VSCROLL:
+                    base.WndProc(ref m);
+                    if (_darkModeEnabled)
+                    {
+                        VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                    }
+                    break;
+                case Native.WM_CTLCOLORSCROLLBAR:
                 case Native.WM_NCPAINT:
                     if (_darkModeEnabled)
                     {

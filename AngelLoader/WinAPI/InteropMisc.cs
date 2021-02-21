@@ -18,6 +18,7 @@ namespace AngelLoader.WinAPI
         internal const int WM_SETREDRAW = 11;
         internal const int WM_NCPAINT = 0x0085;
         internal const int WM_CTLCOLORSCROLLBAR = 0x0137;
+        internal const int WM_PAINT = 0x000F;
 
         internal const int OCM__BASE = 8192;
         internal const int OCM_HSCROLL = (OCM__BASE + WM_HSCROLL);

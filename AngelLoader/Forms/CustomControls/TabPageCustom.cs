@@ -78,6 +78,13 @@ namespace AngelLoader.Forms.CustomControls
                         base.WndProc(ref m);
                     }
                     break;
+                case InteropMisc.WM_PAINT:
+                    if (_darkModeEnabled)
+                    {
+                        VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                    }
+                    base.WndProc(ref m);
+                    break;
                 default:
                     base.WndProc(ref m);
                     break;
