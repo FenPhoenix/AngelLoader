@@ -168,8 +168,7 @@ namespace DarkUI.Controls
 
             Point cursorPos = PointToClient(e.Location);
 
-            var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(ref sbi);
+            Rectangle thumbRect = GetThumbRect();
 
             if (thumbRect.Contains(cursorPos))
             {
@@ -205,8 +204,7 @@ namespace DarkUI.Controls
 
             bool refresh = false;
 
-            var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(ref sbi);
+            Rectangle thumbRect = GetThumbRect();
             var firstArrowRect = GetArrowRect();
             var secondArrowRect = GetArrowRect(second: true);
 
@@ -262,8 +260,7 @@ namespace DarkUI.Controls
         {
             if (!Visible || !Enabled) return;
 
-            var sbi = GetCurrentScrollBarInfo();
-            var thumbRect = GetThumbRect(ref sbi);
+            Rectangle thumbRect = GetThumbRect();
             var leftArrowRect = GetArrowRect();
             var rightArrowRect = GetArrowRect(second: true);
 
@@ -358,12 +355,23 @@ namespace DarkUI.Controls
                 : new Rectangle(sbi.xyThumbTop, 1, thumbLength, Height - 2);
         }
 
-        private Rectangle GetThumbRect(ref Native.SCROLLBARINFO sbi)
+        private Rectangle GetThumbRect()
         {
-            int thumbLength = sbi.xyThumbBottom - sbi.xyThumbTop;
-            return _isVertical
-                ? new Rectangle(0, sbi.xyThumbTop, Width, thumbLength)
-                : new Rectangle(sbi.xyThumbTop, 0, thumbLength, Height);
+            if (_xyThumbBottom != null && _xyThumbTop != null)
+            {
+                int thumbLength = (int)_xyThumbBottom - (int)_xyThumbTop;
+                return _isVertical
+                    ? new Rectangle(0, (int)_xyThumbTop, Width, thumbLength)
+                    : new Rectangle((int)_xyThumbTop, 0, thumbLength, Height);
+            }
+            else
+            {
+                var sbi = GetCurrentScrollBarInfo();
+                int thumbLength = sbi.xyThumbBottom - sbi.xyThumbTop;
+                return _isVertical
+                    ? new Rectangle(0, sbi.xyThumbTop, Width, thumbLength)
+                    : new Rectangle(sbi.xyThumbTop, 0, thumbLength, Height);
+            }
         }
 
         private Rectangle GetArrowRect(bool second = false)
