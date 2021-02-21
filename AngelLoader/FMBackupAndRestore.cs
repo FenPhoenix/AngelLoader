@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -278,7 +279,7 @@ namespace AngelLoader
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
                 using (var archive = new ZipArchive(new FileStream(fileToUse.Name, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read, leaveOpen: false))
+                    ZipArchiveMode.Read, leaveOpen: false, Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage)))
                 {
                     int filesCount = archive.Entries.Count;
                     if (fileToUse.DarkLoader)
@@ -490,7 +491,7 @@ namespace AngelLoader
             if (fmIsZip)
             {
                 using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read, leaveOpen: false);
+                    ZipArchiveMode.Read, leaveOpen: false, Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
 
                 for (int i = 0; i < archive.Entries.Count; i++)
                 {
