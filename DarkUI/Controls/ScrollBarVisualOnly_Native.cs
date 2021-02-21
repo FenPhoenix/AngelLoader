@@ -196,29 +196,6 @@ namespace DarkUI.Controls
             return si;
         }
 
-        private (int MinThumbLengthPX, int ArrowMarginPX, int ExtentPX, int InnerExtentPX)
-        GetMeasurements()
-        {
-            int minThumbLengthPX;
-            int scrollMarginPX;
-            int thisExtentPX;
-            if (_isVertical)
-            {
-                minThumbLengthPX = SystemInformation.VerticalScrollBarThumbHeight;
-                scrollMarginPX = SystemInformation.VerticalScrollBarArrowHeight;
-                thisExtentPX = Height;
-            }
-            else
-            {
-                minThumbLengthPX = SystemInformation.HorizontalScrollBarThumbWidth;
-                scrollMarginPX = SystemInformation.HorizontalScrollBarArrowWidth;
-                thisExtentPX = Width;
-            }
-            int innerExtentPX = thisExtentPX - (scrollMarginPX * 2);
-
-            return (minThumbLengthPX, scrollMarginPX, thisExtentPX, innerExtentPX);
-        }
-
         private protected override void RefreshIfNeeded(bool forceRefreshCorner = false)
         {
             if (_owner.ClosestAddableParent == null) return;

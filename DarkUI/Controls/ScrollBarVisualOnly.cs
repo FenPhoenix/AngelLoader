@@ -143,7 +143,11 @@ namespace DarkUI.Controls
                     _xyThumbTop = sbi.xyThumbTop;
                     _xyThumbBottom = sbi.xyThumbBottom;
 
-                    g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi));
+                    (int minThumbLengthPX, _, _, int innerExtentPX) = GetMeasurements();
+                    if (innerExtentPX >= minThumbLengthPX)
+                    {
+                        g.FillRectangle(CurrentThumbBrush, GetVisualThumbRect(ref sbi));
+                    }
                 }
             }
 

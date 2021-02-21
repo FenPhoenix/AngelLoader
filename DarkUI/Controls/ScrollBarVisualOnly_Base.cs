@@ -402,6 +402,29 @@ namespace DarkUI.Controls
                     : new Rectangle(Width - horzArrowWidth, 0, horzArrowWidth, Height);
         }
 
+        private protected (int MinThumbLengthPX, int ArrowMarginPX, int ExtentPX, int InnerExtentPX)
+        GetMeasurements()
+        {
+            int minThumbLengthPX;
+            int scrollMarginPX;
+            int thisExtentPX;
+            if (_isVertical)
+            {
+                minThumbLengthPX = SystemInformation.VerticalScrollBarThumbHeight;
+                scrollMarginPX = SystemInformation.VerticalScrollBarArrowHeight;
+                thisExtentPX = Height;
+            }
+            else
+            {
+                minThumbLengthPX = SystemInformation.HorizontalScrollBarThumbWidth;
+                scrollMarginPX = SystemInformation.HorizontalScrollBarArrowWidth;
+                thisExtentPX = Width;
+            }
+            int innerExtentPX = thisExtentPX - (scrollMarginPX * 2);
+
+            return (minThumbLengthPX, scrollMarginPX, thisExtentPX, innerExtentPX);
+        }
+
         private protected static bool ChangeStateAndAskIfRefreshRequired(ref State state1, State state2)
         {
             if (state1 == state2) return false;
