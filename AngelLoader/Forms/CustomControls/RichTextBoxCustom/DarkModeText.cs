@@ -399,16 +399,19 @@ namespace AngelLoader.Forms.CustomControls
 
         private void RefreshDarkModeState(bool skipSuspend = false)
         {
-            if (_currentReadmeType == ReadmeType.PlainText) return;
+            // Save/restore scroll position even for plaintext, because merely setting the fore/back colors makes
+            // our scroll position bump itself slightly. Weird.
+
+            bool plainText = _currentReadmeType == ReadmeType.PlainText;
 
             SCROLLINFO si = GetCurrentScrollInfo(Handle);
             try
             {
                 if (!skipSuspend)
                 {
-                    SaveZoom();
+                    if (!plainText) SaveZoom();
                     this.SuspendDrawing_Native();
-                    ReadOnly = false;
+                    if (!plainText) ReadOnly = false;
                 }
 
                 if (_currentReadmeType == ReadmeType.RichText)
@@ -416,7 +419,7 @@ namespace AngelLoader.Forms.CustomControls
                     using var ms = new MemoryStream(_darkModeEnabled ? GetDarkModeRTFBytes() : _currentRTFBytes);
                     LoadFile(ms, RichTextBoxStreamType.RichText);
                 }
-                else // GLML
+                else if (_currentReadmeType == ReadmeType.GLML)
                 {
                     Rtf = GLMLToRTF(Encoding.UTF8.GetString(_currentRTFBytes));
                 }
@@ -429,8 +432,12 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (!skipSuspend)
                 {
-                    ReadOnly = true;
-                    RestoreZoom();
+                    if (!plainText)
+                    {
+                        ReadOnly = true;
+                        RestoreZoom();
+                    }
+
                     RepositionScroll(Handle, si);
                     this.ResumeDrawing_Native();
                 }
