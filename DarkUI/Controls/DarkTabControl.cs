@@ -54,10 +54,11 @@ namespace DarkUI.Controls
                 if (TabPages.Count > 0)
                 {
                     var firstTabRect = GetTabRect(0);
-                    var pageRect = new Rectangle(ClientRectangle.X,
-                        ClientRectangle.Y + firstTabRect.Y + firstTabRect.Height + 1,
+                    var pageRect = new Rectangle(
+                        ClientRectangle.X,
+                        ClientRectangle.Y + firstTabRect.Y + firstTabRect.Height,
                         (ClientRectangle.Width - firstTabRect.X) - 1,
-                        (ClientRectangle.Height - (firstTabRect.Y + firstTabRect.Height + 1)) - 2);
+                        (ClientRectangle.Height - (firstTabRect.Y + firstTabRect.Height + 1)) - 1);
 
                     // Fill background (our actual area is slightly larger than gets filled by simply setting BackColor)
                     using (var b = new SolidBrush(Config.Colors.Fen_ControlBackground))
@@ -85,13 +86,13 @@ namespace DarkUI.Controls
                         // Draw tab background
                         using (var b = new SolidBrush(backColor))
                         {
-                            g.FillRectangle(b, Rectangle.Inflate(tabRect, 0, 1));
+                            g.FillRectangle(b, tabRect);
                         }
 
                         // Draw tab border
                         using (var p = new Pen(Config.Colors.LighterBackground))
                         {
-                            g.DrawRectangle(p, Rectangle.Inflate(tabRect, 0, 1));
+                            g.DrawRectangle(p, tabRect);
                         }
 
                         const TextFormatFlags textFormat =
