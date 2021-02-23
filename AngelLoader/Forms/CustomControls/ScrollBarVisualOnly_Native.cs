@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 
 namespace AngelLoader.Forms.CustomControls
@@ -12,7 +13,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields
 
-        private readonly IDarkableScrollableNative? _owner;
+        private readonly IDarkableScrollableNative _owner;
 
         private readonly Dictionary<int, int> _WM_ClientToNonClient = new Dictionary<int, int>
         {
@@ -45,23 +46,15 @@ namespace AngelLoader.Forms.CustomControls
         public ScrollBarVisualOnly_Native(IDarkableScrollableNative owner, bool isVertical, bool passMouseWheel)
             : base(isVertical, passMouseWheel)
         {
-            SetUpSelf();
-
             // DON'T anchor it, or we get visual glitches and chaos
-
-            #region Setup involving owner
 
             _owner = owner;
 
             _size = Size;
 
-            _owner.Scroll += (sender, e) => RefreshIfNeeded();
-            _owner.VisibilityChanged += (sender, e) => RefreshIfNeeded(forceRefreshCorner: true);
-            _owner.DarkModeChanged += (sender, e) => RefreshIfNeeded(forceRefreshCorner: true);
-
-            #endregion
-
-            SetUpAfterOwner();
+            _owner.Scroll += (_, _) => RefreshIfNeeded();
+            _owner.VisibilityChanged += (_, _) => RefreshIfNeeded(forceRefreshCorner: true);
+            _owner.DarkModeChanged += (_, _) => RefreshIfNeeded(forceRefreshCorner: true);
         }
 
         #endregion
@@ -70,7 +63,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void AddToParent()
         {
-            if (!_addedToControls && _owner.ClosestAddableParent != null)
+            if (!_addedToControls)
             {
                 _owner.ClosestAddableParent.Controls.Add(this);
                 BringToFront();
@@ -80,7 +73,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void ForceSetVisibleState(bool? visible = null)
         {
-            if (_owner != null && _owner.IsHandleCreated && _owner.DarkModeEnabled)
+            if (_owner.IsHandleCreated && _owner.DarkModeEnabled)
             {
                 var sbi = GetCurrentScrollBarInfo();
                 var parentBarVisible = (sbi.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE;
@@ -88,13 +81,15 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        [PublicAPI]
         public void RefreshScrollBar(bool force = false) => RefreshIfNeeded(forceRefreshAll: force);
 
         #endregion
 
         #region Private methods
 
-        private protected override Native.SCROLLBARINFO GetCurrentScrollBarInfo()
+        private protected override Native.SCROLLBARINFO
+        GetCurrentScrollBarInfo()
         {
             var sbi = new Native.SCROLLBARINFO();
             sbi.cbSize = Marshal.SizeOf(sbi);
@@ -144,7 +139,7 @@ namespace AngelLoader.Forms.CustomControls
                     #region Plus down
 
                     double p2 = GetPercentFromValue_Double(
-                        (innerExtentPX) - xyThumbBottom,
+                        innerExtentPX - xyThumbBottom,
                         innerExtentPX - thumbLengthPX);
 
                     double plusDownDouble = GetValueFromPercent_Double(
@@ -198,9 +193,8 @@ namespace AngelLoader.Forms.CustomControls
             return si;
         }
 
-        private protected override void RefreshIfNeeded(bool forceRefreshAll = false, bool forceRefreshCorner = false)
+        private void RefreshIfNeeded(bool forceRefreshAll = false, bool forceRefreshCorner = false)
         {
-            if (_owner.ClosestAddableParent == null) return;
             if (!_owner.IsHandleCreated) return;
 
             if (!_owner.DarkModeEnabled)
@@ -231,7 +225,7 @@ namespace AngelLoader.Forms.CustomControls
 
             bool dontShowCorner = false;
 
-            if ((!Visible || (otherScrollBar == null || !otherScrollBar.Visible)) &&
+            if ((!Visible || otherScrollBar == null || !otherScrollBar.Visible) &&
                 _owner.VisualScrollBarCorner != null)
             {
                 _owner.VisualScrollBarCorner.Visible = false;
@@ -255,7 +249,7 @@ namespace AngelLoader.Forms.CustomControls
                 bool refresh = false;
 
                 // Only refresh when we need to
-                if (forceRefreshAll || (_leftButtonPressedOnThumb /*&& si.nTrackPos != _trackPos*/) ||
+                if (forceRefreshAll || _leftButtonPressedOnThumb ||
                     _size != size || _thumbLoc != loc ||
                     _xyThumbTop != sbi.xyThumbTop ||
                     _xyThumbBottom != sbi.xyThumbBottom)

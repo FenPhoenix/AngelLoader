@@ -2,8 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
-using DarkUI.Config;
-using DarkUI.Controls;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -12,12 +11,13 @@ namespace AngelLoader.Forms.CustomControls
         // TODO: @DarkMode: Make it so changing modes doesn't reset the scroll position of the textbox
 
         private bool _origValuesStored;
-        private Color _origForeColor;
-        private Color _origBackColor;
-        private Padding _origPadding;
-        private BorderStyle _origBorderStyle;
+        private Color? _origForeColor;
+        private Color? _origBackColor;
+        private Padding? _origPadding;
+        private BorderStyle? _origBorderStyle;
 
         private bool _darkModeEnabled;
+        [PublicAPI]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -35,8 +35,8 @@ namespace AngelLoader.Forms.CustomControls
                         _origValuesStored = true;
                     }
 
-                    BackColor = Colors.LightBackground;
-                    ForeColor = Colors.LightText;
+                    BackColor = DarkModeColors.LightBackground;
+                    ForeColor = DarkModeColors.LightText;
                     Padding = new Padding(2, 2, 2, 2);
                     BorderStyle = BorderStyle.FixedSingle;
                 }
@@ -44,23 +44,27 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     if (_origValuesStored)
                     {
-                        BackColor = _origBackColor;
-                        ForeColor = _origForeColor;
-                        Padding = _origPadding;
-                        BorderStyle = _origBorderStyle;
+                        BackColor = (Color)_origBackColor!;
+                        ForeColor = (Color)_origForeColor!;
+                        Padding = (Padding)_origPadding!;
+                        BorderStyle = (BorderStyle)_origBorderStyle!;
                     }
                 }
-                DarkModeChanged?.Invoke(this, new DarkModeChangedEventArgs(_darkModeEnabled));
+                DarkModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
+        [PublicAPI]
         public new bool Multiline
         {
             get => base.Multiline;
             set
             {
                 base.Multiline = value;
-                if (value && VerticalVisualScrollBar == null && HorizontalVisualScrollBar == null && VisualScrollBarCorner == null)
+                if (value &&
+                    VerticalVisualScrollBar == null &&
+                    HorizontalVisualScrollBar == null &&
+                    VisualScrollBarCorner == null)
                 {
                     VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
                     HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
@@ -89,6 +93,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Visible / Show / Hide overrides
 
+        [PublicAPI]
         public new bool Visible
         {
             get => base.Visible;
@@ -108,12 +113,14 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        [PublicAPI]
         public new void Show()
         {
             if (_darkModeEnabled) VerticalVisualScrollBar?.ForceSetVisibleState(true);
             base.Show();
         }
 
+        [PublicAPI]
         public new void Hide()
         {
             base.Hide();
@@ -123,13 +130,13 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         public bool Suspended { get; set; }
-        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; private set; }
-        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; private set; }
-        public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; private set; }
-        public event EventHandler Scroll;
+        public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; private set; }
+        public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; private set; }
+        public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; private set; }
+        public event EventHandler? Scroll;
         public Control ClosestAddableParent => Parent;
-        public event EventHandler<DarkModeChangedEventArgs> DarkModeChanged;
-        public event EventHandler VisibilityChanged;
+        public event EventHandler? DarkModeChanged;
+        public event EventHandler? VisibilityChanged;
 
         protected override void WndProc(ref Message m)
         {
@@ -138,10 +145,7 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_PAINT:
                 case Native.WM_VSCROLL:
                     base.WndProc(ref m);
-                    if (_darkModeEnabled)
-                    {
-                        VisibilityChanged?.Invoke(this, EventArgs.Empty);
-                    }
+                    if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
                     break;
                 case Native.WM_CTLCOLORSCROLLBAR:
                 case Native.WM_NCPAINT:

@@ -2,14 +2,12 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using DarkUI.Config;
-using DarkUI.Controls;
 
 namespace AngelLoader.Forms.CustomControls
 {
     // TODO: @DarkMode(DarkCheckBox):
     // -Add support for putting the checkbox on the right-hand side
-    public class DarkCheckBox : CheckBox
+    public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         #region Field Region
 
@@ -186,20 +184,11 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            if (_spacePressed)
-                return;
+            if (_spacePressed)return;
 
-            if (e.Button == MouseButtons.Left)
-            {
-                if (ClientRectangle.Contains(e.Location))
-                    SetControlState(DarkControlState.Pressed);
-                else
-                    SetControlState(DarkControlState.Hover);
-            }
-            else
-            {
-                SetControlState(DarkControlState.Hover);
-            }
+            SetControlState(e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location)
+                ? DarkControlState.Pressed
+                : DarkControlState.Hover);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -319,37 +308,37 @@ namespace AngelLoader.Forms.CustomControls
 
             var size = Consts.CheckBoxSize;
 
-            var textColor = Colors.LightText;
-            var borderColor = Colors.LightText;
-            var fillColor = Colors.LightText;
+            var textColor = DarkModeColors.LightText;
+            var borderColor = DarkModeColors.LightText;
+            var fillColor = DarkModeColors.LightText;
 
             if (Enabled)
             {
                 if (AutoCheck && Focused)
                 {
-                    borderColor = Colors.BlueHighlight;
-                    fillColor = Colors.BlueHighlight;
+                    borderColor = DarkModeColors.BlueHighlight;
+                    fillColor = DarkModeColors.BlueHighlight;
                 }
 
                 if (_controlState == DarkControlState.Hover)
                 {
-                    borderColor = Colors.BlueHighlight;
-                    fillColor = Colors.BlueSelection;
+                    borderColor = DarkModeColors.BlueHighlight;
+                    fillColor = DarkModeColors.BlueSelection;
                 }
                 else if (_controlState == DarkControlState.Pressed)
                 {
-                    borderColor = Colors.GreyHighlight;
-                    fillColor = Colors.GreySelection;
+                    borderColor = DarkModeColors.GreyHighlight;
+                    fillColor = DarkModeColors.GreySelection;
                 }
             }
             else
             {
-                textColor = Colors.DisabledText;
-                borderColor = Colors.GreyHighlight;
-                fillColor = Colors.GreySelection;
+                textColor = DarkModeColors.DisabledText;
+                borderColor = DarkModeColors.GreyHighlight;
+                fillColor = DarkModeColors.GreySelection;
             }
 
-            using (var b = new SolidBrush(Parent?.BackColor ?? Colors.GreyBackground))
+            using (var b = new SolidBrush(Parent?.BackColor ?? DarkModeColors.GreyBackground))
             {
                 g.FillRectangle(b, rect);
             }
@@ -362,37 +351,33 @@ namespace AngelLoader.Forms.CustomControls
 
             if (CheckState == CheckState.Checked)
             {
-                using (var b = new SolidBrush(fillColor))
-                using (var p = new Pen(b, 1.6f))
-                {
-                    SmoothingMode oldSmoothingMode = g.SmoothingMode;
+                using var b = new SolidBrush(fillColor);
+                using var p = new Pen(b, 1.6f);
+                SmoothingMode oldSmoothingMode = g.SmoothingMode;
 
-                    g.SmoothingMode = SmoothingMode.HighQuality;
+                g.SmoothingMode = SmoothingMode.HighQuality;
 
-                    // First half of checkmark
-                    g.DrawLine(p,
-                        outlineBoxRect.Left + 1.5f,
-                        outlineBoxRect.Top + 6,
-                        outlineBoxRect.Left + 4.5f,
-                        outlineBoxRect.Top + 9);
+                // First half of checkmark
+                g.DrawLine(p,
+                    outlineBoxRect.Left + 1.5f,
+                    outlineBoxRect.Top + 6,
+                    outlineBoxRect.Left + 4.5f,
+                    outlineBoxRect.Top + 9);
 
-                    // Second half of checkmark
-                    g.DrawLine(p,
-                        outlineBoxRect.Left + 4.5f,
-                        outlineBoxRect.Top + 9,
-                        outlineBoxRect.Left + 10.5f,
-                        outlineBoxRect.Top + 3);
+                // Second half of checkmark
+                g.DrawLine(p,
+                    outlineBoxRect.Left + 4.5f,
+                    outlineBoxRect.Top + 9,
+                    outlineBoxRect.Left + 10.5f,
+                    outlineBoxRect.Top + 3);
 
-                    g.SmoothingMode = oldSmoothingMode;
-                }
+                g.SmoothingMode = oldSmoothingMode;
             }
             else if (CheckState == CheckState.Indeterminate)
             {
-                using (var b = new SolidBrush(fillColor))
-                {
-                    Rectangle boxRect = new Rectangle(3, ((rect.Height / 2) - ((size - 4) / 2)) + 1, size - 5, size - 5);
-                    g.FillRectangle(b, boxRect);
-                }
+                using var b = new SolidBrush(fillColor);
+                Rectangle boxRect = new Rectangle(3, ((rect.Height / 2) - ((size - 4) / 2)) + 1, size - 5, size - 5);
+                g.FillRectangle(b, boxRect);
             }
 
             using (var b = new SolidBrush(textColor))

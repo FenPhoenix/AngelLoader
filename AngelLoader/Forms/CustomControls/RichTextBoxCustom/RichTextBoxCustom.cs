@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using AL_Common;
-using DarkUI.Controls;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -46,24 +45,24 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
-        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
-        public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
+        public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; }
 
         public event EventHandler? Scroll;
 
         public bool Suspended { get; set; }
 
-        public event EventHandler<DarkModeChangedEventArgs>? DarkModeChanged;
+        public event EventHandler? DarkModeChanged;
         public event EventHandler? VisibilityChanged;
 
-        public Control? ClosestAddableParent => Parent;
+        public Control ClosestAddableParent => Parent;
 
         public RichTextBoxCustom()
         {
             VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
-            HorizontalVisualScrollBar = null!;
-            VisualScrollBarCorner = null!;
+            HorizontalVisualScrollBar = null;
+            VisualScrollBarCorner = null;
 
             InitWorkarounds();
         }
@@ -126,7 +125,7 @@ namespace AngelLoader.Forms.CustomControls
 
             RestoreZoom();
             // Force visible state update before resuming to avoid a flicker of the classic bar showing up
-            VerticalVisualScrollBar.ForceSetVisibleState();
+            VerticalVisualScrollBar?.ForceSetVisibleState();
             this.ResumeDrawing_Native();
             // Invoke this after resuming to prevent the scroll bar from disappearing when you move through
             // entries by holding down a key
@@ -329,13 +328,13 @@ namespace AngelLoader.Forms.CustomControls
                 if (value)
                 {
                     // Do this before setting the Visible value to avoid the classic-bar-flicker
-                    VerticalVisualScrollBar.ForceSetVisibleState(true);
+                    VerticalVisualScrollBar?.ForceSetVisibleState(true);
                     base.Visible = value;
                 }
                 else
                 {
                     base.Visible = value;
-                    VerticalVisualScrollBar.ForceSetVisibleState(false);
+                    VerticalVisualScrollBar?.ForceSetVisibleState(false);
                 }
             }
         }
@@ -343,7 +342,7 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         public new void Show()
         {
-            VerticalVisualScrollBar.ForceSetVisibleState(true);
+            VerticalVisualScrollBar?.ForceSetVisibleState(true);
             base.Show();
         }
 
@@ -351,7 +350,7 @@ namespace AngelLoader.Forms.CustomControls
         public new void Hide()
         {
             base.Hide();
-            VerticalVisualScrollBar.ForceSetVisibleState(false);
+            VerticalVisualScrollBar?.ForceSetVisibleState(false);
         }
 
         #endregion

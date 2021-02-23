@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using AL_Common;
+using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 
 namespace Fen7z
 {
     public static class Fen7z
     {
+        [PublicAPI]
         public sealed class ProgressReport
         {
             public string EntryFileName = "";
@@ -210,7 +212,7 @@ namespace Fen7z
             }
             catch (Exception ex)
             {
-                return new Result()
+                return new Result
                 {
                     Exception = ex,
                     Canceled = canceled,

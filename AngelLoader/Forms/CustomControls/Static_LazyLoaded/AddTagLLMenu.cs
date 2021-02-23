@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using DarkUI.Controls;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {

@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using DarkUI.Controls;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -10,8 +9,8 @@ namespace AngelLoader.Forms.CustomControls
 {
     internal sealed class ToolStripCustom : ToolStrip, IDarkable
     {
-        private readonly SolidBrush _darkBackColorBrush = new SolidBrush(DarkUI.Config.Colors.Fen_ControlBackground);
-        private readonly Pen _darkBackColorPen = new Pen(DarkUI.Config.Colors.Fen_ControlBackground);
+        private readonly SolidBrush _darkBackColorBrush = new SolidBrush(DarkModeColors.Fen_ControlBackground);
+        private readonly Pen _darkBackColorPen = new Pen(DarkModeColors.Fen_ControlBackground);
 
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
@@ -20,7 +19,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _darkModeEnabled = value;
-                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_ControlBackground : SystemColors.Control;
+                BackColor = _darkModeEnabled ? DarkModeColors.Fen_ControlBackground : SystemColors.Control;
                 Refresh();
             }
         }
@@ -119,7 +118,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _darkModeEnabled = value;
-                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_ControlBackground : SystemColors.Control;
+                BackColor = _darkModeEnabled ? DarkModeColors.Fen_ControlBackground : SystemColors.Control;
             }
         }
 
@@ -141,7 +140,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _darkModeEnabled = value;
-                BackColor = _darkModeEnabled ? DarkUI.Config.Colors.Fen_ControlBackground : SystemColors.Control;
+                BackColor = _darkModeEnabled ? DarkModeColors.Fen_ControlBackground : SystemColors.Control;
             }
         }
 

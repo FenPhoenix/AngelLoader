@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
-using DarkUI.Controls;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -63,7 +62,7 @@ namespace AngelLoader.Forms.CustomControls
                 _origPanel1BackColor ??= Panel1.BackColor;
                 _origPanel2BackColor ??= Panel2.BackColor;
 
-                BackColor = DarkUI.Config.Colors.GreySelection;
+                BackColor = DarkModeColors.GreySelection;
                 Panel1.BackColor = Panel1DarkBackColor;
                 Panel2.BackColor = Panel2DarkBackColor;
             }
@@ -82,8 +81,8 @@ namespace AngelLoader.Forms.CustomControls
         internal bool FullScreen { get; private set; }
         internal int CollapsedSize = 0;
 
-        internal Color Panel1DarkBackColor { get; set; } = DarkUI.Config.Colors.Fen_ControlBackground;
-        internal Color Panel2DarkBackColor { get; set; } = DarkUI.Config.Colors.Fen_ControlBackground;
+        internal Color Panel1DarkBackColor { get; set; } = DarkModeColors.Fen_ControlBackground;
+        internal Color Panel2DarkBackColor { get; set; } = DarkModeColors.Fen_ControlBackground;
 
         #endregion
 

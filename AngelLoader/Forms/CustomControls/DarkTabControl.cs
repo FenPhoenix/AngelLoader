@@ -5,9 +5,7 @@ namespace AngelLoader.Forms.CustomControls
 {
     public class DarkTabControl : TabControl, IDarkable
     {
-        private Font _originalFont;
-
-        public DarkTabControl() { }
+        private Font? _originalFont;
 
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
@@ -46,7 +44,7 @@ namespace AngelLoader.Forms.CustomControls
                 var g = e.Graphics;
 
                 // Draw background
-                using (var b = new SolidBrush(DarkUI.Config.Colors.Fen_DarkBackground))
+                using (var b = new SolidBrush(DarkModeColors.Fen_DarkBackground))
                 {
                     g.FillRectangle(b, ClientRectangle);
                 }
@@ -61,13 +59,13 @@ namespace AngelLoader.Forms.CustomControls
                         (ClientRectangle.Height - (firstTabRect.Y + firstTabRect.Height + 1)) - 1);
 
                     // Fill background (our actual area is slightly larger than gets filled by simply setting BackColor)
-                    using (var b = new SolidBrush(DarkUI.Config.Colors.Fen_ControlBackground))
+                    using (var b = new SolidBrush(DarkModeColors.Fen_ControlBackground))
                     {
                         g.FillRectangle(b, pageRect);
                     }
 
                     // Draw page border
-                    using (var p = new Pen(DarkUI.Config.Colors.LighterBackground))
+                    using (var p = new Pen(DarkModeColors.LighterBackground))
                     {
                         g.DrawRectangle(p, pageRect);
                     }
@@ -80,7 +78,7 @@ namespace AngelLoader.Forms.CustomControls
 
                         bool focused = SelectedTab == tabPage;
 
-                        Color backColor = focused ? DarkUI.Config.Colors.LightBackground : DarkUI.Config.Colors.Fen_DeselectedTabBackground;
+                        Color backColor = focused ? DarkModeColors.LightBackground : DarkModeColors.Fen_DeselectedTabBackground;
                         //Color backColor = focused ? Config.Colors.Fen_ControlBackground : Config.Colors.Fen_DarkBackground;
 
                         // Draw tab background
@@ -90,7 +88,7 @@ namespace AngelLoader.Forms.CustomControls
                         }
 
                         // Draw tab border
-                        using (var p = new Pen(DarkUI.Config.Colors.LighterBackground))
+                        using (var p = new Pen(DarkModeColors.LighterBackground))
                         {
                             g.DrawRectangle(p, tabRect);
                         }
@@ -105,8 +103,8 @@ namespace AngelLoader.Forms.CustomControls
                         // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
                         Color textColor = SelectedTab == tabPage
                             //? Color.FromArgb(220,220,220)
-                            ? DarkUI.Config.Colors.Fen_DarkForeground
-                            : DarkUI.Config.Colors.Fen_DarkForeground;
+                            ? DarkModeColors.Fen_DarkForeground
+                            : DarkModeColors.Fen_DarkForeground;
                         TextRenderer.DrawText(g, tabPage.Text, Font, tabRect, textColor, textFormat);
                     }
                 }

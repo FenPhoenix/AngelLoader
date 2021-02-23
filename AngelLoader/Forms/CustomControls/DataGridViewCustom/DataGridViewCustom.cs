@@ -8,7 +8,6 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.WinAPI;
-using DarkUI.Controls;
 using static AngelLoader.Forms.ControlUtils;
 using static AngelLoader.Misc;
 
@@ -62,17 +61,12 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_darkModeEnabled)
                 {
-                    RowsDefaultCellStyle.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                    RowsDefaultCellStyle.ForeColor = DarkModeColors.Fen_DarkForeground;
                     GridColor = Color.FromArgb(64, 64, 64);
-                    //FMsDGV.RowsDefaultCellStyle.BackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+                    //RowsDefaultCellStyle.BackColor = DarkModeColors.Fen_DarkBackground;
                     RecentHighlightColor = Color.FromArgb(64, 64, 72);
                     UnavailableColor = Color.FromArgb(64, 24, 24);
-                    DefaultRowBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
-
-                    // Custom refresh routine, because we don't want to run SelectProperly() as that will pop us
-                    // back up and put our selection in view, but we don't want to do anything at all other than
-                    // change the look, leaving everything exactly as it was functionally.
-                    int selectedRow = RowCount > 0 ? SelectedRows[0].Index : -1;
+                    DefaultRowBackColor = DarkModeColors.Fen_DarkBackground;
                 }
                 else
                 {
@@ -81,7 +75,7 @@ namespace AngelLoader.Forms.CustomControls
                     RecentHighlightColor = Color.LightGoldenrodYellow;
                     UnavailableColor = Color.MistyRose;
                     DefaultRowBackColor = SystemColors.Window;
-                    //FMsDGV.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+                    //RowsDefaultCellStyle.BackColor = SystemColors.Window;
                 }
             }
         }
@@ -473,12 +467,12 @@ namespace AngelLoader.Forms.CustomControls
                     e.CellBounds.Width,
                     e.CellBounds.Height - 1);
 
-                using (var b = new SolidBrush(DarkUI.Config.Colors.GreyBackground))
+                using (var b = new SolidBrush(DarkModeColors.GreyBackground))
                 {
                     e.Graphics.FillRectangle(b, e.CellBounds);
                 }
 
-                using (var p = new Pen(DarkUI.Config.Colors.GreySelection))
+                using (var p = new Pen(DarkModeColors.GreySelection))
                 {
                     if (!mouseOver)
                     {
@@ -500,8 +494,8 @@ namespace AngelLoader.Forms.CustomControls
                 if (_mouseHere && mouseOver)
                 {
                     using var b = new SolidBrush(_mouseDownOnHeader == e.ColumnIndex
-                        ? DarkUI.Config.Colors.BlueHighlight
-                        : DarkUI.Config.Colors.BlueSelection);
+                        ? DarkModeColors.BlueHighlight
+                        : DarkModeColors.BlueSelection);
                     e.Graphics.FillRectangle(b, selectionRect);
                 }
 
@@ -553,7 +547,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (BorderStyle == BorderStyle.FixedSingle)
                 {
                     // TODO: @DarkMode: Extract this pen...
-                    using var p = new Pen(DarkUI.Config.Colors.GreySelection);
+                    using var p = new Pen(DarkModeColors.GreySelection);
                     e.Graphics.DrawRectangle(p, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
                 }
             }

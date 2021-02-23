@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
-using DarkUI.Controls;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded

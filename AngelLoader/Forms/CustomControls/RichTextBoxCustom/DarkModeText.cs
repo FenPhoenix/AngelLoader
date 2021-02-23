@@ -7,7 +7,6 @@ using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
-using DarkUI.Controls;
 using static AL_Common.CommonUtils;
 using static AngelLoader.Misc;
 
@@ -140,7 +139,7 @@ namespace AngelLoader.Forms.CustomControls
                 _darkModeEnabled = value;
                 SetReadmeTypeAndColorState(_currentReadmeType);
                 RefreshDarkModeState();
-                DarkModeChanged?.Invoke(this, new DarkModeChangedEventArgs(_darkModeEnabled));
+                DarkModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -253,22 +252,22 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     // Explicitly set color 0 to our desired default, so we can spam \cf0 everywhere to keep
                     // our text looking right.
-                    invertedColor = DarkUI.Config.Colors.Fen_DarkForeground;
+                    invertedColor = DarkModeColors.Fen_DarkForeground;
                 }
                 else if (_rtfColorStyle == RTFColorStyle.Monochrome)
                 {
                     invertedColor = ColorIsTheSameAsBackground(currentColor)
-                        ? DarkUI.Config.Colors.Fen_DarkBackground
-                        : DarkUI.Config.Colors.Fen_DarkForeground;
+                        ? DarkModeColors.Fen_DarkBackground
+                        : DarkModeColors.Fen_DarkForeground;
                 }
                 else // auto-color
                 {
                     // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
                     // white and that's a bit too bright.
                     invertedColor = currentColor.R == 0 && currentColor.G == 0 && currentColor.B == 0
-                        ? DarkUI.Config.Colors.Fen_DarkForeground
+                        ? DarkModeColors.Fen_DarkForeground
                         : ColorIsTheSameAsBackground(currentColor)
-                        ? DarkUI.Config.Colors.Fen_DarkBackground
+                        ? DarkModeColors.Fen_DarkBackground
                         : ColorUtils.InvertLightness(currentColor);
                 }
 
@@ -313,7 +312,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (colorTable.Count == 0)
                 {
                     colorTable.Add(_rtfColorStyle == RTFColorStyle.Monochrome
-                        ? DarkUI.Config.Colors.Fen_DarkForeground
+                        ? DarkModeColors.Fen_DarkForeground
                         : Color.FromArgb(0, 0, 0));
                 }
 
@@ -373,7 +372,7 @@ namespace AngelLoader.Forms.CustomControls
             // Insert our dark background definition at the end, so we override any other backgrounds that may be set.
             darkModeBytes.InsertRange(
                 darkModeBytes.LastIndexOf((byte)'}'),
-                CreateBGColorRTFCode_Bytes(DarkUI.Config.Colors.Fen_DarkBackground));
+                CreateBGColorRTFCode_Bytes(DarkModeColors.Fen_DarkBackground));
 
             // Keep this for debug...
             //File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes.ToArray());
@@ -388,7 +387,7 @@ namespace AngelLoader.Forms.CustomControls
             if (readmeType == ReadmeType.PlainText)
             {
                 (BackColor, ForeColor) = _darkModeEnabled
-                    ? (DarkUI.Config.Colors.Fen_DarkBackground, DarkUI.Config.Colors.Fen_DarkForeground)
+                    ? (DarkModeColors.Fen_DarkBackground, DarkModeColors.Fen_DarkForeground)
                     : (SystemColors.Window, SystemColors.WindowText);
             }
             else

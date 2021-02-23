@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 
-namespace DarkUI.Config
+namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed class Colors
+    public static class DarkModeColors
     {
         #region Fen
 

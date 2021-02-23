@@ -1,6 +1,6 @@
-﻿namespace DarkUI.Config
+﻿namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed class Consts
+    public static class Consts
     {
         public static int Padding = 10;
 

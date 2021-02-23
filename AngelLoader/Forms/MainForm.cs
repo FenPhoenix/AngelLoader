@@ -689,11 +689,11 @@ namespace AngelLoader.Forms
             TopSplitContainer.SetSplitterPercent(Config.TopSplitterPercent, suspendResume: false);
 
             MainSplitContainer.InjectSibling(TopSplitContainer);
-            MainSplitContainer.Panel1DarkBackColor = DarkUI.Config.Colors.Fen_ControlBackground;
-            MainSplitContainer.Panel2DarkBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+            MainSplitContainer.Panel1DarkBackColor = DarkModeColors.Fen_ControlBackground;
+            MainSplitContainer.Panel2DarkBackColor = DarkModeColors.Fen_DarkBackground;
             TopSplitContainer.InjectSibling(MainSplitContainer);
-            TopSplitContainer.Panel1DarkBackColor = DarkUI.Config.Colors.Fen_ControlBackground;
-            TopSplitContainer.Panel2DarkBackColor = DarkUI.Config.Colors.Fen_DarkBackground;
+            TopSplitContainer.Panel1DarkBackColor = DarkModeColors.Fen_ControlBackground;
+            TopSplitContainer.Panel2DarkBackColor = DarkModeColors.Fen_DarkBackground;
 
             #endregion
 
@@ -1466,8 +1466,8 @@ namespace AngelLoader.Forms
                     {
                         if (darkMode)
                         {
-                            control.ForeColor = DarkUI.Config.Colors.Fen_DarkForeground;
-                            control.BackColor = DarkUI.Config.Colors.Fen_ControlBackground;
+                            control.ForeColor = DarkModeColors.Fen_DarkForeground;
+                            control.BackColor = DarkModeColors.Fen_ControlBackground;
                         }
                         else
                         {
@@ -4465,8 +4465,8 @@ namespace AngelLoader.Forms
 
             if (MainSplitContainer.DarkModeEnabled)
             {
-                using var p = new Pen(DarkUI.Config.Colors.GreySelection);
-                using var p2 = new Pen(DarkUI.Config.Colors.Fen_ControlBackground);
+                using var p = new Pen(DarkModeColors.GreySelection);
+                using var p2 = new Pen(DarkModeColors.Fen_ControlBackground);
                 e.Graphics.DrawLine(p, panel2.Left, panel2.Height - 2, panel2.Right, panel2.Height - 2);
                 e.Graphics.DrawLine(p2, panel2.Left, panel2.Height - 1, panel2.Right, panel2.Height - 1);
             }

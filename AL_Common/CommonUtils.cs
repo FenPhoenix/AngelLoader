@@ -19,7 +19,7 @@ namespace AL_Common
             (byte)'r',
             (byte)'t',
             (byte)'f',
-            (byte)'1',
+            (byte)'1'
         };
 
         // Perf, for passing to Split(), Trim() etc. so we don't allocate all the time

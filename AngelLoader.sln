@@ -19,7 +19,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkUI", "DarkUI\DarkUI.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fen7z", "Fen7z\Fen7z.csproj", "{38885574-39E3-4644-B63E-E37BFD54C0EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AL_Common", "AL_Common\AL_Common.csproj", "{C3EF0A7F-7950-423A-A6EF-03051579153B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AL_Common", "AL_Common\AL_Common.csproj", "{C3EF0A7F-7950-423A-A6EF-03051579153B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FD8CD094-EB65-42DD-9C68-D60B6F3C8344}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

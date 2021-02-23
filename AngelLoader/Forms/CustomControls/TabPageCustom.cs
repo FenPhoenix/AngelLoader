@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
-using DarkUI.Controls;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -20,13 +19,13 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled)
                 {
                     _origBackColor ??= BackColor;
-                    BackColor = DarkUI.Config.Colors.Fen_ControlBackground;
+                    BackColor = DarkModeColors.Fen_ControlBackground;
                 }
                 else
                 {
                     if (_origBackColor != null) BackColor = (Color)_origBackColor;
                 }
-                DarkModeChanged?.Invoke(this, new DarkModeChangedEventArgs(_darkModeEnabled));
+                DarkModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -35,9 +34,9 @@ namespace AngelLoader.Forms.CustomControls
         public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
         public bool Suspended { get; set; }
         public new event EventHandler? Scroll;
-        public event EventHandler<DarkModeChangedEventArgs>? DarkModeChanged;
+        public event EventHandler? DarkModeChanged;
         public event EventHandler? VisibilityChanged;
-        public Control? ClosestAddableParent => Parent?.Parent;
+        public Control ClosestAddableParent => Parent.Parent;
 
         public TabPageCustom()
         {

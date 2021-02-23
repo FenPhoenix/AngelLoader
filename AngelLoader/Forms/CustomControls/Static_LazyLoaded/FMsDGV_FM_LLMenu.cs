@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Properties;
-using DarkUI.Controls;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 

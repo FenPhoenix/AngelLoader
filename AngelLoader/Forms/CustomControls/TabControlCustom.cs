@@ -41,7 +41,7 @@ namespace AngelLoader.Forms.CustomControls
 
             foreach (TabPage tabPage in tabPages)
             {
-                base.TabPages.Add(tabPage);
+                TabPages.Add(tabPage);
                 _backingTabList.Add(new BackingTab(tabPage));
             }
         }
@@ -49,7 +49,7 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         public void ClearTabsFull()
         {
-            if (TabCount > 0) base.TabPages.Clear();
+            if (TabCount > 0) TabPages.Clear();
             _backingTabList.Clear();
         }
 
@@ -67,12 +67,12 @@ namespace AngelLoader.Forms.CustomControls
             if (show)
             {
                 bt.Visible = true;
-                if (!base.TabPages.Contains(bt.TabPage)) base.TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
+                if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
             }
             else
             {
                 bt.Visible = false;
-                if (base.TabPages.Contains(bt.TabPage)) base.TabPages.Remove(bt.TabPage);
+                if (TabPages.Contains(bt.TabPage)) TabPages.Remove(bt.TabPage);
             }
         }
 
@@ -131,7 +131,7 @@ namespace AngelLoader.Forms.CustomControls
             // If we are dragging a tab, don't run the handler, because we want to be "modal" and block so nothing
             // weird happens
 
-            int dragTabIndex = base.TabPages.IndexOf(_dragTab);
+            int dragTabIndex = TabPages.IndexOf(_dragTab);
             var (bDragTabIndex, _) = FindBackingTab(_dragTab);
 
             Rectangle dragTabRect = GetTabRect(dragTabIndex);
@@ -149,9 +149,9 @@ namespace AngelLoader.Forms.CustomControls
             var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location);
             if (bNewTabIndex == -1 || newTab == null || newTab == _dragTab) return;
 
-            int newTabIndex = base.TabPages.IndexOf(newTab);
-            base.TabPages[dragTabIndex] = newTab;
-            base.TabPages[newTabIndex] = _dragTab;
+            int newTabIndex = TabPages.IndexOf(newTab);
+            TabPages[dragTabIndex] = newTab;
+            TabPages[newTabIndex] = _dragTab;
 
             _backingTabList[bDragTabIndex].TabPage = newTab;
             _backingTabList[bNewTabIndex].TabPage = _dragTab!;
@@ -166,7 +166,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (GetTabRect(i).Contains(position))
                 {
-                    TabPage tabPage = base.TabPages[i];
+                    TabPage tabPage = TabPages[i];
                     var (index, backingTab) = FindBackingTab(tabPage);
 
                     return index == -1 || backingTab == null! ? (-1, null) : (index, tabPage);

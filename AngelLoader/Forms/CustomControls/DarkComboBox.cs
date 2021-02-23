@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Properties;
-using DarkUI.Config;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -17,7 +17,10 @@ namespace AngelLoader.Forms.CustomControls
             TextFormatFlags.SingleLine |
             TextFormatFlags.NoClipping;
 
+        private Bitmap? _buffer;
+
         private bool _darkModeEnabled;
+        [PublicAPI]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -30,21 +33,23 @@ namespace AngelLoader.Forms.CustomControls
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [PublicAPI]
         public new Color ForeColor { get; set; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [PublicAPI]
         public new Color BackColor { get; set; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [PublicAPI]
         public new FlatStyle FlatStyle { get; set; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [PublicAPI]
         public new ComboBoxStyle DropDownStyle { get; set; }
-
-        private Bitmap _buffer;
 
         public DarkComboBox() => SetUpTheme();
 
@@ -75,8 +80,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-                _buffer = null;
+            if (disposing) _buffer = null;
 
             base.Dispose(disposing);
         }
@@ -140,50 +144,46 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (!_darkModeEnabled) return;
 
-            if (_buffer == null)
-                _buffer = new Bitmap(ClientRectangle.Width, ClientRectangle.Height);
+            _buffer ??= new Bitmap(ClientRectangle.Width, ClientRectangle.Height);
 
-            using (var g = Graphics.FromImage(_buffer))
+            using var g = Graphics.FromImage(_buffer);
+            var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+
+            var textColor = Enabled ? DarkModeColors.LightText : DarkModeColors.DisabledText;
+            var borderColor = DarkModeColors.GreySelection;
+            var fillColor = DarkModeColors.LightBackground;
+
+            if (Focused && TabStop) borderColor = DarkModeColors.BlueHighlight;
+
+            using (var b = new SolidBrush(fillColor))
             {
-                var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+                g.FillRectangle(b, rect);
+            }
 
-                var textColor = Enabled ? Colors.LightText : Colors.DisabledText;
-                var borderColor = Colors.GreySelection;
-                var fillColor = Colors.LightBackground;
+            using (var p = new Pen(borderColor, 1))
+            {
+                var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
+                g.DrawRectangle(p, modRect);
+            }
 
-                if (Focused && TabStop)
-                    borderColor = Colors.BlueHighlight;
+            var icon = Resources.DarkUI_scrollbar_arrow_hot;
+            g.DrawImageUnscaled(icon,
+                rect.Right - icon.Width - (Consts.Padding / 2),
+                (rect.Height / 2) - (icon.Height / 2));
 
-                using (var b = new SolidBrush(fillColor))
-                {
-                    g.FillRectangle(b, rect);
-                }
+            var text = SelectedItem != null ? SelectedItem.ToString() : Text;
 
-                using (var p = new Pen(borderColor, 1))
-                {
-                    var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
-                    g.DrawRectangle(p, modRect);
-                }
+            using (var b = new SolidBrush(textColor))
+            {
+                const int padding = 2;
 
-                var icon = Resources.scrollbar_arrow_hot;
-                g.DrawImageUnscaled(icon,
-                                    rect.Right - icon.Width - (Consts.Padding / 2),
-                                    (rect.Height / 2) - (icon.Height / 2));
+                var modRect = new Rectangle(rect.Left + padding,
+                    rect.Top + padding,
+                    rect.Width - icon.Width - (Consts.Padding / 2) - (padding * 2),
+                    rect.Height - (padding * 2));
 
-                var text = SelectedItem != null ? SelectedItem.ToString() : Text;
-
-                using (var b = new SolidBrush(textColor))
-                {
-                    var padding = 2;
-
-                    var modRect = new Rectangle(rect.Left + padding,
-                                                rect.Top + padding,
-                                                rect.Width - icon.Width - (Consts.Padding / 2) - (padding * 2),
-                                                rect.Height - (padding * 2));
-
-                    // Explicitly set the fill color so that the antialiasing/ClearType looks right
-                    TextRenderer.DrawText(g, text, Font, modRect, b.Color, fillColor, _textFormat);
-                }
+                // Explicitly set the fill color so that the antialiasing/ClearType looks right
+                TextRenderer.DrawText(g, text, Font, modRect, b.Color, fillColor, _textFormat);
             }
         }
 
@@ -202,7 +202,7 @@ namespace AngelLoader.Forms.CustomControls
             // Fixes the glitchy drawing bug.
             PaintCombobox();
 
-            e.Graphics.DrawImageUnscaled(_buffer, Point.Empty);
+            e.Graphics.DrawImageUnscaled(_buffer!, Point.Empty);
         }
 
         protected override void OnDrawItem(DrawItemEventArgs e)
@@ -220,14 +220,14 @@ namespace AngelLoader.Forms.CustomControls
             var g = e.Graphics;
             var rect = e.Bounds;
 
-            var textColor = Colors.LightText;
-            var fillColor = Colors.LightBackground;
+            var textColor = DarkModeColors.LightText;
+            var fillColor = DarkModeColors.LightBackground;
 
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected ||
                 (e.State & DrawItemState.Focus) == DrawItemState.Focus ||
                 (e.State & DrawItemState.NoFocusRect) != DrawItemState.NoFocusRect)
             {
-                fillColor = Colors.BlueSelection;
+                fillColor = DarkModeColors.BlueSelection;
             }
 
             using (var b = new SolidBrush(fillColor))
@@ -239,18 +239,16 @@ namespace AngelLoader.Forms.CustomControls
             {
                 var text = Items[e.Index].ToString();
 
-                using (var b = new SolidBrush(textColor))
-                {
-                    var padding = 2;
+                using var b = new SolidBrush(textColor);
+                const int padding = 2;
 
-                    var modRect = new Rectangle(rect.Left + padding,
-                        rect.Top + padding,
-                        rect.Width - (padding * 2),
-                        rect.Height - (padding * 2));
+                var modRect = new Rectangle(rect.Left + padding,
+                    rect.Top + padding,
+                    rect.Width - (padding * 2),
+                    rect.Height - (padding * 2));
 
-                    // Explicitly set the fill color so that the antialiasing/ClearType looks right
-                    TextRenderer.DrawText(g, text, Font, modRect, b.Color, fillColor, _textFormat);
-                }
+                // Explicitly set the fill color so that the antialiasing/ClearType looks right
+                TextRenderer.DrawText(g, text, Font, modRect, b.Color, fillColor, _textFormat);
             }
         }
     }

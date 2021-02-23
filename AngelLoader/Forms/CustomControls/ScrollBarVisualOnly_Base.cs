@@ -45,38 +45,39 @@ namespace AngelLoader.Forms.CustomControls
         private protected State _firstArrowState;
         private protected State _secondArrowState;
 
-        protected SolidBrush CurrentThumbBrush => _thumbState == State.Normal
-            ? _thumbNormalBrush
-            : _thumbState == State.Hot
-            ? _thumbHotBrush
-            : _thumbPressedBrush;
+        protected SolidBrush CurrentThumbBrush => _thumbState switch
+        {
+            State.Normal => _thumbNormalBrush,
+            State.Hot => _thumbHotBrush,
+            _ => _thumbPressedBrush
+        };
 
         #endregion
 
         #region Disposables
 
-        private readonly Pen _greySelectionPen = new Pen(DarkUI.Config.Colors.GreySelection);
+        private readonly Pen _greySelectionPen = new Pen(DarkModeColors.GreySelection);
 
-        private SolidBrush _thumbNormalBrush;
-        private SolidBrush _thumbHotBrush;
-        private SolidBrush _thumbPressedBrush;
+        private readonly SolidBrush _thumbNormalBrush;
+        private readonly SolidBrush _thumbHotBrush;
+        private readonly SolidBrush _thumbPressedBrush;
 
         // We want them separate, not all pointing to the same reference
-        private readonly Bitmap _upArrowNormal = Resources.scrollbar_arrow_small_standard;
-        private readonly Bitmap _upArrowHot = Resources.scrollbar_arrow_small_hot;
-        private readonly Bitmap _upArrowPressed = Resources.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _upArrowNormal = Resources.DarkUI_scrollbar_arrow_small_standard;
+        private readonly Bitmap _upArrowHot = Resources.DarkUI_scrollbar_arrow_small_hot;
+        private readonly Bitmap _upArrowPressed = Resources.DarkUI_scrollbar_arrow_small_clicked;
 
-        private readonly Bitmap _downArrowNormal = Resources.scrollbar_arrow_small_standard;
-        private readonly Bitmap _downArrowHot = Resources.scrollbar_arrow_small_hot;
-        private readonly Bitmap _downArrowPressed = Resources.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _downArrowNormal = Resources.DarkUI_scrollbar_arrow_small_standard;
+        private readonly Bitmap _downArrowHot = Resources.DarkUI_scrollbar_arrow_small_hot;
+        private readonly Bitmap _downArrowPressed = Resources.DarkUI_scrollbar_arrow_small_clicked;
 
-        private readonly Bitmap _leftArrowNormal = Resources.scrollbar_arrow_small_standard;
-        private readonly Bitmap _leftArrowHot = Resources.scrollbar_arrow_small_hot;
-        private readonly Bitmap _leftArrowPressed = Resources.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _leftArrowNormal = Resources.DarkUI_scrollbar_arrow_small_standard;
+        private readonly Bitmap _leftArrowHot = Resources.DarkUI_scrollbar_arrow_small_hot;
+        private readonly Bitmap _leftArrowPressed = Resources.DarkUI_scrollbar_arrow_small_clicked;
 
-        private readonly Bitmap _rightArrowNormal = Resources.scrollbar_arrow_small_standard;
-        private readonly Bitmap _rightArrowHot = Resources.scrollbar_arrow_small_hot;
-        private readonly Bitmap _rightArrowPressed = Resources.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _rightArrowNormal = Resources.DarkUI_scrollbar_arrow_small_standard;
+        private readonly Bitmap _rightArrowHot = Resources.DarkUI_scrollbar_arrow_small_hot;
+        private readonly Bitmap _rightArrowPressed = Resources.DarkUI_scrollbar_arrow_small_clicked;
 
         #endregion
 
@@ -86,29 +87,14 @@ namespace AngelLoader.Forms.CustomControls
         {
             _isVertical = isVertical;
             _passMouseWheel = passMouseWheel;
-        }
 
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                var cp = base.CreateParams;
-                const int WS_EX_NOACTIVATE = 0x8000000;
-                // This doesn't seem to change anything one way or the other, but meh
-                cp.ExStyle |= WS_EX_NOACTIVATE;
-                return cp;
-            }
-        }
-
-        private protected void SetUpSelf()
-        {
             #region Set up self
 
             Visible = false;
-            DoubleBuffered = true;
+            base.DoubleBuffered = true;
             ResizeRedraw = true;
 
-            BackColor = DarkUI.Config.Colors.DarkBackground;
+            base.BackColor = DarkModeColors.DarkBackground;
 
             SetStyle(
                 ControlStyles.UserPaint |
@@ -117,10 +103,7 @@ namespace AngelLoader.Forms.CustomControls
                 true);
 
             #endregion
-        }
 
-        private protected void SetUpAfterOwner()
-        {
             #region Set up scroll bar arrows
 
             _upArrowNormal.RotateFlip(RotateFlipType.Rotate180FlipNone);
@@ -139,9 +122,9 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Set up thumb colors
 
-            _thumbNormalBrush = new SolidBrush(DarkUI.Config.Colors.GreySelection);
-            _thumbHotBrush = new SolidBrush(DarkUI.Config.Colors.GreyHighlight);
-            _thumbPressedBrush = new SolidBrush(DarkUI.Config.Colors.DarkGreySelection);
+            _thumbNormalBrush = new SolidBrush(DarkModeColors.GreySelection);
+            _thumbHotBrush = new SolidBrush(DarkModeColors.GreyHighlight);
+            _thumbPressedBrush = new SolidBrush(DarkModeColors.DarkGreySelection);
 
             #endregion
 
@@ -154,6 +137,18 @@ namespace AngelLoader.Forms.CustomControls
             ControlUtils.MouseHook.MouseMoveExt += MouseMoveExt_Handler;
 
             #endregion
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                const int WS_EX_NOACTIVATE = 0x8000000;
+                // This doesn't seem to change anything one way or the other, but meh
+                cp.ExStyle |= WS_EX_NOACTIVATE;
+                return cp;
+            }
         }
 
         #endregion
@@ -343,8 +338,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Methods
 
-        private protected virtual void RefreshIfNeeded(bool forceRefreshAll = false, bool forceRefreshCorner = false) { }
-
         private protected virtual Native.SCROLLBARINFO GetCurrentScrollBarInfo() => throw new NotImplementedException();
 
         private protected Rectangle GetVisualThumbRect(ref Native.SCROLLBARINFO sbi)
@@ -422,7 +415,7 @@ namespace AngelLoader.Forms.CustomControls
         private protected bool ShouldSendToOwner(int msg)
         {
             return
-                (msg == Native.WM_LBUTTONDOWN || msg == Native.WM_NCLBUTTONDOWN
+                   msg == Native.WM_LBUTTONDOWN || msg == Native.WM_NCLBUTTONDOWN
                 || msg == Native.WM_LBUTTONUP || msg == Native.WM_NCLBUTTONUP
                 || msg == Native.WM_LBUTTONDBLCLK || msg == Native.WM_NCLBUTTONDBLCLK
 
@@ -439,8 +432,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 // TODO: @DarkMode: Test wheel tilt with this system!
                 // (do I still have that spare Logitech mouse that works?)
-                || (_passMouseWheel && (msg == Native.WM_MOUSEWHEEL || msg == Native.WM_MOUSEHWHEEL))
-                );
+                || (_passMouseWheel && (msg == Native.WM_MOUSEWHEEL || msg == Native.WM_MOUSEHWHEEL));
         }
 
         private protected void PaintArrows(Graphics g, bool enabled)

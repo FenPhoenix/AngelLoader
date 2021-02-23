@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
-using DarkUI.Controls;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -19,10 +18,6 @@ namespace AngelLoader.Forms.CustomControls
         public ScrollBarVisualOnly(ScrollBar owner, bool passMouseWheel = false)
             : base(owner is VScrollBar, passMouseWheel)
         {
-            SetUpSelf();
-
-            #region Setup involving owner
-
             _owner = owner;
 
             if (_owner.Parent != null)
@@ -31,16 +26,12 @@ namespace AngelLoader.Forms.CustomControls
                 BringToFront();
                 if (owner.Parent is IDarkableScrollable ids)
                 {
-                    _owner.Parent.Paint += (sender, e) => PaintDarkScrollBars(ids, e);
+                    _owner.Parent.Paint += (_, e) => PaintDarkScrollBars(ids, e);
                 }
             }
 
-            _owner.VisibleChanged += (sender, e) => { if (_owner.Visible) BringToFront(); };
-            _owner.Scroll += (sender, e) => { if (_owner.Visible || Visible) RefreshIfNeeded(); };
-
-            #endregion
-
-            SetUpAfterOwner();
+            _owner.VisibleChanged += (_, _) => { if (_owner.Visible) BringToFront(); };
+            _owner.Scroll += (_, _) => { if (_owner.Visible || Visible) RefreshIfNeeded(); };
         }
 
         #endregion
@@ -62,7 +53,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void RefreshScrollBar(bool force = false) => RefreshIfNeeded(forceRefreshAll: force);
 
-        private protected override void RefreshIfNeeded(bool forceRefreshAll = false, bool forceRefreshCorner = false)
+        private void RefreshIfNeeded(bool forceRefreshAll = false)
         {
             // Refresh only if our thumb's size/position is stale. Otherwise, we get unacceptable lag.
             var sbi = GetCurrentScrollBarInfo();
@@ -91,37 +82,37 @@ namespace AngelLoader.Forms.CustomControls
                     var visualScrollBar = i == 0 ? control.VerticalVisualScrollBar : control.HorizontalVisualScrollBar;
 
                     // PERF: Check if we need to set expensive properties before setting expensive properties
-                    if (realScrollBar.Visible)
+                    if (realScrollBar.Visible && visualScrollBar != null)
                     {
                         visualScrollBar.Location = realScrollBar.Location;
                         visualScrollBar.Size = realScrollBar.Size;
                         visualScrollBar.Anchor = realScrollBar.Anchor;
                     }
 
-                    if (realScrollBar.Visible != visualScrollBar.Visible)
+                    if (visualScrollBar != null && realScrollBar.Visible != visualScrollBar.Visible)
                     {
                         visualScrollBar.Visible = realScrollBar.Visible;
                     }
                 }
 
-                if (control.VerticalScrollBar.Visible && control.HorizontalScrollBar.Visible)
+                if (control.VerticalVisualScrollBar != null &&
+                    control.VerticalScrollBar.Visible &&
+                    control.HorizontalScrollBar.Visible)
                 {
                     // Draw the corner in between the two scroll bars
                     // TODO: @DarkMode: Also cache this brush
-                    using (var b = new SolidBrush(control.VerticalVisualScrollBar.BackColor))
-                    {
-                        e.Graphics.FillRectangle(b, new Rectangle(
-                            control.VerticalScrollBar.Location.X,
-                            control.HorizontalScrollBar.Location.Y,
-                            control.VerticalScrollBar.Width,
-                            control.HorizontalScrollBar.Height));
-                    }
+                    using var b = new SolidBrush(control.VerticalVisualScrollBar.BackColor);
+                    e.Graphics.FillRectangle(b, new Rectangle(
+                        control.VerticalScrollBar.Location.X,
+                        control.HorizontalScrollBar.Location.Y,
+                        control.VerticalScrollBar.Width,
+                        control.HorizontalScrollBar.Height));
                 }
             }
             else
             {
-                control.VerticalVisualScrollBar.Hide();
-                control.HorizontalVisualScrollBar.Hide();
+                control.VerticalVisualScrollBar?.Hide();
+                control.HorizontalVisualScrollBar?.Hide();
             }
         }
 

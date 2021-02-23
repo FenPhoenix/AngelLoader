@@ -7,27 +7,10 @@ namespace DarkUI.Controls
 {
     public class DarkContextMenu : ContextMenuStrip
     {
-
-        private bool _darkModeEnabled;
-        public bool DarkModeEnabled
-        {
-            get => _darkModeEnabled;
-            set
-            {
-                _darkModeEnabled = value;
-                SetUpTheme();
-            }
-        }
-
         #region Constructors
 
         public DarkContextMenu() => SetUpTheme();
 
-        public DarkContextMenu(IContainer container) : base(container) => SetUpTheme();
-
-        public DarkContextMenu(bool darkModeEnabled) => DarkModeEnabled = darkModeEnabled;
-
-        public DarkContextMenu(bool darkModeEnabled, IContainer container) : base(container) => DarkModeEnabled = darkModeEnabled;
 
         #endregion
 
@@ -35,24 +18,7 @@ namespace DarkUI.Controls
         {
             void SetMenuTheme(ToolStripDropDown menu)
             {
-                if (_darkModeEnabled)
-                {
-                    menu.Renderer = new DarkMenuRenderer();
-                }
-                else
-                {
-                    menu.RenderMode = ToolStripRenderMode.ManagerRenderMode;
-
-                    // Prevents wrong back color on separators
-                    menu.BackColor = SystemColors.Control;
-
-                    // Prevents wrong back/fore color on items
-                    foreach (ToolStripItem item in menu.Items)
-                    {
-                        item.BackColor = SystemColors.Control;
-                        item.ForeColor = SystemColors.ControlText;
-                    }
-                }
+                menu.Renderer = new DarkMenuRenderer();
 
                 foreach (ToolStripItem item in menu.Items)
                 {

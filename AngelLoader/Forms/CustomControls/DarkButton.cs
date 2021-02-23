@@ -2,8 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using DarkUI.Config;
-using DarkUI.Controls;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -14,12 +13,10 @@ namespace AngelLoader.Forms.CustomControls
         #region Field Region
 
         private DarkButtonStyle _style = DarkButtonStyle.Normal;
-        private DarkControlState _buttonState = DarkControlState.Normal;
 
         private bool _isDefault;
         private bool _spacePressed;
 
-        private int _padding = Consts.Padding / 2;
         private int _imagePadding = 5; // Consts.Padding / 2
 
         private FlatStyle? _originalFlatStyle;
@@ -29,21 +26,24 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Designer Property Region
 
+        [PublicAPI]
         public Color? DarkModeBackColor { get; set; }
 
+        [PublicAPI]
         public new string Text
         {
-            get { return base.Text; }
+            get => base.Text;
             set
             {
                 base.Text = value;
                 InvalidateIfDark();
             }
         }
+        [PublicAPI]
 
         public new bool Enabled
         {
-            get { return base.Enabled; }
+            get => base.Enabled;
             set
             {
                 base.Enabled = value;
@@ -54,9 +54,10 @@ namespace AngelLoader.Forms.CustomControls
         [Category("Appearance")]
         [Description("Determines the style of the button.")]
         [DefaultValue(DarkButtonStyle.Normal)]
+        [PublicAPI]
         public DarkButtonStyle ButtonStyle
         {
-            get { return _style; }
+            get => _style;
             set
             {
                 _style = value;
@@ -67,9 +68,10 @@ namespace AngelLoader.Forms.CustomControls
         [Category("Appearance")]
         [Description("Determines the amount of padding between the image and text.")]
         [DefaultValue(5)]
+        [PublicAPI]
         public int ImagePadding
         {
-            get { return _imagePadding; }
+            get => _imagePadding;
             set
             {
                 _imagePadding = value;
@@ -81,36 +83,14 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Code Property Region
 
-        //[Browsable(false)]
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        //public new bool AutoEllipsis
-        //{
-        //    get { return false; }
-        //}
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [PublicAPI]
+        public DarkControlState ButtonState { get; private set; } = DarkControlState.Normal;
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public DarkControlState ButtonState
-        {
-            get { return _buttonState; }
-        }
-
-        //[Browsable(false)]
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        //public new ContentAlignment ImageAlign
-        //{
-        //    get { return base.ImageAlign; }
-        //}
-
-        //[Browsable(false)]
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        //public new bool FlatAppearance
-        //{
-        //    get { return false; }
-        //}
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [PublicAPI]
         public new FlatStyle FlatStyle
         {
             get => base.FlatStyle;
@@ -123,30 +103,10 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        //[Browsable(false)]
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        //public new ContentAlignment TextAlign
-        //{
-        //    get { return base.TextAlign; }
-        //}
-
-        //[Browsable(false)]
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        //public new bool UseCompatibleTextRendering
-        //{
-        //    get { return false; }
-        //}
-
-        //[Browsable(false)]
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        //public new bool UseVisualStyleBackColor
-        //{
-        //    get { return false; }
-        //}
-
         #endregion
 
         private bool _darkModeEnabled;
+        [PublicAPI]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -165,13 +125,13 @@ namespace AngelLoader.Forms.CustomControls
 
             // Everything needs to be just like this, or else there are cases where the appearance is wrong
 
-            base.UseCompatibleTextRendering = false;
+            UseCompatibleTextRendering = false;
 
             if (_darkModeEnabled)
             {
                 _originalFlatStyle = base.FlatStyle;
                 _originalBorderSize = FlatAppearance.BorderSize;
-                base.UseVisualStyleBackColor = !_darkModeEnabled;
+                UseVisualStyleBackColor = !_darkModeEnabled;
                 SetButtonState(DarkControlState.Normal);
 
                 Invalidate();
@@ -181,7 +141,7 @@ namespace AngelLoader.Forms.CustomControls
                 // Need to set these explicitly because in some cases (not all) they don't get set back automatically
                 ForeColor = SystemColors.ControlText;
                 BackColor = SystemColors.Control;
-                base.UseVisualStyleBackColor = true;
+                UseVisualStyleBackColor = true;
                 base.FlatStyle = _originalFlatStyle ?? base.FlatStyle;
                 FlatAppearance.BorderSize = _originalBorderSize ?? FlatAppearance.BorderSize;
             }
@@ -206,9 +166,9 @@ namespace AngelLoader.Forms.CustomControls
 
         private void SetButtonState(DarkControlState buttonState)
         {
-            if (_buttonState != buttonState)
+            if (ButtonState != buttonState)
             {
-                _buttonState = buttonState;
+                ButtonState = buttonState;
                 InvalidateIfDark();
             }
         }
@@ -217,18 +177,17 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Event Handler Region
 
+        // Need our own event because we can't fire base.OnPaint() or it overrides our own painting
+        public event PaintEventHandler? PaintCustom;
+
         protected override void OnCreateControl()
         {
             base.OnCreateControl();
 
             if (!_darkModeEnabled) return;
 
-            var form = FindForm();
-            if (form != null)
-            {
-                if (form.AcceptButton == this)
-                    _isDefault = true;
-            }
+            Form? form = FindForm();
+            if (form != null && form.AcceptButton == this) _isDefault = true;
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -237,20 +196,11 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            if (_spacePressed)
-                return;
+            if (_spacePressed) return;
 
-            if (e.Button == MouseButtons.Left)
-            {
-                if (ClientRectangle.Contains(e.Location))
-                    SetButtonState(DarkControlState.Pressed);
-                else
-                    SetButtonState(DarkControlState.Hover);
-            }
-            else
-            {
-                SetButtonState(DarkControlState.Hover);
-            }
+            SetButtonState(e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location)
+                ? DarkControlState.Pressed
+                : DarkControlState.Hover);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -261,8 +211,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (e.Button != MouseButtons.Left) return;
 
-            if (!ClientRectangle.Contains(e.Location))
-                return;
+            if (!ClientRectangle.Contains(e.Location)) return;
 
             SetButtonState(DarkControlState.Pressed);
         }
@@ -275,8 +224,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (e.Button != MouseButtons.Left) return;
 
-            if (_spacePressed)
-                return;
+            if (_spacePressed) return;
 
             SetButtonState(DarkControlState.Normal);
         }
@@ -287,8 +235,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            if (_spacePressed)
-                return;
+            if (_spacePressed) return;
 
             SetButtonState(DarkControlState.Normal);
         }
@@ -299,13 +246,9 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            if (_spacePressed)
-                return;
+            if (_spacePressed) return;
 
-            var location = Cursor.Position;
-
-            if (!ClientRectangle.Contains(location))
-                SetButtonState(DarkControlState.Normal);
+            if (!ClientRectangle.Contains(Cursor.Position)) SetButtonState(DarkControlState.Normal);
         }
 
         protected override void OnGotFocus(EventArgs e)
@@ -325,12 +268,9 @@ namespace AngelLoader.Forms.CustomControls
 
             _spacePressed = false;
 
-            var location = Cursor.Position;
-
-            if (!ClientRectangle.Contains(location))
-                SetButtonState(DarkControlState.Normal);
-            else
-                SetButtonState(DarkControlState.Hover);
+            SetButtonState(!ClientRectangle.Contains(Cursor.Position)
+                ? DarkControlState.Normal
+                : DarkControlState.Hover);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -356,12 +296,9 @@ namespace AngelLoader.Forms.CustomControls
             {
                 _spacePressed = false;
 
-                var location = Cursor.Position;
-
-                if (!ClientRectangle.Contains(location))
-                    SetButtonState(DarkControlState.Normal);
-                else
-                    SetButtonState(DarkControlState.Hover);
+                SetButtonState(!ClientRectangle.Contains(Cursor.Position)
+                    ? DarkControlState.Normal
+                    : DarkControlState.Hover);
             }
         }
 
@@ -371,8 +308,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            if (!DesignMode)
-                return;
+            if (!DesignMode) return;
 
             _isDefault = value;
             InvalidateIfDark();
@@ -381,9 +317,6 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #region Paint Region
-
-        // Need our own event because we can't fire base.OnPaint() or it overrides our own painting
-        public event PaintEventHandler PaintCustom;
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -402,24 +335,23 @@ namespace AngelLoader.Forms.CustomControls
                 ? new Rectangle(1, 1, ClientSize.Width - 2, ClientSize.Height - 3)
                 : new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
-            var textColor = Colors.LightText;
-            var borderColor = Colors.GreySelection;
-            var fillColor = DarkModeBackColor ?? (_isDefault ? Colors.DarkBlueBackground : Colors.LightBackground);
+            var textColor = DarkModeColors.LightText;
+            var borderColor = DarkModeColors.GreySelection;
+            var fillColor = DarkModeBackColor ?? (_isDefault ? DarkModeColors.DarkBlueBackground : DarkModeColors.LightBackground);
 
             if (Enabled)
             {
                 if (ButtonStyle == DarkButtonStyle.Normal)
                 {
-                    if (Focused && TabStop)
-                        borderColor = Colors.BlueHighlight;
+                    if (Focused && TabStop) borderColor = DarkModeColors.BlueHighlight;
 
                     switch (ButtonState)
                     {
                         case DarkControlState.Hover:
-                            fillColor = _isDefault ? Colors.BlueBackground : Colors.LighterBackground;
+                            fillColor = _isDefault ? DarkModeColors.BlueBackground : DarkModeColors.LighterBackground;
                             break;
                         case DarkControlState.Pressed:
-                            fillColor = _isDefault ? Colors.DarkBackground : Colors.DarkBackground;
+                            fillColor = _isDefault ? DarkModeColors.DarkBackground : DarkModeColors.DarkBackground;
                             break;
                     }
                 }
@@ -428,21 +360,21 @@ namespace AngelLoader.Forms.CustomControls
                     switch (ButtonState)
                     {
                         case DarkControlState.Normal:
-                            fillColor = DarkModeBackColor ?? Colors.GreyBackground;
+                            fillColor = DarkModeBackColor ?? DarkModeColors.GreyBackground;
                             break;
                         case DarkControlState.Hover:
-                            fillColor = Colors.MediumBackground;
+                            fillColor = DarkModeColors.MediumBackground;
                             break;
                         case DarkControlState.Pressed:
-                            fillColor = Colors.DarkBackground;
+                            fillColor = DarkModeColors.DarkBackground;
                             break;
                     }
                 }
             }
             else
             {
-                textColor = Colors.DisabledText;
-                fillColor = DarkModeBackColor ?? Colors.DarkGreySelection;
+                textColor = DarkModeColors.DisabledText;
+                fillColor = DarkModeBackColor ?? DarkModeColors.DarkGreySelection;
             }
 
             using (var b = new SolidBrush(fillColor))
@@ -452,13 +384,11 @@ namespace AngelLoader.Forms.CustomControls
 
             if (ButtonStyle == DarkButtonStyle.Normal)
             {
-                using (var p = new Pen(borderColor, 1))
-                {
-                    // Again, match us visually to size and position of classic mode
-                    var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height);
+                using var p = new Pen(borderColor, 1);
+                // Again, match us visually to size and position of classic mode
+                var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height);
 
-                    g.DrawRectangle(p, modRect);
-                }
+                g.DrawRectangle(p, modRect);
             }
 
             var textOffsetX = 0;
@@ -475,18 +405,18 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     case TextImageRelation.ImageAboveText:
                         textOffsetY = (Image.Size.Height / 2) + (ImagePadding / 2);
-                        y = y - ((int)(stringSize.Height / 2) + (ImagePadding / 2));
+                        y -= (int)(stringSize.Height / 2) + (ImagePadding / 2);
                         break;
                     case TextImageRelation.TextAboveImage:
                         textOffsetY = ((Image.Size.Height / 2) + (ImagePadding / 2)) * -1;
-                        y = y + ((int)(stringSize.Height / 2) + (ImagePadding / 2));
+                        y += (int)(stringSize.Height / 2) + (ImagePadding / 2);
                         break;
                     case TextImageRelation.ImageBeforeText:
                         textOffsetX = Image.Size.Width + (ImagePadding * 2);
                         x = ImagePadding;
                         break;
                     case TextImageRelation.TextBeforeImage:
-                        x = x + (int)stringSize.Width;
+                        x += (int)stringSize.Width;
                         break;
                 }
 
@@ -539,11 +469,9 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (parent != null)
                 {
-                    using (var pen = new Pen(parent.BackColor))
-                    {
-                        var bgRect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
-                        g.DrawRectangle(pen, bgRect);
-                    }
+                    using var pen = new Pen(parent.BackColor);
+                    var bgRect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
+                    g.DrawRectangle(pen, bgRect);
                 }
             }
 

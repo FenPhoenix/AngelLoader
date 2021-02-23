@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using DarkUI.Controls;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -13,7 +12,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             Visible = false;
             _owner = owner;
-            BackColor = DarkUI.Config.Colors.DarkBackground;
+            BackColor = DarkModeColors.DarkBackground;
             // DON'T anchor it bottom-right, or we get visual glitches and chaos
         }
 

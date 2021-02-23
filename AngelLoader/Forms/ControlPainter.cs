@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 using static AL_Common.CommonUtils;
 using static AngelLoader.Misc;
 
@@ -411,16 +412,16 @@ namespace AngelLoader.Forms
                 _darkModeEnabled = value;
                 if (_darkModeEnabled)
                 {
-                    BlackForegroundBrush = new SolidBrush(DarkUI.Config.Colors.Fen_DarkForeground);
+                    BlackForegroundBrush = new SolidBrush(DarkModeColors.Fen_DarkForeground);
 
                     // This one is the same color as the DarkComboBox arrow, but being smaller, is less visible
-                    //_arrowButtonEnabledBrush = new SolidBrush(DarkUI.Config.Colors.GreyHighlight);
+                    //_arrowButtonEnabledBrush = new SolidBrush(DarkModeColors.GreyHighlight);
 
                     // This one looks reasonably visible but not overbearing
                     _arrowButtonEnabledBrush = new SolidBrush(Color.FromArgb(150, 156, 160));
 
                     // This one looks very visible but possibly distracting
-                    //_arrowButtonEnabledBrush = new SolidBrush(DarkUI.Config.Colors.Fen_DarkForeground);
+                    //_arrowButtonEnabledBrush = new SolidBrush(DarkModeColors.Fen_DarkForeground);
                 }
                 else
                 {

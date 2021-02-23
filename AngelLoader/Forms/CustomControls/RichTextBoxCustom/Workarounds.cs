@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.WinAPI;
-using static AngelLoader.WinAPI.Native;
+//using static AngelLoader.WinAPI.Native;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -23,7 +23,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch ((uint)m.Msg)
             {
-                case WM_NCPAINT:
+                case Native.WM_NCPAINT:
                     if (_darkModeEnabled)
                     {
                         VisibilityChanged?.Invoke(this, EventArgs.Empty);
@@ -33,21 +33,21 @@ namespace AngelLoader.Forms.CustomControls
                         base.WndProc(ref m);
                     }
                     break;
-                case WM_MOUSEWHEEL:
+                case Native.WM_MOUSEWHEEL:
                     // Intercept the mousewheel call and direct it to use the fixed scrolling
                     InterceptMousewheel(ref m);
                     break;
-                case WM_MBUTTONDOWN:
-                case WM_MBUTTONDBLCLK:
+                case Native.WM_MBUTTONDOWN:
+                case Native.WM_MBUTTONDBLCLK:
                     // Intercept the middle mouse button and direct it to use the fixed reader mode
                     InterceptMiddleMouseButton(ref m);
                     break;
                 // CursorHandler() essentially "calls" this section, and this section "returns" whether the cursor
                 // was over a link (via LinkCursor)
-                case WM_REFLECT + WM_NOTIFY:
+                case Native.WM_REFLECT + Native.WM_NOTIFY:
                     CheckAndHandleEnLinkMsg(ref m);
                     break;
-                case WM_SETCURSOR:
+                case Native.WM_SETCURSOR:
                     CursorHandler(ref m);
                     break;
                 default:
@@ -58,30 +58,30 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Better vertical scrolling - original contribution by Xanfre
 
-        private SCROLLINFO _scrollInfo;
+        private Native.SCROLLINFO _scrollInfo;
         private int _wheelAccum;
 
         private void InitScrollInfo()
         {
             // Make sure this is valid right from the start
             _scrollInfo.cbSize = (uint)Marshal.SizeOf(_scrollInfo);
-            _scrollInfo.fMask = (uint)ScrollInfoMask.SIF_ALL;
+            _scrollInfo.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
         }
 
-        private static SCROLLINFO GetCurrentScrollInfo(IntPtr handle)
+        private static Native.SCROLLINFO GetCurrentScrollInfo(IntPtr handle)
         {
-            var si = new SCROLLINFO();
+            var si = new Native.SCROLLINFO();
             si.cbSize = (uint)Marshal.SizeOf(si);
-            si.fMask = (uint)ScrollInfoMask.SIF_ALL;
-            GetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si);
+            si.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
+            Native.GetScrollInfo(handle, (int)Native.ScrollBarDirection.SB_VERT, ref si);
             return si;
         }
 
         private void ResetScrollInfo()
         {
-            var si = new SCROLLINFO();
+            var si = new Native.SCROLLINFO();
             si.cbSize = (uint)Marshal.SizeOf(si);
-            si.fMask = (uint)ScrollInfoMask.SIF_ALL;
+            si.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
             si.nPos = 0;
             _scrollInfo = si;
             RepositionScroll(Handle, si);
@@ -114,7 +114,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private async Task SetScrollPositionToCorrect()
         {
-            SCROLLINFO si = _scrollInfo;
+            Native.SCROLLINFO si = _scrollInfo;
 
             this.SuspendDrawing_Native();
             try
@@ -133,7 +133,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private static bool VerticalScrollBarVisible(Control ctl)
         {
-            int style = GetWindowLong(ctl.Handle, -16);
+            int style = Native.GetWindowLong(ctl.Handle, -16);
             return (style & 0x200000) != 0;
         }
 
@@ -141,17 +141,17 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (pixels == 0) return;
 
-            SCROLLINFO si = GetCurrentScrollInfo(handle);
+            Native.SCROLLINFO si = GetCurrentScrollInfo(handle);
 
             si.nPos += pixels;
 
             RepositionScroll(handle, si);
         }
 
-        private static void RepositionScroll(IntPtr handle, SCROLLINFO si)
+        private static void RepositionScroll(IntPtr handle, Native.SCROLLINFO si)
         {
             // Reposition scroll
-            SetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si, true);
+            Native.SetScrollInfo(handle, (int)Native.ScrollBarDirection.SB_VERT, ref si, true);
 
             // Send a WM_VSCROLL scroll message using SB_THUMBTRACK as wParam
             // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
@@ -159,7 +159,7 @@ namespace AngelLoader.Forms.CustomControls
             IntPtr ptrLParam = new IntPtr(0);
 
             IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)Native.SB_THUMBTRACK;
-            SendMessage(handle, WM_VSCROLL, wp, ptrLParam);
+            Native.SendMessage(handle, Native.WM_VSCROLL, wp, ptrLParam);
         }
 
         // Intercept mousewheel and make RichTextBox scroll using the above method
@@ -216,7 +216,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             _cursorScrollBounds.Location = Point.Subtract(PointToClient(MousePosition), new Size(_cursorScrollBounds.Width / 2, _cursorScrollBounds.Height / 2));
 
-            SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
+            Native.SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
             _autoScrollTimer.Start();
             _endOnMouseUp = false;
 
@@ -231,10 +231,10 @@ namespace AngelLoader.Forms.CustomControls
             {
                 Marshal.StructureToPtr(scrollBounds, rectPtr, true);
 
-                var readerInfo = new READERMODEINFO
+                var readerInfo = new Native.READERMODEINFO
                 {
                     hwnd = Handle,
-                    fFlags = ReaderModeFlags.VerticalOnly,
+                    fFlags = Native.ReaderModeFlags.VerticalOnly,
                     prc = rectPtr,
                     lParam = IntPtr.Zero,
                     fFlags2 = TranslateDispatchCallback,
@@ -243,7 +243,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 readerInfo.cbSize = Marshal.SizeOf(readerInfo);
 
-                DoReaderMode(ref readerInfo);
+                Native.DoReaderMode(ref readerInfo);
             }
             finally
             {
@@ -258,34 +258,34 @@ namespace AngelLoader.Forms.CustomControls
 
         private bool TranslateDispatchCallback(ref Message msg)
         {
-            bool isMouseDown = msg.Msg == WM_LBUTTONDOWN ||
-                               msg.Msg == WM_MBUTTONDOWN ||
-                               msg.Msg == WM_RBUTTONDOWN ||
-                               msg.Msg == WM_XBUTTONDOWN ||
-                               msg.Msg == WM_MOUSEWHEEL ||
-                               msg.Msg == WM_MOUSEHWHEEL ||
-                               msg.Msg == WM_KEYDOWN;
+            bool isMouseDown = msg.Msg == Native.WM_LBUTTONDOWN ||
+                               msg.Msg == Native.WM_MBUTTONDOWN ||
+                               msg.Msg == Native.WM_RBUTTONDOWN ||
+                               msg.Msg == Native.WM_XBUTTONDOWN ||
+                               msg.Msg == Native.WM_MOUSEWHEEL ||
+                               msg.Msg == Native.WM_MOUSEHWHEEL ||
+                               msg.Msg == Native.WM_KEYDOWN;
 
-            if (isMouseDown || (_endOnMouseUp && (msg.Msg == WM_MBUTTONUP)))
+            if (isMouseDown || (_endOnMouseUp && (msg.Msg == Native.WM_MBUTTONUP)))
             {
                 // exit reader mode
                 _autoScrollTimer.Stop();
             }
 
-            if ((!_endOnMouseUp && (msg.Msg == WM_MBUTTONUP)) || (msg.Msg == WM_MOUSELEAVE))
+            if ((!_endOnMouseUp && (msg.Msg == Native.WM_MBUTTONUP)) || (msg.Msg == Native.WM_MOUSELEAVE))
             {
                 return true;
             }
 
             if (isMouseDown)
             {
-                msg.Msg = WM_MBUTTONDOWN;
+                msg.Msg = Native.WM_MBUTTONDOWN;
             }
 
             return false;
         }
 
-        private bool ReaderScrollCallback(ref READERMODEINFO prmi, int dx, int dy)
+        private bool ReaderScrollCallback(ref Native.READERMODEINFO prmi, int dx, int dy)
         {
             if (dy == 0)
             {
@@ -340,7 +340,7 @@ namespace AngelLoader.Forms.CustomControls
             DefWndProc(ref m);
             if (LinkCursor)
             {
-                SetCursor(new HandleRef(Cursors.Hand, Cursors.Hand.Handle));
+                Native.SetCursor(new HandleRef(Cursors.Hand, Cursors.Hand.Handle));
                 m.Result = (IntPtr)1;
             }
             // If the cursor isn't supposed to be Hand, then leave it be. Prevents cursor fighting where
@@ -349,13 +349,13 @@ namespace AngelLoader.Forms.CustomControls
 
         private void CheckAndHandleEnLinkMsg(ref Message m)
         {
-            if (((NMHDR)m.GetLParam(typeof(NMHDR))).code != EN_LINK)
+            if (((Native.NMHDR)m.GetLParam(typeof(Native.NMHDR))).code != Native.EN_LINK)
             {
                 base.WndProc(ref m);
                 return;
             }
 
-            var enlink = (ENLINK)m.GetLParam(typeof(ENLINK));
+            var enlink = (Native.ENLINK)m.GetLParam(typeof(Native.ENLINK));
             /*
             @X64 (RichTextBox workarounds - link hand cursor handler)
             NOTE:
@@ -373,11 +373,11 @@ namespace AngelLoader.Forms.CustomControls
 
             switch (enlink.msg)
             {
-                case WM_SETCURSOR:
+                case Native.WM_SETCURSOR:
                     LinkCursor = true;
                     m.Result = (IntPtr)1;
                     return;
-                case WM_LBUTTONDOWN:
+                case Native.WM_LBUTTONDOWN:
                     // Run base link-mousedown handler (eventually) - otherwise we'd have to re-implement
                     // CharRangeToString() in managed code and junk
                     base.WndProc(ref m);

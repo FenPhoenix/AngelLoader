@@ -50,7 +50,6 @@
     <Compile Include="Collections\ObservableListModified.cs" />
     <Compile Include="Config\Colors.cs" />
     <Compile Include="Config\Consts.cs" />
-    <Compile Include="Controls\EventArgs.cs" />
     <Compile Include="Controls\DarkButtonStyle.cs" />
     <Compile Include="Controls\DarkDropdownItem.cs" />
     <Compile Include="Controls\DarkDropdownList.cs">
@@ -243,6 +242,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="Resources\grip.png" />
   </ItemGroup>
   <ItemGroup>

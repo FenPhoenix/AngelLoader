@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.WinAPI.Taskbar;
-using DarkUI.Controls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -38,8 +37,8 @@ namespace AngelLoader.Forms.CustomControls
             if (_darkModeEnabled)
             {
                 // Use a lighter background so make it easy to see we're supposed to be in front and modal
-                back = DarkUI.Config.Colors.LightBackground;
-                fore = DarkUI.Config.Colors.Fen_DarkForeground;
+                back = DarkModeColors.LightBackground;
+                fore = DarkModeColors.Fen_DarkForeground;
             }
             else
             {
@@ -231,7 +230,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (BorderStyle == BorderStyle.FixedSingle)
                 {
                     // TODO: @DarkMode: Extract this pen...
-                    using var p = new Pen(DarkUI.Config.Colors.GreySelection);
+                    using var p = new Pen(DarkModeColors.GreySelection);
                     e.Graphics.DrawRectangle(p, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
                 }
             }
