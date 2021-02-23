@@ -61,12 +61,12 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_darkModeEnabled)
                 {
-                    RowsDefaultCellStyle.ForeColor = DarkModeColors.Fen_DarkForeground;
+                    RowsDefaultCellStyle.ForeColor = DarkColors.Fen_DarkForeground;
                     GridColor = Color.FromArgb(64, 64, 64);
                     //RowsDefaultCellStyle.BackColor = DarkModeColors.Fen_DarkBackground;
                     RecentHighlightColor = Color.FromArgb(64, 64, 72);
                     UnavailableColor = Color.FromArgb(64, 24, 24);
-                    DefaultRowBackColor = DarkModeColors.Fen_DarkBackground;
+                    DefaultRowBackColor = DarkColors.Fen_DarkBackground;
                 }
                 else
                 {
@@ -467,35 +467,29 @@ namespace AngelLoader.Forms.CustomControls
                     e.CellBounds.Width,
                     e.CellBounds.Height - 1);
 
-                using (var b = new SolidBrush(DarkModeColors.GreyBackground))
-                {
-                    e.Graphics.FillRectangle(b, e.CellBounds);
-                }
+                e.Graphics.FillRectangle(DarkColors.GreyBackgroundBrush, e.CellBounds);
 
-                using (var p = new Pen(DarkModeColors.GreySelection))
+                if (!mouseOver)
                 {
-                    if (!mouseOver)
-                    {
-                        e.Graphics.DrawLine(
-                            p,
-                            e.CellBounds.X + e.CellBounds.Width - 1,
-                            0,
-                            e.CellBounds.X + e.CellBounds.Width - 1,
-                            e.CellBounds.Y + e.CellBounds.Height - 1);
-                    }
                     e.Graphics.DrawLine(
-                        p,
-                        e.CellBounds.X,
-                        e.CellBounds.Y + e.CellBounds.Height - 1,
-                        e.CellBounds.X + e.CellBounds.Width,
+                        DarkColors.GreySelectionPen,
+                        e.CellBounds.X + e.CellBounds.Width - 1,
+                        0,
+                        e.CellBounds.X + e.CellBounds.Width - 1,
                         e.CellBounds.Y + e.CellBounds.Height - 1);
                 }
+                e.Graphics.DrawLine(
+                    DarkColors.GreySelectionPen,
+                    e.CellBounds.X,
+                    e.CellBounds.Y + e.CellBounds.Height - 1,
+                    e.CellBounds.X + e.CellBounds.Width,
+                    e.CellBounds.Y + e.CellBounds.Height - 1);
 
                 if (_mouseHere && mouseOver)
                 {
-                    using var b = new SolidBrush(_mouseDownOnHeader == e.ColumnIndex
-                        ? DarkModeColors.BlueHighlight
-                        : DarkModeColors.BlueSelection);
+                    var b = _mouseDownOnHeader == e.ColumnIndex
+                        ? DarkColors.BlueHighlightBrush
+                        : DarkColors.BlueSelectionBrush;
                     e.Graphics.FillRectangle(b, selectionRect);
                 }
 
@@ -542,14 +536,9 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnPaint(e);
 
-            if (_darkModeEnabled)
+            if (_darkModeEnabled && BorderStyle == BorderStyle.FixedSingle)
             {
-                if (BorderStyle == BorderStyle.FixedSingle)
-                {
-                    // TODO: @DarkMode: Extract this pen...
-                    using var p = new Pen(DarkModeColors.GreySelection);
-                    e.Graphics.DrawRectangle(p, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
-                }
+                e.Graphics.DrawRectangle(DarkColors.GreySelectionPen, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
             }
         }
 

@@ -45,27 +45,24 @@ namespace AngelLoader.Forms.CustomControls
         private protected State _firstArrowState;
         private protected State _secondArrowState;
 
-        protected SolidBrush CurrentThumbBrush => _thumbState switch
+        private readonly Point[] _arrowPolygon = new Point[3];
+
+        private protected SolidBrush CurrentThumbBrush => _thumbState switch
         {
-            State.Normal => _thumbNormalBrush,
-            State.Hot => _thumbHotBrush,
-            _ => _thumbPressedBrush
+            State.Normal => DarkColors.GreySelectionBrush,
+            State.Hot => DarkColors.GreyHighlightBrush,
+            _ => DarkColors.ActiveControlBrush
+        };
+
+        private static SolidBrush GetStateBrush(State state) => state switch
+        {
+            State.Normal => DarkColors.GreySelectionBrush,
+            State.Hot => DarkColors.GreyHighlightBrush,
+            _ => DarkColors.ActiveControlBrush
         };
 
         #endregion
-
-        #region Disposables
-
-        private readonly Pen _greySelectionPen = new Pen(DarkModeColors.GreySelection);
-
-        private readonly SolidBrush _thumbNormalBrush;
-        private readonly SolidBrush _thumbHotBrush;
-        private readonly SolidBrush _thumbPressedBrush;
-
-        private readonly Point[] _arrowPolygon = new Point[3];
-
-        #endregion
-
+        
         #region Constructor / init
 
         private protected ScrollBarVisualOnly_Base(bool isVertical, bool passMouseWheel)
@@ -79,21 +76,13 @@ namespace AngelLoader.Forms.CustomControls
             base.DoubleBuffered = true;
             ResizeRedraw = true;
 
-            base.BackColor = DarkModeColors.DarkBackground;
+            base.BackColor = DarkColors.DarkBackground;
 
             SetStyle(
                 ControlStyles.UserPaint |
                 ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.CacheText,
                 true);
-
-            #endregion
-
-            #region Set up thumb colors
-
-            _thumbNormalBrush = new SolidBrush(DarkModeColors.GreySelection);
-            _thumbHotBrush = new SolidBrush(DarkModeColors.GreyHighlight);
-            _thumbPressedBrush = new SolidBrush(DarkModeColors.ActiveControl);
 
             #endregion
 
@@ -429,40 +418,28 @@ namespace AngelLoader.Forms.CustomControls
                 secondDirection = Direction.Right;
             }
 
-            using (var firstArrowBrush = new SolidBrush(!enabled || _firstArrowState == State.Normal
-                ? DarkModeColors.GreySelection
-                : _firstArrowState == State.Hot
-                ? DarkModeColors.GreyHighlight
-                : DarkModeColors.ActiveControl))
-            {
-                ControlPainter.PaintArrow(
-                    g,
-                    _arrowPolygon,
-                    firstDirection,
-                    w,
-                    h,
-                    GetOwnerEnabled(),
-                    brush: firstArrowBrush);
-            }
+            var firstArrowBrush = GetStateBrush(_firstArrowState);
+            var secondArrowBrush = GetStateBrush(_secondArrowState);
 
-            using (var secondArrowBrush = new SolidBrush(!enabled || _secondArrowState == State.Normal
-                ? DarkModeColors.GreySelection
-                : _secondArrowState == State.Hot
-                ? DarkModeColors.GreyHighlight
-                : DarkModeColors.ActiveControl))
-            {
+            ControlPainter.PaintArrow(
+                g,
+                _arrowPolygon,
+                firstDirection,
+                w,
+                h,
+                GetOwnerEnabled(),
+                brush: firstArrowBrush);
 
-                ControlPainter.PaintArrow(
-                    g,
-                    _arrowPolygon,
-                    secondDirection,
-                    w,
-                    h,
-                    GetOwnerEnabled(),
-                    brush: secondArrowBrush,
-                    xOffset: xOffset,
-                    yOffset: yOffset);
-            }
+            ControlPainter.PaintArrow(
+                g,
+                _arrowPolygon,
+                secondDirection,
+                w,
+                h,
+                GetOwnerEnabled(),
+                brush: secondArrowBrush,
+                xOffset: xOffset,
+                yOffset: yOffset);
         }
 
         #endregion
@@ -477,12 +454,6 @@ namespace AngelLoader.Forms.CustomControls
                     ControlUtils.MouseHook.MouseUpExt -= MouseUpExt_Handler;
                     ControlUtils.MouseHook.MouseMoveExt -= MouseMoveExt_Handler;
                 }
-
-                _greySelectionPen.Dispose();
-
-                _thumbNormalBrush.Dispose();
-                _thumbHotBrush.Dispose();
-                _thumbPressedBrush.Dispose();
             }
 
             base.Dispose(disposing);

@@ -403,37 +403,12 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private static bool _darkModeEnabled;
-        internal static bool DarkModeEnabled
-        {
-            get => _darkModeEnabled;
-            set
-            {
-                _darkModeEnabled = value;
-                if (_darkModeEnabled)
-                {
-                    BlackForegroundBrush = new SolidBrush(DarkModeColors.Fen_DarkForeground);
+        internal static bool DarkModeEnabled { get; set; }
 
-                    // This one is the same color as the DarkComboBox arrow, but being smaller, is less visible
-                    //_arrowButtonEnabledBrush = new SolidBrush(DarkModeColors.GreyHighlight);
+        internal static Brush BlackForegroundBrush => DarkModeEnabled ? DarkColors.Fen_DarkForegroundBrush : Brushes.Black;
 
-                    // This one looks reasonably visible but not overbearing
-                    _arrowButtonEnabledBrush = new SolidBrush(Color.FromArgb(150, 156, 160));
-
-                    // This one looks very visible but possibly distracting
-                    //_arrowButtonEnabledBrush = new SolidBrush(DarkModeColors.Fen_DarkForeground);
-                }
-                else
-                {
-                    BlackForegroundBrush = Brushes.Black;
-                    _arrowButtonEnabledBrush = SystemBrushes.ControlText;
-                }
-            }
-        }
-
-        internal static Brush BlackForegroundBrush = Brushes.Black;
-        private static Brush _darkForegroundBrush = SystemBrushes.ControlText;
-        private static Brush _arrowButtonEnabledBrush = SystemBrushes.ControlText;
+        private static readonly Brush _darkModeArrowButtonEnabledBrush = new SolidBrush(Color.FromArgb(150, 156, 160));
+        private static Brush ArrowButtonEnabledBrush => DarkModeEnabled ? _darkModeArrowButtonEnabledBrush : SystemBrushes.ControlText;
 
         #region Buttons
 
@@ -720,7 +695,7 @@ namespace AngelLoader.Forms
                     break;
             }
 
-            brush ??= controlEnabled == true ? _arrowButtonEnabledBrush : SystemBrushes.ControlDark;
+            brush ??= controlEnabled == true ? ArrowButtonEnabledBrush : SystemBrushes.ControlDark;
 
             g.FillPolygon(brush, _arrowPolygon);
         }

@@ -12,7 +12,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             Visible = false;
             _owner = owner;
-            BackColor = DarkModeColors.DarkBackground;
+            BackColor = DarkColors.DarkBackground;
             // DON'T anchor it bottom-right, or we get visual glitches and chaos
         }
 

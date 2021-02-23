@@ -252,22 +252,22 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     // Explicitly set color 0 to our desired default, so we can spam \cf0 everywhere to keep
                     // our text looking right.
-                    invertedColor = DarkModeColors.Fen_DarkForeground;
+                    invertedColor = DarkColors.Fen_DarkForeground;
                 }
                 else if (_rtfColorStyle == RTFColorStyle.Monochrome)
                 {
                     invertedColor = ColorIsTheSameAsBackground(currentColor)
-                        ? DarkModeColors.Fen_DarkBackground
-                        : DarkModeColors.Fen_DarkForeground;
+                        ? DarkColors.Fen_DarkBackground
+                        : DarkColors.Fen_DarkForeground;
                 }
                 else // auto-color
                 {
                     // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
                     // white and that's a bit too bright.
                     invertedColor = currentColor.R == 0 && currentColor.G == 0 && currentColor.B == 0
-                        ? DarkModeColors.Fen_DarkForeground
+                        ? DarkColors.Fen_DarkForeground
                         : ColorIsTheSameAsBackground(currentColor)
-                        ? DarkModeColors.Fen_DarkBackground
+                        ? DarkColors.Fen_DarkBackground
                         : ColorUtils.InvertLightness(currentColor);
                 }
 
@@ -312,7 +312,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (colorTable.Count == 0)
                 {
                     colorTable.Add(_rtfColorStyle == RTFColorStyle.Monochrome
-                        ? DarkModeColors.Fen_DarkForeground
+                        ? DarkColors.Fen_DarkForeground
                         : Color.FromArgb(0, 0, 0));
                 }
 
@@ -372,7 +372,7 @@ namespace AngelLoader.Forms.CustomControls
             // Insert our dark background definition at the end, so we override any other backgrounds that may be set.
             darkModeBytes.InsertRange(
                 darkModeBytes.LastIndexOf((byte)'}'),
-                CreateBGColorRTFCode_Bytes(DarkModeColors.Fen_DarkBackground));
+                CreateBGColorRTFCode_Bytes(DarkColors.Fen_DarkBackground));
 
             // Keep this for debug...
             //File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes.ToArray());
@@ -387,7 +387,7 @@ namespace AngelLoader.Forms.CustomControls
             if (readmeType == ReadmeType.PlainText)
             {
                 (BackColor, ForeColor) = _darkModeEnabled
-                    ? (DarkModeColors.Fen_DarkBackground, DarkModeColors.Fen_DarkForeground)
+                    ? (DarkColors.Fen_DarkBackground, DarkColors.Fen_DarkForeground)
                     : (SystemColors.Window, SystemColors.WindowText);
             }
             else

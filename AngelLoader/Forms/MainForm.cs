@@ -689,11 +689,11 @@ namespace AngelLoader.Forms
             TopSplitContainer.SetSplitterPercent(Config.TopSplitterPercent, suspendResume: false);
 
             MainSplitContainer.InjectSibling(TopSplitContainer);
-            MainSplitContainer.Panel1DarkBackColor = DarkModeColors.Fen_ControlBackground;
-            MainSplitContainer.Panel2DarkBackColor = DarkModeColors.Fen_DarkBackground;
+            MainSplitContainer.Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
+            MainSplitContainer.Panel2DarkBackColor = DarkColors.Fen_DarkBackground;
             TopSplitContainer.InjectSibling(MainSplitContainer);
-            TopSplitContainer.Panel1DarkBackColor = DarkModeColors.Fen_ControlBackground;
-            TopSplitContainer.Panel2DarkBackColor = DarkModeColors.Fen_DarkBackground;
+            TopSplitContainer.Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
+            TopSplitContainer.Panel2DarkBackColor = DarkColors.Fen_DarkBackground;
 
             #endregion
 
@@ -1466,8 +1466,8 @@ namespace AngelLoader.Forms
                     {
                         if (darkMode)
                         {
-                            control.ForeColor = DarkModeColors.Fen_DarkForeground;
-                            control.BackColor = DarkModeColors.Fen_ControlBackground;
+                            control.ForeColor = DarkColors.Fen_DarkForeground;
+                            control.BackColor = DarkColors.Fen_ControlBackground;
                         }
                         else
                         {
@@ -3925,7 +3925,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(false);
 
             FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(false);
-            
+
             FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(false);
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(false);
@@ -4465,15 +4465,12 @@ namespace AngelLoader.Forms
 
             if (MainSplitContainer.DarkModeEnabled)
             {
-                using var p = new Pen(DarkModeColors.GreySelection);
-                using var p2 = new Pen(DarkModeColors.Fen_ControlBackground);
-                e.Graphics.DrawLine(p, panel2.Left, panel2.Height - 2, panel2.Right, panel2.Height - 2);
-                e.Graphics.DrawLine(p2, panel2.Left, panel2.Height - 1, panel2.Right, panel2.Height - 1);
+                e.Graphics.DrawLine(DarkColors.GreySelectionPen, panel2.Left, panel2.Height - 2, panel2.Right, panel2.Height - 2);
+                e.Graphics.DrawLine(DarkColors.Fen_ControlBackgroundPen, panel2.Left, panel2.Height - 1, panel2.Right, panel2.Height - 1);
             }
             else
             {
-                using var p = new Pen(Color.FromArgb(210, 210, 210));
-                e.Graphics.DrawLine(p, panel2.Left, panel2.Height - 2, panel2.Right, panel2.Height - 2);
+                e.Graphics.DrawLine(SystemPens.ControlLight, panel2.Left, panel2.Height - 2, panel2.Right, panel2.Height - 2);
             }
         }
 

@@ -12,16 +12,16 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.Initialize(toolStrip);
 
-            toolStrip.BackColor = DarkModeColors.GreyBackground;
-            toolStrip.ForeColor = DarkModeColors.LightText;
+            toolStrip.BackColor = DarkColors.GreyBackground;
+            toolStrip.ForeColor = DarkColors.LightText;
         }
 
         protected override void InitializeItem(ToolStripItem item)
         {
             base.InitializeItem(item);
 
-            item.BackColor = DarkModeColors.GreyBackground;
-            item.ForeColor = DarkModeColors.LightText;
+            item.BackColor = DarkColors.GreyBackground;
+            item.ForeColor = DarkColors.LightText;
 
             if (item.GetType() == typeof(ToolStripSeparator))
             {
@@ -35,19 +35,13 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
         {
-            var g = e.Graphics;
-            using var b = new SolidBrush(DarkModeColors.GreyBackground);
-            g.FillRectangle(b, e.AffectedBounds);
+            e.Graphics.FillRectangle(DarkColors.GreyBackgroundBrush, e.AffectedBounds);
         }
 
         protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
         {
-            var g = e.Graphics;
-
             var rect = new Rectangle(0, 0, e.ToolStrip.Width - 1, e.ToolStrip.Height - 1);
-
-            using var p = new Pen(DarkModeColors.LightBorder);
-            g.DrawRectangle(p, rect);
+            e.Graphics.DrawRectangle(DarkColors.LightBorderPen, rect);
         }
 
         protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
@@ -57,16 +51,10 @@ namespace AngelLoader.Forms.CustomControls
             var rect = new Rectangle(e.ImageRectangle.Left - 2, e.ImageRectangle.Top - 2,
                                          e.ImageRectangle.Width + 4, e.ImageRectangle.Height + 4);
 
-            using (var b = new SolidBrush(DarkModeColors.LightBorder))
-            {
-                g.FillRectangle(b, rect);
-            }
+            g.FillRectangle(DarkColors.LightBorderBrush, rect);
 
-            using (var p = new Pen(DarkModeColors.BlueHighlight))
-            {
-                var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
-                g.DrawRectangle(p, modRect);
-            }
+            var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
+            g.DrawRectangle(DarkColors.BlueHighlightPen, modRect);
 
             if (e.Item.ImageIndex == -1 && string.IsNullOrEmpty(e.Item.ImageKey) && e.Item.Image == null)
             {
@@ -76,17 +64,13 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
         {
-            var g = e.Graphics;
-
             var rect = new Rectangle(1, 3, e.Item.Width, 1);
-
-            using var b = new SolidBrush(DarkModeColors.LightBorder);
-            g.FillRectangle(b, rect);
+            e.Graphics.FillRectangle(DarkColors.LightBorderBrush, rect);
         }
 
         protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
         {
-            e.ArrowColor = e.Item.Enabled ? DarkModeColors.LightText : DarkModeColors.DisabledText;
+            e.ArrowColor = e.Item.Enabled ? DarkColors.LightText : DarkColors.DisabledText;
             e.ArrowRectangle = new Rectangle(new Point(e.ArrowRectangle.Left, e.ArrowRectangle.Top - 1), e.ArrowRectangle.Size);
 
             base.OnRenderArrow(e);
@@ -94,7 +78,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
         {
-            Color foreColor = e.Item.Enabled ? e.TextColor : DarkModeColors.DisabledText;
+            Color foreColor = e.Item.Enabled ? e.TextColor : DarkColors.DisabledText;
             TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, foreColor, e.TextFormat);
         }
 
@@ -102,18 +86,23 @@ namespace AngelLoader.Forms.CustomControls
         {
             var g = e.Graphics;
 
-            e.Item.ForeColor = e.Item.Enabled ? DarkModeColors.LightText : DarkModeColors.DisabledText;
+            e.Item.ForeColor = e.Item.Enabled ? DarkColors.LightText : DarkColors.DisabledText;
 
             if (e.Item.Enabled)
             {
-                var bgColor = e.Item.Selected ? DarkModeColors.GreyHighlight : e.Item.BackColor;
+                Color? bgColor = e.Item.Selected ? DarkColors.GreyHighlight : null;
 
                 // Normal item
                 var rect = new Rectangle(2, 0, e.Item.Width - 3, e.Item.Height);
 
-                using (var b = new SolidBrush(bgColor))
+                if (bgColor == null)
                 {
+                    using var b = new SolidBrush(e.Item.BackColor);
                     g.FillRectangle(b, rect);
+                }
+                else
+                {
+                    g.FillRectangle(DarkColors.GreyHighlightBrush, rect);
                 }
 
                 // Header item on open menu
@@ -121,8 +110,7 @@ namespace AngelLoader.Forms.CustomControls
                    tsMenuItem.DropDown.Visible &&
                    !tsMenuItem.IsOnDropDown)
                 {
-                    using var b = new SolidBrush(DarkModeColors.GreySelection);
-                    g.FillRectangle(b, rect);
+                    g.FillRectangle(DarkColors.GreySelectionBrush, rect);
                 }
             }
         }

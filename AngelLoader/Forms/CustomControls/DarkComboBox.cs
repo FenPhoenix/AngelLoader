@@ -149,21 +149,17 @@ namespace AngelLoader.Forms.CustomControls
             using var g = Graphics.FromImage(_buffer);
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
-            var textColor = Enabled ? DarkModeColors.LightText : DarkModeColors.DisabledText;
-            var borderColor = DarkModeColors.GreySelection;
-            var fillColor = DarkModeColors.LightBackground;
+            var textColorBrush = Enabled ? DarkColors.LightTextBrush : DarkColors.DisabledTextBrush;
+            var borderPen = DarkColors.GreySelectionPen;
+            var fillColorBrush = DarkColors.LightBackgroundBrush;
 
-            if (Focused && TabStop) borderColor = DarkModeColors.BlueHighlight;
+            if (Focused && TabStop) borderPen = DarkColors.BlueHighlightPen;
 
-            using (var b = new SolidBrush(fillColor))
-            {
-                g.FillRectangle(b, rect);
-            }
+            g.FillRectangle(fillColorBrush, rect);
 
-            using (var p = new Pen(borderColor, 1))
             {
                 var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
-                g.DrawRectangle(p, modRect);
+                g.DrawRectangle(borderPen, modRect);
             }
 
             var icon = Resources.DarkUI_scrollbar_arrow_hot;
@@ -173,18 +169,15 @@ namespace AngelLoader.Forms.CustomControls
 
             var text = SelectedItem != null ? SelectedItem.ToString() : Text;
 
-            using (var b = new SolidBrush(textColor))
-            {
-                const int padding = 2;
+            const int padding = 2;
 
-                var modRect = new Rectangle(rect.Left + padding,
-                    rect.Top + padding,
-                    rect.Width - icon.Width - (Consts.Padding / 2) - (padding * 2),
-                    rect.Height - (padding * 2));
+            var textRect = new Rectangle(rect.Left + padding,
+                rect.Top + padding,
+                rect.Width - icon.Width - (Consts.Padding / 2) - (padding * 2),
+                rect.Height - (padding * 2));
 
-                // Explicitly set the fill color so that the antialiasing/ClearType looks right
-                TextRenderer.DrawText(g, text, Font, modRect, b.Color, fillColor, _textFormat);
-            }
+            // Explicitly set the fill color so that the antialiasing/ClearType looks right
+            TextRenderer.DrawText(g, text, Font, textRect, textColorBrush.Color, fillColorBrush.Color, _textFormat);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -220,35 +213,31 @@ namespace AngelLoader.Forms.CustomControls
             var g = e.Graphics;
             var rect = e.Bounds;
 
-            var textColor = DarkModeColors.LightText;
-            var fillColor = DarkModeColors.LightBackground;
+            var textColorBrush = DarkColors.LightTextBrush;
+            var fillColorBrush = DarkColors.LightBackgroundBrush;
 
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected ||
                 (e.State & DrawItemState.Focus) == DrawItemState.Focus ||
                 (e.State & DrawItemState.NoFocusRect) != DrawItemState.NoFocusRect)
             {
-                fillColor = DarkModeColors.BlueSelection;
+                fillColorBrush = DarkColors.BlueSelectionBrush;
             }
 
-            using (var b = new SolidBrush(fillColor))
-            {
-                g.FillRectangle(b, rect);
-            }
+            g.FillRectangle(fillColorBrush, rect);
 
             if (e.Index >= 0 && e.Index < Items.Count)
             {
                 var text = Items[e.Index].ToString();
 
-                using var b = new SolidBrush(textColor);
                 const int padding = 2;
 
-                var modRect = new Rectangle(rect.Left + padding,
+                var textRect = new Rectangle(rect.Left + padding,
                     rect.Top + padding,
                     rect.Width - (padding * 2),
                     rect.Height - (padding * 2));
 
                 // Explicitly set the fill color so that the antialiasing/ClearType looks right
-                TextRenderer.DrawText(g, text, Font, modRect, b.Color, fillColor, _textFormat);
+                TextRenderer.DrawText(g, text, Font, textRect, textColorBrush.Color, fillColorBrush.Color, _textFormat);
             }
         }
     }

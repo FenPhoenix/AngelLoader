@@ -335,23 +335,24 @@ namespace AngelLoader.Forms.CustomControls
                 ? new Rectangle(1, 1, ClientSize.Width - 2, ClientSize.Height - 3)
                 : new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
-            var textColor = DarkModeColors.LightText;
-            var borderColor = DarkModeColors.GreySelection;
-            var fillColor = DarkModeBackColor ?? (_isDefault ? DarkModeColors.DarkBlueBackground : DarkModeColors.LightBackground);
+            var textColorBrush = DarkColors.LightTextBrush;
+            var borderPen = DarkColors.GreySelectionPen;
+            Color? fillColor = null;
+            if (DarkModeBackColor != null) fillColor = DarkModeBackColor;
 
             if (Enabled)
             {
                 if (ButtonStyle == DarkButtonStyle.Normal)
                 {
-                    if (Focused && TabStop) borderColor = DarkModeColors.BlueHighlight;
+                    if (Focused && TabStop) borderPen = DarkColors.BlueHighlightPen;
 
                     switch (ButtonState)
                     {
                         case DarkControlState.Hover:
-                            fillColor = _isDefault ? DarkModeColors.BlueBackground : DarkModeColors.LighterBackground;
+                            fillColor = _isDefault ? DarkColors.BlueBackground : DarkColors.LighterBackground;
                             break;
                         case DarkControlState.Pressed:
-                            fillColor = _isDefault ? DarkModeColors.DarkBackground : DarkModeColors.DarkBackground;
+                            fillColor = _isDefault ? DarkColors.DarkBackground : DarkColors.DarkBackground;
                             break;
                     }
                 }
@@ -360,35 +361,40 @@ namespace AngelLoader.Forms.CustomControls
                     switch (ButtonState)
                     {
                         case DarkControlState.Normal:
-                            fillColor = DarkModeBackColor ?? DarkModeColors.GreyBackground;
+                            fillColor = DarkModeBackColor ?? DarkColors.GreyBackground;
                             break;
                         case DarkControlState.Hover:
-                            fillColor = DarkModeColors.MediumBackground;
+                            fillColor = DarkColors.MediumBackground;
                             break;
                         case DarkControlState.Pressed:
-                            fillColor = DarkModeColors.DarkBackground;
+                            fillColor = DarkColors.DarkBackground;
                             break;
                     }
                 }
             }
             else
             {
-                textColor = DarkModeColors.DisabledText;
-                fillColor = DarkModeBackColor ?? DarkModeColors.DarkGreySelection;
+                textColorBrush = DarkColors.DisabledTextBrush;
+                fillColor = DarkModeBackColor ?? DarkColors.DarkGreySelection;
             }
 
-            using (var b = new SolidBrush(fillColor))
+            if (fillColor != null)
             {
+                using var b = new SolidBrush((Color)fillColor);
                 g.FillRectangle(b, rect);
+            }
+            else
+            {
+                var fillBrush = _isDefault ? DarkColors.DarkBlueBackgroundBrush : DarkColors.LightBackgroundBrush;
+                g.FillRectangle(fillBrush, rect);
             }
 
             if (ButtonStyle == DarkButtonStyle.Normal)
             {
-                using var p = new Pen(borderColor, 1);
                 // Again, match us visually to size and position of classic mode
-                var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height);
+                var borderRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height);
 
-                g.DrawRectangle(p, modRect);
+                g.DrawRectangle(borderPen, borderRect);
             }
 
             var textOffsetX = 0;
@@ -423,39 +429,36 @@ namespace AngelLoader.Forms.CustomControls
                 g.DrawImageUnscaled(Image, x, y);
             }
 
-            using (var b = new SolidBrush(textColor))
+            var padding = Padding;
+            /*
+            TODO: Remove this hack entirely and just make all image buttons be manually painted
+            We can just draw a bitmap instead of a vector and be perfectly fine then.
+            Remember to cache all needed bitmaps so we don't pull from Resources every time.
+
+            Create a greyed-out version of any bitmap:
+            Bitmap c = new Bitmap("filename");
+            Image d = ToolStripRenderer.CreateDisabledImage(c);
+            */
+            if (Image != null)
             {
-                var padding = Padding;
-                /*
-                TODO: Remove this hack entirely and just make all image buttons be manually painted
-                We can just draw a bitmap instead of a vector and be perfectly fine then.
-                Remember to cache all needed bitmaps so we don't pull from Resources every time.
-
-                Create a greyed-out version of any bitmap:
-                Bitmap c = new Bitmap("filename");
-                Image d = ToolStripRenderer.CreateDisabledImage(c);
-                */
-                if (Image != null)
-                {
-                    //padding.Left = -42;
-                    padding.Left -= Image.Width * 2;
-                    //padding.Right = -32;
-                }
-
-                var modRect = new Rectangle(rect.Left + textOffsetX + padding.Left,
-                                            rect.Top + textOffsetY + padding.Top, rect.Width - padding.Horizontal,
-                                            rect.Height - padding.Vertical);
-
-                const TextFormatFlags textFormat =
-                    TextFormatFlags.HorizontalCenter |
-                    TextFormatFlags.VerticalCenter |
-                    TextFormatFlags.EndEllipsis |
-                    TextFormatFlags.NoPrefix |
-                    TextFormatFlags.NoClipping;
-
-                // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
-                TextRenderer.DrawText(g, Text, Font, modRect, b.Color, textFormat);
+                //padding.Left = -42;
+                padding.Left -= Image.Width * 2;
+                //padding.Right = -32;
             }
+
+            var textRect = new Rectangle(rect.Left + textOffsetX + padding.Left,
+                rect.Top + textOffsetY + padding.Top, rect.Width - padding.Horizontal,
+                rect.Height - padding.Vertical);
+
+            const TextFormatFlags textFormat =
+                TextFormatFlags.HorizontalCenter |
+                TextFormatFlags.VerticalCenter |
+                TextFormatFlags.EndEllipsis |
+                TextFormatFlags.NoPrefix |
+                TextFormatFlags.NoClipping;
+
+            // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
+            TextRenderer.DrawText(g, Text, Font, textRect, textColorBrush.Color, textFormat);
 
             #region Draw "transparent" (parent-control-backcolor-matching) border
 

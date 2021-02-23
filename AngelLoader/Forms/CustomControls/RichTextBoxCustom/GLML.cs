@@ -20,7 +20,7 @@ namespace AngelLoader.Forms.CustomControls
 
             string colorTable = @"{\colortbl ";
             colorTable = _darkModeEnabled
-                ? AddColorToTable(colorTable, DarkModeColors.Fen_DarkForeground)
+                ? AddColorToTable(colorTable, DarkColors.Fen_DarkForeground)
                 : colorTable + ";";
             colorTable += _darkModeEnabled
                 ? @"\red222\green73\blue64;"
@@ -340,7 +340,7 @@ namespace AngelLoader.Forms.CustomControls
             if (_darkModeEnabled)
             {
                 // Background code at the end again, cause why not, it works
-                sb.Append(CreateBGColorRTFCode(DarkModeColors.Fen_DarkBackground));
+                sb.Append(CreateBGColorRTFCode(DarkColors.Fen_DarkBackground));
             }
 
             sb.Append('}');

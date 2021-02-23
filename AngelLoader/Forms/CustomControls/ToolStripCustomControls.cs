@@ -9,9 +9,6 @@ namespace AngelLoader.Forms.CustomControls
 {
     internal sealed class ToolStripCustom : ToolStrip, IDarkable
     {
-        private readonly SolidBrush _darkBackColorBrush = new SolidBrush(DarkModeColors.Fen_ControlBackground);
-        private readonly Pen _darkBackColorPen = new Pen(DarkModeColors.Fen_ControlBackground);
-
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
         {
@@ -19,7 +16,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _darkModeEnabled = value;
-                BackColor = _darkModeEnabled ? DarkModeColors.Fen_ControlBackground : SystemColors.Control;
+                BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
                 Refresh();
             }
         }
@@ -46,23 +43,13 @@ namespace AngelLoader.Forms.CustomControls
             var rectRight = new Rectangle(rect2Start - PaddingDrawNudge, 0, (Width - rect2Start) + PaddingDrawNudge, Height);
             var rectBottom = new Rectangle(0, Height - 1, Width, 1);
 
-            var brush = _darkModeEnabled ? _darkBackColorBrush : SystemBrushes.Control;
-            var pen = _darkModeEnabled ? _darkBackColorPen : SystemPens.Control;
+            var brush = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundBrush : SystemBrushes.Control;
+            var pen = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundPen : SystemPens.Control;
 
             e.Graphics.FillRectangle(brush, rectLeft);
             e.Graphics.FillRectangle(brush, rectRight);
             e.Graphics.FillRectangle(brush, rectBottom);
             e.Graphics.DrawLine(pen, Width - 2, Height - 2, Width - 1, Height - 2);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _darkBackColorBrush.Dispose();
-                _darkBackColorPen.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 
@@ -118,7 +105,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _darkModeEnabled = value;
-                BackColor = _darkModeEnabled ? DarkModeColors.Fen_ControlBackground : SystemColors.Control;
+                BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
             }
         }
 
@@ -140,7 +127,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _darkModeEnabled = value;
-                BackColor = _darkModeEnabled ? DarkModeColors.Fen_ControlBackground : SystemColors.Control;
+                BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
             }
         }
 

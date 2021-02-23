@@ -19,7 +19,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled)
                 {
                     _origBackColor ??= BackColor;
-                    BackColor = DarkModeColors.Fen_ControlBackground;
+                    BackColor = DarkColors.Fen_ControlBackground;
                 }
                 else
                 {

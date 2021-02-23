@@ -37,8 +37,8 @@ namespace AngelLoader.Forms.CustomControls
             if (_darkModeEnabled)
             {
                 // Use a lighter background so make it easy to see we're supposed to be in front and modal
-                back = DarkModeColors.LightBackground;
-                fore = DarkModeColors.Fen_DarkForeground;
+                back = DarkColors.LightBackground;
+                fore = DarkColors.Fen_DarkForeground;
             }
             else
             {
@@ -225,14 +225,9 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnPaint(e);
 
-            if (_darkModeEnabled)
+            if (_darkModeEnabled && BorderStyle == BorderStyle.FixedSingle)
             {
-                if (BorderStyle == BorderStyle.FixedSingle)
-                {
-                    // TODO: @DarkMode: Extract this pen...
-                    using var p = new Pen(DarkModeColors.GreySelection);
-                    e.Graphics.DrawRectangle(p, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
-                }
+                e.Graphics.DrawRectangle(DarkColors.GreySelectionPen, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
             }
         }
     }

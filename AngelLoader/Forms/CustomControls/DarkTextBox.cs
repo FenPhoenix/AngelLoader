@@ -35,8 +35,8 @@ namespace AngelLoader.Forms.CustomControls
                         _origValuesStored = true;
                     }
 
-                    BackColor = DarkModeColors.LightBackground;
-                    ForeColor = DarkModeColors.LightText;
+                    BackColor = DarkColors.LightBackground;
+                    ForeColor = DarkColors.LightText;
                     Padding = new Padding(2, 2, 2, 2);
                     BorderStyle = BorderStyle.FixedSingle;
                 }

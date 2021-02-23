@@ -184,7 +184,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            if (_spacePressed)return;
+            if (_spacePressed) return;
 
             SetControlState(e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location)
                 ? DarkControlState.Pressed
@@ -308,51 +308,55 @@ namespace AngelLoader.Forms.CustomControls
 
             var size = Consts.CheckBoxSize;
 
-            var textColor = DarkModeColors.LightText;
-            var borderColor = DarkModeColors.LightText;
-            var fillColor = DarkModeColors.LightText;
+            var textColorPen = DarkColors.LightTextPen;
+            var borderPen = DarkColors.LightTextPen;
+            var fillBrush = DarkColors.LightTextBrush;
 
             if (Enabled)
             {
                 if (AutoCheck && Focused)
                 {
-                    borderColor = DarkModeColors.BlueHighlight;
-                    fillColor = DarkModeColors.BlueHighlight;
+                    borderPen = DarkColors.BlueHighlightPen;
+                    fillBrush = DarkColors.BlueHighlightBrush;
                 }
 
                 if (_controlState == DarkControlState.Hover)
                 {
-                    borderColor = DarkModeColors.BlueHighlight;
-                    fillColor = DarkModeColors.BlueSelection;
+                    borderPen = DarkColors.BlueHighlightPen;
+                    fillBrush = DarkColors.BlueSelectionBrush;
                 }
                 else if (_controlState == DarkControlState.Pressed)
                 {
-                    borderColor = DarkModeColors.GreyHighlight;
-                    fillColor = DarkModeColors.GreySelection;
+                    borderPen = DarkColors.GreyHighlightPen;
+                    fillBrush = DarkColors.GreySelectionBrush;
                 }
             }
             else
             {
-                textColor = DarkModeColors.DisabledText;
-                borderColor = DarkModeColors.GreyHighlight;
-                fillColor = DarkModeColors.GreySelection;
+                textColorPen = DarkColors.DisabledTextPen;
+                borderPen = DarkColors.GreyHighlightPen;
+                fillBrush = DarkColors.GreySelectionBrush;
             }
 
-            using (var b = new SolidBrush(Parent?.BackColor ?? DarkModeColors.GreyBackground))
+            Color? parentBackColor = Parent?.BackColor;
+            if (parentBackColor != null)
             {
+                using var b = new SolidBrush((Color)parentBackColor);
                 g.FillRectangle(b, rect);
+            }
+            else
+            {
+                g.FillRectangle(DarkColors.GreyBackgroundBrush, rect);
             }
 
             var outlineBoxRect = new Rectangle(0, (rect.Height / 2) - (size / 2), size, size);
-            using (var p = new Pen(borderColor))
             {
-                g.DrawRectangle(p, outlineBoxRect);
+                g.DrawRectangle(borderPen, outlineBoxRect);
             }
 
             if (CheckState == CheckState.Checked)
             {
-                using var b = new SolidBrush(fillColor);
-                using var p = new Pen(b, 1.6f);
+                using var p = new Pen(fillBrush, 1.6f);
                 SmoothingMode oldSmoothingMode = g.SmoothingMode;
 
                 g.SmoothingMode = SmoothingMode.HighQuality;
@@ -375,22 +379,18 @@ namespace AngelLoader.Forms.CustomControls
             }
             else if (CheckState == CheckState.Indeterminate)
             {
-                using var b = new SolidBrush(fillColor);
                 Rectangle boxRect = new Rectangle(3, ((rect.Height / 2) - ((size - 4) / 2)) + 1, size - 5, size - 5);
-                g.FillRectangle(b, boxRect);
+                g.FillRectangle(fillBrush, boxRect);
             }
 
-            using (var b = new SolidBrush(textColor))
-            {
-                const TextFormatFlags textFormatFlags =
-                    TextFormatFlags.VerticalCenter |
-                    TextFormatFlags.NoPrefix |
-                    TextFormatFlags.Default |
-                    TextFormatFlags.NoClipping;
+            const TextFormatFlags textFormatFlags =
+                TextFormatFlags.VerticalCenter |
+                TextFormatFlags.NoPrefix |
+                TextFormatFlags.Default |
+                TextFormatFlags.NoClipping;
 
-                var modRect = new Rectangle(size + 4, 0, rect.Width - size, rect.Height);
-                TextRenderer.DrawText(g, Text, Font, modRect, b.Color, textFormatFlags);
-            }
+            var textRect = new Rectangle(size + 4, 0, rect.Width - size, rect.Height);
+            TextRenderer.DrawText(g, Text, Font, textRect, textColorPen.Color, textFormatFlags);
         }
 
         #endregion
