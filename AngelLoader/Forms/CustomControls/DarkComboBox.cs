@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Properties;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -18,6 +17,8 @@ namespace AngelLoader.Forms.CustomControls
             TextFormatFlags.NoClipping;
 
         private Bitmap? _buffer;
+
+        private readonly Point[] _arrowPoints = new Point[3];
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -158,14 +159,21 @@ namespace AngelLoader.Forms.CustomControls
             g.FillRectangle(fillColorBrush, rect);
 
             {
-                var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
-                g.DrawRectangle(borderPen, modRect);
+                var borderRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
+                g.DrawRectangle(borderPen, borderRect);
             }
 
-            var icon = Resources.DarkUI_scrollbar_arrow_hot;
-            g.DrawImageUnscaled(icon,
-                rect.Right - icon.Width - (Consts.Padding / 2),
-                (rect.Height / 2) - (icon.Height / 2));
+            const int arrowWidth = 9;
+            const int arrowHeight = 4;
+
+            int x = rect.Width - arrowWidth - (Consts.Padding / 2);
+            int y = (rect.Height / 2) - (arrowHeight / 2);
+
+            _arrowPoints[0] = new Point(x, y);
+            _arrowPoints[1] = new Point(x + 4, y + 5);
+            _arrowPoints[2] = new Point(x + 9, y);
+
+            g.FillPolygon(DarkColors.GreyHighlightBrush, _arrowPoints);
 
             var text = SelectedItem != null ? SelectedItem.ToString() : Text;
 
@@ -173,7 +181,7 @@ namespace AngelLoader.Forms.CustomControls
 
             var textRect = new Rectangle(rect.Left + padding,
                 rect.Top + padding,
-                rect.Width - icon.Width - (Consts.Padding / 2) - (padding * 2),
+                rect.Width - arrowWidth - (Consts.Padding / 2) - (padding * 2),
                 rect.Height - (padding * 2));
 
             // Explicitly set the fill color so that the antialiasing/ClearType looks right

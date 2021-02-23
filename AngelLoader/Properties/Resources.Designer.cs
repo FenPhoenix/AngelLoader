@@ -103,46 +103,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap DarkUI_scrollbar_arrow_hot {
-            get {
-                object obj = ResourceManager.GetObject("DarkUI_scrollbar_arrow_hot", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap DarkUI_scrollbar_arrow_small_clicked {
-            get {
-                object obj = ResourceManager.GetObject("DarkUI_scrollbar_arrow_small_clicked", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap DarkUI_scrollbar_arrow_small_hot {
-            get {
-                object obj = ResourceManager.GetObject("DarkUI_scrollbar_arrow_small_hot", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap DarkUI_scrollbar_arrow_small_standard {
-            get {
-                object obj = ResourceManager.GetObject("DarkUI_scrollbar_arrow_small_standard", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap DarkUI_Tick {
             get {
                 object obj = ResourceManager.GetObject("DarkUI_Tick", resourceCulture);
