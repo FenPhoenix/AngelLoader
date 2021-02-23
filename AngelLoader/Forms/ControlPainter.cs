@@ -654,12 +654,15 @@ namespace AngelLoader.Forms
         #endregion
 
         internal static void PaintArrow(
-            PaintEventArgs e,
+            Graphics g,
             Point[] _arrowPolygon,
             Direction direction,
-            int width,
-            int height,
-            bool enabled)
+            int controlWidth,
+            int controlHeight,
+            bool? controlEnabled = null,
+            Brush? brush = null,
+            int? xOffset = null,
+            int? yOffset = null)
         {
             int arrowX;
             int arrowY;
@@ -667,8 +670,11 @@ namespace AngelLoader.Forms
             switch (direction)
             {
                 case Direction.Left:
-                    arrowX = (width / 2) + 2;
-                    arrowY = (height / 2) - 4;
+                    arrowX = (controlWidth / 2) + 2;
+                    arrowY = (controlHeight / 2) - 3;
+
+                    if (xOffset != null) arrowX += (int)xOffset;
+                    if (yOffset != null) arrowY += (int)yOffset;
 
                     (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY - 1);
                     (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX, arrowY + 7);
@@ -676,27 +682,36 @@ namespace AngelLoader.Forms
 
                     break;
                 case Direction.Right:
-                    arrowX = (width / 2) - 2;
-                    arrowY = (height / 2) - 4;
+                    arrowX = (controlWidth / 2) - 2;
+                    arrowY = (controlHeight / 2) - 3;
 
-                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY - 1);
-                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX, arrowY + 7);
-                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 4, arrowY + 3);
+                    if (xOffset != null) arrowX += (int)xOffset;
+                    if (yOffset != null) arrowY += (int)yOffset;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX + 1, arrowY - 1);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX + 1, arrowY + 7);
+                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 5, arrowY + 3);
 
                     break;
                 case Direction.Up:
-                    arrowX = (width / 2) - 3;
-                    arrowY = (height / 2) + 1;
+                    arrowX = (controlWidth / 2) - 3;
+                    arrowY = (controlHeight / 2) + 1;
 
-                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY);
-                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX + 7, arrowY);
+                    if (xOffset != null) arrowX += (int)xOffset;
+                    if (yOffset != null) arrowY += (int)yOffset;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX - 1, arrowY + 1);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX + 7, arrowY + 1);
                     (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 3, arrowY - 4);
 
                     break;
                 case Direction.Down:
                 default:
-                    arrowX = (width / 2) - 3;
-                    arrowY = (height / 2) - 1;
+                    arrowX = (controlWidth / 2) - 3;
+                    arrowY = (controlHeight / 2) - 1;
+
+                    if (xOffset != null) arrowX += (int)xOffset;
+                    if (yOffset != null) arrowY += (int)yOffset;
 
                     (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY);
                     (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX + 7, arrowY);
@@ -705,8 +720,9 @@ namespace AngelLoader.Forms
                     break;
             }
 
-            Brush brush = enabled ? _arrowButtonEnabledBrush : SystemBrushes.ControlDark;
-            e.Graphics.FillPolygon(brush, _arrowPolygon);
+            brush ??= controlEnabled == true ? _arrowButtonEnabledBrush : SystemBrushes.ControlDark;
+
+            g.FillPolygon(brush, _arrowPolygon);
         }
     }
 }

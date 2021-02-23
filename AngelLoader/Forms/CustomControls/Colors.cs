@@ -6,6 +6,11 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Fen
 
+        // Scroll arrows:
+        // Normal:   92,  92,  92 (GreySelection)
+        // Hot:     122, 128, 132 (GreyHighlight)
+        // Pressed: 159, 178, 196 (ActiveControl)
+
         public static Color Fen_DarkBackground => Color.FromArgb(32, 32, 32);
         public static Color Fen_DarkForeground => Color.FromArgb(200, 200, 200);
 

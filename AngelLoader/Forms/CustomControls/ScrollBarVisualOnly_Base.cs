@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using Gma.System.MouseKeyHook;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -62,22 +62,7 @@ namespace AngelLoader.Forms.CustomControls
         private readonly SolidBrush _thumbHotBrush;
         private readonly SolidBrush _thumbPressedBrush;
 
-        // We want them separate, not all pointing to the same reference
-        private readonly Bitmap _upArrowNormal = Resources.DarkUI_scrollbar_arrow_small_standard;
-        private readonly Bitmap _upArrowHot = Resources.DarkUI_scrollbar_arrow_small_hot;
-        private readonly Bitmap _upArrowPressed = Resources.DarkUI_scrollbar_arrow_small_clicked;
-
-        private readonly Bitmap _downArrowNormal = Resources.DarkUI_scrollbar_arrow_small_standard;
-        private readonly Bitmap _downArrowHot = Resources.DarkUI_scrollbar_arrow_small_hot;
-        private readonly Bitmap _downArrowPressed = Resources.DarkUI_scrollbar_arrow_small_clicked;
-
-        private readonly Bitmap _leftArrowNormal = Resources.DarkUI_scrollbar_arrow_small_standard;
-        private readonly Bitmap _leftArrowHot = Resources.DarkUI_scrollbar_arrow_small_hot;
-        private readonly Bitmap _leftArrowPressed = Resources.DarkUI_scrollbar_arrow_small_clicked;
-
-        private readonly Bitmap _rightArrowNormal = Resources.DarkUI_scrollbar_arrow_small_standard;
-        private readonly Bitmap _rightArrowHot = Resources.DarkUI_scrollbar_arrow_small_hot;
-        private readonly Bitmap _rightArrowPressed = Resources.DarkUI_scrollbar_arrow_small_clicked;
+        private readonly Point[] _arrowPolygon = new Point[3];
 
         #endregion
 
@@ -104,27 +89,11 @@ namespace AngelLoader.Forms.CustomControls
 
             #endregion
 
-            #region Set up scroll bar arrows
-
-            _upArrowNormal.RotateFlip(RotateFlipType.Rotate180FlipNone);
-            _upArrowHot.RotateFlip(RotateFlipType.Rotate180FlipNone);
-            _upArrowPressed.RotateFlip(RotateFlipType.Rotate180FlipNone);
-
-            _leftArrowNormal.RotateFlip(RotateFlipType.Rotate90FlipNone);
-            _leftArrowHot.RotateFlip(RotateFlipType.Rotate90FlipNone);
-            _leftArrowPressed.RotateFlip(RotateFlipType.Rotate90FlipNone);
-
-            _rightArrowNormal.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            _rightArrowHot.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            _rightArrowPressed.RotateFlip(RotateFlipType.Rotate270FlipNone);
-
-            #endregion
-
             #region Set up thumb colors
 
             _thumbNormalBrush = new SolidBrush(DarkModeColors.GreySelection);
             _thumbHotBrush = new SolidBrush(DarkModeColors.GreyHighlight);
-            _thumbPressedBrush = new SolidBrush(DarkModeColors.DarkGreySelection);
+            _thumbPressedBrush = new SolidBrush(DarkModeColors.ActiveControl);
 
             #endregion
 
@@ -435,67 +404,64 @@ namespace AngelLoader.Forms.CustomControls
                 || (_passMouseWheel && (msg == Native.WM_MOUSEWHEEL || msg == Native.WM_MOUSEHWHEEL));
         }
 
+        private protected virtual bool GetOwnerEnabled() => throw new NotImplementedException();
+
         private protected void PaintArrows(Graphics g, bool enabled)
         {
-            int w, h;
+            int w, h, xOffset, yOffset;
+            Direction firstDirection, secondDirection;
             if (_isVertical)
             {
                 w = SystemInformation.VerticalScrollBarWidth;
                 h = SystemInformation.VerticalScrollBarArrowHeight;
+                xOffset = 0;
+                yOffset = Height - h;
+                firstDirection = Direction.Up;
+                secondDirection = Direction.Down;
             }
             else
             {
                 w = SystemInformation.HorizontalScrollBarHeight;
                 h = SystemInformation.HorizontalScrollBarArrowWidth;
+                xOffset = Width - w;
+                yOffset = 0;
+                firstDirection = Direction.Left;
+                secondDirection = Direction.Right;
             }
 
-            if (_isVertical)
+            using (var firstArrowBrush = new SolidBrush(!enabled || _firstArrowState == State.Normal
+                ? DarkModeColors.GreySelection
+                : _firstArrowState == State.Hot
+                ? DarkModeColors.GreyHighlight
+                : DarkModeColors.ActiveControl))
             {
-                Bitmap upArrow = !enabled || _firstArrowState == State.Normal
-                    ? _upArrowNormal
-                    : _firstArrowState == State.Hot
-                    ? _upArrowHot
-                    : _upArrowPressed;
-
-                Bitmap downArrow = !enabled || _secondArrowState == State.Normal
-                    ? _downArrowNormal
-                    : _secondArrowState == State.Hot
-                    ? _downArrowHot
-                    : _downArrowPressed;
-
-                g.DrawImageUnscaled(
-                    upArrow,
-                    (w / 2) - (_upArrowNormal.Width / 2),
-                    (h / 2) - (_upArrowNormal.Height / 2));
-
-                g.DrawImageUnscaled(
-                    downArrow,
-                    (w / 2) - (_downArrowNormal.Width / 2),
-                    (Height - h) + ((h / 2) - (_downArrowNormal.Height / 2)));
+                ControlPainter.PaintArrow(
+                    g,
+                    _arrowPolygon,
+                    firstDirection,
+                    w,
+                    h,
+                    GetOwnerEnabled(),
+                    brush: firstArrowBrush);
             }
-            else
+
+            using (var secondArrowBrush = new SolidBrush(!enabled || _secondArrowState == State.Normal
+                ? DarkModeColors.GreySelection
+                : _secondArrowState == State.Hot
+                ? DarkModeColors.GreyHighlight
+                : DarkModeColors.ActiveControl))
             {
-                Bitmap leftArrow = !enabled || _firstArrowState == State.Normal
-                    ? _leftArrowNormal
-                    : _firstArrowState == State.Hot
-                    ? _leftArrowHot
-                    : _leftArrowPressed;
 
-                Bitmap rightArrow = !enabled || _secondArrowState == State.Normal
-                    ? _rightArrowNormal
-                    : _secondArrowState == State.Hot
-                    ? _rightArrowHot
-                    : _rightArrowPressed;
-
-                g.DrawImageUnscaled(
-                    leftArrow,
-                    (w / 2) - (_leftArrowNormal.Width / 2),
-                    (h / 2) - (_leftArrowNormal.Height / 2));
-
-                g.DrawImageUnscaled(
-                    rightArrow,
-                    Width - w + (w / 2) - (_rightArrowNormal.Width / 2),
-                    (h / 2) - (_rightArrowNormal.Height / 2));
+                ControlPainter.PaintArrow(
+                    g,
+                    _arrowPolygon,
+                    secondDirection,
+                    w,
+                    h,
+                    GetOwnerEnabled(),
+                    brush: secondArrowBrush,
+                    xOffset: xOffset,
+                    yOffset: yOffset);
             }
         }
 
@@ -517,22 +483,6 @@ namespace AngelLoader.Forms.CustomControls
                 _thumbNormalBrush.Dispose();
                 _thumbHotBrush.Dispose();
                 _thumbPressedBrush.Dispose();
-
-                _upArrowNormal.Dispose();
-                _upArrowHot.Dispose();
-                _upArrowPressed.Dispose();
-
-                _downArrowNormal.Dispose();
-                _downArrowHot.Dispose();
-                _downArrowPressed.Dispose();
-
-                _leftArrowNormal.Dispose();
-                _leftArrowHot.Dispose();
-                _leftArrowPressed.Dispose();
-
-                _rightArrowNormal.Dispose();
-                _rightArrowHot.Dispose();
-                _rightArrowPressed.Dispose();
             }
 
             base.Dispose(disposing);

@@ -88,6 +88,8 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Private methods
 
+        private protected override bool GetOwnerEnabled() => _owner.Enabled;
+
         private protected override Native.SCROLLBARINFO
         GetCurrentScrollBarInfo()
         {
