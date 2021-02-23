@@ -1,7 +1,8 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using DarkUI.Controls;
 
-namespace DarkUI.Controls
+namespace AngelLoader.Forms.CustomControls
 {
     public sealed class ScrollBarVisualOnly_Corner : Control
     {
@@ -12,7 +13,7 @@ namespace DarkUI.Controls
         {
             Visible = false;
             _owner = owner;
-            BackColor = Config.Colors.DarkBackground;
+            BackColor = DarkUI.Config.Colors.DarkBackground;
             // DON'T anchor it bottom-right, or we get visual glitches and chaos
         }
 

@@ -94,13 +94,13 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             SetProgressBarPos = InteropMisc.WM_USER + 106, // wParam = new position
             SetProgressBarMarquee = InteropMisc.WM_USER + 107, // wParam = 0 (stop marquee), wParam != 0 (start marquee), lparam = speed (milliseconds between repaints)
             */
-            SetElementText = InteropMisc.WM_USER + 108, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
+            SetElementText = Native.WM_USER + 108, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
             /*
             ClickRadioButton = InteropMisc.WM_USER + 110, // wParam = Radio Button ID
             EnableButton = InteropMisc.WM_USER + 111, // lParam = 0 (disable), lParam != 0 (enable), wParam = Button ID
             EnableRadioButton = InteropMisc.WM_USER + 112, // lParam = 0 (disable), lParam != 0 (enable), wParam = Radio Button ID
             */
-            ClickVerification = InteropMisc.WM_USER + 113, // wParam = 0 (unchecked), 1 (checked), lParam = 1 (set key focus)
+            ClickVerification = Native.WM_USER + 113, // wParam = 0 (unchecked), 1 (checked), lParam = 1 (set key focus)
             /*
             UpdateElementText = InteropMisc.WM_USER + 114, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
             SetButtonElevationRequiredState = InteropMisc.WM_USER + 115, // wParam = Button ID, lParam = 0 (elevation not required), lParam != 0 (elevation required)

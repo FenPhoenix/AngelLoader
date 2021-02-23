@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.WinAPI;
-using static AngelLoader.Forms.CustomControls.RichTextBoxCustom_Interop;
-using static AngelLoader.WinAPI.InteropMisc;
+using static AngelLoader.WinAPI.Native;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -156,10 +155,10 @@ namespace AngelLoader.Forms.CustomControls
 
             // Send a WM_VSCROLL scroll message using SB_THUMBTRACK as wParam
             // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
-            IntPtr ptrWParam = new IntPtr(InteropMisc.SB_THUMBTRACK + (0x10000 * si.nPos));
+            IntPtr ptrWParam = new IntPtr(Native.SB_THUMBTRACK + (0x10000 * si.nPos));
             IntPtr ptrLParam = new IntPtr(0);
 
-            IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)InteropMisc.SB_THUMBTRACK;
+            IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)Native.SB_THUMBTRACK;
             SendMessage(handle, WM_VSCROLL, wp, ptrLParam);
         }
 

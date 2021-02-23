@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class ComboBoxCustom : DarkUI.Controls.DarkComboBox
+    public sealed class ComboBoxCustom : DarkComboBox
     {
         private const uint WM_CTLCOLORLISTBOX = 308;
         private const int SWP_NOSIZE = 1;
@@ -68,7 +68,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             // Needed to make the MouseLeave event fire when the mouse moves off the control directly onto another
             // window (other controls work like that automatically, ComboBox doesn't)
-            else if (m.Msg == InteropMisc.WM_MOUSELEAVE) // 675 / 0x2A3
+            else if (m.Msg == Native.WM_MOUSELEAVE) // 675 / 0x2A3
             {
                 OnMouseLeave(EventArgs.Empty);
                 m.Result = (IntPtr)1;

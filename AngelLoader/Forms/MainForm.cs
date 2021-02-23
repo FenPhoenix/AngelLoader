@@ -59,7 +59,6 @@ using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
-using DarkUI.Controls;
 using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
@@ -221,7 +220,7 @@ namespace AngelLoader.Forms
         {
             // A second instance has been started and told us to show ourselves, so do it here (nicer UX).
             // This has to be in WndProc, not PreFilterMessage(). Shrug.
-            if (m.Msg == InteropMisc.WM_SHOWFIRSTINSTANCE)
+            if (m.Msg == Native.WM_SHOWFIRSTINSTANCE)
             {
                 if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
                 Activate();
@@ -248,7 +247,7 @@ namespace AngelLoader.Forms
 
             #region Mouse
 
-            if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
+            if (m.Msg == Native.WM_MOUSEWHEEL)
             {
                 // IMPORTANT (PreFilterMessage):
                 // Do this check inside each if block rather than above, because the message may not
@@ -266,17 +265,17 @@ namespace AngelLoader.Forms
                     // and disappearing as appropriate
                     if (delta != 0)
                     {
-                        int direction = delta > 0 ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
+                        int direction = delta > 0 ? Native.SB_LINELEFT : Native.SB_LINERIGHT;
                         int origSmallChange = FilterBarFLP.HorizontalScroll.SmallChange;
 
                         FilterBarFLP.HorizontalScroll.SmallChange = 45;
 
-                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+                        Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
 
                         FilterBarFLP.HorizontalScroll.SmallChange = origSmallChange;
                     }
                 }
-                else if (CanFocus && CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == InteropMisc.MK_CONTROL)
+                else if (CanFocus && CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == Native.MK_CONTROL)
                 {
                     if (delta != 0) ZoomFMsDGV(delta > 0 ? ZoomFMsDGVType.ZoomIn : ZoomFMsDGVType.ZoomOut);
                 }
@@ -294,11 +293,11 @@ namespace AngelLoader.Forms
                     {
                         MainSplitContainer.Panel2.Focus();
                     }
-                    InteropMisc.SendMessage(hWnd, m.Msg, m.WParam, m.LParam);
+                    Native.SendMessage(hWnd, m.Msg, m.WParam, m.LParam);
                 }
                 return BlockMessage;
             }
-            else if (m.Msg == InteropMisc.WM_MOUSEHWHEEL)
+            else if (m.Msg == Native.WM_MOUSEHWHEEL)
             {
                 if (!TryGetHWndFromMousePos(m, out _)) return PassMessageOn;
 
@@ -318,7 +317,7 @@ namespace AngelLoader.Forms
             }
             // Just handle the NC* messages and presto, we don't even need the mouse hook anymore!
             // NC = Non-Client, ie. the mouse was in a non-client area of the control
-            else if (m.Msg == InteropMisc.WM_MOUSEMOVE || m.Msg == InteropMisc.WM_NCMOUSEMOVE)
+            else if (m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE)
             {
                 if (!CanFocus) return PassMessageOn;
 
@@ -326,15 +325,15 @@ namespace AngelLoader.Forms
 
                 ShowReadmeControls(CursorOverReadmeArea());
             }
-            else if (m.Msg == InteropMisc.WM_LBUTTONDOWN || m.Msg == InteropMisc.WM_NCLBUTTONDOWN ||
-                     m.Msg == InteropMisc.WM_MBUTTONDOWN || m.Msg == InteropMisc.WM_NCMBUTTONDOWN ||
-                     m.Msg == InteropMisc.WM_RBUTTONDOWN || m.Msg == InteropMisc.WM_NCRBUTTONDOWN ||
-                     m.Msg == InteropMisc.WM_LBUTTONDBLCLK || m.Msg == InteropMisc.WM_NCLBUTTONDBLCLK ||
-                     m.Msg == InteropMisc.WM_MBUTTONDBLCLK || m.Msg == InteropMisc.WM_NCMBUTTONDBLCLK ||
-                     m.Msg == InteropMisc.WM_RBUTTONDBLCLK || m.Msg == InteropMisc.WM_NCRBUTTONDBLCLK ||
-                     m.Msg == InteropMisc.WM_LBUTTONUP || m.Msg == InteropMisc.WM_NCLBUTTONUP ||
-                     m.Msg == InteropMisc.WM_MBUTTONUP || m.Msg == InteropMisc.WM_NCMBUTTONUP ||
-                     m.Msg == InteropMisc.WM_RBUTTONUP || m.Msg == InteropMisc.WM_NCRBUTTONUP)
+            else if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN ||
+                     m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN ||
+                     m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
+                     m.Msg == Native.WM_LBUTTONDBLCLK || m.Msg == Native.WM_NCLBUTTONDBLCLK ||
+                     m.Msg == Native.WM_MBUTTONDBLCLK || m.Msg == Native.WM_NCMBUTTONDBLCLK ||
+                     m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK ||
+                     m.Msg == Native.WM_LBUTTONUP || m.Msg == Native.WM_NCLBUTTONUP ||
+                     m.Msg == Native.WM_MBUTTONUP || m.Msg == Native.WM_NCMBUTTONUP ||
+                     m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP)
             {
                 if (!CanFocus) return PassMessageOn;
 
@@ -347,7 +346,7 @@ namespace AngelLoader.Forms
                     AddTagLLDropDown.HideAndClear();
                     return BlockMessage;
                 }
-                else if (m.Msg == InteropMisc.WM_MBUTTONDOWN && CursorOverControl(FMsDGV))
+                else if (m.Msg == Native.WM_MBUTTONDOWN && CursorOverControl(FMsDGV))
                 {
                     FMsDGV.Focus();
                     if (FMsDGV.RowSelected() && !FMsDGV.SelectedRows[0].Displayed)
@@ -359,13 +358,13 @@ namespace AngelLoader.Forms
             #endregion
             #region Keys
             // To handle alt presses, we have to handle WM_SYSKEYDOWN, which handles alt and F10. Sure why not.
-            else if (m.Msg == InteropMisc.WM_SYSKEYDOWN)
+            else if (m.Msg == Native.WM_SYSKEYDOWN)
             {
                 int wParam = (int)m.WParam;
                 if (ModifierKeys == Keys.Alt && wParam == (int)Keys.F4) return PassMessageOn;
             }
             // Any other keys have to use this.
-            else if (m.Msg == InteropMisc.WM_KEYDOWN)
+            else if (m.Msg == Native.WM_KEYDOWN)
             {
                 if (KeyPressesDisabled || _viewBlocked) return BlockMessage;
 
@@ -423,7 +422,7 @@ namespace AngelLoader.Forms
                     if (mainMenuWasOpen) return BlockMessage;
                 }
             }
-            else if (m.Msg == InteropMisc.WM_KEYUP)
+            else if (m.Msg == Native.WM_KEYUP)
             {
                 if (KeyPressesDisabled || _viewBlocked) return BlockMessage;
             }
@@ -1744,7 +1743,7 @@ namespace AngelLoader.Forms
         private static bool TryGetHWndFromMousePos(Message msg, out IntPtr result)
         {
             Point pos = new Point(msg.LParam.ToInt32() & 0xffff, msg.LParam.ToInt32() >> 16);
-            result = InteropMisc.WindowFromPoint(pos);
+            result = Native.WindowFromPoint(pos);
             return result != IntPtr.Zero && Control.FromHandle(result) != null;
         }
 
@@ -2188,14 +2187,14 @@ namespace AngelLoader.Forms
         private void FilterBarScrollButtons_Click(object sender, EventArgs e)
         {
             if (_repeatButtonRunning) return;
-            int direction = sender == FilterBarScrollLeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
-            InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+            int direction = sender == FilterBarScrollLeftButton ? Native.SB_LINELEFT : Native.SB_LINERIGHT;
+            Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
         }
 
         private void FilterBarScrollButtons_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
-            RunRepeatButton(sender == FilterBarScrollLeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT);
+            RunRepeatButton(sender == FilterBarScrollLeftButton ? Native.SB_LINELEFT : Native.SB_LINERIGHT);
         }
 
         private void RunRepeatButton(int direction)
@@ -2206,7 +2205,7 @@ namespace AngelLoader.Forms
             {
                 while (_repeatButtonRunning)
                 {
-                    Invoke(new Action(() => InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero)));
+                    Invoke(new Action(() => Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)direction, IntPtr.Zero)));
                     Thread.Sleep(150);
                 }
             });
@@ -2278,7 +2277,7 @@ namespace AngelLoader.Forms
                     // WinForms? Argh!
                     for (int i = 0; i < 8; i++)
                     {
-                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINELEFT, IntPtr.Zero);
+                        Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)Native.SB_LINELEFT, IntPtr.Zero);
                     }
                 }
             }
@@ -2291,7 +2290,7 @@ namespace AngelLoader.Forms
                     // Ditto the above
                     for (int i = 0; i < 8; i++)
                     {
-                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINERIGHT, IntPtr.Zero);
+                        Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)Native.SB_LINERIGHT, IntPtr.Zero);
                     }
                 }
             }
@@ -3710,7 +3709,7 @@ namespace AngelLoader.Forms
         // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
         internal void ReadmeArea_MouseLeave(object sender, EventArgs e)
         {
-            IntPtr hWnd = InteropMisc.WindowFromPoint(Cursor.Position);
+            IntPtr hWnd = Native.WindowFromPoint(Cursor.Position);
             if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
         }
 

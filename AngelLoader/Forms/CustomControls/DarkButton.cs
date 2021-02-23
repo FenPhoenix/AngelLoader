@@ -3,12 +3,13 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using DarkUI.Config;
+using DarkUI.Controls;
 
-namespace DarkUI.Controls
+namespace AngelLoader.Forms.CustomControls
 {
     [ToolboxBitmap(typeof(Button))]
     [DefaultEvent("Click")]
-    public class DarkButton : Button
+    public class DarkButton : Button, IDarkable
     {
         #region Field Region
 

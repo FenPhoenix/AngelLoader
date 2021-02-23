@@ -50,20 +50,10 @@
     <Compile Include="Collections\ObservableListModified.cs" />
     <Compile Include="Config\Colors.cs" />
     <Compile Include="Config\Consts.cs" />
-    <Compile Include="Controls\DarkTabControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Controls\EventArgs.cs" />
-    <Compile Include="Controls\Interfaces.cs" />
     <Compile Include="Controls\DarkButtonStyle.cs" />
-    <Compile Include="Controls\DarkCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Controls\DarkDropdownItem.cs" />
     <Compile Include="Controls\DarkDropdownList.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\DarkComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\DarkContentAlignment.cs" />
@@ -118,22 +108,10 @@
     <Compile Include="Controls\DarkStatusStrip.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\DarkTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Controls\DarkToolStrip.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\DarkTreeNode.cs" />
-    <Compile Include="Controls\ScrollBarVisualOnly.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ScrollBarVisualOnly_Base.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ScrollBarVisualOnly_Corner.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Controls\ScrollValueEventArgs.cs" />
     <Compile Include="Docking\DarkDockArea.cs" />
     <Compile Include="Docking\DarkDockContent.cs">
@@ -187,7 +165,6 @@
     <Compile Include="Forms\DarkTranslucentForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Global.cs" />
     <Compile Include="Icons\DockIcons.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -217,9 +194,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>TreeViewIcons.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ScrollBarVisualOnly_Native.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Win32\ControlScrollFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

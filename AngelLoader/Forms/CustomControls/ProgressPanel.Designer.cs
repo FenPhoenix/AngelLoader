@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.ProgressCancelButton = new DarkUI.Controls.DarkButton();
+            this.ProgressCancelButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ProgressPercentLabel = new System.Windows.Forms.Label();
             this.ProgressMessageLabel = new System.Windows.Forms.Label();
             this.CurrentThingLabel = new System.Windows.Forms.Label();
@@ -106,7 +106,7 @@
 
         #endregion
 #endif
-        private DarkUI.Controls.DarkButton ProgressCancelButton;
+        private DarkButton ProgressCancelButton;
         private System.Windows.Forms.Label ProgressPercentLabel;
         private System.Windows.Forms.Label ProgressMessageLabel;
         private System.Windows.Forms.Label CurrentThingLabel;

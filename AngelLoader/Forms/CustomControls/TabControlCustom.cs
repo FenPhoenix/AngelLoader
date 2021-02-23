@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed class TabControlCustom : DarkUI.Controls.DarkTabControl
+    internal sealed class TabControlCustom : DarkTabControl
     {
         #region Private fields
 

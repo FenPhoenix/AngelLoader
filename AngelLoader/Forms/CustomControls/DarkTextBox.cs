@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.WinAPI;
 using DarkUI.Config;
-using DarkUI.Win32;
+using DarkUI.Controls;
 
-namespace DarkUI.Controls
+namespace AngelLoader.Forms.CustomControls
 {
     public class DarkTextBox : TextBox, IDarkableScrollableNative
     {

@@ -25,7 +25,7 @@ namespace AngelLoader
             {
                 // Tell first instance to show itself
                 // Must use PostMessage because SendMessage blocks forever at least on my new Win10 machine(?!)
-                InteropMisc.PostMessage((IntPtr)InteropMisc.HWND_BROADCAST, InteropMisc.WM_SHOWFIRSTINSTANCE, IntPtr.Zero, IntPtr.Zero);
+                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, Native.WM_SHOWFIRSTINSTANCE, IntPtr.Zero, IntPtr.Zero);
                 // If it fails, oh well, then it's just the old behavior where the window doesn't activate but
                 // it's still a single instance. Good enough.
                 return;

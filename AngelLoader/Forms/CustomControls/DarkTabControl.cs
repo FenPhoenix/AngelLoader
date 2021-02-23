@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace DarkUI.Controls
+namespace AngelLoader.Forms.CustomControls
 {
     public class DarkTabControl : TabControl, IDarkable
     {
@@ -46,7 +46,7 @@ namespace DarkUI.Controls
                 var g = e.Graphics;
 
                 // Draw background
-                using (var b = new SolidBrush(Config.Colors.Fen_DarkBackground))
+                using (var b = new SolidBrush(DarkUI.Config.Colors.Fen_DarkBackground))
                 {
                     g.FillRectangle(b, ClientRectangle);
                 }
@@ -61,13 +61,13 @@ namespace DarkUI.Controls
                         (ClientRectangle.Height - (firstTabRect.Y + firstTabRect.Height + 1)) - 1);
 
                     // Fill background (our actual area is slightly larger than gets filled by simply setting BackColor)
-                    using (var b = new SolidBrush(Config.Colors.Fen_ControlBackground))
+                    using (var b = new SolidBrush(DarkUI.Config.Colors.Fen_ControlBackground))
                     {
                         g.FillRectangle(b, pageRect);
                     }
 
                     // Draw page border
-                    using (var p = new Pen(Config.Colors.LighterBackground))
+                    using (var p = new Pen(DarkUI.Config.Colors.LighterBackground))
                     {
                         g.DrawRectangle(p, pageRect);
                     }
@@ -80,7 +80,7 @@ namespace DarkUI.Controls
 
                         bool focused = SelectedTab == tabPage;
 
-                        Color backColor = focused ? Config.Colors.LightBackground : Config.Colors.Fen_DeselectedTabBackground;
+                        Color backColor = focused ? DarkUI.Config.Colors.LightBackground : DarkUI.Config.Colors.Fen_DeselectedTabBackground;
                         //Color backColor = focused ? Config.Colors.Fen_ControlBackground : Config.Colors.Fen_DarkBackground;
 
                         // Draw tab background
@@ -90,7 +90,7 @@ namespace DarkUI.Controls
                         }
 
                         // Draw tab border
-                        using (var p = new Pen(Config.Colors.LighterBackground))
+                        using (var p = new Pen(DarkUI.Config.Colors.LighterBackground))
                         {
                             g.DrawRectangle(p, tabRect);
                         }
@@ -105,8 +105,8 @@ namespace DarkUI.Controls
                         // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
                         Color textColor = SelectedTab == tabPage
                             //? Color.FromArgb(220,220,220)
-                            ? Config.Colors.Fen_DarkForeground
-                            : Config.Colors.Fen_DarkForeground;
+                            ? DarkUI.Config.Colors.Fen_DarkForeground
+                            : DarkUI.Config.Colors.Fen_DarkForeground;
                         TextRenderer.DrawText(g, tabPage.Text, Font, tabRect, textColor, textFormat);
                     }
                 }

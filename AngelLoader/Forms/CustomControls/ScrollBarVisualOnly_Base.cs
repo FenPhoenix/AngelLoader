@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using AL_Common;
-using DarkUI.Win32;
+using AngelLoader.Properties;
+using AngelLoader.WinAPI;
 using Gma.System.MouseKeyHook;
 
-namespace DarkUI.Controls
+namespace AngelLoader.Forms.CustomControls
 {
     public class ScrollBarVisualOnly_Base : Control
     {
@@ -55,28 +55,28 @@ namespace DarkUI.Controls
 
         #region Disposables
 
-        private readonly Pen _greySelectionPen = new Pen(Config.Colors.GreySelection);
+        private readonly Pen _greySelectionPen = new Pen(DarkUI.Config.Colors.GreySelection);
 
         private SolidBrush _thumbNormalBrush;
         private SolidBrush _thumbHotBrush;
         private SolidBrush _thumbPressedBrush;
 
         // We want them separate, not all pointing to the same reference
-        private readonly Bitmap _upArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _upArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        private readonly Bitmap _upArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _upArrowNormal = Resources.scrollbar_arrow_small_standard;
+        private readonly Bitmap _upArrowHot = Resources.scrollbar_arrow_small_hot;
+        private readonly Bitmap _upArrowPressed = Resources.scrollbar_arrow_small_clicked;
 
-        private readonly Bitmap _downArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _downArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        private readonly Bitmap _downArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _downArrowNormal = Resources.scrollbar_arrow_small_standard;
+        private readonly Bitmap _downArrowHot = Resources.scrollbar_arrow_small_hot;
+        private readonly Bitmap _downArrowPressed = Resources.scrollbar_arrow_small_clicked;
 
-        private readonly Bitmap _leftArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _leftArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        private readonly Bitmap _leftArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _leftArrowNormal = Resources.scrollbar_arrow_small_standard;
+        private readonly Bitmap _leftArrowHot = Resources.scrollbar_arrow_small_hot;
+        private readonly Bitmap _leftArrowPressed = Resources.scrollbar_arrow_small_clicked;
 
-        private readonly Bitmap _rightArrowNormal = ScrollIcons.scrollbar_arrow_small_standard;
-        private readonly Bitmap _rightArrowHot = ScrollIcons.scrollbar_arrow_small_hot;
-        private readonly Bitmap _rightArrowPressed = ScrollIcons.scrollbar_arrow_small_clicked;
+        private readonly Bitmap _rightArrowNormal = Resources.scrollbar_arrow_small_standard;
+        private readonly Bitmap _rightArrowHot = Resources.scrollbar_arrow_small_hot;
+        private readonly Bitmap _rightArrowPressed = Resources.scrollbar_arrow_small_clicked;
 
         #endregion
 
@@ -108,7 +108,7 @@ namespace DarkUI.Controls
             DoubleBuffered = true;
             ResizeRedraw = true;
 
-            BackColor = Config.Colors.DarkBackground;
+            BackColor = DarkUI.Config.Colors.DarkBackground;
 
             SetStyle(
                 ControlStyles.UserPaint |
@@ -139,19 +139,19 @@ namespace DarkUI.Controls
 
             #region Set up thumb colors
 
-            _thumbNormalBrush = new SolidBrush(Config.Colors.GreySelection);
-            _thumbHotBrush = new SolidBrush(Config.Colors.GreyHighlight);
-            _thumbPressedBrush = new SolidBrush(Config.Colors.DarkGreySelection);
+            _thumbNormalBrush = new SolidBrush(DarkUI.Config.Colors.GreySelection);
+            _thumbHotBrush = new SolidBrush(DarkUI.Config.Colors.GreyHighlight);
+            _thumbPressedBrush = new SolidBrush(DarkUI.Config.Colors.DarkGreySelection);
 
             #endregion
 
             #region Set up mouse hook
 
-            if (Global.MouseHook == null) Global.MouseHook = Hook.AppEvents();
+            ControlUtils.MouseHook ??= Hook.AppEvents();
 
-            Global.MouseHook.MouseDownExt += MouseDownExt_Handler;
-            Global.MouseHook.MouseUpExt += MouseUpExt_Handler;
-            Global.MouseHook.MouseMoveExt += MouseMoveExt_Handler;
+            ControlUtils.MouseHook.MouseDownExt += MouseDownExt_Handler;
+            ControlUtils.MouseHook.MouseUpExt += MouseUpExt_Handler;
+            ControlUtils.MouseHook.MouseMoveExt += MouseMoveExt_Handler;
 
             #endregion
         }
@@ -513,9 +513,12 @@ namespace DarkUI.Controls
         {
             if (disposing)
             {
-                Global.MouseHook.MouseDownExt -= MouseDownExt_Handler;
-                Global.MouseHook.MouseUpExt -= MouseUpExt_Handler;
-                Global.MouseHook.MouseMoveExt -= MouseMoveExt_Handler;
+                if (ControlUtils.MouseHook != null)
+                {
+                    ControlUtils.MouseHook.MouseDownExt -= MouseDownExt_Handler;
+                    ControlUtils.MouseHook.MouseUpExt -= MouseUpExt_Handler;
+                    ControlUtils.MouseHook.MouseMoveExt -= MouseMoveExt_Handler;
+                }
 
                 _greySelectionPen.Dispose();
 

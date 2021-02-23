@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.WinAPI;
 using DarkUI.Controls;
 using static AL_Common.CommonUtils;
-using static AngelLoader.Forms.CustomControls.RichTextBoxCustom_Interop;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -404,7 +404,7 @@ namespace AngelLoader.Forms.CustomControls
 
             bool plainText = _currentReadmeType == ReadmeType.PlainText;
 
-            SCROLLINFO si = GetCurrentScrollInfo(Handle);
+            Native.SCROLLINFO si = GetCurrentScrollInfo(Handle);
             try
             {
                 if (!skipSuspend)

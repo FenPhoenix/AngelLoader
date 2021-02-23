@@ -1,9 +1,10 @@
 ﻿using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using DarkUI.Win32;
+using AngelLoader.WinAPI;
+using DarkUI.Controls;
 
-namespace DarkUI.Controls
+namespace AngelLoader.Forms.CustomControls
 {
     public sealed class ScrollBarVisualOnly : ScrollBarVisualOnly_Base
     {

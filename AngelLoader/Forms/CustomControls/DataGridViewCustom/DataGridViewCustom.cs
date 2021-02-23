@@ -565,7 +565,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch (m.Msg)
             {
-                case InteropMisc.WM_CTLCOLORSCROLLBAR:
+                case Native.WM_CTLCOLORSCROLLBAR:
                     if (_darkModeEnabled)
                     {
                         // Needed for scrollbar thumbs to show up immediately without using a timer

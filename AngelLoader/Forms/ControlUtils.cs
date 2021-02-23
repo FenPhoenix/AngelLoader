@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
-using DarkUI.Controls;
+using AngelLoader.Forms.CustomControls;
+using Gma.System.MouseKeyHook;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
-using static AngelLoader.WinAPI.InteropMisc;
+using static AngelLoader.WinAPI.Native;
 
 namespace AngelLoader.Forms
 {
     internal static class ControlUtils
     {
+        // Only one copy of the hook
+        internal static IMouseEvents? MouseHook;
+
         #region Suspend/resume drawing
 
         internal static void SuspendDrawing_Native(this ISuspendResumable control)

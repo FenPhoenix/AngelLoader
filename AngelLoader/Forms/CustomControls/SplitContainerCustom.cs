@@ -156,7 +156,7 @@ namespace AngelLoader.Forms.CustomControls
                     // Colossal hack (hiding dark tab control prevents white line on side)
                     foreach (Control control in Panel2.Controls)
                     {
-                        if (control is DarkUI.Controls.DarkTabControl) control.Hide();
+                        if (control is DarkTabControl) control.Hide();
                     }
                     if (suspendResume) this.ResumeDrawing();
                 }
@@ -170,7 +170,7 @@ namespace AngelLoader.Forms.CustomControls
                     // Colossal hack (hiding dark tab control prevents white line on side)
                     foreach (Control control in Panel2.Controls)
                     {
-                        if (control is DarkUI.Controls.DarkTabControl) control.Show();
+                        if (control is DarkTabControl) control.Show();
                     }
                     if (suspendResume) this.ResumeDrawing();
                 }

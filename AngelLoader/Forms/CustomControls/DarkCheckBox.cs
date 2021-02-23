@@ -3,12 +3,13 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using DarkUI.Config;
+using DarkUI.Controls;
 
-namespace DarkUI.Controls
+namespace AngelLoader.Forms.CustomControls
 {
     // TODO: @DarkMode(DarkCheckBox):
     // -Add support for putting the checkbox on the right-hand side
-    public class DarkCheckBox : CheckBox, IDarkable
+    public class DarkCheckBox : CheckBox
     {
         #region Field Region
 

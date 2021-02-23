@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using DarkUI.Win32;
+using AngelLoader.WinAPI;
 using static AL_Common.CommonUtils;
 
-namespace DarkUI.Controls
+namespace AngelLoader.Forms.CustomControls
 {
     public sealed class ScrollBarVisualOnly_Native : ScrollBarVisualOnly_Base
     {
         #region Private fields
 
-        private readonly IDarkableScrollableNative _owner;
+        private readonly IDarkableScrollableNative? _owner;
 
         private readonly Dictionary<int, int> _WM_ClientToNonClient = new Dictionary<int, int>
         {
@@ -187,7 +187,7 @@ namespace DarkUI.Controls
         private Native.SCROLLINFO GetScrollInfo(uint mask)
         {
             var si = new Native.SCROLLINFO();
-            si.cbSize = Marshal.SizeOf(si);
+            si.cbSize = (uint)Marshal.SizeOf(si);
             si.fMask = mask;
 
             if (_owner.IsHandleCreated)
@@ -360,8 +360,8 @@ namespace DarkUI.Controls
                     // Test to make sure these params transfer their signedness! Use multiple monitors and see
                     // if the value goes negative as it should, and works as it should.
                     int wParam;
-                    int x = Global.SignedLOWORD(_m.LParam);
-                    int y = Global.SignedHIWORD(_m.LParam);
+                    int x = Native.SignedLOWORD(_m.LParam);
+                    int y = Native.SignedHIWORD(_m.LParam);
                     Point ownerScreenLoc = _owner.Parent.PointToScreen(_owner.Location);
 
                     if (_isVertical)

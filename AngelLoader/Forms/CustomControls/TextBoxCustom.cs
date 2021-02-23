@@ -6,7 +6,7 @@ using AL_Common;
 namespace AngelLoader.Forms.CustomControls
 {
     // Also lifted straight from Autovid but with a couple improvements
-    public sealed class TextBoxCustom : DarkUI.Controls.DarkTextBox
+    public sealed class TextBoxCustom : DarkTextBox
     {
         [Browsable(true)] public string DisallowedCharacters { get; set; } = "";
 

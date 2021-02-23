@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
-using static AngelLoader.WinAPI.InteropMisc;
+using static AngelLoader.WinAPI.Native;
 
 namespace AngelLoader
 {

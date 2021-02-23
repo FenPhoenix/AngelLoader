@@ -68,7 +68,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch (m.Msg)
             {
-                case InteropMisc.WM_NCPAINT:
+                case Native.WM_NCPAINT:
                     if (_darkModeEnabled)
                     {
                         VisibilityChanged?.Invoke(this, EventArgs.Empty);
@@ -78,7 +78,7 @@ namespace AngelLoader.Forms.CustomControls
                         base.WndProc(ref m);
                     }
                     break;
-                case InteropMisc.WM_PAINT:
+                case Native.WM_PAINT:
                     if (_darkModeEnabled)
                     {
                         VisibilityChanged?.Invoke(this, EventArgs.Empty);

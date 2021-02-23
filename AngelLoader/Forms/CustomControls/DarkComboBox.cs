@@ -2,9 +2,10 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Properties;
 using DarkUI.Config;
 
-namespace DarkUI.Controls
+namespace AngelLoader.Forms.CustomControls
 {
     public class DarkComboBox : ComboBox, IDarkable
     {
@@ -164,7 +165,7 @@ namespace DarkUI.Controls
                     g.DrawRectangle(p, modRect);
                 }
 
-                var icon = ScrollIcons.scrollbar_arrow_hot;
+                var icon = Resources.scrollbar_arrow_hot;
                 g.DrawImageUnscaled(icon,
                                     rect.Right - icon.Width - (Consts.Padding / 2),
                                     (rect.Height / 2) - (icon.Height / 2));

@@ -6,7 +6,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         private void InitComponentManual()
         {
-            ProgressCancelButton = new DarkUI.Controls.DarkButton();
+            ProgressCancelButton = new DarkButton();
             ProgressPercentLabel = new Label();
             ProgressMessageLabel = new Label();
             CurrentThingLabel = new Label();
