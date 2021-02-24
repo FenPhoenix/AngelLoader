@@ -25,6 +25,7 @@ namespace AngelLoader.WinAPI
 
         internal const uint WS_EX_CLIENTEDGE = 0x00000200;
         internal const uint WS_BORDER = 0x00800000;
+        internal const uint WS_VSCROLL = 0x00200000;
 
         internal const int GWL_STYLE = -16;
         internal const int GWL_EXSTYLE = -20;
@@ -34,6 +35,21 @@ namespace AngelLoader.WinAPI
 
         [DllImport("user32.dll")]
         private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+        public sealed class DeviceContext : IDisposable
+        {
+            public IntPtr DC;
+            private readonly IntPtr _hWnd;
+            public DeviceContext(IntPtr hWnd)
+            {
+                _hWnd = hWnd;
+                DC = GetWindowDC(_hWnd);
+            }
+
+            public void Dispose() => ReleaseDC(_hWnd, DC);
+        }
+
+        #region Window
 
         [Flags]
         internal enum RedrawWindowFlags : uint
@@ -54,19 +70,6 @@ namespace AngelLoader.WinAPI
 
         [DllImport("user32.dll")]
         internal static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
-
-        public sealed class DeviceContext : IDisposable
-        {
-            public IntPtr DC;
-            private readonly IntPtr _hWnd;
-            public DeviceContext(IntPtr hWnd)
-            {
-                _hWnd = hWnd;
-                DC = GetWindowDC(_hWnd);
-            }
-
-            public void Dispose() => ReleaseDC(_hWnd, DC);
-        }
 
         internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
         {
@@ -160,6 +163,8 @@ namespace AngelLoader.WinAPI
             ShowWindow = 0x0040,
         }
 
+        #endregion
+
         internal const int OCM__BASE = 8192;
         internal const int OCM_HSCROLL = (OCM__BASE + WM_HSCROLL);
         internal const int OCM_VSCROLL = (OCM__BASE + WM_VSCROLL);
@@ -186,6 +191,8 @@ namespace AngelLoader.WinAPI
         public const uint SB_CTL = 2;
         public const uint SB_BOTH = 3;
 
+        #region lParam/wParam
+
         public static int MAKELONG(int low, int high) => high << 16 | low & (int)ushort.MaxValue;
 
         public static IntPtr MAKELPARAM(int low, int high) => (IntPtr)(high << 16 | low & (int)ushort.MaxValue);
@@ -205,6 +212,8 @@ namespace AngelLoader.WinAPI
         public static int SignedHIWORD(int n) => (int)(short)(n >> 16 & (int)ushort.MaxValue);
 
         public static int SignedLOWORD(int n) => (int)(short)(n & (int)ushort.MaxValue);
+
+        #endregion
 
         #region WM_CHANGEUISTATE
 
@@ -492,14 +501,7 @@ namespace AngelLoader.WinAPI
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
 
-        // TODO: @X64: GetWindowLong() probably needs fixing to GetWindowLongPtr()
-        [DllImport("user32.dll")]
-        internal static extern int GetWindowLong(IntPtr hWnd, int index);
-
         #endregion
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        internal static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         #region Fen
 

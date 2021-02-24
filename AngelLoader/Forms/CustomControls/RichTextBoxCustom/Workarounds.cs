@@ -133,8 +133,8 @@ namespace AngelLoader.Forms.CustomControls
 
         private static bool VerticalScrollBarVisible(Control ctl)
         {
-            int style = Native.GetWindowLong(ctl.Handle, -16);
-            return (style & 0x200000) != 0;
+            uint style = Native.GetWindowLongPtr(ctl.Handle, -16).ToUInt32();
+            return (style & Native.WS_VSCROLL) != 0;
         }
 
         private static void BetterScroll(IntPtr handle, int pixels)
