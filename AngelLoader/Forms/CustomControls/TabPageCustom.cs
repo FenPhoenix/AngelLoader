@@ -35,8 +35,8 @@ namespace AngelLoader.Forms.CustomControls
         public bool Suspended { get; set; }
         public new event EventHandler? Scroll;
         public event EventHandler? DarkModeChanged;
-        public event EventHandler? VisibilityChanged;
-        public Control ClosestAddableParent => Parent.Parent;
+        public event EventHandler? RefreshIfNeededForceCorner;
+        public Control? ClosestAddableParent => Parent.Parent;
 
         public TabPageCustom()
         {
@@ -54,13 +54,13 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);
-            if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnClientSizeChanged(EventArgs e)
         {
             base.OnClientSizeChanged(e);
-            if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void WndProc(ref Message m)
@@ -70,7 +70,7 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_NCPAINT:
                     if (_darkModeEnabled)
                     {
-                        VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     }
                     else
                     {
@@ -80,7 +80,7 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_PAINT:
                     if (_darkModeEnabled)
                     {
-                        VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     }
                     base.WndProc(ref m);
                     break;

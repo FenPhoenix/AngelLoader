@@ -2,12 +2,22 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms.CustomControls
 {
     public sealed class DarkListBox : ListBox, IDarkableScrollableNative
     {
-        private BorderStyle? _origBorderStyle;
+        // TODO: @DarkMode(DarkListBox): Horizontal scrollbars issue
+        // We can't handle horizontal scrollbar for some reason. Even if we set the HorizontalExtent, the items
+        // are drawn completely broken when scrolled horizontally. Probably doing something wrong in OnPaint(),
+        // but consider just switching all ListBoxes to ListView or DataGridViews in virtual mode and turning off
+        // all headers and everything so it's just a single line that looks just like a ListBox.
+        // We know DataGridView scrolling works and we know how to use it, so we could just use that.
+
+        private uint _origStyle;
+        private uint _origExStyle;
+        private bool _origIntegralHeight;
 
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
@@ -17,21 +27,48 @@ namespace AngelLoader.Forms.CustomControls
             {
                 _darkModeEnabled = value;
                 SetUpTheme();
+                DarkModeChanged?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        // ResizeRedraw doesn't do it. We have to do it manually...
+        protected override void OnResize(EventArgs e)
+        {
+            if (_darkModeEnabled)
+            {
+                // TODO: @DarkMode(DarkListBox: OnResize()):
+                // If we're in dark mode, then we're always IntegralHeight = false even if we would be true in
+                // classic mode. Technically we should implement IntegralHeight manually here, but we don't ever
+                // change the height of IntegralHeight ListBoxes currently. We probably won't either because it's
+                // janky and looks terrible, but if we ever need to, then implement it here.
+
+                Native.RedrawWindow(
+                    Handle,
+                    IntPtr.Zero,
+                    IntPtr.Zero,
+                    Native.RedrawWindowFlags.Frame |
+                    Native.RedrawWindowFlags.UpdateNow |
+                    Native.RedrawWindowFlags.Invalidate);
+            }
+            base.OnResize(e);
         }
 
         public DarkListBox()
         {
-            // TODO: @DarkMode(DarkListBox): Set up scroll bars as usual.
-            //VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
-            //HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
-            //VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
+            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
+            HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
+            VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
         }
 
         private void SetUpTheme()
         {
+            // Order matters here
+
             if (_darkModeEnabled)
             {
+                _origIntegralHeight = IntegralHeight;
+                IntegralHeight = false;
+
                 SetStyle(
                     ControlStyles.Opaque |
                     ControlStyles.AllPaintingInWmPaint |
@@ -39,14 +76,43 @@ namespace AngelLoader.Forms.CustomControls
                     ControlStyles.UserPaint |
                     ControlStyles.OptimizedDoubleBuffer, true);
 
-                DrawMode = DrawMode.OwnerDrawFixed;
-                //_origBorderStyle ??= BorderStyle;
-                //BorderStyle = BorderStyle.None;
+                DrawMode = DrawMode.OwnerDrawVariable;
                 BackColor = DarkColors.Fen_ControlBackground;
-                ForeColor = DarkColors.Fen_DarkForeground;
+                ForeColor = DarkColors.LightText;
+
+                uint style = Native.GetWindowLongPtr(Handle, Native.GWL_STYLE).ToUInt32();
+                uint exStyle = Native.GetWindowLongPtr(Handle, Native.GWL_EXSTYLE).ToUInt32();
+
+                _origStyle = style;
+                _origExStyle = exStyle;
+
+                style |= Native.WS_BORDER;
+                exStyle &= ~Native.WS_EX_CLIENTEDGE;
+
+                Native.SetWindowLongPtr(Handle, Native.GWL_STYLE, (UIntPtr)style);
+                Native.SetWindowLongPtr(Handle, Native.GWL_EXSTYLE, (UIntPtr)exStyle);
+
+                Native.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0,
+                    Native.SetWindowPosFlags.DoNotChangeOwnerZOrder
+                    | Native.SetWindowPosFlags.IgnoreMove
+                    | Native.SetWindowPosFlags.IgnoreResize
+                    | Native.SetWindowPosFlags.DoNotActivate
+                    | Native.SetWindowPosFlags.DrawFrame);
             }
             else
             {
+                IntegralHeight = _origIntegralHeight;
+
+                Native.SetWindowLongPtr(Handle, Native.GWL_STYLE, (UIntPtr)_origStyle);
+                Native.SetWindowLongPtr(Handle, Native.GWL_EXSTYLE, (UIntPtr)_origExStyle);
+
+                Native.SetWindowPos(Handle, IntPtr.Zero, 0, 0, 0, 0,
+                    Native.SetWindowPosFlags.DoNotChangeOwnerZOrder
+                    | Native.SetWindowPosFlags.IgnoreMove
+                    | Native.SetWindowPosFlags.IgnoreResize
+                    | Native.SetWindowPosFlags.DoNotActivate
+                    | Native.SetWindowPosFlags.DrawFrame);
+
                 SetStyle(
                     ControlStyles.AllPaintingInWmPaint, true);
                 SetStyle(
@@ -55,10 +121,10 @@ namespace AngelLoader.Forms.CustomControls
                     ControlStyles.UserPaint |
                     ControlStyles.OptimizedDoubleBuffer, false);
 
-                DrawMode = DrawMode.Normal;
-                //if (_origBorderStyle != null) BorderStyle = (BorderStyle)_origBorderStyle;
                 BackColor = SystemColors.Window;
                 ForeColor = SystemColors.WindowText;
+
+                DrawMode = DrawMode.Normal;
             }
         }
 
@@ -97,14 +163,6 @@ namespace AngelLoader.Forms.CustomControls
             // Very slightly wasteful because some of it may be painted over by the items later, but meh.
             g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, ClientRectangle);
 
-            // TODO: @DarkMode(DarkListBox): Draw the border.
-            // Set border style to none, then bump the item rectangles over to account for it, then draw the
-            // border.
-
-            //int realHeight = IntegralHeight ? ItemHeight * itemsToDraw.Count : Height;
-            //var borderRect = new Rectangle(0, 0, Width - 1, realHeight - 1);
-            //g.DrawRectangle(DarkColors.BlueHighlightPen, borderRect);
-
             for (int i = 0; i < itemsToDraw.Count; i++)
             {
                 OnDrawItem(itemsToDraw[i]);
@@ -121,9 +179,16 @@ namespace AngelLoader.Forms.CustomControls
 
             if (e.Index == -1) return;
 
+            var itemRect = new Rectangle(
+                e.Bounds.X + 1,
+                e.Bounds.Y + 1,
+                e.Bounds.Width - 2,
+                e.Bounds.Height
+            );
+
             e.Graphics.FillRectangle((e.State & DrawItemState.Selected) == DrawItemState.Selected
                 ? DarkColors.BlueSelectionBrush
-                : DarkColors.Fen_ControlBackgroundBrush, e.Bounds);
+                : DarkColors.Fen_ControlBackgroundBrush, itemRect);
 
             const TextFormatFlags textFormat =
                 TextFormatFlags.Default |
@@ -132,17 +197,74 @@ namespace AngelLoader.Forms.CustomControls
                 TextFormatFlags.NoPadding |
                 TextFormatFlags.NoClipping;
 
-            var textRect = new Rectangle(e.Bounds.X + 2, e.Bounds.Y, e.Bounds.Width - 2, e.Bounds.Height);
+            var textRect = new Rectangle(e.Bounds.X + 3, e.Bounds.Y + 1, e.Bounds.Width - 3, e.Bounds.Height - 1);
             TextRenderer.DrawText(e.Graphics, Items[e.Index].ToString(), e.Font, textRect, e.ForeColor, textFormat);
+        }
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected override void OnClientSizeChanged(EventArgs e)
+        {
+            base.OnClientSizeChanged(e);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         public bool Suspended { get; set; }
         public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
         public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
         public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
-        public Control ClosestAddableParent => Parent;
+        public Control? ClosestAddableParent => Parent;
         public event EventHandler? DarkModeChanged;
         public event EventHandler? Scroll;
-        public event EventHandler? VisibilityChanged;
+        public event EventHandler? RefreshIfNeededForceCorner;
+
+        private void WmNcPaint(IntPtr hWnd)
+        {
+            if (_darkModeEnabled && BorderStyle != BorderStyle.None)
+            {
+                using var dc = new Native.DeviceContext(hWnd);
+                using Graphics g = Graphics.FromHdc(dc.DC);
+                g.DrawRectangle(DarkColors.BlueHighlightPen, new Rectangle(0, 0, Width - 1, Height - 1));
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                case Native.WM_PAINT:
+                case Native.WM_VSCROLL:
+                case Native.WM_HSCROLL:
+                case Native.WM_ERASEBKGND:
+                    base.WndProc(ref m);
+                    if (_darkModeEnabled)
+                    {
+                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+                    }
+                    break;
+                case Native.WM_CTLCOLORSCROLLBAR:
+                case Native.WM_NCPAINT:
+                    if (_darkModeEnabled)
+                    {
+                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+                        if (m.Msg == Native.WM_NCPAINT)
+                        {
+                            WmNcPaint(m.HWnd);
+                        }
+                    }
+                    else
+                    {
+                        base.WndProc(ref m);
+                    }
+                    break;
+                default:
+                    base.WndProc(ref m);
+                    break;
+            }
+        }
     }
 }

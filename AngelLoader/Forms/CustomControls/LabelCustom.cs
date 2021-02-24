@@ -13,7 +13,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (DarkModeEnabled)
             {
-                Color color = Enabled ? DarkColors.Fen_DarkForeground : DarkColors.DisabledText;
+                Color color = Enabled ? DarkColors.LightText : DarkColors.DisabledText;
                 TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color);
             }
             else

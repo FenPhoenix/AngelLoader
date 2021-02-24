@@ -88,8 +88,8 @@ namespace AngelLoader.Forms.CustomControls
                         // Use TextRenderer.DrawText() rather than g.DrawString() to match default text look exactly
                         Color textColor = SelectedTab == tabPage
                             //? Color.FromArgb(220,220,220)
-                            ? DarkColors.Fen_DarkForeground
-                            : DarkColors.Fen_DarkForeground;
+                            ? DarkColors.LightText
+                            : DarkColors.LightText;
                         TextRenderer.DrawText(g, tabPage.Text, Font, tabRect, textColor, textFormat);
                     }
                 }

@@ -76,19 +76,19 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);
-            if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnClientSizeChanged(EventArgs e)
         {
             base.OnClientSizeChanged(e);
-            if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnTextChanged(EventArgs e)
         {
             base.OnTextChanged(e);
-            if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         #region Visible / Show / Hide overrides
@@ -134,9 +134,9 @@ namespace AngelLoader.Forms.CustomControls
         public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; private set; }
         public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; private set; }
         public event EventHandler? Scroll;
-        public Control ClosestAddableParent => Parent;
+        public Control? ClosestAddableParent => Parent;
         public event EventHandler? DarkModeChanged;
-        public event EventHandler? VisibilityChanged;
+        public event EventHandler? RefreshIfNeededForceCorner;
 
         protected override void WndProc(ref Message m)
         {
@@ -145,13 +145,13 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_PAINT:
                 case Native.WM_VSCROLL:
                     base.WndProc(ref m);
-                    if (_darkModeEnabled) VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                    if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     break;
                 case Native.WM_CTLCOLORSCROLLBAR:
                 case Native.WM_NCPAINT:
                     if (_darkModeEnabled)
                     {
-                        VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     }
                     else
                     {

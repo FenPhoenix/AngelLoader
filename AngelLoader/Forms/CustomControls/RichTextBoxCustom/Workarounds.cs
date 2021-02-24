@@ -26,7 +26,7 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_NCPAINT:
                     if (_darkModeEnabled)
                     {
-                        VisibilityChanged?.Invoke(this, EventArgs.Empty);
+                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     }
                     else
                     {

@@ -38,7 +38,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 // Use a lighter background so make it easy to see we're supposed to be in front and modal
                 back = DarkColors.LightBackground;
-                fore = DarkColors.Fen_DarkForeground;
+                fore = DarkColors.LightText;
             }
             else
             {

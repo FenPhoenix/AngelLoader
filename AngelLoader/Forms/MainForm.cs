@@ -929,6 +929,11 @@ namespace AngelLoader.Forms
                 EnableEverything(!EverythingPanel.Enabled);
                 return;
             }
+            // For separating log spam
+            else if (e.Control && e.KeyCode == Keys.T)
+            {
+                System.Diagnostics.Trace.WriteLine("");
+            }
 #endif
 
             if (KeyPressesDisabled) return;
@@ -1466,7 +1471,7 @@ namespace AngelLoader.Forms
                     {
                         if (darkMode)
                         {
-                            control.ForeColor = DarkColors.Fen_DarkForeground;
+                            control.ForeColor = DarkColors.LightText;
                             control.BackColor = DarkColors.Fen_ControlBackground;
                         }
                         else

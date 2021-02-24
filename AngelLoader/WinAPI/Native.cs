@@ -21,6 +21,144 @@ namespace AngelLoader.WinAPI
         internal const int WM_NCPAINT = 0x0085;
         internal const int WM_CTLCOLORSCROLLBAR = 0x0137;
         internal const int WM_PAINT = 0x000F;
+        internal const int WM_ERASEBKGND = 0x0014;
+
+        internal const uint WS_EX_CLIENTEDGE = 0x00000200;
+        internal const uint WS_BORDER = 0x00800000;
+
+        internal const int GWL_STYLE = -16;
+        internal const int GWL_EXSTYLE = -20;
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetWindowDC(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+        [Flags]
+        internal enum RedrawWindowFlags : uint
+        {
+            Invalidate = 0X1,
+            InternalPaint = 0X2,
+            Erase = 0X4,
+            Validate = 0X8,
+            NoInternalPaint = 0X10,
+            NoErase = 0X20,
+            NoChildren = 0X40,
+            AllChildren = 0X80,
+            UpdateNow = 0X100,
+            EraseNow = 0X200,
+            Frame = 0X400,
+            NoFrame = 0X800
+        }
+
+        [DllImport("user32.dll")]
+        internal static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
+
+        public sealed class DeviceContext : IDisposable
+        {
+            public IntPtr DC;
+            private readonly IntPtr _hWnd;
+            public DeviceContext(IntPtr hWnd)
+            {
+                _hWnd = hWnd;
+                DC = GetWindowDC(_hWnd);
+            }
+
+            public void Dispose() => ReleaseDC(_hWnd, DC);
+        }
+
+        internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
+        {
+            return Environment.Is64BitProcess
+                ? GetWindowLongPtr64(hWnd, nIndex)
+                : GetWindowLong32(hWnd, nIndex);
+        }
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongW")]
+        private static extern UIntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+        private static extern UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+
+        // This static method is required because legacy OSes do not support
+        // SetWindowLongPtr
+        internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, UIntPtr dwNewLong)
+        {
+            return Environment.Is64BitProcess
+                ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong)
+                : new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToUInt32()));
+        }
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongW")]
+        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, uint dwNewLong);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
+        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
+
+        [Flags]
+        internal enum SetWindowPosFlags : uint
+        {
+            /// <summary>If the calling thread and the thread that owns the window are attached to different input queues,
+            /// the system posts the request to the thread that owns the window. This prevents the calling thread from
+            /// blocking its execution while other threads process the request.</summary>
+            /// <remarks>SWP_ASYNCWINDOWPOS</remarks>
+            AsynchronousWindowPosition = 0x4000,
+            /// <summary>Prevents generation of the WM_SYNCPAINT message.</summary>
+            /// <remarks>SWP_DEFERERASE</remarks>
+            DeferErase = 0x2000,
+            /// <summary>Draws a frame (defined in the window's class description) around the window.</summary>
+            /// <remarks>SWP_DRAWFRAME</remarks>
+            DrawFrame = 0x0020,
+            /// <summary>Applies new frame styles set using the SetWindowLong function. Sends a WM_NCCALCSIZE message to
+            /// the window, even if the window's size is not being changed. If this flag is not specified, WM_NCCALCSIZE
+            /// is sent only when the window's size is being changed.</summary>
+            /// <remarks>SWP_FRAMECHANGED</remarks>
+            FrameChanged = 0x0020,
+            /// <summary>Hides the window.</summary>
+            /// <remarks>SWP_HIDEWINDOW</remarks>
+            HideWindow = 0x0080,
+            /// <summary>Does not activate the window. If this flag is not set, the window is activated and moved to the
+            /// top of either the topmost or non-topmost group (depending on the setting of the hWndInsertAfter
+            /// parameter).</summary>
+            /// <remarks>SWP_NOACTIVATE</remarks>
+            DoNotActivate = 0x0010,
+            /// <summary>Discards the entire contents of the client area. If this flag is not specified, the valid
+            /// contents of the client area are saved and copied back into the client area after the window is sized or
+            /// repositioned.</summary>
+            /// <remarks>SWP_NOCOPYBITS</remarks>
+            DoNotCopyBits = 0x0100,
+            /// <summary>Retains the current position (ignores X and Y parameters).</summary>
+            /// <remarks>SWP_NOMOVE</remarks>
+            IgnoreMove = 0x0002,
+            /// <summary>Does not change the owner window's position in the Z order.</summary>
+            /// <remarks>SWP_NOOWNERZORDER</remarks>
+            DoNotChangeOwnerZOrder = 0x0200,
+            /// <summary>Does not redraw changes. If this flag is set, no repainting of any kind occurs. This applies to
+            /// the client area, the nonclient area (including the title bar and scroll bars), and any part of the parent
+            /// window uncovered as a result of the window being moved. When this flag is set, the application must
+            /// explicitly invalidate or redraw any parts of the window and parent window that need redrawing.</summary>
+            /// <remarks>SWP_NOREDRAW</remarks>
+            DoNotRedraw = 0x0008,
+            /// <summary>Same as the SWP_NOOWNERZORDER flag.</summary>
+            /// <remarks>SWP_NOREPOSITION</remarks>
+            DoNotReposition = 0x0200,
+            /// <summary>Prevents the window from receiving the WM_WINDOWPOSCHANGING message.</summary>
+            /// <remarks>SWP_NOSENDCHANGING</remarks>
+            DoNotSendChangingEvent = 0x0400,
+            /// <summary>Retains the current size (ignores the cx and cy parameters).</summary>
+            /// <remarks>SWP_NOSIZE</remarks>
+            IgnoreResize = 0x0001,
+            /// <summary>Retains the current Z order (ignores the hWndInsertAfter parameter).</summary>
+            /// <remarks>SWP_NOZORDER</remarks>
+            IgnoreZOrder = 0x0004,
+            /// <summary>Displays the window.</summary>
+            /// <remarks>SWP_SHOWWINDOW</remarks>
+            ShowWindow = 0x0040,
+        }
 
         internal const int OCM__BASE = 8192;
         internal const int OCM_HSCROLL = (OCM__BASE + WM_HSCROLL);
@@ -84,7 +222,7 @@ namespace AngelLoader.WinAPI
 
         #region Scrollbar
 
-        internal const int WM_SCROLL = 276;
+        internal const int WM_SCROLL = 0x114;
         internal const int WM_VSCROLL = 0x115;
         internal const int WM_HSCROLL = 0x114;
         //internal const int SB_LINEUP = 0;
@@ -354,12 +492,13 @@ namespace AngelLoader.WinAPI
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
 
+        // TODO: @X64: GetWindowLong() probably needs fixing to GetWindowLongPtr()
         [DllImport("user32.dll")]
         internal static extern int GetWindowLong(IntPtr hWnd, int index);
 
         #endregion
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         internal static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         #region Fen

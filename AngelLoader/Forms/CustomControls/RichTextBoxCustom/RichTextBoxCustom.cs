@@ -54,9 +54,9 @@ namespace AngelLoader.Forms.CustomControls
         public bool Suspended { get; set; }
 
         public event EventHandler? DarkModeChanged;
-        public event EventHandler? VisibilityChanged;
+        public event EventHandler? RefreshIfNeededForceCorner;
 
-        public Control ClosestAddableParent => Parent;
+        public Control? ClosestAddableParent => Parent;
 
         public RichTextBoxCustom()
         {
@@ -129,7 +129,7 @@ namespace AngelLoader.Forms.CustomControls
             this.ResumeDrawing_Native();
             // Invoke this after resuming to prevent the scroll bar from disappearing when you move through
             // entries by holding down a key
-            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -306,13 +306,13 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);
-            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnClientSizeChanged(EventArgs e)
         {
             base.OnClientSizeChanged(e);
-            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

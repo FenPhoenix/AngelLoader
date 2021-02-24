@@ -53,7 +53,7 @@ namespace AngelLoader.Forms.CustomControls
             _size = Size;
 
             _owner.Scroll += (_, _) => RefreshIfNeeded();
-            _owner.VisibilityChanged += (_, _) => RefreshIfNeeded(forceRefreshCorner: true);
+            _owner.RefreshIfNeededForceCorner += (_, _) => RefreshIfNeeded(forceRefreshCorner: true);
             _owner.DarkModeChanged += (_, _) => RefreshIfNeeded(forceRefreshCorner: true);
         }
 
@@ -63,7 +63,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void AddToParent()
         {
-            if (!_addedToControls)
+            if (!_addedToControls && _owner.ClosestAddableParent != null)
             {
                 _owner.ClosestAddableParent.Controls.Add(this);
                 BringToFront();
@@ -234,7 +234,7 @@ namespace AngelLoader.Forms.CustomControls
                 dontShowCorner = true;
             }
 
-            if (Visible)
+            if (Visible && _owner.Parent != null)
             {
                 var topLeft = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.left, sbi.rcScrollBar.top));
                 var bottomRight = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.right, sbi.rcScrollBar.bottom));
@@ -257,6 +257,9 @@ namespace AngelLoader.Forms.CustomControls
                     _xyThumbBottom != sbi.xyThumbBottom)
                 {
                     Location = new Point(loc.X, loc.Y);
+
+                    // Even though we already set this in AddParent(), some controls need it set here too...
+                    BringToFront();
 
                     Size = size;
                     _size = size;
@@ -350,7 +353,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (!_owner.IsHandleCreated) return;
                 // We have to take our client messages and convert them to non-client messages to pass to our
                 // underlying scroll bar.
-                if (_WM_ClientToNonClient.TryGetValue(_m.Msg, out int ncMsg))
+                if (_owner.Parent != null && _WM_ClientToNonClient.TryGetValue(_m.Msg, out int ncMsg))
                 {
                     // TODO: @DarkMode(ScrollBarVisualOnly_Native):
                     // Test to make sure these params transfer their signedness! Use multiple monitors and see
