@@ -228,7 +228,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 using var dc = new Native.DeviceContext(hWnd);
                 using Graphics g = Graphics.FromHdc(dc.DC);
-                g.DrawRectangle(DarkColors.BlueHighlightPen, new Rectangle(0, 0, Width - 1, Height - 1));
+                g.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
             }
         }
 
