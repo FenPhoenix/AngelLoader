@@ -355,9 +355,8 @@ namespace AngelLoader.Forms.CustomControls
                 // underlying scroll bar.
                 if (_owner.Parent != null && _WM_ClientToNonClient.TryGetValue(_m.Msg, out int ncMsg))
                 {
-                    // TODO: @DarkMode(ScrollBarVisualOnly_Native):
-                    // Test to make sure these params transfer their signedness! Use multiple monitors and see
-                    // if the value goes negative as it should, and works as it should.
+                    // Tested, the signedness carries over properly and works with multiple monitors where one
+                    // of them has negative positions.
                     int wParam;
                     int x = Native.SignedLOWORD(_m.LParam);
                     int y = Native.SignedHIWORD(_m.LParam);
@@ -378,7 +377,7 @@ namespace AngelLoader.Forms.CustomControls
                         wParam = Native.HTHSCROLL;
                     }
 
-                    Native.POINTS points = new Native.POINTS((short)x, (short)y);
+                    var points = new Native.POINTS((short)x, (short)y);
 
                     Native.PostMessage(_owner.Handle, ncMsg, (IntPtr)wParam, points);
                 }
