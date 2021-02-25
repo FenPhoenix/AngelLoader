@@ -60,7 +60,7 @@
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.RecentFMsGroupBox = new System.Windows.Forms.GroupBox();
             this.RecentFMsLabel = new System.Windows.Forms.Label();
-            this.RecentFMsNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.RecentFMsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.DateFormatGroupBox.SuspendLayout();
@@ -494,7 +494,7 @@
         internal System.Windows.Forms.Label PreviewDateLabel;
         internal System.Windows.Forms.CheckBox UseShortGameTabNamesCheckBox;
         internal System.Windows.Forms.GroupBox RecentFMsGroupBox;
-        internal System.Windows.Forms.NumericUpDown RecentFMsNumericUpDown;
+        internal AngelLoader.Forms.CustomControls.DarkNumericUpDown RecentFMsNumericUpDown;
         internal System.Windows.Forms.Label RecentFMsLabel;
     }
 }

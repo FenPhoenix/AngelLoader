@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
@@ -35,6 +36,8 @@ namespace AngelLoader.Forms
     internal sealed partial class SettingsForm : Form, IEventDisabler
     {
         #region Private fields
+
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
         private readonly IThemeableWindow? _ownerForm;
 
@@ -523,6 +526,78 @@ namespace AngelLoader.Forms
             }
 
             #endregion
+
+            SetTheme(Config.VisualTheme, startup: true);
+        }
+
+        private void SetTheme(VisualTheme theme, bool startup)
+        {
+            // TODO: @DarkMode(SetTheme): Eventually just codegen the set of all darkable controls
+            // So we don't have to have this awkward dictionary fill/loop/manual-set system.
+
+            bool darkMode = theme == VisualTheme.Dark;
+
+            if (_controlColors.Count == 0) ControlUtils.FillControlDict(this, _controlColors);
+
+            try
+            {
+                if (!startup) this.SuspendDrawing();
+
+                #region Automatic sets
+
+                foreach (var item in _controlColors)
+                {
+                    Control control = item.Key;
+
+                    // Excludes - we handle these manually
+                    if (control is ScrollBarVisualOnly || control is SplitterPanel)
+                    {
+                        continue;
+                    }
+
+                    // Separate if because a control could be IDarkable AND be a ToolStrip
+                    if (control is ToolStrip ts)
+                    {
+                        foreach (ToolStripItem tsItem in ts.Items)
+                        {
+                            if (tsItem is IDarkable darkableTSItem)
+                            {
+                                darkableTSItem.DarkModeEnabled = darkMode;
+                            }
+                        }
+                    }
+
+                    if (control is IDarkable darkableControl)
+                    {
+                        darkableControl.DarkModeEnabled = darkMode;
+                    }
+                    else
+                    {
+                        if (darkMode)
+                        {
+                            control.ForeColor = DarkColors.LightText;
+                            control.BackColor = DarkColors.Fen_ControlBackground;
+                        }
+                        else
+                        {
+                            control.ForeColor = item.Value.ForeColor;
+                            control.BackColor = item.Value.BackColor;
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Manual sets
+
+                ControlPainter.DarkModeEnabled = darkMode;
+
+                #endregion
+            }
+            finally
+            {
+                if (!startup) this.ResumeDrawing();
+            }
         }
 
         private void SettingsForm_Load(object sender, EventArgs e)

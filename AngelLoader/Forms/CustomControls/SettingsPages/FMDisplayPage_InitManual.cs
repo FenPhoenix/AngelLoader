@@ -38,7 +38,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             DummyAutoScrollPanel = new Control();
             RecentFMsGroupBox = new GroupBox();
             RecentFMsLabel = new Label();
-            RecentFMsNumericUpDown = new NumericUpDown();
+            RecentFMsNumericUpDown = new DarkNumericUpDown();
             RatingDisplayStyleGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)RatingExamplePictureBox).BeginInit();
             DateFormatGroupBox.SuspendLayout();

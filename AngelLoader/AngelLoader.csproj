@@ -103,6 +103,9 @@
     <Compile Update="Forms\CustomControls\DarkContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Forms\CustomControls\DarkNumericUpDown.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Forms\CustomControls\DarkTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
