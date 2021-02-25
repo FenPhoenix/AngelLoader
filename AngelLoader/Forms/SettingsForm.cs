@@ -527,6 +527,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            // TODO: @DarkMode(SettingsForm): We get a flicker of classic mode even when we suspend/resume
             SetTheme(Config.VisualTheme, startup: true);
         }
 

@@ -30,6 +30,12 @@ namespace AngelLoader.Forms.CustomControls
         public Color? DarkModeBackColor { get; set; }
 
         [PublicAPI]
+        public Color? DarkModeHoverColor { get; set; }
+
+        [PublicAPI]
+        public Color? DarkModePressedColor { get; set; }
+
+        [PublicAPI]
         public new string Text
         {
             get => base.Text;
@@ -107,7 +113,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private bool _darkModeEnabled;
         [PublicAPI]
-        public bool DarkModeEnabled
+        public virtual bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -350,10 +356,10 @@ namespace AngelLoader.Forms.CustomControls
                     switch (ButtonState)
                     {
                         case DarkControlState.Hover:
-                            fillColor = _isDefault ? DarkColors.BlueBackground : DarkColors.LighterBackground;
+                            fillColor = _isDefault ? DarkColors.BlueBackground : DarkModeHoverColor ?? DarkColors.LighterBackground;
                             break;
                         case DarkControlState.Pressed:
-                            fillColor = _isDefault ? DarkColors.DarkBackground : DarkColors.DarkBackground;
+                            fillColor = _isDefault ? DarkColors.DarkBackground : DarkModePressedColor ?? DarkColors.DarkBackground;
                             break;
                     }
                 }
@@ -365,10 +371,10 @@ namespace AngelLoader.Forms.CustomControls
                             fillColor = DarkModeBackColor ?? DarkColors.GreyBackground;
                             break;
                         case DarkControlState.Hover:
-                            fillColor = DarkColors.MediumBackground;
+                            fillColor = DarkModeHoverColor ?? DarkColors.MediumBackground;
                             break;
                         case DarkControlState.Pressed:
-                            fillColor = DarkColors.DarkBackground;
+                            fillColor = DarkModePressedColor ?? DarkColors.DarkBackground;
                             break;
                     }
                 }

@@ -62,7 +62,7 @@ namespace AngelLoader.Forms.CustomControls
         };
 
         #endregion
-        
+
         #region Constructor / init
 
         private protected ScrollBarVisualOnly_Base(bool isVertical, bool passMouseWheel)
@@ -115,7 +115,8 @@ namespace AngelLoader.Forms.CustomControls
 
         private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
-            if (!Visible || !Enabled) return;
+            // TODO: @DarkMode(Scroll bar mouse handlers): Profile perf on the FindForm() calls and cache if necessary
+            if (!Visible || !Enabled || !CanFocus || FindForm()?.CanFocus == false) return;
 
             if (e.Button != MouseButtons.Left) return;
 
@@ -151,7 +152,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void MouseUpExt_Handler(object sender, MouseEventExtArgs e)
         {
-            if (!Visible || !Enabled) return;
+            if (!Visible || !Enabled || !CanFocus || FindForm()?.CanFocus == false) return;
 
             if (e.Button != MouseButtons.Left) return;
 
@@ -211,7 +212,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void MouseMoveExt_Handler(object sender, MouseEventExtArgs e)
         {
-            if (!Visible || !Enabled) return;
+            if (!Visible || !Enabled || !CanFocus || FindForm()?.CanFocus == false) return;
 
             Rectangle thumbRect = GetThumbRect();
             var leftArrowRect = GetArrowRect();

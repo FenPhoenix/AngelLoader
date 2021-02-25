@@ -18,9 +18,9 @@
         {
             this.components = new System.ComponentModel.Container();
             this.BottomFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.Cancel_Button = new System.Windows.Forms.Button();
-            this.OKButton = new System.Windows.Forms.Button();
-            this.ErrorLabel = new System.Windows.Forms.Label();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ErrorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.MainErrorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
@@ -128,6 +128,9 @@
             this.OtherRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OtherRadioButton.BackColor = System.Drawing.SystemColors.Control;
+            this.OtherRadioButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_ControlBackground;
+            this.OtherRadioButton.DarkModeHoverColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
+            this.OtherRadioButton.DarkModePressedColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.OtherRadioButton.Checked = false;
             this.OtherRadioButton.FlatAppearance.BorderSize = 0;
             this.OtherRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
@@ -148,6 +151,9 @@
             this.FMDisplayRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMDisplayRadioButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FMDisplayRadioButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_ControlBackground;
+            this.FMDisplayRadioButton.DarkModeHoverColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
+            this.FMDisplayRadioButton.DarkModePressedColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.FMDisplayRadioButton.Checked = false;
             this.FMDisplayRadioButton.FlatAppearance.BorderSize = 0;
             this.FMDisplayRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
@@ -168,6 +174,9 @@
             this.PathsRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PathsRadioButton.BackColor = System.Drawing.SystemColors.Control;
+            this.PathsRadioButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_ControlBackground;
+            this.PathsRadioButton.DarkModeHoverColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
+            this.PathsRadioButton.DarkModePressedColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.PathsRadioButton.Checked = false;
             this.PathsRadioButton.FlatAppearance.BorderSize = 0;
             this.PathsRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
@@ -229,11 +238,11 @@
 
         private System.Windows.Forms.Panel PagePanel;
         private System.Windows.Forms.FlowLayoutPanel BottomFlowLayoutPanel;
-        private System.Windows.Forms.Button Cancel_Button;
-        private System.Windows.Forms.Button OKButton;
+        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
+        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
         private System.Windows.Forms.ToolTip MainToolTip;
         private System.Windows.Forms.ErrorProvider MainErrorProvider;
-        private System.Windows.Forms.Label ErrorLabel;
+        private AngelLoader.Forms.CustomControls.DarkLabel ErrorLabel;
         private AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
         private AngelLoader.Forms.CustomControls.RadioButtonCustom OtherRadioButton;
         private AngelLoader.Forms.CustomControls.RadioButtonCustom FMDisplayRadioButton;

@@ -11,9 +11,9 @@ namespace AngelLoader.Forms
         {
             components = new Container();
             BottomFlowLayoutPanel = new FlowLayoutPanel();
-            Cancel_Button = new Button();
-            OKButton = new Button();
-            ErrorLabel = new Label();
+            Cancel_Button = new DarkButton();
+            OKButton = new DarkButton();
+            ErrorLabel = new DarkLabel();
             MainToolTip = new ToolTip(components);
             MainErrorProvider = new ErrorProvider(components);
             MainSplitContainer = new SplitContainerCustom();
@@ -109,6 +109,9 @@ namespace AngelLoader.Forms
             // 
             OtherRadioButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             OtherRadioButton.BackColor = SystemColors.Control;
+            OtherRadioButton.DarkModeBackColor = DarkColors.Fen_ControlBackground;
+            OtherRadioButton.DarkModeHoverColor = DarkColors.Fen_DarkBackground;
+            OtherRadioButton.DarkModePressedColor = DarkColors.Fen_DarkBackground;
             OtherRadioButton.Checked = false;
             OtherRadioButton.FlatAppearance.BorderSize = 0;
             OtherRadioButton.FlatAppearance.MouseDownBackColor = SystemColors.Window;
@@ -126,6 +129,9 @@ namespace AngelLoader.Forms
             // 
             FMDisplayRadioButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             FMDisplayRadioButton.BackColor = SystemColors.Control;
+            FMDisplayRadioButton.DarkModeBackColor = DarkColors.Fen_ControlBackground;
+            FMDisplayRadioButton.DarkModeHoverColor = DarkColors.Fen_DarkBackground;
+            FMDisplayRadioButton.DarkModePressedColor = DarkColors.Fen_DarkBackground;
             FMDisplayRadioButton.Checked = false;
             FMDisplayRadioButton.FlatAppearance.BorderSize = 0;
             FMDisplayRadioButton.FlatAppearance.MouseDownBackColor = SystemColors.Window;
@@ -143,6 +149,9 @@ namespace AngelLoader.Forms
             // 
             PathsRadioButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             PathsRadioButton.BackColor = SystemColors.Control;
+            PathsRadioButton.DarkModeBackColor = DarkColors.Fen_ControlBackground;
+            PathsRadioButton.DarkModeHoverColor = DarkColors.Fen_DarkBackground;
+            PathsRadioButton.DarkModePressedColor = DarkColors.Fen_DarkBackground;
             PathsRadioButton.Checked = false;
             PathsRadioButton.FlatAppearance.BorderSize = 0;
             PathsRadioButton.FlatAppearance.MouseDownBackColor = SystemColors.Window;

@@ -13,40 +13,40 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             OtherGroupBox = new GroupBox();
             BackupPathPanel = new Panel();
             BackupHelpPictureBox = new PictureBox();
-            BackupPathHelpLabel = new Label();
-            BackupPathLabel = new Label();
-            BackupPathTextBox = new TextBox();
-            BackupPathBrowseButton = new Button();
+            BackupPathHelpLabel = new DarkLabel();
+            BackupPathLabel = new DarkLabel();
+            BackupPathTextBox = new DarkTextBox();
+            BackupPathBrowseButton = new DarkButton();
             FMArchivePathsGroupBox = new GroupBox();
-            IncludeSubfoldersCheckBox = new CheckBox();
-            AddFMArchivePathButton = new Button();
-            RemoveFMArchivePathButton = new Button();
-            FMArchivePathsListBox = new ListBox();
+            IncludeSubfoldersCheckBox = new DarkCheckBox();
+            AddFMArchivePathButton = new DarkButton();
+            RemoveFMArchivePathButton = new DarkButton();
+            FMArchivePathsListBox = new DarkListBox();
             SteamOptionsGroupBox = new GroupBox();
             LaunchTheseGamesThroughSteamPanel = new Panel();
-            LaunchTheseGamesThroughSteamCheckBox = new CheckBox();
-            Thief1UseSteamCheckBox = new CheckBox();
-            SS2UseSteamCheckBox = new CheckBox();
-            Thief3UseSteamCheckBox = new CheckBox();
-            Thief2UseSteamCheckBox = new CheckBox();
-            SteamExeLabel = new Label();
-            SteamExeTextBox = new TextBox();
-            SteamExeBrowseButton = new Button();
+            LaunchTheseGamesThroughSteamCheckBox = new DarkCheckBox();
+            Thief1UseSteamCheckBox = new DarkCheckBox();
+            SS2UseSteamCheckBox = new DarkCheckBox();
+            Thief3UseSteamCheckBox = new DarkCheckBox();
+            Thief2UseSteamCheckBox = new DarkCheckBox();
+            SteamExeLabel = new DarkLabel();
+            SteamExeTextBox = new DarkTextBox();
+            SteamExeBrowseButton = new DarkButton();
             PathsToGameExesGroupBox = new GroupBox();
             GameRequirementsPanel = new Panel();
-            GameRequirementsLabel = new Label();
-            SS2ExePathLabel = new Label();
-            Thief3ExePathLabel = new Label();
-            Thief2ExePathLabel = new Label();
-            Thief1ExePathLabel = new Label();
-            SS2ExePathBrowseButton = new Button();
-            Thief3ExePathBrowseButton = new Button();
-            Thief2ExePathBrowseButton = new Button();
-            Thief1ExePathBrowseButton = new Button();
-            SS2ExePathTextBox = new TextBox();
-            Thief3ExePathTextBox = new TextBox();
-            Thief2ExePathTextBox = new TextBox();
-            Thief1ExePathTextBox = new TextBox();
+            GameRequirementsLabel = new DarkLabel();
+            SS2ExePathLabel = new DarkLabel();
+            Thief3ExePathLabel = new DarkLabel();
+            Thief2ExePathLabel = new DarkLabel();
+            Thief1ExePathLabel = new DarkLabel();
+            SS2ExePathBrowseButton = new DarkButton();
+            Thief3ExePathBrowseButton = new DarkButton();
+            Thief2ExePathBrowseButton = new DarkButton();
+            Thief1ExePathBrowseButton = new DarkButton();
+            SS2ExePathTextBox = new DarkTextBox();
+            Thief3ExePathTextBox = new DarkTextBox();
+            Thief2ExePathTextBox = new DarkTextBox();
+            Thief1ExePathTextBox = new DarkTextBox();
             DummyAutoScrollPanel = new Control();
             PagePanel.SuspendLayout();
             ActualPathsPanel.SuspendLayout();
@@ -187,7 +187,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             AddFMArchivePathButton.Size = new Size(23, 23);
             AddFMArchivePathButton.TabIndex = 3;
             AddFMArchivePathButton.UseVisualStyleBackColor = true;
-            AddFMArchivePathButton.Paint += AddFMArchivePathButton_Paint;
+            AddFMArchivePathButton.PaintCustom += AddFMArchivePathButton_Paint;
             // 
             // RemoveFMArchivePathButton
             // 
@@ -196,7 +196,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             RemoveFMArchivePathButton.Size = new Size(23, 23);
             RemoveFMArchivePathButton.TabIndex = 2;
             RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
-            RemoveFMArchivePathButton.Paint += RemoveFMArchivePathButton_Paint;
+            RemoveFMArchivePathButton.PaintCustom += RemoveFMArchivePathButton_Paint;
             // 
             // FMArchivePathsListBox
             // 

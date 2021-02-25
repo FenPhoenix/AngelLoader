@@ -5,11 +5,28 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class RadioButtonCustom : Button
+    public sealed class RadioButtonCustom : DarkButton
     {
         private bool _checked;
 
         public event EventHandler? CheckedChanged;
+
+        public override bool DarkModeEnabled
+        {
+            get => base.DarkModeEnabled;
+            set
+            {
+                SetCheckedVisualState();
+                base.DarkModeEnabled = value;
+            }
+        }
+
+        private void SetCheckedVisualState()
+        {
+            DarkModeBackColor = _checked
+                ? DarkColors.Fen_DarkBackground
+                : DarkColors.Fen_ControlBackground;
+        }
 
         [Browsable(true)]
         public bool Checked
@@ -20,7 +37,17 @@ namespace AngelLoader.Forms.CustomControls
                 if (_checked == value) return;
 
                 _checked = value;
-                BackColor = _checked ? SystemColors.Window : SystemColors.Control;
+                if (DarkModeEnabled)
+                {
+                    SetCheckedVisualState();
+                }
+                else
+                {
+                    BackColor = _checked
+                        ? SystemColors.Window
+                        : SystemColors.Control;
+                }
+
                 CheckedChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -35,7 +62,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnPaint(e);
             var rect = new Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
-            e.Graphics.DrawRectangle(SystemPens.ControlText, rect);
+            e.Graphics.DrawRectangle(DarkModeEnabled ? DarkColors.LightTextPen : SystemPens.ControlText, rect);
         }
     }
 }

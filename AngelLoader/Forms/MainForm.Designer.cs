@@ -75,9 +75,9 @@ namespace AngelLoader.Forms
             this.FilterByThief2Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.FilterByThief3Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.FilterBySS2Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
-            this.FilterTitleLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
+            this.FilterTitleLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.FilterTitleTextBox = new AngelLoader.Forms.CustomControls.TextBoxCustom();
-            this.FilterAuthorLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
+            this.FilterAuthorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.FilterAuthorTextBox = new AngelLoader.Forms.CustomControls.TextBoxCustom();
             this.FilterIconButtonsToolStrip = new AngelLoader.Forms.CustomControls.ToolStripCustom();
             this.FilterByReleaseDateButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
@@ -115,10 +115,10 @@ namespace AngelLoader.Forms
             this.CR_ScriptsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.CR_SubtitlesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.CR_ObjectsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CustomResourcesLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
+            this.CustomResourcesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.EditFMTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.EditFMScanLanguagesButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMLanguageLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
+            this.EditFMLanguageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.EditFMLanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
             this.EditFMScanForReadmesButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.EditFMScanReleaseDateButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -128,17 +128,17 @@ namespace AngelLoader.Forms
             this.EditFMTitleTextBox = new DarkTextBox();
             this.EditFMFinishedOnButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.EditFMRatingComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
-            this.EditFMRatingLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
+            this.EditFMRatingLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.EditFMLastPlayedDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.EditFMReleaseDateDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.EditFMLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.EditFMReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.EditFMDisableAllModsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.EditFMDisabledModsTextBox = new DarkTextBox();
-            this.EditFMDisabledModsLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
+            this.EditFMDisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.EditFMAuthorTextBox = new DarkTextBox();
-            this.EditFMAuthorLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
-            this.EditFMTitleLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
+            this.EditFMAuthorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.EditFMTitleLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.CommentTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.CommentTextBox = new DarkTextBox();
             this.TagsTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
@@ -152,12 +152,12 @@ namespace AngelLoader.Forms
             this.PatchTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.PatchMainPanel = new System.Windows.Forms.Panel();
             this.PatchDMLsPanel = new System.Windows.Forms.Panel();
-            this.PatchDMLPatchesLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
+            this.PatchDMLPatchesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.PatchDMLsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
             this.PatchRemoveDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchAddDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.PatchFMNotInstalledLabel = new AngelLoader.Forms.CustomControls.LabelCustom();
+            this.PatchFMNotInstalledLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeZoomOutButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -1938,8 +1938,8 @@ namespace AngelLoader.Forms
         internal DarkButton Test2Button;
         internal DarkButton Test3Button;
         internal DarkButton Test4Button;
-        internal AngelLoader.Forms.CustomControls.LabelCustom DebugLabel;
-        internal AngelLoader.Forms.CustomControls.LabelCustom DebugLabel2;
+        internal AngelLoader.Forms.CustomControls.DarkLabel DebugLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel DebugLabel2;
 #endif
 
 #if !ReleaseBeta && !ReleasePublic
@@ -1959,7 +1959,7 @@ namespace AngelLoader.Forms
         internal DarkButton SettingsButton;
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom ChooseReadmeComboBox;
         internal DarkButton ReadmeResetZoomButton;
-        internal AngelLoader.Forms.CustomControls.LabelCustom FilterTitleLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel FilterTitleLabel;
         internal AngelLoader.Forms.CustomControls.TextBoxCustom FilterTitleTextBox;
         internal DarkButton PlayOriginalGameButton;
         internal System.Windows.Forms.TabControl GamesTabControl;
@@ -1968,7 +1968,7 @@ namespace AngelLoader.Forms
         internal System.Windows.Forms.ImageList GameTabsImageList;
         internal AngelLoader.Forms.CustomControls.TabControlCustom TopRightTabControl;
         internal AngelLoader.Forms.CustomControls.TabPageCustom StatisticsTabPage;
-        internal AngelLoader.Forms.CustomControls.LabelCustom CustomResourcesLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel CustomResourcesLabel;
         internal DarkCheckBox CR_MotionsCheckBox;
         internal DarkCheckBox CR_CreaturesCheckBox;
         internal DarkCheckBox CR_MapCheckBox;
@@ -1990,16 +1990,16 @@ namespace AngelLoader.Forms
         internal DarkButton AddTagFromListButton;
         internal AngelLoader.Forms.CustomControls.TextBoxCustom AddTagTextBox;
         internal AngelLoader.Forms.CustomControls.TextBoxCustom FilterAuthorTextBox;
-        internal AngelLoader.Forms.CustomControls.LabelCustom FilterAuthorLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel FilterAuthorLabel;
         internal AngelLoader.Forms.CustomControls.TabPageCustom EditFMTabPage;
         internal System.Windows.Forms.DateTimePicker EditFMLastPlayedDateTimePicker;
         internal System.Windows.Forms.DateTimePicker EditFMReleaseDateDateTimePicker;
         internal DarkTextBox EditFMAuthorTextBox;
-        internal AngelLoader.Forms.CustomControls.LabelCustom EditFMAuthorLabel;
-        internal AngelLoader.Forms.CustomControls.LabelCustom EditFMTitleLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMAuthorLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMTitleLabel;
         internal DarkCheckBox EditFMDisableAllModsCheckBox;
         internal DarkTextBox EditFMDisabledModsTextBox;
-        internal AngelLoader.Forms.CustomControls.LabelCustom EditFMDisabledModsLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMDisabledModsLabel;
         internal System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
         internal AngelLoader.Forms.CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByThief1Button;
@@ -2008,7 +2008,7 @@ namespace AngelLoader.Forms
         internal DarkCheckBox EditFMLastPlayedCheckBox;
         internal DarkCheckBox EditFMReleaseDateCheckBox;
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom EditFMRatingComboBox;
-        internal AngelLoader.Forms.CustomControls.LabelCustom EditFMRatingLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMRatingLabel;
         internal DarkButton EditFMFinishedOnButton;
         internal DarkButton ReadmeFullScreenButton;
         internal DarkButton WebSearchButton;
@@ -2043,9 +2043,9 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.DarkListBox PatchDMLsListBox;
         internal DarkButton PatchRemoveDMLButton;
         internal DarkButton PatchAddDMLButton;
-        internal AngelLoader.Forms.CustomControls.LabelCustom PatchDMLPatchesLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel PatchDMLPatchesLabel;
         internal System.Windows.Forms.Panel PatchDMLsPanel;
-        internal AngelLoader.Forms.CustomControls.LabelCustom PatchFMNotInstalledLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel PatchFMNotInstalledLabel;
         internal System.Windows.Forms.Panel PatchMainPanel;
         internal DarkButton PatchOpenFMFolderButton;
         internal AngelLoader.Forms.CustomControls.ArrowButton TopRightCollapseButton;
@@ -2072,7 +2072,7 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom EditFMLanguageComboBox;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
         internal DarkButton EditFMScanLanguagesButton;
-        internal AngelLoader.Forms.CustomControls.LabelCustom EditFMLanguageLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMLanguageLabel;
         internal DarkButton MainMenuButton;
         internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
     }
