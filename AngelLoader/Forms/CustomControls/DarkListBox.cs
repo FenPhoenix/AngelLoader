@@ -6,7 +6,7 @@ using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class DarkListBox : ListBox, IDarkableScrollableNative
+    public class DarkListBox : ListBox, IDarkableScrollableNative
     {
         // TODO: @DarkMode(DarkListBox): Horizontal scrollbars issue
         // We can't handle horizontal scrollbar for some reason. Even if we set the HorizontalExtent, the items
@@ -25,6 +25,7 @@ namespace AngelLoader.Forms.CustomControls
             get => _darkModeEnabled;
             set
             {
+                if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
                 SetUpTheme();
                 DarkModeChanged?.Invoke(this, EventArgs.Empty);

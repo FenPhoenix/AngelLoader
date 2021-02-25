@@ -13,6 +13,7 @@ namespace AngelLoader.Forms.CustomControls
             get => _darkModeEnabled;
             set
             {
+                if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
                 SetUpTheme();
             }

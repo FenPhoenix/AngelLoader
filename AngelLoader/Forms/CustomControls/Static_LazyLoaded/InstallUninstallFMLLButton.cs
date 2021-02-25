@@ -21,6 +21,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             get => _darkModeEnabled;
             set
             {
+                if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
                 if (!Constructed) return;
 

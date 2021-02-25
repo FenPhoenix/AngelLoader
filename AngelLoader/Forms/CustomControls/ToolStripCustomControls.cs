@@ -15,6 +15,7 @@ namespace AngelLoader.Forms.CustomControls
             get => _darkModeEnabled;
             set
             {
+                if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
                 BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
                 Refresh();
@@ -104,6 +105,7 @@ namespace AngelLoader.Forms.CustomControls
             get => _darkModeEnabled;
             set
             {
+                if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
                 BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
             }
@@ -126,6 +128,7 @@ namespace AngelLoader.Forms.CustomControls
             get => _darkModeEnabled;
             set
             {
+                if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
                 BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
             }

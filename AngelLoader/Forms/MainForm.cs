@@ -1503,6 +1503,7 @@ namespace AngelLoader.Forms
                 ProgressBoxDarkModeEnabled = darkMode;
                 ControlPainter.DarkModeEnabled = darkMode;
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
+                ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
 
                 #endregion
             }
