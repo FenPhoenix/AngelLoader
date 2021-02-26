@@ -30,28 +30,28 @@
         private void InitializeComponent()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.ReadmeGroupBox = new System.Windows.Forms.GroupBox();
+            this.ReadmeGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ReadmeFixedWidthFontCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.ShowOrHideUIElementsGroupBox = new System.Windows.Forms.GroupBox();
+            this.ShowOrHideUIElementsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.HideExitButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.HideFMListZoomButtonsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.HideUninstallButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.PlayFMOnDCOrEnterGroupBox = new System.Windows.Forms.GroupBox();
+            this.PlayFMOnDCOrEnterGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
+            this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
-            this.WebSearchGroupBox = new System.Windows.Forms.GroupBox();
+            this.WebSearchGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.WebSearchUrlResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.WebSearchTitleExplanationLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.WebSearchUrlTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.WebSearchUrlLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.UninstallingFMsGroupBox = new System.Windows.Forms.GroupBox();
+            this.UninstallingFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConfirmUninstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.WhatToBackUpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.BackupAlwaysAskCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.BackupAllChangedDataRadioButton = new System.Windows.Forms.RadioButton();
-            this.BackupSavesAndScreensOnlyRadioButton = new System.Windows.Forms.RadioButton();
-            this.FMFileConversionGroupBox = new System.Windows.Forms.GroupBox();
+            this.BackupAllChangedDataRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.BackupSavesAndScreensOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.FMFileConversionGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
@@ -404,29 +404,29 @@
 #endif
 
         internal System.Windows.Forms.Panel PagePanel;
-        internal System.Windows.Forms.GroupBox ShowOrHideUIElementsGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox ShowOrHideUIElementsGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox HideFMListZoomButtonsCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox HideUninstallButtonCheckBox;
-        internal System.Windows.Forms.GroupBox PlayFMOnDCOrEnterGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox PlayFMOnDCOrEnterGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox ConfirmPlayOnDCOrEnterCheckBox;
-        internal System.Windows.Forms.GroupBox LanguageGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox LanguageGroupBox;
         internal AngelLoader.Forms.CustomControls.ComboBoxCustom LanguageComboBox;
-        internal System.Windows.Forms.GroupBox WebSearchGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox WebSearchGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkButton WebSearchUrlResetButton;
         internal AngelLoader.Forms.CustomControls.DarkLabel WebSearchTitleExplanationLabel;
         internal AngelLoader.Forms.CustomControls.DarkTextBox WebSearchUrlTextBox;
         internal AngelLoader.Forms.CustomControls.DarkLabel WebSearchUrlLabel;
-        internal System.Windows.Forms.GroupBox UninstallingFMsGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox UninstallingFMsGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox ConfirmUninstallCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkLabel WhatToBackUpLabel;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox BackupAlwaysAskCheckBox;
-        internal System.Windows.Forms.RadioButton BackupAllChangedDataRadioButton;
-        internal System.Windows.Forms.RadioButton BackupSavesAndScreensOnlyRadioButton;
-        internal System.Windows.Forms.GroupBox FMFileConversionGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkRadioButton BackupAllChangedDataRadioButton;
+        internal AngelLoader.Forms.CustomControls.DarkRadioButton BackupSavesAndScreensOnlyRadioButton;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox FMFileConversionGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox ConvertOGGsToWAVsOnInstallCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox ConvertWAVsTo16BitOnInstallCheckBox;
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
-        internal System.Windows.Forms.GroupBox ReadmeGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox ReadmeGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox ReadmeFixedWidthFontCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox HideExitButtonCheckBox;
     }

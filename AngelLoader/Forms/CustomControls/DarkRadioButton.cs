@@ -12,6 +12,8 @@ namespace AngelLoader.Forms.CustomControls
 
         private DarkControlState _controlState = DarkControlState.Normal;
 
+        private bool _origUseVisualStyleBackColor;
+
         private bool _spacePressed;
 
         #endregion
@@ -74,13 +76,28 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new bool UseCompatibleTextRendering => false;
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool UseVisualStyleBackColor => false;
-
         #endregion
 
-        public bool DarkModeEnabled { get; set; }
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                if (_darkModeEnabled == value) return;
+                _darkModeEnabled = value;
+
+                if (_darkModeEnabled)
+                {
+                    _origUseVisualStyleBackColor = UseVisualStyleBackColor;
+                    UseVisualStyleBackColor = false;
+                }
+                else
+                {
+                    UseVisualStyleBackColor = _origUseVisualStyleBackColor;
+                }
+            }
+        }
 
         #region Constructor Region
 
@@ -129,9 +146,10 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!DarkModeEnabled) return;
 
-            if (!ClientRectangle.Contains(e.Location)) return;
-
-            SetControlState(DarkControlState.Pressed);
+            if (e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location))
+            {
+                SetControlState(DarkControlState.Pressed);
+            }
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
@@ -238,7 +256,7 @@ namespace AngelLoader.Forms.CustomControls
                 fillColorBrush = DarkColors.GreySelectionBrush;
             }
 
-            g.FillRectangle(DarkColors.GreyBackgroundBrush, ClientRectangle);
+            g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, ClientRectangle);
 
             g.SmoothingMode = SmoothingMode.HighQuality;
 

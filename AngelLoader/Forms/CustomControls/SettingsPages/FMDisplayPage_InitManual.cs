@@ -7,12 +7,12 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
     {
         private void InitComponentManual()
         {
-            RatingDisplayStyleGroupBox = new GroupBox();
+            RatingDisplayStyleGroupBox = new DarkGroupBox();
             RatingUseStarsCheckBox = new DarkCheckBox();
             RatingExamplePictureBox = new PictureBox();
-            RatingFMSelDisplayStyleRadioButton = new RadioButton();
-            RatingNDLDisplayStyleRadioButton = new RadioButton();
-            DateFormatGroupBox = new GroupBox();
+            RatingFMSelDisplayStyleRadioButton = new DarkRadioButton();
+            RatingNDLDisplayStyleRadioButton = new DarkRadioButton();
+            DateFormatGroupBox = new DarkGroupBox();
             PreviewDateFlowLayoutPanel = new FlowLayoutPanel();
             PreviewDateLabel = new DarkLabel();
             DateCustomFormatPanel = new Panel();
@@ -23,20 +23,20 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             Date4ComboBox = new DarkComboBox();
             Date2ComboBox = new DarkComboBox();
             Date3ComboBox = new DarkComboBox();
-            DateCustomRadioButton = new RadioButton();
-            DateCurrentCultureLongRadioButton = new RadioButton();
-            DateCurrentCultureShortRadioButton = new RadioButton();
-            SortingGroupBox = new GroupBox();
+            DateCustomRadioButton = new DarkRadioButton();
+            DateCurrentCultureLongRadioButton = new DarkRadioButton();
+            DateCurrentCultureShortRadioButton = new DarkRadioButton();
+            SortingGroupBox = new DarkGroupBox();
             MoveArticlesToEndCheckBox = new DarkCheckBox();
             EnableIgnoreArticlesCheckBox = new DarkCheckBox();
             ArticlesTextBox = new DarkTextBox();
-            GameOrganizationGroupBox = new GroupBox();
+            GameOrganizationGroupBox = new DarkGroupBox();
             UseShortGameTabNamesCheckBox = new DarkCheckBox();
-            OrganizeGamesByTabRadioButton = new RadioButton();
-            OrganizeGamesInOneListRadioButton = new RadioButton();
+            OrganizeGamesByTabRadioButton = new DarkRadioButton();
+            OrganizeGamesInOneListRadioButton = new DarkRadioButton();
             PagePanel = new Panel();
             DummyAutoScrollPanel = new Control();
-            RecentFMsGroupBox = new GroupBox();
+            RecentFMsGroupBox = new DarkGroupBox();
             RecentFMsLabel = new DarkLabel();
             RecentFMsNumericUpDown = new DarkNumericUpDown();
             RatingDisplayStyleGroupBox.SuspendLayout();

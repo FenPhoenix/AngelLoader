@@ -29,12 +29,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.RatingDisplayStyleGroupBox = new System.Windows.Forms.GroupBox();
+            this.RatingDisplayStyleGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.RatingUseStarsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.RatingExamplePictureBox = new System.Windows.Forms.PictureBox();
-            this.RatingFMSelDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
-            this.RatingNDLDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
-            this.DateFormatGroupBox = new System.Windows.Forms.GroupBox();
+            this.RatingFMSelDisplayStyleRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.RatingNDLDisplayStyleRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.DateFormatGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.PreviewDateFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.PreviewDateLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.DateCustomFormatPanel = new System.Windows.Forms.Panel();
@@ -45,20 +45,20 @@
             this.Date4ComboBox = new AngelLoader.Forms.CustomControls.DarkComboBox();
             this.Date2ComboBox = new AngelLoader.Forms.CustomControls.DarkComboBox();
             this.Date3ComboBox = new AngelLoader.Forms.CustomControls.DarkComboBox();
-            this.DateCustomRadioButton = new System.Windows.Forms.RadioButton();
-            this.DateCurrentCultureLongRadioButton = new System.Windows.Forms.RadioButton();
-            this.DateCurrentCultureShortRadioButton = new System.Windows.Forms.RadioButton();
-            this.SortingGroupBox = new System.Windows.Forms.GroupBox();
+            this.DateCustomRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.DateCurrentCultureLongRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.DateCurrentCultureShortRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.SortingGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.MoveArticlesToEndCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.EnableIgnoreArticlesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ArticlesTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.GameOrganizationGroupBox = new System.Windows.Forms.GroupBox();
+            this.GameOrganizationGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.UseShortGameTabNamesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.OrganizeGamesByTabRadioButton = new System.Windows.Forms.RadioButton();
-            this.OrganizeGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
+            this.OrganizeGamesByTabRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.OrganizeGamesInOneListRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
-            this.RecentFMsGroupBox = new System.Windows.Forms.GroupBox();
+            this.RecentFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.RecentFMsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.RecentFMsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
@@ -464,12 +464,12 @@
         #endregion
 #endif
 
-        internal System.Windows.Forms.GroupBox RatingDisplayStyleGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox RatingDisplayStyleGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox RatingUseStarsCheckBox;
         internal System.Windows.Forms.PictureBox RatingExamplePictureBox;
-        internal System.Windows.Forms.RadioButton RatingFMSelDisplayStyleRadioButton;
-        internal System.Windows.Forms.RadioButton RatingNDLDisplayStyleRadioButton;
-        internal System.Windows.Forms.GroupBox DateFormatGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkRadioButton RatingFMSelDisplayStyleRadioButton;
+        internal AngelLoader.Forms.CustomControls.DarkRadioButton RatingNDLDisplayStyleRadioButton;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox DateFormatGroupBox;
         internal System.Windows.Forms.Panel DateCustomFormatPanel;
         internal AngelLoader.Forms.CustomControls.DarkTextBox DateSeparator3TextBox;
         internal AngelLoader.Forms.CustomControls.DarkTextBox DateSeparator2TextBox;
@@ -478,22 +478,22 @@
         internal AngelLoader.Forms.CustomControls.DarkComboBox Date4ComboBox;
         internal AngelLoader.Forms.CustomControls.DarkComboBox Date2ComboBox;
         internal AngelLoader.Forms.CustomControls.DarkComboBox Date3ComboBox;
-        internal System.Windows.Forms.RadioButton DateCustomRadioButton;
-        internal System.Windows.Forms.RadioButton DateCurrentCultureLongRadioButton;
-        internal System.Windows.Forms.RadioButton DateCurrentCultureShortRadioButton;
-        internal System.Windows.Forms.GroupBox SortingGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkRadioButton DateCustomRadioButton;
+        internal AngelLoader.Forms.CustomControls.DarkRadioButton DateCurrentCultureLongRadioButton;
+        internal AngelLoader.Forms.CustomControls.DarkRadioButton DateCurrentCultureShortRadioButton;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox SortingGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox MoveArticlesToEndCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox EnableIgnoreArticlesCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkTextBox ArticlesTextBox;
-        internal System.Windows.Forms.GroupBox GameOrganizationGroupBox;
-        internal System.Windows.Forms.RadioButton OrganizeGamesByTabRadioButton;
-        internal System.Windows.Forms.RadioButton OrganizeGamesInOneListRadioButton;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox GameOrganizationGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkRadioButton OrganizeGamesByTabRadioButton;
+        internal AngelLoader.Forms.CustomControls.DarkRadioButton OrganizeGamesInOneListRadioButton;
         internal System.Windows.Forms.Panel PagePanel;
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
         internal System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
         internal AngelLoader.Forms.CustomControls.DarkLabel PreviewDateLabel;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox UseShortGameTabNamesCheckBox;
-        internal System.Windows.Forms.GroupBox RecentFMsGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox RecentFMsGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkNumericUpDown RecentFMsNumericUpDown;
         internal AngelLoader.Forms.CustomControls.DarkLabel RecentFMsLabel;
     }

@@ -32,19 +32,19 @@
             this.PagePanel = new System.Windows.Forms.Panel();
             this.ActualPathsPanel = new System.Windows.Forms.Panel();
             this.FlowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.OtherGroupBox = new System.Windows.Forms.GroupBox();
+            this.OtherGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.BackupPathPanel = new System.Windows.Forms.Panel();
             this.BackupHelpPictureBox = new System.Windows.Forms.PictureBox();
             this.BackupPathHelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.BackupPathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.BackupPathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.BackupPathBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.FMArchivePathsGroupBox = new System.Windows.Forms.GroupBox();
+            this.FMArchivePathsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.IncludeSubfoldersCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.AddFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.RemoveFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
-            this.SteamOptionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.SteamOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
             this.LaunchTheseGamesThroughSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.Thief1UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -54,7 +54,7 @@
             this.SteamExeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.SteamExeTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.SteamExeBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.PathsToGameExesGroupBox = new System.Windows.Forms.GroupBox();
+            this.PathsToGameExesGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.GameRequirementsPanel = new System.Windows.Forms.Panel();
             this.GameRequirementsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.SS2ExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -591,11 +591,11 @@
 #endif
 
         internal System.Windows.Forms.Panel PagePanel;
-        internal System.Windows.Forms.GroupBox OtherGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox OtherGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkLabel BackupPathLabel;
         internal AngelLoader.Forms.CustomControls.DarkButton BackupPathBrowseButton;
         internal AngelLoader.Forms.CustomControls.DarkTextBox BackupPathTextBox;
-        internal System.Windows.Forms.GroupBox PathsToGameExesGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox PathsToGameExesGroupBox;
         internal System.Windows.Forms.Panel GameRequirementsPanel;
         internal AngelLoader.Forms.CustomControls.DarkLabel GameRequirementsLabel;
         internal AngelLoader.Forms.CustomControls.DarkLabel Thief3ExePathLabel;
@@ -607,7 +607,7 @@
         internal AngelLoader.Forms.CustomControls.DarkTextBox Thief3ExePathTextBox;
         internal AngelLoader.Forms.CustomControls.DarkTextBox Thief2ExePathTextBox;
         internal AngelLoader.Forms.CustomControls.DarkTextBox Thief1ExePathTextBox;
-        internal System.Windows.Forms.GroupBox FMArchivePathsGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox FMArchivePathsGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox IncludeSubfoldersCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkButton AddFMArchivePathButton;
         internal AngelLoader.Forms.CustomControls.DarkButton RemoveFMArchivePathButton;
@@ -617,7 +617,7 @@
         internal AngelLoader.Forms.CustomControls.DarkLabel SteamExeLabel;
         internal AngelLoader.Forms.CustomControls.DarkTextBox SteamExeTextBox;
         internal AngelLoader.Forms.CustomControls.DarkButton SteamExeBrowseButton;
-        internal System.Windows.Forms.GroupBox SteamOptionsGroupBox;
+        internal AngelLoader.Forms.CustomControls.DarkGroupBox SteamOptionsGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox Thief3UseSteamCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox Thief2UseSteamCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox Thief1UseSteamCheckBox;

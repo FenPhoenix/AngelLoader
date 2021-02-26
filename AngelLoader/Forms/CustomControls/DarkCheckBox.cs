@@ -198,11 +198,10 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            if (e.Button != MouseButtons.Left) return;
-
-            if (!ClientRectangle.Contains(e.Location)) return;
-
-            SetControlState(DarkControlState.Pressed);
+            if (e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location))
+            {
+                SetControlState(DarkControlState.Pressed);
+            }
         }
 
         protected override void OnMouseUp(MouseEventArgs e)

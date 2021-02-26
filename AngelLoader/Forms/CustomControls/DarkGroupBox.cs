@@ -8,7 +8,7 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed class DarkGroupBox : GroupBox, IDarkable
     {
-        private Color _borderColor = DarkColors.DarkBorder;
+        private Color _borderColor = DarkColors.LightBorder;
 
         [Category("Appearance")]
         [Description("Determines the color of the border.")]
@@ -65,7 +65,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (_darkModeEnabled)
+            if (!_darkModeEnabled)
             {
                 base.OnPaint(e);
                 return;
@@ -75,7 +75,7 @@ namespace AngelLoader.Forms.CustomControls
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
             var stringSize = g.MeasureString(Text, Font);
 
-            g.FillRectangle(DarkColors.GreyBackgroundBrush, rect);
+            g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
 
             using (var p = new Pen(BorderColor, 1))
             {
@@ -94,7 +94,7 @@ namespace AngelLoader.Forms.CustomControls
                 (int)stringSize.Height);
 
             var modRect = new Rectangle(textRect.Left, textRect.Top, Math.Min(textRect.Width, (int)stringSize.Width), textRect.Height);
-            g.FillRectangle(DarkColors.GreyBackgroundBrush, modRect);
+            g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, modRect);
 
             const TextFormatFlags textFormatFlags =
                 TextFormatFlags.Default |

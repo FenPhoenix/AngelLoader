@@ -8,28 +8,28 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
         private void InitComponentManual()
         {
             PagePanel = new Panel();
-            ReadmeGroupBox = new GroupBox();
+            ReadmeGroupBox = new DarkGroupBox();
             ReadmeFixedWidthFontCheckBox = new DarkCheckBox();
-            ShowOrHideUIElementsGroupBox = new GroupBox();
+            ShowOrHideUIElementsGroupBox = new DarkGroupBox();
             HideExitButtonCheckBox = new DarkCheckBox();
             HideFMListZoomButtonsCheckBox = new DarkCheckBox();
             HideUninstallButtonCheckBox = new DarkCheckBox();
-            PlayFMOnDCOrEnterGroupBox = new GroupBox();
+            PlayFMOnDCOrEnterGroupBox = new DarkGroupBox();
             ConfirmPlayOnDCOrEnterCheckBox = new DarkCheckBox();
-            LanguageGroupBox = new GroupBox();
+            LanguageGroupBox = new DarkGroupBox();
             LanguageComboBox = new ComboBoxCustom();
-            WebSearchGroupBox = new GroupBox();
+            WebSearchGroupBox = new DarkGroupBox();
             WebSearchUrlResetButton = new DarkButton();
             WebSearchTitleExplanationLabel = new DarkLabel();
             WebSearchUrlTextBox = new DarkTextBox();
             WebSearchUrlLabel = new DarkLabel();
-            UninstallingFMsGroupBox = new GroupBox();
+            UninstallingFMsGroupBox = new DarkGroupBox();
             ConfirmUninstallCheckBox = new DarkCheckBox();
             WhatToBackUpLabel = new DarkLabel();
             BackupAlwaysAskCheckBox = new DarkCheckBox();
-            BackupAllChangedDataRadioButton = new RadioButton();
-            BackupSavesAndScreensOnlyRadioButton = new RadioButton();
-            FMFileConversionGroupBox = new GroupBox();
+            BackupAllChangedDataRadioButton = new DarkRadioButton();
+            BackupSavesAndScreensOnlyRadioButton = new DarkRadioButton();
+            FMFileConversionGroupBox = new DarkGroupBox();
             ConvertOGGsToWAVsOnInstallCheckBox = new DarkCheckBox();
             ConvertWAVsTo16BitOnInstallCheckBox = new DarkCheckBox();
             DummyAutoScrollPanel = new Control();
