@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 
 namespace AngelLoader.Forms
@@ -8,15 +9,15 @@ namespace AngelLoader.Forms
     {
         private void InitComponentManual()
         {
-            T1VersionLabel = new Label();
-            T1VersionTextBox = new TextBox();
-            T2VersionLabel = new Label();
-            T2VersionTextBox = new TextBox();
-            T3VersionLabel = new Label();
-            T3VersionTextBox = new TextBox();
-            SS2VersionLabel = new Label();
-            SS2VersionTextBox = new TextBox();
-            OKButton = new Button();
+            T1VersionLabel = new DarkLabel();
+            T1VersionTextBox = new DarkTextBox();
+            T2VersionLabel = new DarkLabel();
+            T2VersionTextBox = new DarkTextBox();
+            T3VersionLabel = new DarkLabel();
+            T3VersionTextBox = new DarkTextBox();
+            SS2VersionLabel = new DarkLabel();
+            SS2VersionTextBox = new DarkTextBox();
+            OKButton = new DarkButton();
             OKFlowLayoutPanel = new FlowLayoutPanel();
             OKFlowLayoutPanel.SuspendLayout();
             SuspendLayout();

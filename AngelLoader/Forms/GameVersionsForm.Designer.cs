@@ -31,15 +31,15 @@ namespace AngelLoader.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.T1VersionLabel = new System.Windows.Forms.Label();
-            this.T1VersionTextBox = new System.Windows.Forms.TextBox();
-            this.T2VersionLabel = new System.Windows.Forms.Label();
-            this.T2VersionTextBox = new System.Windows.Forms.TextBox();
-            this.T3VersionLabel = new System.Windows.Forms.Label();
-            this.T3VersionTextBox = new System.Windows.Forms.TextBox();
-            this.SS2VersionLabel = new System.Windows.Forms.Label();
-            this.SS2VersionTextBox = new System.Windows.Forms.TextBox();
-            this.OKButton = new System.Windows.Forms.Button();
+            this.T1VersionLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.T1VersionTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.T2VersionLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.T2VersionTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.T3VersionLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.T3VersionTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.SS2VersionLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.SS2VersionTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.OKFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.OKFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
@@ -182,15 +182,15 @@ namespace AngelLoader.Forms
         #endregion
 #endif
 
-        private System.Windows.Forms.Label T1VersionLabel;
-        private System.Windows.Forms.TextBox T1VersionTextBox;
-        private System.Windows.Forms.Label T2VersionLabel;
-        private System.Windows.Forms.TextBox T2VersionTextBox;
-        private System.Windows.Forms.Label T3VersionLabel;
-        private System.Windows.Forms.TextBox T3VersionTextBox;
-        private System.Windows.Forms.Label SS2VersionLabel;
-        private System.Windows.Forms.TextBox SS2VersionTextBox;
-        private System.Windows.Forms.Button OKButton;
+        private AngelLoader.Forms.CustomControls.DarkLabel T1VersionLabel;
+        private AngelLoader.Forms.CustomControls.DarkTextBox T1VersionTextBox;
+        private AngelLoader.Forms.CustomControls.DarkLabel T2VersionLabel;
+        private AngelLoader.Forms.CustomControls.DarkTextBox T2VersionTextBox;
+        private AngelLoader.Forms.CustomControls.DarkLabel T3VersionLabel;
+        private AngelLoader.Forms.CustomControls.DarkTextBox T3VersionTextBox;
+        private AngelLoader.Forms.CustomControls.DarkLabel SS2VersionLabel;
+        private AngelLoader.Forms.CustomControls.DarkTextBox SS2VersionTextBox;
+        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
         private System.Windows.Forms.FlowLayoutPanel OKFlowLayoutPanel;
     }
 }

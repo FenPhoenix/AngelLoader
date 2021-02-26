@@ -1,5 +1,9 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -7,7 +11,9 @@ namespace AngelLoader.Forms
 {
     public sealed partial class GameVersionsForm : Form
     {
-        private readonly (Label Label, TextBox TextBox)[] GameVersionItems;
+        private readonly (DarkLabel Label, DarkTextBox TextBox)[] GameVersionItems;
+
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
         public GameVersionsForm()
         {
@@ -48,8 +54,12 @@ namespace AngelLoader.Forms
             }
             // @GENGAMES (GameVersionsForm): End
 
+            SetTheme(Config.VisualTheme);
+
             Localize();
         }
+
+        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeControlThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {
