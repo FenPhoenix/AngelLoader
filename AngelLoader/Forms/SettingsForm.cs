@@ -95,6 +95,13 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            // Disgusting hack to make dark mode not flicker, part un
+            if (Config.VisualTheme == VisualTheme.Dark)
+            {
+                MainSplitContainer.Hide();
+                BottomFlowLayoutPanel.Hide();
+            }
+
             _startup = startup;
             _cleanStart = cleanStart;
             _ownerForm = ownerForm;
@@ -607,7 +614,10 @@ namespace AngelLoader.Forms
             {
                 if (button.Checked)
                 {
-                    ShowPage(Array.IndexOf(PageRadioButtons, button), initialCall: true);
+                    ShowPage(
+                        Array.IndexOf(PageRadioButtons, button),
+                        // Disgusting hack to make dark mode not flicker, part deux
+                        initialCall: Config.VisualTheme != VisualTheme.Dark);
                     break;
                 }
             }
@@ -630,6 +640,13 @@ namespace AngelLoader.Forms
             // questions.
             PathsPage.DoLayout = true;
             PathsPage.FlowLayoutPanel1.PerformLayout();
+
+            // Disgusting hack to make dark mode not flicker, part trois
+            if (Config.VisualTheme == VisualTheme.Dark)
+            {
+                BottomFlowLayoutPanel.Show();
+                MainSplitContainer.Show();
+            }
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
