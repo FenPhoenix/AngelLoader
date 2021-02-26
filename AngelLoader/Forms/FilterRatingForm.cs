@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
     public sealed partial class FilterRatingForm : Form, IEventDisabler
     {
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+
         internal int RatingFrom;
         internal int RatingTo;
 
@@ -20,6 +25,8 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            SetTheme(Config.VisualTheme);
+
             Localize();
 
             FromComboBox.Items.Add(LText.Global.Unrated);
@@ -32,6 +39,8 @@ namespace AngelLoader.Forms
                 ToComboBox.SelectedIndex = ratingTo + 1;
             }
         }
+
+        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeControlThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {

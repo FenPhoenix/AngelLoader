@@ -28,13 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.FromLabel = new System.Windows.Forms.Label();
-            this.ToLabel = new System.Windows.Forms.Label();
-            this.FromComboBox = new System.Windows.Forms.ComboBox();
-            this.ToComboBox = new System.Windows.Forms.ComboBox();
-            this.OKButton = new System.Windows.Forms.Button();
-            this.Cancel_Button = new System.Windows.Forms.Button();
-            this.ResetButton = new System.Windows.Forms.Button();
+            this.FromLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.ToLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.FromComboBox = new AngelLoader.Forms.CustomControls.DarkComboBox();
+            this.ToComboBox = new AngelLoader.Forms.CustomControls.DarkComboBox();
+            this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.SuspendLayout();
             // 
             // FromLabel
@@ -138,12 +138,12 @@
 
         #endregion
 #endif
-        private System.Windows.Forms.Label FromLabel;
-        private System.Windows.Forms.Label ToLabel;
-        private System.Windows.Forms.ComboBox FromComboBox;
-        private System.Windows.Forms.ComboBox ToComboBox;
-        private System.Windows.Forms.Button OKButton;
-        private System.Windows.Forms.Button Cancel_Button;
-        private System.Windows.Forms.Button ResetButton;
+        private AngelLoader.Forms.CustomControls.DarkLabel FromLabel;
+        private AngelLoader.Forms.CustomControls.DarkLabel ToLabel;
+        private AngelLoader.Forms.CustomControls.DarkComboBox FromComboBox;
+        private AngelLoader.Forms.CustomControls.DarkComboBox ToComboBox;
+        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
+        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
+        private AngelLoader.Forms.CustomControls.DarkButton ResetButton;
     }
 }

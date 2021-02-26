@@ -13,12 +13,6 @@ namespace AngelLoader.Forms.CustomControls
         private const uint WM_CTLCOLORLISTBOX = 308;
         private const int SWP_NOSIZE = 1;
 
-        public ComboBoxCustom()
-        {
-            // Hack to make it autosize in dark mode
-            DropDownHeight = int.MaxValue;
-        }
-
         #region Backing items
 
         // For when the backing items should be different from the displayed items

@@ -53,7 +53,13 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         public new ComboBoxStyle DropDownStyle { get; set; }
 
-        public DarkComboBox() => SetUpTheme();
+        public DarkComboBox()
+        {
+            // Hack to make it autosize in dark mode
+            DropDownHeight = int.MaxValue;
+
+            SetUpTheme();
+        }
 
         private void SetUpTheme()
         {

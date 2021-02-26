@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms
 {
@@ -6,13 +7,13 @@ namespace AngelLoader.Forms
     {
         private void InitComponentManual()
         {
-            FromLabel = new Label();
-            ToLabel = new Label();
-            FromComboBox = new ComboBox();
-            ToComboBox = new ComboBox();
-            OKButton = new Button();
-            Cancel_Button = new Button();
-            ResetButton = new Button();
+            FromLabel = new DarkLabel();
+            ToLabel = new DarkLabel();
+            FromComboBox = new DarkComboBox();
+            ToComboBox = new DarkComboBox();
+            OKButton = new DarkButton();
+            Cancel_Button = new DarkButton();
+            ResetButton = new DarkButton();
             SuspendLayout();
             // 
             // FromLabel
