@@ -186,10 +186,10 @@ namespace AngelLoader.WinAPI
         public const uint OBJID_VSCROLL = 0xFFFFFFFB;
         public const uint OBJID_CLIENT = 0xFFFFFFFC;
 
-        public const uint SB_HORZ = 0;
-        public const uint SB_VERT = 1;
-        public const uint SB_CTL = 2;
-        public const uint SB_BOTH = 3;
+        public const int SB_HORZ = 0;
+        public const int SB_VERT = 1;
+        public const int SB_CTL = 2;
+        public const int SB_BOTH = 3;
 
         #region lParam/wParam
 
@@ -468,16 +468,6 @@ namespace AngelLoader.WinAPI
             internal uint nPage;
             internal int nPos;
             internal int nTrackPos;
-        }
-
-        //[PublicAPI]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal enum ScrollBarDirection
-        {
-            //SB_HORZ = 0,
-            SB_VERT = 1,
-            //SB_CTL = 2,
-            //SB_BOTH = 3
         }
 
         //[PublicAPI]

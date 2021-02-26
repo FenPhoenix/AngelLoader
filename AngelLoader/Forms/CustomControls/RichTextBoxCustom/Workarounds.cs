@@ -68,15 +68,6 @@ namespace AngelLoader.Forms.CustomControls
             _scrollInfo.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
         }
 
-        private static Native.SCROLLINFO GetCurrentScrollInfo(IntPtr handle)
-        {
-            var si = new Native.SCROLLINFO();
-            si.cbSize = (uint)Marshal.SizeOf(si);
-            si.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
-            Native.GetScrollInfo(handle, (int)Native.ScrollBarDirection.SB_VERT, ref si);
-            return si;
-        }
-
         private void ResetScrollInfo()
         {
             var si = new Native.SCROLLINFO();
@@ -84,7 +75,7 @@ namespace AngelLoader.Forms.CustomControls
             si.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
             si.nPos = 0;
             _scrollInfo = si;
-            RepositionScroll(Handle, si);
+            ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
         }
 
         /*
@@ -101,7 +92,7 @@ namespace AngelLoader.Forms.CustomControls
         */
         private void Workarounds_OnVScroll()
         {
-            _scrollInfo = GetCurrentScrollInfo(Handle);
+            _scrollInfo = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
         }
 
         protected override async void OnEnter(EventArgs e)
@@ -123,7 +114,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 _scrollInfo = si;
 
-                RepositionScroll(Handle, si);
+                ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
             }
             finally
             {
@@ -141,25 +132,11 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (pixels == 0) return;
 
-            Native.SCROLLINFO si = GetCurrentScrollInfo(handle);
+            Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(handle, Native.SB_VERT);
 
             si.nPos += pixels;
 
-            RepositionScroll(handle, si);
-        }
-
-        private static void RepositionScroll(IntPtr handle, Native.SCROLLINFO si)
-        {
-            // Reposition scroll
-            Native.SetScrollInfo(handle, (int)Native.ScrollBarDirection.SB_VERT, ref si, true);
-
-            // Send a WM_VSCROLL scroll message using SB_THUMBTRACK as wParam
-            // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
-            IntPtr ptrWParam = new IntPtr(Native.SB_THUMBTRACK + (0x10000 * si.nPos));
-            IntPtr ptrLParam = new IntPtr(0);
-
-            IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)Native.SB_THUMBTRACK;
-            Native.SendMessage(handle, Native.WM_VSCROLL, wp, ptrLParam);
+            ControlUtils.RepositionScroll(handle, si, Native.SB_VERT);
         }
 
         // Intercept mousewheel and make RichTextBox scroll using the above method

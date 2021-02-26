@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.Forms.CustomControls;
+using AngelLoader.WinAPI;
 using Gma.System.MouseKeyHook;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -217,6 +219,29 @@ namespace AngelLoader.Forms
             {
                 FillControlDict(control.Controls[i], controlColors, stackCounter);
             }
+        }
+
+        internal static SCROLLINFO GetCurrentScrollInfo(IntPtr handle, int direction)
+        {
+            var si = new SCROLLINFO();
+            si.cbSize = (uint)Marshal.SizeOf(si);
+            si.fMask = (uint)ScrollInfoMask.SIF_ALL;
+            GetScrollInfo(handle, direction, ref si);
+            return si;
+        }
+
+        internal static void RepositionScroll(IntPtr handle, SCROLLINFO si, int direction)
+        {
+            // Reposition scroll
+            Native.SetScrollInfo(handle, direction, ref si, true);
+
+            // Send a WM_*SCROLL scroll message using SB_THUMBTRACK as wParam
+            // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
+            IntPtr ptrWParam = new IntPtr(SB_THUMBTRACK + (0x10000 * si.nPos));
+            IntPtr ptrLParam = new IntPtr(0);
+
+            IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)SB_THUMBTRACK;
+            SendMessage(handle, direction == SB_VERT ? WM_VSCROLL : WM_HSCROLL, wp, ptrLParam);
         }
     }
 }

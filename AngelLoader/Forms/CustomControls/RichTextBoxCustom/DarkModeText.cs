@@ -404,7 +404,7 @@ namespace AngelLoader.Forms.CustomControls
 
             bool plainText = _currentReadmeType == ReadmeType.PlainText;
 
-            Native.SCROLLINFO si = GetCurrentScrollInfo(Handle);
+            Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
             try
             {
                 if (!skipSuspend)
@@ -438,7 +438,7 @@ namespace AngelLoader.Forms.CustomControls
                         RestoreZoom();
                     }
 
-                    RepositionScroll(Handle, si);
+                    ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
                     this.ResumeDrawing_Native();
                 }
             }
