@@ -29,11 +29,6 @@ namespace AngelLoader.Forms
             MainSplitContainer.SuspendLayout();
             SuspendLayout();
             // 
-            // DarkModeBlanker
-            // 
-            DarkModeBlanker.Dock = DockStyle.Fill;
-            DarkModeBlanker.BackColor = DarkColors.Fen_ControlBackground;
-            // 
             // BottomFlowLayoutPanel
             // 
             BottomFlowLayoutPanel.Controls.Add(Cancel_Button);

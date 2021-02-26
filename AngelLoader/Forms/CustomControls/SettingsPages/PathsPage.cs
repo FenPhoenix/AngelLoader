@@ -36,20 +36,14 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
 
         private void RemoveFMArchivePathButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintMinusButton(RemoveFMArchivePathButton, e);
 
-        private bool _layouting;
-
-        public void DoLayoutDarkModeCompatible()
+        private void FlowLayoutPanel1_Layout(object sender, LayoutEventArgs e)
         {
-            if (_layouting) return;
-
             // Horrible hack to get everything to look right on first show
             if (!DoLayout) return;
             try
             {
-                //FlowLayoutPanel1.SuspendLayout();
-                //ActualPathsPanel.SuspendLayout();
-
-                _layouting = true;
+                FlowLayoutPanel1.SuspendLayout();
+                ActualPathsPanel.SuspendLayout();
 
                 // Manual crap. Yes, it's necessary. All automatic methods are "almost what we need but not quite".
                 int flpC = FlowLayoutPanel1.Controls.Count;
@@ -113,15 +107,9 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             }
             finally
             {
-                //ActualPathsPanel.ResumeLayout();
-                //FlowLayoutPanel1.ResumeLayout();
-                _layouting = false;
+                ActualPathsPanel.ResumeLayout();
+                FlowLayoutPanel1.ResumeLayout();
             }
-        }
-
-        private void FlowLayoutPanel1_Layout(object sender, LayoutEventArgs e)
-        {
-            DoLayoutDarkModeCompatible();
         }
 
         private void BackupPathHelpLabel_TextChanged(object sender, System.EventArgs e)

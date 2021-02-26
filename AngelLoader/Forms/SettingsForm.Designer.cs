@@ -236,7 +236,6 @@
         #endregion
 #endif
 
-        private System.Windows.Forms.Control DarkModeBlanker;
         private System.Windows.Forms.Panel PagePanel;
         private System.Windows.Forms.FlowLayoutPanel BottomFlowLayoutPanel;
         private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
