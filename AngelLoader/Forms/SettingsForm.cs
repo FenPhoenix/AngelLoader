@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -527,6 +528,20 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            if (Config.VisualTheme == VisualTheme.Dark)
+            {
+                SuspendLayout();
+                DarkModeBlanker = new Control
+                {
+                    BackColor = DarkColors.Fen_ControlBackground,
+                    Dock = DockStyle.Fill,
+                    Visible = true
+                };
+                Controls.Add(DarkModeBlanker);
+                DarkModeBlanker.BringToFront();
+                ResumeLayout();
+            }
+
             // TODO: @DarkMode(SettingsForm): We get a flicker of classic mode even when we suspend/resume
             SetTheme(Config.VisualTheme, startup: true);
         }
@@ -623,13 +638,27 @@ namespace AngelLoader.Forms
             if (_startup && !_cleanStart) CheckForErrors();
         }
 
-        private void SettingsForm_Shown(object sender, EventArgs e)
+        private async void SettingsForm_Shown(object sender, EventArgs e)
         {
             // We have to do this here, in _Shown, otherwise it doesn't do its initial layout and might miss if
             // there's supposed to be scroll bars or whatever else... this makes it visually correct. Don't ask
             // questions.
-            PathsPage.DoLayout = true;
-            PathsPage.FlowLayoutPanel1.PerformLayout();
+            //if (Config.VisualTheme != VisualTheme.Dark)
+            {
+                PathsPage.DoLayout = true;
+                PathsPage.DoLayoutDarkModeCompatible();
+            }
+
+            if (Config.VisualTheme == VisualTheme.Dark && DarkModeBlanker != null)
+            {
+                // Repulsive hack to get dark mode to not flicker light on show. It's partly because of that layout
+                // stuff up there, but we get a white flash sometimes even with this hack.
+                // TODO: @DarkMode(SettingsForm): Figure out how to stop this white flicker completely...
+                await Task.Delay(10);
+                DarkModeBlanker.Hide();
+                Controls.Remove(DarkModeBlanker);
+                DarkModeBlanker.Dispose();
+            }
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
