@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.WinAPI;
 using Gma.System.MouseKeyHook;
@@ -218,6 +220,64 @@ namespace AngelLoader.Forms
             for (int i = 0; i < control.Controls.Count; i++)
             {
                 FillControlDict(control.Controls[i], controlColors, stackCounter);
+            }
+        }
+
+        internal static void ChangeControlThemeMode(
+            VisualTheme theme,
+            Form form,
+            Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
+            Func<Component, bool>? excludePredicate = null
+            )
+        {
+            // TODO: @DarkMode(SetTheme): Eventually just codegen the set of all darkable controls
+            // So we don't have to have this awkward dictionary fill/loop/manual-set system.
+
+            bool darkMode = theme == VisualTheme.Dark;
+
+            if (controlColors.Count == 0) FillControlDict(form, controlColors);
+
+            foreach (var item in controlColors)
+            {
+                Control control = item.Key;
+
+                // Visual scroll bars are always themed by definition of how they work, so just always exclude
+                // them here.
+                if (control is ScrollBarVisualOnly_Base ||
+                    excludePredicate?.Invoke(control) == true)
+                {
+                    continue;
+                }
+
+                // Separate if because a control could be IDarkable AND be a ToolStrip
+                if (control is ToolStrip ts)
+                {
+                    foreach (ToolStripItem tsItem in ts.Items)
+                    {
+                        if (tsItem is IDarkable darkableTSItem && !excludePredicate?.Invoke(tsItem) == true)
+                        {
+                            darkableTSItem.DarkModeEnabled = darkMode;
+                        }
+                    }
+                }
+
+                if (control is IDarkable darkableControl)
+                {
+                    darkableControl.DarkModeEnabled = darkMode;
+                }
+                else
+                {
+                    if (darkMode)
+                    {
+                        control.ForeColor = DarkColors.LightText;
+                        control.BackColor = DarkColors.Fen_ControlBackground;
+                    }
+                    else
+                    {
+                        control.ForeColor = item.Value.ForeColor;
+                        control.BackColor = item.Value.BackColor;
+                    }
+                }
             }
         }
 

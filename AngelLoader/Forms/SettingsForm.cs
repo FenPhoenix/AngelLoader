@@ -492,6 +492,8 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            SetTheme(Config.VisualTheme, startup: true);
+
             // Comes last so we don't have to use any DisableEvents blocks
             #region Hook up page events
 
@@ -544,8 +546,6 @@ namespace AngelLoader.Forms
             }
 
             #endregion
-
-            SetTheme(Config.VisualTheme, startup: true);
         }
 
         private void SetTheme(VisualTheme theme, bool startup)
@@ -555,65 +555,20 @@ namespace AngelLoader.Forms
 
             bool darkMode = theme == VisualTheme.Dark;
 
-            if (_controlColors.Count == 0) ControlUtils.FillControlDict(this, _controlColors);
-
             try
             {
                 if (!startup) this.SuspendDrawing();
 
-                #region Automatic sets
-
-                foreach (var item in _controlColors)
-                {
-                    Control control = item.Key;
-
-                    // Excludes - we handle these manually
-                    if (control is ScrollBarVisualOnly
-                        || control is SplitterPanel
-                        // This one is already set to the dark BackColor, so just don't even mess with it
-                        || control.EqualsIfNotNull(DarkModeBlocker))
-                    {
-                        continue;
-                    }
-
-                    // Separate if because a control could be IDarkable AND be a ToolStrip
-                    if (control is ToolStrip ts)
-                    {
-                        foreach (ToolStripItem tsItem in ts.Items)
-                        {
-                            if (tsItem is IDarkable darkableTSItem)
-                            {
-                                darkableTSItem.DarkModeEnabled = darkMode;
-                            }
-                        }
-                    }
-
-                    if (control is IDarkable darkableControl)
-                    {
-                        darkableControl.DarkModeEnabled = darkMode;
-                    }
-                    else
-                    {
-                        if (darkMode)
-                        {
-                            control.ForeColor = DarkColors.LightText;
-                            control.BackColor = DarkColors.Fen_ControlBackground;
-                        }
-                        else
-                        {
-                            control.ForeColor = item.Value.ForeColor;
-                            control.BackColor = item.Value.BackColor;
-                        }
-                    }
-                }
-
-                #endregion
-
-                #region Manual sets
+                ControlUtils.ChangeControlThemeMode(
+                    theme,
+                    this,
+                    _controlColors,
+                    x => x is SplitterPanel
+                         // This one is already set to the dark BackColor, so just don't even mess with it
+                         || x.EqualsIfNotNull(DarkModeBlocker)
+                );
 
                 ControlPainter.DarkModeEnabled = darkMode;
-
-                #endregion
             }
             finally
             {

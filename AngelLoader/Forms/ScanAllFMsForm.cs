@@ -43,60 +43,7 @@ namespace AngelLoader.Forms
             Localize();
         }
 
-        private void SetTheme(VisualTheme theme)
-        {
-            bool darkMode = theme == VisualTheme.Dark;
-
-            if (_controlColors.Count == 0) ControlUtils.FillControlDict(this, _controlColors);
-
-            #region Automatic sets
-
-            foreach (var item in _controlColors)
-            {
-                Control control = item.Key;
-
-                // TODO: @DarkMode(SetTheme excludes): We need to exclude lazy-loaded controls also.
-                // Figure out some way to just say "if a control is part of a lazy-loaded class" so we don't
-                // have to write them out manually here again and keep both places in sync.
-                // Excludes - we handle these manually
-                if (control is ScrollBarVisualOnly || control is SplitterPanel)
-                {
-                    continue;
-                }
-
-                // Separate if because a control could be IDarkable AND be a ToolStrip
-                if (control is ToolStrip ts)
-                {
-                    foreach (ToolStripItem tsItem in ts.Items)
-                    {
-                        if (tsItem is IDarkable darkableTSItem)
-                        {
-                            darkableTSItem.DarkModeEnabled = darkMode;
-                        }
-                    }
-                }
-
-                if (control is IDarkable darkableControl)
-                {
-                    darkableControl.DarkModeEnabled = darkMode;
-                }
-                else
-                {
-                    if (darkMode)
-                    {
-                        control.ForeColor = DarkColors.LightText;
-                        control.BackColor = DarkColors.Fen_ControlBackground;
-                    }
-                    else
-                    {
-                        control.ForeColor = item.Value.ForeColor;
-                        control.BackColor = item.Value.BackColor;
-                    }
-                }
-            }
-
-            #endregion
-        }
+        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeControlThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {

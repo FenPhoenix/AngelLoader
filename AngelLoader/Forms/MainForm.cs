@@ -1418,73 +1418,24 @@ namespace AngelLoader.Forms
         {
             Config.VisualTheme = theme;
 
-            // IMPORTANT: We use DarkButton because it properly colors disabled button text
-            // TODO: @DarkMode(SetTheme): Eventually just codegen the set of all darkable controls
-            // So we don't have to have this awkward dictionary fill/loop/manual-set system.
-
             bool darkMode = theme == VisualTheme.Dark;
-
-            if (_controlColors.Count == 0) ControlUtils.FillControlDict(this, _controlColors);
 
             try
             {
                 if (!startup) this.SuspendDrawing();
 
-                #region Automatic sets
+                // TODO: @DarkMode(SetTheme excludes): We need to exclude lazy-loaded controls also.
+                // Figure out some way to just say "if a control is part of a lazy-loaded class" so we don't
+                // have to write them out manually here again and keep both places in sync.
 
-                foreach (var item in _controlColors)
-                {
-                    Control control = item.Key;
-
-                    // TODO: @DarkMode(SetTheme excludes): We need to exclude lazy-loaded controls also.
-                    // Figure out some way to just say "if a control is part of a lazy-loaded class" so we don't
-                    // have to write them out manually here again and keep both places in sync.
-                    // Excludes - we handle these manually
-                    if (control.EqualsIfNotNull(ProgressBox)
-                        || _progressBoxConstructed && ProgressBox!.Controls.Contains(control)
-                        //|| control.EqualsIfNotNull(InstallUninstallFMLLButton.Button)
-                        //|| control == ReadmeRichTextBox
-                        || control is ScrollBarVisualOnly
-                        || control is SplitterPanel
-                        )
-                    {
-                        continue;
-                    }
-
-                    // Separate if because a control could be IDarkable AND be a ToolStrip
-                    if (control is ToolStrip ts)
-                    {
-                        foreach (ToolStripItem tsItem in ts.Items)
-                        {
-                            if (tsItem is IDarkable darkableTSItem)
-                            {
-                                darkableTSItem.DarkModeEnabled = darkMode;
-                            }
-                        }
-                    }
-
-                    if (control is IDarkable darkableControl)
-                    {
-                        darkableControl.DarkModeEnabled = darkMode;
-                    }
-                    else
-                    {
-                        if (darkMode)
-                        {
-                            control.ForeColor = DarkColors.LightText;
-                            control.BackColor = DarkColors.Fen_ControlBackground;
-                        }
-                        else
-                        {
-                            control.ForeColor = item.Value.ForeColor;
-                            control.BackColor = item.Value.BackColor;
-                        }
-                    }
-                }
-
-                #endregion
-
-                #region Manual sets
+                ControlUtils.ChangeControlThemeMode(
+                    theme,
+                    this,
+                    _controlColors,
+                    x => x.EqualsIfNotNull(ProgressBox)
+                         || _progressBoxConstructed && ProgressBox!.Controls.Contains(x as Control)
+                         || x is SplitterPanel
+                );
 
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible);
 
@@ -1504,8 +1455,6 @@ namespace AngelLoader.Forms
                 ControlPainter.DarkModeEnabled = darkMode;
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
-
-                #endregion
             }
             finally
             {
