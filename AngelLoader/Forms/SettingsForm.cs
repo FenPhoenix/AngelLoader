@@ -632,6 +632,7 @@ namespace AngelLoader.Forms
             if (_startup && !_cleanStart) CheckForErrors();
         }
 
+        // TODO: @DarkMode: Paths page has buggy position/gap at top in dark mode
         private void SettingsForm_Shown(object sender, EventArgs e)
         {
             // We have to do this here, in _Shown, otherwise it doesn't do its initial layout and might miss if
