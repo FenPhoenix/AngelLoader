@@ -2,78 +2,110 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class DarkGroupBox : GroupBox
+    public sealed class DarkGroupBox : GroupBox, IDarkable
     {
         private Color _borderColor = DarkColors.DarkBorder;
 
         [Category("Appearance")]
         [Description("Determines the color of the border.")]
+        [PublicAPI]
         public Color BorderColor
         {
-            get { return _borderColor; }
+            get => _borderColor;
             set
             {
                 _borderColor = value;
-                Invalidate();
+                if (_darkModeEnabled) Invalidate();
             }
         }
 
-        public DarkGroupBox()
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
         {
-            SetStyle(ControlStyles.OptimizedDoubleBuffer |
-                    ControlStyles.ResizeRedraw |
-                    ControlStyles.UserPaint, true);
+            get => _darkModeEnabled;
+            set
+            {
+                if (_darkModeEnabled == value) return;
+                _darkModeEnabled = value;
+                SetUpTheme();
+            }
+        }
 
-            ResizeRedraw = true;
-            DoubleBuffered = true;
+        private void SetUpTheme()
+        {
+            // Original:
+
+            // ControlStyles.OptimizedDoubleBuffer == false
+            // ControlStyles.ResizeRedraw == true
+            // ControlStyles.UserPaint == true
+            // ResizeRedraw == true
+            // DoubleBuffered == false
+
+            if (_darkModeEnabled)
+            {
+                SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                         ControlStyles.ResizeRedraw |
+                         ControlStyles.UserPaint, true);
+
+                ResizeRedraw = true;
+                DoubleBuffered = true;
+            }
+            else
+            {
+                SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
+                SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
+                ResizeRedraw = true;
+                DoubleBuffered = false;
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            if (_darkModeEnabled)
+            {
+                base.OnPaint(e);
+                return;
+            }
+
             var g = e.Graphics;
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
             var stringSize = g.MeasureString(Text, Font);
 
-            var textColor = DarkColors.LightText;
-            var fillColor = DarkColors.GreyBackground;
-
-            using (var b = new SolidBrush(fillColor))
-            {
-                g.FillRectangle(b, rect);
-            }
+            g.FillRectangle(DarkColors.GreyBackgroundBrush, rect);
 
             using (var p = new Pen(BorderColor, 1))
             {
-                var borderRect = new Rectangle(0, (int)stringSize.Height / 2, rect.Width - 1, rect.Height - ((int)stringSize.Height / 2) - 1);
+                var borderRect = new Rectangle(
+                    0,
+                    (int)stringSize.Height / 2,
+                    rect.Width - 1,
+                    rect.Height - ((int)stringSize.Height / 2) - 1);
                 g.DrawRectangle(p, borderRect);
             }
 
-            var textRect = new Rectangle(rect.Left + Consts.Padding,
-                    rect.Top,
-                    rect.Width - (Consts.Padding * 2),
-                    (int)stringSize.Height);
+            var textRect = new Rectangle(
+                rect.Left + Consts.Padding,
+                rect.Top,
+                rect.Width - (Consts.Padding * 2),
+                (int)stringSize.Height);
 
-            using (var b2 = new SolidBrush(fillColor))
-            {
-                var modRect = new Rectangle(textRect.Left, textRect.Top, Math.Min(textRect.Width, (int)stringSize.Width), textRect.Height);
-                g.FillRectangle(b2, modRect);
-            }
+            var modRect = new Rectangle(textRect.Left, textRect.Top, Math.Min(textRect.Width, (int)stringSize.Width), textRect.Height);
+            g.FillRectangle(DarkColors.GreyBackgroundBrush, modRect);
 
-            using (var b = new SolidBrush(textColor))
-            {
-                var stringFormat = new StringFormat
-                {
-                    LineAlignment = StringAlignment.Center,
-                    Alignment = StringAlignment.Near,
-                    FormatFlags = StringFormatFlags.NoWrap,
-                    Trimming = StringTrimming.EllipsisCharacter
-                };
+            const TextFormatFlags textFormatFlags =
+                TextFormatFlags.Default |
+                TextFormatFlags.VerticalCenter |
+                TextFormatFlags.NoClipping |
+                TextFormatFlags.NoPrefix |
+                TextFormatFlags.EndEllipsis |
+                TextFormatFlags.SingleLine;
 
-                g.DrawString(Text, Font, b, textRect, stringFormat);
-            }
+            Color textColor = Enabled ? DarkColors.LightText : DarkColors.DisabledText;
+            TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);
         }
     }
 }
