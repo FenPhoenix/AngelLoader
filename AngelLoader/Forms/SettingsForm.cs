@@ -836,7 +836,7 @@ namespace AngelLoader.Forms
                 // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
                 // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen
                 // to make it clear.
-                foreach (TextBox tb in ErrorableTextBoxes)
+                foreach (DarkTextBox tb in ErrorableTextBoxes)
                 {
                     if (PathErrorIsSet(tb))
                     {
@@ -1169,13 +1169,13 @@ namespace AngelLoader.Forms
 
         private void ExePathTextBoxes_Leave(object sender, EventArgs e)
         {
-            var s = (TextBox)sender;
+            var s = (DarkTextBox)sender;
             ShowPathError(s, !s.Text.IsEmpty() && !File.Exists(s.Text));
         }
 
         private void ExePathBrowseButtons_Click(object sender, EventArgs e)
         {
-            TextBox? tb = null;
+            DarkTextBox? tb = null;
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 if (sender == GameExeBrowseButtons[i])
@@ -1204,7 +1204,7 @@ namespace AngelLoader.Forms
 
         private void BackupPathTextBox_Leave(object sender, EventArgs e)
         {
-            var s = (TextBox)sender;
+            var s = (DarkTextBox)sender;
             ShowPathError(s, !Directory.Exists(s.Text));
         }
 
@@ -1503,9 +1503,17 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void ShowPathError(TextBox textBox, bool shown)
+        private void ShowPathError(DarkTextBox textBox, bool shown)
         {
-            textBox.BackColor = shown ? Color.MistyRose : SystemColors.Window;
+            textBox.BackColor =
+                Config.VisualTheme == VisualTheme.Dark
+                    ? shown
+                        ? DarkColors.Fen_RedHighlight
+                        : DarkColors.LightBackground
+                    : shown
+                        ? Color.MistyRose
+                        : SystemColors.Window;
+
             textBox.Tag = shown ? PathError.True : PathError.False;
 
             if (!shown)

@@ -66,7 +66,7 @@ namespace AngelLoader.Forms.CustomControls
                     GridColor = Color.FromArgb(64, 64, 64);
                     //RowsDefaultCellStyle.BackColor = DarkModeColors.Fen_DarkBackground;
                     RecentHighlightColor = Color.FromArgb(64, 64, 72);
-                    UnavailableColor = Color.FromArgb(64, 24, 24);
+                    UnavailableColor = DarkColors.Fen_RedHighlight;
                     DefaultRowBackColor = DarkColors.Fen_DarkBackground;
                 }
                 else
