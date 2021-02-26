@@ -82,6 +82,8 @@ namespace AngelLoader.Forms
 
         public bool EventsDisabled { get; set; }
 
+        private readonly Panel? DarkModeBlocker;
+
         #endregion
 
         public readonly ConfigData OutConfig;
@@ -98,8 +100,17 @@ namespace AngelLoader.Forms
             // Disgusting hack to make dark mode not flicker, part un
             if (Config.VisualTheme == VisualTheme.Dark)
             {
-                MainSplitContainer.Hide();
+                // To prevent flicker on our bottom panel, we can simply hide it. Also we NEED to hide it, because
+                // for some reason it's unaffected by the blocker below and flickers anyway. Okay then.
                 BottomFlowLayoutPanel.Hide();
+                // We can't hide our SplitContainer because then PathsPage glitches out its from-top position/
+                // scroll position/whatever tf else. So we block the window out with this ridiculous blocker thing.
+                // It makes the window look blank while it loads, which is better than a blinding flicker.
+                // NOTE: This has to be a Panel, not just a Control, because if it's just a Control then it flickers
+                // white itself. Argh.
+                DarkModeBlocker = new Panel { Dock = DockStyle.Fill, BackColor = DarkColors.Fen_ControlBackground };
+                Controls.Add(DarkModeBlocker);
+                DarkModeBlocker.BringToFront();
             }
 
             _startup = startup;
@@ -557,7 +568,10 @@ namespace AngelLoader.Forms
                     Control control = item.Key;
 
                     // Excludes - we handle these manually
-                    if (control is ScrollBarVisualOnly || control is SplitterPanel)
+                    if (control is ScrollBarVisualOnly
+                        || control is SplitterPanel
+                        // This one is already set to the dark BackColor, so just don't even mess with it
+                        || control.EqualsIfNotNull(DarkModeBlocker))
                     {
                         continue;
                     }
@@ -613,10 +627,7 @@ namespace AngelLoader.Forms
             {
                 if (button.Checked)
                 {
-                    ShowPage(
-                        Array.IndexOf(PageRadioButtons, button),
-                        // Disgusting hack to make dark mode not flicker, part deux
-                        initialCall: Config.VisualTheme != VisualTheme.Dark);
+                    ShowPage(Array.IndexOf(PageRadioButtons, button), initialCall: true);
                     break;
                 }
             }
@@ -632,7 +643,6 @@ namespace AngelLoader.Forms
             if (_startup && !_cleanStart) CheckForErrors();
         }
 
-        // TODO: @DarkMode: Paths page has buggy position/gap at top in dark mode
         private void SettingsForm_Shown(object sender, EventArgs e)
         {
             // We have to do this here, in _Shown, otherwise it doesn't do its initial layout and might miss if
@@ -641,11 +651,11 @@ namespace AngelLoader.Forms
             PathsPage.DoLayout = true;
             PathsPage.FlowLayoutPanel1.PerformLayout();
 
-            // Disgusting hack to make dark mode not flicker, part trois
+            // Disgusting hack to make dark mode not flicker, part deux
             if (Config.VisualTheme == VisualTheme.Dark)
             {
                 BottomFlowLayoutPanel.Show();
-                MainSplitContainer.Show();
+                DarkModeBlocker?.Hide();
             }
         }
 
