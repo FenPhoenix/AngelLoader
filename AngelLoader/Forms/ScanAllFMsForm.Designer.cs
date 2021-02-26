@@ -42,7 +42,7 @@ namespace AngelLoader.Forms
             this.SelectNoneButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ScanButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.ScanAllFMsForLabel = new System.Windows.Forms.Label();
+            this.ScanAllFMsForLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.OKCancelButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.OKCancelButtonsFLP.SuspendLayout();

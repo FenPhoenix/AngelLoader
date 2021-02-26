@@ -199,7 +199,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static void FillControlDict(
+        private static void FillControlDict(
             Control control,
             Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
             int stackCounter = 0)
@@ -236,6 +236,31 @@ namespace AngelLoader.Forms
             bool darkMode = theme == VisualTheme.Dark;
 
             if (controlColors.Count == 0) FillControlDict(form, controlColors);
+
+            #region Add native dark scroll bars to their closest addable parents
+
+            // This prevents other controls in the collection from having their size/location bumped around if we
+            // were to just call this just-in-time while the user is dragging. We want to do it while everything
+            // is stationary.
+            // We could just add these scroll bars to each control manually at init-component time, but we want
+            // to avoid doing that as it's error-prone and easy to forget.
+
+            // TODO: @DarkMode(Add native dark scroll bars to their parents):
+            // Lazy-loaded controls will be a problem here. We should probably just convert any lazy-loaded
+            // scrollable controls back to immediately-loaded again.
+            // Menus and buttons are fine to stay lazy-loaded, but check list boxes and panels etc.
+
+            foreach (Control c in controlColors.Keys)
+            {
+                if (c is IDarkableScrollableNative ids)
+                {
+                    ids.VerticalVisualScrollBar?.AddToParent();
+                    ids.HorizontalVisualScrollBar?.AddToParent();
+                    ids.VisualScrollBarCorner?.AddToParent();
+                }
+            }
+
+            #endregion
 
             foreach (var item in controlColors)
             {
@@ -280,6 +305,21 @@ namespace AngelLoader.Forms
                 }
             }
         }
+
+        // TODO: @DarkMode: Add this to all controls with alignable text
+        internal static TextFormatFlags GetTextAlignmentFlags(ContentAlignment textAlign) => textAlign switch
+        {
+            ContentAlignment.TopLeft => TextFormatFlags.Top | TextFormatFlags.Left,
+            ContentAlignment.TopCenter => TextFormatFlags.Top | TextFormatFlags.HorizontalCenter,
+            ContentAlignment.TopRight => TextFormatFlags.Top | TextFormatFlags.Right,
+            ContentAlignment.MiddleLeft => TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
+            ContentAlignment.MiddleCenter => TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+            ContentAlignment.MiddleRight => TextFormatFlags.VerticalCenter | TextFormatFlags.Right,
+            ContentAlignment.BottomLeft => TextFormatFlags.Bottom | TextFormatFlags.Left,
+            ContentAlignment.BottomCenter => TextFormatFlags.Bottom | TextFormatFlags.HorizontalCenter,
+            ContentAlignment.BottomRight => TextFormatFlags.Bottom | TextFormatFlags.Right,
+            _ => TextFormatFlags.Top | TextFormatFlags.Left
+        };
 
         internal static SCROLLINFO GetCurrentScrollInfo(IntPtr handle, int direction)
         {

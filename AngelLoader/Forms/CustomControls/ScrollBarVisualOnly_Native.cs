@@ -54,7 +54,7 @@ namespace AngelLoader.Forms.CustomControls
 
             _owner.Scroll += (_, _) => RefreshIfNeeded();
             _owner.RefreshIfNeededForceCorner += (_, _) => RefreshIfNeeded(forceRefreshCorner: true);
-            _owner.DarkModeChanged += (_, _) => RefreshIfNeeded(forceRefreshCorner: true);
+            _owner.DarkModeChanged += (_, _) => RefreshIfNeeded(forceRefreshAll: true);
         }
 
         #endregion

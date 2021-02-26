@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Reflection;
@@ -6,12 +7,16 @@ using System.Runtime.Versioning;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
+using AngelLoader.Properties;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
     public sealed partial class AboutForm : Form
     {
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+
         public AboutForm()
         {
 #if DEBUG
@@ -77,7 +82,32 @@ namespace AngelLoader.Forms
                 "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE " +
                 "SOFTWARE.";
 
+            SetTheme(Config.VisualTheme);
+
             Localize();
+        }
+
+        private void SetTheme(VisualTheme theme)
+        {
+            ControlUtils.ChangeControlThemeMode(theme, this, _controlColors, x => x == BuildDateLabel);
+
+            if (theme == VisualTheme.Dark)
+            {
+                BuildDateLabel.ForeColor = DarkColors.Fen_DarkForeground;
+                LogoTextPictureBox.Image = Resources.About_DarkMode;
+            }
+            else
+            {
+                BuildDateLabel.ForeColor = SystemColors.ControlDarkDark;
+                LogoTextPictureBox.Image = Resources.About;
+            }
+        }
+
+        private void Localize()
+        {
+            Text = LText.AboutWindow.TitleText;
+            AngelLoaderUsesLabel.Text = LText.AboutWindow.AngelLoaderUses;
+            OKButton.Text = LText.Global.OK;
         }
 
         private void LinkLabels_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -132,13 +162,6 @@ namespace AngelLoader.Forms
             {
                 MessageBox.Show(ex.Message, LText.AlertMessages.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void Localize()
-        {
-            Text = LText.AboutWindow.TitleText;
-            AngelLoaderUsesLabel.Text = LText.AboutWindow.AngelLoaderUses;
-            OKButton.Text = LText.Global.OK;
         }
     }
 }

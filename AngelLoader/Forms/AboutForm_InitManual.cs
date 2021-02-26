@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Properties;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms
 {
@@ -15,23 +15,23 @@ namespace AngelLoader.Forms
         private void InitComponentManual()
         {
             LogoPictureBox = new PictureBox();
-            VersionLabel = new Label();
-            GitHubLinkLabel = new LinkLabel();
-            LicenseTextBox = new TextBox();
-            OKButton = new Button();
-            SevenZipLinkLabel = new LinkLabel();
-            SevenZipSharpLinkLabel = new LinkLabel();
-            FFmpegLinkLabel = new LinkLabel();
-            FFmpegDotNetLinkLabel = new LinkLabel();
-            SimpleHelpersDotNetLinkLabel = new LinkLabel();
-            UdeNetStandardLinkLabel = new LinkLabel();
-            OokiiDialogsLinkLabel = new LinkLabel();
-            NetCore3SysIOCompLinkLabel = new LinkLabel();
-            AngelLoaderUsesLabel = new Label();
+            VersionLabel = new DarkLabel();
+            GitHubLinkLabel = new DarkLinkLabel();
+            LicenseTextBox = new DarkTextBox();
+            OKButton = new DarkButton();
+            SevenZipLinkLabel = new DarkLinkLabel();
+            SevenZipSharpLinkLabel = new DarkLinkLabel();
+            FFmpegLinkLabel = new DarkLinkLabel();
+            FFmpegDotNetLinkLabel = new DarkLinkLabel();
+            SimpleHelpersDotNetLinkLabel = new DarkLinkLabel();
+            UdeNetStandardLinkLabel = new DarkLinkLabel();
+            OokiiDialogsLinkLabel = new DarkLinkLabel();
+            NetCore3SysIOCompLinkLabel = new DarkLinkLabel();
+            AngelLoaderUsesLabel = new DarkLabel();
             LogoTextPictureBox = new PictureBox();
             OKFlowLayoutPanel = new FlowLayoutPanel();
-            BuildDateLabel = new Label();
-            DarkUILinkLabel = new LinkLabel();
+            BuildDateLabel = new DarkLabel();
+            DarkUILinkLabel = new DarkLinkLabel();
             ((System.ComponentModel.ISupportInitialize)(LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(LogoTextPictureBox)).BeginInit();
             OKFlowLayoutPanel.SuspendLayout();
@@ -162,7 +162,7 @@ namespace AngelLoader.Forms
             // 
             // LogoTextPictureBox
             // 
-            LogoTextPictureBox.Image = Resources.About;
+            // Image gets set later
             LogoTextPictureBox.Location = new Point(64, 16);
             LogoTextPictureBox.Size = new Size(290, 50);
             LogoTextPictureBox.TabIndex = 7;
@@ -181,7 +181,7 @@ namespace AngelLoader.Forms
             // 
             BuildDateLabel.AutoSize = true;
             BuildDateLabel.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BuildDateLabel.ForeColor = SystemColors.ControlDarkDark;
+            // ForeColor gets set later
             BuildDateLabel.Location = new Point(352, 50);
             BuildDateLabel.TabIndex = 2;
             // 

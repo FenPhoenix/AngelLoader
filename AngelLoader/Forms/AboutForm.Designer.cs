@@ -30,23 +30,23 @@
         private void InitializeComponent()
         {
             this.LogoPictureBox = new System.Windows.Forms.PictureBox();
-            this.VersionLabel = new System.Windows.Forms.Label();
-            this.GitHubLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.LicenseTextBox = new System.Windows.Forms.TextBox();
-            this.OKButton = new System.Windows.Forms.Button();
-            this.SevenZipLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.SevenZipSharpLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.FFmpegLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.FFmpegDotNetLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.SimpleHelpersDotNetLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.UdeNetStandardLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.OokiiDialogsLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.NetCore3SysIOCompLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.AngelLoaderUsesLabel = new System.Windows.Forms.Label();
+            this.VersionLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.GitHubLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.LicenseTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.SevenZipLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.SevenZipSharpLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.FFmpegLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.FFmpegDotNetLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.SimpleHelpersDotNetLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.UdeNetStandardLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.OokiiDialogsLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.NetCore3SysIOCompLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.AngelLoaderUsesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.LogoTextPictureBox = new System.Windows.Forms.PictureBox();
             this.OKFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.BuildDateLabel = new System.Windows.Forms.Label();
-            this.DarkUILinkLabel = new System.Windows.Forms.LinkLabel();
+            this.BuildDateLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.DarkUILinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LogoTextPictureBox)).BeginInit();
             this.OKFlowLayoutPanel.SuspendLayout();
@@ -290,22 +290,22 @@
 #endif
 
         private System.Windows.Forms.PictureBox LogoPictureBox;
-        private System.Windows.Forms.Label VersionLabel;
-        private System.Windows.Forms.LinkLabel GitHubLinkLabel;
-        private System.Windows.Forms.TextBox LicenseTextBox;
-        private System.Windows.Forms.Button OKButton;
-        private System.Windows.Forms.LinkLabel SevenZipLinkLabel;
-        private System.Windows.Forms.LinkLabel SevenZipSharpLinkLabel;
-        private System.Windows.Forms.LinkLabel FFmpegLinkLabel;
-        private System.Windows.Forms.LinkLabel FFmpegDotNetLinkLabel;
-        private System.Windows.Forms.LinkLabel SimpleHelpersDotNetLinkLabel;
-        private System.Windows.Forms.LinkLabel UdeNetStandardLinkLabel;
-        private System.Windows.Forms.LinkLabel OokiiDialogsLinkLabel;
-        private System.Windows.Forms.LinkLabel NetCore3SysIOCompLinkLabel;
-        private System.Windows.Forms.Label AngelLoaderUsesLabel;
+        private AngelLoader.Forms.CustomControls.DarkLabel VersionLabel;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel GitHubLinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkTextBox LicenseTextBox;
+        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel SevenZipLinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel SevenZipSharpLinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel FFmpegLinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel FFmpegDotNetLinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel SimpleHelpersDotNetLinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel UdeNetStandardLinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel OokiiDialogsLinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel NetCore3SysIOCompLinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkLabel AngelLoaderUsesLabel;
         private System.Windows.Forms.PictureBox LogoTextPictureBox;
         private System.Windows.Forms.FlowLayoutPanel OKFlowLayoutPanel;
-        private System.Windows.Forms.Label BuildDateLabel;
-        private System.Windows.Forms.LinkLabel DarkUILinkLabel;
+        private AngelLoader.Forms.CustomControls.DarkLabel BuildDateLabel;
+        private AngelLoader.Forms.CustomControls.DarkLinkLabel DarkUILinkLabel;
     }
 }
