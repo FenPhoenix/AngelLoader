@@ -31,17 +31,17 @@ namespace AngelLoader.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.TitleCheckBox = new System.Windows.Forms.CheckBox();
-            this.AuthorCheckBox = new System.Windows.Forms.CheckBox();
-            this.GameCheckBox = new System.Windows.Forms.CheckBox();
-            this.CustomResourcesCheckBox = new System.Windows.Forms.CheckBox();
-            this.SizeCheckBox = new System.Windows.Forms.CheckBox();
-            this.ReleaseDateCheckBox = new System.Windows.Forms.CheckBox();
-            this.TagsCheckBox = new System.Windows.Forms.CheckBox();
-            this.SelectAllButton = new System.Windows.Forms.Button();
-            this.SelectNoneButton = new System.Windows.Forms.Button();
-            this.ScanButton = new System.Windows.Forms.Button();
-            this.Cancel_Button = new System.Windows.Forms.Button();
+            this.TitleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.AuthorCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.GameCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.CustomResourcesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.SizeCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.TagsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.SelectAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.SelectNoneButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ScanButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ScanAllFMsForLabel = new System.Windows.Forms.Label();
             this.OKCancelButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
@@ -261,18 +261,18 @@ namespace AngelLoader.Forms
         #endregion
 #endif
 
-        private System.Windows.Forms.CheckBox TitleCheckBox;
-        private System.Windows.Forms.CheckBox AuthorCheckBox;
-        private System.Windows.Forms.CheckBox GameCheckBox;
-        private System.Windows.Forms.CheckBox CustomResourcesCheckBox;
-        private System.Windows.Forms.CheckBox SizeCheckBox;
-        private System.Windows.Forms.CheckBox ReleaseDateCheckBox;
-        private System.Windows.Forms.CheckBox TagsCheckBox;
-        private System.Windows.Forms.Button SelectAllButton;
-        private System.Windows.Forms.Button SelectNoneButton;
-        private System.Windows.Forms.Button ScanButton;
-        private System.Windows.Forms.Button Cancel_Button;
-        private System.Windows.Forms.Label ScanAllFMsForLabel;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox TitleCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox AuthorCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox GameCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox CustomResourcesCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox SizeCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ReleaseDateCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox TagsCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkButton SelectAllButton;
+        private AngelLoader.Forms.CustomControls.DarkButton SelectNoneButton;
+        private AngelLoader.Forms.CustomControls.DarkButton ScanButton;
+        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
+        private AngelLoader.Forms.CustomControls.DarkLabel ScanAllFMsForLabel;
         private System.Windows.Forms.FlowLayoutPanel OKCancelButtonsFLP;
         private System.Windows.Forms.FlowLayoutPanel SelectButtonsFLP;
     }

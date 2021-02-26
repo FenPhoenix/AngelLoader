@@ -39,7 +39,7 @@ namespace AngelLoader.Forms
 
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
-        private readonly IThemeableWindow? _ownerForm;
+        private readonly ISettingsChangeableWindow? _ownerForm;
 
         private readonly bool _startup;
         private readonly bool _cleanStart;
@@ -89,7 +89,7 @@ namespace AngelLoader.Forms
         public readonly ConfigData OutConfig;
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        internal SettingsForm(IThemeableWindow? ownerForm, ConfigData config, bool startup, bool cleanStart)
+        internal SettingsForm(ISettingsChangeableWindow? ownerForm, ConfigData config, bool startup, bool cleanStart)
         {
 #if DEBUG
             InitializeComponent();

@@ -198,7 +198,7 @@ namespace AngelLoader
 
         #endregion
 
-        internal interface IThemeableWindow
+        internal interface ISettingsChangeableWindow
         {
             void Localize();
             void SetTheme(VisualTheme theme);
