@@ -59,13 +59,13 @@ namespace AngelLoader.Forms
         private readonly ISettingsPage[] Pages;
         private readonly int?[] _pageVScrollValues;
 
-        private readonly TextBox[] ExePathTextBoxes;
-        private readonly TextBox[] ErrorableTextBoxes;
+        private readonly DarkTextBox[] ExePathTextBoxes;
+        private readonly DarkTextBox[] ErrorableTextBoxes;
 
-        private readonly Label[] GameExeLabels;
-        private readonly TextBox[] GameExeTextBoxes;
-        private readonly Button[] GameExeBrowseButtons;
-        private readonly CheckBox[] GameUseSteamCheckBoxes;
+        private readonly DarkLabel[] GameExeLabels;
+        private readonly DarkTextBox[] GameExeTextBoxes;
+        private readonly DarkButton[] GameExeBrowseButtons;
+        private readonly DarkCheckBox[] GameUseSteamCheckBoxes;
 
         // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
@@ -169,7 +169,7 @@ namespace AngelLoader.Forms
 
             #region Exe path textboxes
 
-            ExePathTextBoxes = new TextBox[SupportedGameCount + 1];
+            ExePathTextBoxes = new DarkTextBox[SupportedGameCount + 1];
             Array.Copy(GameExeTextBoxes, 0, ExePathTextBoxes, 0, SupportedGameCount);
 
             ExePathTextBoxes[SupportedGameCount] = PathsPage.SteamExeTextBox;
@@ -178,7 +178,7 @@ namespace AngelLoader.Forms
 
             #region Errorable textboxes
 
-            ErrorableTextBoxes = new TextBox[SupportedGameCount + 2];
+            ErrorableTextBoxes = new DarkTextBox[SupportedGameCount + 2];
             Array.Copy(GameExeTextBoxes, 0, ErrorableTextBoxes, 0, SupportedGameCount);
 
             ErrorableTextBoxes[SupportedGameCount] = PathsPage.SteamExeTextBox;
