@@ -32,6 +32,21 @@ namespace AngelLoader.Forms.CustomControls
          separately. We'd have to duplicate the scrolling-on-too-long behavior of the vanilla control. We would
          also have to programmatically open and close the calendar dropdown somehow.
          For that, we should try this: https://stackoverflow.com/a/56129920
+
+        Notes:
+        -There are only two cultures currently (2021-02-26) that have anything other than numbers in their short
+         dates:
+         ky: d-MMM yy
+         ky-KG: d-MMM yy
+         That's Kyrgyz and Kyrgyz-Kyrgyzstan. For that we can just fall back to classic-mode I guess, either that
+         or shorten the MMM to MM and then we have nice numbers again.
+         So actually, presuming we ignore user overrides, we have it really easy here. Just numbers. Oh, except
+         for any stuff at the end (see below)... but, we've also left a generous amount of extra space, so maybe
+         not really an issue?
+        -We should always change any amount of y chars to yyyy (4-digit year).
+        -When parsing and cross-referencing the format string, we need to consider only m/d/y, and we should
+         display extra stuff like 'г.' (bg-BG) but not consider it a selectable field (this matches vanilla
+         behavior).
         */
 
         private bool _darkModeEnabled;
