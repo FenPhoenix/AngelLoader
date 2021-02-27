@@ -1430,15 +1430,18 @@ namespace AngelLoader.Forms
             if (FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked)
             {
                 FMDisplayPage.RatingUseStarsCheckBox.Enabled = true;
-                FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingUseStarsCheckBox.Checked
-                    ? Images.RatingExample_FMSel_Stars
-                    : Images.RatingExample_FMSel_Number;
+                SetRatingImage();
             }
         }
 
         private void RatingUseStarsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
+            SetRatingImage();
+        }
+
+        private void SetRatingImage()
+        {
             FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingUseStarsCheckBox.Checked
                 ? Images.RatingExample_FMSel_Stars
                 : Images.RatingExample_FMSel_Number;

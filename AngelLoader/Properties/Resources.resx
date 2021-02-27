@@ -214,4 +214,10 @@
   <data name="About_DarkMode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\about_darkmode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="RatingExample_FMSel_Number_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\ratingexample_fmsel_number_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RatingExample_NDL_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\ratingexample_ndl_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

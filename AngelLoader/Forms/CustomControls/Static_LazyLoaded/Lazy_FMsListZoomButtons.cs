@@ -21,12 +21,12 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 _darkModeEnabled = value;
                 if (_constructed)
                 {
-                    RegeneratedButtonImages();
+                    RegenerateButtonImages();
                 }
             }
         }
 
-        private static void RegeneratedButtonImages()
+        private static void RegenerateButtonImages()
         {
             ZoomInButton.Image?.Dispose();
             ZoomOutButton.Image?.Dispose();

@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using static AngelLoader.Misc;
 
@@ -364,54 +365,71 @@ namespace AngelLoader.Forms
         private static Bitmap? _refresh;
         public static Bitmap Refresh => _refresh ??= Resources.Refresh;
 
-        private static Bitmap? _ratingExample_NDL;
-        public static Bitmap RatingExample_NDL => _ratingExample_NDL ??= Resources.RatingExample_NDL;
+        #region Rating example
 
-        private static Bitmap? _ratingExample_FMSel_Stars;
-        public static Bitmap RatingExample_FMSel_Stars
+        // TODO: @DarkMode: Change star colors to be appropriate for dark mode
+
+        private static Bitmap? _ratingExample_NDL_Classic;
+        private static Bitmap? _ratingExample_NDL_Dark;
+        public static Bitmap RatingExample_NDL =>
+            Config.VisualTheme == VisualTheme.Dark
+                ? _ratingExample_NDL_Dark ??= Resources.RatingExample_NDL_Dark
+                : _ratingExample_NDL_Classic ??= Resources.RatingExample_NDL;
+
+        private static Bitmap? _ratingExample_FMSel_Stars_Classic;
+        private static Bitmap? _ratingExample_FMSel_Stars_Dark;
+        public static Bitmap RatingExample_FMSel_Stars =>
+            Config.VisualTheme == VisualTheme.Dark
+                ? _ratingExample_FMSel_Stars_Dark ??= GetRatingExample_FMSel_Stars(darkMode: true)
+                : _ratingExample_FMSel_Stars_Classic ??= GetRatingExample_FMSel_Stars(darkMode: false);
+
+        private static Bitmap GetRatingExample_FMSel_Stars(bool darkMode)
         {
-            get
+            Bitmap ret;
+            Bitmap? _starEmpty = null;
+            Bitmap? _starRightEmpty = null;
+            Bitmap? _starFull = null;
+            try
             {
-                if (_ratingExample_FMSel_Stars == null)
-                {
-                    Bitmap? _starEmpty = null;
-                    Bitmap? _starRightEmpty = null;
-                    Bitmap? _starFull = null;
-                    try
-                    {
-                        const int px = 14;
+                const int px = 14;
 
-                        Bitmap GetStarEmpty() => _starEmpty = FillStarImage(ControlPainter.StarEmptyGPath, px);
-                        Bitmap GetStarRightEmpty() => _starRightEmpty = FillStarImage(ControlPainter.StarRightEmptyGPath, px);
-                        Bitmap GetStarFull() => _starFull ??= FillStarImage(ControlPainter.StarFullGPath, px);
+                Bitmap GetStarEmpty() => _starEmpty = FillStarImage(ControlPainter.StarEmptyGPath, px);
+                Bitmap GetStarRightEmpty() => _starRightEmpty = FillStarImage(ControlPainter.StarRightEmptyGPath, px);
+                Bitmap GetStarFull() => _starFull ??= FillStarImage(ControlPainter.StarFullGPath, px);
 
-                        _ratingExample_FMSel_Stars = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
-                        using var g = Graphics.FromImage(_ratingExample_FMSel_Stars);
-                        g.FillRectangle(Brushes.White, 1, 1, 77, 21);
-                        using (var pen = new Pen(Color.FromArgb(160, 160, 160)))
-                        {
-                            g.DrawRectangle(pen, 0, 0, 78, 22);
-                        }
-                        g.SmoothingMode = SmoothingMode.AntiAlias;
+                ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
+                using var g = Graphics.FromImage(ret);
+                g.FillRectangle(darkMode ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White, 1, 1, 77, 21);
 
-                        float x = 4;
-                        const float y = 3.5f;
-                        for (int i = 0; i < 3; i++, x += px) g.DrawImage(GetStarFull(), x, y);
-                        g.DrawImage(GetStarRightEmpty(), x, y);
-                        g.DrawImage(GetStarEmpty(), x + px, y);
-                    }
-                    finally
-                    {
-                        _starEmpty?.Dispose();
-                        _starRightEmpty?.Dispose();
-                        _starFull?.Dispose();
-                    }
-                }
-                return _ratingExample_FMSel_Stars;
+                var borderRect = new Rectangle(0, 0, 78, 22);
+
+                using var pen = new Pen(darkMode ? Color.FromArgb(64, 64, 64) : Color.FromArgb(160, 160, 160));
+                g.DrawRectangle(pen, borderRect);
+
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+
+                float x = 4;
+                const float y = 3.5f;
+                for (int i = 0; i < 3; i++, x += px) g.DrawImage(GetStarFull(), x, y);
+                g.DrawImage(GetStarRightEmpty(), x, y);
+                g.DrawImage(GetStarEmpty(), x + px, y);
             }
+            finally
+            {
+                _starEmpty?.Dispose();
+                _starRightEmpty?.Dispose();
+                _starFull?.Dispose();
+            }
+            return ret;
         }
 
-        private static Bitmap? _ratingExample_FMSel_Number;
-        public static Bitmap RatingExample_FMSel_Number => _ratingExample_FMSel_Number ??= Resources.RatingExample_FMSel_Number;
+        private static Bitmap? _ratingExample_FMSel_Number_Classic;
+        private static Bitmap? _ratingExample_FMSel_Number_Dark;
+        public static Bitmap RatingExample_FMSel_Number =>
+            Config.VisualTheme == VisualTheme.Dark
+                ? _ratingExample_FMSel_Number_Dark ??= Resources.RatingExample_FMSel_Number_Dark
+                : _ratingExample_FMSel_Number_Classic ??= Resources.RatingExample_FMSel_Number;
+
+        #endregion
     }
 }
