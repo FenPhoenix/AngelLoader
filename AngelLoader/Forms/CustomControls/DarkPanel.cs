@@ -44,12 +44,6 @@ namespace AngelLoader.Forms.CustomControls
             VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
         }
 
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            base.OnVisibleChanged(e);
-            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-        }
-
         #region Visible / Show / Hide overrides
 
         [PublicAPI]
@@ -91,11 +85,27 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        #region Event overrides
+
+        protected override void OnClientSizeChanged(EventArgs e)
+        {
+            base.OnClientSizeChanged(e);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+        }
+
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             base.OnMouseWheel(e);
             if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
 
         public bool Suspended { get; set; }
         public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; }
