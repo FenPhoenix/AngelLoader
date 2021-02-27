@@ -102,9 +102,7 @@ namespace AngelLoader.Forms.CustomControls
                     control.HorizontalScrollBar.Visible)
                 {
                     // Draw the corner in between the two scroll bars
-                    // TODO: @DarkMode: Also cache this brush
-                    using var b = new SolidBrush(control.VerticalVisualScrollBar.BackColor);
-                    e.Graphics.FillRectangle(b, new Rectangle(
+                    e.Graphics.FillRectangle(DarkColors.DarkBackgroundBrush, new Rectangle(
                         control.VerticalScrollBar.Location.X,
                         control.HorizontalScrollBar.Location.Y,
                         control.VerticalScrollBar.Width,

@@ -550,9 +550,6 @@ namespace AngelLoader.Forms
 
         private void SetTheme(VisualTheme theme, bool startup)
         {
-            // TODO: @DarkMode(SetTheme): Eventually just codegen the set of all darkable controls
-            // So we don't have to have this awkward dictionary fill/loop/manual-set system.
-
             bool darkMode = theme == VisualTheme.Dark;
 
             try

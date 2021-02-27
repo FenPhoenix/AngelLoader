@@ -115,7 +115,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void MouseDownExt_Handler(object sender, MouseEventExtArgs e)
         {
-            // TODO: @DarkMode(Scroll bar mouse handlers): Profile perf on the FindForm() calls and cache if necessary
+            // FindForm() is unmeasurably fast, so just leave it as is
             if (!Visible || !Enabled || !CanFocus || FindForm()?.CanFocus == false) return;
 
             if (e.Button != MouseButtons.Left) return;

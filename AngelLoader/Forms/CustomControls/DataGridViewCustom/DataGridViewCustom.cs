@@ -408,6 +408,8 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
+            #region Draw cell borders
+
             // TODO: @DarkMode: This is for having different colored grid lines in recent-highlighted rows
             // That way, we can get a good, visible separator color for all cases by just having two.
             // But we need to figure this out exactly because it doesn't work properly as is.
@@ -434,6 +436,11 @@ namespace AngelLoader.Forms.CustomControls
             e.Handled = true;
 
 #endif
+
+            #endregion
+
+            #region Draw headers
+
             /*
             TODO: @DarkMode(DGV headers):
             -Tune highlighting colors
@@ -521,6 +528,8 @@ namespace AngelLoader.Forms.CustomControls
 
                 e.Handled = true;
             }
+
+            #endregion
         }
 
         // Cancel column resize operations if we lose focus. Otherwise, we end up still in drag mode with the
