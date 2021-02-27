@@ -27,7 +27,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_darkModeEnabled)
             {
-                _originalFont = (Font)Font.Clone();
+                _originalFont ??= (Font)Font.Clone();
             }
             else
             {

@@ -7,7 +7,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
     {
         private void InitComponentManual()
         {
-            PagePanel = new Panel();
+            PagePanel = new DarkPanel();
             ReadmeGroupBox = new DarkGroupBox();
             ReadmeFixedWidthFontCheckBox = new DarkCheckBox();
             ShowOrHideUIElementsGroupBox = new DarkGroupBox();

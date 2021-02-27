@@ -29,7 +29,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.PagePanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
             this.ActualPathsPanel = new System.Windows.Forms.Panel();
             this.FlowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.OtherGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -590,7 +590,7 @@
         #endregion
 #endif
 
-        internal System.Windows.Forms.Panel PagePanel;
+        internal AngelLoader.Forms.CustomControls.DarkPanel PagePanel;
         internal AngelLoader.Forms.CustomControls.DarkGroupBox OtherGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkLabel BackupPathLabel;
         internal AngelLoader.Forms.CustomControls.DarkButton BackupPathBrowseButton;

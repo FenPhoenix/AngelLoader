@@ -29,10 +29,10 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     if (!_origValuesStored)
                     {
-                        _origForeColor = ForeColor;
-                        _origBackColor = BackColor;
-                        _origPadding = Padding;
-                        _origBorderStyle = BorderStyle;
+                        _origForeColor ??= ForeColor;
+                        _origBackColor ??= BackColor;
+                        _origPadding ??= Padding;
+                        _origBorderStyle ??= BorderStyle;
                         _origValuesStored = true;
                     }
 
@@ -103,13 +103,15 @@ namespace AngelLoader.Forms.CustomControls
                 if (value)
                 {
                     // Do this before setting the Visible value to avoid the classic-bar-flicker
-                    if (_darkModeEnabled) VerticalVisualScrollBar?.ForceSetVisibleState(true);
+                    VerticalVisualScrollBar?.ForceSetVisibleState(true);
+                    HorizontalVisualScrollBar?.ForceSetVisibleState(true);
                     base.Visible = true;
                 }
                 else
                 {
                     base.Visible = false;
-                    if (_darkModeEnabled) VerticalVisualScrollBar?.ForceSetVisibleState(false);
+                    VerticalVisualScrollBar?.ForceSetVisibleState(false);
+                    HorizontalVisualScrollBar?.ForceSetVisibleState(false);
                 }
             }
         }
@@ -117,7 +119,8 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         public new void Show()
         {
-            if (_darkModeEnabled) VerticalVisualScrollBar?.ForceSetVisibleState(true);
+            VerticalVisualScrollBar?.ForceSetVisibleState(true);
+            HorizontalVisualScrollBar?.ForceSetVisibleState(true);
             base.Show();
         }
 
@@ -125,7 +128,8 @@ namespace AngelLoader.Forms.CustomControls
         public new void Hide()
         {
             base.Hide();
-            if (_darkModeEnabled) VerticalVisualScrollBar?.ForceSetVisibleState(false);
+            VerticalVisualScrollBar?.ForceSetVisibleState(false);
+            HorizontalVisualScrollBar?.ForceSetVisibleState(false);
         }
 
         #endregion

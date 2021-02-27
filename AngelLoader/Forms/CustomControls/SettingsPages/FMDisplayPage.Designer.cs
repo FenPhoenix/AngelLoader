@@ -56,7 +56,7 @@
             this.UseShortGameTabNamesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.OrganizeGamesByTabRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.OrganizeGamesInOneListRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
-            this.PagePanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.RecentFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.RecentFMsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -488,7 +488,7 @@
         internal AngelLoader.Forms.CustomControls.DarkGroupBox GameOrganizationGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkRadioButton OrganizeGamesByTabRadioButton;
         internal AngelLoader.Forms.CustomControls.DarkRadioButton OrganizeGamesInOneListRadioButton;
-        internal System.Windows.Forms.Panel PagePanel;
+        internal AngelLoader.Forms.CustomControls.DarkPanel PagePanel;
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
         internal System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
         internal AngelLoader.Forms.CustomControls.DarkLabel PreviewDateLabel;

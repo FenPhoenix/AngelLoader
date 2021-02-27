@@ -7,7 +7,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
     {
         private void InitComponentManual()
         {
-            PagePanel = new Panel();
+            PagePanel = new DarkPanel();
             ActualPathsPanel = new Panel();
             FlowLayoutPanel1 = new FlowLayoutPanel();
             OtherGroupBox = new DarkGroupBox();

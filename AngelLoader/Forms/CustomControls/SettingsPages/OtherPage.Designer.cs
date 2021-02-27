@@ -29,7 +29,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.PagePanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
             this.ReadmeGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ReadmeFixedWidthFontCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ShowOrHideUIElementsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -403,7 +403,7 @@
         #endregion
 #endif
 
-        internal System.Windows.Forms.Panel PagePanel;
+        internal AngelLoader.Forms.CustomControls.DarkPanel PagePanel;
         internal AngelLoader.Forms.CustomControls.DarkGroupBox ShowOrHideUIElementsGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox HideFMListZoomButtonsCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox HideUninstallButtonCheckBox;

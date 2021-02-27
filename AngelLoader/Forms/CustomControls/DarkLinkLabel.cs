@@ -26,11 +26,11 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_darkModeEnabled)
                 {
-                    _origForeColor = ForeColor;
-                    _origLinkColor = LinkColor;
-                    _origActiveLinkColor = ActiveLinkColor;
-                    _origVisitedLinkColor = VisitedLinkColor;
-                    _origDisabledLinkColor = DisabledLinkColor;
+                    _origForeColor ??= ForeColor;
+                    _origLinkColor ??= LinkColor;
+                    _origActiveLinkColor ??= ActiveLinkColor;
+                    _origVisitedLinkColor ??= VisitedLinkColor;
+                    _origDisabledLinkColor ??= DisabledLinkColor;
 
                     ForeColor = DarkColors.LightText;
                     LinkColor = DarkColors.LightText;

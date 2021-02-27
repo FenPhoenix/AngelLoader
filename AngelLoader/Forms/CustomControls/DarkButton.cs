@@ -136,8 +136,8 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_darkModeEnabled)
             {
-                _originalFlatStyle = base.FlatStyle;
-                _originalBorderSize = FlatAppearance.BorderSize;
+                _originalFlatStyle ??= base.FlatStyle;
+                _originalBorderSize ??= FlatAppearance.BorderSize;
                 UseVisualStyleBackColor = !_darkModeEnabled;
                 SetButtonState(DarkControlState.Normal);
 
@@ -149,8 +149,8 @@ namespace AngelLoader.Forms.CustomControls
                 ForeColor = SystemColors.ControlText;
                 BackColor = SystemColors.Control;
                 UseVisualStyleBackColor = true;
-                base.FlatStyle = _originalFlatStyle ?? base.FlatStyle;
-                FlatAppearance.BorderSize = _originalBorderSize ?? FlatAppearance.BorderSize;
+                if (_originalFlatStyle != null) base.FlatStyle = (FlatStyle)_originalFlatStyle;
+                if (_originalBorderSize != null) FlatAppearance.BorderSize = (int)_originalBorderSize;
             }
         }
 

@@ -34,7 +34,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             UseShortGameTabNamesCheckBox = new DarkCheckBox();
             OrganizeGamesByTabRadioButton = new DarkRadioButton();
             OrganizeGamesInOneListRadioButton = new DarkRadioButton();
-            PagePanel = new Panel();
+            PagePanel = new DarkPanel();
             DummyAutoScrollPanel = new Control();
             RecentFMsGroupBox = new DarkGroupBox();
             RecentFMsLabel = new DarkLabel();
