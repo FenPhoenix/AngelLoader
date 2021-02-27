@@ -632,8 +632,8 @@ namespace AngelLoader.Forms
             Graphics g,
             Point[] _arrowPolygon,
             Direction direction,
-            int controlWidth,
-            int controlHeight,
+            int areaWidth,
+            int areaHeight,
             bool? controlEnabled = null,
             Brush? brush = null,
             int? xOffset = null,
@@ -645,8 +645,8 @@ namespace AngelLoader.Forms
             switch (direction)
             {
                 case Direction.Left:
-                    arrowX = (controlWidth / 2) + 2;
-                    arrowY = (controlHeight / 2) - 3;
+                    arrowX = (areaWidth / 2) + 2;
+                    arrowY = (areaHeight / 2) - 3;
 
                     if (xOffset != null) arrowX += (int)xOffset;
                     if (yOffset != null) arrowY += (int)yOffset;
@@ -657,8 +657,8 @@ namespace AngelLoader.Forms
 
                     break;
                 case Direction.Right:
-                    arrowX = (controlWidth / 2) - 2;
-                    arrowY = (controlHeight / 2) - 3;
+                    arrowX = (areaWidth / 2) - 2;
+                    arrowY = (areaHeight / 2) - 3;
 
                     if (xOffset != null) arrowX += (int)xOffset;
                     if (yOffset != null) arrowY += (int)yOffset;
@@ -669,8 +669,8 @@ namespace AngelLoader.Forms
 
                     break;
                 case Direction.Up:
-                    arrowX = (controlWidth / 2) - 3;
-                    arrowY = (controlHeight / 2) + 1;
+                    arrowX = (areaWidth / 2) - 3;
+                    arrowY = (areaHeight / 2) + 1;
 
                     if (xOffset != null) arrowX += (int)xOffset;
                     if (yOffset != null) arrowY += (int)yOffset;
@@ -682,8 +682,8 @@ namespace AngelLoader.Forms
                     break;
                 case Direction.Down:
                 default:
-                    arrowX = (controlWidth / 2) - 3;
-                    arrowY = (controlHeight / 2) - 1;
+                    arrowX = (areaWidth / 2) - 3;
+                    arrowY = (areaHeight / 2) - 1;
 
                     if (xOffset != null) arrowX += (int)xOffset;
                     if (yOffset != null) arrowY += (int)yOffset;

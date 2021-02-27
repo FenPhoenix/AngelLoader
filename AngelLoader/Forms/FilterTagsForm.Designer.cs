@@ -9,6 +9,19 @@ namespace AngelLoader.Forms
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
 #if DEBUG
         #region Windows Form Designer generated code
 
@@ -23,26 +36,26 @@ namespace AngelLoader.Forms
             this.AndTreeView = new System.Windows.Forms.TreeView();
             this.OrTreeView = new System.Windows.Forms.TreeView();
             this.NotTreeView = new System.Windows.Forms.TreeView();
-            this.AndButton = new System.Windows.Forms.Button();
-            this.OrButton = new System.Windows.Forms.Button();
-            this.NotButton = new System.Windows.Forms.Button();
-            this.IncludeAllLabel = new System.Windows.Forms.Label();
-            this.IncludeAnyLabel = new System.Windows.Forms.Label();
-            this.ExcludeLabel = new System.Windows.Forms.Label();
+            this.AndButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.OrButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.NotButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.IncludeAllLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.IncludeAnyLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.ExcludeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.FilterLabelsPanel = new System.Windows.Forms.Panel();
-            this.RemoveAllNotButton = new System.Windows.Forms.Button();
-            this.RemoveAllOrButton = new System.Windows.Forms.Button();
-            this.RemoveAllAndButton = new System.Windows.Forms.Button();
-            this.RemoveSelectedNotButton = new System.Windows.Forms.Button();
-            this.RemoveSelectedOrButton = new System.Windows.Forms.Button();
-            this.RemoveSelectedAndButton = new System.Windows.Forms.Button();
-            this.OKButton = new System.Windows.Forms.Button();
-            this.Cancel_Button = new System.Windows.Forms.Button();
-            this.ResetButton = new System.Windows.Forms.Button();
+            this.RemoveAllNotButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.RemoveAllOrButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.RemoveAllAndButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.RemoveSelectedNotButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.RemoveSelectedOrButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.RemoveSelectedAndButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.BottomButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.MoveButtonsPanel = new System.Windows.Forms.Panel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.FindTagTextBox = new System.Windows.Forms.TextBox();
+            this.FindTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.FilterLabelsPanel.SuspendLayout();
             this.BottomButtonsFLP.SuspendLayout();
             this.MoveButtonsPanel.SuspendLayout();
@@ -50,7 +63,7 @@ namespace AngelLoader.Forms
             // 
             // OriginTreeView
             // 
-            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OriginTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.OriginTreeView.HideSelection = false;
@@ -62,7 +75,7 @@ namespace AngelLoader.Forms
             // 
             // AndTreeView
             // 
-            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.AndTreeView.HideSelection = false;
             this.AndTreeView.Location = new System.Drawing.Point(344, 24);
@@ -72,7 +85,7 @@ namespace AngelLoader.Forms
             // 
             // OrTreeView
             // 
-            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OrTreeView.HideSelection = false;
             this.OrTreeView.Location = new System.Drawing.Point(576, 24);
@@ -82,7 +95,7 @@ namespace AngelLoader.Forms
             // 
             // NotTreeView
             // 
-            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.NotTreeView.HideSelection = false;
             this.NotTreeView.Location = new System.Drawing.Point(808, 24);
@@ -97,6 +110,7 @@ namespace AngelLoader.Forms
             this.AndButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.AndButton.Location = new System.Drawing.Point(16, 0);
             this.AndButton.Name = "AndButton";
+            this.AndButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.AndButton.Size = new System.Drawing.Size(80, 23);
             this.AndButton.TabIndex = 0;
             this.AndButton.Text = "All";
@@ -104,6 +118,7 @@ namespace AngelLoader.Forms
             this.AndButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.AndButton.UseVisualStyleBackColor = true;
             this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
+            this.AndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
             // 
             // OrButton
             // 
@@ -112,6 +127,7 @@ namespace AngelLoader.Forms
             this.OrButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.OrButton.Location = new System.Drawing.Point(16, 23);
             this.OrButton.Name = "OrButton";
+            this.OrButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.OrButton.Size = new System.Drawing.Size(80, 23);
             this.OrButton.TabIndex = 1;
             this.OrButton.Text = "Any";
@@ -119,6 +135,7 @@ namespace AngelLoader.Forms
             this.OrButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.OrButton.UseVisualStyleBackColor = true;
             this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
+            this.OrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
             // 
             // NotButton
             // 
@@ -127,6 +144,7 @@ namespace AngelLoader.Forms
             this.NotButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.NotButton.Location = new System.Drawing.Point(16, 46);
             this.NotButton.Name = "NotButton";
+            this.NotButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.NotButton.Size = new System.Drawing.Size(80, 23);
             this.NotButton.TabIndex = 2;
             this.NotButton.Text = "Exclude";
@@ -134,6 +152,7 @@ namespace AngelLoader.Forms
             this.NotButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.NotButton.UseVisualStyleBackColor = true;
             this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
+            this.NotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
             // 
             // IncludeAllLabel
             // 
@@ -186,7 +205,7 @@ namespace AngelLoader.Forms
             this.RemoveAllNotButton.TabIndex = 8;
             this.RemoveAllNotButton.UseVisualStyleBackColor = true;
             this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
-            this.RemoveAllNotButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+            this.RemoveAllNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
             // 
             // RemoveAllOrButton
             // 
@@ -196,7 +215,7 @@ namespace AngelLoader.Forms
             this.RemoveAllOrButton.TabIndex = 5;
             this.RemoveAllOrButton.UseVisualStyleBackColor = true;
             this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
-            this.RemoveAllOrButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+            this.RemoveAllOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
             // 
             // RemoveAllAndButton
             // 
@@ -206,7 +225,7 @@ namespace AngelLoader.Forms
             this.RemoveAllAndButton.TabIndex = 2;
             this.RemoveAllAndButton.UseVisualStyleBackColor = true;
             this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
-            this.RemoveAllAndButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+            this.RemoveAllAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
             // 
             // RemoveSelectedNotButton
             // 
@@ -216,7 +235,7 @@ namespace AngelLoader.Forms
             this.RemoveSelectedNotButton.TabIndex = 7;
             this.RemoveSelectedNotButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
-            this.RemoveSelectedNotButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+            this.RemoveSelectedNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
             // 
             // RemoveSelectedOrButton
             // 
@@ -226,7 +245,7 @@ namespace AngelLoader.Forms
             this.RemoveSelectedOrButton.TabIndex = 4;
             this.RemoveSelectedOrButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
-            this.RemoveSelectedOrButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+            this.RemoveSelectedOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
             // 
             // RemoveSelectedAndButton
             // 
@@ -236,7 +255,7 @@ namespace AngelLoader.Forms
             this.RemoveSelectedAndButton.TabIndex = 1;
             this.RemoveSelectedAndButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
-            this.RemoveSelectedAndButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+            this.RemoveSelectedAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
             // 
             // OKButton
             // 
@@ -360,25 +379,25 @@ namespace AngelLoader.Forms
         private System.Windows.Forms.TreeView AndTreeView;
         private System.Windows.Forms.TreeView OrTreeView;
         private System.Windows.Forms.TreeView NotTreeView;
-        private System.Windows.Forms.Button AndButton;
-        private System.Windows.Forms.Button OrButton;
-        private System.Windows.Forms.Button NotButton;
-        private System.Windows.Forms.Label IncludeAllLabel;
-        private System.Windows.Forms.Label IncludeAnyLabel;
-        private System.Windows.Forms.Label ExcludeLabel;
+        private AngelLoader.Forms.CustomControls.DarkButton AndButton;
+        private AngelLoader.Forms.CustomControls.DarkButton OrButton;
+        private AngelLoader.Forms.CustomControls.DarkButton NotButton;
+        private AngelLoader.Forms.CustomControls.DarkLabel IncludeAllLabel;
+        private AngelLoader.Forms.CustomControls.DarkLabel IncludeAnyLabel;
+        private AngelLoader.Forms.CustomControls.DarkLabel ExcludeLabel;
         private System.Windows.Forms.Panel FilterLabelsPanel;
-        private System.Windows.Forms.Button OKButton;
-        private System.Windows.Forms.Button Cancel_Button;
-        private System.Windows.Forms.Button RemoveSelectedAndButton;
-        private System.Windows.Forms.Button RemoveAllAndButton;
-        private System.Windows.Forms.Button RemoveAllNotButton;
-        private System.Windows.Forms.Button RemoveAllOrButton;
-        private System.Windows.Forms.Button RemoveSelectedNotButton;
-        private System.Windows.Forms.Button RemoveSelectedOrButton;
-        private System.Windows.Forms.Button ResetButton;
+        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
+        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
+        private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedAndButton;
+        private AngelLoader.Forms.CustomControls.DarkButton RemoveAllAndButton;
+        private AngelLoader.Forms.CustomControls.DarkButton RemoveAllNotButton;
+        private AngelLoader.Forms.CustomControls.DarkButton RemoveAllOrButton;
+        private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedNotButton;
+        private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedOrButton;
+        private AngelLoader.Forms.CustomControls.DarkButton ResetButton;
         private System.Windows.Forms.FlowLayoutPanel BottomButtonsFLP;
         private System.Windows.Forms.Panel MoveButtonsPanel;
         private System.Windows.Forms.ToolTip MainToolTip;
-        private System.Windows.Forms.TextBox FindTagTextBox;
+        private AngelLoader.Forms.CustomControls.DarkTextBox FindTagTextBox;
     }
 }

@@ -14,26 +14,26 @@ namespace AngelLoader.Forms
             AndTreeView = new TreeView();
             OrTreeView = new TreeView();
             NotTreeView = new TreeView();
-            AndButton = new Button();
-            OrButton = new Button();
-            NotButton = new Button();
-            IncludeAllLabel = new Label();
-            IncludeAnyLabel = new Label();
-            ExcludeLabel = new Label();
+            AndButton = new DarkButton();
+            OrButton = new DarkButton();
+            NotButton = new DarkButton();
+            IncludeAllLabel = new DarkLabel();
+            IncludeAnyLabel = new DarkLabel();
+            ExcludeLabel = new DarkLabel();
             FilterLabelsPanel = new Panel();
-            RemoveAllNotButton = new Button();
-            RemoveAllOrButton = new Button();
-            RemoveAllAndButton = new Button();
-            RemoveSelectedNotButton = new Button();
-            RemoveSelectedOrButton = new Button();
-            RemoveSelectedAndButton = new Button();
-            OKButton = new Button();
-            Cancel_Button = new Button();
-            ResetButton = new Button();
+            RemoveAllNotButton = new DarkButton();
+            RemoveAllOrButton = new DarkButton();
+            RemoveAllAndButton = new DarkButton();
+            RemoveSelectedNotButton = new DarkButton();
+            RemoveSelectedOrButton = new DarkButton();
+            RemoveSelectedAndButton = new DarkButton();
+            OKButton = new DarkButton();
+            Cancel_Button = new DarkButton();
+            ResetButton = new DarkButton();
             BottomButtonsFLP = new FlowLayoutPanel();
             MoveButtonsPanel = new Panel();
             MainToolTip = new ToolTip(components);
-            FindTagTextBox = new TextBox();
+            FindTagTextBox = new DarkTextBox();
             FilterLabelsPanel.SuspendLayout();
             BottomButtonsFLP.SuspendLayout();
             MoveButtonsPanel.SuspendLayout();
@@ -79,11 +79,13 @@ namespace AngelLoader.Forms
             AndButton.MinimumSize = new Size(80, 23);
             AndButton.ImageAlign = ContentAlignment.MiddleLeft;
             AndButton.Location = new Point(16, 0);
+            AndButton.Padding = new Padding(7, 0, 0, 0);
             AndButton.TabIndex = 0;
             AndButton.TextAlign = ContentAlignment.MiddleLeft;
             AndButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             AndButton.UseVisualStyleBackColor = true;
             AndButton.Click += AddTagsButtons_Click;
+            AndButton.PaintCustom += ArrowButtons_Paint;
             // 
             // OrButton
             // 
@@ -91,11 +93,13 @@ namespace AngelLoader.Forms
             OrButton.MinimumSize = new Size(80, 23);
             OrButton.ImageAlign = ContentAlignment.MiddleLeft;
             OrButton.Location = new Point(16, 23);
+            OrButton.Padding = new Padding(7, 0, 0, 0);
             OrButton.TabIndex = 1;
             OrButton.TextAlign = ContentAlignment.MiddleLeft;
             OrButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             OrButton.UseVisualStyleBackColor = true;
             OrButton.Click += AddTagsButtons_Click;
+            OrButton.PaintCustom += ArrowButtons_Paint;
             // 
             // NotButton
             // 
@@ -103,11 +107,13 @@ namespace AngelLoader.Forms
             NotButton.MinimumSize = new Size(80, 23);
             NotButton.ImageAlign = ContentAlignment.MiddleLeft;
             NotButton.Location = new Point(16, 46);
+            NotButton.Padding = new Padding(7, 0, 0, 0);
             NotButton.TabIndex = 2;
             NotButton.TextAlign = ContentAlignment.MiddleLeft;
             NotButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             NotButton.UseVisualStyleBackColor = true;
             NotButton.Click += AddTagsButtons_Click;
+            NotButton.PaintCustom += ArrowButtons_Paint;
             // 
             // IncludeAllLabel
             // 
@@ -149,7 +155,7 @@ namespace AngelLoader.Forms
             RemoveAllNotButton.TabIndex = 8;
             RemoveAllNotButton.UseVisualStyleBackColor = true;
             RemoveAllNotButton.Click += RemoveAllButtons_Click;
-            RemoveAllNotButton.Paint += RemoveAllButtons_Paint;
+            RemoveAllNotButton.PaintCustom += RemoveAllButtons_Paint;
             // 
             // RemoveAllOrButton
             // 
@@ -158,7 +164,7 @@ namespace AngelLoader.Forms
             RemoveAllOrButton.TabIndex = 5;
             RemoveAllOrButton.UseVisualStyleBackColor = true;
             RemoveAllOrButton.Click += RemoveAllButtons_Click;
-            RemoveAllOrButton.Paint += RemoveAllButtons_Paint;
+            RemoveAllOrButton.PaintCustom += RemoveAllButtons_Paint;
             // 
             // RemoveAllAndButton
             // 
@@ -167,7 +173,7 @@ namespace AngelLoader.Forms
             RemoveAllAndButton.TabIndex = 2;
             RemoveAllAndButton.UseVisualStyleBackColor = true;
             RemoveAllAndButton.Click += RemoveAllButtons_Click;
-            RemoveAllAndButton.Paint += RemoveAllButtons_Paint;
+            RemoveAllAndButton.PaintCustom += RemoveAllButtons_Paint;
             // 
             // RemoveSelectedNotButton
             // 
@@ -176,7 +182,7 @@ namespace AngelLoader.Forms
             RemoveSelectedNotButton.TabIndex = 7;
             RemoveSelectedNotButton.UseVisualStyleBackColor = true;
             RemoveSelectedNotButton.Click += RemoveSelectedButtons_Click;
-            RemoveSelectedNotButton.Paint += RemoveButtons_Paint;
+            RemoveSelectedNotButton.PaintCustom += RemoveButtons_Paint;
             // 
             // RemoveSelectedOrButton
             // 
@@ -185,7 +191,7 @@ namespace AngelLoader.Forms
             RemoveSelectedOrButton.TabIndex = 4;
             RemoveSelectedOrButton.UseVisualStyleBackColor = true;
             RemoveSelectedOrButton.Click += RemoveSelectedButtons_Click;
-            RemoveSelectedOrButton.Paint += RemoveButtons_Paint;
+            RemoveSelectedOrButton.PaintCustom += RemoveButtons_Paint;
             // 
             // RemoveSelectedAndButton
             // 
@@ -194,7 +200,7 @@ namespace AngelLoader.Forms
             RemoveSelectedAndButton.TabIndex = 1;
             RemoveSelectedAndButton.UseVisualStyleBackColor = true;
             RemoveSelectedAndButton.Click += RemoveSelectedButtons_Click;
-            RemoveSelectedAndButton.Paint += RemoveButtons_Paint;
+            RemoveSelectedAndButton.PaintCustom += RemoveButtons_Paint;
             // 
             // OKButton
             // 

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -11,7 +11,9 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : Form
     {
-        private readonly Bitmap _arrowRightBmp = new Bitmap(7, 7, PixelFormat.Format32bppPArgb);
+        private readonly Point[] _arrowPoints = new Point[3];
+
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
         private readonly CatAndTagsList _sourceTags;
 
@@ -27,32 +29,15 @@ namespace AngelLoader.Forms
 
             _sourceTags = new CatAndTagsList(sourceTags.Count);
 
-            #region Arrow buttons setup
-
-            // Because this form isn't loading on startup, I'm being lazy here and just creating a bitmap
-            using (var g = Graphics.FromImage(_arrowRightBmp))
-            {
-                Point[] arrowPolygon =
-                {
-                    // -1 works?! (and for some reason is needed?!)
-                    new Point(2, -1),
-                    new Point(2, 7),
-                    new Point(6, 3)
-                };
-                g.FillPolygon(Brushes.Black, arrowPolygon);
-            }
-
-            AndButton.Image = _arrowRightBmp;
-            OrButton.Image = _arrowRightBmp;
-            NotButton.Image = _arrowRightBmp;
-
-            #endregion
-
             sourceTags.DeepCopyTo(_sourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);
 
+            SetTheme(Config.VisualTheme);
+
             Localize();
         }
+
+        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeControlThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {
@@ -348,18 +333,17 @@ namespace AngelLoader.Forms
             }
         }
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        private void ArrowButtons_Paint(object sender, PaintEventArgs e)
         {
-            if (disposing)
-            {
-                _arrowRightBmp.Dispose();
-                components?.Dispose();
-            }
-            base.Dispose(disposing);
+            Button button = (Button)sender;
+            ControlPainter.PaintArrow(
+                e.Graphics,
+                _arrowPoints,
+                Direction.Right,
+                15,
+                button.Height,
+                button.Enabled
+            );
         }
     }
 }
