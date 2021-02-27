@@ -438,7 +438,7 @@ namespace AngelLoader.Forms.CustomControls
 
             var padding = Padding;
             /*
-            TODO: Remove this hack entirely and just make all image buttons be manually painted
+            TODO: @DarkMode: Remove this hack entirely and just make all image buttons be manually painted
             We can just draw a bitmap instead of a vector and be perfectly fine then.
             Remember to cache all needed bitmaps so we don't pull from Resources every time.
 
@@ -453,9 +453,16 @@ namespace AngelLoader.Forms.CustomControls
                 //padding.Right = -32;
             }
 
-            var textRect = new Rectangle(rect.Left + textOffsetX + padding.Left,
-                rect.Top + textOffsetY + padding.Top, rect.Width - padding.Horizontal,
-                rect.Height - padding.Vertical);
+            // 3 pixel offset on all sides because of fudging with the rectangle, this gets it back to accurate
+            // for the text.
+            // TODO: @DarkMode(DarkButton/TextRect):
+            // But actually we only know it's accurate for left-alignment, test if it is for all other alignments
+            // as well...
+            var textRect = new Rectangle(
+                rect.Left + textOffsetX + padding.Left + 3,
+                rect.Top + textOffsetY + padding.Top + 3,
+                (rect.Width - padding.Horizontal) - 6,
+                (rect.Height - padding.Vertical) - 6);
 
             TextFormatFlags textFormat =
                 ControlUtils.GetTextAlignmentFlags(TextAlign) |

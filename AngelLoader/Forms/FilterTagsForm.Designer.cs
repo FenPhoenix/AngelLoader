@@ -107,7 +107,6 @@ namespace AngelLoader.Forms
             // 
             this.AndButton.AutoSize = true;
             this.AndButton.MinimumSize = new System.Drawing.Size(80, 23);
-            this.AndButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.AndButton.Location = new System.Drawing.Point(16, 0);
             this.AndButton.Name = "AndButton";
             this.AndButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
@@ -115,7 +114,6 @@ namespace AngelLoader.Forms
             this.AndButton.TabIndex = 0;
             this.AndButton.Text = "All";
             this.AndButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.AndButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.AndButton.UseVisualStyleBackColor = true;
             this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             this.AndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
@@ -124,7 +122,6 @@ namespace AngelLoader.Forms
             // 
             this.OrButton.AutoSize = true;
             this.OrButton.MinimumSize = new System.Drawing.Size(80, 23);
-            this.OrButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.OrButton.Location = new System.Drawing.Point(16, 23);
             this.OrButton.Name = "OrButton";
             this.OrButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
@@ -132,7 +129,6 @@ namespace AngelLoader.Forms
             this.OrButton.TabIndex = 1;
             this.OrButton.Text = "Any";
             this.OrButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.OrButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.OrButton.UseVisualStyleBackColor = true;
             this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             this.OrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
@@ -141,7 +137,6 @@ namespace AngelLoader.Forms
             // 
             this.NotButton.AutoSize = true;
             this.NotButton.MinimumSize = new System.Drawing.Size(80, 23);
-            this.NotButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.NotButton.Location = new System.Drawing.Point(16, 46);
             this.NotButton.Name = "NotButton";
             this.NotButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
@@ -149,7 +144,6 @@ namespace AngelLoader.Forms
             this.NotButton.TabIndex = 2;
             this.NotButton.Text = "Exclude";
             this.NotButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.NotButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.NotButton.UseVisualStyleBackColor = true;
             this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             this.NotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);

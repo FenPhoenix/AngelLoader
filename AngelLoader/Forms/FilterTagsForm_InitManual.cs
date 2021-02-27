@@ -77,12 +77,10 @@ namespace AngelLoader.Forms
             // 
             AndButton.AutoSize = true;
             AndButton.MinimumSize = new Size(80, 23);
-            AndButton.ImageAlign = ContentAlignment.MiddleLeft;
             AndButton.Location = new Point(16, 0);
             AndButton.Padding = new Padding(7, 0, 0, 0);
             AndButton.TabIndex = 0;
             AndButton.TextAlign = ContentAlignment.MiddleLeft;
-            AndButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             AndButton.UseVisualStyleBackColor = true;
             AndButton.Click += AddTagsButtons_Click;
             AndButton.PaintCustom += ArrowButtons_Paint;
@@ -91,12 +89,10 @@ namespace AngelLoader.Forms
             // 
             OrButton.AutoSize = true;
             OrButton.MinimumSize = new Size(80, 23);
-            OrButton.ImageAlign = ContentAlignment.MiddleLeft;
             OrButton.Location = new Point(16, 23);
             OrButton.Padding = new Padding(7, 0, 0, 0);
             OrButton.TabIndex = 1;
             OrButton.TextAlign = ContentAlignment.MiddleLeft;
-            OrButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             OrButton.UseVisualStyleBackColor = true;
             OrButton.Click += AddTagsButtons_Click;
             OrButton.PaintCustom += ArrowButtons_Paint;
@@ -105,12 +101,10 @@ namespace AngelLoader.Forms
             // 
             NotButton.AutoSize = true;
             NotButton.MinimumSize = new Size(80, 23);
-            NotButton.ImageAlign = ContentAlignment.MiddleLeft;
             NotButton.Location = new Point(16, 46);
             NotButton.Padding = new Padding(7, 0, 0, 0);
             NotButton.TabIndex = 2;
             NotButton.TextAlign = ContentAlignment.MiddleLeft;
-            NotButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             NotButton.UseVisualStyleBackColor = true;
             NotButton.Click += AddTagsButtons_Click;
             NotButton.PaintCustom += ArrowButtons_Paint;
