@@ -1402,7 +1402,7 @@ namespace AngelLoader.Forms
                 // Figure out some way to just say "if a control is part of a lazy-loaded class" so we don't
                 // have to write them out manually here again and keep both places in sync.
 
-                ControlUtils.ChangeControlThemeMode(
+                ControlUtils.ChangeFormThemeMode(
                     theme,
                     this,
                     _controlColors,

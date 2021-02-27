@@ -223,7 +223,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static void ChangeControlThemeMode(
+        internal static void ChangeFormThemeMode(
             VisualTheme theme,
             Form form,
             Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
@@ -318,6 +318,20 @@ namespace AngelLoader.Forms
             ContentAlignment.BottomLeft => TextFormatFlags.Bottom | TextFormatFlags.Left,
             ContentAlignment.BottomCenter => TextFormatFlags.Bottom | TextFormatFlags.HorizontalCenter,
             ContentAlignment.BottomRight => TextFormatFlags.Bottom | TextFormatFlags.Right,
+            _ => TextFormatFlags.Top | TextFormatFlags.Left
+        };
+
+        internal static TextFormatFlags GetTextAlignmentFlags(DataGridViewContentAlignment align) => align switch
+        {
+            DataGridViewContentAlignment.TopLeft => TextFormatFlags.Top | TextFormatFlags.Left,
+            DataGridViewContentAlignment.TopCenter => TextFormatFlags.Top | TextFormatFlags.HorizontalCenter,
+            DataGridViewContentAlignment.TopRight => TextFormatFlags.Top | TextFormatFlags.Right,
+            DataGridViewContentAlignment.MiddleLeft => TextFormatFlags.VerticalCenter | TextFormatFlags.Left,
+            DataGridViewContentAlignment.MiddleCenter => TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter,
+            DataGridViewContentAlignment.MiddleRight => TextFormatFlags.VerticalCenter | TextFormatFlags.Right,
+            DataGridViewContentAlignment.BottomLeft => TextFormatFlags.Bottom | TextFormatFlags.Left,
+            DataGridViewContentAlignment.BottomCenter => TextFormatFlags.Bottom | TextFormatFlags.HorizontalCenter,
+            DataGridViewContentAlignment.BottomRight => TextFormatFlags.Bottom | TextFormatFlags.Right,
             _ => TextFormatFlags.Top | TextFormatFlags.Left
         };
 

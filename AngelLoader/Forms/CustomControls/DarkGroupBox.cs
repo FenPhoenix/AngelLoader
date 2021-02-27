@@ -96,6 +96,7 @@ namespace AngelLoader.Forms.CustomControls
             var modRect = new Rectangle(textRect.Left, textRect.Top, Math.Min(textRect.Width, (int)stringSize.Width), textRect.Height);
             g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, modRect);
 
+            // No TextAlign property, so leave constant
             const TextFormatFlags textFormatFlags =
                 TextFormatFlags.Default |
                 TextFormatFlags.VerticalCenter |

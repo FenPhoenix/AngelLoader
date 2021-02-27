@@ -383,10 +383,9 @@ namespace AngelLoader.Forms.CustomControls
                 g.FillRectangle(fillBrush, boxRect);
             }
 
-            const TextFormatFlags textFormatFlags =
-                TextFormatFlags.VerticalCenter |
+            TextFormatFlags textFormatFlags =
+                ControlUtils.GetTextAlignmentFlags(TextAlign) |
                 TextFormatFlags.NoPrefix |
-                TextFormatFlags.Default |
                 TextFormatFlags.NoClipping;
 
             var textRect = new Rectangle(size + 4, 0, rect.Width - size, rect.Height);

@@ -79,6 +79,7 @@ namespace AngelLoader.Forms.CustomControls
                         // Draw tab border
                         g.DrawRectangle(DarkColors.LighterBackgroundPen, tabRect);
 
+                        // No TextAlign property, so leave constant
                         const TextFormatFlags textFormat =
                             TextFormatFlags.HorizontalCenter |
                             TextFormatFlags.VerticalCenter |

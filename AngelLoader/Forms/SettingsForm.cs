@@ -559,7 +559,7 @@ namespace AngelLoader.Forms
             {
                 if (!startup) this.SuspendDrawing();
 
-                ControlUtils.ChangeControlThemeMode(
+                ControlUtils.ChangeFormThemeMode(
                     theme,
                     this,
                     _controlColors,

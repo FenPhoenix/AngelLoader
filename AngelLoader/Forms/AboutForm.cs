@@ -89,7 +89,7 @@ namespace AngelLoader.Forms
 
         private void SetTheme(VisualTheme theme)
         {
-            ControlUtils.ChangeControlThemeMode(theme, this, _controlColors, x => x == BuildDateLabel);
+            ControlUtils.ChangeFormThemeMode(theme, this, _controlColors, x => x == BuildDateLabel);
 
             if (theme == VisualTheme.Dark)
             {

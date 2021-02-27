@@ -59,7 +59,7 @@ namespace AngelLoader.Forms
             Localize();
         }
 
-        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeControlThemeMode(theme, this, _controlColors);
+        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {

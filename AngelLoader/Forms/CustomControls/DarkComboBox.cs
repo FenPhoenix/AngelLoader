@@ -8,6 +8,7 @@ namespace AngelLoader.Forms.CustomControls
 {
     public class DarkComboBox : ComboBox, IDarkable
     {
+        // No TextAlign property, so leave constant
         private const TextFormatFlags _textFormat =
             TextFormatFlags.Default |
             TextFormatFlags.VerticalCenter |

@@ -271,9 +271,11 @@ namespace AngelLoader.Forms.CustomControls
 
             g.SmoothingMode = SmoothingMode.Default;
 
-            const TextFormatFlags textFormatFlags =
-                TextFormatFlags.Default |
-                TextFormatFlags.VerticalCenter;
+            TextFormatFlags textFormatFlags =
+                ControlUtils.GetTextAlignmentFlags(TextAlign) |
+                TextFormatFlags.NoClipping |
+                TextFormatFlags.WordBreak |
+                TextFormatFlags.NoPrefix;
 
             var textRect = new Rectangle(size + 4, 0, ClientRectangle.Width - size, ClientRectangle.Height);
             TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);

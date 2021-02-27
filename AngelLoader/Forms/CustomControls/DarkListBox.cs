@@ -191,6 +191,7 @@ namespace AngelLoader.Forms.CustomControls
                 ? DarkColors.BlueSelectionBrush
                 : DarkColors.Fen_ControlBackgroundBrush, itemRect);
 
+            // No TextAlign property, so leave constant
             const TextFormatFlags textFormat =
                 TextFormatFlags.Default |
                 TextFormatFlags.VerticalCenter |

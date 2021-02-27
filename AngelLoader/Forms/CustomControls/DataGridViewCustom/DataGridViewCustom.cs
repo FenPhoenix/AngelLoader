@@ -8,7 +8,6 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.WinAPI;
-using static AngelLoader.Forms.ControlUtils;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -278,7 +277,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 col.DisplayIndex = colData.DisplayIndex;
                 if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
-                MakeColumnVisible(col, colData.Visible);
+                ControlUtils.MakeColumnVisible(col, colData.Visible);
 
                 FMsDGV_ColumnHeaderLLMenu.SetColumnChecked((int)colData.Id, colData.Visible);
             }
@@ -505,10 +504,9 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (e.Value is string headerText)
                 {
-                    const TextFormatFlags textFormatFlags =
-                        TextFormatFlags.VerticalCenter |
+                    TextFormatFlags textFormatFlags =
+                        ControlUtils.GetTextAlignmentFlags(e.CellStyle.Alignment) |
                         TextFormatFlags.NoPrefix |
-                        TextFormatFlags.Default |
                         TextFormatFlags.NoClipping |
                         TextFormatFlags.EndEllipsis;
 

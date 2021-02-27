@@ -457,9 +457,8 @@ namespace AngelLoader.Forms.CustomControls
                 rect.Top + textOffsetY + padding.Top, rect.Width - padding.Horizontal,
                 rect.Height - padding.Vertical);
 
-            const TextFormatFlags textFormat =
-                TextFormatFlags.HorizontalCenter |
-                TextFormatFlags.VerticalCenter |
+            TextFormatFlags textFormat =
+                ControlUtils.GetTextAlignmentFlags(TextAlign) |
                 TextFormatFlags.EndEllipsis |
                 TextFormatFlags.NoPrefix |
                 TextFormatFlags.NoClipping;
