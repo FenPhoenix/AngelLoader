@@ -340,6 +340,9 @@ namespace AngelLoader.WinAPI
         [DllImport("user32.dll")]
         internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
 
+        [DllImport("user32.dll")]
+        internal static extern void SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
+
         #region Process
 
         internal const uint QUERY_LIMITED_INFORMATION = 0x00001000;
@@ -493,8 +496,6 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
-        #region Fen
-
         #region Mouse
 
         // NC prefix means the mouse was over a non-client area
@@ -560,6 +561,20 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
-        #endregion
+        public const int DTM_FIRST = 0x1000;
+        public const int DTM_GETDATETIMEPICKERINFO = 0x100E;
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct DATETIMEPICKERINFO
+        {
+            internal int cbSize;
+            internal RECT rcCheck;
+            internal int stateCheck;
+            internal RECT rcButton;
+            internal int stateButton;
+            internal IntPtr hwndEdit;
+            internal IntPtr hwndUD;
+            internal IntPtr hwndDropDown;
+        }
     }
 }

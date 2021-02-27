@@ -129,7 +129,7 @@ namespace AngelLoader.Forms
             EditFMFinishedOnButton = new DarkButton();
             EditFMRatingComboBox = new ComboBoxCustom();
             EditFMRatingLabel = new DarkLabel();
-            EditFMLastPlayedDateTimePicker = new DateTimePicker();
+            EditFMLastPlayedDateTimePicker = new DarkDateTimePicker();
             EditFMReleaseDateDateTimePicker = new DateTimePicker();
             EditFMLastPlayedCheckBox = new DarkCheckBox();
             EditFMReleaseDateCheckBox = new DarkCheckBox();
