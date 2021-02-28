@@ -139,11 +139,12 @@ namespace AngelLoader.Forms.CustomControls
                     break;
                 case Native.WM_VSCROLL:
                 case Native.WM_HSCROLL:
+                    // Do this FIRST, otherwise we don't update on mousedown
+                    base.WndProc(ref m);
                     if (_darkModeEnabled)
                     {
                         RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     }
-                    base.WndProc(ref m);
                     break;
                 default:
                     base.WndProc(ref m);
