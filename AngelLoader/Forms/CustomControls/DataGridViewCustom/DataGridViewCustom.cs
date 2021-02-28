@@ -29,13 +29,19 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
+        
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly VerticalVisualScrollBar { get; }
+        
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly HorizontalVisualScrollBar { get; }
 
         #region Public fields
@@ -64,6 +70,7 @@ namespace AngelLoader.Forms.CustomControls
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;

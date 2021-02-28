@@ -14,6 +14,7 @@ namespace AngelLoader.Forms.CustomControls
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -35,19 +36,33 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Suspended { get; set; }
+
         public new event EventHandler? Scroll;
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? DarkModeChanged;
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? RefreshIfNeededForceCorner;
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Control? ClosestAddableParent => Parent.Parent;
 
         public TabPageCustom()

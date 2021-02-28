@@ -20,6 +20,7 @@ namespace AngelLoader.Forms.CustomControls
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -137,20 +138,35 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Suspended { get; set; }
+        
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; private set; }
+        
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; private set; }
+        
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; private set; }
+        
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? Scroll;
+        
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Control? ClosestAddableParent => Parent;
+        
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? DarkModeChanged;
+        
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? RefreshIfNeededForceCorner;
 
         protected override void WndProc(ref Message m)

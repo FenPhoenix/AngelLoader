@@ -9,6 +9,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled { get; set; }
 
         protected override void OnPaint(PaintEventArgs e)

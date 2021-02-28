@@ -12,6 +12,7 @@ namespace AngelLoader.Forms.CustomControls
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -104,6 +105,7 @@ namespace AngelLoader.Forms.CustomControls
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -129,6 +131,7 @@ namespace AngelLoader.Forms.CustomControls
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
