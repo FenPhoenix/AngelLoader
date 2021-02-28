@@ -274,8 +274,8 @@ namespace AngelLoader.Forms.CustomControls
             TextFormatFlags textFormatFlags =
                 ControlUtils.GetTextAlignmentFlags(TextAlign) |
                 TextFormatFlags.NoClipping |
-                TextFormatFlags.WordBreak |
-                TextFormatFlags.NoPrefix;
+                TextFormatFlags.NoPrefix |
+                TextFormatFlags.WordBreak;
 
             var textRect = new Rectangle(size + 4, 0, ClientRectangle.Width - size, ClientRectangle.Height);
             TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);

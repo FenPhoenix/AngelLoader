@@ -350,9 +350,7 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             var outlineBoxRect = new Rectangle(0, (rect.Height / 2) - (size / 2), size, size);
-            {
-                g.DrawRectangle(borderPen, outlineBoxRect);
-            }
+            g.DrawRectangle(borderPen, outlineBoxRect);
 
             if (CheckState == CheckState.Checked)
             {
@@ -379,14 +377,15 @@ namespace AngelLoader.Forms.CustomControls
             }
             else if (CheckState == CheckState.Indeterminate)
             {
-                Rectangle boxRect = new Rectangle(3, ((rect.Height / 2) - ((size - 4) / 2)) + 1, size - 5, size - 5);
+                var boxRect = new Rectangle(3, ((rect.Height / 2) - ((size - 4) / 2)) + 1, size - 5, size - 5);
                 g.FillRectangle(fillBrush, boxRect);
             }
 
             TextFormatFlags textFormatFlags =
                 ControlUtils.GetTextAlignmentFlags(TextAlign) |
                 TextFormatFlags.NoPrefix |
-                TextFormatFlags.NoClipping;
+                TextFormatFlags.NoClipping|
+                TextFormatFlags.WordBreak;
 
             var textRect = new Rectangle(size + 4, 0, rect.Width - size, rect.Height);
             TextRenderer.DrawText(g, Text, Font, textRect, textColorPen.Color, textFormatFlags);

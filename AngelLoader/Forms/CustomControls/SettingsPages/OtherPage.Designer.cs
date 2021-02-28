@@ -87,9 +87,9 @@
             this.ReadmeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeGroupBox.Controls.Add(this.ReadmeFixedWidthFontCheckBox);
-            this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 640);
+            this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 643);
             this.ReadmeGroupBox.Name = "ReadmeGroupBox";
-            this.ReadmeGroupBox.Size = new System.Drawing.Size(424, 64);
+            this.ReadmeGroupBox.Size = new System.Drawing.Size(424, 56);
             this.ReadmeGroupBox.TabIndex = 13;
             this.ReadmeGroupBox.TabStop = false;
             this.ReadmeGroupBox.Text = "Readme box";
@@ -100,7 +100,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeFixedWidthFontCheckBox.Checked = true;
             this.ReadmeFixedWidthFontCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ReadmeFixedWidthFontCheckBox.Location = new System.Drawing.Point(16, 24);
+            this.ReadmeFixedWidthFontCheckBox.Location = new System.Drawing.Point(16, 16);
             this.ReadmeFixedWidthFontCheckBox.Name = "ReadmeFixedWidthFontCheckBox";
             this.ReadmeFixedWidthFontCheckBox.Size = new System.Drawing.Size(400, 32);
             this.ReadmeFixedWidthFontCheckBox.TabIndex = 0;
@@ -114,7 +114,7 @@
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideExitButtonCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideFMListZoomButtonsCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideUninstallButtonCheckBox);
-            this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 525);
+            this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 524);
             this.ShowOrHideUIElementsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.ShowOrHideUIElementsGroupBox.Name = "ShowOrHideUIElementsGroupBox";
             this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(424, 107);
