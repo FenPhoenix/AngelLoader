@@ -58,10 +58,8 @@ namespace AngelLoader.Forms.CustomControls
 
         public DarkComboBox()
         {
-            // Hack to make it autosize in dark mode
-            DropDownHeight = int.MaxValue;
-
-            SetUpTheme();
+            // We only support DropDownList for dark mode
+            base.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
         private void SetUpTheme()
@@ -72,7 +70,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_darkModeEnabled)
             {
-                DrawMode = DrawMode.OwnerDrawVariable;
+                DrawMode = DrawMode.OwnerDrawFixed;
                 base.FlatStyle = FlatStyle.Flat;
             }
             else
@@ -81,7 +79,6 @@ namespace AngelLoader.Forms.CustomControls
                 base.FlatStyle = FlatStyle.Standard;
             }
 
-            base.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
         private void InvalidateIfDark()
