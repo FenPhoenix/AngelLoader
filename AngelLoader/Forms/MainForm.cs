@@ -608,14 +608,6 @@ namespace AngelLoader.Forms
                 new Component[] { FilterShowUnsupportedButton },
                 new Component[] { FilterShowRecentAtTopButton }
             };
-
-            // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
-            // while running(?) meh, whatever
-            ReadmeZoomInButton.BringToFront();
-            ReadmeZoomOutButton.BringToFront();
-            ReadmeResetZoomButton.BringToFront();
-            ReadmeFullScreenButton.BringToFront();
-            ChooseReadmeComboBox.BringToFront();
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
@@ -1430,6 +1422,14 @@ namespace AngelLoader.Forms
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
                 RefreshFiltersButton.Image = Images.Refresh;
+
+                // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
+                // while running(?) meh, whatever
+                ReadmeZoomInButton.BringToFront();
+                ReadmeZoomOutButton.BringToFront();
+                ReadmeResetZoomButton.BringToFront();
+                ReadmeFullScreenButton.BringToFront();
+                ChooseReadmeComboBox.BringToFront();
             }
             finally
             {
