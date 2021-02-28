@@ -61,6 +61,10 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public methods
 
+        /// <summary>
+        /// Adds the visual scrollbar to its closest addable parent. If it has no closest addable parent or it
+        /// has already been added, it does nothing.
+        /// </summary>
         public void AddToParent()
         {
             if (!_addedToControls && _owner.ClosestAddableParent != null)

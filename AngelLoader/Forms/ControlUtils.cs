@@ -235,6 +235,9 @@ namespace AngelLoader.Forms
 
             bool darkMode = theme == VisualTheme.Dark;
 
+            // TODO: @DarkMode(FillControlDict): Controls might change their colors after construct
+            // For example, in the Settings window, we might get a textbox with an error-red background, and we
+            // would then have to make sure we set the right colors on mode change.
             if (controlColors.Count == 0) FillControlDict(form, controlColors);
 
             #region Add native dark scroll bars to their closest addable parents
@@ -347,7 +350,7 @@ namespace AngelLoader.Forms
         internal static void RepositionScroll(IntPtr handle, SCROLLINFO si, int direction)
         {
             // Reposition scroll
-            Native.SetScrollInfo(handle, direction, ref si, true);
+            SetScrollInfo(handle, direction, ref si, true);
 
             // Send a WM_*SCROLL scroll message using SB_THUMBTRACK as wParam
             // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
