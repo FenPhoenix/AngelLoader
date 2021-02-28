@@ -8,21 +8,6 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed class DarkGroupBox : GroupBox, IDarkable
     {
-        private Color _borderColor = DarkColors.LightBorder;
-
-        [Category("Appearance")]
-        [Description("Determines the color of the border.")]
-        [PublicAPI]
-        public Color BorderColor
-        {
-            get => _borderColor;
-            set
-            {
-                _borderColor = value;
-                if (_darkModeEnabled) Invalidate();
-            }
-        }
-
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
@@ -80,15 +65,12 @@ namespace AngelLoader.Forms.CustomControls
 
             g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
 
-            using (var p = new Pen(BorderColor, 1))
-            {
-                var borderRect = new Rectangle(
-                    0,
-                    (int)stringSize.Height / 2,
-                    rect.Width - 1,
-                    rect.Height - ((int)stringSize.Height / 2) - 1);
-                g.DrawRectangle(p, borderRect);
-            }
+            var borderRect = new Rectangle(
+                0,
+                (int)stringSize.Height / 2,
+                rect.Width - 1,
+                rect.Height - ((int)stringSize.Height / 2) - 1);
+            g.DrawRectangle(DarkColors.LightBorderPen, borderRect);
 
             var textRect = new Rectangle(
                 rect.Left + Consts.Padding,

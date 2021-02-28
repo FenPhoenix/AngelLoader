@@ -45,8 +45,8 @@ namespace AngelLoader.Forms.CustomControls
                 InvalidateIfDark();
             }
         }
-        [PublicAPI]
 
+        [PublicAPI]
         public new bool Enabled
         {
             get => base.Enabled;
@@ -113,6 +113,8 @@ namespace AngelLoader.Forms.CustomControls
 
         private bool _darkModeEnabled;
         [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public virtual bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -126,13 +128,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void SetUpTheme()
         {
-            SetStyle(ControlStyles.OptimizedDoubleBuffer |
-                     ControlStyles.ResizeRedraw |
-                     ControlStyles.UserPaint, true);
-
             // Everything needs to be just like this, or else there are cases where the appearance is wrong
-
-            UseCompatibleTextRendering = false;
 
             if (_darkModeEnabled)
             {
@@ -159,7 +155,11 @@ namespace AngelLoader.Forms.CustomControls
         public DarkButton()
         {
             UseMnemonic = false;
-            SetUpTheme();
+            UseCompatibleTextRendering = false;
+
+            SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                     ControlStyles.ResizeRedraw |
+                     ControlStyles.UserPaint, true);
         }
 
         #endregion
