@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using AL_Common;
 using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -50,6 +52,8 @@ namespace AngelLoader.Forms.CustomControls
         */
 
         private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;

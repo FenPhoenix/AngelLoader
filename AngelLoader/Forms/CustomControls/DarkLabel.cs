@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 
@@ -7,6 +8,7 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class DarkLabel : Label, IDarkable
     {
         [PublicAPI]
+        [Browsable(false)]
         public bool DarkModeEnabled { get; set; }
 
         protected override void OnPaint(PaintEventArgs e)

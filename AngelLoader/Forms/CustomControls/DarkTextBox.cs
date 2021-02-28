@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
@@ -18,6 +19,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private bool _darkModeEnabled;
         [PublicAPI]
+        [Browsable(false)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -134,13 +136,21 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        [Browsable(false)]
         public bool Suspended { get; set; }
+        [Browsable(false)]
         public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; private set; }
+        [Browsable(false)]
         public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; private set; }
+        [Browsable(false)]
         public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; private set; }
+        [Browsable(false)]
         public event EventHandler? Scroll;
+        [Browsable(false)]
         public Control? ClosestAddableParent => Parent;
+        [Browsable(false)]
         public event EventHandler? DarkModeChanged;
+        [Browsable(false)]
         public event EventHandler? RefreshIfNeededForceCorner;
 
         protected override void WndProc(ref Message m)
@@ -149,6 +159,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 case Native.WM_PAINT:
                 case Native.WM_VSCROLL:
+                case Native.WM_HSCROLL:
                     base.WndProc(ref m);
                     if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     break;

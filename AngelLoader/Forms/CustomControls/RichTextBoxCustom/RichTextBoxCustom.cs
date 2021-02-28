@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -45,17 +46,21 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        [Browsable(false)]
         public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; }
+        [Browsable(false)]
         public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; }
+        [Browsable(false)]
         public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; }
-
+        [Browsable(false)]
         public event EventHandler? Scroll;
-
+        [Browsable(false)]
         public bool Suspended { get; set; }
-
+        [Browsable(false)]
         public event EventHandler? DarkModeChanged;
+        [Browsable(false)]
         public event EventHandler? RefreshIfNeededForceCorner;
-
+        [Browsable(false)]
         public Control? ClosestAddableParent => Parent;
 
         public RichTextBoxCustom()

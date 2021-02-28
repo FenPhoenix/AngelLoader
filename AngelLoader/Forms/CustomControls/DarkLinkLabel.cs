@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 
@@ -16,6 +17,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private bool _darkModeEnabled;
         [PublicAPI]
+        [Browsable(false)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;

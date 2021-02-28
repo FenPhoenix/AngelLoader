@@ -403,7 +403,7 @@ namespace AngelLoader.Forms
                         !EverythingPanel.Enabled ? HelpSections.MainWindow :
                         mainMenuWasOpen ? HelpSections.MainMenu :
                         FMsDGV_FM_LLMenu.Visible ? HelpSections.FMContextMenu :
-                        FMsDGV.ColumnHeaderMenuVisible ? HelpSections.ColumnHeaderContextMenu :
+                        FMsDGV_ColumnHeaderLLMenu.Visible ? HelpSections.ColumnHeaderContextMenu :
                         // TODO: We could try to be clever and take mouse position into account in some cases?
                         AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
                         TopRightMenuButton.Focused || TopRightLLMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :

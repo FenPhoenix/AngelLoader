@@ -10,6 +10,8 @@ namespace AngelLoader.Forms.CustomControls
     internal sealed class ToolStripCustom : ToolStrip, IDarkable
     {
         private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -100,6 +102,8 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class ToolStripButtonCustom : ToolStripButton, IDarkable
     {
         private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -123,6 +127,8 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class ToolStripArrowButton : ToolStripButton, IDarkable
     {
         private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -8,6 +8,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -26,6 +27,16 @@ namespace AngelLoader.Forms.CustomControls
         private int _mouseDownOnHeader = -1;
 
         #endregion
+
+        [Browsable(false)]
+        public new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
+        [Browsable(false)]
+        public new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
+
+        [Browsable(false)]
+        public ScrollBarVisualOnly VerticalVisualScrollBar { get; }
+        [Browsable(false)]
+        public ScrollBarVisualOnly HorizontalVisualScrollBar { get; }
 
         #region Public fields
 
@@ -51,6 +62,8 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -111,23 +124,13 @@ namespace AngelLoader.Forms.CustomControls
             */
         }
 
-        #region API methods
+        #region Public methods
 
         #region Init
-
-        public new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
-        public new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
-
-        public ScrollBarVisualOnly VerticalVisualScrollBar { get; }
-        public ScrollBarVisualOnly HorizontalVisualScrollBar { get; }
 
         internal void InjectOwner(MainForm owner) => _owner = owner;
 
         #endregion
-
-        // We keep this non-static so we can call it with an instance syntax like everything else for consistency.
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal bool ColumnHeaderMenuVisible => FMsDGV_ColumnHeaderLLMenu.Visible;
 
         #region Get FM / FM data
 

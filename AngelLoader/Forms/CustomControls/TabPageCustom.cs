@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -10,6 +12,8 @@ namespace AngelLoader.Forms.CustomControls
         private Color? _origBackColor;
 
         private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -30,13 +34,20 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        [Browsable(false)]
         public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
+        [Browsable(false)]
         public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+        [Browsable(false)]
         public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
+        [Browsable(false)]
         public bool Suspended { get; set; }
         public new event EventHandler? Scroll;
+        [Browsable(false)]
         public event EventHandler? DarkModeChanged;
+        [Browsable(false)]
         public event EventHandler? RefreshIfNeededForceCorner;
+        [Browsable(false)]
         public Control? ClosestAddableParent => Parent.Parent;
 
         public TabPageCustom()
