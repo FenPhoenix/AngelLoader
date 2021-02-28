@@ -53,7 +53,11 @@ namespace AngelLoader.Forms
         private readonly int _inFMDisplayVScrollPos;
         private readonly int _inOtherVScrollPos;
 
+        private readonly VisualTheme _inTheme;
+
         #endregion
+
+        private VisualTheme _selfTheme;
 
         private readonly RadioButtonCustom[] PageRadioButtons;
         private readonly ISettingsPage[] Pages;
@@ -97,8 +101,10 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            _selfTheme = config.VisualTheme;
+
             // Disgusting hack to make dark mode not flicker, part un
-            if (Config.VisualTheme == VisualTheme.Dark)
+            if (_selfTheme == VisualTheme.Dark)
             {
                 // To prevent flicker on our bottom panel, we can simply hide it. Also we NEED to hide it, because
                 // for some reason it's unaffected by the blocker below and flickers anyway. Okay then.
@@ -129,6 +135,8 @@ namespace AngelLoader.Forms
             _inFMDisplayVScrollPos = config.SettingsFMDisplayVScrollPos;
             _inOtherVScrollPos = config.SettingsOtherVScrollPos;
 
+            _inTheme = config.VisualTheme;
+
             #endregion
 
             OutConfig = new ConfigData();
@@ -137,8 +145,8 @@ namespace AngelLoader.Forms
             FMDisplayPage = new FMDisplayPage { Visible = false };
             OtherPage = new OtherPage { Visible = false };
 
-            LangGroupBox = OtherPage.LanguageGroupBox;
-            LangComboBox = OtherPage.LanguageComboBox;
+            LangGroupBox = FMDisplayPage.LanguageGroupBox;
+            LangComboBox = FMDisplayPage.LanguageComboBox;
 
             // @GENGAMES (Settings): Begin
 
@@ -220,7 +228,7 @@ namespace AngelLoader.Forms
                 Pages = new ISettingsPage[] { PathsPage };
 
                 PathsPage.PagePanel.Controls.Add(LangGroupBox);
-                OtherPage.PagePanel.Controls.Remove(LangGroupBox);
+                FMDisplayPage.PagePanel.Controls.Remove(LangGroupBox);
                 LangGroupBox.Location = new Point(8, 8);
                 LangGroupBox.Width = PathsPage.Width - 16;
                 LangGroupBox.MinimumSize = new Size(LangGroupBox.Width, LangGroupBox.MinimumSize.Height);
@@ -328,6 +336,17 @@ namespace AngelLoader.Forms
             {
                 #region FM Display page
 
+                switch (_selfTheme)
+                {
+                    case VisualTheme.Classic:
+                        FMDisplayPage.ClassicThemeRadioButton.Checked = true;
+                        break;
+                    case VisualTheme.Dark:
+                    default:
+                        FMDisplayPage.DarkThemeRadioButton.Checked = true;
+                        break;
+                }
+
                 #region Game organization
 
                 switch (config.GameOrganization)
@@ -433,11 +452,7 @@ namespace AngelLoader.Forms
 
                 FMDisplayPage.RatingUseStarsCheckBox.Checked = config.RatingUseStars;
 
-                FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked
-                    ? Images.RatingExample_NDL
-                    : FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked && FMDisplayPage.RatingUseStarsCheckBox.Checked
-                    ? Images.RatingExample_FMSel_Stars
-                    : Images.RatingExample_FMSel_Number;
+                SetRatingImage();
 
                 FMDisplayPage.RatingUseStarsCheckBox.Enabled = FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked;
 
@@ -479,20 +494,20 @@ namespace AngelLoader.Forms
 
                 #region Show/hide UI elements
 
-                OtherPage.HideUninstallButtonCheckBox.Checked = config.HideUninstallButton;
-                OtherPage.HideFMListZoomButtonsCheckBox.Checked = config.HideFMListZoomButtons;
-                OtherPage.HideExitButtonCheckBox.Checked = config.HideExitButton;
+                FMDisplayPage.HideUninstallButtonCheckBox.Checked = config.HideUninstallButton;
+                FMDisplayPage.HideFMListZoomButtonsCheckBox.Checked = config.HideFMListZoomButtons;
+                FMDisplayPage.HideExitButtonCheckBox.Checked = config.HideExitButton;
 
                 #endregion
 
-                OtherPage.ReadmeFixedWidthFontCheckBox.Checked = config.ReadmeUseFixedWidthFont;
+                FMDisplayPage.ReadmeFixedWidthFontCheckBox.Checked = config.ReadmeUseFixedWidthFont;
 
                 #endregion
             }
 
             #endregion
 
-            SetTheme(Config.VisualTheme, startup: true);
+            SetTheme(_selfTheme, startup: true);
 
             // Comes last so we don't have to use any DisableEvents blocks
             #region Hook up page events
@@ -519,6 +534,9 @@ namespace AngelLoader.Forms
 
             if (!startup)
             {
+                FMDisplayPage.ClassicThemeRadioButton.CheckedChanged += VisualThemeRadioButtons_CheckedChanged;
+                FMDisplayPage.DarkThemeRadioButton.CheckedChanged += VisualThemeRadioButtons_CheckedChanged;
+
                 FMDisplayPage.OrganizeGamesByTabRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
                 FMDisplayPage.OrganizeGamesInOneListRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
 
@@ -550,6 +568,8 @@ namespace AngelLoader.Forms
 
         private void SetTheme(VisualTheme theme, bool startup)
         {
+            _selfTheme = theme;
+
             bool darkMode = theme == VisualTheme.Dark;
 
             try
@@ -566,6 +586,8 @@ namespace AngelLoader.Forms
                 );
 
                 ControlPainter.DarkModeEnabled = darkMode;
+                Images.DarkModeEnabled = darkMode;
+                SetRatingImage();
             }
             finally
             {
@@ -604,7 +626,7 @@ namespace AngelLoader.Forms
             PathsPage.FlowLayoutPanel1.PerformLayout();
 
             // Disgusting hack to make dark mode not flicker, part deux
-            if (Config.VisualTheme == VisualTheme.Dark)
+            if (_selfTheme == VisualTheme.Dark)
             {
                 BottomFlowLayoutPanel.Show();
                 DarkModeBlocker?.Hide();
@@ -685,26 +707,31 @@ namespace AngelLoader.Forms
 
                     FMDisplayRadioButton.Text = LText.SettingsWindow.FMDisplay_TabText;
 
-                    FMDisplayPage.GameOrganizationGroupBox.Text = LText.SettingsWindow.FMDisplay_GameOrganization;
+                    FMDisplayPage.VisualThemeGroupBox.Text = LText.SettingsWindow.FMDisplay_Theme;
+                    FMDisplayPage.ClassicThemeRadioButton.Text = LText.SettingsWindow.FMDisplay_Theme_Classic;
+                    FMDisplayPage.DarkThemeRadioButton.Text = LText.SettingsWindow.FMDisplay_Theme_Dark;
+
+                    FMDisplayPage.FMsListGroupBox.Text = LText.SettingsWindow.FMDisplay_FMsList;
+                    FMDisplayPage.GameOrganizationLabel.Text = LText.SettingsWindow.FMDisplay_GameOrganization;
                     FMDisplayPage.OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationByTab;
                     FMDisplayPage.UseShortGameTabNamesCheckBox.Text = LText.SettingsWindow.FMDisplay_UseShortGameTabNames;
                     FMDisplayPage.OrganizeGamesInOneListRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationOneList;
 
-                    FMDisplayPage.SortingGroupBox.Text = LText.SettingsWindow.FMDisplay_Sorting;
+                    FMDisplayPage.SortingLabel.Text = LText.SettingsWindow.FMDisplay_Sorting;
                     FMDisplayPage.EnableIgnoreArticlesCheckBox.Text = LText.SettingsWindow.FMDisplay_IgnoreArticles;
                     FMDisplayPage.MoveArticlesToEndCheckBox.Text = LText.SettingsWindow.FMDisplay_MoveArticlesToEnd;
 
-                    FMDisplayPage.RatingDisplayStyleGroupBox.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyle;
+                    FMDisplayPage.RatingDisplayStyleLabel.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyle;
                     FMDisplayPage.RatingNDLDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleNDL;
                     FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleFMSel;
                     FMDisplayPage.RatingUseStarsCheckBox.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleUseStars;
 
-                    FMDisplayPage.DateFormatGroupBox.Text = LText.SettingsWindow.FMDisplay_DateFormat;
+                    FMDisplayPage.DateFormatLabel.Text = LText.SettingsWindow.FMDisplay_DateFormat;
                     FMDisplayPage.DateCurrentCultureShortRadioButton.Text = LText.SettingsWindow.FMDisplay_CurrentCultureShort;
                     FMDisplayPage.DateCurrentCultureLongRadioButton.Text = LText.SettingsWindow.FMDisplay_CurrentCultureLong;
                     FMDisplayPage.DateCustomRadioButton.Text = LText.SettingsWindow.FMDisplay_Custom;
 
-                    FMDisplayPage.RecentFMsGroupBox.Text = LText.SettingsWindow.FMDisplay_RecentFMs;
+                    FMDisplayPage.RecentFMsHeaderLabel.Text = LText.SettingsWindow.FMDisplay_RecentFMs;
                     FMDisplayPage.RecentFMsLabel.Text = LText.SettingsWindow.FMDisplay_RecentFMs_MaxDays;
 
                     #endregion
@@ -724,7 +751,7 @@ namespace AngelLoader.Forms
                     OtherPage.BackupAllChangedDataRadioButton.Text = LText.SettingsWindow.Other_BackUpAllChangedFiles;
                     OtherPage.BackupAlwaysAskCheckBox.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
 
-                    OtherPage.LanguageGroupBox.Text = LText.SettingsWindow.Other_Language;
+                    FMDisplayPage.LanguageGroupBox.Text = LText.SettingsWindow.Other_Language;
 
                     OtherPage.WebSearchGroupBox.Text = LText.SettingsWindow.Other_WebSearch;
                     OtherPage.WebSearchUrlLabel.Text = LText.SettingsWindow.Other_WebSearchURL;
@@ -734,13 +761,13 @@ namespace AngelLoader.Forms
                     OtherPage.PlayFMOnDCOrEnterGroupBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter;
                     OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask;
 
-                    OtherPage.ShowOrHideUIElementsGroupBox.Text = LText.SettingsWindow.Other_ShowOrHideInterfaceElements;
-                    OtherPage.HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Other_HideUninstallButton;
-                    OtherPage.HideFMListZoomButtonsCheckBox.Text = LText.SettingsWindow.Other_HideFMListZoomButtons;
-                    OtherPage.HideExitButtonCheckBox.Text = LText.SettingsWindow.Other_HideExitButton;
+                    FMDisplayPage.ShowOrHideUIElementsGroupBox.Text = LText.SettingsWindow.Other_ShowOrHideInterfaceElements;
+                    FMDisplayPage.HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Other_HideUninstallButton;
+                    FMDisplayPage.HideFMListZoomButtonsCheckBox.Text = LText.SettingsWindow.Other_HideFMListZoomButtons;
+                    FMDisplayPage.HideExitButtonCheckBox.Text = LText.SettingsWindow.Other_HideExitButton;
 
-                    OtherPage.ReadmeGroupBox.Text = LText.SettingsWindow.Other_ReadmeBox;
-                    OtherPage.ReadmeFixedWidthFontCheckBox.Text = LText.SettingsWindow.Other_ReadmeUseFixedWidthFont;
+                    FMDisplayPage.ReadmeGroupBox.Text = LText.SettingsWindow.Other_ReadmeBox;
+                    FMDisplayPage.ReadmeFixedWidthFontCheckBox.Text = LText.SettingsWindow.Other_ReadmeUseFixedWidthFont;
 
                     #endregion
                 }
@@ -824,7 +851,7 @@ namespace AngelLoader.Forms
             {
                 foreach (var tb in ErrorableTextBoxes)
                 {
-                    tb.BackColor = Config.VisualTheme == VisualTheme.Dark
+                    tb.BackColor = _selfTheme == VisualTheme.Dark
                         ? DarkColors.LightBackground
                         : SystemColors.Window;
                     tb.Tag = PathError.False;
@@ -863,18 +890,23 @@ namespace AngelLoader.Forms
 
             if (DialogResult != DialogResult.OK)
             {
-                if (!_startup && !LangComboBox.SelectedBackingItem().EqualsI(_inLanguage))
+                if (!_startup)
                 {
-                    try
+                    if (!LangComboBox.SelectedBackingItem().EqualsI(_inLanguage))
                     {
-                        // It's actually totally fine that this one is a reference.
-                        LText = _inLText;
-                        LocalizeOwnerForm();
+                        try
+                        {
+                            // It's actually totally fine that this one is a reference.
+                            LText = _inLText;
+                            LocalizeOwnerForm();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Exception in language reading", ex);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Log("Exception in language reading", ex);
-                    }
+
+                    ThemeOwnerForm(_inTheme);
                 }
 
                 return;
@@ -919,6 +951,10 @@ namespace AngelLoader.Forms
             else
             {
                 #region FM Display page
+
+                OutConfig.VisualTheme = FMDisplayPage.DarkThemeRadioButton.Checked
+                    ? VisualTheme.Dark
+                    : VisualTheme.Classic;
 
                 #region Game organization
 
@@ -1026,13 +1062,13 @@ namespace AngelLoader.Forms
 
                 #region Show/hide UI elements
 
-                OutConfig.HideUninstallButton = OtherPage.HideUninstallButtonCheckBox.Checked;
-                OutConfig.HideFMListZoomButtons = OtherPage.HideFMListZoomButtonsCheckBox.Checked;
-                OutConfig.HideExitButton = OtherPage.HideExitButtonCheckBox.Checked;
+                OutConfig.HideUninstallButton = FMDisplayPage.HideUninstallButtonCheckBox.Checked;
+                OutConfig.HideFMListZoomButtons = FMDisplayPage.HideFMListZoomButtonsCheckBox.Checked;
+                OutConfig.HideExitButton = FMDisplayPage.HideExitButtonCheckBox.Checked;
 
                 #endregion
 
-                OutConfig.ReadmeUseFixedWidthFont = OtherPage.ReadmeFixedWidthFontCheckBox.Checked;
+                OutConfig.ReadmeUseFixedWidthFont = FMDisplayPage.ReadmeFixedWidthFontCheckBox.Checked;
 
                 #endregion
             }
@@ -1272,6 +1308,18 @@ namespace AngelLoader.Forms
 
         #region FM Display page
 
+        private void VisualThemeRadioButtons_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+
+            VisualTheme theme = sender == FMDisplayPage.DarkThemeRadioButton
+                ? VisualTheme.Dark
+                : VisualTheme.Classic;
+
+            SetTheme(theme, startup: false);
+            ThemeOwnerForm(theme);
+        }
+
         private void GameOrganizationRadioButtons_CheckedChanged(object sender, EventArgs e)
         {
             FMDisplayPage.UseShortGameTabNamesCheckBox.Enabled = FMDisplayPage.OrganizeGamesByTabRadioButton.Checked;
@@ -1417,7 +1465,7 @@ namespace AngelLoader.Forms
             if (FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked)
             {
                 FMDisplayPage.RatingUseStarsCheckBox.Enabled = false;
-                FMDisplayPage.RatingExamplePictureBox.Image = Images.RatingExample_NDL;
+                SetRatingImage();
             }
         }
 
@@ -1439,7 +1487,9 @@ namespace AngelLoader.Forms
 
         private void SetRatingImage()
         {
-            FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingUseStarsCheckBox.Checked
+            FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked
+                ? Images.RatingExample_NDL
+                : FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked && FMDisplayPage.RatingUseStarsCheckBox.Checked
                 ? Images.RatingExample_FMSel_Stars
                 : Images.RatingExample_FMSel_Number;
         }
@@ -1472,7 +1522,7 @@ namespace AngelLoader.Forms
         private void ShowPathError(DarkTextBox textBox, bool shown)
         {
             textBox.BackColor =
-                Config.VisualTheme == VisualTheme.Dark
+                _selfTheme == VisualTheme.Dark
                     ? shown
                         ? DarkColors.Fen_RedHighlight
                         : DarkColors.LightBackground
@@ -1526,6 +1576,7 @@ namespace AngelLoader.Forms
 
         private void LocalizeOwnerForm()
         {
+            if (_ownerForm == null) return;
             try
             {
                 _ownerForm!.Localize();
@@ -1535,6 +1586,8 @@ namespace AngelLoader.Forms
                 Log(nameof(_ownerForm) + " was null or some other exotic exception occurred - not supposed to happen", ex);
             }
         }
+
+        private void ThemeOwnerForm(VisualTheme theme) => _ownerForm?.SetTheme(theme);
 
         /// <summary>
         /// Clean up any resources being used.

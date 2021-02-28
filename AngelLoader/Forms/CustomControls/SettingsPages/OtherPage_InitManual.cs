@@ -8,16 +8,8 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
         private void InitComponentManual()
         {
             PagePanel = new DarkPanel();
-            ReadmeGroupBox = new DarkGroupBox();
-            ReadmeFixedWidthFontCheckBox = new DarkCheckBox();
-            ShowOrHideUIElementsGroupBox = new DarkGroupBox();
-            HideExitButtonCheckBox = new DarkCheckBox();
-            HideFMListZoomButtonsCheckBox = new DarkCheckBox();
-            HideUninstallButtonCheckBox = new DarkCheckBox();
             PlayFMOnDCOrEnterGroupBox = new DarkGroupBox();
             ConfirmPlayOnDCOrEnterCheckBox = new DarkCheckBox();
-            LanguageGroupBox = new DarkGroupBox();
-            LanguageComboBox = new ComboBoxCustom();
             WebSearchGroupBox = new DarkGroupBox();
             WebSearchUrlResetButton = new DarkButton();
             WebSearchTitleExplanationLabel = new DarkLabel();
@@ -34,10 +26,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             ConvertWAVsTo16BitOnInstallCheckBox = new DarkCheckBox();
             DummyAutoScrollPanel = new Control();
             PagePanel.SuspendLayout();
-            ReadmeGroupBox.SuspendLayout();
-            ShowOrHideUIElementsGroupBox.SuspendLayout();
             PlayFMOnDCOrEnterGroupBox.SuspendLayout();
-            LanguageGroupBox.SuspendLayout();
             WebSearchGroupBox.SuspendLayout();
             UninstallingFMsGroupBox.SuspendLayout();
             FMFileConversionGroupBox.SuspendLayout();
@@ -46,79 +35,21 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             // PagePanel
             // 
             PagePanel.AutoScroll = true;
-            PagePanel.Controls.Add(ReadmeGroupBox);
-            PagePanel.Controls.Add(ShowOrHideUIElementsGroupBox);
             PagePanel.Controls.Add(PlayFMOnDCOrEnterGroupBox);
-            PagePanel.Controls.Add(LanguageGroupBox);
             PagePanel.Controls.Add(WebSearchGroupBox);
             PagePanel.Controls.Add(UninstallingFMsGroupBox);
             PagePanel.Controls.Add(FMFileConversionGroupBox);
             PagePanel.Controls.Add(DummyAutoScrollPanel);
             PagePanel.Dock = DockStyle.Fill;
             PagePanel.Location = new Point(0, 0);
-            PagePanel.Size = new Size(440, 713);
+            PagePanel.Size = new Size(440, 449);
             PagePanel.TabIndex = 0;
-            // 
-            // ReadmeGroupBox
-            // 
-            ReadmeGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            ReadmeGroupBox.Controls.Add(ReadmeFixedWidthFontCheckBox);
-            ReadmeGroupBox.Location = new Point(8, 640);
-            ReadmeGroupBox.Size = new Size(424, 64);
-            ReadmeGroupBox.TabIndex = 13;
-            ReadmeGroupBox.TabStop = false;
-            // 
-            // ReadmeFixedWidthFontCheckBox
-            // 
-            ReadmeFixedWidthFontCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            ReadmeFixedWidthFontCheckBox.Checked = true;
-            ReadmeFixedWidthFontCheckBox.Location = new Point(16, 24);
-            ReadmeFixedWidthFontCheckBox.Size = new Size(400, 32);
-            ReadmeFixedWidthFontCheckBox.TabIndex = 0;
-            ReadmeFixedWidthFontCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // ShowOrHideUIElementsGroupBox
-            // 
-            ShowOrHideUIElementsGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            ShowOrHideUIElementsGroupBox.Controls.Add(HideExitButtonCheckBox);
-            ShowOrHideUIElementsGroupBox.Controls.Add(HideFMListZoomButtonsCheckBox);
-            ShowOrHideUIElementsGroupBox.Controls.Add(HideUninstallButtonCheckBox);
-            ShowOrHideUIElementsGroupBox.Location = new Point(8, 525);
-            ShowOrHideUIElementsGroupBox.MinimumSize = new Size(424, 0);
-            ShowOrHideUIElementsGroupBox.Size = new Size(424, 107);
-            ShowOrHideUIElementsGroupBox.TabIndex = 5;
-            ShowOrHideUIElementsGroupBox.TabStop = false;
-            // 
-            // HideExitButtonCheckBox
-            // 
-            HideExitButtonCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            HideExitButtonCheckBox.Checked = true;
-            HideExitButtonCheckBox.Location = new Point(16, 72);
-            HideExitButtonCheckBox.Size = new Size(400, 32);
-            HideExitButtonCheckBox.TabIndex = 3;
-            HideExitButtonCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // HideFMListZoomButtonsCheckBox
-            // 
-            HideFMListZoomButtonsCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            HideFMListZoomButtonsCheckBox.Location = new Point(16, 44);
-            HideFMListZoomButtonsCheckBox.Size = new Size(400, 32);
-            HideFMListZoomButtonsCheckBox.TabIndex = 2;
-            HideFMListZoomButtonsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // HideUninstallButtonCheckBox
-            // 
-            HideUninstallButtonCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            HideUninstallButtonCheckBox.Location = new Point(16, 16);
-            HideUninstallButtonCheckBox.Size = new Size(400, 32);
-            HideUninstallButtonCheckBox.TabIndex = 1;
-            HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // PlayFMOnDCOrEnterGroupBox
             // 
             PlayFMOnDCOrEnterGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             PlayFMOnDCOrEnterGroupBox.Controls.Add(ConfirmPlayOnDCOrEnterCheckBox);
-            PlayFMOnDCOrEnterGroupBox.Location = new Point(8, 456);
+            PlayFMOnDCOrEnterGroupBox.Location = new Point(8, 384);
             PlayFMOnDCOrEnterGroupBox.MinimumSize = new Size(424, 0);
             PlayFMOnDCOrEnterGroupBox.Size = new Size(424, 56);
             PlayFMOnDCOrEnterGroupBox.TabIndex = 4;
@@ -131,24 +62,6 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             ConfirmPlayOnDCOrEnterCheckBox.Location = new Point(16, 24);
             ConfirmPlayOnDCOrEnterCheckBox.TabIndex = 0;
             ConfirmPlayOnDCOrEnterCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // LanguageGroupBox
-            // 
-            LanguageGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            LanguageGroupBox.Controls.Add(LanguageComboBox);
-            LanguageGroupBox.Location = new Point(8, 8);
-            LanguageGroupBox.MinimumSize = new Size(424, 0);
-            LanguageGroupBox.Size = new Size(424, 60);
-            LanguageGroupBox.TabIndex = 0;
-            LanguageGroupBox.TabStop = false;
-            // 
-            // LanguageComboBox
-            // 
-            LanguageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            LanguageComboBox.FormattingEnabled = true;
-            LanguageComboBox.Location = new Point(16, 24);
-            LanguageComboBox.Size = new Size(184, 21);
-            LanguageComboBox.TabIndex = 0;
             //
             // WebSearchGroupBox
             // 
@@ -157,7 +70,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             WebSearchGroupBox.Controls.Add(WebSearchTitleExplanationLabel);
             WebSearchGroupBox.Controls.Add(WebSearchUrlTextBox);
             WebSearchGroupBox.Controls.Add(WebSearchUrlLabel);
-            WebSearchGroupBox.Location = new Point(8, 336);
+            WebSearchGroupBox.Location = new Point(8, 264);
             WebSearchGroupBox.MinimumSize = new Size(424, 0);
             WebSearchGroupBox.Size = new Size(424, 108);
             WebSearchGroupBox.TabIndex = 3;
@@ -201,7 +114,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             UninstallingFMsGroupBox.Controls.Add(BackupAlwaysAskCheckBox);
             UninstallingFMsGroupBox.Controls.Add(BackupAllChangedDataRadioButton);
             UninstallingFMsGroupBox.Controls.Add(BackupSavesAndScreensOnlyRadioButton);
-            UninstallingFMsGroupBox.Location = new Point(8, 176);
+            UninstallingFMsGroupBox.Location = new Point(8, 104);
             UninstallingFMsGroupBox.MinimumSize = new Size(424, 0);
             UninstallingFMsGroupBox.Size = new Size(424, 148);
             UninstallingFMsGroupBox.TabIndex = 2;
@@ -250,7 +163,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             FMFileConversionGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             FMFileConversionGroupBox.Controls.Add(ConvertOGGsToWAVsOnInstallCheckBox);
             FMFileConversionGroupBox.Controls.Add(ConvertWAVsTo16BitOnInstallCheckBox);
-            FMFileConversionGroupBox.Location = new Point(8, 80);
+            FMFileConversionGroupBox.Location = new Point(8, 8);
             FMFileConversionGroupBox.MinimumSize = new Size(424, 0);
             FMFileConversionGroupBox.Size = new Size(424, 84);
             FMFileConversionGroupBox.TabIndex = 1;
@@ -275,7 +188,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             // 
             // DummyAutoScrollPanel
             // 
-            DummyAutoScrollPanel.Location = new Point(8, 120);
+            DummyAutoScrollPanel.Location = new Point(8, 48);
             DummyAutoScrollPanel.Size = new Size(424, 8);
             DummyAutoScrollPanel.TabIndex = 12;
             // 
@@ -284,13 +197,10 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(PagePanel);
-            Size = new Size(440, 713);
+            Size = new Size(440, 449);
             PagePanel.ResumeLayout(false);
-            ReadmeGroupBox.ResumeLayout(false);
-            ShowOrHideUIElementsGroupBox.ResumeLayout(false);
             PlayFMOnDCOrEnterGroupBox.ResumeLayout(false);
             PlayFMOnDCOrEnterGroupBox.PerformLayout();
-            LanguageGroupBox.ResumeLayout(false);
             WebSearchGroupBox.ResumeLayout(false);
             WebSearchGroupBox.PerformLayout();
             UninstallingFMsGroupBox.ResumeLayout(false);

@@ -173,7 +173,8 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-            SetTheme(Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic);
+            Config.VisualTheme = Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic;
+            SetTheme(Config.VisualTheme);
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
@@ -1382,8 +1383,6 @@ namespace AngelLoader.Forms
 
         private void SetTheme(VisualTheme theme, bool startup)
         {
-            Config.VisualTheme = theme;
-
             bool darkMode = theme == VisualTheme.Dark;
 
             try
@@ -1403,7 +1402,7 @@ namespace AngelLoader.Forms
                          || x is SplitterPanel
                 );
 
-                SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible);
+                SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible, theme);
 
                 MainLLMenu.DarkModeEnabled = darkMode;
                 FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
@@ -1419,6 +1418,7 @@ namespace AngelLoader.Forms
                 ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
                 ProgressBoxDarkModeEnabled = darkMode;
                 ControlPainter.DarkModeEnabled = darkMode;
+                Images.DarkModeEnabled = darkMode;
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
                 RefreshFiltersButton.Image = Images.Refresh;
@@ -3662,16 +3662,16 @@ namespace AngelLoader.Forms
         {
             ReadmeRichTextBox.Visible = enabled;
 
-            SetReadmeButtonsBackColor(enabled);
+            SetReadmeButtonsBackColor(enabled, Config.VisualTheme);
 
             // In case the cursor is already over the readme when we do this
             // (cause it won't show automatically if it is)
             ShowReadmeControls(enabled && CursorOverReadmeArea());
         }
 
-        private void SetReadmeButtonsBackColor(bool enabled)
+        private void SetReadmeButtonsBackColor(bool enabled, VisualTheme theme)
         {
-            if (Config.VisualTheme == VisualTheme.Dark) return;
+            if (theme == VisualTheme.Dark) return;
 
             Color backColor = enabled ? SystemColors.Window : SystemColors.Control;
             ReadmeZoomInButton.BackColor = backColor;

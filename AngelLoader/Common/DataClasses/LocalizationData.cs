@@ -527,15 +527,19 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string FMDisplay_TabText = "FM Display";
             [FenGenBlankLine]
-            internal readonly string FMDisplay_GameOrganization = "Game organization";
+            internal readonly string FMDisplay_Theme = "Theme";
+            internal readonly string FMDisplay_Theme_Classic = "Classic";
+            internal readonly string FMDisplay_Theme_Dark = "Dark";
+            [FenGenBlankLine]
+            internal readonly string FMDisplay_FMsList = "FMs list";
+            [FenGenBlankLine]
+            internal readonly string FMDisplay_GameOrganization = "Game organization:";
             internal readonly string FMDisplay_GameOrganizationByTab = "Each game in its own tab";
             internal readonly string FMDisplay_UseShortGameTabNames = "Use short names on game tabs";
             internal readonly string FMDisplay_GameOrganizationOneList = "Everything in one list, and games are filters";
             [FenGenBlankLine]
             internal readonly string FMDisplay_Sorting = "Sorting";
-            [FenGenBlankLine]
             internal readonly string FMDisplay_IgnoreArticles = "Ignore the following leading articles when sorting by title:";
-            [FenGenBlankLine]
             internal readonly string FMDisplay_MoveArticlesToEnd = "Move articles to the end of names when displaying them";
             [FenGenBlankLine]
             internal readonly string FMDisplay_RatingDisplayStyle = "Rating display style";

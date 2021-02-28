@@ -345,6 +345,8 @@ namespace AngelLoader
 
             #region FM Display tab
 
+            Config.VisualTheme = outConfig.VisualTheme;
+
             Config.GameOrganization = outConfig.GameOrganization;
             Config.UseShortGameTabNames = outConfig.UseShortGameTabNames;
 

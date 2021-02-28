@@ -17,6 +17,8 @@ namespace AngelLoader.Forms
     // NOTE: This class and everything accessible inside it needs to be public for the designers to recognize it.
     public static class Images
     {
+        public static bool DarkModeEnabled;
+
         #region Games
 
         // @GENGAMES (Images): Begin
@@ -365,7 +367,7 @@ namespace AngelLoader.Forms
         private static Bitmap? _refresh_Classic;
         private static Bitmap? _refresh_Dark;
         public static Bitmap Refresh =>
-            Config.VisualTheme == VisualTheme.Dark
+            DarkModeEnabled
                 ? _refresh_Dark ??= Resources.Refresh_DarkMode
                 : _refresh_Classic ??= Resources.Refresh;
 
@@ -376,14 +378,14 @@ namespace AngelLoader.Forms
         private static Bitmap? _ratingExample_NDL_Classic;
         private static Bitmap? _ratingExample_NDL_Dark;
         public static Bitmap RatingExample_NDL =>
-            Config.VisualTheme == VisualTheme.Dark
+            DarkModeEnabled
                 ? _ratingExample_NDL_Dark ??= Resources.RatingExample_NDL_Dark
                 : _ratingExample_NDL_Classic ??= Resources.RatingExample_NDL;
 
         private static Bitmap? _ratingExample_FMSel_Stars_Classic;
         private static Bitmap? _ratingExample_FMSel_Stars_Dark;
         public static Bitmap RatingExample_FMSel_Stars =>
-            Config.VisualTheme == VisualTheme.Dark
+            DarkModeEnabled
                 ? _ratingExample_FMSel_Stars_Dark ??= GetRatingExample_FMSel_Stars(darkMode: true)
                 : _ratingExample_FMSel_Stars_Classic ??= GetRatingExample_FMSel_Stars(darkMode: false);
 
@@ -430,7 +432,7 @@ namespace AngelLoader.Forms
         private static Bitmap? _ratingExample_FMSel_Number_Classic;
         private static Bitmap? _ratingExample_FMSel_Number_Dark;
         public static Bitmap RatingExample_FMSel_Number =>
-            Config.VisualTheme == VisualTheme.Dark
+            DarkModeEnabled
                 ? _ratingExample_FMSel_Number_Dark ??= Resources.RatingExample_FMSel_Number_Dark
                 : _ratingExample_FMSel_Number_Classic ??= Resources.RatingExample_FMSel_Number;
 
