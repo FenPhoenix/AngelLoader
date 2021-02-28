@@ -1399,7 +1399,7 @@ namespace AngelLoader.Forms
                     this,
                     _controlColors,
                     x => x.EqualsIfNotNull(ProgressBox)
-                         || _progressBoxConstructed && ProgressBox!.Controls.Contains(x as Control)
+                         || (_progressBoxConstructed && x is Control xControl && ProgressBox!.Controls.Contains(xControl))
                          || x is SplitterPanel
                 );
 
