@@ -434,10 +434,20 @@ namespace AngelLoader.Forms
             PaintEventArgs e,
             Image img,
             int x = 0,
-            int? y = null)
+            int? y = null,
+            RectangleF? scaledRect = null)
         {
-            y ??= (button.Height - img.Height) / 2;
-            e.Graphics.DrawImage(img, x, (int)y);
+            if (scaledRect != null)
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+                e.Graphics.DrawImage(img, (RectangleF)scaledRect);
+            }
+            else
+            {
+                y ??= (button.Height - img.Height) / 2;
+                e.Graphics.DrawImage(img, x, (int)y);
+            }
+
         }
 
         internal static void PaintPlusButton(Button button, PaintEventArgs e)

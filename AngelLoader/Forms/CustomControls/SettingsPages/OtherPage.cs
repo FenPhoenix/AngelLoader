@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 using AL_Common;
 using JetBrains.Annotations;
 
@@ -25,5 +26,19 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
         public void ShowPage() => Show();
 
         public void HidePage() => Hide();
+
+        private void WebSearchUrlResetButton_Paint(object sender, PaintEventArgs e)
+        {
+            var cr = WebSearchUrlResetButton.ClientRectangle;
+            ControlPainter.PaintBitmapButton(
+                WebSearchUrlResetButton,
+                e,
+                Images.Refresh,
+                scaledRect: new RectangleF(
+                    cr.X + 2f,
+                    cr.Y + 2f,
+                    cr.Width - 4f,
+                    cr.Height - 4f));
+        }
     }
 }

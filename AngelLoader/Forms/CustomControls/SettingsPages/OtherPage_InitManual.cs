@@ -166,13 +166,11 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             // WebSearchUrlResetButton
             // 
             WebSearchUrlResetButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            WebSearchUrlResetButton.BackgroundImage = Images.Refresh;
-            WebSearchUrlResetButton.BackgroundImageLayout = ImageLayout.Zoom;
-            WebSearchUrlResetButton.FlatStyle = FlatStyle.Flat;
-            WebSearchUrlResetButton.Location = new Point(394, 48);
-            WebSearchUrlResetButton.Size = new Size(20, 20);
+            WebSearchUrlResetButton.Location = new Point(393, 47);
+            WebSearchUrlResetButton.Size = new Size(22, 22);
             WebSearchUrlResetButton.TabIndex = 2;
             WebSearchUrlResetButton.UseVisualStyleBackColor = true;
+            WebSearchUrlResetButton.PaintCustom += WebSearchUrlResetButton_Paint;
             // 
             // WebSearchTitleExplanationLabel
             // 

@@ -1429,6 +1429,7 @@ namespace AngelLoader.Forms
                 ControlPainter.DarkModeEnabled = darkMode;
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
+                RefreshFiltersButton.Image = Images.Refresh;
             }
             finally
             {

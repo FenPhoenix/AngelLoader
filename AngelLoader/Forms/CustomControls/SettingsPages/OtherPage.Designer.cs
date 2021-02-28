@@ -223,14 +223,12 @@
             // WebSearchUrlResetButton
             // 
             this.WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.WebSearchUrlResetButton.BackgroundImage = global::AngelLoader.Forms.Images.Refresh;
-            this.WebSearchUrlResetButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.WebSearchUrlResetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.WebSearchUrlResetButton.Location = new System.Drawing.Point(394, 48);
+            this.WebSearchUrlResetButton.Location = new System.Drawing.Point(393, 47);
             this.WebSearchUrlResetButton.Name = "WebSearchUrlResetButton";
-            this.WebSearchUrlResetButton.Size = new System.Drawing.Size(20, 20);
+            this.WebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);
             this.WebSearchUrlResetButton.TabIndex = 2;
             this.WebSearchUrlResetButton.UseVisualStyleBackColor = true;
+            this.WebSearchUrlResetButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.WebSearchUrlResetButton_Paint);
             // 
             // WebSearchTitleExplanationLabel
             // 

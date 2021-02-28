@@ -362,8 +362,12 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private static Bitmap? _refresh;
-        public static Bitmap Refresh => _refresh ??= Resources.Refresh;
+        private static Bitmap? _refresh_Classic;
+        private static Bitmap? _refresh_Dark;
+        public static Bitmap Refresh =>
+            Config.VisualTheme == VisualTheme.Dark
+                ? _refresh_Dark ??= Resources.Refresh_DarkMode
+                : _refresh_Classic ??= Resources.Refresh;
 
         #region Rating example
 
