@@ -822,13 +822,13 @@ namespace AngelLoader.Forms
             }
             else
             {
-                foreach (var tb in ExePathTextBoxes)
+                foreach (var tb in ErrorableTextBoxes)
                 {
-                    tb.BackColor = SystemColors.Window;
+                    tb.BackColor = Config.VisualTheme == VisualTheme.Dark
+                        ? DarkColors.LightBackground
+                        : SystemColors.Window;
                     tb.Tag = PathError.False;
                 }
-                PathsPage.BackupPathTextBox.BackColor = SystemColors.Window;
-                PathsPage.BackupPathTextBox.Tag = PathError.False;
                 ErrorLabel.Hide();
 
                 // Extremely petty visual nicety - makes the error stuff go away before the form closes
