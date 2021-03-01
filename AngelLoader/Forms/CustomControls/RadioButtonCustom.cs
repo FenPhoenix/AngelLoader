@@ -34,6 +34,8 @@ namespace AngelLoader.Forms.CustomControls
                     ? SystemColors.Window
                     : SystemColors.Control;
             }
+            // Needed to prevent background color sticking when unchecked sometimes
+            Refresh();
         }
 
         [Browsable(true)]

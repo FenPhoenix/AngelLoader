@@ -22,8 +22,6 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    // TODO: @DarkMode: RadioButtonCustom controls don't always unset their mouseover color
-
     internal sealed partial class SettingsForm : Form, IEventDisabler
     {
         #region Private fields
