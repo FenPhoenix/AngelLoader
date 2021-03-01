@@ -19,7 +19,19 @@ namespace FenGen
                 GenerateDesignerFile(designerFile);
             }
         }
-
+        /*
+        TODO(FenGen/DesignerGen):
+        -If Anchor == Top | Left, remove Anchor.
+        -If AutoSize == true OR Dock == Fill, remove Size and Location.
+        -If Dock == Fill, remove Location.
+        -If there exists a Checked and a CheckedState whose values match, remove CheckedState.
+        -If Size is the same as MinimumSize, remove Size.
+        -Remove Location = new Point(0, 0).
+        -If this.Text exists, don't remove it but instead just say Text = " "; (Settings form perf hack).
+        -Somehow deal with icons/images wanting to load from Resources but we want them from Images etc.
+        -Have some way to manually specify things, like specify lines not to overwrite because they're manually
+         set up.
+        */
         private static void GenerateDesignerFile(string designerFile)
         {
             string formFileName = Path.GetFileName(designerFile);
