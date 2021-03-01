@@ -85,9 +85,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        [PublicAPI]
-        public void RefreshScrollBar(bool force = false) => RefreshIfNeeded(forceRefreshAll: force);
-
         #endregion
 
         #region Private methods
@@ -205,10 +202,15 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_owner.DarkModeEnabled)
             {
-                if (Visible) Visible = false;
-                if (_owner.VisualScrollBarCorner?.Visible == true)
+                // Fixes the case in Settings window where sometimes we wouldn't hide ourselves on mode change to
+                // classic
+                if (forceRefreshAll || Visible) Visible = false;
+                if (_owner.VisualScrollBarCorner != null)
                 {
-                    _owner.VisualScrollBarCorner.Visible = false;
+                    if (forceRefreshAll || _owner.VisualScrollBarCorner.Visible)
+                    {
+                        _owner.VisualScrollBarCorner.Visible = false;
+                    }
                 }
                 return;
             }
