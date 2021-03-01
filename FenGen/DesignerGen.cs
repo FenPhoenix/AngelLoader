@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static FenGen.Misc;
 
@@ -116,21 +118,76 @@ namespace FenGen
 
             var destLines = new List<string>();
 
+            bool pastConstructorSection = false;
+            int pastConstructorStartLine = -1;
+
+            foreach (SyntaxTrivia tn in block.DescendantTrivia())
+            {
+                if (tn.IsKind(SyntaxKind.SingleLineCommentTrivia))
+                {
+                    if (tn.ToString().Trim() == "//")
+                    {
+                        pastConstructorStartLine = tn.GetLocation().GetLineSpan().StartLinePosition.Line;
+                        break;
+                    }
+                }
+            }
+
+            if (pastConstructorStartLine == -1) return;
+
             foreach (SyntaxNode node in block.ChildNodes())
             {
                 bool nodeExcluded = false;
 
-                if (node is ExpressionStatementSyntax exp)
+                if (!pastConstructorSection && node.GetLocation().GetLineSpan().StartLinePosition.Line >=
+                    pastConstructorStartLine)
+                {
+                    pastConstructorSection = true;
+                }
+
+                if (pastConstructorSection && node is ExpressionStatementSyntax exp)
                 {
                     foreach (var cn in exp.DescendantNodes())
                     {
-                        if (cn is AssignmentExpressionSyntax { Left: MemberAccessExpressionSyntax mae })
+                        if (cn is AssignmentExpressionSyntax aes)
                         {
-                            string name = mae.Name.ToString();
-                            if (name == "Name" || name == "Text")
+                            bool isFormProperty = false;
+
+                            if (aes.Left is MemberAccessExpressionSyntax left)
                             {
-                                nodeExcluded = true;
-                                break;
+                                foreach (var n in left.DescendantNodes())
+                                {
+                                    if ((n is ThisExpressionSyntax && left.DescendantNodes().Count() == 2) ||
+                                        (n is not ThisExpressionSyntax && left.DescendantNodes().Count() == 1))
+                                    {
+                                        isFormProperty = true;
+                                    }
+
+                                    if (n is IdentifierNameSyntax ins)
+                                    {
+                                        //Trace.WriteLine(cn.ToString());
+                                        //Trace.WriteLine(left.ToString());
+                                        //Trace.WriteLine(ins.ToString());
+                                        //Trace.WriteLine(left.Name.ToString());
+                                        //Trace.WriteLine(left.DescendantNodes().Count());
+                                        //Trace.WriteLine("");
+                                        break;
+                                    }
+                                }
+
+                                string name = left.Name.ToString();
+                                if (name == "Name" || name == "Text")
+                                {
+                                    if (isFormProperty && name == "Text")
+                                    {
+                                        // TODO: Implement setting the value to " "
+                                    }
+                                    else
+                                    {
+                                        nodeExcluded = true;
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }

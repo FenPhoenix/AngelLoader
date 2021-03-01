@@ -94,6 +94,7 @@ namespace FenGen
             Config,
             Language,
             LanguageAndAlsoCreateTestIni,
+            EnableLangReflectionStyleGen,
             GameSupport,
             ExcludeResx,
             RestoreResx,
@@ -108,6 +109,7 @@ namespace FenGen
             { "-fmdata", GenType.FMData },
             { "-language", GenType.Language },
             { "-language_t", GenType.LanguageAndAlsoCreateTestIni },
+            { "-enable_lang_reflection_style_gen", GenType.EnableLangReflectionStyleGen },
             { "-game_support", GenType.GameSupport },
             { "-exclude_resx", GenType.ExcludeResx },
             { "-restore_resx", GenType.RestoreResx },
@@ -197,6 +199,7 @@ namespace FenGen
                 Environment.GetCommandLineArgs()[0],
                 GetArg(GenType.FMData),
                 GetArg(GenType.LanguageAndAlsoCreateTestIni),
+                GetArg(GenType.EnableLangReflectionStyleGen),
                 GetArg(GenType.ExcludeResx),
                 //GetArg(GenType.RestoreResx),
                 GetArg(GenType.AddBuildDate),
@@ -295,7 +298,7 @@ namespace FenGen
                     taggedFilesDict![GenFileTags.LocalizationDest],
                     englishIni,
                     testLangIni,
-                    writeReflectionStyle: args.Contains("-enable_lang_reflection_style_gen"));
+                    writeReflectionStyle: GenTaskActive(GenType.EnableLangReflectionStyleGen));
             }
             if (GenTaskActive(GenType.GameSupport))
             {
