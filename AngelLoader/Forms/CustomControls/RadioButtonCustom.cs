@@ -16,16 +16,24 @@ namespace AngelLoader.Forms.CustomControls
             get => base.DarkModeEnabled;
             set
             {
-                SetCheckedVisualState();
                 base.DarkModeEnabled = value;
+                SetCheckedVisualState();
             }
         }
 
         private void SetCheckedVisualState()
         {
-            DarkModeBackColor = _checked
-                ? DarkColors.Fen_DarkBackground
-                : DarkColors.Fen_ControlBackground;
+            DarkModeBackColor =
+                _checked
+                    ? DarkColors.Fen_DarkBackground
+                    : DarkColors.Fen_ControlBackground;
+
+            if (!DarkModeEnabled)
+            {
+                BackColor = _checked
+                    ? SystemColors.Window
+                    : SystemColors.Control;
+            }
         }
 
         [Browsable(true)]
@@ -37,16 +45,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (_checked == value) return;
 
                 _checked = value;
-                if (DarkModeEnabled)
-                {
-                    SetCheckedVisualState();
-                }
-                else
-                {
-                    BackColor = _checked
-                        ? SystemColors.Window
-                        : SystemColors.Control;
-                }
+                SetCheckedVisualState();
 
                 CheckedChanged?.Invoke(this, EventArgs.Empty);
             }

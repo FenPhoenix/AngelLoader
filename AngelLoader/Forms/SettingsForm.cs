@@ -22,16 +22,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    /*
-    PERF (2019-06-24):
-    _Load: ~31ms
-    ctor: ~17ms
-    
-    Major bottlenecks are:
-    -Localize() - SetTextAutoSize() calls being the main contributors
-    -ShowPage() (for Other page) - nothing we can do about this
-    -Page ctors - lazy-loading these would be a giant headache - not really worth it
-    */
+    // TODO: @DarkMode: RadioButtonCustom controls don't always unset their mouseover color
 
     internal sealed partial class SettingsForm : Form, IEventDisabler
     {
