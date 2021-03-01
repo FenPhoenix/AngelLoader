@@ -38,7 +38,9 @@ namespace FenGen
         internal static List<string> CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories).ToList();
 
         private static List<string>? _designerCSFiles;
-        internal static List<string> DesignerCSFiles => _designerCSFiles ??= CSFiles.Where(x => x.EndsWithI(".Designer.cs")).ToList();
+        internal static List<string> DesignerCSFiles => _designerCSFiles ??= CSFiles.Where
+            (x => x.EndsWithI(".Designer.cs") && !x.EndsWithI("Resources.Designer.cs"))
+            .ToList();
 
         internal static void Clear()
         {
@@ -99,7 +101,8 @@ namespace FenGen
             ExcludeResx,
             RestoreResx,
             AddBuildDate,
-            RemoveBuildDate
+            RemoveBuildDate,
+            GenSlimDesignerFiles
         }
 
         private static readonly Dictionary<string, GenType>
@@ -112,7 +115,8 @@ namespace FenGen
             { "-exclude_resx", GenType.ExcludeResx },
             { "-restore_resx", GenType.RestoreResx },
             { "-add_build_date", GenType.AddBuildDate },
-            { "-remove_build_date", GenType.RemoveBuildDate }
+            { "-remove_build_date", GenType.RemoveBuildDate },
+            { "-gen_slim_designer_files", GenType.GenSlimDesignerFiles }
         };
 
         // Only used for debug, so we can explicitly place test arguments into the set
@@ -198,7 +202,8 @@ namespace FenGen
                 GetArg(GenType.LanguageAndAlsoCreateTestIni),
                 GetArg(GenType.ExcludeResx),
                 //GetArg(GenType.RestoreResx),
-                GetArg(GenType.AddBuildDate)
+                GetArg(GenType.AddBuildDate),
+                GetArg(GenType.GenSlimDesignerFile)
             };
 #else
             string[] args = Environment.GetCommandLineArgs();
@@ -260,6 +265,10 @@ namespace FenGen
             {
                 genFileTags.Add(GenFileTags.BuildDate);
             }
+            if (GenTaskActive(GenType.GenSlimDesignerFiles))
+            {
+                forceFindRequiredFiles = true;
+            }
 
             Dictionary<string, string>? taggedFilesDict = null;
             if (forceFindRequiredFiles || genFileTags.Count > 0)
@@ -310,6 +319,10 @@ namespace FenGen
             if (GenTaskActive(GenType.RemoveBuildDate))
             {
                 BuildDateGen.Generate(taggedFilesDict![GenFileTags.BuildDate], remove: true);
+            }
+            if (GenTaskActive(GenType.GenSlimDesignerFiles))
+            {
+                DesignerGen.Generate();
             }
         }
 

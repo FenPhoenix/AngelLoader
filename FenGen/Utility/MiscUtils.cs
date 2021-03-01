@@ -24,9 +24,9 @@ namespace FenGen
         #region Common gen utils
 
         [PublicAPI]
-        internal static string GetCodeBlock(string destFile, string genAttr)
+        internal static string GetCodeBlock(string file, string genAttr)
         {
-            string code = File.ReadAllText(destFile);
+            string code = File.ReadAllText(file);
             SyntaxTree tree = ParseTextFast(code);
 
             var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, genAttr);
