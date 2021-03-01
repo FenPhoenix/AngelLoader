@@ -1,6 +1,4 @@
-﻿#define FenGen_ExcludeDesigner
-
-namespace AngelLoader.Forms
+﻿namespace AngelLoader.Forms
 {
     sealed partial class FilterTagsForm
     {

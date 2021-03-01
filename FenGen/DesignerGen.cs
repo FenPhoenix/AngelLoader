@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
-using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static FenGen.Misc;
 
@@ -27,18 +22,8 @@ namespace FenGen
 
         private static void GenerateDesignerFile(string designerFile)
         {
-            //const string sourceFile = @"C:\Users\Brian\source\repos\AngelLoader\AngelLoader\Forms\CustomControls\SettingsPages\FMDisplayPage.Designer.cs";
             string formFileName = Path.GetFileName(designerFile);
-            //formFileName = formFileName.Substring(0, (formFileName.Length - "Designer.cs".Length) - 1) + ".cs";
-            //Trace.WriteLine(formFileName);
-            //File.WriteAllLines(@"C:\formFileName.txt", new[] { formFileName });
             string destFile = Path.Combine(Path.GetDirectoryName(designerFile)!, formFileName.Substring(0, (formFileName.Length - "Designer.cs".Length) - 1) + "_InitManual.cs");
-            //using (var sw = new StreamWriter(@"C:\formFileName.txt", append: true))
-            //{
-            //    sw.WriteLine(Path.GetFileName(designerFile));
-            //    sw.WriteLine(destFile);
-            //}
-            //return;
 
             string code = File.ReadAllText(designerFile);
 
@@ -63,14 +48,25 @@ namespace FenGen
 
             ClassDeclarationSyntax? formClass = null;
 
+            NamespaceDeclarationSyntax? namespaceDeclaration = null;
+
             foreach (SyntaxNode node in descendantNodes)
             {
-                if (node is ClassDeclarationSyntax cds)
+                if (node is NamespaceDeclarationSyntax nds)
+                {
+                    namespaceDeclaration = nds;
+                }
+                else if (node is ClassDeclarationSyntax cds)
                 {
                     formClass = cds;
                     break;
                 }
             }
+
+            if (namespaceDeclaration == null) return;
+
+            var namespaceDeclarationLineSpan = namespaceDeclaration.GetLocation().GetLineSpan();
+            int namespaceDeclarationStartLine = namespaceDeclarationLineSpan.StartLinePosition.Line;
 
             if (formClass == null) return;
 
@@ -138,7 +134,9 @@ namespace FenGen
 
             var finalDestLines = new List<string>();
 
-            for (int i = 0; i <= formClassStartLine; i++)
+            // By starting at the namespace declaration, we skip copying the #define FenGen_* thing which would
+            // throw us an exception for not being in a .Designer.cs file
+            for (int i = namespaceDeclarationStartLine; i <= formClassStartLine; i++)
             {
                 finalDestLines.Add(sourceLines[i]);
             }
@@ -151,7 +149,8 @@ namespace FenGen
             finalDestLines.Add("    }");
             finalDestLines.Add("}");
 
-            File.WriteAllLines(destFile, finalDestLines);
+            // UTF8 with BOM or else Visual Studio complains about "different" encoding
+            File.WriteAllLines(destFile, finalDestLines, Encoding.UTF8);
 
             bool foundIfDEBUG = false;
             bool foundEndIfDEBUG = false;

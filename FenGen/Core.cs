@@ -37,17 +37,14 @@ namespace FenGen
         private static List<string>? _csFiles;
         internal static List<string> CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories).ToList();
 
-        private static List<string>? _designerCSFiles;
-        internal static List<string> DesignerCSFiles => _designerCSFiles ??= CSFiles.Where
-            (x => x.EndsWithI(".Designer.cs") && !x.EndsWithI("Resources.Designer.cs"))
-            .ToList();
+        internal static readonly List<string> DesignerCSFiles = new List<string>();
 
         internal static void Clear()
         {
             _gameSupportFile = "";
             _gamesEnum = null;
             _csFiles = null;
-            _designerCSFiles = null;
+            DesignerCSFiles.Clear();
         }
     }
 
@@ -139,7 +136,7 @@ namespace FenGen
             internal const string GameSupport = "FenGen_GameSupport";
             internal const string FMDataSource = "FenGen_FMDataSource";
             internal const string FMDataDest = "FenGen_FMDataDest";
-            internal const string ExcludeDesigner = "FenGen_ExcludeDesigner";
+            internal const string GenSlimDesignerFromThis = "FenGen_GenSlimDesignerFromThis";
             internal const string BuildDate = "FenGen_BuildDateDest";
         }
 
@@ -203,7 +200,7 @@ namespace FenGen
                 GetArg(GenType.ExcludeResx),
                 //GetArg(GenType.RestoreResx),
                 GetArg(GenType.AddBuildDate),
-                GetArg(GenType.GenSlimDesignerFile)
+                GetArg(GenType.GenSlimDesignerFiles)
             };
 #else
             string[] args = Environment.GetCommandLineArgs();
@@ -347,14 +344,23 @@ namespace FenGen
                     if (lts.StartsWithPlusWhiteSpace("#define"))
                     {
                         string tag = lts.Substring(7).Trim();
+                        if (tag == GenFileTags.GenSlimDesignerFromThis)
+                        {
+                            if (f.EndsWithI(".Designer.cs"))
+                            {
+                                Cache.DesignerCSFiles.Add(f);
+                            }
+                            else
+                            {
+                                ThrowErrorAndTerminate(GenFileTags.GenSlimDesignerFromThis +
+                                                       " found in a file not ending in .Designer.cs.");
+                            }
+                            continue;
+                        }
 
                         for (int i = 0; i < genFileTags.Count; i++)
                         {
-                            if (tag == GenFileTags.ExcludeDesigner)
-                            {
-                                Cache.DesignerCSFiles.Remove(f);
-                            }
-                            else if (tag == genFileTags[i])
+                            if (tag == genFileTags[i])
                             {
                                 taggedFiles[i].Add(f);
                                 break;

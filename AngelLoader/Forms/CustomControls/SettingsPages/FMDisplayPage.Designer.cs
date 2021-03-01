@@ -1,4 +1,6 @@
-﻿namespace AngelLoader.Forms.CustomControls.SettingsPages
+﻿#define FenGen_GenSlimDesignerFromThis
+
+namespace AngelLoader.Forms.CustomControls.SettingsPages
 {
     partial class FMDisplayPage
     {

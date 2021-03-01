@@ -1,6 +1,4 @@
-﻿#define FenGen_ExcludeDesigner
-
-using AngelLoader.Forms.CustomControls;
+﻿using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms
 {

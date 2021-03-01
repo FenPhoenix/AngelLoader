@@ -1,6 +1,4 @@
-﻿#define FenGen_ExcludeDesigner
-
-namespace AngelLoader.Forms
+﻿namespace AngelLoader.Forms
 {
     partial class MessageBoxCustomForm
     {
