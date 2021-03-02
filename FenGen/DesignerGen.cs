@@ -33,8 +33,10 @@ namespace FenGen
         {
             internal string ControlName = "";
             internal string PropName = "";
-            internal SyntaxNode? Node;
             internal string OverrideLine = "";
+            internal readonly SyntaxNode Node;
+
+            internal NodeCustom(SyntaxNode node) => Node = node;
         }
 
         private static CProps GetOrAddProps(this Dictionary<string, CProps> dict, string key)
@@ -55,6 +57,7 @@ namespace FenGen
         -Somehow deal with icons/images wanting to load from Resources but we want them from Images etc.
         -Have some way to manually specify things, like specify lines not to overwrite because they're manually
          set up.
+        -If a control is being added to a FlowLayoutPanel, remove Location.
         */
         private static void GenerateDesignerFile(string designerFile)
         {
@@ -67,6 +70,8 @@ namespace FenGen
             string code = File.ReadAllText(designerFile);
 
             List<string> sourceLines = code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
+
+            #region Remove existing ifdefs
 
             // Hack: Remove existing ifdefs because otherwise the parser just ignores all code inside them...
             for (int i = 0; i < sourceLines.Count; i++)
@@ -81,15 +86,16 @@ namespace FenGen
 
             code = string.Join("\r\n", sourceLines);
 
+            #endregion
+
             SyntaxTree tree = ParseTextFast(code);
 
-            var descendantNodes = tree.GetRoot().DescendantNodes();
-
+            NamespaceDeclarationSyntax? namespaceDeclaration = null;
             ClassDeclarationSyntax? formClass = null;
 
-            NamespaceDeclarationSyntax? namespaceDeclaration = null;
+            #region Find namespace and form class declarations
 
-            foreach (SyntaxNode node in descendantNodes)
+            foreach (SyntaxNode node in tree.GetRoot().DescendantNodes())
             {
                 if (node is NamespaceDeclarationSyntax nds)
                 {
@@ -102,44 +108,55 @@ namespace FenGen
                 }
             }
 
-            if (namespaceDeclaration == null) return;
+            if (namespaceDeclaration == null)
+            {
+                ThrowErrorAndTerminate("Namespace declaration not found in:\r\n" + designerFile);
+                return;
+            }
 
             var namespaceDeclarationLineSpan = namespaceDeclaration.GetLocation().GetLineSpan();
             int namespaceDeclarationStartLine = namespaceDeclarationLineSpan.StartLinePosition.Line;
 
-            if (formClass == null) return;
+            if (formClass == null)
+            {
+                ThrowErrorAndTerminate("Form class declaration not found in:\r\n" + designerFile);
+                return;
+            }
+
+            #endregion
+
+            #region Find start/end line indexes of form class and InitializeComponent() method
 
             var formClassLineSpan = formClass.GetLocation().GetLineSpan();
             int formClassStartLine = formClassLineSpan.StartLinePosition.Line;
             int formClassEndLine = formClassLineSpan.EndLinePosition.Line;
 
-            MethodDeclarationSyntax? initializeComponentMethod = null;
+            var initializeComponentMethod = (MethodDeclarationSyntax?)formClass.DescendantNodes()
+                .FirstOrDefault(
+                    x => x is MethodDeclarationSyntax mds &&
+                         mds.Identifier.Value?.ToString() == "InitializeComponent");
 
-            string nameSpace = "";
-
-            foreach (SyntaxNode node in formClass.DescendantNodes())
+            if (initializeComponentMethod == null)
             {
-                if (nameSpace.IsEmpty() && node is NamespaceDeclarationSyntax nds)
-                {
-                    nameSpace = nds.Name.ToString();
-                }
-                else if (node is MethodDeclarationSyntax mds &&
-                    mds.Identifier.Value?.ToString() == "InitializeComponent")
-                {
-                    initializeComponentMethod = mds;
-                    break;
-                }
+                ThrowErrorAndTerminate("InitializeComponent() method not found in:\r\n" + designerFile);
+                return;
             }
-
-            if (initializeComponentMethod == null) return;
 
             var initComponentLineSpan = initializeComponentMethod.GetLocation().GetLineSpan();
             int initComponentStartLine = initComponentLineSpan.StartLinePosition.Line;
             int initComponentEndLine = initComponentLineSpan.EndLinePosition.Line;
 
+            #endregion
+
             SyntaxNode? block = initializeComponentMethod.Body;
 
-            if (block == null) return;
+            if (block == null)
+            {
+                ThrowErrorAndTerminate("Body of InitializeComponent() method not found found in:\r\n" + designerFile);
+                return;
+            }
+
+            #region Find start line index of property-set section
 
             bool pastConstructorSection = false;
             int pastConstructorStartLine = -1;
@@ -150,20 +167,24 @@ namespace FenGen
             // 
             foreach (SyntaxTrivia tn in block.DescendantTrivia())
             {
-                if (tn.IsKind(SyntaxKind.SingleLineCommentTrivia))
+                if (tn.IsKind(SyntaxKind.SingleLineCommentTrivia) && tn.ToString().Trim() == "//")
                 {
-                    if (tn.ToString().Trim() == "//")
-                    {
-                        pastConstructorStartLine = tn.GetLocation().GetLineSpan().StartLinePosition.Line;
-                        break;
-                    }
+                    pastConstructorStartLine = tn.GetLocation().GetLineSpan().StartLinePosition.Line;
+                    break;
                 }
             }
 
-            if (pastConstructorStartLine == -1) return;
+            if (pastConstructorStartLine == -1)
+            {
+                ThrowErrorAndTerminate("Post-construction-section control comment header not found in:\r\n" + designerFile);
+                return;
+            }
 
-            var array = block.ChildNodes().ToArray();
-            foreach (SyntaxNode node in array)
+            #endregion
+
+            #region Process nodes
+
+            foreach (SyntaxNode node in block.ChildNodes())
             {
                 if (!pastConstructorSection && node.GetLocation().GetLineSpan().StartLinePosition.Line >=
                     pastConstructorStartLine)
@@ -171,179 +192,176 @@ namespace FenGen
                     pastConstructorSection = true;
                 }
 
-                var curNode = new NodeCustom();
+                var curNode = new NodeCustom(node);
+                destNodes.Add(curNode);
 
-                if (pastConstructorSection && node is ExpressionStatementSyntax exp)
+                if (!pastConstructorSection || node is not ExpressionStatementSyntax exp)
                 {
-                    foreach (var cn in exp.DescendantNodes())
+                    continue;
+                }
+
+                var aes = (AssignmentExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(x => x is AssignmentExpressionSyntax);
+
+                if (aes?.Left is not MemberAccessExpressionSyntax left) continue;
+
+                curNode.ControlName = left.DescendantNodes().First(x => x is IdentifierNameSyntax).ToString();
+                curNode.PropName = left.Name.ToString();
+
+                if (left.DescendantNodes().FirstOrDefault(
+                    n => (n is ThisExpressionSyntax && left.DescendantNodes().Count() == 2) ||
+                         (n is not ThisExpressionSyntax && left.DescendantNodes().Count() == 1)) != null)
+                {
+                    CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+                    props.IsFormProperty = true;
+                }
+
+                #region Set control property
+
+                switch (curNode.PropName)
+                {
+                    case "AutoSize":
+                    case "Checked":
                     {
-                        if (cn is not AssignmentExpressionSyntax aes) continue;
-
-                        if (aes.Left is not MemberAccessExpressionSyntax left) continue;
-                        string controlName = left.DescendantNodes().First(x => x is IdentifierNameSyntax).ToString();
-                        string propName = left.Name.ToString();
-
-                        if (aes.Right != null)
+                        if (aes.Right is LiteralExpressionSyntax les)
                         {
-                            switch (propName)
+                            string value = les.ToString();
+
+                            CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+
+                            bool? boolVal = value switch
+                            {
+                                "true" => true,
+                                "false" => false,
+                                _ => null
+                            };
+
+                            switch (curNode.PropName)
                             {
                                 case "AutoSize":
+                                    props.AutoSize = boolVal;
+                                    break;
                                 case "Checked":
-                                {
-                                    if (aes.Right is LiteralExpressionSyntax les)
-                                    {
-                                        string value = les.ToString();
-
-                                        CProps props = controlProperties.GetOrAddProps(controlName);
-
-                                        bool? boolVal = value switch
-                                        {
-                                            "true" => true,
-                                            "false" => false,
-                                            _ => null
-                                        };
-
-                                        switch (propName)
-                                        {
-                                            case "AutoSize":
-                                                props.AutoSize = boolVal;
-                                                break;
-                                            case "Checked":
-                                                props.Checked = boolVal;
-                                                break;
-                                        }
-                                    }
+                                    props.Checked = boolVal;
                                     break;
-                                }
-                                case "Size":
-                                case "MinimumSize":
-                                {
-                                    if (aes.Right is ObjectCreationExpressionSyntax oce &&
-                                        oce.Type.ToString() == "System.Drawing.Size" &&
-                                        oce.ArgumentList != null &&
-                                        oce.ArgumentList.Arguments.Count == 2 &&
-                                        int.TryParse(oce.ArgumentList.Arguments[0].ToString(),
-                                            out int width) &&
-                                        int.TryParse(oce.ArgumentList.Arguments[1].ToString(),
-                                            out int height))
-                                    {
-                                        CProps props = controlProperties.GetOrAddProps(controlName);
-
-                                        switch (propName)
-                                        {
-                                            case "Size":
-                                                props.Size = new Size(width, height);
-                                                break;
-                                            case "MinimumSize":
-                                                props.MinimumSize = new Size(width, height);
-                                                break;
-                                        }
-                                    }
-                                    break;
-                                }
-                                case "Location":
-                                {
-                                    if (aes.Right is ObjectCreationExpressionSyntax oce &&
-                                        oce.Type.ToString() == "System.Drawing.Point" &&
-                                        oce.ArgumentList != null && oce.ArgumentList.Arguments.Count == 2 &&
-                                        int.TryParse(oce.ArgumentList.Arguments[0].ToString(), out int x) &&
-                                        int.TryParse(oce.ArgumentList.Arguments[1].ToString(), out int y))
-                                    {
-                                        CProps props = controlProperties.GetOrAddProps(controlName);
-                                        props.Location = new Point(x, y);
-                                    }
-                                    break;
-                                }
-                                case "Name":
-                                case "Text":
-                                {
-                                    if (aes.Right is LiteralExpressionSyntax)
-                                    {
-                                        CProps props = controlProperties.GetOrAddProps(controlName);
-                                        switch (propName)
-                                        {
-                                            case "Name":
-                                                props.HasName = true;
-                                                break;
-                                            case "Text":
-                                                props.HasText = true;
-                                                break;
-                                        }
-                                    }
-                                    break;
-                                }
-                                case "Anchor":
-                                {
-                                    var ors = aes.Right.DescendantNodesAndSelf()
-                                        .Where(x =>
-                                            x is MemberAccessExpressionSyntax &&
-                                            x.ToString().StartsWith("System.Windows.Forms.AnchorStyles."))
-                                        .ToArray();
-
-                                    if (ors.Length == 2
-                                        && ors.FirstOrDefault(
-                                            x => x.ToString() ==
-                                                 "System.Windows.Forms.AnchorStyles.Top") != null
-                                        && ors.FirstOrDefault(
-                                            x => x.ToString() ==
-                                                 "System.Windows.Forms.AnchorStyles.Left") != null)
-                                    {
-                                        CProps props = controlProperties.GetOrAddProps(controlName);
-                                        props.HasDefaultAnchor = true;
-                                    }
-                                    break;
-                                }
-                                case "Dock":
-                                {
-                                    if (aes.Right is MemberAccessExpressionSyntax mae)
-                                    {
-                                        CProps props = controlProperties.GetOrAddProps(controlName);
-                                        props.DockIsFill = mae.ToString() == "System.Windows.Forms.DockStyle.Fill";
-                                    }
-                                    break;
-                                }
-                                case "CheckState":
-                                {
-                                    if (aes.Right is MemberAccessExpressionSyntax les)
-                                    {
-                                        CProps props = controlProperties.GetOrAddProps(controlName);
-
-                                        props.CheckState = les.ToString() switch
-                                        {
-                                            "System.Windows.Forms.CheckState.Checked" => CheckState.Checked,
-                                            "System.Windows.Forms.CheckState.Unchecked" => CheckState.Unchecked,
-                                            "System.Windows.Forms.CheckState.Indeterminate" => CheckState.Indeterminate,
-                                            _ => null
-                                        };
-                                    }
-                                    break;
-                                }
                             }
                         }
-                        foreach (var n in left.DescendantNodes())
+                        break;
+                    }
+                    case "Size":
+                    case "MinimumSize":
+                    {
+                        if (aes.Right is ObjectCreationExpressionSyntax oce &&
+                            oce.Type.ToString() == "System.Drawing.Size" &&
+                            oce.ArgumentList != null &&
+                            oce.ArgumentList.Arguments.Count == 2 &&
+                            int.TryParse(oce.ArgumentList.Arguments[0].ToString(), out int width) &&
+                            int.TryParse(oce.ArgumentList.Arguments[1].ToString(), out int height))
                         {
-                            if ((n is ThisExpressionSyntax && left.DescendantNodes().Count() == 2) ||
-                                (n is not ThisExpressionSyntax && left.DescendantNodes().Count() == 1))
+                            CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+
+                            switch (curNode.PropName)
                             {
-                                CProps props = controlProperties.GetOrAddProps(controlName);
-                                props.IsFormProperty = true;
+                                case "Size":
+                                    props.Size = new Size(width, height);
+                                    break;
+                                case "MinimumSize":
+                                    props.MinimumSize = new Size(width, height);
+                                    break;
                             }
                         }
-                        curNode.ControlName = controlName;
-                        curNode.PropName = propName;
+                        break;
+                    }
+                    case "Location":
+                    {
+                        if (aes.Right is ObjectCreationExpressionSyntax oce &&
+                            oce.Type.ToString() == "System.Drawing.Point" &&
+                            oce.ArgumentList != null && oce.ArgumentList.Arguments.Count == 2 &&
+                            int.TryParse(oce.ArgumentList.Arguments[0].ToString(), out int x) &&
+                            int.TryParse(oce.ArgumentList.Arguments[1].ToString(), out int y))
+                        {
+                            CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+                            props.Location = new Point(x, y);
+                        }
+                        break;
+                    }
+                    case "Name":
+                    case "Text":
+                    {
+                        if (aes.Right is LiteralExpressionSyntax)
+                        {
+                            CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+                            switch (curNode.PropName)
+                            {
+                                case "Name":
+                                    props.HasName = true;
+                                    break;
+                                case "Text":
+                                    props.HasText = true;
+                                    break;
+                            }
+                        }
+                        break;
+                    }
+                    case "Anchor":
+                    {
+                        var ors = aes.Right.DescendantNodesAndSelf()
+                            .Where(x =>
+                                x is MemberAccessExpressionSyntax &&
+                                x.ToString().StartsWith("System.Windows.Forms.AnchorStyles."))
+                            .ToArray();
+
+                        if (ors.Length == 2
+                            && ors.FirstOrDefault(x => x.ToString() == "System.Windows.Forms.AnchorStyles.Top") != null
+                            && ors.FirstOrDefault(x => x.ToString() == "System.Windows.Forms.AnchorStyles.Left") != null)
+                        {
+                            CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+                            props.HasDefaultAnchor = true;
+                        }
+                        break;
+                    }
+                    case "Dock":
+                    {
+                        if (aes.Right is MemberAccessExpressionSyntax mae)
+                        {
+                            CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+                            props.DockIsFill = mae.ToString() == "System.Windows.Forms.DockStyle.Fill";
+                        }
+                        break;
+                    }
+                    case "CheckState":
+                    {
+                        if (aes.Right is MemberAccessExpressionSyntax les)
+                        {
+                            CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+
+                            props.CheckState = les.ToString() switch
+                            {
+                                "System.Windows.Forms.CheckState.Checked" => CheckState.Checked,
+                                "System.Windows.Forms.CheckState.Unchecked" => CheckState.Unchecked,
+                                "System.Windows.Forms.CheckState.Indeterminate" => CheckState.Indeterminate,
+                                _ => null
+                            };
+                        }
+                        break;
                     }
                 }
-                curNode.Node = node;
 
-                destNodes.Add(curNode);
+                #endregion
             }
+
+            #endregion
+
+            #region Edit or elide property sets based on control's other properties
 
             for (int i = 0; i < destNodes.Count; i++)
             {
                 var destNode = destNodes[i];
 
-                if (destNode.ControlName.IsEmpty() || destNode.Node == null) continue;
-                if (!controlProperties.TryGetValue(destNode.ControlName, out CProps props)) continue;
+                if (destNode.ControlName.IsEmpty() ||
+                    !controlProperties.TryGetValue(destNode.ControlName, out CProps props))
+                {
+                    continue;
+                }
 
                 if (destNode.PropName == "Name" && props.HasName)
                 {
@@ -392,9 +410,13 @@ namespace FenGen
                 }
             }
 
+            #endregion
+
             // TODO: Auto-gen the ifdeffed method call switch
 
             var finalDestLines = new List<string>();
+
+            #region Create final destination file lines
 
             // By starting at the namespace declaration, we skip copying the #define FenGen_* thing which would
             // throw us an exception for not being in a .Designer.cs file
@@ -410,21 +432,20 @@ namespace FenGen
             finalDestLines.Add("        {");
             foreach (NodeCustom node in destNodes)
             {
-                if (!node.OverrideLine.IsEmpty())
-                {
-                    finalDestLines.Add(node.OverrideLine);
-                }
-                else if (node.Node != null)
-                {
-                    finalDestLines.Add(node.Node.ToFullString().TrimEnd('\r', '\n'));
-                }
+                finalDestLines.Add(!node.OverrideLine.IsEmpty()
+                    ? node.OverrideLine
+                    : node.Node.ToFullString().TrimEnd('\r', '\n'));
             }
             finalDestLines.Add("        }");
             finalDestLines.Add("    }");
             finalDestLines.Add("}");
 
+            #endregion
+
             // UTF8 with BOM or else Visual Studio complains about "different" encoding
             File.WriteAllLines(destFile, finalDestLines, Encoding.UTF8);
+
+            #region Add ifdefs around original InitializeComponent() method
 
             bool foundIfDEBUG = false;
             bool foundEndIfDEBUG = false;
@@ -455,6 +476,8 @@ namespace FenGen
                 sourceLines.Insert(initComponentStartLine - 4, "#if DEBUG");
                 sourceLines.Insert(initComponentEndLine + 2, "#endif");
             }
+
+            #endregion
 
             while (sourceLines[sourceLines.Count - 1].IsWhiteSpace())
             {
