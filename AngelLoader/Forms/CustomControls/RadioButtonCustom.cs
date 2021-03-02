@@ -21,6 +21,13 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        public RadioButtonCustom()
+        {
+            DarkModeBackColor = DarkColors.Fen_ControlBackground;
+            DarkModeHoverColor = DarkColors.Fen_DarkBackground;
+            DarkModePressedColor = DarkColors.Fen_DarkBackground;
+        }
+
         private void SetCheckedVisualState()
         {
             DarkModeBackColor =

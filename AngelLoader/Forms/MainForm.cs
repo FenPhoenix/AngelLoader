@@ -452,6 +452,11 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            ReadmeFullScreenButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
+            ReadmeZoomInButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
+            ReadmeZoomOutButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
+            ReadmeResetZoomButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
+
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
             {

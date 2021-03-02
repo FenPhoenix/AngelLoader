@@ -27,12 +27,15 @@ namespace AngelLoader.Forms.CustomControls
         #region Designer Property Region
 
         [PublicAPI]
+        [Browsable(false)]
         public Color? DarkModeBackColor { get; set; }
 
         [PublicAPI]
+        [Browsable(false)]
         public Color? DarkModeHoverColor { get; set; }
 
         [PublicAPI]
+        [Browsable(false)]
         public Color? DarkModePressedColor { get; set; }
 
         [PublicAPI]

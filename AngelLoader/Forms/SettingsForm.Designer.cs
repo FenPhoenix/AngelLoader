@@ -128,9 +128,6 @@
             this.OtherRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OtherRadioButton.BackColor = System.Drawing.SystemColors.Control;
-            this.OtherRadioButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_ControlBackground;
-            this.OtherRadioButton.DarkModeHoverColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
-            this.OtherRadioButton.DarkModePressedColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.OtherRadioButton.Checked = false;
             this.OtherRadioButton.FlatAppearance.BorderSize = 0;
             this.OtherRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
@@ -151,9 +148,6 @@
             this.AppearanceRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AppearanceRadioButton.BackColor = System.Drawing.SystemColors.Control;
-            this.AppearanceRadioButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_ControlBackground;
-            this.AppearanceRadioButton.DarkModeHoverColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
-            this.AppearanceRadioButton.DarkModePressedColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.AppearanceRadioButton.Checked = false;
             this.AppearanceRadioButton.FlatAppearance.BorderSize = 0;
             this.AppearanceRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
@@ -174,9 +168,6 @@
             this.PathsRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PathsRadioButton.BackColor = System.Drawing.SystemColors.Control;
-            this.PathsRadioButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_ControlBackground;
-            this.PathsRadioButton.DarkModeHoverColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
-            this.PathsRadioButton.DarkModePressedColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.PathsRadioButton.Checked = false;
             this.PathsRadioButton.FlatAppearance.BorderSize = 0;
             this.PathsRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;

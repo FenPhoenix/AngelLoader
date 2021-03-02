@@ -1760,7 +1760,6 @@ namespace AngelLoader.Forms
             // 
             this.ReadmeFullScreenButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeFullScreenButton.BackColor = System.Drawing.SystemColors.Window;
-            this.ReadmeFullScreenButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
             this.ReadmeFullScreenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeFullScreenButton.Location = new System.Drawing.Point(1616, 8);
@@ -1779,7 +1778,6 @@ namespace AngelLoader.Forms
             this.ReadmeZoomInButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeZoomInButton.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeZoomInButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ReadmeZoomInButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
             this.ReadmeZoomInButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeZoomInButton.Location = new System.Drawing.Point(1534, 8);
@@ -1798,7 +1796,6 @@ namespace AngelLoader.Forms
             this.ReadmeZoomOutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeZoomOutButton.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeZoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ReadmeZoomOutButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
             this.ReadmeZoomOutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeZoomOutButton.Location = new System.Drawing.Point(1559, 8);
@@ -1817,7 +1814,6 @@ namespace AngelLoader.Forms
             this.ReadmeResetZoomButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeResetZoomButton.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeResetZoomButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ReadmeResetZoomButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
             this.ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
             this.ReadmeResetZoomButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeResetZoomButton.Location = new System.Drawing.Point(1584, 8);

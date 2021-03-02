@@ -113,9 +113,6 @@
             // WebSearchUrlResetButton
             // 
             this.WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.WebSearchUrlResetButton.DarkModeBackColor = null;
-            this.WebSearchUrlResetButton.DarkModeHoverColor = null;
-            this.WebSearchUrlResetButton.DarkModePressedColor = null;
             this.WebSearchUrlResetButton.Location = new System.Drawing.Point(393, 47);
             this.WebSearchUrlResetButton.Name = "WebSearchUrlResetButton";
             this.WebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);

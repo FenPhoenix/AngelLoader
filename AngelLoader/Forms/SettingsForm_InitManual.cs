@@ -109,9 +109,6 @@ namespace AngelLoader.Forms
             // 
             OtherRadioButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             OtherRadioButton.BackColor = SystemColors.Control;
-            OtherRadioButton.DarkModeBackColor = DarkColors.Fen_ControlBackground;
-            OtherRadioButton.DarkModeHoverColor = DarkColors.Fen_DarkBackground;
-            OtherRadioButton.DarkModePressedColor = DarkColors.Fen_DarkBackground;
             OtherRadioButton.Checked = false;
             OtherRadioButton.FlatAppearance.BorderSize = 0;
             OtherRadioButton.FlatAppearance.MouseDownBackColor = SystemColors.Window;
@@ -129,9 +126,6 @@ namespace AngelLoader.Forms
             // 
             AppearanceRadioButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             AppearanceRadioButton.BackColor = SystemColors.Control;
-            AppearanceRadioButton.DarkModeBackColor = DarkColors.Fen_ControlBackground;
-            AppearanceRadioButton.DarkModeHoverColor = DarkColors.Fen_DarkBackground;
-            AppearanceRadioButton.DarkModePressedColor = DarkColors.Fen_DarkBackground;
             AppearanceRadioButton.Checked = false;
             AppearanceRadioButton.FlatAppearance.BorderSize = 0;
             AppearanceRadioButton.FlatAppearance.MouseDownBackColor = SystemColors.Window;
@@ -149,9 +143,6 @@ namespace AngelLoader.Forms
             // 
             PathsRadioButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             PathsRadioButton.BackColor = SystemColors.Control;
-            PathsRadioButton.DarkModeBackColor = DarkColors.Fen_ControlBackground;
-            PathsRadioButton.DarkModeHoverColor = DarkColors.Fen_DarkBackground;
-            PathsRadioButton.DarkModePressedColor = DarkColors.Fen_DarkBackground;
             PathsRadioButton.Checked = false;
             PathsRadioButton.FlatAppearance.BorderSize = 0;
             PathsRadioButton.FlatAppearance.MouseDownBackColor = SystemColors.Window;
