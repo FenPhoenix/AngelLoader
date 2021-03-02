@@ -62,7 +62,7 @@ namespace FenGen
             var destNodes = new List<NodeCustom>();
 
             string formFileName = Path.GetFileName(designerFile);
-            string destFile = Path.Combine(Path.GetDirectoryName(designerFile)!, formFileName.Substring(0, (formFileName.Length - ".Designer.cs".Length)) + "_InitManual.cs");
+            string destFile = Path.Combine(Path.GetDirectoryName(designerFile)!, formFileName.Substring(0, (formFileName.Length - ".Designer.cs".Length)) + "_InitSlim.Generated.cs");
 
             string code = File.ReadAllText(designerFile);
 
@@ -403,19 +403,21 @@ namespace FenGen
                 finalDestLines.Add(sourceLines[i]);
             }
             finalDestLines.Add("    {");
-
-            finalDestLines.Add("        private void InitComponentManual()");
+            finalDestLines.Add("        /// <summary>");
+            finalDestLines.Add("        /// Custom generated component initializer with cruft removed.");
+            finalDestLines.Add("        /// </summary>");
+            finalDestLines.Add("        private void InitializeComponentSlim()");
             finalDestLines.Add("        {");
             foreach (NodeCustom node in destNodes)
             {
                 if (!node.OverrideLine.IsEmpty())
                 {
                     finalDestLines.Add(node.OverrideLine);
-                    continue;
                 }
-
-                if (node.Node == null) continue;
-                finalDestLines.Add(node.Node.ToFullString().TrimEnd('\r', '\n'));
+                else if (node.Node != null)
+                {
+                    finalDestLines.Add(node.Node.ToFullString().TrimEnd('\r', '\n'));
+                }
             }
             finalDestLines.Add("        }");
             finalDestLines.Add("    }");
@@ -448,7 +450,7 @@ namespace FenGen
 
             if (!foundIfDEBUG && !foundEndIfDEBUG)
             {
-                sourceLines.Insert(initComponentStartLine, "#if DEBUG");
+                sourceLines.Insert(initComponentStartLine - 4, "#if DEBUG");
                 sourceLines.Insert(initComponentEndLine + 2, "#endif");
             }
 

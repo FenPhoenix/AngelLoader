@@ -2,7 +2,10 @@
 {
     partial class FMDisplayPage
     {
-        private void InitComponentManual()
+        /// <summary>
+        /// Custom generated component initializer with cruft removed.
+        /// </summary>
+        private void InitializeComponentSlim()
         {
             this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
             this.FMsListGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();

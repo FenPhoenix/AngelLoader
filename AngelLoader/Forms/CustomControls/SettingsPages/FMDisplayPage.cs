@@ -11,11 +11,10 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
 
         public FMDisplayPage()
         {
-            // TODO: @DarkMode: Redo InitComponentManual()!
 #if DEBUG
             InitializeComponent();
 #else
-            InitComponentManual();
+            InitializeComponentSlim();
 #endif
         }
 

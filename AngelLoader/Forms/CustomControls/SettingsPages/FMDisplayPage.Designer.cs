@@ -24,11 +24,11 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
 
         #region Component Designer generated code
 
+#if DEBUG
         /// <summary> 
         /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
-#if DEBUG
         private void InitializeComponent()
         {
             this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
