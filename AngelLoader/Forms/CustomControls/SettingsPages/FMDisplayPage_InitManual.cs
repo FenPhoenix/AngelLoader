@@ -80,7 +80,6 @@
             this.PagePanel.Controls.Add(this.LanguageGroupBox);
             this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Size = new System.Drawing.Size(496, 1065);
             this.PagePanel.TabIndex = 8;
             // 
@@ -162,7 +161,6 @@
             // 
             this.DateCurrentCultureShortRadioButton.AutoSize = true;
             this.DateCurrentCultureShortRadioButton.Location = new System.Drawing.Point(0, 3);
-            this.DateCurrentCultureShortRadioButton.Size = new System.Drawing.Size(119, 17);
             this.DateCurrentCultureShortRadioButton.TabIndex = 22;
             this.DateCurrentCultureShortRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -170,7 +168,6 @@
             // 
             this.DateCurrentCultureLongRadioButton.AutoSize = true;
             this.DateCurrentCultureLongRadioButton.Location = new System.Drawing.Point(0, 27);
-            this.DateCurrentCultureLongRadioButton.Size = new System.Drawing.Size(116, 17);
             this.DateCurrentCultureLongRadioButton.TabIndex = 23;
             this.DateCurrentCultureLongRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -178,7 +175,6 @@
             // 
             this.DateCustomRadioButton.AutoSize = true;
             this.DateCustomRadioButton.Location = new System.Drawing.Point(0, 51);
-            this.DateCustomRadioButton.Size = new System.Drawing.Size(63, 17);
             this.DateCustomRadioButton.TabIndex = 24;
             this.DateCustomRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -195,8 +191,6 @@
             // RatingNDLDisplayStyleRadioButton
             // 
             this.RatingNDLDisplayStyleRadioButton.AutoSize = true;
-            this.RatingNDLDisplayStyleRadioButton.Location = new System.Drawing.Point(0, 0);
-            this.RatingNDLDisplayStyleRadioButton.Size = new System.Drawing.Size(219, 17);
             this.RatingNDLDisplayStyleRadioButton.TabIndex = 7;
             this.RatingNDLDisplayStyleRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -205,7 +199,6 @@
             this.RatingFMSelDisplayStyleRadioButton.AutoSize = true;
             this.RatingFMSelDisplayStyleRadioButton.Checked = true;
             this.RatingFMSelDisplayStyleRadioButton.Location = new System.Drawing.Point(0, 24);
-            this.RatingFMSelDisplayStyleRadioButton.Size = new System.Drawing.Size(174, 17);
             this.RatingFMSelDisplayStyleRadioButton.TabIndex = 9;
             this.RatingFMSelDisplayStyleRadioButton.TabStop = true;
             this.RatingFMSelDisplayStyleRadioButton.UseVisualStyleBackColor = true;
@@ -225,7 +218,6 @@
             // 
             this.OrganizeGamesByTabRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.OrganizeGamesByTabRadioButton.Location = new System.Drawing.Point(0, 0);
             this.OrganizeGamesByTabRadioButton.Size = new System.Drawing.Size(456, 32);
             this.OrganizeGamesByTabRadioButton.TabIndex = 0;
             this.OrganizeGamesByTabRadioButton.UseVisualStyleBackColor = true;
@@ -245,7 +237,6 @@
             // 
             this.UseShortGameTabNamesCheckBox.AutoSize = true;
             this.UseShortGameTabNamesCheckBox.Location = new System.Drawing.Point(24, 40);
-            this.UseShortGameTabNamesCheckBox.Size = new System.Drawing.Size(172, 17);
             this.UseShortGameTabNamesCheckBox.TabIndex = 1;
             this.UseShortGameTabNamesCheckBox.UseMnemonic = false;
             this.UseShortGameTabNamesCheckBox.UseVisualStyleBackColor = true;
@@ -290,7 +281,6 @@
             this.PreviewDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.PreviewDateLabel.AutoSize = true;
             this.PreviewDateLabel.Location = new System.Drawing.Point(378, 0);
-            this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
             this.PreviewDateLabel.TabIndex = 0;
             // 
             // DateCustomFormatPanel
@@ -321,7 +311,6 @@
             // Date1ComboBox
             // 
             this.Date1ComboBox.FormattingEnabled = true;
-            this.Date1ComboBox.Location = new System.Drawing.Point(0, 0);
             this.Date1ComboBox.Size = new System.Drawing.Size(88, 21);
             this.Date1ComboBox.TabIndex = 0;
             // 
@@ -356,9 +345,7 @@
             // 
             this.RatingUseStarsCheckBox.AutoSize = true;
             this.RatingUseStarsCheckBox.Checked = true;
-            this.RatingUseStarsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.RatingUseStarsCheckBox.Location = new System.Drawing.Point(32, 360);
-            this.RatingUseStarsCheckBox.Size = new System.Drawing.Size(70, 17);
             this.RatingUseStarsCheckBox.TabIndex = 10;
             this.RatingUseStarsCheckBox.UseMnemonic = false;
             this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
@@ -375,35 +362,30 @@
             // 
             this.RecentFMsHeaderLabel.AutoSize = true;
             this.RecentFMsHeaderLabel.Location = new System.Drawing.Point(8, 608);
-            this.RecentFMsHeaderLabel.Size = new System.Drawing.Size(68, 13);
             this.RecentFMsHeaderLabel.TabIndex = 6;
             // 
             // DateFormatLabel
             // 
             this.DateFormatLabel.AutoSize = true;
             this.DateFormatLabel.Location = new System.Drawing.Point(8, 432);
-            this.DateFormatLabel.Size = new System.Drawing.Size(65, 13);
             this.DateFormatLabel.TabIndex = 6;
             // 
             // RatingDisplayStyleLabel
             // 
             this.RatingDisplayStyleLabel.AutoSize = true;
             this.RatingDisplayStyleLabel.Location = new System.Drawing.Point(8, 288);
-            this.RatingDisplayStyleLabel.Size = new System.Drawing.Size(100, 13);
             this.RatingDisplayStyleLabel.TabIndex = 6;
             // 
             // GameOrganizationLabel
             // 
             this.GameOrganizationLabel.AutoSize = true;
             this.GameOrganizationLabel.Location = new System.Drawing.Point(8, 24);
-            this.GameOrganizationLabel.Size = new System.Drawing.Size(98, 13);
             this.GameOrganizationLabel.TabIndex = 6;
             // 
             // SortingLabel
             // 
             this.SortingLabel.AutoSize = true;
             this.SortingLabel.Location = new System.Drawing.Point(8, 160);
-            this.SortingLabel.Size = new System.Drawing.Size(43, 13);
             this.SortingLabel.TabIndex = 6;
             // 
             // MoveArticlesToEndCheckBox
@@ -411,7 +393,6 @@
             this.MoveArticlesToEndCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MoveArticlesToEndCheckBox.Checked = true;
-            this.MoveArticlesToEndCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.MoveArticlesToEndCheckBox.Location = new System.Drawing.Point(16, 232);
             this.MoveArticlesToEndCheckBox.Size = new System.Drawing.Size(456, 32);
             this.MoveArticlesToEndCheckBox.TabIndex = 5;
@@ -423,7 +404,6 @@
             this.EnableIgnoreArticlesCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EnableIgnoreArticlesCheckBox.Checked = true;
-            this.EnableIgnoreArticlesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.EnableIgnoreArticlesCheckBox.Location = new System.Drawing.Point(16, 176);
             this.EnableIgnoreArticlesCheckBox.Size = new System.Drawing.Size(456, 32);
             this.EnableIgnoreArticlesCheckBox.TabIndex = 3;
@@ -454,7 +434,6 @@
             this.ReadmeFixedWidthFontCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeFixedWidthFontCheckBox.Checked = true;
-            this.ReadmeFixedWidthFontCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ReadmeFixedWidthFontCheckBox.Location = new System.Drawing.Point(16, 16);
             this.ReadmeFixedWidthFontCheckBox.Size = new System.Drawing.Size(456, 32);
             this.ReadmeFixedWidthFontCheckBox.TabIndex = 0;
@@ -479,7 +458,6 @@
             this.HideExitButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.HideExitButtonCheckBox.Checked = true;
-            this.HideExitButtonCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.HideExitButtonCheckBox.Location = new System.Drawing.Point(16, 72);
             this.HideExitButtonCheckBox.Size = new System.Drawing.Size(456, 32);
             this.HideExitButtonCheckBox.TabIndex = 3;
@@ -522,7 +500,6 @@
             // 
             this.DarkThemeRadioButton.AutoSize = true;
             this.DarkThemeRadioButton.Location = new System.Drawing.Point(16, 48);
-            this.DarkThemeRadioButton.Size = new System.Drawing.Size(48, 17);
             this.DarkThemeRadioButton.TabIndex = 0;
             this.DarkThemeRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -531,7 +508,6 @@
             this.ClassicThemeRadioButton.AutoSize = true;
             this.ClassicThemeRadioButton.Checked = true;
             this.ClassicThemeRadioButton.Location = new System.Drawing.Point(16, 24);
-            this.ClassicThemeRadioButton.Size = new System.Drawing.Size(58, 17);
             this.ClassicThemeRadioButton.TabIndex = 0;
             this.ClassicThemeRadioButton.TabStop = true;
             this.ClassicThemeRadioButton.UseVisualStyleBackColor = true;
