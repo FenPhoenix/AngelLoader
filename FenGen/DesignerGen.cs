@@ -434,6 +434,7 @@ namespace FenGen
                 if (sourceLines[i].Trim() == "#if DEBUG")
                 {
                     foundIfDEBUG = true;
+                    break;
                 }
             }
 
@@ -444,6 +445,7 @@ namespace FenGen
                     if (sourceLines[i].Trim() == "#endif")
                     {
                         foundEndIfDEBUG = true;
+                        break;
                     }
                 }
             }
