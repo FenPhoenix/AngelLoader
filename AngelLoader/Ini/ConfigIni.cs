@@ -338,11 +338,11 @@ namespace AngelLoader
                         config.SettingsPathsVScrollPos = result;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("SettingsFMDisplayVScrollPos="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SettingsAppearanceVScrollPos="))
                 {
                     if (int.TryParse(val, out int result))
                     {
-                        config.SettingsFMDisplayVScrollPos = result;
+                        config.SettingsAppearanceVScrollPos = result;
                     }
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("SettingsOtherVScrollPos="))
@@ -744,7 +744,7 @@ namespace AngelLoader
             sb.Append("SettingsWindowSplitterDistance=").Append(config.SettingsWindowSplitterDistance).AppendLine();
 
             sb.Append("SettingsPathsVScrollPos=").Append(config.SettingsPathsVScrollPos).AppendLine();
-            sb.Append("SettingsFMDisplayVScrollPos=").Append(config.SettingsFMDisplayVScrollPos).AppendLine();
+            sb.Append("SettingsAppearanceVScrollPos=").Append(config.SettingsAppearanceVScrollPos).AppendLine();
             sb.Append("SettingsOtherVScrollPos=").Append(config.SettingsOtherVScrollPos).AppendLine();
 
             #endregion

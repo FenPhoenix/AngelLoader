@@ -25,7 +25,7 @@
             this.MainErrorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
             this.OtherRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
-            this.FMDisplayRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
+            this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
             this.PathsRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.BottomFlowLayoutPanel.SuspendLayout();
@@ -112,7 +112,7 @@
             // 
             this.MainSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
             this.MainSplitContainer.Panel1.Controls.Add(this.OtherRadioButton);
-            this.MainSplitContainer.Panel1.Controls.Add(this.FMDisplayRadioButton);
+            this.MainSplitContainer.Panel1.Controls.Add(this.AppearanceRadioButton);
             this.MainSplitContainer.Panel1.Controls.Add(this.PathsRadioButton);
             // 
             // MainSplitContainer.Panel2
@@ -146,28 +146,28 @@
             this.OtherRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
             this.OtherRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Paths_RadioButton_MouseDown);
             // 
-            // FMDisplayRadioButton
+            // AppearanceRadioButton
             // 
-            this.FMDisplayRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.AppearanceRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FMDisplayRadioButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FMDisplayRadioButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_ControlBackground;
-            this.FMDisplayRadioButton.DarkModeHoverColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
-            this.FMDisplayRadioButton.DarkModePressedColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
-            this.FMDisplayRadioButton.Checked = false;
-            this.FMDisplayRadioButton.FlatAppearance.BorderSize = 0;
-            this.FMDisplayRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
-            this.FMDisplayRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
-            this.FMDisplayRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.FMDisplayRadioButton.Location = new System.Drawing.Point(8, 32);
-            this.FMDisplayRadioButton.Name = "FMDisplayRadioButton";
-            this.FMDisplayRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.FMDisplayRadioButton.TabIndex = 1;
-            this.FMDisplayRadioButton.Text = "FM Display";
-            this.FMDisplayRadioButton.UseVisualStyleBackColor = true;
-            this.FMDisplayRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
-            this.FMDisplayRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.FMDisplayRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Paths_RadioButton_MouseDown);
+            this.AppearanceRadioButton.BackColor = System.Drawing.SystemColors.Control;
+            this.AppearanceRadioButton.DarkModeBackColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_ControlBackground;
+            this.AppearanceRadioButton.DarkModeHoverColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
+            this.AppearanceRadioButton.DarkModePressedColor = AngelLoader.Forms.CustomControls.DarkColors.Fen_DarkBackground;
+            this.AppearanceRadioButton.Checked = false;
+            this.AppearanceRadioButton.FlatAppearance.BorderSize = 0;
+            this.AppearanceRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
+            this.AppearanceRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
+            this.AppearanceRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.AppearanceRadioButton.Location = new System.Drawing.Point(8, 32);
+            this.AppearanceRadioButton.Name = "FMDisplayRadioButton";
+            this.AppearanceRadioButton.Size = new System.Drawing.Size(136, 23);
+            this.AppearanceRadioButton.TabIndex = 1;
+            this.AppearanceRadioButton.Text = "FM Display";
+            this.AppearanceRadioButton.UseVisualStyleBackColor = true;
+            this.AppearanceRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
+            this.AppearanceRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
+            this.AppearanceRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Paths_RadioButton_MouseDown);            // 
             // 
             // PathsRadioButton
             // 
@@ -245,7 +245,7 @@
         private AngelLoader.Forms.CustomControls.DarkLabel ErrorLabel;
         private AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
         private AngelLoader.Forms.CustomControls.RadioButtonCustom OtherRadioButton;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom FMDisplayRadioButton;
+        private AngelLoader.Forms.CustomControls.RadioButtonCustom AppearanceRadioButton;
         private AngelLoader.Forms.CustomControls.RadioButtonCustom PathsRadioButton;
     }
 }

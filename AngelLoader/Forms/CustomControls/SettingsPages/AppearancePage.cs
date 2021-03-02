@@ -5,11 +5,11 @@ using JetBrains.Annotations;
 namespace AngelLoader.Forms.CustomControls.SettingsPages
 {
     [PublicAPI]
-    public partial class FMDisplayPage : UserControl, Interfaces.ISettingsPage
+    public partial class AppearancePage : UserControl, Interfaces.ISettingsPage
     {
         public bool IsVisible { get => Visible; set => Visible = value; }
 
-        public FMDisplayPage()
+        public AppearancePage()
         {
 #if DEBUG
             InitializeComponent();

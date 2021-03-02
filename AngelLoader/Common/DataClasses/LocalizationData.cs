@@ -525,35 +525,45 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Paths_ErrorSomePathsAreInvalid = "Some paths are invalid.";
             [FenGenBlankLine]
-            internal readonly string FMDisplay_TabText = "FM Display";
+            internal readonly string Appearance_TabText = "Appearance";
             [FenGenBlankLine]
-            internal readonly string FMDisplay_Theme = "Theme";
-            internal readonly string FMDisplay_Theme_Classic = "Classic";
-            internal readonly string FMDisplay_Theme_Dark = "Dark";
+            internal readonly string Appearance_Language = "Language";
             [FenGenBlankLine]
-            internal readonly string FMDisplay_FMsList = "FMs list";
+            internal readonly string Appearance_Theme = "Theme";
+            internal readonly string Appearance_Theme_Classic = "Classic";
+            internal readonly string Appearance_Theme_Dark = "Dark";
             [FenGenBlankLine]
-            internal readonly string FMDisplay_GameOrganization = "Game organization:";
-            internal readonly string FMDisplay_GameOrganizationByTab = "Each game in its own tab";
-            internal readonly string FMDisplay_UseShortGameTabNames = "Use short names on game tabs";
-            internal readonly string FMDisplay_GameOrganizationOneList = "Everything in one list, and games are filters";
+            internal readonly string Appearance_FMsList = "FMs list";
             [FenGenBlankLine]
-            internal readonly string FMDisplay_Sorting = "Sorting";
-            internal readonly string FMDisplay_IgnoreArticles = "Ignore the following leading articles when sorting by title:";
-            internal readonly string FMDisplay_MoveArticlesToEnd = "Move articles to the end of names when displaying them";
+            internal readonly string Appearance_GameOrganization = "Game organization:";
+            internal readonly string Appearance_GameOrganizationByTab = "Each game in its own tab";
+            internal readonly string Appearance_UseShortGameTabNames = "Use short names on game tabs";
+            internal readonly string Appearance_GameOrganizationOneList = "Everything in one list, and games are filters";
             [FenGenBlankLine]
-            internal readonly string FMDisplay_RatingDisplayStyle = "Rating display style";
-            internal readonly string FMDisplay_RatingDisplayStyleNDL = "NewDarkLoader (0-10 in increments of 1)";
-            internal readonly string FMDisplay_RatingDisplayStyleFMSel = "FMSel (0-5 in increments of 0.5)";
-            internal readonly string FMDisplay_RatingDisplayStyleUseStars = "Use stars";
+            internal readonly string Appearance_Sorting = "Sorting";
+            internal readonly string Appearance_IgnoreArticles = "Ignore the following leading articles when sorting by title:";
+            internal readonly string Appearance_MoveArticlesToEnd = "Move articles to the end of names when displaying them";
             [FenGenBlankLine]
-            internal readonly string FMDisplay_DateFormat = "Date format";
-            internal readonly string FMDisplay_CurrentCultureShort = "System locale, short";
-            internal readonly string FMDisplay_CurrentCultureLong = "System locale, long";
-            internal readonly string FMDisplay_Custom = "Custom:";
+            internal readonly string Appearance_RatingDisplayStyle = "Rating display style";
+            internal readonly string Appearance_RatingDisplayStyleNDL = "NewDarkLoader (0-10 in increments of 1)";
+            internal readonly string Appearance_RatingDisplayStyleFMSel = "FMSel (0-5 in increments of 0.5)";
+            internal readonly string Appearance_RatingDisplayStyleUseStars = "Use stars";
             [FenGenBlankLine]
-            internal readonly string FMDisplay_RecentFMs = "Recent FMs";
-            internal readonly string FMDisplay_RecentFMs_MaxDays = "Maximum number of days to consider an FM \"recent\":";
+            internal readonly string Appearance_DateFormat = "Date format";
+            internal readonly string Appearance_CurrentCultureShort = "System locale, short";
+            internal readonly string Appearance_CurrentCultureLong = "System locale, long";
+            internal readonly string Appearance_Custom = "Custom:";
+            [FenGenBlankLine]
+            internal readonly string Appearance_RecentFMs = "Recent FMs";
+            internal readonly string Appearance_RecentFMs_MaxDays = "Maximum number of days to consider an FM \"recent\":";
+            [FenGenBlankLine]
+            internal readonly string Appearance_ShowOrHideInterfaceElements = "Show or hide interface elements";
+            internal readonly string Appearance_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
+            internal readonly string Appearance_HideFMListZoomButtons = "Hide FM list zoom buttons";
+            internal readonly string Appearance_HideExitButton = "Hide exit button";
+            [FenGenBlankLine]
+            internal readonly string Appearance_ReadmeBox = "Readme box";
+            internal readonly string Appearance_ReadmeUseFixedWidthFont = "Use a fixed-width font when displaying plain text";
             [FenGenBlankLine]
             internal readonly string Other_TabText = "Other";
             [FenGenBlankLine]
@@ -568,8 +578,6 @@ namespace AngelLoader.DataClasses
             internal readonly string Other_BackUpAllChangedFiles = "All changed files";
             internal readonly string Other_BackUpAlwaysAsk = "Always ask";
             [FenGenBlankLine]
-            internal readonly string Other_Language = "Language";
-            [FenGenBlankLine]
             internal readonly string Other_WebSearch = "Web search";
             internal readonly string Other_WebSearchURL = "Full URL to use when searching for an FM title:";
             [FenGenComment(
@@ -580,14 +588,6 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Other_ConfirmPlayOnDCOrEnter = "Play FM on double-click / Enter";
             internal readonly string Other_ConfirmPlayOnDCOrEnter_Ask = "Ask for confirmation";
-            [FenGenBlankLine]
-            internal readonly string Other_ShowOrHideInterfaceElements = "Show or hide interface elements";
-            internal readonly string Other_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
-            internal readonly string Other_HideFMListZoomButtons = "Hide FM list zoom buttons";
-            internal readonly string Other_HideExitButton = "Hide exit button";
-            [FenGenBlankLine]
-            internal readonly string Other_ReadmeBox = "Readme box";
-            internal readonly string Other_ReadmeUseFixedWidthFont = "Use a fixed-width font when displaying plain text";
         }
 
         internal sealed class DateFilterBox_Class

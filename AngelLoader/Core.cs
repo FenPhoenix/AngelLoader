@@ -207,7 +207,7 @@ namespace AngelLoader
             Config.SettingsWindowSplitterDistance = outConfig.SettingsWindowSplitterDistance;
 
             Config.SettingsPathsVScrollPos = outConfig.SettingsPathsVScrollPos;
-            Config.SettingsFMDisplayVScrollPos = outConfig.SettingsFMDisplayVScrollPos;
+            Config.SettingsAppearanceVScrollPos = outConfig.SettingsAppearanceVScrollPos;
             Config.SettingsOtherVScrollPos = outConfig.SettingsOtherVScrollPos;
 
             #endregion

@@ -339,7 +339,7 @@ namespace AngelLoader.DataClasses
         internal Size SettingsWindowSize = new Size(Defaults.SettingsWindowWidth, Defaults.SettingsWindowHeight);
         internal int SettingsWindowSplitterDistance = Defaults.SettingsWindowSplitterDistance;
         internal int SettingsPathsVScrollPos = 0;
-        internal int SettingsFMDisplayVScrollPos = 0;
+        internal int SettingsAppearanceVScrollPos = 0;
         internal int SettingsOtherVScrollPos = 0;
 
         #endregion
