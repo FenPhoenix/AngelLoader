@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,9 +16,46 @@ namespace FenGen
 {
     internal static class DesignerGen
     {
+        private enum ControlProperty
+        {
+            Anchor,
+            AutoSize,
+            Checked,
+            CheckState,
+            Dock,
+            Location,
+            MinimumSize,
+            Size
+        }
+
+        private sealed class CProp
+        {
+            internal bool IsFormProperty;
+            internal AnchorStyles? AnchorStyles;
+            internal bool? AutoSize;
+            internal bool? Checked;
+            internal CheckState? CheckState;
+            internal DockStyle? Dock;
+            internal Size? MinimumSize;
+            internal Size? Size;
+            internal Point? Location;
+            internal bool HasName;
+            internal bool HasText;
+        }
+
+        private static CProp Prop(this Dictionary<string, CProp> dict, string key)
+        {
+            if (!dict.ContainsKey(key)) dict.Add(key, new CProp());
+            return dict[key];
+        }
+
+        private sealed class ControlInfo
+        {
+            internal Dictionary<ControlProperty, object> Properties = new();
+        }
+
         internal static void Generate()
         {
-            File.Delete(@"C:\formFileName.txt");
             foreach (var designerFile in Cache.DesignerCSFiles)
             {
                 GenerateDesignerFile(designerFile);
@@ -25,8 +65,8 @@ namespace FenGen
         TODO(FenGen/DesignerGen):
         -If Anchor == Top | Left, remove Anchor.
         -If AutoSize == true OR Dock == Fill, remove Size and Location.
-        -If Dock == Fill, remove Location.
         -If there exists a Checked and a CheckedState whose values match, remove CheckedState.
+        -If Dock == Fill, remove Location.
         -If Size is the same as MinimumSize, remove Size.
         -Remove Location = new Point(0, 0).
         -If this.Text exists, don't remove it but instead just say Text = " "; (Settings form perf hack).
@@ -36,6 +76,9 @@ namespace FenGen
         */
         private static void GenerateDesignerFile(string designerFile)
         {
+            var controlProperties = new Dictionary<string, CProp>();
+            var destNodes = new List<(string? PropName, SyntaxNode Node)>();
+
             string formFileName = Path.GetFileName(designerFile);
             string destFile = Path.Combine(Path.GetDirectoryName(designerFile)!, formFileName.Substring(0, (formFileName.Length - "Designer.cs".Length) - 1) + "_InitManual.cs");
 
@@ -137,7 +180,9 @@ namespace FenGen
 
             foreach (SyntaxNode node in block.ChildNodes())
             {
-                bool nodeExcluded = false;
+                (string? PropName, SyntaxNode Node) curNode = new();
+
+                //bool nodeExcluded = false;
 
                 if (!pastConstructorSection && node.GetLocation().GetLineSpan().StartLinePosition.Line >=
                     pastConstructorStartLine)
@@ -155,12 +200,115 @@ namespace FenGen
 
                             if (aes.Left is MemberAccessExpressionSyntax left)
                             {
+                                string name = left.Name.ToString();
+                                if (aes.Right != null)
+                                {
+                                    switch (name)
+                                    {
+                                        case "AutoSize":
+                                        case "Checked":
+                                        {
+                                            if (aes.Right is LiteralExpressionSyntax les)
+                                            {
+                                                string value = les.ToString();
+
+                                                CProp prop = controlProperties.Prop(name);
+
+                                                bool? boolVal = value switch
+                                                {
+                                                    "true" => true,
+                                                    "false" => false,
+                                                    _ => null
+                                                };
+
+                                                switch (name)
+                                                {
+                                                    case "AutoSize":
+                                                        prop.AutoSize = boolVal;
+                                                        break;
+                                                    case "Checked":
+                                                        prop.Checked = boolVal;
+                                                        break;
+                                                }
+                                            }
+                                            break;
+                                        }
+                                        case "Size":
+                                        case "MinimumSize":
+                                        {
+                                            if (aes.Right is ObjectCreationExpressionSyntax oce &&
+                                                oce.Type.ToString() == "System.Drawing.Size" &&
+                                                oce.ArgumentList != null &&
+                                                oce.ArgumentList.Arguments.Count == 2 &&
+                                                int.TryParse(oce.ArgumentList.Arguments[0].ToString(),
+                                                    out int width) &&
+                                                int.TryParse(oce.ArgumentList.Arguments[1].ToString(),
+                                                    out int height))
+                                            {
+                                                CProp prop = controlProperties.Prop(name);
+
+                                                switch (name)
+                                                {
+                                                    case "Size":
+                                                        prop.Size = new Size(width, height);
+                                                        break;
+                                                    case "MinimumSize":
+                                                        prop.MinimumSize = new Size(width, height);
+                                                        break;
+                                                }
+                                            }
+                                            break;
+                                        }
+                                        case "Location":
+                                        {
+                                            if (aes.Right is ObjectCreationExpressionSyntax oce &&
+                                                oce.Type.ToString() == "System.Drawing.Point" &&
+                                                oce.ArgumentList != null && oce.ArgumentList.Arguments.Count == 2 &&
+                                                int.TryParse(oce.ArgumentList.Arguments[0].ToString(), out int x) &&
+                                                int.TryParse(oce.ArgumentList.Arguments[1].ToString(), out int y))
+                                            {
+                                                CProp prop = controlProperties.Prop(name);
+                                                prop.Location = new Point(x, y);
+                                            }
+                                            break;
+                                        }
+                                        case "Name":
+                                        case "Text":
+                                        {
+                                            //Trace.WriteLine(aes.Right.Kind());
+                                            if (aes.Right is LiteralExpressionSyntax)
+                                            {
+                                                CProp prop = controlProperties.Prop(name);
+                                                switch (name)
+                                                {
+                                                    case "Name":
+                                                        prop.HasName = true;
+                                                        break;
+                                                    case "Text":
+                                                        prop.HasText = true;
+                                                        break;
+                                                }
+                                            }
+                                            break;
+                                        }
+                                        case "AnchorStyles":
+                                        case "CheckState":
+                                        case "DockStyle":
+                                        {
+                                            // TODO: Implement
+                                            break;
+                                        }
+                                    }
+                                }
+
                                 foreach (var n in left.DescendantNodes())
                                 {
                                     if ((n is ThisExpressionSyntax && left.DescendantNodes().Count() == 2) ||
                                         (n is not ThisExpressionSyntax && left.DescendantNodes().Count() == 1))
                                     {
                                         isFormProperty = true;
+                                        CProp prop = controlProperties.Prop(name);
+                                        prop.IsFormProperty = true;
                                     }
 
                                     if (n is IdentifierNameSyntax ins)
@@ -175,16 +323,16 @@ namespace FenGen
                                     }
                                 }
 
-                                string name = left.Name.ToString();
                                 if (name == "Name" || name == "Text")
                                 {
                                     if (isFormProperty && name == "Text")
                                     {
                                         // TODO: Implement setting the value to " "
+                                        curNode.Node = node;
                                     }
                                     else
                                     {
-                                        nodeExcluded = true;
+                                        //nodeExcluded = true;
                                     }
                                     break;
                                 }
@@ -193,10 +341,12 @@ namespace FenGen
                     }
                 }
 
-                if (!nodeExcluded)
-                {
-                    destLines.Add(node.ToFullString().TrimEnd('\r', '\n'));
-                }
+                //if (!nodeExcluded)
+                //{
+                //    destLines.Add(node.ToFullString().TrimEnd('\r', '\n'));
+                //}
+
+                destNodes.Add(curNode);
             }
 
             // TODO: Auto-gen the ifdeffed method call switch
