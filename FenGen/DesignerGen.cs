@@ -378,8 +378,7 @@ namespace FenGen
                 else if (destNode.PropName == "Size" &&
                          ((props.Size != null && props.MinimumSize != null && props.Size == props.MinimumSize) ||
                          (props.Size != null && props.AutoSize == true) ||
-                         props.AutoSize == true ||
-                         props.DockIsFill))
+                         props.AutoSize == true))
                 {
                     destNodes.RemoveAt(i);
                     i--;
