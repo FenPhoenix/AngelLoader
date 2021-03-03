@@ -578,6 +578,10 @@ namespace AngelLoader.Forms
                 ControlPainter.DarkModeEnabled = darkMode;
                 Images.DarkModeEnabled = darkMode;
                 SetRatingImage();
+                for (int i = 0; i < ErrorableTextBoxes.Length; i++)
+                {
+                    ShowPathError(ErrorableTextBoxes[i], PathErrorIsSet(ErrorableTextBoxes[i]));
+                }
             }
             finally
             {

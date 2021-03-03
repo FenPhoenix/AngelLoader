@@ -236,8 +236,7 @@ namespace AngelLoader.Forms
             bool darkMode = theme == VisualTheme.Dark;
 
             // TODO: @DarkMode(FillControlDict): Controls might change their colors after construct
-            // For example, in the Settings window, we might get a textbox with an error-red background, and we
-            // would then have to make sure we set the right colors on mode change.
+            // We fixed the Settings window case, but keep this in mind until we're sure we're done.
             if (controlColors.Count == 0) FillControlDict(form, controlColors);
 
             #region Add native dark scroll bars to their closest addable parents
