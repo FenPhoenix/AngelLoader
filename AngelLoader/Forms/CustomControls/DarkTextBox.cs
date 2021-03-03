@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
 using JetBrains.Annotations;
@@ -9,8 +10,6 @@ namespace AngelLoader.Forms.CustomControls
 {
     public class DarkTextBox : TextBox, IDarkableScrollableNative
     {
-        // TODO: @DarkMode: Make it so changing modes doesn't reset the scroll position of the textbox
-
         private bool _origValuesStored;
         private Color? _origForeColor;
         private Color? _origBackColor;
@@ -28,6 +27,27 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
+
+                var sbi_v = new Native.SCROLLBARINFO { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+                int result_v = Native.GetScrollBarInfo(Handle, Native.OBJID_VSCROLL, ref sbi_v);
+
+                bool vertScrollBarNeedsRepositioning =
+                    result_v != 0 &&
+                    (sbi_v.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE &&
+                    (sbi_v.rgstate[0] & Native.STATE_SYSTEM_UNAVAILABLE) != Native.STATE_SYSTEM_UNAVAILABLE;
+
+                var sbi_h = new Native.SCROLLBARINFO { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+                int result_h = Native.GetScrollBarInfo(Handle, Native.OBJID_HSCROLL, ref sbi_h);
+
+                bool horzScrollBarNeedsRepositioning =
+                    result_h != 0 &&
+                    (sbi_h.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE &&
+                    (sbi_h.rgstate[0] & Native.STATE_SYSTEM_UNAVAILABLE) != Native.STATE_SYSTEM_UNAVAILABLE;
+
+                Native.SCROLLINFO? si_v = null, si_h = null;
+                if (vertScrollBarNeedsRepositioning) si_v = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
+                if (horzScrollBarNeedsRepositioning) si_h = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_HORZ);
+
                 if (_darkModeEnabled)
                 {
                     if (!_origValuesStored)
@@ -54,6 +74,16 @@ namespace AngelLoader.Forms.CustomControls
                         BorderStyle = (BorderStyle)_origBorderStyle!;
                     }
                 }
+
+                if (vertScrollBarNeedsRepositioning && si_v != null)
+                {
+                    ControlUtils.RepositionScroll(Handle, (Native.SCROLLINFO)si_v, Native.SB_VERT);
+                }
+                if (horzScrollBarNeedsRepositioning && si_h != null)
+                {
+                    ControlUtils.RepositionScroll(Handle, (Native.SCROLLINFO)si_h, Native.SB_HORZ);
+                }
+
                 DarkModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -140,31 +170,31 @@ namespace AngelLoader.Forms.CustomControls
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Suspended { get; set; }
-        
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; private set; }
-        
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; private set; }
-        
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; private set; }
-        
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? Scroll;
-        
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Control? ClosestAddableParent => Parent;
-        
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? DarkModeChanged;
-        
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? RefreshIfNeededForceCorner;

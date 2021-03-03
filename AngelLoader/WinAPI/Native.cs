@@ -554,11 +554,6 @@ namespace AngelLoader.WinAPI
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
         public static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetScrollInfo(IntPtr hwnd, uint fnBar, ref SCROLLINFO lpsi);
-
-
         #endregion
 
         public const int DTM_FIRST = 0x1000;
