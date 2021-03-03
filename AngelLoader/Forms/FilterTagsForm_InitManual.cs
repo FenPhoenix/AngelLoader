@@ -10,10 +10,10 @@ namespace AngelLoader.Forms
         private void InitComponentManual()
         {
             components = new Container();
-            OriginTreeView = new TreeViewCustom();
-            AndTreeView = new TreeView();
-            OrTreeView = new TreeView();
-            NotTreeView = new TreeView();
+            OriginTreeView = new DarkTreeView();
+            AndTreeView = new DarkTreeView();
+            OrTreeView = new DarkTreeView();
+            NotTreeView = new DarkTreeView();
             AndButton = new DarkButton();
             OrButton = new DarkButton();
             NotButton = new DarkButton();
@@ -41,6 +41,7 @@ namespace AngelLoader.Forms
             // 
             // OriginTreeView
             // 
+            OriginTreeView.AlwaysDrawNodesFocused = true;
             OriginTreeView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             OriginTreeView.DrawMode = TreeViewDrawMode.OwnerDrawText;
             OriginTreeView.HideSelection = false;

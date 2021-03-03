@@ -24,7 +24,7 @@ namespace AngelLoader.Forms.CustomControls
         ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; }
         new bool IsHandleCreated { get; }
         new IntPtr Handle { get; }
-        event EventHandler Scroll;
+        event EventHandler? Scroll;
         Control? Parent { get; }
         Control? ClosestAddableParent { get; }
         Point Location { get; }
@@ -32,8 +32,8 @@ namespace AngelLoader.Forms.CustomControls
         Size Size { get; }
         bool Enabled { get; }
         new bool Visible { get; }
-        event EventHandler DarkModeChanged;
-        event EventHandler RefreshIfNeededForceCorner;
+        event EventHandler? DarkModeChanged;
+        event EventHandler? RefreshIfNeededForceCorner;
     }
 
     public interface ISuspendResumable

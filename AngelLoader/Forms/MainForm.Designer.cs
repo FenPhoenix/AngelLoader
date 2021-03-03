@@ -145,7 +145,7 @@ namespace AngelLoader.Forms
             this.AddRemoveTagFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.RemoveTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.AddTagFromListButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.TagsTreeView = new System.Windows.Forms.TreeView();
+            this.TagsTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
             this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
             this.PatchTabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.PatchMainPanel = new System.Windows.Forms.Panel();
@@ -1976,7 +1976,7 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.TabPageCustom CommentTabPage;
         internal DarkTextBox CommentTextBox;
         internal AngelLoader.Forms.CustomControls.TabPageCustom TagsTabPage;
-        internal System.Windows.Forms.TreeView TagsTreeView;
+        internal AngelLoader.Forms.CustomControls.DarkTreeView TagsTreeView;
         internal DarkButton ResetLayoutButton;
         internal System.Windows.Forms.ToolTip MainToolTip;
         internal DarkButton RemoveTagButton;

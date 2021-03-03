@@ -30,10 +30,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.OriginTreeView = new AngelLoader.Forms.CustomControls.TreeViewCustom();
-            this.AndTreeView = new System.Windows.Forms.TreeView();
-            this.OrTreeView = new System.Windows.Forms.TreeView();
-            this.NotTreeView = new System.Windows.Forms.TreeView();
+            this.OriginTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
+            this.AndTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
+            this.OrTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
+            this.NotTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
             this.AndButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.OrButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.NotButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -61,6 +61,7 @@
             // 
             // OriginTreeView
             // 
+            this.OriginTreeView.AlwaysDrawNodesFocused = true;
             this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OriginTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
@@ -367,10 +368,10 @@
         #endregion
 #endif
 
-        private AngelLoader.Forms.CustomControls.TreeViewCustom OriginTreeView;
-        private System.Windows.Forms.TreeView AndTreeView;
-        private System.Windows.Forms.TreeView OrTreeView;
-        private System.Windows.Forms.TreeView NotTreeView;
+        private AngelLoader.Forms.CustomControls.DarkTreeView OriginTreeView;
+        private AngelLoader.Forms.CustomControls.DarkTreeView AndTreeView;
+        private AngelLoader.Forms.CustomControls.DarkTreeView OrTreeView;
+        private AngelLoader.Forms.CustomControls.DarkTreeView NotTreeView;
         private AngelLoader.Forms.CustomControls.DarkButton AndButton;
         private AngelLoader.Forms.CustomControls.DarkButton OrButton;
         private AngelLoader.Forms.CustomControls.DarkButton NotButton;

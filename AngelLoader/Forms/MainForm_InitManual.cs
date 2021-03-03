@@ -147,7 +147,7 @@ namespace AngelLoader.Forms
             AddRemoveTagFLP = new FlowLayoutPanel();
             RemoveTagButton = new DarkButton();
             AddTagFromListButton = new DarkButton();
-            TagsTreeView = new TreeView();
+            TagsTreeView = new DarkTreeView();
             TagsTabAutoScrollMarker = new Control();
             PatchTabPage = new TabPageCustom();
             PatchMainPanel = new Panel();
