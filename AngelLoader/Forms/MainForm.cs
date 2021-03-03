@@ -2823,7 +2823,7 @@ namespace AngelLoader.Forms
             // TODO: @DarkMode: Make this less dumb
             // Like maybe override add methods of DarkContextMenu to just always re-setup the theme afterward
             // Special case because we add items dynamically
-            AddTagLLMenu.DarkModeEnabled = AddTagLLMenu.DarkModeEnabled;
+            AddTagLLMenu.Menu.RefreshDarkModeState();
 
             ShowMenu(AddTagLLMenu.Menu, AddTagFromListButton, MenuPos.LeftDown);
         }
@@ -4351,7 +4351,7 @@ namespace AngelLoader.Forms
                 // TODO: @DarkMode: Make this less dumb
                 // Like maybe override add methods of DarkContextMenu to just always re-setup the theme afterward
                 // Special case because we add items dynamically
-                AltTitlesLLMenu.DarkModeEnabled = AltTitlesLLMenu.DarkModeEnabled;
+                AltTitlesLLMenu.Menu.RefreshDarkModeState();
 
                 EditFMAltTitlesArrowButton.Enabled = true;
             }

@@ -19,15 +19,15 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                SetUpTheme();
+                RefreshDarkModeState();
             }
         }
 
         #region Constructors
 
-        public DarkContextMenu() => SetUpTheme();
+        public DarkContextMenu() => RefreshDarkModeState();
 
-        public DarkContextMenu(IContainer container) : base(container) => SetUpTheme();
+        public DarkContextMenu(IContainer container) : base(container) => RefreshDarkModeState();
 
         public DarkContextMenu(bool darkModeEnabled) => DarkModeEnabled = darkModeEnabled;
 
@@ -35,7 +35,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        private void SetUpTheme()
+        public void RefreshDarkModeState()
         {
             void SetMenuTheme(ToolStripDropDown menu)
             {
