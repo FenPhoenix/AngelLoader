@@ -122,6 +122,8 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        #region Event overrides
+
         protected override void OnDrawNode(DrawTreeNodeEventArgs e)
         {
             bool nodeFocused = (e.State & TreeNodeStates.Focused) == TreeNodeStates.Focused;
@@ -149,16 +151,8 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     if (Focused)
                     {
-                        if (nodeFocused)
-                        {
-                            backColorBrush = bgBrush_Highlighted_Focused;
-                            textColor = textColor_Highlighted_Focused;
-                        }
-                        else
-                        {
-                            backColorBrush = bgBrush_Normal;
-                            textColor = textColor_Normal;
-                        }
+                        backColorBrush = nodeFocused ? bgBrush_Highlighted_Focused : bgBrush_Normal;
+                        textColor = nodeFocused ? textColor_Highlighted_Focused : textColor_Normal;
                     }
                     else
                     {
@@ -191,15 +185,16 @@ namespace AngelLoader.Forms.CustomControls
             if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
+        #endregion
+
         private void DrawBorder(IntPtr hWnd)
         {
-            if (_darkModeEnabled && BorderStyle != BorderStyle.None)
-            {
-                using var dc = new Native.DeviceContext(hWnd);
-                using Graphics g = Graphics.FromHdc(dc.DC);
-                g.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
-                g.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
-            }
+            if (!_darkModeEnabled || BorderStyle == BorderStyle.None) return;
+
+            using var dc = new Native.DeviceContext(hWnd);
+            using Graphics g = Graphics.FromHdc(dc.DC);
+            g.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
+            g.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
         }
 
         protected override void WndProc(ref Message m)
