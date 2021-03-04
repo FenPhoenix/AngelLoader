@@ -1,9 +1,4 @@
 ﻿/* TODO: MainForm notes:
- PERF_TODO: Removing ALL asyncs and awaits saves 13ms on startup and 48k off the exe.
- If it comes down to it, I can probably figure out how to do the old way of async programming that doesn't add
- state machines a bazillion levels down, so as to only have the overhead right where it's actually used. But
- the time savings isn't as much as I thought it might be, so meh.
-
  NOTE: Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
  in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
