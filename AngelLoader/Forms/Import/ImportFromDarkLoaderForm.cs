@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
     public sealed partial class ImportFromDarkLoaderForm : Form
     {
+        // TODO: @DarkMode(Import DL form): Add visual blocker here too to prevent flicker
+
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+
         internal string DarkLoaderIniFile = "";
         internal bool ImportFMData;
         internal bool ImportTitle;
@@ -26,9 +33,20 @@ namespace AngelLoader.Forms
 #else
             InitComponentManual();
 #endif
+
+            SetTheme(Config.VisualTheme);
         }
 
         private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e) => Localize();
+
+        private void SetTheme(VisualTheme theme)
+        {
+            ControlUtils.ChangeFormThemeMode(
+                theme,
+                this,
+                _controlColors
+            );
+        }
 
         private void Localize()
         {

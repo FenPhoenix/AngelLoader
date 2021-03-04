@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms
 {
@@ -7,10 +8,10 @@ namespace AngelLoader.Forms
     {
         private void InitComponentManual()
         {
-            AutodetectCheckBox = new CheckBox();
-            ChooseDarkLoaderIniLabel = new Label();
-            DarkLoaderIniTextBox = new TextBox();
-            DarkLoaderIniBrowseButton = new Button();
+            AutodetectCheckBox = new DarkCheckBox();
+            ChooseDarkLoaderIniLabel = new DarkLabel();
+            DarkLoaderIniTextBox = new DarkTextBox();
+            DarkLoaderIniBrowseButton = new DarkButton();
             SuspendLayout();
             // 
             // AutodetectCheckBox

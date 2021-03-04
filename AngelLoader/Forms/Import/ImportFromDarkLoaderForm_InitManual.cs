@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms
 {
@@ -7,17 +8,17 @@ namespace AngelLoader.Forms
     {
         private void InitComponentManual()
         {
-            OKButton = new Button();
-            Cancel_Button = new Button();
+            OKButton = new DarkButton();
+            Cancel_Button = new DarkButton();
             OKCancelFlowLayoutPanel = new FlowLayoutPanel();
-            ImportFinishedOnCheckBox = new CheckBox();
-            ImportLastPlayedCheckBox = new CheckBox();
-            ImportReleaseDateCheckBox = new CheckBox();
-            ImportCommentCheckBox = new CheckBox();
-            ImportSizeCheckBox = new CheckBox();
-            ImportTitleCheckBox = new CheckBox();
-            ImportFMDataCheckBox = new CheckBox();
-            ImportSavesCheckBox = new CheckBox();
+            ImportFinishedOnCheckBox = new DarkCheckBox();
+            ImportLastPlayedCheckBox = new DarkCheckBox();
+            ImportReleaseDateCheckBox = new DarkCheckBox();
+            ImportCommentCheckBox = new DarkCheckBox();
+            ImportSizeCheckBox = new DarkCheckBox();
+            ImportTitleCheckBox = new DarkCheckBox();
+            ImportFMDataCheckBox = new DarkCheckBox();
+            ImportSavesCheckBox = new DarkCheckBox();
             ImportControls = new User_DL_ImportControls();
             OKCancelFlowLayoutPanel.SuspendLayout();
             SuspendLayout();

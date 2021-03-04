@@ -29,10 +29,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.AutodetectCheckBox = new System.Windows.Forms.CheckBox();
-            this.ChooseDarkLoaderIniLabel = new System.Windows.Forms.Label();
-            this.DarkLoaderIniTextBox = new System.Windows.Forms.TextBox();
-            this.DarkLoaderIniBrowseButton = new System.Windows.Forms.Button();
+            this.AutodetectCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ChooseDarkLoaderIniLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.DarkLoaderIniTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.DarkLoaderIniBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.SuspendLayout();
             // 
             // AutodetectCheckBox
@@ -98,9 +98,9 @@
         #endregion
 #endif
 
-        private System.Windows.Forms.CheckBox AutodetectCheckBox;
-        private System.Windows.Forms.Label ChooseDarkLoaderIniLabel;
-        private System.Windows.Forms.TextBox DarkLoaderIniTextBox;
-        private System.Windows.Forms.Button DarkLoaderIniBrowseButton;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox AutodetectCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkLabel ChooseDarkLoaderIniLabel;
+        private AngelLoader.Forms.CustomControls.DarkTextBox DarkLoaderIniTextBox;
+        private AngelLoader.Forms.CustomControls.DarkButton DarkLoaderIniBrowseButton;
     }
 }

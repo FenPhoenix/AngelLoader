@@ -29,17 +29,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.OKButton = new System.Windows.Forms.Button();
-            this.Cancel_Button = new System.Windows.Forms.Button();
+            this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.ImportFinishedOnCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportLastPlayedCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportReleaseDateCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportCommentCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportSizeCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportTitleCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportFMDataCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportSavesCheckBox = new System.Windows.Forms.CheckBox();
+            this.ImportFinishedOnCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportCommentCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportSizeCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportTitleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportFMDataCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportSavesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportControls = new AngelLoader.Forms.User_DL_ImportControls();
             this.OKCancelFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
@@ -226,17 +226,17 @@
         #endregion
 #endif
 
-        private System.Windows.Forms.Button OKButton;
-        private System.Windows.Forms.Button Cancel_Button;
+        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
+        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
         private System.Windows.Forms.FlowLayoutPanel OKCancelFlowLayoutPanel;
         private User_DL_ImportControls ImportControls;
-        private System.Windows.Forms.CheckBox ImportFinishedOnCheckBox;
-        private System.Windows.Forms.CheckBox ImportLastPlayedCheckBox;
-        private System.Windows.Forms.CheckBox ImportReleaseDateCheckBox;
-        private System.Windows.Forms.CheckBox ImportCommentCheckBox;
-        private System.Windows.Forms.CheckBox ImportSizeCheckBox;
-        private System.Windows.Forms.CheckBox ImportTitleCheckBox;
-        private System.Windows.Forms.CheckBox ImportFMDataCheckBox;
-        private System.Windows.Forms.CheckBox ImportSavesCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportFinishedOnCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportLastPlayedCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportReleaseDateCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportCommentCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportSizeCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportTitleCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportFMDataCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportSavesCheckBox;
     }
 }
