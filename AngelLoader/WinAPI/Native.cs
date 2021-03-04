@@ -30,6 +30,9 @@ namespace AngelLoader.WinAPI
         internal const uint WS_BORDER = 0x00800000;
         internal const uint WS_VSCROLL = 0x00200000;
 
+        internal const int WM_SETFOCUS = 0x0007;
+        internal const int WM_KILLFOCUS = 0x0008;
+
         internal const int GWL_STYLE = -16;
         internal const int GWL_EXSTYLE = -20;
 

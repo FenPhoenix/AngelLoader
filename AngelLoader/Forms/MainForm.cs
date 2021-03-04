@@ -2869,8 +2869,6 @@ namespace AngelLoader.Forms
 
         private void PatchAddDMLButton_Click(object sender, EventArgs e)
         {
-            var lb = PatchDMLsListBox;
-
             var dmlFiles = new List<string>();
 
             using (var d = new OpenFileDialog())
@@ -2880,7 +2878,7 @@ namespace AngelLoader.Forms
                 if (d.ShowDialog() != DialogResult.OK || d.FileNames.Length == 0) return;
                 dmlFiles.AddRange(d.FileNames);
             }
-
+            PatchDMLsListBox.BeginUpdate();
             foreach (string f in dmlFiles)
             {
                 if (f.IsEmpty()) continue;
@@ -2889,11 +2887,12 @@ namespace AngelLoader.Forms
                 if (!success) return;
 
                 string dmlFileName = Path.GetFileName(f);
-                if (!lb.Items.Cast<string>().ToArray().ContainsI(dmlFileName))
+                if (!PatchDMLsListBox.Items.Cast<string>().ToArray().ContainsI(dmlFileName))
                 {
-                    lb.Items.Add(dmlFileName);
+                    PatchDMLsListBox.Items.Add(dmlFileName);
                 }
             }
+            PatchDMLsListBox.EndUpdate();
         }
 
         private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
@@ -4103,6 +4102,7 @@ namespace AngelLoader.Forms
                 {
                     PatchMainPanel.Show();
                     PatchFMNotInstalledLabel.Hide();
+                    PatchDMLsListBox.BeginUpdate();
                     PatchDMLsListBox.Items.Clear();
                     (bool success, List<string> dmlFiles) = Core.GetDMLFiles(fm);
                     if (success)
@@ -4112,6 +4112,7 @@ namespace AngelLoader.Forms
                             if (!f.IsEmpty()) PatchDMLsListBox.Items.Add(f);
                         }
                     }
+                    PatchDMLsListBox.EndUpdate();
                 }
             }
 
