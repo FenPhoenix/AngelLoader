@@ -37,6 +37,8 @@
  IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
  TODO: @DarkMode: Make sure all controls' disabled colors are working!
+
+ @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */
 
 using System;
@@ -235,12 +237,6 @@ namespace AngelLoader.Forms
             const bool BlockMessage = true;
             const bool PassMessageOn = false;
 
-            //{
-            //    Point pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
-            //    IntPtr handle = InteropMisc.WindowFromPoint(pos);
-            //    Trace.WriteLine("window under mouse: " + handle.ToString());
-            //}
-
             // Note: CanFocus will be false if there are modal windows open
 
             // This allows controls to be scrolled with the mousewheel when the mouse is over them, without
@@ -258,8 +254,7 @@ namespace AngelLoader.Forms
 
                 if (_viewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
-                int wParam = (int)m.WParam;
-                int delta = wParam >> 16;
+                int delta = Native.SignedHIWORD(m.WParam);
                 if (CanFocus && CursorOverControl(FilterBarFLP) && !CursorOverControl(FMsDGV))
                 {
                     // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing
@@ -276,7 +271,7 @@ namespace AngelLoader.Forms
                         FilterBarFLP.HorizontalScroll.SmallChange = origSmallChange;
                     }
                 }
-                else if (CanFocus && CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == Native.MK_CONTROL)
+                else if (CanFocus && CursorOverControl(FMsDGV) && (Native.LOWORD(m.WParam)) == Native.MK_CONTROL)
                 {
                     if (delta != 0) ZoomFMsDGV(delta > 0 ? ZoomFMsDGVType.ZoomIn : ZoomFMsDGVType.ZoomOut);
                 }
@@ -306,7 +301,7 @@ namespace AngelLoader.Forms
 
                 if (CanFocus && CursorOverControl(FMsDGV))
                 {
-                    int delta = (int)m.WParam >> 16;
+                    int delta = Native.SignedHIWORD(m.WParam);
                     if (delta != 0)
                     {
                         int offset = FMsDGV.HorizontalScrollingOffset;
@@ -1677,7 +1672,7 @@ namespace AngelLoader.Forms
 
         private static bool TryGetHWndFromMousePos(Message msg, out IntPtr result)
         {
-            Point pos = new Point(msg.LParam.ToInt32() & 0xffff, msg.LParam.ToInt32() >> 16);
+            Point pos = new Point(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
             result = Native.WindowFromPoint(pos);
             return result != IntPtr.Zero && Control.FromHandle(result) != null;
         }

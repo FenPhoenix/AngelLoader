@@ -149,7 +149,7 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             const int delta = 120;
-            _wheelAccum += (int)m.WParam >> 16;
+            _wheelAccum += Native.SignedHIWORD(m.WParam);
             if (Math.Abs(_wheelAccum) >= delta)
             {
                 while (_wheelAccum >= delta)
