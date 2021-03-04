@@ -7,20 +7,20 @@ namespace AngelLoader.Forms
     {
         private void InitComponentManual()
         {
-            OKButton = new Button();
-            Cancel_Button = new Button();
+            OKButton = new CustomControls.DarkButton();
+            Cancel_Button = new CustomControls.DarkButton();
             OKCancelFlowLayoutPanel = new FlowLayoutPanel();
             ImportControls = new User_FMSel_NDL_ImportControls();
-            ImportSizeCheckBox = new CheckBox();
-            ImportFinishedOnCheckBox = new CheckBox();
-            ImportSelectedReadmeCheckBox = new CheckBox();
-            ImportTagsCheckBox = new CheckBox();
-            ImportDisabledModsCheckBox = new CheckBox();
-            ImportRatingCheckBox = new CheckBox();
-            ImportCommentCheckBox = new CheckBox();
-            ImportLastPlayedCheckBox = new CheckBox();
-            ImportReleaseDateCheckBox = new CheckBox();
-            ImportTitleCheckBox = new CheckBox();
+            ImportSizeCheckBox = new CustomControls.DarkCheckBox();
+            ImportFinishedOnCheckBox = new CustomControls.DarkCheckBox();
+            ImportSelectedReadmeCheckBox = new CustomControls.DarkCheckBox();
+            ImportTagsCheckBox = new CustomControls.DarkCheckBox();
+            ImportDisabledModsCheckBox = new CustomControls.DarkCheckBox();
+            ImportRatingCheckBox = new CustomControls.DarkCheckBox();
+            ImportCommentCheckBox = new CustomControls.DarkCheckBox();
+            ImportLastPlayedCheckBox = new CustomControls.DarkCheckBox();
+            ImportReleaseDateCheckBox = new CustomControls.DarkCheckBox();
+            ImportTitleCheckBox = new CustomControls.DarkCheckBox();
             OKCancelFlowLayoutPanel.SuspendLayout();
             SuspendLayout();
             // 

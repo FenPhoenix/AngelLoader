@@ -29,20 +29,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.OKButton = new System.Windows.Forms.Button();
-            this.Cancel_Button = new System.Windows.Forms.Button();
+            this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.ImportControls = new User_FMSel_NDL_ImportControls();
-            this.ImportSizeCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportFinishedOnCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportSelectedReadmeCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportTagsCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportDisabledModsCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportRatingCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportCommentCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportLastPlayedCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportReleaseDateCheckBox = new System.Windows.Forms.CheckBox();
-            this.ImportTitleCheckBox = new System.Windows.Forms.CheckBox();
+            this.ImportSizeCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportFinishedOnCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportSelectedReadmeCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportTagsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportDisabledModsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportRatingCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportCommentCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ImportTitleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.OKCancelFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -252,19 +252,19 @@
         #endregion
 #endif
 
-        private System.Windows.Forms.Button OKButton;
-        private System.Windows.Forms.Button Cancel_Button;
+        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
+        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
         private System.Windows.Forms.FlowLayoutPanel OKCancelFlowLayoutPanel;
         private User_FMSel_NDL_ImportControls ImportControls;
-        private System.Windows.Forms.CheckBox ImportSizeCheckBox;
-        private System.Windows.Forms.CheckBox ImportFinishedOnCheckBox;
-        private System.Windows.Forms.CheckBox ImportSelectedReadmeCheckBox;
-        private System.Windows.Forms.CheckBox ImportTagsCheckBox;
-        private System.Windows.Forms.CheckBox ImportDisabledModsCheckBox;
-        private System.Windows.Forms.CheckBox ImportRatingCheckBox;
-        private System.Windows.Forms.CheckBox ImportCommentCheckBox;
-        private System.Windows.Forms.CheckBox ImportLastPlayedCheckBox;
-        private System.Windows.Forms.CheckBox ImportReleaseDateCheckBox;
-        private System.Windows.Forms.CheckBox ImportTitleCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportSizeCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportFinishedOnCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportSelectedReadmeCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportTagsCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportDisabledModsCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportRatingCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportCommentCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportLastPlayedCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportReleaseDateCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportTitleCheckBox;
     }
 }

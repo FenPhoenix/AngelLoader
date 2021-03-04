@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -7,6 +9,10 @@ namespace AngelLoader.Forms
 {
     public sealed partial class ImportFromMultipleInisForm : Form
     {
+        // TODO: @DarkMode(ImportFromMultipleInisForm): Blocker
+
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+
         internal List<string> IniFiles = new List<string>();
         internal bool ImportTitle;
         internal bool ImportReleaseDate;
@@ -34,7 +40,18 @@ namespace AngelLoader.Forms
 
             if (ImportType == ImportType.FMSel) ImportSizeCheckBox.Hide();
 
+            SetTheme(Config.VisualTheme);
+
             Localize();
+        }
+
+        private void SetTheme(VisualTheme theme)
+        {
+            ControlUtils.ChangeFormThemeMode(
+                theme,
+                this,
+                _controlColors
+            );
         }
 
         private void Localize()

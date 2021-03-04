@@ -29,23 +29,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.Thief3GroupBox = new System.Windows.Forms.GroupBox();
-            this.Thief3AutodetectCheckBox = new System.Windows.Forms.CheckBox();
-            this.Thief3IniBrowseButton = new System.Windows.Forms.Button();
-            this.Thief3IniTextBox = new System.Windows.Forms.TextBox();
-            this.Thief2GroupBox = new System.Windows.Forms.GroupBox();
-            this.Thief2AutodetectCheckBox = new System.Windows.Forms.CheckBox();
-            this.Thief2IniBrowseButton = new System.Windows.Forms.Button();
-            this.Thief2IniTextBox = new System.Windows.Forms.TextBox();
-            this.Thief1GroupBox = new System.Windows.Forms.GroupBox();
-            this.Thief1AutodetectCheckBox = new System.Windows.Forms.CheckBox();
-            this.Thief1IniBrowseButton = new System.Windows.Forms.Button();
-            this.Thief1IniTextBox = new System.Windows.Forms.TextBox();
-            this.ChooseIniFilesLabel = new System.Windows.Forms.Label();
-            this.SS2GroupBox = new System.Windows.Forms.GroupBox();
-            this.SS2AutodetectCheckBox = new System.Windows.Forms.CheckBox();
-            this.SS2IniBrowseButton = new System.Windows.Forms.Button();
-            this.SS2IniTextBox = new System.Windows.Forms.TextBox();
+            this.Thief3GroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.Thief3AutodetectCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Thief3IniBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.Thief3IniTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.Thief2GroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.Thief2AutodetectCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Thief2IniBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.Thief2IniTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.Thief1GroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.Thief1AutodetectCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Thief1IniBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.Thief1IniTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.ChooseIniFilesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.SS2GroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.SS2AutodetectCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.SS2IniBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.SS2IniTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.Thief3GroupBox.SuspendLayout();
             this.Thief2GroupBox.SuspendLayout();
             this.Thief1GroupBox.SuspendLayout();
@@ -280,22 +280,22 @@
         #endregion
 #endif
 
-        private System.Windows.Forms.GroupBox Thief3GroupBox;
-        private System.Windows.Forms.CheckBox Thief3AutodetectCheckBox;
-        private System.Windows.Forms.Button Thief3IniBrowseButton;
-        private System.Windows.Forms.TextBox Thief3IniTextBox;
-        private System.Windows.Forms.GroupBox Thief2GroupBox;
-        private System.Windows.Forms.CheckBox Thief2AutodetectCheckBox;
-        private System.Windows.Forms.Button Thief2IniBrowseButton;
-        private System.Windows.Forms.TextBox Thief2IniTextBox;
-        private System.Windows.Forms.GroupBox Thief1GroupBox;
-        private System.Windows.Forms.CheckBox Thief1AutodetectCheckBox;
-        private System.Windows.Forms.Button Thief1IniBrowseButton;
-        private System.Windows.Forms.TextBox Thief1IniTextBox;
-        private System.Windows.Forms.Label ChooseIniFilesLabel;
-        private System.Windows.Forms.GroupBox SS2GroupBox;
-        private System.Windows.Forms.CheckBox SS2AutodetectCheckBox;
-        private System.Windows.Forms.Button SS2IniBrowseButton;
-        private System.Windows.Forms.TextBox SS2IniTextBox;
+        private AngelLoader.Forms.CustomControls.DarkGroupBox Thief3GroupBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox Thief3AutodetectCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkButton Thief3IniBrowseButton;
+        private AngelLoader.Forms.CustomControls.DarkTextBox Thief3IniTextBox;
+        private AngelLoader.Forms.CustomControls.DarkGroupBox Thief2GroupBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox Thief2AutodetectCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkButton Thief2IniBrowseButton;
+        private AngelLoader.Forms.CustomControls.DarkTextBox Thief2IniTextBox;
+        private AngelLoader.Forms.CustomControls.DarkGroupBox Thief1GroupBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox Thief1AutodetectCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkButton Thief1IniBrowseButton;
+        private AngelLoader.Forms.CustomControls.DarkTextBox Thief1IniTextBox;
+        private AngelLoader.Forms.CustomControls.DarkLabel ChooseIniFilesLabel;
+        private AngelLoader.Forms.CustomControls.DarkGroupBox SS2GroupBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox SS2AutodetectCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkButton SS2IniBrowseButton;
+        private AngelLoader.Forms.CustomControls.DarkTextBox SS2IniTextBox;
     }
 }

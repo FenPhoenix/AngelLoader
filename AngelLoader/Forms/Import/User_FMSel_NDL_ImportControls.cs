@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -11,7 +12,7 @@ namespace AngelLoader.Forms
     {
         private ImportType ImportType;
 
-        private readonly (GroupBox GroupBox, CheckBox AutodetectCheckBox, TextBox TextBox, Button BrowseButton)[]
+        private readonly (DarkGroupBox GroupBox, DarkCheckBox AutodetectCheckBox, DarkTextBox TextBox, DarkButton BrowseButton)[]
         GameIniItems;
 
         internal string GetIniFile(GameIndex gameIndex) => GameIniItems[(int)gameIndex].TextBox.Text;

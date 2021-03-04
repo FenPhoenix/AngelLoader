@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms
 {
@@ -7,23 +8,23 @@ namespace AngelLoader.Forms
     {
         private void InitComponentManual()
         {
-            Thief3GroupBox = new GroupBox();
-            Thief3AutodetectCheckBox = new CheckBox();
-            Thief3IniBrowseButton = new Button();
-            Thief3IniTextBox = new TextBox();
-            Thief2GroupBox = new GroupBox();
-            Thief2AutodetectCheckBox = new CheckBox();
-            Thief2IniBrowseButton = new Button();
-            Thief2IniTextBox = new TextBox();
-            Thief1GroupBox = new GroupBox();
-            Thief1AutodetectCheckBox = new CheckBox();
-            Thief1IniBrowseButton = new Button();
-            Thief1IniTextBox = new TextBox();
-            ChooseIniFilesLabel = new Label();
-            SS2GroupBox = new GroupBox();
-            SS2AutodetectCheckBox = new CheckBox();
-            SS2IniBrowseButton = new Button();
-            SS2IniTextBox = new TextBox();
+            Thief3GroupBox = new DarkGroupBox();
+            Thief3AutodetectCheckBox = new DarkCheckBox();
+            Thief3IniBrowseButton = new DarkButton();
+            Thief3IniTextBox = new DarkTextBox();
+            Thief2GroupBox = new DarkGroupBox();
+            Thief2AutodetectCheckBox = new DarkCheckBox();
+            Thief2IniBrowseButton = new DarkButton();
+            Thief2IniTextBox = new DarkTextBox();
+            Thief1GroupBox = new DarkGroupBox();
+            Thief1AutodetectCheckBox = new DarkCheckBox();
+            Thief1IniBrowseButton = new DarkButton();
+            Thief1IniTextBox = new DarkTextBox();
+            ChooseIniFilesLabel = new DarkLabel();
+            SS2GroupBox = new DarkGroupBox();
+            SS2AutodetectCheckBox = new DarkCheckBox();
+            SS2IniBrowseButton = new DarkButton();
+            SS2IniTextBox = new DarkTextBox();
             Thief3GroupBox.SuspendLayout();
             Thief2GroupBox.SuspendLayout();
             Thief1GroupBox.SuspendLayout();
