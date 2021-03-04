@@ -9,7 +9,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class GameVersionsForm : Form
+    public sealed partial class GameVersionsForm : DarkForm
     {
         private readonly (DarkLabel Label, DarkTextBox TextBox)[] GameVersionItems;
 

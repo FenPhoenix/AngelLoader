@@ -22,6 +22,9 @@ namespace AngelLoader.WinAPI
         internal const int WM_CTLCOLORSCROLLBAR = 0x0137;
         internal const int WM_PAINT = 0x000F;
         internal const int WM_ERASEBKGND = 0x0014;
+        internal const int WM_MOVE = 0x0003;
+        internal const int WM_SIZE = 0x0005;
+        internal const int WM_ACTIVATE = 0x0006;
 
         internal const uint WS_EX_CLIENTEDGE = 0x00000200;
         internal const uint WS_BORDER = 0x00800000;

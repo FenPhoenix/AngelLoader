@@ -10,7 +10,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class ScanAllFMsForm : Form
+    public sealed partial class ScanAllFMsForm : DarkForm
     {
         private readonly DarkCheckBox[] _checkBoxes;
 

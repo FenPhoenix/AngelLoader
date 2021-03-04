@@ -5,12 +5,13 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class MessageBoxCustomForm : Form
+    public sealed partial class MessageBoxCustomForm : DarkForm
     {
         #region P/Invoke crap
 

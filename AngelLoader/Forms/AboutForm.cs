@@ -13,7 +13,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class AboutForm : Form
+    public sealed partial class AboutForm : DarkForm
     {
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 

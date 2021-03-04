@@ -14,7 +14,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class GlobalFMStatsForm : Form
+    public sealed partial class GlobalFMStatsForm : DarkForm
     {
         public GlobalFMStatsForm()
         {

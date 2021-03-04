@@ -22,7 +22,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    internal sealed partial class SettingsForm : Form, IEventDisabler
+    internal sealed partial class SettingsForm : DarkForm, IEventDisabler
     {
         #region Private fields
 
@@ -75,8 +75,6 @@ namespace AngelLoader.Forms
 
         public bool EventsDisabled { get; set; }
 
-        private readonly Panel? DarkModeBlocker;
-
         #endregion
 
         public readonly ConfigData OutConfig;
@@ -91,22 +89,6 @@ namespace AngelLoader.Forms
 #endif
 
             _selfTheme = config.VisualTheme;
-
-            // Disgusting hack to make dark mode not flicker, part un
-            if (_selfTheme == VisualTheme.Dark)
-            {
-                // To prevent flicker on our bottom panel, we can simply hide it. Also we NEED to hide it, because
-                // for some reason it's unaffected by the blocker below and flickers anyway. Okay then.
-                BottomFlowLayoutPanel.Hide();
-                // We can't hide our SplitContainer because then PathsPage glitches out its from-top position/
-                // scroll position/whatever tf else. So we block the window out with this ridiculous blocker thing.
-                // It makes the window look blank while it loads, which is better than a blinding flicker.
-                // NOTE: This has to be a Panel, not just a Control, because if it's just a Control then it flickers
-                // white itself. Argh.
-                DarkModeBlocker = new Panel { Dock = DockStyle.Fill, BackColor = DarkColors.Fen_ControlBackground };
-                Controls.Add(DarkModeBlocker);
-                DarkModeBlocker.BringToFront();
-            }
 
             _startup = startup;
             _cleanStart = cleanStart;
@@ -571,8 +553,6 @@ namespace AngelLoader.Forms
                     this,
                     _controlColors,
                     x => x is SplitterPanel
-                         // This one is already set to the dark BackColor, so just don't even mess with it
-                         || x.EqualsIfNotNull(DarkModeBlocker)
                 );
 
                 ControlPainter.DarkModeEnabled = darkMode;
@@ -618,13 +598,6 @@ namespace AngelLoader.Forms
             // questions.
             PathsPage.DoLayout = true;
             PathsPage.FlowLayoutPanel1.PerformLayout();
-
-            // Disgusting hack to make dark mode not flicker, part deux
-            if (_selfTheme == VisualTheme.Dark)
-            {
-                BottomFlowLayoutPanel.Show();
-                DarkModeBlocker?.Hide();
-            }
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)

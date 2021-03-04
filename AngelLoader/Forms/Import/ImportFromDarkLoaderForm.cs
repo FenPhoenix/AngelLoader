@@ -5,11 +5,12 @@ using System.IO;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class ImportFromDarkLoaderForm : Form
+    public sealed partial class ImportFromDarkLoaderForm : DarkForm
     {
         // TODO: @DarkMode(Import DL form): Add visual blocker here too to prevent flicker
 

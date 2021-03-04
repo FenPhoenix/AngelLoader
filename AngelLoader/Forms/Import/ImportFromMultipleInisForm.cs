@@ -2,12 +2,13 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class ImportFromMultipleInisForm : Form
+    public sealed partial class ImportFromMultipleInisForm : DarkForm
     {
         // TODO: @DarkMode(ImportFromMultipleInisForm): Blocker
 

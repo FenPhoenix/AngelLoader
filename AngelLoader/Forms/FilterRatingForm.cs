@@ -4,11 +4,12 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class FilterRatingForm : Form, IEventDisabler
+    public sealed partial class FilterRatingForm : DarkForm, IEventDisabler
     {
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class FilterDateForm : Form, IEventDisabler
+    public sealed partial class FilterDateForm : DarkForm, IEventDisabler
     {
         internal DateTime? DateFrom;
         internal DateTime? DateTo;

@@ -5,11 +5,12 @@ using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class FilterTagsForm : Form
+    public sealed partial class FilterTagsForm : DarkForm
     {
         private readonly Point[] _arrowPoints = new Point[3];
 
