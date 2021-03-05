@@ -62,6 +62,8 @@ namespace AngelLoader.Forms.CustomControls
             Columns[0].CellTemplate = new DataGridViewTextBoxCell();
 
             StandardTab = true;
+
+            ShowCellToolTips = false;
         }
 
         #region Public methods
