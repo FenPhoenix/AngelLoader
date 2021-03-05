@@ -18,9 +18,9 @@ namespace AngelLoader.Forms.CustomControls
 
         private MainForm _owner = null!;
 
-        private Color DefaultRowBackColor = SystemColors.Window;
-        private Color RecentHighlightColor = Color.LightGoldenrodYellow;
-        private Color UnavailableColor = Color.MistyRose;
+        private readonly Color DefaultRowBackColor = SystemColors.Window;
+        private readonly Color RecentHighlightColor = Color.LightGoldenrodYellow;
+        private readonly Color UnavailableColor = Color.MistyRose;
 
         private bool _mouseHere;
         private int _mouseDownOnHeader = -1;
@@ -64,47 +64,8 @@ namespace AngelLoader.Forms.CustomControls
 
                 base.DarkModeEnabled = value;
 
-                if (_darkModeEnabled)
-                {
-                    RecentHighlightColor = Color.FromArgb(64, 64, 72);
-                    UnavailableColor = DarkColors.Fen_RedHighlight;
-                    DefaultRowBackColor = DarkColors.Fen_DarkBackground;
-                    BackgroundColor = DarkColors.Fen_DarkBackground;
-                }
-                else
-                {
-                    RecentHighlightColor = Color.LightGoldenrodYellow;
-                    UnavailableColor = Color.MistyRose;
-                    DefaultRowBackColor = SystemColors.Window;
-                    BackColor = SystemColors.Control;
-                }
+                BackgroundColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.ControlDark;
             }
-        }
-
-        public DataGridViewCustom()
-        {
-            /*
-            TODO: @DarkMode(Scroll bars): The original plan:
-            
-            *** remove only after scroll bars are 100% complete and working to my satisfaction
-            
-            -Create a custom control that looks like a scroll bar and place it overtop of the real scroll bar(s),
-             showing and hiding as the real scroll bars do. Dock and anchor so the size and position always matches
-             the real scroll bar. Apply the style here https://stackoverflow.com/a/50245502 to make clicks fall
-             through to the real scroll bar underneath.
-            -On Paint of whatever control contains the scroll bars, call GetScrollBarInfo() to get the top and
-             bottom of the scroll thumb, and paint our themed scroll bar to match.
-            -On mouse events of the real scroll bar, detect cursor position (is it on the arrow, the thumb, etc.?)
-             and paint ourselves appropriately to show arrow pressed states etc.
-
-            Notes:
-            MSDN:
-            "Beginning with Windows 8, WS_EX_LAYERED can be used with child windows and top-level windows. Previous
-            Windows versions support WS_EX_LAYERED only for top-level windows."
-            Damn... so we can't do this on 7, which we otherwise support.
-            -Handle NCHITTEST / return HTTRANSPARENT - might work instead?
-            -Handle all mouse events and pass them along with PostMessage() - this works, we'll use it
-            */
         }
 
         #region Public methods
@@ -333,13 +294,16 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnRowPrePaint(e);
 
+            if (_darkModeEnabled) return;
+
             // Coloring the recent rows here because if we do it in _CellValueNeeded, we get a brief flash of the
             // default white-background cell color before it changes.
             if (!_owner.CellValueNeededDisabled && FilterShownIndexList.Count > 0)
             {
                 var fm = GetFMFromIndex(e.RowIndex);
 
-                Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedUnavailable
+                Rows[e.RowIndex].DefaultCellStyle.BackColor =
+                    fm.MarkedUnavailable
                     ? UnavailableColor
                     : fm.MarkedRecent
                     ? RecentHighlightColor
@@ -353,51 +317,76 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            #region Draw cell borders
-
-            // TODO: @DarkMode: This is for having different colored grid lines in recent-highlighted rows
+            // This is for having different colored grid lines in recent-highlighted rows.
             // That way, we can get a good, visible separator color for all cases by just having two.
-            // But we need to figure this out exactly because it doesn't work properly as is.
-            // https://stackoverflow.com/a/32170212
 
-#if false
-
-            if (Config.VisualTheme == VisualTheme.Classic || _owner.CellValueNeededDisabled ||
-                FilterShownIndexList.Count == 0 || !GetFMFromIndex(e.RowIndex).MarkedRecent)
-            {
-                e.Paint(e.ClipBounds, DataGridViewPaintParts.All);
-                e.Handled = true;
-                return;
-            }
-
-            e.Paint(e.ClipBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.Border);
-            e.Graphics.DrawRectangle(Pens.Black, new Rectangle(e.CellBounds.Left, e.CellBounds.Top, e.CellBounds.Width - 1, e.CellBounds.Height - 1));
-            //e.Graphics.DrawLine(
-            //    Pens.Black,
-            //    e.CellBounds.Left,
-            //    e.CellBounds.Top,
-            //    e.CellBounds.Right,
-            //    e.CellBounds.Top);
-            e.Handled = true;
-
-#endif
             int selectedIndex = SelectedRows.Count == 0 ? -1 : SelectedRows[0].Index;
-            if (_darkModeEnabled && e.RowIndex > -1 && selectedIndex == e.RowIndex)
+            if (e.RowIndex > -1)
             {
-                e.Graphics.FillRectangle(DarkColors.BlueSelectionBrush, e.CellBounds);
-                e.Paint(e.ClipBounds, DataGridViewPaintParts.ContentForeground);
-                e.Paint(e.ClipBounds, DataGridViewPaintParts.Border);
+                FanMission fm = GetFMFromIndex(e.RowIndex);
+
+                #region Paint cell background
+
+                SolidBrush bgBrush = selectedIndex == e.RowIndex
+                    ? DarkColors.BlueSelectionBrush
+                    : fm.MarkedUnavailable
+                    ? DarkColors.Fen_RedHighlightBrush
+                    : fm.MarkedRecent
+                    ? DarkColors.Fen_DGVCellBordersBrush
+                    : DarkColors.Fen_DarkBackgroundBrush;
+
+                e.Graphics.FillRectangle(bgBrush, e.CellBounds);
+
+                #endregion
+
+                e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
+
+                #region Draw cell borders
+
+                bool needsDarkBorder = fm.MarkedUnavailable || fm.MarkedRecent;
+
+                Pen borderPen = needsDarkBorder
+                    ? DarkColors.Fen_DarkBackgroundPen
+                    : DarkColors.Fen_DGVCellBordersPen;
+
+                FanMission nextFM;
+                Pen bottomBorderPen =
+                    needsDarkBorder &&
+                    e.RowIndex < RowCount - 1 &&
+                    !(nextFM = GetFMFromIndex(e.RowIndex + 1)).MarkedUnavailable &&
+                    !nextFM.MarkedRecent
+                        ? DarkColors.Fen_DGVCellBordersPen
+                        : borderPen;
+
+                // Bottom
+                e.Graphics.DrawLine(
+                    bottomBorderPen,
+                    e.CellBounds.X,
+                    e.CellBounds.Y + (e.CellBounds.Height - 1),
+                    e.CellBounds.X + (e.CellBounds.Width - 2),
+                    e.CellBounds.Y + (e.CellBounds.Height - 1)
+                );
+
+                // Right
+                e.Graphics.DrawLine(
+                    borderPen,
+                    e.CellBounds.X + (e.CellBounds.Width - 1),
+                    e.CellBounds.Y,
+                    e.CellBounds.X + (e.CellBounds.Width - 1),
+                    e.CellBounds.Y + (e.CellBounds.Height - 1)
+                );
+
+                #endregion
+
                 e.Handled = true;
             }
 
-            #endregion
-
-            #region Draw headers
+            #region Draw column headers
 
             /*
             TODO: @DarkMode(DGV headers):
             -Tune highlighting colors
-            -Draw sort glyph
+            -TODO: @DarkMode: Draw sort glyph
             -Header painting appears to happen in DataGridViewColumnHeaderCell.PaintPrivate() - look here for
              precise text bounds calculations etc.
             -We're not painting the vestigial selected-column header color. We should see if we can owner-paint
@@ -442,7 +431,7 @@ namespace AngelLoader.Forms.CustomControls
                     DarkColors.GreySelectionPen,
                     e.CellBounds.X,
                     e.CellBounds.Y + e.CellBounds.Height - 1,
-                    e.CellBounds.X + e.CellBounds.Width,
+                    e.CellBounds.X + e.CellBounds.Width - 1,
                     e.CellBounds.Y + e.CellBounds.Height - 1);
 
                 if (_mouseHere && mouseOver)

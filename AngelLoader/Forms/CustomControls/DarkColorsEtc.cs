@@ -19,6 +19,8 @@ namespace AngelLoader.Forms.CustomControls
 
         public static Color Fen_RedHighlight = Color.FromArgb(64, 24, 24);
 
+        public static Color Fen_DGVCellBorders = Color.FromArgb(64, 64, 72);
+
         #endregion
 
         #region DarkUI
@@ -74,6 +76,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Pen Fen_ControlBackgroundPen = new Pen(Fen_ControlBackground);
         public static readonly Pen Fen_DeselectedTabBackgroundPen = new Pen(Fen_DeselectedTabBackground);
         public static readonly Pen Fen_RedHighlightPen = new Pen(Fen_RedHighlight);
+        public static readonly Pen Fen_DGVCellBordersPen = new Pen(Fen_DGVCellBorders);
 
         public static Pen GreyBackgroundPen = new Pen(GreyBackground);
         public static Pen HeaderBackgroundPen = new Pen(HeaderBackground);
@@ -106,6 +109,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly SolidBrush Fen_ControlBackgroundBrush = new SolidBrush(Fen_ControlBackground);
         public static readonly SolidBrush Fen_DeselectedTabBackgroundBrush = new SolidBrush(Fen_DeselectedTabBackground);
         public static readonly SolidBrush Fen_RedHighlightBrush = new SolidBrush(Fen_RedHighlight);
+        public static readonly SolidBrush Fen_DGVCellBordersBrush = new SolidBrush(Fen_DGVCellBorders);
 
         public static SolidBrush GreyBackgroundBrush = new SolidBrush(GreyBackground);
         public static SolidBrush HeaderBackgroundBrush = new SolidBrush(HeaderBackground);

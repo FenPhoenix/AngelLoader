@@ -488,6 +488,7 @@ namespace AngelLoader.Forms
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;

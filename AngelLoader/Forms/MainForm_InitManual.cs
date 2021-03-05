@@ -442,6 +442,7 @@ namespace AngelLoader.Forms
                 DateAddedColumn,
                 DisabledModsColumn,
                 CommentColumn);
+            FMsDGV.BackgroundColor = SystemColors.ControlDark;
             FMsDGV.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
             FMsDGV.Location = new Point(1, 26);
             FMsDGV.MultiSelect = false;
