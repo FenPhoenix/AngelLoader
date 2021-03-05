@@ -193,8 +193,7 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-            using var f = new DarkListBox2_Test_Form();
-            f.ShowDialog();
+
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
