@@ -4,8 +4,10 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class DarkListBox2 : DarkDataGridView
+    public class DarkListBox2 : DarkDataGridView
     {
+        private bool _loaded;
+
         private bool _darkModeEnabled;
         public override bool DarkModeEnabled
         {
@@ -48,6 +50,7 @@ namespace AngelLoader.Forms.CustomControls
             RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft;
             RowTemplate.ReadOnly = true;
 
+            // Full-width item hack part un: Set the column to accomodate to the longest item.
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
             RowHeadersVisible = false;
@@ -61,17 +64,7 @@ namespace AngelLoader.Forms.CustomControls
             StandardTab = true;
         }
 
-        // Hack to get the damn first row unselected on first show
-        private bool _loaded;
-        protected override void OnParentVisibleChanged(EventArgs e)
-        {
-            if (!_loaded)
-            {
-                ClearSelection();
-                _loaded = true;
-            }
-            base.OnParentVisibleChanged(e);
-        }
+        #region Public methods
 
         public string[] GetRowValuesAsStrings()
         {
@@ -82,6 +75,10 @@ namespace AngelLoader.Forms.CustomControls
             }
             return ret;
         }
+
+        #endregion
+
+        #region Public properties
 
         public int SelectedIndex
         {
@@ -106,11 +103,19 @@ namespace AngelLoader.Forms.CustomControls
 
         public string SelectedItem => SelectedRows.Count == 0 ? "" : SelectedRows[0].Cells[0].Value?.ToString() ?? "";
 
-        // Hack to keep the cells from being less than the width of the canvas
-        protected override void OnClientSizeChanged(EventArgs e)
+        #endregion
+
+        #region Event overrides
+
+        // Hack to get the damn first row unselected on first show
+        protected override void OnParentVisibleChanged(EventArgs e)
         {
-            Columns[0].MinimumWidth = ClientSize.Width - 2;
-            base.OnClientSizeChanged(e);
+            if (!_loaded)
+            {
+                ClearSelection();
+                _loaded = true;
+            }
+            base.OnParentVisibleChanged(e);
         }
 
         protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
@@ -136,12 +141,38 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnCellPainting(e);
 
-            if (_darkModeEnabled && SelectedIndex == e.RowIndex)
+            if (SelectedIndex == e.RowIndex)
             {
-                e.Graphics.FillRectangle(DarkColors.BlueSelectionBrush, e.CellBounds);
-                e.Paint(e.ClipBounds, DataGridViewPaintParts.ContentForeground);
+                // Full-width item hack part deux: The AllCells autosize mode will still end up making the column
+                // shorter than the canvas if the longest ITEM is shorter than the canvas. We want it to be max
+                // the longest item, and min the client width. But we can't. Even when we try to set the minimum
+                // width in OnClientSize(), it doesn't work. By which I mean, it sets the size the FIRST time
+                // it's run, but not any subsequent run. I don't have time to deal with this shit, so:
+                // Just draw the selection rectangle the width of the client. That takes care of the visual part.
+                var selRect = new Rectangle(
+                    e.CellBounds.X,
+                    e.CellBounds.Y,
+                    ClientRectangle.Width - e.CellBounds.X,
+                    e.CellBounds.Height
+                );
+
+                Brush brush = _darkModeEnabled ? DarkColors.BlueSelectionBrush : SystemBrushes.Highlight;
+
+                e.Graphics.FillRectangle(brush, selRect);
+                e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
                 e.Handled = true;
             }
         }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            // Full-width item hack part trois: Even though we're drawing the selection full-width, the mouse
+            // down will still do nothing if it's outside the actual column rectangle. So just set the X coord
+            // to way over on the left all the time, and that makes it work like you'd expect. Repulsive, but
+            // there you are.
+            base.OnMouseDown(new MouseEventArgs(e.Button, e.Clicks, 2, e.Y, e.Delta));
+        }
+
+        #endregion
     }
 }

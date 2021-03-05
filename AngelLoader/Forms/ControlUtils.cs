@@ -152,28 +152,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        internal static void RemoveAndSelectNearest(this ListBox listBox)
-        {
-            if (listBox.SelectedIndex == -1) return;
-
-            int oldSelectedIndex = listBox.SelectedIndex;
-
-            listBox.Items.RemoveAt(listBox.SelectedIndex);
-
-            if (oldSelectedIndex < listBox.Items.Count && listBox.Items.Count > 1)
-            {
-                listBox.SelectedIndex = oldSelectedIndex;
-            }
-            else if (listBox.Items.Count > 1)
-            {
-                listBox.SelectedIndex = oldSelectedIndex - 1;
-            }
-            else if (listBox.Items.Count == 1)
-            {
-                listBox.SelectedIndex = 0;
-            }
-        }
-
         internal static void RemoveAndSelectNearest(this DarkListBox2 listBox)
         {
             if (listBox.SelectedIndex == -1) return;

@@ -3579,7 +3579,7 @@ namespace AngelLoader.Forms
         {
             // This is only hooked up after construction, so no Construct() call needed
 
-            if (ChooseReadmeLLPanel.ListBox.Items.Count == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
+            if (ChooseReadmeLLPanel.ListBox.Rows.Count == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
             {
                 return;
             }
@@ -3597,7 +3597,7 @@ namespace AngelLoader.Forms
                 SetReadmeVisible(true);
             }
 
-            if (ChooseReadmeLLPanel.ListBox.Items.Count > 1)
+            if (ChooseReadmeLLPanel.ListBox.Rows.Count > 1)
             {
                 ReadmeComboBoxFillAndSelect(ChooseReadmeLLPanel.ListBox.BackingItems, fm.SelectedReadme);
                 ShowReadmeControls(CursorOverReadmeArea());
@@ -4192,8 +4192,15 @@ namespace AngelLoader.Forms
 
                         ChooseReadmeLLPanel.Construct(this, MainSplitContainer.Panel2);
 
+                        ChooseReadmeLLPanel.ListBox.SuspendDrawing();
                         ChooseReadmeLLPanel.ListBox.ClearFullItems();
-                        foreach (string f in readmeFiles) ChooseReadmeLLPanel.ListBox.AddFullItem(f, f.GetFileNameFast());
+                        foreach (string f in readmeFiles)
+                        {
+                            ChooseReadmeLLPanel.ListBox.AddFullItem(f, f.GetFileNameFast());
+                        }
+                        // @DarkMode: Hack because the internal selection clearer isn't working in this case
+                        ChooseReadmeLLPanel.ListBox.ClearSelection();
+                        ChooseReadmeLLPanel.ListBox.ResumeDrawing();
 
                         ShowReadmeControls(false);
 

@@ -65,7 +65,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             ListBox = new ListBoxCustom
             {
-                FormattingEnabled = true,
+                MultiSelect = false,
                 Size = new Size(320, 134),
                 TabIndex = 47,
                 DarkModeEnabled = _darkModeEnabled

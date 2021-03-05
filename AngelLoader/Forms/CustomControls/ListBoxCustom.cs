@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed class ListBoxCustom : DarkListBox
+    internal sealed class ListBoxCustom : DarkListBox2
     {
         #region Backing items
 
@@ -14,13 +13,13 @@ namespace AngelLoader.Forms.CustomControls
         internal void AddFullItem(string backingItem, string item)
         {
             BackingItems.Add(backingItem);
-            Items.Add(item);
+            Rows.Add(item);
         }
 
         internal void ClearFullItems()
         {
             BackingItems.Clear();
-            Items.Clear();
+            Rows.Clear();
         }
 
         internal string SelectedBackingItem() => BackingItems[SelectedIndex];

@@ -21,7 +21,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             IncludeSubfoldersCheckBox = new DarkCheckBox();
             AddFMArchivePathButton = new DarkButton();
             RemoveFMArchivePathButton = new DarkButton();
-            FMArchivePathsListBox = new DarkListBox();
+            FMArchivePathsListBox = new DarkListBox2();
             SteamOptionsGroupBox = new DarkGroupBox();
             LaunchTheseGamesThroughSteamPanel = new Panel();
             LaunchTheseGamesThroughSteamCheckBox = new DarkCheckBox();
@@ -201,8 +201,9 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             // FMArchivePathsListBox
             // 
             FMArchivePathsListBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            FMArchivePathsListBox.FormattingEnabled = true;
             FMArchivePathsListBox.Location = new Point(16, 24);
+            FMArchivePathsListBox.MultiSelect = false;
+            FMArchivePathsListBox.ScrollBars = ScrollBars.Both;
             FMArchivePathsListBox.Size = new Size(392, 199);
             FMArchivePathsListBox.TabIndex = 0;
             // 

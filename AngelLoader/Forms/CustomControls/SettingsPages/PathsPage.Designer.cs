@@ -43,7 +43,7 @@
             this.IncludeSubfoldersCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.AddFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.RemoveFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
+            this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox2();
             this.SteamOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
             this.LaunchTheseGamesThroughSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -251,9 +251,10 @@
             // 
             this.FMArchivePathsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FMArchivePathsListBox.FormattingEnabled = true;
             this.FMArchivePathsListBox.Location = new System.Drawing.Point(16, 24);
+            this.FMArchivePathsListBox.MultiSelect = false;
             this.FMArchivePathsListBox.Name = "FMArchivePathsListBox";
+            this.FMArchivePathsListBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.FMArchivePathsListBox.Size = new System.Drawing.Size(392, 199);
             this.FMArchivePathsListBox.TabIndex = 0;
             // 
@@ -611,7 +612,7 @@
         internal AngelLoader.Forms.CustomControls.DarkCheckBox IncludeSubfoldersCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkButton AddFMArchivePathButton;
         internal AngelLoader.Forms.CustomControls.DarkButton RemoveFMArchivePathButton;
-        internal AngelLoader.Forms.CustomControls.DarkListBox FMArchivePathsListBox;
+        internal AngelLoader.Forms.CustomControls.DarkListBox2 FMArchivePathsListBox;
         internal System.Windows.Forms.Panel ActualPathsPanel;
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
         internal AngelLoader.Forms.CustomControls.DarkLabel SteamExeLabel;
