@@ -3,6 +3,7 @@
 
 # Fen custom
 *.exe
+!bin_dependencies/**/*.exe
 ffmpeg/**
 temp_transfer_bin/**
 !temp_transfer_bin/.gitkeep
