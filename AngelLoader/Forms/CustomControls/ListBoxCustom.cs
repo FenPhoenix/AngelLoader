@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed class ListBoxCustom : DarkListBox2
+    internal sealed class ListBoxCustom : DarkListBox
     {
         #region Backing items
 

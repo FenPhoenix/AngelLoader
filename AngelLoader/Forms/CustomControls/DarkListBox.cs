@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class DarkListBox2 : DarkDataGridView
+    public class DarkListBox : DarkDataGridView
     {
         private bool _loaded;
 
@@ -29,7 +29,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public DarkListBox2()
+        public DarkListBox()
         {
             BorderStyle = BorderStyle.FixedSingle;
 

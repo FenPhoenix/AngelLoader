@@ -151,7 +151,7 @@ namespace AngelLoader.Forms
             this.PatchMainPanel = new System.Windows.Forms.Panel();
             this.PatchDMLsPanel = new System.Windows.Forms.Panel();
             this.PatchDMLPatchesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.PatchDMLsListBox = new AngelLoader.Forms.CustomControls.DarkListBox2();
+            this.PatchDMLsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
             this.PatchRemoveDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchAddDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -2035,7 +2035,7 @@ namespace AngelLoader.Forms
         internal DarkButton EditFMScanForReadmesButton;
         internal DarkButton StatsScanCustomResourcesButton;
         internal AngelLoader.Forms.CustomControls.TabPageCustom PatchTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkListBox2 PatchDMLsListBox;
+        internal AngelLoader.Forms.CustomControls.DarkListBox PatchDMLsListBox;
         internal DarkButton PatchRemoveDMLButton;
         internal DarkButton PatchAddDMLButton;
         internal AngelLoader.Forms.CustomControls.DarkLabel PatchDMLPatchesLabel;

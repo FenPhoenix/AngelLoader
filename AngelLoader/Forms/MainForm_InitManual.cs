@@ -153,7 +153,7 @@ namespace AngelLoader.Forms
             PatchMainPanel = new Panel();
             PatchDMLsPanel = new Panel();
             PatchDMLPatchesLabel = new DarkLabel();
-            PatchDMLsListBox = new DarkListBox2();
+            PatchDMLsListBox = new DarkListBox();
             PatchRemoveDMLButton = new DarkButton();
             PatchAddDMLButton = new DarkButton();
             PatchOpenFMFolderButton = new DarkButton();

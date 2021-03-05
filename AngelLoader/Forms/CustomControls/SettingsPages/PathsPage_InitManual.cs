@@ -21,7 +21,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             IncludeSubfoldersCheckBox = new DarkCheckBox();
             AddFMArchivePathButton = new DarkButton();
             RemoveFMArchivePathButton = new DarkButton();
-            FMArchivePathsListBox = new DarkListBox2();
+            FMArchivePathsListBox = new DarkListBox();
             SteamOptionsGroupBox = new DarkGroupBox();
             LaunchTheseGamesThroughSteamPanel = new Panel();
             LaunchTheseGamesThroughSteamCheckBox = new DarkCheckBox();

@@ -33,7 +33,7 @@ namespace AngelLoader.Forms
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             this.listView1 = new System.Windows.Forms.ListView();
-            this.darkListBox21 = new AngelLoader.Forms.CustomControls.DarkListBox2();
+            this.darkListBox21 = new AngelLoader.Forms.CustomControls.DarkListBox();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.darkListBox21)).BeginInit();
@@ -121,7 +121,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private CustomControls.DarkListBox2 darkListBox21;
+        private CustomControls.DarkListBox darkListBox21;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.Button button1;

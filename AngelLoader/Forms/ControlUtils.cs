@@ -152,7 +152,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        internal static void RemoveAndSelectNearest(this DarkListBox2 listBox)
+        internal static void RemoveAndSelectNearest(this DarkListBox listBox)
         {
             if (listBox.SelectedIndex == -1) return;
 

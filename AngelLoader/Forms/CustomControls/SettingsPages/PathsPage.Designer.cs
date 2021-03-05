@@ -43,7 +43,7 @@
             this.IncludeSubfoldersCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.AddFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.RemoveFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox2();
+            this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
             this.SteamOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
             this.LaunchTheseGamesThroughSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -612,7 +612,7 @@
         internal AngelLoader.Forms.CustomControls.DarkCheckBox IncludeSubfoldersCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkButton AddFMArchivePathButton;
         internal AngelLoader.Forms.CustomControls.DarkButton RemoveFMArchivePathButton;
-        internal AngelLoader.Forms.CustomControls.DarkListBox2 FMArchivePathsListBox;
+        internal AngelLoader.Forms.CustomControls.DarkListBox FMArchivePathsListBox;
         internal System.Windows.Forms.Panel ActualPathsPanel;
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
         internal AngelLoader.Forms.CustomControls.DarkLabel SteamExeLabel;
