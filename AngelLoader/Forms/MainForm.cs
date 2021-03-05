@@ -276,14 +276,17 @@ namespace AngelLoader.Forms
                     // Stupid hack to fix "send mousewheel to underlying control and block further messages"
                     // functionality still not being fully reliable. We need to focus the parent control sometimes
                     // inexplicably. Sure. Whole point is to avoid having to do that, but sure.
-                    if (CursorOverControl(TopSplitContainer.Panel2))
+                    if (!(AddTagLLDropDown.Constructed && CursorOverControl(AddTagLLDropDown.ListBox)))
                     {
-                        TopSplitContainer.Panel2.Focus();
-                    }
-                    else if (CursorOverControl(MainSplitContainer.Panel2) &&
-                             !ReadmeRichTextBox.Focused)
-                    {
-                        MainSplitContainer.Panel2.Focus();
+                        if (CursorOverControl(TopSplitContainer.Panel2))
+                        {
+                            TopSplitContainer.Panel2.Focus();
+                        }
+                        else if (CursorOverControl(MainSplitContainer.Panel2) &&
+                                 !ReadmeRichTextBox.Focused)
+                        {
+                            MainSplitContainer.Panel2.Focus();
+                        }
                     }
                     Native.SendMessage(hWnd, m.Msg, m.WParam, m.LParam);
                 }
