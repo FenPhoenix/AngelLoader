@@ -153,7 +153,7 @@ namespace AngelLoader.Forms
             PatchMainPanel = new Panel();
             PatchDMLsPanel = new Panel();
             PatchDMLPatchesLabel = new DarkLabel();
-            PatchDMLsListBox = new DarkListBox();
+            PatchDMLsListBox = new DarkListBox2();
             PatchRemoveDMLButton = new DarkButton();
             PatchAddDMLButton = new DarkButton();
             PatchOpenFMFolderButton = new DarkButton();
@@ -1400,8 +1400,9 @@ namespace AngelLoader.Forms
             // 
             // PatchDMLsListBox
             // 
-            PatchDMLsListBox.FormattingEnabled = true;
             PatchDMLsListBox.Location = new Point(8, 24);
+            PatchDMLsListBox.MultiSelect = false;
+            PatchDMLsListBox.ScrollBars = ScrollBars.Both;
             PatchDMLsListBox.Size = new Size(160, 69);
             PatchDMLsListBox.TabIndex = 41;
             // 

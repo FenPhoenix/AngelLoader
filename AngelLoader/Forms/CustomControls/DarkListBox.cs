@@ -266,7 +266,6 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void WndProc(ref Message m)
         {
-            Trace.WriteLine(m.Msg.ToString("x8"));
             switch (m.Msg)
             {
                 case Native.WM_PAINT:

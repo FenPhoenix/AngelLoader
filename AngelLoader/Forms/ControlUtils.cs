@@ -174,6 +174,28 @@ namespace AngelLoader.Forms
             }
         }
 
+        internal static void RemoveAndSelectNearest(this DarkListBox2 listBox)
+        {
+            if (listBox.SelectedIndex == -1) return;
+
+            int oldSelectedIndex = listBox.SelectedIndex;
+
+            listBox.Rows.RemoveAt(listBox.SelectedIndex);
+
+            if (oldSelectedIndex < listBox.Rows.Count && listBox.Rows.Count > 1)
+            {
+                listBox.SelectedIndex = oldSelectedIndex;
+            }
+            else if (listBox.Rows.Count > 1)
+            {
+                listBox.SelectedIndex = oldSelectedIndex - 1;
+            }
+            else if (listBox.Rows.Count == 1)
+            {
+                listBox.SelectedIndex = 0;
+            }
+        }
+
         internal static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
 
         internal static void HideFocusRectangle(this Control control) => SendMessage(

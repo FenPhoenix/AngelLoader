@@ -193,7 +193,8 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-
+            using var f = new DarkListBox2_Test_Form();
+            f.ShowDialog();
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
@@ -2861,7 +2862,7 @@ namespace AngelLoader.Forms
             var lb = PatchDMLsListBox;
             if (lb.SelectedIndex == -1) return;
 
-            bool success = Core.RemoveDML(FMsDGV.GetSelectedFM(), lb.SelectedItem.ToString());
+            bool success = Core.RemoveDML(FMsDGV.GetSelectedFM(), lb.SelectedItem);
             if (!success) return;
 
             lb.RemoveAndSelectNearest();
@@ -2878,7 +2879,7 @@ namespace AngelLoader.Forms
                 if (d.ShowDialog() != DialogResult.OK || d.FileNames.Length == 0) return;
                 dmlFiles.AddRange(d.FileNames);
             }
-            PatchDMLsListBox.BeginUpdate();
+            PatchDMLsListBox.SuspendDrawing();
             foreach (string f in dmlFiles)
             {
                 if (f.IsEmpty()) continue;
@@ -2887,12 +2888,12 @@ namespace AngelLoader.Forms
                 if (!success) return;
 
                 string dmlFileName = Path.GetFileName(f);
-                if (!PatchDMLsListBox.Items.Cast<string>().ToArray().ContainsI(dmlFileName))
+                if (!PatchDMLsListBox.GetRowValuesAsStrings().ContainsI(dmlFileName))
                 {
-                    PatchDMLsListBox.Items.Add(dmlFileName);
+                    PatchDMLsListBox.Rows.Add(dmlFileName);
                 }
             }
-            PatchDMLsListBox.EndUpdate();
+            PatchDMLsListBox.ResumeDrawing();
         }
 
         private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
@@ -3915,7 +3916,7 @@ namespace AngelLoader.Forms
 
         private void HidePatchSectionWithMessage(string message)
         {
-            PatchDMLsListBox.Items.Clear();
+            PatchDMLsListBox.Rows.Clear();
             PatchMainPanel.Hide();
             PatchFMNotInstalledLabel.Text = message;
             PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
@@ -3924,7 +3925,7 @@ namespace AngelLoader.Forms
 
         private void ShowPatchSection(bool enable)
         {
-            PatchDMLsListBox.Items.Clear();
+            PatchDMLsListBox.Rows.Clear();
             PatchMainPanel.Show();
             PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
             PatchFMNotInstalledLabel.Hide();
@@ -4102,17 +4103,18 @@ namespace AngelLoader.Forms
                 {
                     PatchMainPanel.Show();
                     PatchFMNotInstalledLabel.Hide();
-                    PatchDMLsListBox.BeginUpdate();
-                    PatchDMLsListBox.Items.Clear();
+                    PatchDMLsListBox.SuspendDrawing();
+                    PatchDMLsListBox.Rows.Clear();
                     (bool success, List<string> dmlFiles) = Core.GetDMLFiles(fm);
                     if (success)
                     {
                         foreach (string f in dmlFiles)
                         {
-                            if (!f.IsEmpty()) PatchDMLsListBox.Items.Add(f);
+                            if (!f.IsEmpty()) PatchDMLsListBox.Rows.Add(f);
                         }
                     }
-                    PatchDMLsListBox.EndUpdate();
+                    PatchDMLsListBox.ClearSelection();
+                    PatchDMLsListBox.ResumeDrawing();
                 }
             }
 
