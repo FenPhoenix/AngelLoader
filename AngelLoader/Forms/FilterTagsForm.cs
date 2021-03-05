@@ -322,16 +322,10 @@ namespace AngelLoader.Forms
 
         private void BottomButtonsFLP_Paint(object sender, PaintEventArgs e)
         {
-            Pen s1Pen = Application.RenderWithVisualStyles ? ControlPainter.Sep1Pen : ControlPainter.Sep1PenC;
-            const int y1 = 4;
-            const int y2 = 23;
-            {
-                int bx = OKButton.Location.X;
-                int sep1x = bx - 8;
-                int sep2x = bx - 7;
-                e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
-            }
+            ControlPainter.PaintControlSeparators(
+                e: e,
+                pixelsFromVerticalEdges: 5,
+                items: new Control[] { OKButton });
         }
 
         private void ArrowButtons_Paint(object sender, PaintEventArgs e)

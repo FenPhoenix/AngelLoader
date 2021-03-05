@@ -202,6 +202,7 @@ namespace AngelLoader.Forms
             OKButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             OKButton.AutoSize = true;
             OKButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            OKButton.Margin = new Padding(13, 3, 3, 3);
             OKButton.MinimumSize = new Size(75, 23);
             OKButton.DialogResult = DialogResult.OK;
             OKButton.Padding = new Padding(6, 0, 6, 0);
@@ -226,7 +227,7 @@ namespace AngelLoader.Forms
             ResetButton.AutoSize = true;
             ResetButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ResetButton.MinimumSize = new Size(75, 23);
-            ResetButton.Margin = new Padding(3, 3, 11, 3);
+            ResetButton.Margin = new Padding(3, 3, 0, 3);
             ResetButton.Padding = new Padding(6, 0, 6, 0);
             ResetButton.TabIndex = 0;
             ResetButton.UseVisualStyleBackColor = true;

@@ -258,6 +258,7 @@
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(877, 3);
+            this.OKButton.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -288,7 +289,7 @@
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ResetButton.Location = new System.Drawing.Point(788, 3);
-            this.ResetButton.Margin = new System.Windows.Forms.Padding(3, 3, 11, 3);
+            this.ResetButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(75, 23);
