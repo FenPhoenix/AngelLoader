@@ -307,7 +307,12 @@ namespace AngelLoader.Forms
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
         private static readonly SolidBrush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
 
-        internal static Pen GetSeparatorPenForCurrentVisualStyleMode() => Application.RenderWithVisualStyles ? Sep1Pen : Sep1PenC;
+        internal static Pen GetSeparatorPenForCurrentVisualStyleMode() =>
+            DarkModeEnabled
+                ? DarkColors.GreySelectionPen
+            : Application.RenderWithVisualStyles
+                ? Sep1Pen
+                : Sep1PenC;
 
         #endregion
 
@@ -580,8 +585,10 @@ namespace AngelLoader.Forms
         // just to draw two one-pixel-wide lines. Especially when there's a ton of them on the UI. For startup
         // perf and lightness of weight, we just draw them ourselves.
 
-        internal static void PaintToolStripSeparators(PaintEventArgs e, int pixelsFromVerticalEdges,
-                                                      params ToolStripItem[] items)
+        internal static void PaintToolStripSeparators(
+            PaintEventArgs e,
+            int pixelsFromVerticalEdges,
+            params ToolStripItem[] items)
         {
             Pen s1Pen = GetSeparatorPenForCurrentVisualStyleMode();
 
@@ -631,9 +638,12 @@ namespace AngelLoader.Forms
             int x)
         {
             int sep1x = x - line1DistanceBackFromLoc;
-            int sep2x = (x - line1DistanceBackFromLoc) + 1;
             e.Graphics.DrawLine(line1Pen, sep1x, line1Top, sep1x, line1Bottom);
-            e.Graphics.DrawLine(Sep2Pen, sep2x, line1Top + 1, sep2x, line1Bottom + 1);
+            if (!DarkModeEnabled)
+            {
+                int sep2x = (x - line1DistanceBackFromLoc) + 1;
+                e.Graphics.DrawLine(Sep2Pen, sep2x, line1Top + 1, sep2x, line1Bottom + 1);
+            }
         }
 
         #endregion
