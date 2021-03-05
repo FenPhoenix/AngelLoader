@@ -22,8 +22,6 @@ namespace AngelLoader.Forms.CustomControls
         private readonly Color RecentHighlightColor = Color.LightGoldenrodYellow;
         private readonly Color UnavailableColor = Color.MistyRose;
 
-        private readonly Point[] _arrowPoints = new Point[3];
-
         private bool _mouseHere;
         private int _mouseDownOnHeader = -1;
 
@@ -487,7 +485,6 @@ namespace AngelLoader.Forms.CustomControls
                         // TODO: @DarkMode(DGV sort arrow): We need to draw the 9x5 arrow for this
                         ControlPainter.PaintArrow(
                             g: e.Graphics,
-                            arrowPolygon: _arrowPoints,
                             direction: direction,
                             area: new Rectangle(e.CellBounds.Right - 15, 0, 15, e.CellBounds.Height),
                             controlEnabled: Enabled

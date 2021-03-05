@@ -45,8 +45,6 @@ namespace AngelLoader.Forms.CustomControls
         private protected State _firstArrowState;
         private protected State _secondArrowState;
 
-        private readonly Point[] _arrowPolygon = new Point[3];
-
         private protected SolidBrush CurrentThumbBrush => _thumbState switch
         {
             State.Normal => DarkColors.GreySelectionBrush,
@@ -424,7 +422,6 @@ namespace AngelLoader.Forms.CustomControls
 
             ControlPainter.PaintArrow(
                 g: g,
-                arrowPolygon: _arrowPolygon,
                 direction: firstDirection,
                 area: new Rectangle(0, 0, w, h),
                 controlEnabled: GetOwnerEnabled(),
@@ -433,7 +430,6 @@ namespace AngelLoader.Forms.CustomControls
 
             ControlPainter.PaintArrow(
                 g: g,
-                arrowPolygon: _arrowPolygon,
                 direction: secondDirection,
                 area: new Rectangle(xOffset, yOffset, w, h),
                 controlEnabled: GetOwnerEnabled(),

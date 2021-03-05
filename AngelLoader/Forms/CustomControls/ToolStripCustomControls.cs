@@ -144,7 +144,6 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         private Direction _arrowDirection;
-        private readonly Point[] _arrowPolygon = new Point[3];
 
         // Public for the designer
         [Browsable(true)]
@@ -164,7 +163,6 @@ namespace AngelLoader.Forms.CustomControls
             base.OnPaint(e);
             ControlPainter.PaintArrow(
                 g: e.Graphics,
-                arrowPolygon: _arrowPolygon,
                 direction: _arrowDirection,
                 area: ContentRectangle,
                 controlEnabled: Enabled

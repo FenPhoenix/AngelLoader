@@ -648,9 +648,10 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private static readonly Point[] _arrowPoints = new Point[3];
+
         internal static void PaintArrow(
             Graphics g,
-            Point[] arrowPolygon,
             Direction direction,
             int x = 0,
             int y = 0,
@@ -666,37 +667,37 @@ namespace AngelLoader.Forms
                 bool arrowIsVert = direction == Direction.Up || direction == Direction.Down;
 
                 x = (rect.X + (rect.Width / 2)) - (arrowIsVert ? 4 : 2);
-                y = (rect.Y + (rect.Height / 2)) - (arrowIsVert ? 2 : 4);
+                y = (rect.Y + (rect.Height / 2)) - (arrowIsVert ? 3 : 4);
             }
 
             switch (direction)
             {
                 case Direction.Left:
-                    (arrowPolygon[0].X, arrowPolygon[0].Y) = (4 + x, 0 + y);
-                    (arrowPolygon[1].X, arrowPolygon[1].Y) = (0 + x, 4 + y);
-                    (arrowPolygon[2].X, arrowPolygon[2].Y) = (4 + x, 8 + y);
+                    (_arrowPoints[0].X, _arrowPoints[0].Y) = (4 + x, 0 + y);
+                    (_arrowPoints[1].X, _arrowPoints[1].Y) = (0 + x, 4 + y);
+                    (_arrowPoints[2].X, _arrowPoints[2].Y) = (4 + x, 8 + y);
                     break;
                 case Direction.Right:
-                    (arrowPolygon[0].X, arrowPolygon[0].Y) = (1 + x, 0 + y);
-                    (arrowPolygon[1].X, arrowPolygon[1].Y) = (5 + x, 4 + y);
-                    (arrowPolygon[2].X, arrowPolygon[2].Y) = (1 + x, 8 + y);
+                    (_arrowPoints[0].X, _arrowPoints[0].Y) = (1 + x, 0 + y);
+                    (_arrowPoints[1].X, _arrowPoints[1].Y) = (5 + x, 4 + y);
+                    (_arrowPoints[2].X, _arrowPoints[2].Y) = (1 + x, 8 + y);
                     break;
                 case Direction.Up:
-                    (arrowPolygon[0].X, arrowPolygon[0].Y) = (0 + x, 4 + y);
-                    (arrowPolygon[1].X, arrowPolygon[1].Y) = (4 + x, -1 + y);
-                    (arrowPolygon[2].X, arrowPolygon[2].Y) = (8 + x, 4 + y);
+                    (_arrowPoints[0].X, _arrowPoints[0].Y) = (0 + x, 5 + y);
+                    (_arrowPoints[1].X, _arrowPoints[1].Y) = (4 + x, 0 + y);
+                    (_arrowPoints[2].X, _arrowPoints[2].Y) = (8 + x, 5 + y);
                     break;
                 case Direction.Down:
                 default:
-                    (arrowPolygon[0].X, arrowPolygon[0].Y) = (1 + x, 1 + y);
-                    (arrowPolygon[1].X, arrowPolygon[1].Y) = (4 + x, 5 + y);
-                    (arrowPolygon[2].X, arrowPolygon[2].Y) = (8 + x, 1 + y);
+                    (_arrowPoints[0].X, _arrowPoints[0].Y) = (1 + x, 2 + y);
+                    (_arrowPoints[1].X, _arrowPoints[1].Y) = (4 + x, 6 + y);
+                    (_arrowPoints[2].X, _arrowPoints[2].Y) = (8 + x, 2 + y);
                     break;
             }
 
             brush ??= controlEnabled == true ? ArrowButtonEnabledBrush : SystemBrushes.ControlDark;
 
-            g.FillPolygon(brush, arrowPolygon);
+            g.FillPolygon(brush, _arrowPoints);
         }
     }
 }

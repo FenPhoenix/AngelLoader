@@ -12,8 +12,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : DarkForm
     {
-        private readonly Point[] _arrowPoints = new Point[3];
-
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
         private readonly CatAndTagsList _sourceTags;
@@ -333,7 +331,6 @@ namespace AngelLoader.Forms
             Button button = (Button)sender;
             ControlPainter.PaintArrow(
                 g: e.Graphics,
-                arrowPolygon: _arrowPoints,
                 direction: Direction.Right,
                 area: new Rectangle(0, 0, 15, button.Height),
                 controlEnabled: button.Enabled

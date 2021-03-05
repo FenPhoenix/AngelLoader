@@ -12,8 +12,6 @@ namespace AngelLoader.Forms.CustomControls
         private Color? _origForeColor;
         private Color? _origBackColor;
 
-        private readonly Point[] _arrowPoints = new Point[3];
-
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
@@ -188,7 +186,6 @@ namespace AngelLoader.Forms.CustomControls
 
             ControlPainter.PaintArrow(
                 g: g,
-                arrowPolygon: _arrowPoints,
                 direction: Misc.Direction.Up,
                 area: upArea,
                 controlEnabled: Enabled,
@@ -206,7 +203,6 @@ namespace AngelLoader.Forms.CustomControls
 
             ControlPainter.PaintArrow(
                 g: g,
-                arrowPolygon: _arrowPoints,
                 direction: Misc.Direction.Down,
                 area: downArea,
                 controlEnabled: Enabled,
