@@ -69,12 +69,14 @@ namespace AngelLoader.Forms.CustomControls
                     RecentHighlightColor = Color.FromArgb(64, 64, 72);
                     UnavailableColor = DarkColors.Fen_RedHighlight;
                     DefaultRowBackColor = DarkColors.Fen_DarkBackground;
+                    BackgroundColor = DarkColors.Fen_DarkBackground;
                 }
                 else
                 {
                     RecentHighlightColor = Color.LightGoldenrodYellow;
                     UnavailableColor = Color.MistyRose;
                     DefaultRowBackColor = SystemColors.Window;
+                    BackColor = SystemColors.Control;
                 }
             }
         }
@@ -379,6 +381,14 @@ namespace AngelLoader.Forms.CustomControls
             e.Handled = true;
 
 #endif
+            int selectedIndex = SelectedRows.Count == 0 ? -1 : SelectedRows[0].Index;
+            if (_darkModeEnabled && e.RowIndex > -1 && selectedIndex == e.RowIndex)
+            {
+                e.Graphics.FillRectangle(DarkColors.BlueSelectionBrush, e.CellBounds);
+                e.Paint(e.ClipBounds, DataGridViewPaintParts.ContentForeground);
+                e.Paint(e.ClipBounds, DataGridViewPaintParts.Border);
+                e.Handled = true;
+            }
 
             #endregion
 

@@ -57,6 +57,8 @@ namespace AngelLoader.Forms.CustomControls
             RowsDefaultCellStyle.BackColor = SystemColors.Window;
 
             Columns[0].CellTemplate = new DataGridViewTextBoxCell();
+
+            StandardTab = true;
         }
 
         // Hack to get the damn first row unselected on first show
@@ -128,6 +130,18 @@ namespace AngelLoader.Forms.CustomControls
             // Hack to get the horizontal scroll bar to disappear if there's no rows
             if (Rows.Count == 0) ScrollBars = ScrollBars.Vertical;
             base.OnRowsRemoved(e);
+        }
+
+        protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
+        {
+            base.OnCellPainting(e);
+
+            if (_darkModeEnabled && SelectedIndex == e.RowIndex)
+            {
+                e.Graphics.FillRectangle(DarkColors.BlueSelectionBrush, e.CellBounds);
+                e.Paint(e.ClipBounds, DataGridViewPaintParts.ContentForeground);
+                e.Handled = true;
+            }
         }
     }
 }
