@@ -332,12 +332,13 @@ namespace AngelLoader.Forms
         {
             Button button = (Button)sender;
             ControlPainter.PaintArrow(
-                e.Graphics,
-                _arrowPoints,
-                Direction.Right,
-                15,
-                button.Height,
-                button.Enabled
+                g: e.Graphics,
+                _arrowPolygon: _arrowPoints,
+                direction: Direction.Right,
+                area: new Rectangle(0, 0, 15, button.Height),
+                //15,
+                //button.Height,
+                controlEnabled: button.Enabled
             );
         }
     }

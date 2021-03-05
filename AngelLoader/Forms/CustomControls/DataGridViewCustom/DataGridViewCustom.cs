@@ -484,15 +484,24 @@ namespace AngelLoader.Forms.CustomControls
                             ? Direction.Up
                             : Direction.Down;
 
+                        var areaRect = new Rectangle(
+                            e.CellBounds.Right - 15,
+                            0,
+                            15,
+                            e.CellBounds.Height
+                        );
+
                         // TODO: @DarkMode(DGV sort arrow): We need to draw the 9x5 arrow for this
                         ControlPainter.PaintArrow(
                             g: e.Graphics,
                             _arrowPolygon: _arrowPoints,
                             direction: direction,
-                            areaWidth: 15,
-                            areaHeight: e.CellBounds.Height,
-                            controlEnabled: Enabled,
-                            xOffset: e.CellBounds.Right - 15
+                            area: areaRect,
+                            //areaWidth: 15,
+                            //areaHeight: e.CellBounds.Height,
+
+                            controlEnabled: Enabled
+                        //xOffset: e.CellBounds.Right - 15
                         );
                     }
                 }
