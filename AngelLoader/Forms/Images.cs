@@ -302,29 +302,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Arrows
-
-        //private static GraphicsPath? _upArrowSmallGraphicsPath;
-
-        //private static GraphicsPath upArrowSmallGraphicsPath
-        //{
-        //    get
-        //    {
-        //        if (_upArrowSmallGraphicsPath == null)
-        //        {
-        //            _upArrowSmallGraphicsPath = new GraphicsPath(new Point[]
-        //            {
-        //                new Point(0,5),
-        //                new Point(4,0),
-        //                new Point(8,5)
-        //            },new byte[]);
-        //        }
-        //        return _upArrowSmallGraphicsPath;
-        //    }
-        //}
-
-        #endregion
-
         private static Icon? _AngelLoader;
         public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
 

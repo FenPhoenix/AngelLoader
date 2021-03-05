@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -653,55 +652,66 @@ namespace AngelLoader.Forms
             Graphics g,
             Point[] _arrowPolygon,
             Direction direction,
-            int x = 0,
-            int y = 0,
-            Rectangle? area = null,
+            int areaWidth,
+            int areaHeight,
             bool? controlEnabled = null,
             Brush? brush = null,
-            int xOffset = 0,
-            int yOffset = 0
-            )
+            int? xOffset = null,
+            int? yOffset = null)
         {
-            const int length = 4;
-            const int width = 7;
-
-            if (area != null)
-            {
-                var rect = (Rectangle)area;
-                bool arrowIsVert = direction == Direction.Up || direction == Direction.Down;
-
-                //x = (rect.Width / 2) - (int)Math.Floor(arrowIsVert ? (double)width / 2 : (double)length / 2);
-                //y = (rect.Height / 2) - (int)Math.Floor(arrowIsVert ? (double)length / 2 : (double)width / 2);
-
-                x = (rect.Width / 2) - (arrowIsVert ? 3 : length / 2);
-                y = (rect.Height / 2) - (arrowIsVert ? length / 2 : 4);
-
-                x += xOffset;
-                y += yOffset;
-            }
+            int arrowX;
+            int arrowY;
 
             switch (direction)
             {
                 case Direction.Left:
-                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (4 + x, 0 + y);
-                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (0 + x, 4 + y);
-                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (4 + x, 8 + y);
+                    arrowX = (areaWidth / 2) + 2;
+                    arrowY = (areaHeight / 2) - 3;
+
+                    if (xOffset != null) arrowX += (int)xOffset;
+                    if (yOffset != null) arrowY += (int)yOffset;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY - 1);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX, arrowY + 7);
+                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX - 4, arrowY + 3);
+
                     break;
                 case Direction.Right:
-                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (0 + x, 0 + y);
-                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (4 + x, 4 + y);
-                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (0 + x, 8 + y);
+                    arrowX = (areaWidth / 2) - 2;
+                    arrowY = (areaHeight / 2) - 3;
+
+                    if (xOffset != null) arrowX += (int)xOffset;
+                    if (yOffset != null) arrowY += (int)yOffset;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX + 1, arrowY - 1);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX + 1, arrowY + 7);
+                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 5, arrowY + 3);
+
                     break;
                 case Direction.Up:
-                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (-1 + x, 5 + y);
-                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (3 + x, 0 + y);
-                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (7 + x, 5 + y);
+                    arrowX = (areaWidth / 2) - 3;
+                    arrowY = (areaHeight / 2) + 1;
+
+                    if (xOffset != null) arrowX += (int)xOffset;
+                    if (yOffset != null) arrowY += (int)yOffset;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX - 1, arrowY + 1);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX + 7, arrowY + 1);
+                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 3, arrowY - 4);
+
                     break;
                 case Direction.Down:
                 default:
-                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (0 + x, 0 + y);
-                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (3 + x, 4 + y);
-                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (7 + x, 0 + y);
+                    arrowX = (areaWidth / 2) - 3;
+                    arrowY = (areaHeight / 2) - 1;
+
+                    if (xOffset != null) arrowX += (int)xOffset;
+                    if (yOffset != null) arrowY += (int)yOffset;
+
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY);
+                    (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX + 7, arrowY);
+                    (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 3, arrowY + 4);
+
                     break;
             }
 

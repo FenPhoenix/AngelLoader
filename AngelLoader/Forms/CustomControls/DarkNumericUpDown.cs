@@ -187,12 +187,13 @@ namespace AngelLoader.Forms.CustomControls
                 : DarkColors.GreySelectionBrush;
 
             ControlPainter.PaintArrow(
-                g: g,
-                _arrowPolygon: _arrowPoints,
-                direction: Misc.Direction.Up,
-                area: upArea,
-                controlEnabled: Enabled,
-                brush: upBrush
+                g,
+                _arrowPoints,
+                Misc.Direction.Up,
+                upArea.Width,
+                upArea.Height,
+                Enabled,
+                upBrush
             );
 
             var downArea = new Rectangle(0, clipRect.Height / 2, clipRect.Width, clipRect.Height / 2);
@@ -208,9 +209,10 @@ namespace AngelLoader.Forms.CustomControls
                 g,
                 _arrowPoints,
                 Misc.Direction.Down,
-                area: downArea,
-                controlEnabled: Enabled,
-                brush: downBrush,
+                downArea.Width,
+                downArea.Height,
+                Enabled,
+                downBrush,
                 yOffset: downArea.Top
             );
         }

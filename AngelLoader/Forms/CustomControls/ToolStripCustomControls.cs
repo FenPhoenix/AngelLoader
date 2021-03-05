@@ -162,15 +162,7 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            ControlPainter.PaintArrow(
-                g: e.Graphics,
-                _arrowPolygon: _arrowPolygon,
-                direction: _arrowDirection,
-                //Width, 
-                //Height,
-                area: ContentRectangle,
-                controlEnabled: Enabled
-            );
+            ControlPainter.PaintArrow(e.Graphics, _arrowPolygon, _arrowDirection, Width, Height, Enabled);
         }
     }
 }

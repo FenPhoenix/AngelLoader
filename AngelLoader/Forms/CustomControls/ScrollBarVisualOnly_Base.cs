@@ -426,35 +426,21 @@ namespace AngelLoader.Forms.CustomControls
                 g,
                 _arrowPolygon,
                 firstDirection,
-                area: new Rectangle(
-                    ClientRectangle.X,
-                    ClientRectangle.Y,
-                    w,
-                    h
-                ),
-                //w,
-                //h,
-                controlEnabled: GetOwnerEnabled(),
-                brush: firstArrowBrush
-            );
+                w,
+                h,
+                GetOwnerEnabled(),
+                brush: firstArrowBrush);
 
             ControlPainter.PaintArrow(
                 g,
                 _arrowPolygon,
                 secondDirection,
-                area: new Rectangle(
-                    ClientRectangle.X + xOffset,
-                    ClientRectangle.Y + yOffset,
-                    w,
-                    h
-                ),
-                //w,
-                //h,
-                controlEnabled: GetOwnerEnabled(),
+                w,
+                h,
+                GetOwnerEnabled(),
                 brush: secondArrowBrush,
                 xOffset: xOffset,
-                yOffset: yOffset
-            );
+                yOffset: yOffset);
         }
 
         #endregion
