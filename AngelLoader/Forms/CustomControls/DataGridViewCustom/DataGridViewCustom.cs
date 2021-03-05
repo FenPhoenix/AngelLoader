@@ -385,7 +385,6 @@ namespace AngelLoader.Forms.CustomControls
 
             /*
             TODO: @DarkMode(DGV headers):
-            -Tune highlighting colors
             -TODO: @DarkMode: Draw sort glyph
             -Header painting appears to happen in DataGridViewColumnHeaderCell.PaintPrivate() - look here for
              precise text bounds calculations etc.
@@ -437,8 +436,8 @@ namespace AngelLoader.Forms.CustomControls
                 if (_mouseHere && mouseOver)
                 {
                     var b = _mouseDownOnHeader == e.ColumnIndex
-                        ? DarkColors.BlueHighlightBrush
-                        : DarkColors.BlueSelectionBrush;
+                        ? DarkColors.Fen_DGVColumnHeaderPressedBrush
+                        : DarkColors.Fen_DGVColumnHeaderHighlightBrush;
                     e.Graphics.FillRectangle(b, selectionRect);
                 }
 
