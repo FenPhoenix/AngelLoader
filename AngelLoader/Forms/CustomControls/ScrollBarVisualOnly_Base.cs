@@ -423,24 +423,22 @@ namespace AngelLoader.Forms.CustomControls
             var secondArrowBrush = GetStateBrush(_secondArrowState);
 
             ControlPainter.PaintArrow(
-                g,
-                _arrowPolygon,
-                firstDirection,
-                w,
-                h,
-                GetOwnerEnabled(),
-                brush: firstArrowBrush);
+                g: g,
+                arrowPolygon: _arrowPolygon,
+                direction: firstDirection,
+                area: new Rectangle(0, 0, w, h),
+                controlEnabled: GetOwnerEnabled(),
+                brush: firstArrowBrush
+            );
 
             ControlPainter.PaintArrow(
-                g,
-                _arrowPolygon,
-                secondDirection,
-                w,
-                h,
-                GetOwnerEnabled(),
-                brush: secondArrowBrush,
-                xOffset: xOffset,
-                yOffset: yOffset);
+                g: g,
+                arrowPolygon: _arrowPolygon,
+                direction: secondDirection,
+                area: new Rectangle(xOffset, yOffset, w, h),
+                controlEnabled: GetOwnerEnabled(),
+                brush: secondArrowBrush
+            );
         }
 
         #endregion
