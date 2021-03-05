@@ -22,6 +22,8 @@ namespace AngelLoader.Forms.CustomControls
         private readonly Color RecentHighlightColor = Color.LightGoldenrodYellow;
         private readonly Color UnavailableColor = Color.MistyRose;
 
+        private readonly Point[] _arrowPoints = new Point[3];
+
         private bool _mouseHere;
         private int _mouseDownOnHeader = -1;
 
@@ -465,6 +467,34 @@ namespace AngelLoader.Forms.CustomControls
                         textRect,
                         RowsDefaultCellStyle.ForeColor,
                         textFormatFlags);
+
+                    int textLength = TextRenderer.MeasureText(
+                        e.Graphics,
+                        headerText,
+                        e.CellStyle.Font,
+                        new Size(int.MaxValue, int.MaxValue),
+                        textFormatFlags
+                    ).Width;
+
+                    if (e.ColumnIndex == (int)CurrentSortedColumn &&
+                        textLength < e.CellBounds.Width - 24 &&
+                        CurrentSortDirection != SortOrder.None)
+                    {
+                        var direction = CurrentSortDirection == SortOrder.Ascending
+                            ? Direction.Up
+                            : Direction.Down;
+
+                        // TODO: @DarkMode(DGV sort arrow): We need to draw the 9x5 arrow for this
+                        ControlPainter.PaintArrow(
+                            g: e.Graphics,
+                            _arrowPolygon: _arrowPoints,
+                            direction: direction,
+                            areaWidth: 15,
+                            areaHeight: e.CellBounds.Height,
+                            controlEnabled: Enabled,
+                            xOffset: e.CellBounds.Right - 15
+                        );
+                    }
                 }
 
                 e.Handled = true;

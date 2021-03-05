@@ -165,11 +165,10 @@ namespace AngelLoader.Forms.CustomControls
 
             g.FillRectangle(fillColorBrush, rect);
 
-            {
-                var borderRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
-                g.DrawRectangle(borderPen, borderRect);
-            }
+            var borderRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
+            g.DrawRectangle(borderPen, borderRect);
 
+            // TODO: @DarkMode: Extract this into a 9x5 version of ControlPainter.PaintArrow()
             const int arrowWidth = 9;
             const int arrowHeight = 4;
 
