@@ -197,7 +197,6 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(PagePanel);
-            Dock = DockStyle.Fill;
             Size = new Size(440, 449);
             PagePanel.ResumeLayout(false);
             PlayFMOnDCOrEnterGroupBox.ResumeLayout(false);
