@@ -168,18 +168,22 @@ namespace AngelLoader.Forms.CustomControls
             var borderRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
             g.DrawRectangle(borderPen, borderRect);
 
-            // TODO: @DarkMode: Extract this into a 9x5 version of ControlPainter.PaintArrow()
             const int arrowWidth = 9;
             const int arrowHeight = 4;
 
-            int x = rect.Width - arrowWidth - (Consts.Padding / 2);
-            int y = (rect.Height / 2) - (arrowHeight / 2);
+            var arrowRect = new Rectangle(
+                rect.Width - arrowWidth - (Consts.Padding / 2),
+                (rect.Height / 2) - (arrowHeight / 2),
+                arrowWidth,
+                arrowHeight
+            );
 
-            _arrowPoints[0] = new Point(x, y);
-            _arrowPoints[1] = new Point(x + 4, y + 5);
-            _arrowPoints[2] = new Point(x + 9, y);
-
-            g.FillPolygon(DarkColors.GreyHighlightBrush, _arrowPoints);
+            ControlPainter.PaintArrow9x5(
+                g: g,
+                direction: Misc.Direction.Down,
+                area: arrowRect,
+                pen: DarkColors.GreyHighlightPen
+            );
 
             var text = SelectedItem != null ? SelectedItem.ToString() : Text;
 
