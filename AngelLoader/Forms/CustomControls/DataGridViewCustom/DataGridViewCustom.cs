@@ -482,11 +482,10 @@ namespace AngelLoader.Forms.CustomControls
                             ? Direction.Up
                             : Direction.Down;
 
-                        // TODO: @DarkMode(DGV sort arrow): We need to draw the 9x5 arrow for this
-                        ControlPainter.PaintArrow(
+                        ControlPainter.PaintArrow9x5(
                             g: e.Graphics,
                             direction: direction,
-                            area: new Rectangle(e.CellBounds.Right - 15, 0, 15, e.CellBounds.Height),
+                            area: new Rectangle(e.CellBounds.Right - 17, 2, 17, e.CellBounds.Height),
                             controlEnabled: Enabled
                         );
                     }

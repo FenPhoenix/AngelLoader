@@ -178,35 +178,35 @@ namespace AngelLoader.Forms.CustomControls
             var upArea = new Rectangle(0, 0, clipRect.Width, clipRect.Height / 2);
             bool upHot = upArea.Contains(mousePos);
 
-            Brush upBrush = upHot
+            Pen upPen = upHot
                 ? _mouseDown
-                    ? DarkColors.ActiveControlBrush
-                    : DarkColors.GreyHighlightBrush
-                : DarkColors.GreySelectionBrush;
+                    ? DarkColors.ActiveControlPen
+                    : DarkColors.GreyHighlightPen
+                : DarkColors.GreySelectionPen;
 
-            ControlPainter.PaintArrow(
+            ControlPainter.PaintArrow7x4(
                 g: g,
                 direction: Misc.Direction.Up,
                 area: upArea,
                 controlEnabled: Enabled,
-                brush: upBrush
+                pen: upPen
             );
 
             var downArea = new Rectangle(0, clipRect.Height / 2, clipRect.Width, clipRect.Height / 2);
             bool downHot = downArea.Contains(mousePos);
 
-            Brush downBrush = downHot
+            Pen downPen = downHot
                 ? _mouseDown
-                    ? DarkColors.ActiveControlBrush
-                    : DarkColors.GreyHighlightBrush
-                : DarkColors.GreySelectionBrush;
+                    ? DarkColors.ActiveControlPen
+                    : DarkColors.GreyHighlightPen
+                : DarkColors.GreySelectionPen;
 
-            ControlPainter.PaintArrow(
+            ControlPainter.PaintArrow7x4(
                 g: g,
                 direction: Misc.Direction.Down,
                 area: downArea,
                 controlEnabled: Enabled,
-                brush: downBrush
+                pen: downPen
             );
         }
 

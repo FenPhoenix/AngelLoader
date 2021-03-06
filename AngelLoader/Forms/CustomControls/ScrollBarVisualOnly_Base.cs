@@ -52,11 +52,11 @@ namespace AngelLoader.Forms.CustomControls
             _ => DarkColors.ActiveControlBrush
         };
 
-        private static SolidBrush GetStateBrush(State state) => state switch
+        private static Pen GetStatePen(State state) => state switch
         {
-            State.Normal => DarkColors.GreySelectionBrush,
-            State.Hot => DarkColors.GreyHighlightBrush,
-            _ => DarkColors.ActiveControlBrush
+            State.Normal => DarkColors.GreySelectionPen,
+            State.Hot => DarkColors.GreyHighlightPen,
+            _ => DarkColors.ActiveControlPen
         };
 
         #endregion
@@ -417,23 +417,23 @@ namespace AngelLoader.Forms.CustomControls
                 secondDirection = Direction.Right;
             }
 
-            var firstArrowBrush = GetStateBrush(_firstArrowState);
-            var secondArrowBrush = GetStateBrush(_secondArrowState);
+            Pen firstArrowPen = GetStatePen(_firstArrowState);
+            Pen secondArrowPen = GetStatePen(_secondArrowState);
 
-            ControlPainter.PaintArrow(
+            ControlPainter.PaintArrow7x4(
                 g: g,
                 direction: firstDirection,
                 area: new Rectangle(0, 0, w, h),
                 controlEnabled: GetOwnerEnabled(),
-                brush: firstArrowBrush
+                pen: firstArrowPen
             );
 
-            ControlPainter.PaintArrow(
+            ControlPainter.PaintArrow7x4(
                 g: g,
                 direction: secondDirection,
                 area: new Rectangle(xOffset, yOffset, w, h),
                 controlEnabled: GetOwnerEnabled(),
-                brush: secondArrowBrush
+                pen: secondArrowPen
             );
         }
 

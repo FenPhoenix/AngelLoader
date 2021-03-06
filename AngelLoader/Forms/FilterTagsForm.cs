@@ -329,7 +329,7 @@ namespace AngelLoader.Forms
         private void ArrowButtons_Paint(object sender, PaintEventArgs e)
         {
             Button button = (Button)sender;
-            ControlPainter.PaintArrow(
+            ControlPainter.PaintArrow7x4(
                 g: e.Graphics,
                 direction: Direction.Right,
                 area: new Rectangle(0, 0, 15, button.Height),

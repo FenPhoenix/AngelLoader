@@ -415,6 +415,9 @@ namespace AngelLoader.Forms
         private static readonly Brush _darkModeArrowButtonEnabledBrush = new SolidBrush(Color.FromArgb(150, 156, 160));
         private static Brush ArrowButtonEnabledBrush => DarkModeEnabled ? _darkModeArrowButtonEnabledBrush : SystemBrushes.ControlText;
 
+        private static readonly Pen _darkModeArrowButtonEnabledPen = new Pen(Color.FromArgb(150, 156, 160));
+        private static Pen ArrowButtonEnabledPen => DarkModeEnabled ? _darkModeArrowButtonEnabledPen : SystemPens.ControlText;
+
         #region Buttons
 
         internal static void PaintZoomButtons(Button button, PaintEventArgs e, Zoom zoomType)
@@ -650,54 +653,144 @@ namespace AngelLoader.Forms
 
         private static readonly Point[] _arrowPoints = new Point[3];
 
-        internal static void PaintArrow(
+        internal static void PaintArrow7x4(
             Graphics g,
             Direction direction,
-            int x = 0,
-            int y = 0,
-            Rectangle? area = null,
+            Rectangle area,
             bool? controlEnabled = null,
-            Brush? brush = null)
+            Pen? pen = null)
         {
             g.SmoothingMode = SmoothingMode.None;
 
-            if (area != null)
-            {
-                var rect = (Rectangle)area;
-                bool arrowIsVert = direction == Direction.Up || direction == Direction.Down;
+            int x = area.X + (area.Width / 2);
+            int y = area.Y + (area.Height / 2);
 
-                x = (rect.X + (rect.Width / 2)) - (arrowIsVert ? 4 : 2);
-                y = (rect.Y + (rect.Height / 2)) - (arrowIsVert ? 3 : 4);
-            }
+            pen ??= controlEnabled == true ? ArrowButtonEnabledPen : SystemPens.ControlDark;
 
             switch (direction)
             {
                 case Direction.Left:
-                    (_arrowPoints[0].X, _arrowPoints[0].Y) = (4 + x, 0 + y);
-                    (_arrowPoints[1].X, _arrowPoints[1].Y) = (0 + x, 4 + y);
-                    (_arrowPoints[2].X, _arrowPoints[2].Y) = (4 + x, 8 + y);
+                    x -= 2;
+                    y -= 3;
+
+                    // Arrow tip
+                    g.DrawLine(pen, x, y + 3, x + 1, y + 3);
+
+                    g.DrawLine(pen, x + 1, y + 2, x + 1, y + 4);
+                    g.DrawLine(pen, x + 2, y + 1, x + 2, y + 5);
+                    g.DrawLine(pen, x + 3, y, x + 3, y + 6);
+
                     break;
                 case Direction.Right:
-                    (_arrowPoints[0].X, _arrowPoints[0].Y) = (1 + x, 0 + y);
-                    (_arrowPoints[1].X, _arrowPoints[1].Y) = (5 + x, 4 + y);
-                    (_arrowPoints[2].X, _arrowPoints[2].Y) = (1 + x, 8 + y);
+                    x -= 1;
+                    y -= 3;
+
+                    g.DrawLine(pen, x, y, x, y + 6);
+                    g.DrawLine(pen, x + 1, y + 1, x + 1, y + 5);
+                    g.DrawLine(pen, x + 2, y + 2, x + 2, y + 4);
+
+                    // Arrow tip
+                    g.DrawLine(pen, x + 2, y + 3, x + 3, y + 3);
+
                     break;
                 case Direction.Up:
-                    (_arrowPoints[0].X, _arrowPoints[0].Y) = (0 + x, 5 + y);
-                    (_arrowPoints[1].X, _arrowPoints[1].Y) = (4 + x, 0 + y);
-                    (_arrowPoints[2].X, _arrowPoints[2].Y) = (8 + x, 5 + y);
+                    x -= 3;
+                    y -= 2;
+
+                    // Arrow tip
+                    g.DrawLine(pen, x + 3, y, x + 3, y + 1);
+
+                    g.DrawLine(pen, x + 2, y + 1, x + 4, y + 1);
+                    g.DrawLine(pen, x + 1, y + 2, x + 5, y + 2);
+                    g.DrawLine(pen, x, y + 3, x + 6, y + 3);
+
                     break;
                 case Direction.Down:
                 default:
-                    (_arrowPoints[0].X, _arrowPoints[0].Y) = (1 + x, 2 + y);
-                    (_arrowPoints[1].X, _arrowPoints[1].Y) = (4 + x, 6 + y);
-                    (_arrowPoints[2].X, _arrowPoints[2].Y) = (8 + x, 2 + y);
+                    x -= 3;
+                    y -= 1;
+
+                    g.DrawLine(pen, x, y, x + 6, y);
+                    g.DrawLine(pen, x + 1, y + 1, x + 5, y + 1);
+                    g.DrawLine(pen, x + 2, y + 2, x + 4, y + 2);
+
+                    // Arrow tip
+                    g.DrawLine(pen, x + 3, y + 2, x + 3, y + 3);
+
                     break;
             }
+        }
 
-            brush ??= controlEnabled == true ? ArrowButtonEnabledBrush : SystemBrushes.ControlDark;
+        internal static void PaintArrow9x5(
+            Graphics g,
+            Direction direction,
+            Rectangle area,
+            bool? controlEnabled = null,
+            Pen? pen = null)
+        {
+            g.SmoothingMode = SmoothingMode.None;
 
-            g.FillPolygon(brush, _arrowPoints);
+            int x = area.X + (area.Width / 2);
+            int y = area.Y + (area.Height / 2);
+
+            pen ??= controlEnabled == true ? ArrowButtonEnabledPen : SystemPens.ControlDark;
+
+            switch (direction)
+            {
+                case Direction.Left:
+                    x -= 2;
+                    y -= 4;
+
+                    // Arrow tip
+                    g.DrawLine(pen, x, y + 4, x + 1, y + 4);
+
+                    g.DrawLine(pen, x + 1, y + 3, x + 1, y + 5);
+                    g.DrawLine(pen, x + 2, y + 2, x + 2, y + 6);
+                    g.DrawLine(pen, x + 3, y + 1, x + 3, y + 7);
+                    g.DrawLine(pen, x + 4, y, x + 4, y + 8);
+
+                    break;
+                case Direction.Right:
+                    x -= 2;
+                    y -= 4;
+
+                    g.DrawLine(pen, x, y, x, y + 8);
+                    g.DrawLine(pen, x + 1, y + 1, x + 1, y + 7);
+                    g.DrawLine(pen, x + 2, y + 2, x + 2, y + 6);
+                    g.DrawLine(pen, x + 3, y + 3, x + 3, y + 5);
+
+                    // Arrow tip
+                    g.DrawLine(pen, x + 3, y + 4, x + 4, y + 4);
+
+                    break;
+                case Direction.Up:
+                    x -= 4;
+                    y -= 2;
+
+                    // Arrow tip
+                    g.DrawLine(pen, x + 4, y, x + 4, y + 1);
+
+                    g.DrawLine(pen, x + 3, y + 1, x + 5, y + 1);
+                    g.DrawLine(pen, x + 2, y + 2, x + 6, y + 2);
+                    g.DrawLine(pen, x + 1, y + 3, x + 7, y + 3);
+                    g.DrawLine(pen, x, y + 4, x + 8, y + 4);
+
+                    break;
+                case Direction.Down:
+                default:
+                    x -= 4;
+                    y -= 2;
+
+                    g.DrawLine(pen, x, y, x + 8, y);
+                    g.DrawLine(pen, x + 1, y + 1, x + 7, y + 1);
+                    g.DrawLine(pen, x + 2, y + 2, x + 6, y + 2);
+                    g.DrawLine(pen, x + 3, y + 3, x + 5, y + 3);
+
+                    // Arrow tip
+                    g.DrawLine(pen, x + 4, y + 3, x + 4, y + 4);
+
+                    break;
+            }
         }
     }
 }

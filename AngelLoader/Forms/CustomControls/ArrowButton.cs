@@ -25,7 +25,7 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            ControlPainter.PaintArrow(
+            ControlPainter.PaintArrow7x4(
                 g: e.Graphics,
                 direction: _arrowDirection,
                 area: ClientRectangle,
