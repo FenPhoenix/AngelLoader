@@ -6,6 +6,8 @@ namespace AngelLoader.Forms.CustomControls
 {
     public class DarkListBox : DarkDataGridView
     {
+        // TODO: @DarkMode(DarkListBox): The auto-select is very problematic. Try custom ListView...
+
         private bool _loaded;
 
         private bool _darkModeEnabled;
