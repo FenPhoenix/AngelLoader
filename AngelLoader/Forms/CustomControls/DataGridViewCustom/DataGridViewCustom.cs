@@ -385,7 +385,6 @@ namespace AngelLoader.Forms.CustomControls
 
             /*
             TODO: @DarkMode(DGV headers):
-            -TODO: @DarkMode: Draw sort glyph
             -Header painting appears to happen in DataGridViewColumnHeaderCell.PaintPrivate() - look here for
              precise text bounds calculations etc.
             -We're not painting the vestigial selected-column header color. We should see if we can owner-paint
