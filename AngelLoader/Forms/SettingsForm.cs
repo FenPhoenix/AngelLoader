@@ -192,8 +192,6 @@ namespace AngelLoader.Forms
             #region Add pages
 
             PagePanel.Controls.Add(PathsPage);
-            // TODO: @DarkMode: Why are we setting this here? Shouldn't we set it in the designer files?
-            PathsPage.Dock = DockStyle.Fill;
 
             if (startup)
             {
@@ -212,9 +210,6 @@ namespace AngelLoader.Forms
 
                 PagePanel.Controls.Add(AppearancePage);
                 PagePanel.Controls.Add(OtherPage);
-
-                AppearancePage.Dock = DockStyle.Fill;
-                OtherPage.Dock = DockStyle.Fill;
             }
 
             #endregion

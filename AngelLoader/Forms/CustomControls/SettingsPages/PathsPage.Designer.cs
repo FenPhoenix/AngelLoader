@@ -565,6 +565,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
+            this.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Name = "PathsPage";
             this.Size = new System.Drawing.Size(440, 910);
             this.PagePanel.ResumeLayout(false);

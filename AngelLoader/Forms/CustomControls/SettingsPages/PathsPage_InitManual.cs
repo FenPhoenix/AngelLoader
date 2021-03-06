@@ -440,6 +440,7 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(PagePanel);
+            Dock = DockStyle.Fill;
             Size = new Size(440, 910);
             PagePanel.ResumeLayout(false);
             ActualPathsPanel.ResumeLayout(false);
