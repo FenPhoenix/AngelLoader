@@ -474,7 +474,10 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            SetTheme(_selfTheme, startup: true);
+            if (_inTheme != VisualTheme.Classic)
+            {
+                SetTheme(_selfTheme, startup: true);
+            }
 
             // Comes last so we don't have to use any DisableEvents blocks
             #region Hook up page events
@@ -868,7 +871,10 @@ namespace AngelLoader.Forms
                         }
                     }
 
-                    ThemeOwnerForm(_inTheme);
+                    if (_inTheme != _selfTheme)
+                    {
+                        ThemeOwnerForm(_inTheme);
+                    }
                 }
 
                 return;
