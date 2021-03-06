@@ -10,8 +10,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class ImportFromMultipleInisForm : DarkForm
     {
-        // TODO: @DarkMode(ImportFromMultipleInisForm): Blocker
-
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
         internal List<string> IniFiles = new List<string>();

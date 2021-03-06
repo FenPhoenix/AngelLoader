@@ -12,8 +12,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class ImportFromDarkLoaderForm : DarkForm
     {
-        // TODO: @DarkMode(Import DL form): Add visual blocker here too to prevent flicker
-
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
         internal string DarkLoaderIniFile = "";
