@@ -338,7 +338,12 @@ namespace AngelLoader.Forms
                 else if (CursorOutsideAddTagsDropDownArea())
                 {
                     AddTagLLDropDown.HideAndClear();
-                    return BlockMessage;
+                    if (m.Msg != Native.WM_LBUTTONUP && m.Msg != Native.WM_NCLBUTTONUP &&
+                        m.Msg != Native.WM_MBUTTONUP && m.Msg != Native.WM_NCMBUTTONUP &&
+                        m.Msg != Native.WM_RBUTTONUP && m.Msg != Native.WM_NCRBUTTONUP)
+                    {
+                        return BlockMessage;
+                    }
                 }
                 else if (m.Msg == Native.WM_MBUTTONDOWN && CursorOverControl(FMsDGV))
                 {
