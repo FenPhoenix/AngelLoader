@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using static AngelLoader.Misc;
@@ -13,6 +14,8 @@ namespace AngelLoader.Forms
 {
     public sealed partial class MessageBoxCustomForm : DarkForm
     {
+        // TODO: @DarkMode(MessageBoxFormCustom): Paint icon on OK button (or just fix DarkButton's image alignment)
+
         #region P/Invoke crap
 
         [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -48,6 +51,8 @@ namespace AngelLoader.Forms
         private static extern bool DestroyIcon(IntPtr hIcon);
 
         #endregion
+
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
         private readonly bool _multiChoice;
         private const int _bottomAreaHeight = 42;
@@ -99,7 +104,7 @@ namespace AngelLoader.Forms
                 // Set this first: the list is now populated
                 for (int i = 0; i < choiceStrings!.Length; i++)
                 {
-                    ChoiceListBox.Items.Add(choiceStrings[i]);
+                    ChoiceListBox.Rows.Add(choiceStrings[i]);
                 }
             }
             else
@@ -121,7 +126,7 @@ namespace AngelLoader.Forms
             {
                 // Set this second: the list is now sized based on its content
                 ChoiceListBox.Size = new Size(innerControlWidth,
-                    (ChoiceListBox.ItemHeight * ChoiceListBox.Items.Count.Clamp(5, 20)) +
+                    (ChoiceListBox.ItemHeight * ChoiceListBox.Rows.Count.Clamp(5, 20)) +
                     ((SystemInformation.BorderSize.Height * 4) + 3));
 
                 // Set this before window autosizing
@@ -142,6 +147,8 @@ namespace AngelLoader.Forms
             Cancel_Button.Text = cancelText;
 
             #endregion
+
+            SetTheme(Config.VisualTheme);
 
             Localize();
 
@@ -193,7 +200,16 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            if (ChoiceListBox.Items.Count > 0) ChoiceListBox.SetSelected(0, true);
+            if (ChoiceListBox.Rows.Count > 0) ChoiceListBox.Rows[0].Selected = false;
+        }
+
+        private void SetTheme(VisualTheme theme)
+        {
+            ControlUtils.ChangeFormThemeMode(
+                theme,
+                this,
+                _controlColors
+            );
         }
 
         private void SetMessageBoxIcon(MessageBoxIcon icon)
@@ -247,11 +263,11 @@ namespace AngelLoader.Forms
 
         private void SelectAllButton_Click(object sender, EventArgs e)
         {
-            if (ChoiceListBox.Items.Count > 0)
+            if (ChoiceListBox.Rows.Count > 0)
             {
-                for (int i = 0; i < ChoiceListBox.Items.Count; i++)
+                for (int i = 0; i < ChoiceListBox.Rows.Count; i++)
                 {
-                    ChoiceListBox.SetSelected(i, true);
+                    ChoiceListBox.Rows[i].Selected = true;
                 }
             }
         }

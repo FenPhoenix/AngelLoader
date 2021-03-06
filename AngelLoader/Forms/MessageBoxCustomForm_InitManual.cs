@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms
 {
@@ -8,18 +9,18 @@ namespace AngelLoader.Forms
     {
         private void InitComponentManual()
         {
-            MessageTopLabel = new Label();
+            MessageTopLabel = new DarkLabel();
             IconPictureBox = new PictureBox();
             ContentTLP = new TableLayoutPanel();
             MainFLP = new FlowLayoutPanel();
-            ChoiceListBox = new ListBox();
+            ChoiceListBox = new DarkListBox();
             SelectButtonsFLP = new FlowLayoutPanel();
-            SelectAllButton = new Button();
-            MessageBottomLabel = new Label();
+            SelectAllButton = new DarkButton();
+            MessageBottomLabel = new DarkLabel();
             OuterTLP = new TableLayoutPanel();
             BottomFLP = new FlowLayoutPanel();
-            Cancel_Button = new Button();
-            OKButton = new Button();
+            Cancel_Button = new DarkButton();
+            OKButton = new DarkButton();
             ((ISupportInitialize)IconPictureBox).BeginInit();
             ContentTLP.SuspendLayout();
             MainFLP.SuspendLayout();
@@ -74,13 +75,11 @@ namespace AngelLoader.Forms
             // 
             // ChoiceListBox
             // 
-            ChoiceListBox.FormattingEnabled = true;
-            ChoiceListBox.HorizontalScrollbar = true;
-            ChoiceListBox.IntegralHeight = false;
             ChoiceListBox.Margin = new Padding(0, 3, 3, 0);
-            ChoiceListBox.SelectionMode = SelectionMode.MultiExtended;
+            ChoiceListBox.MultiSelect = true;
+            ChoiceListBox.ScrollBars = ScrollBars.Both;
             ChoiceListBox.TabIndex = 1;
-            ChoiceListBox.SelectedIndexChanged += ChoiceListBox_SelectedIndexChanged;
+            ChoiceListBox.SelectionChanged += ChoiceListBox_SelectedIndexChanged;
             // 
             // SelectButtonsFLP
             // 

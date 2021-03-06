@@ -105,19 +105,41 @@ namespace AngelLoader.Forms.CustomControls
 
         public string SelectedItem => SelectedRows.Count == 0 ? "" : SelectedRows[0].Cells[0].Value?.ToString() ?? "";
 
+        public string[] SelectedItems
+        {
+            get
+            {
+                string[] ret = new string[SelectedRows.Count];
+                for (int i = 0; i < SelectedRows.Count; i++)
+                {
+                    ret[i] = SelectedRows[i].Cells[0].Value?.ToString() ?? "";
+                }
+                return ret;
+            }
+        }
+
+        public int ItemHeight => Font.Height + 4;
+
         #endregion
 
         #region Event overrides
 
-        // Hack to get the damn first row unselected on first show
-        protected override void OnParentVisibleChanged(EventArgs e)
+        protected override void OnSelectionChanged(EventArgs e)
         {
-            if (!_loaded)
+            if (!_loaded) return;
+            base.OnSelectionChanged(e);
+        }
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            // Hack to get the damn first row unselected on first show
+            if (Visible && !_loaded)
             {
                 ClearSelection();
                 _loaded = true;
             }
-            base.OnParentVisibleChanged(e);
+
+            base.OnVisibleChanged(e);
         }
 
         protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
@@ -129,6 +151,7 @@ namespace AngelLoader.Forms.CustomControls
                 Rows[i].MinimumHeight = Font.Height + 4;
                 Rows[i].Height = Font.Height + 4;
             }
+
             base.OnRowsAdded(e);
         }
 
@@ -143,7 +166,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnCellPainting(e);
 
-            if (SelectedIndex == e.RowIndex)
+            if (Rows[e.RowIndex].Selected)
             {
                 // Full-width item hack part deux: The AllCells autosize mode will still end up making the column
                 // shorter than the canvas if the longest ITEM is shorter than the canvas. We want it to be max

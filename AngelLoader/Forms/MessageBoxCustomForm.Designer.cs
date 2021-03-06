@@ -29,18 +29,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.MessageTopLabel = new System.Windows.Forms.Label();
+            this.MessageTopLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.IconPictureBox = new System.Windows.Forms.PictureBox();
             this.ContentTLP = new System.Windows.Forms.TableLayoutPanel();
             this.MainFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.ChoiceListBox = new System.Windows.Forms.ListBox();
+            this.ChoiceListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
             this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.SelectAllButton = new System.Windows.Forms.Button();
-            this.MessageBottomLabel = new System.Windows.Forms.Label();
+            this.SelectAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.MessageBottomLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.OuterTLP = new System.Windows.Forms.TableLayoutPanel();
             this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.Cancel_Button = new System.Windows.Forms.Button();
-            this.OKButton = new System.Windows.Forms.Button();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).BeginInit();
             this.ContentTLP.SuspendLayout();
             this.MainFLP.SuspendLayout();
@@ -102,16 +102,14 @@
             // 
             // ChoiceListBox
             // 
-            this.ChoiceListBox.FormattingEnabled = true;
-            this.ChoiceListBox.HorizontalScrollbar = true;
-            this.ChoiceListBox.IntegralHeight = false;
             this.ChoiceListBox.Location = new System.Drawing.Point(0, 55);
             this.ChoiceListBox.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
+            this.ChoiceListBox.MultiSelect = true;
             this.ChoiceListBox.Name = "ChoiceListBox";
-            this.ChoiceListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.ChoiceListBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.ChoiceListBox.Size = new System.Drawing.Size(493, 95);
             this.ChoiceListBox.TabIndex = 1;
-            this.ChoiceListBox.SelectedIndexChanged += new System.EventHandler(this.ChoiceListBox_SelectedIndexChanged);
+            this.ChoiceListBox.SelectionChanged += new System.EventHandler(this.ChoiceListBox_SelectedIndexChanged);
             // 
             // SelectButtonsFLP
             // 
@@ -241,17 +239,17 @@
         #endregion
 #endif
 
-        private System.Windows.Forms.Label MessageTopLabel;
+        private AngelLoader.Forms.CustomControls.DarkLabel MessageTopLabel;
         private System.Windows.Forms.PictureBox IconPictureBox;
         private System.Windows.Forms.TableLayoutPanel ContentTLP;
         private System.Windows.Forms.TableLayoutPanel OuterTLP;
         private System.Windows.Forms.FlowLayoutPanel BottomFLP;
         private System.Windows.Forms.FlowLayoutPanel MainFLP;
-        private System.Windows.Forms.ListBox ChoiceListBox;
-        private System.Windows.Forms.Label MessageBottomLabel;
+        private AngelLoader.Forms.CustomControls.DarkListBox ChoiceListBox;
+        private AngelLoader.Forms.CustomControls.DarkLabel MessageBottomLabel;
         private System.Windows.Forms.FlowLayoutPanel SelectButtonsFLP;
-        private System.Windows.Forms.Button SelectAllButton;
-        private System.Windows.Forms.Button Cancel_Button;
-        private System.Windows.Forms.Button OKButton;
+        private AngelLoader.Forms.CustomControls.DarkButton SelectAllButton;
+        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
+        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
     }
 }
