@@ -56,7 +56,7 @@
             this.DarkThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.LanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
+            this.LanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxWithBackingItems();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.FMsListGroupBox.SuspendLayout();

@@ -64,7 +64,7 @@ namespace AngelLoader.Forms
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
         private readonly DateTime _exampleDate = new DateTime(DateTime.Now.Year, 8, 4);
 
-        private readonly ComboBoxCustom LangComboBox;
+        private readonly ComboBoxWithBackingItems LangComboBox;
         private readonly GroupBox LangGroupBox;
 
         private readonly PathsPage PathsPage;

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -19,8 +20,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private Bitmap? _buffer;
 
-        private readonly Point[] _arrowPoints = new Point[3];
-
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
@@ -35,6 +34,9 @@ namespace AngelLoader.Forms.CustomControls
                 SetUpTheme();
             }
         }
+
+        [DefaultValue(false)]
+        public bool FireMouseLeaveOnLeaveWindow { get; set; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -258,5 +260,55 @@ namespace AngelLoader.Forms.CustomControls
                 TextRenderer.DrawText(g, text, Font, textRect, textColorBrush.Color, fillColorBrush.Color, _textFormat);
             }
         }
+
+        #region Dropdown fixes/behavior improvements etc.
+
+        protected override void WndProc(ref Message m)
+        {
+            // If the dropdown is going to go off the right side of the screen, try to reposition it so it always
+            // appears fully on-screen
+            if (m.Msg == Native.WM_CTLCOLORLISTBOX)
+            {
+                Point p = PointToScreen(new Point(0, Height));
+
+                int screenWidth = Screen.FromControl(this).Bounds.Width;
+                bool alignRight = p.X + DropDownWidth > screenWidth;
+
+                int x = alignRight ? p.X - (DropDownWidth - Math.Min(Width, screenWidth - p.X)) : p.X;
+                Native.SetWindowPos(m.LParam, IntPtr.Zero, x, p.Y, 0, 0, Native.SWP_NOSIZE);
+            }
+            // Needed to make the MouseLeave event fire when the mouse moves off the control directly onto another
+            // window (other controls work like that automatically, ComboBox doesn't)
+            else if (FireMouseLeaveOnLeaveWindow && m.Msg == Native.WM_MOUSELEAVE)
+            {
+                OnMouseLeave(EventArgs.Empty);
+                m.Result = (IntPtr)1;
+                // NOTE:
+                // If we return here, the ComboBox remains highlighted even when the mouse leaves.
+                // If we don't return here, the OnMouseLeave event gets fired twice. That's irritating, but in
+                // this particular case it's fine, it just hides the readme controls twice. But remember in case
+                // you want to do anything more complicated...
+            }
+
+            base.WndProc(ref m);
+        }
+
+        protected override void OnDropDown(EventArgs e)
+        {
+            // Autosize dropdown to accomodate the longest item
+            int finalWidth = 0;
+            foreach (object item in Items)
+            {
+                if (item is not string itemStr) continue;
+
+                int currentItemWidth = TextRenderer.MeasureText(itemStr, Font, Size.Empty).Width;
+                if (finalWidth < currentItemWidth) finalWidth = currentItemWidth;
+            }
+            DropDownWidth = Math.Max(finalWidth, Width);
+
+            base.OnDropDown(e);
+        }
+
+        #endregion
     }
 }

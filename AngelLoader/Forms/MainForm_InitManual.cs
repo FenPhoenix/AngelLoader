@@ -119,7 +119,7 @@ namespace AngelLoader.Forms
             EditFMTabPage = new TabPageCustom();
             EditFMScanLanguagesButton = new DarkButton();
             EditFMLanguageLabel = new DarkLabel();
-            EditFMLanguageComboBox = new ComboBoxCustom();
+            EditFMLanguageComboBox = new ComboBoxWithBackingItems();
             EditFMScanForReadmesButton = new DarkButton();
             EditFMScanReleaseDateButton = new DarkButton();
             EditFMScanAuthorButton = new DarkButton();
@@ -127,7 +127,7 @@ namespace AngelLoader.Forms
             EditFMAltTitlesArrowButton = new ArrowButton();
             EditFMTitleTextBox = new DarkTextBox();
             EditFMFinishedOnButton = new DarkButton();
-            EditFMRatingComboBox = new ComboBoxCustom();
+            EditFMRatingComboBox = new ComboBoxWithBackingItems();
             EditFMRatingLabel = new DarkLabel();
             EditFMLastPlayedDateTimePicker = new DarkDateTimePicker();
             EditFMReleaseDateDateTimePicker = new DateTimePicker();
@@ -162,7 +162,7 @@ namespace AngelLoader.Forms
             ReadmeZoomInButton = new DarkButton();
             ReadmeZoomOutButton = new DarkButton();
             ReadmeResetZoomButton = new DarkButton();
-            ChooseReadmeComboBox = new ComboBoxCustom();
+            ChooseReadmeComboBox = new ComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
             MainMenuButton = new DarkButton();
@@ -1512,6 +1512,7 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             ChooseReadmeComboBox.FormattingEnabled = true;
             ChooseReadmeComboBox.Location = new Point(1350, 8);
+            ChooseReadmeComboBox.FireMouseLeaveOnLeaveWindow = true;
             ChooseReadmeComboBox.Size = new Size(170, 21);
             ChooseReadmeComboBox.TabIndex = 51;
             ChooseReadmeComboBox.Visible = false;

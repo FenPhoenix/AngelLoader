@@ -17,7 +17,7 @@ namespace AngelLoader.WinAPI
         internal const int WM_USER = 0x0400;
         internal const int WM_REFLECT = WM_USER + 0x1C00;
         internal const int WM_NOTIFY = 0x004E;
-        internal const int WM_SETREDRAW = 11;
+        internal const int WM_SETREDRAW = 0x000B;
         internal const int WM_NCPAINT = 0x0085;
         internal const int WM_CTLCOLORSCROLLBAR = 0x0137;
         internal const int WM_PAINT = 0x000F;
@@ -25,6 +25,9 @@ namespace AngelLoader.WinAPI
         internal const int WM_MOVE = 0x0003;
         internal const int WM_SIZE = 0x0005;
         internal const int WM_ACTIVATE = 0x0006;
+
+        internal const uint WM_CTLCOLORLISTBOX = 0x0134;
+        internal const int SWP_NOSIZE = 0x0001;
 
         internal const uint WS_EX_CLIENTEDGE = 0x00000200;
         internal const uint WS_BORDER = 0x00800000;
@@ -35,6 +38,9 @@ namespace AngelLoader.WinAPI
 
         internal const int GWL_STYLE = -16;
         internal const int GWL_EXSTYLE = -20;
+
+        [DllImport("user32.dll")]
+        internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetWindowDC(IntPtr hWnd);
