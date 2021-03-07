@@ -606,6 +606,8 @@ namespace AngelLoader.Forms
             // questions.
             PathsPage.DoLayout = true;
             PathsPage.FlowLayoutPanel1.PerformLayout();
+
+            if (_startup) Activate();
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
