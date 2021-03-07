@@ -23,10 +23,7 @@ namespace AngelLoader.WinAPI.Taskbar
         [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
         private static readonly ITaskbarList3 _instance = (ITaskbarList3)new TaskbarInstance();
 
-        // Windows 7 (version 6.1) is the minimum required version for this
-        private static readonly bool _taskbarSupported =
-            Environment.OSVersion.Platform == PlatformID.Win32NT &&
-            Environment.OSVersion.Version >= new Version(6, 1);
+        private static readonly bool _taskbarSupported = Misc.WinVersionIs7OrAbove();
 
         internal static void SetState(IntPtr windowHandle, TaskbarStates taskbarState)
         {

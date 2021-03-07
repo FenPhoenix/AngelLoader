@@ -237,5 +237,31 @@ namespace AngelLoader
         {
             try { value.Cancel(); } catch (ObjectDisposedException) { }
         }
+
+        internal static bool WinVersionIs7OrAbove()
+        {
+            try
+            {
+                return Environment.OSVersion.Platform == PlatformID.Win32NT &&
+                       Environment.OSVersion.Version >= new Version(6, 1);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal static bool WinVersionIs8OrAbove()
+        {
+            try
+            {
+                return Environment.OSVersion.Platform == PlatformID.Win32NT &&
+                       Environment.OSVersion.Version >= new Version(6, 2);
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

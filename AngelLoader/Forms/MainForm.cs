@@ -56,6 +56,7 @@ using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
+using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
@@ -450,6 +451,13 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            // @OpacityHide
+            if (WinVersionIs8OrAbove())
+            {
+                ShowInTaskbar = false;
+                Opacity = 0d;
+            }
+
             ReadmeFullScreenButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
             ReadmeZoomInButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
             ReadmeZoomOutButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
@@ -771,7 +779,7 @@ namespace AngelLoader.Forms
         // This one can't be multithreaded because it depends on the FMs list
         public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned)
         {
-            if (Visible) return;
+            if (AlreadyShown()) return;
 
 #if !ReleaseBeta && !ReleasePublic
             UpdateGameScreenShotModes();
@@ -796,7 +804,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.Focus();
 
-            if (!Visible) Show();
+            if (!AlreadyShown()) Show();
 
 #if !ReleasePublic
             //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
@@ -833,14 +841,41 @@ namespace AngelLoader.Forms
 
         public void ShowOnly()
         {
-            if (!Visible) Show();
+            if (!AlreadyShown()) Show();
         }
+
+        // @OpacityHide
+        private bool AlreadyShown() => WinVersionIs8OrAbove() ? Opacity > 0d : Visible;
 
         #endregion
 
-        #region Form events
+        [PublicAPI]
+        public new void Show()
+        {
+            // @OpacityHide
+            if (WinVersionIs8OrAbove())
+            {
+                // Opacity is supposed to have been set to 0 already at this point, also ShowInTaskbar is supposed
+                // to be false at this point too.
 
-        private void MainForm_Load(object sender, EventArgs e)
+                // We "Show" the form (so we can force it to do the layout and drawing work), but our 0 opacity
+                // makes us invisible in practice, so the users don't have to see all the garbage.
+                base.Show();
+
+                ShowInTaskbar = true;
+                LoadCustom();
+                // Tested: With exactly 0 opacity, the window doesn't receive input and acts like it's not there.
+                // Anything above 0 and the window receives input and acts like it's there. This is exactly what
+                // we want!
+                Opacity = 1.0d;
+            }
+            else
+            {
+                base.Show();
+            }
+        }
+
+        private void LoadCustom()
         {
             // These have to go here because they depend on and/or affect the width of other controls, and we
             // need to be in a state where layout is happening
@@ -848,6 +883,14 @@ namespace AngelLoader.Forms
             ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
 
             Application.AddMessageFilter(this);
+        }
+
+        #region Form events
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            // @OpacityHide
+            if (!WinVersionIs8OrAbove()) LoadCustom();
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
