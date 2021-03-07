@@ -808,10 +808,8 @@ namespace AngelLoader.Forms
         [PublicAPI]
         public new void Show()
         {
-            base.Show();
-            // We close the splash screen AFTER showing, otherwise we sometimes end up behind other windows and
-            // flashing our taskbar icon (because we're supposed to be activated)
             SplashScreen.Close();
+            base.Show();
         }
 
         private void SetWindowStateAndSize()
@@ -864,7 +862,8 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            Activate();
+            ControlUtils.ForceActivate(this);
+
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
             // Regular Environment.Exit() because we're testing speed
