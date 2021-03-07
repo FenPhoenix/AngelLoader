@@ -95,12 +95,12 @@ namespace AngelLoader
             {
                 // We can't show the splash screen until we know our theme, which we have to get from the config
                 // file, so we can't show it any earlier than this.
-                SplashScreen.InitSplashScreen();
-                SplashScreen.ShowSplashScreen(Config.VisualTheme);
+                SplashScreen.Init();
+                SplashScreen.Show(Config.VisualTheme);
                 // We can't show a message until we've read the config file (to know which language to use) and
                 // the current language file (to get the translated message strings). So just show the splash
                 // screen with no message to start with.
-                SplashScreen.SetSplashScreenMessage("");
+                SplashScreen.SetMessage("");
 
                 #region Read languages
 
@@ -134,7 +134,7 @@ namespace AngelLoader
 
                 #endregion
 
-                SplashScreen.SetSplashScreenMessage(LText.SplashScreen.ReadingGameConfigurations);
+                SplashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigurations);
 
                 #region Set paths
 
@@ -153,7 +153,7 @@ namespace AngelLoader
 
                 Task DoParallelLoad()
                 {
-                    SplashScreen.SetSplashScreenMessage(LText.SplashScreen.SearchingForNewFMs);
+                    SplashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs);
                     using (Task findFMsTask = Task.Run(() => fmsViewListUnscanned = FindFMs.Find(startup: true)))
                     {
                         // Construct and init the view both right here, because they're both heavy operations and
@@ -164,7 +164,7 @@ namespace AngelLoader
                         findFMsTask.Wait();
                     }
 
-                    SplashScreen.SetSplashScreenMessage(LText.SplashScreen.LoadingMainApp);
+                    SplashScreen.SetMessage(LText.SplashScreen.LoadingMainApp);
                     return View.FinishInitAndShow(fmsViewListUnscanned!);
                 }
 
@@ -174,17 +174,16 @@ namespace AngelLoader
                 }
                 else
                 {
-                    SplashScreen.HideSplashScreen();
                     if (!OpenSettings(startup: true, cleanStart: cleanStart).Canceled)
                     {
-                        SplashScreen.ShowSplashScreen(Config.VisualTheme);
+                        SplashScreen.Show(Config.VisualTheme);
                         await DoParallelLoad();
                     }
                 }
             }
             finally
             {
-                SplashScreen.CloseSplashScreen();
+                SplashScreen.Close();
             }
         }
 
