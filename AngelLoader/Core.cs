@@ -39,7 +39,7 @@ namespace AngelLoader
         // it's null. But if we check it from another thread there'll be a race condition. Figure something out?
         internal static IView View = null!;
 
-        internal static async void Init()
+        internal static void Init(Task configTask)
         {
             bool openSettings;
             // This is if we have no config file; in that case we assume we're starting for the first time ever
@@ -47,60 +47,66 @@ namespace AngelLoader
 
             List<int>? fmsViewListUnscanned = null;
 
-            #region Create required directories
-
             try
             {
-                Directory.CreateDirectory(Paths.Data);
-                Directory.CreateDirectory(Paths.Languages);
-            }
-            catch (Exception ex)
-            {
-                // ReSharper disable once ConvertToConstant.Local
-                string message = "Failed to create required application directories on startup.";
-                Log(message, ex);
-                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.Exit(1);
-            }
+                #region Create required directories
 
-            #endregion
-
-            #region Read config file if it exists
-
-            if (File.Exists(Paths.ConfigIni))
-            {
                 try
                 {
-                    Ini.ReadConfigIni(Paths.ConfigIni, Config);
-
-                    openSettings = !Directory.Exists(Config.FMsBackupPath);
+                    Directory.CreateDirectory(Paths.Data);
+                    Directory.CreateDirectory(Paths.Languages);
                 }
                 catch (Exception ex)
                 {
-                    string message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                    // ReSharper disable once ConvertToConstant.Local
+                    string message = "Failed to create required application directories on startup.";
                     Log(message, ex);
-                    openSettings = true;
+                    MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(1);
                 }
-            }
-            else
-            {
-                openSettings = true;
-                // We're starting for the first time ever (assumed)
-                cleanStart = true;
-            }
 
-            #endregion
+                #endregion
 
-            try
-            {
-                // We can't show the splash screen until we know our theme, which we have to get from the config
-                // file, so we can't show it any earlier than this.
-                SplashScreen.InitSplashScreen();
-                SplashScreen.ShowSplashScreen(Config.VisualTheme);
-                // We can't show a message until we've read the config file (to know which language to use) and
-                // the current language file (to get the translated message strings). So just show the splash
-                // screen with no message to start with.
-                SplashScreen.SetSplashScreenMessage("");
+                #region Read config file if it exists
+
+                if (File.Exists(Paths.ConfigIni))
+                {
+                    try
+                    {
+                        Ini.ReadConfigIni(Paths.ConfigIni, Config);
+
+                        #region Set paths
+
+                        // PERF: 9ms, but it's mostly IO. Darn.
+                        bool[] gameExeExists = new bool[SupportedGameCount];
+                        for (int i = 0; i < SupportedGameCount; i++)
+                        {
+                            // Existence checks on startup are merely a perf optimization: values start blank so
+                            // just don't set them if we don't have a game exe
+                            string gameExe = Config.GetGameExe((GameIndex)i);
+                            gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
+                            if (gameExeExists[i]) SetGameDataFromDisk((GameIndex)i, storeConfigInfo: true);
+                        }
+
+                        #endregion
+
+                        openSettings = !Directory.Exists(Config.FMsBackupPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        string message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                        Log(message, ex);
+                        openSettings = true;
+                    }
+                }
+                else
+                {
+                    openSettings = true;
+                    // We're starting for the first time ever (assumed)
+                    cleanStart = true;
+                }
+
+                #endregion
 
                 #region Read languages
 
@@ -134,57 +140,47 @@ namespace AngelLoader
 
                 #endregion
 
-                SplashScreen.SetSplashScreenMessage(LText.SplashScreen.ReadingGameConfigurations);
-
-                #region Set paths
-
-                // PERF: 9ms, but it's mostly IO. Darn.
-                bool[] gameExeExists = new bool[SupportedGameCount];
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    // Existence checks on startup are merely a perf optimization: values start blank so just don't
-                    // set them if we don't have a game exe
-                    string gameExe = Config.GetGameExe((GameIndex)i);
-                    gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
-                    if (gameExeExists[i]) SetGameDataFromDisk((GameIndex)i, storeConfigInfo: true);
-                }
-
-                #endregion
-
-                Task DoParallelLoad()
-                {
-                    SplashScreen.SetSplashScreenMessage(LText.SplashScreen.SearchingForNewFMs);
-                    using (Task findFMsTask = Task.Run(() => fmsViewListUnscanned = FindFMs.Find(startup: true)))
-                    {
-                        // Construct and init the view both right here, because they're both heavy operations and
-                        // we want them both to run in parallel with Find() to the greatest extent possible.
-                        View = new MainForm();
-                        View.InitThreadable();
-
-                        findFMsTask.Wait();
-                    }
-
-                    SplashScreen.SetSplashScreenMessage(LText.SplashScreen.LoadingMainApp);
-                    return View.FinishInitAndShow(fmsViewListUnscanned!);
-                }
-
                 if (!openSettings)
                 {
-                    await DoParallelLoad();
+                    #region Parallel load
+
+                    using Task findFMsTask = Task.Run(() => fmsViewListUnscanned = FindFMs.Find(startup: true));
+
+                    // It's safe to overlap this with Find(), but not with MainForm.ctor()
+                    configTask.Wait();
+
+                    // Construct and init the view both right here, because they're both heavy operations and we
+                    // want them both to run in parallel with Find() to the greatest extent possible.
+                    View = new MainForm();
+                    View.InitThreadable();
+
+                    findFMsTask.Wait();
+
+                    #endregion
                 }
                 else
                 {
-                    SplashScreen.HideSplashScreen();
-                    if (!OpenSettings(startup: true, cleanStart: cleanStart).Canceled)
-                    {
-                        SplashScreen.ShowSplashScreen(Config.VisualTheme);
-                        await DoParallelLoad();
-                    }
+                    // Don't forget to wait in this case too
+                    configTask.Wait();
                 }
             }
             finally
             {
-                SplashScreen.CloseSplashScreen();
+                configTask.Dispose();
+            }
+
+            if (openSettings)
+            {
+                OpenSettings(startup: true, cleanStart: cleanStart);
+            }
+            else
+            {
+                // Eliding await so that we don't have to be async and run the state machine and lose time. This
+                // will be the last line run in this method and nothing does anything up the call stack, so it's
+                // safe. Don't put this inside a try block, or it won't be safe. It has to really be the last
+                // thing run in the method.
+                // View won't be null here
+                View.FinishInitAndShow(fmsViewListUnscanned!);
             }
         }
 
@@ -328,6 +324,17 @@ namespace AngelLoader
 
                 Ini.WriteConfigIni();
 
+                // We have to do this here because we won't have before
+                using (Task findFMsTask = Task.Run(() => fmsViewListUnscanned = FindFMs.Find(startup: true)))
+                {
+                    // Have to do the full View init sequence here, because we skipped them all before
+                    View = new MainForm();
+                    View.InitThreadable();
+
+                    findFMsTask.Wait();
+                }
+                // Again, last line and nothing up the call stack, so call without await.
+                View.FinishInitAndShow(fmsViewListUnscanned!);
                 return (false, null, false, false);
             }
 

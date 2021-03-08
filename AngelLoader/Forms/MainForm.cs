@@ -56,7 +56,6 @@ using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
-using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
@@ -804,13 +803,6 @@ namespace AngelLoader.Forms
 #endif
         }
 
-        [PublicAPI]
-        public new void Show()
-        {
-            SplashScreen.CloseSplashScreen();
-            base.Show();
-        }
-
         private void SetWindowStateAndSize()
         {
             // Size MUST come first, otherwise it doesn't take (and then you have to put it in _Load, where it
@@ -861,7 +853,6 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            Activate();
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
             // Regular Environment.Exit() because we're testing speed

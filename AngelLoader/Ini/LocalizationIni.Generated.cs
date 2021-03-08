@@ -49,12 +49,6 @@ namespace AngelLoader
             {
                 Global_Dict.Add(f.Name, f);
             }
-            var splashScreenFields = typeof(LText_Class.SplashScreen_Class).GetFields(_bfLText);
-            var SplashScreen_Dict = new Dictionary<string, FieldInfo>(splashScreenFields.Length);
-            foreach (var f in splashScreenFields)
-            {
-                SplashScreen_Dict.Add(f.Name, f);
-            }
             var browseDialogsFields = typeof(LText_Class.BrowseDialogs_Class).GetFields(_bfLText);
             var BrowseDialogs_Dict = new Dictionary<string, FieldInfo>(browseDialogsFields.Length);
             foreach (var f in browseDialogsFields)
@@ -243,28 +237,6 @@ namespace AngelLoader
                             if (Global_Dict.TryGetValue(key, out FieldInfo value))
                             {
                                 value.SetValue(ret.Global, lt.Substring(eqIndex + 1));
-                            }
-                        }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
-                        {
-                            break;
-                        }
-                        i++;
-                    }
-                }
-                else if (lineT == "[SplashScreen]")
-                {
-                    while (i < linesLength - 1)
-                    {
-                        int ltLength;
-                        string lt = lines[i + 1].TrimStart();
-                        int eqIndex = lt.IndexOf('=');
-                        if (eqIndex > -1)
-                        {
-                            string key = lt.Substring(0, eqIndex);
-                            if (SplashScreen_Dict.TryGetValue(key, out FieldInfo value))
-                            {
-                                value.SetValue(ret.SplashScreen, lt.Substring(eqIndex + 1));
                             }
                         }
                         else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )
