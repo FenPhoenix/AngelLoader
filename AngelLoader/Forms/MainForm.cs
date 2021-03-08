@@ -807,10 +807,8 @@ namespace AngelLoader.Forms
         [PublicAPI]
         public new void Show()
         {
+            SplashScreen.CloseSplashScreen();
             base.Show();
-            // We close the splash screen AFTER showing, otherwise we sometimes end up behind other windows and
-            // flashing our taskbar icon (because we're supposed to be activated)
-            SplashScreen.Close();
         }
 
         private void SetWindowStateAndSize()

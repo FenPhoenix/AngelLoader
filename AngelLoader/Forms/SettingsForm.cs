@@ -607,13 +607,7 @@ namespace AngelLoader.Forms
             PathsPage.DoLayout = true;
             PathsPage.FlowLayoutPanel1.PerformLayout();
 
-            if (_startup)
-            {
-                Activate();
-                // We close the splash screen AFTER showing, otherwise we sometimes end up behind other windows
-                // and flashing our taskbar icon (because we're supposed to be activated)
-                SplashScreen.Hide();
-            }
+            if (_startup) Activate();
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
