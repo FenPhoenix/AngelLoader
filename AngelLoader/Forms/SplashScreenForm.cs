@@ -10,8 +10,6 @@ namespace AngelLoader.Forms
     public sealed partial class SplashScreenForm : Form
     {
         private readonly EventWaitHandle _disposeWaitHandle;
-        private bool _themeSet;
-        private bool _closingAllowed;
 
         public SplashScreenForm(EventWaitHandle waitHandle, EventWaitHandle disposeWaitHandle)
         {
@@ -30,6 +28,8 @@ namespace AngelLoader.Forms
             CreateHandle();
             waitHandle.Set();
         }
+
+        private bool _themeSet;
 
         public void Show(VisualTheme theme)
         {
@@ -65,26 +65,6 @@ namespace AngelLoader.Forms
         }
 
         public void SetMessageText(string text) => SplashScreenMessageLabel.Text = text;
-
-
-        public void ProgrammaticClose()
-        {
-            _closingAllowed = true;
-            Close();
-            Dispose();
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            if (!_closingAllowed)
-            {
-                e.Cancel = true;
-            }
-            else
-            {
-                base.OnFormClosing(e);
-            }
-        }
 
         /// <summary>
         /// Clean up any resources being used.

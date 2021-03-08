@@ -44,6 +44,18 @@ namespace AngelLoader
             }
         }
 
+        internal static void Hide()
+        {
+            if (_closed) return;
+
+            _initWaitHandle.WaitOne();
+
+            if (splashScreenForm != null && splashScreenForm.IsHandleCreated)
+            {
+                splashScreenForm.Invoke(new Action(() => splashScreenForm.Hide()));
+            }
+        }
+
         internal static void Show(VisualTheme theme)
         {
             if (_closed) return;
@@ -60,18 +72,6 @@ namespace AngelLoader
             }
         }
 
-        internal static void Hide()
-        {
-            if (_closed) return;
-
-            _initWaitHandle.WaitOne();
-
-            if (splashScreenForm != null && splashScreenForm.IsHandleCreated)
-            {
-                splashScreenForm.Invoke(new Action(() => splashScreenForm.Hide()));
-            }
-        }
-
         internal static void Close()
         {
             if (_closed) return;
@@ -83,7 +83,8 @@ namespace AngelLoader
             {
                 splashScreenForm.Invoke(new Action(() =>
                 {
-                    splashScreenForm.ProgrammaticClose();
+                    splashScreenForm.Close();
+                    splashScreenForm.Dispose();
                     _disposeWaitHandle.WaitOne();
                 }));
             }
