@@ -7,6 +7,7 @@
         /// </summary>
         private void InitializeComponentSlim()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SplashScreenForm));
             this.LogoTextPictureBox = new System.Windows.Forms.PictureBox();
             this.LogoPictureBox = new System.Windows.Forms.PictureBox();
             this.SplashScreenMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
