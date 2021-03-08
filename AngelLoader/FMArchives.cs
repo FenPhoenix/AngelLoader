@@ -132,6 +132,24 @@ namespace AngelLoader
                 finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
             }
 
+            // TODO: This is a first pass at the "uninstall first?" for FM deletion - it needs quite a bit more work
+            if (fm.Installed)
+            {
+                using var f = new MessageBoxCustomForm(
+                    messageTop: "This FM is installed. Uninstall it first?",
+                    messageBottom: "",
+                    title: LText.AlertMessages.DeleteFMArchive,
+                    icon: MessageBoxIcon.Warning,
+                    okText: LText.AlertMessages.Uninstall,
+                    cancelText: "Leave installed",
+                    okIsDangerous: true);
+
+                if (f.ShowDialog() == DialogResult.OK)
+                {
+                    await FMInstallAndPlay.InstallOrUninstall(fm);
+                }
+            }
+
             try
             {
                 Core.View.ShowProgressBox(ProgressTask.DeleteFMArchive);
