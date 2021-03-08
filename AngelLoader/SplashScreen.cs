@@ -7,6 +7,10 @@ using AngelLoader.Forms;
 
 namespace AngelLoader
 {
+    // TODO(SplashScreen): Even with our hacks, the main window activation still sometimes doesn't work.
+    // We should either try to un-thread this and maybe that'll work, or we just give up and remove it.
+    // We could try starting the splash screen in the main thread and shoving the main app into a secondary
+    // thread. Maybe that would be the "right way around" for it?!
     internal static class SplashScreen
     {
         private static SplashScreenForm? splashScreenForm;
