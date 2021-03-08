@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
+using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms
 {
@@ -26,6 +27,8 @@ namespace AngelLoader.Forms
             Icon = Images.AngelLoader;
 
             LogoPictureBox.Image = new Icon(Images.AngelLoader, 48, 48).ToBitmap();
+
+            Text = "AngelLoader " + Application.ProductVersion;
 
             CreateHandle();
             waitHandle.Set();
@@ -84,6 +87,15 @@ namespace AngelLoader.Forms
             {
                 base.OnFormClosing(e);
             }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Native.WM_SETFOCUS)
+            {
+                return;
+            }
+            base.WndProc(ref m);
         }
 
         /// <summary>
