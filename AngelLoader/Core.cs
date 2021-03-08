@@ -39,6 +39,10 @@ namespace AngelLoader
         // it's null. But if we check it from another thread there'll be a race condition. Figure something out?
         internal static IView View = null!;
 
+        // TODO: @SplashScreen: We can use a same-threaded window but just draw in the device context
+        // And it doesn't get painted over with junk either, both the background color and text stayed put during
+        // tests even when another window was moved in front, and even when the thread was blocked for a long time.
+        // More thorough testing is needed, but promising.
         internal static void Init(Task configTask)
         {
             bool openSettings;
