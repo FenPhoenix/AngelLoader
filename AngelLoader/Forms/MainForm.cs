@@ -32,7 +32,6 @@
  IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
  TODO: @DarkMode: Make sure all controls' disabled colors are working!
- TODO: @DarkMode: Test all parts of the app with high DPI!
 
  @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */
