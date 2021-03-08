@@ -18,7 +18,7 @@ namespace AngelLoader
 
         internal static void Init()
         {
-            if (_initialized || _closed) return;
+            if (_initialized) return;
             _initialized = true;
 
             Task.Run(() =>
@@ -34,7 +34,7 @@ namespace AngelLoader
 
         internal static void SetMessage(string message)
         {
-            if (!_initialized || _closed) return;
+            if (_closed) return;
 
             _initWaitHandle.WaitOne();
 
@@ -46,7 +46,7 @@ namespace AngelLoader
 
         internal static void Show(VisualTheme theme)
         {
-            if (!_initialized || _closed) return;
+            if (_closed) return;
 
             _initWaitHandle.WaitOne();
 
@@ -62,7 +62,7 @@ namespace AngelLoader
 
         internal static void Hide()
         {
-            if (!_initialized || _closed) return;
+            if (_closed) return;
 
             _initWaitHandle.WaitOne();
 
@@ -74,7 +74,7 @@ namespace AngelLoader
 
         internal static void Close()
         {
-            if (!_initialized || _closed) return;
+            if (_closed) return;
             _closed = true;
 
             _initWaitHandle.WaitOne();
