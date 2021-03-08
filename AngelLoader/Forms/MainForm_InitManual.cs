@@ -94,7 +94,7 @@ namespace AngelLoader.Forms
             RefreshFiltersButton = new ToolStripButtonCustom();
             ClearFiltersButton = new ToolStripButtonCustom();
             ResetLayoutButton = new DarkButton();
-            GamesTabControl = new TabControl();
+            GamesTabControl = new DarkTabControl();
             Thief1TabPage = new TabPage();
             Thief2TabPage = new TabPage();
             Thief3TabPage = new TabPage();

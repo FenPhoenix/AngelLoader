@@ -452,6 +452,8 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            #region Manual control init
+
             ReadmeFullScreenButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
             ReadmeZoomInButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
             ReadmeZoomOutButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
@@ -467,9 +469,13 @@ namespace AngelLoader.Forms
                 SortMode = DataGridViewColumnSortMode.Programmatic
             };
 
+            #endregion
+
             MainMenuButton.HideFocusRectangle();
 
             //Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+
+            #region Init non-public-release controls
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             #region Init debug-only controls
@@ -545,6 +551,10 @@ namespace AngelLoader.Forms
             T2ScreenShotModeCheckBox.CheckedChanged += T2ScreenShotModeCheckBox_CheckedChanged;
 #endif
 
+            #endregion
+
+            #region Control arrays
+
             // -------- New games go here!
             // @GENGAMES (tabs and filter buttons): Begin
             _gameTabsInOrder = new[]
@@ -614,6 +624,8 @@ namespace AngelLoader.Forms
                 new Component[] { FilterShowUnsupportedButton },
                 new Component[] { FilterShowRecentAtTopButton }
             };
+
+            #endregion
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
