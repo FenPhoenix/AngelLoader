@@ -37,15 +37,15 @@ namespace AngelLoader.Forms.CustomControls
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; private set; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; private set; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
+        public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; private set; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -65,11 +65,22 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Control? ClosestAddableParent => Parent.Parent;
 
-        public TabPageCustom()
+        public override bool AutoScroll
         {
-            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
-            HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
-            VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
+            get => base.AutoScroll;
+            set
+            {
+                base.AutoScroll = value;
+                if (value &&
+                    VerticalVisualScrollBar == null &&
+                    HorizontalVisualScrollBar == null &&
+                    VisualScrollBarCorner == null)
+                {
+                    VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
+                    HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
+                    VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
+                }
+            }
         }
 
         protected override void OnScroll(ScrollEventArgs se)
