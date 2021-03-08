@@ -57,6 +57,7 @@ using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
+using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
@@ -764,9 +765,6 @@ namespace AngelLoader.Forms
             }
 
             ChangeGameOrganization(startup: true);
-
-            // PERF: If we're in the classic theme, we don't need to do anything
-            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme, startup: true);
         }
 
         // This one can't be multithreaded because it depends on the FMs list
@@ -802,6 +800,21 @@ namespace AngelLoader.Forms
 #if !ReleasePublic
             //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
 #endif
+        }
+
+        [PublicAPI]
+        public new void Show()
+        {
+            // PERF: If we're in the classic theme, we don't need to do anything
+            if (Config.VisualTheme != VisualTheme.Classic)
+            {
+                SetTheme(Config.VisualTheme, startup: true, alsoCreateControlHandles: true);
+            }
+            else
+            {
+                ControlUtils.CreateAllControlsHandles(this);
+            }
+            base.Show();
         }
 
         private void SetWindowStateAndSize()
@@ -1385,7 +1398,7 @@ namespace AngelLoader.Forms
 
         public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false);
 
-        private void SetTheme(VisualTheme theme, bool startup)
+        private void SetTheme(VisualTheme theme, bool startup, bool alsoCreateControlHandles = false)
         {
             bool darkMode = theme == VisualTheme.Dark;
 
@@ -1403,7 +1416,8 @@ namespace AngelLoader.Forms
                     _controlColors,
                     x => x.EqualsIfNotNull(ProgressBox)
                          || (_progressBoxConstructed && x is Control xControl && ProgressBox!.Controls.Contains(xControl))
-                         || x is SplitterPanel
+                         || x is SplitterPanel,
+                    alsoCreateControlHandles: alsoCreateControlHandles
                 );
 
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible, theme);

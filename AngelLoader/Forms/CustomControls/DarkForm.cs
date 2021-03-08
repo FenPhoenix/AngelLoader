@@ -25,12 +25,20 @@ namespace AngelLoader.Forms.CustomControls
                 IsHandleCreated &&
                 (m.Msg == Native.WM_PAINT
                  || m.Msg == Native.WM_SIZE
-                 || m.Msg == Native.WM_MOVE))
+                 || m.Msg == Native.WM_MOVE
+                 || m.Msg == Native.WM_WINDOWPOSCHANGED
+                 || m.Msg == Native.WM_ERASEBKGND
+                ))
             {
                 using var dc = new Native.DeviceContext(Handle);
                 using Graphics g = Graphics.FromHdc(dc.DC);
 
                 g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, new Rectangle(0, 0, Width, Height));
+
+                if (m.Msg != Native.WM_PAINT)
+                {
+                    base.WndProc(ref m);
+                }
             }
             else
             {

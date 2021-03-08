@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
-using AngelLoader.WinAPI;
 using Gma.System.MouseKeyHook;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -202,6 +201,7 @@ namespace AngelLoader.Forms
         private static void FillControlDict(
             Control control,
             Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
+            bool alsoCreateControlHandles,
             int stackCounter = 0)
         {
             const int maxStackCount = 100;
@@ -209,6 +209,11 @@ namespace AngelLoader.Forms
             if (!controlColors.ContainsKey(control))
             {
                 controlColors[control] = (control.ForeColor, control.BackColor);
+            }
+
+            if (alsoCreateControlHandles && !control.IsHandleCreated)
+            {
+                var dummy = control.Handle;
             }
 
             stackCounter++;
@@ -219,7 +224,31 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < control.Controls.Count; i++)
             {
-                FillControlDict(control.Controls[i], controlColors, stackCounter);
+                FillControlDict(control.Controls[i], controlColors, alsoCreateControlHandles, stackCounter);
+            }
+        }
+
+        internal static void CreateAllControlsHandles(
+            Control control,
+            int stackCounter = 0
+            )
+        {
+            const int maxStackCount = 100;
+
+            if (!control.IsHandleCreated)
+            {
+                var dummy = control.Handle;
+            }
+
+            stackCounter++;
+
+            AssertR(
+                stackCounter <= maxStackCount,
+                nameof(CreateAllControlsHandles) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
+
+            for (int i = 0; i < control.Controls.Count; i++)
+            {
+                CreateAllControlsHandles(control.Controls[i], stackCounter);
             }
         }
 
@@ -227,7 +256,8 @@ namespace AngelLoader.Forms
             VisualTheme theme,
             Form form,
             Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
-            Func<Component, bool>? excludePredicate = null
+            Func<Component, bool>? excludePredicate = null,
+            bool alsoCreateControlHandles = false
             )
         {
             // TODO: @DarkMode(SetTheme): Eventually just codegen the set of all darkable controls
@@ -237,7 +267,7 @@ namespace AngelLoader.Forms
 
             // TODO: @DarkMode(FillControlDict): Controls might change their colors after construct
             // We fixed the Settings window case, but keep this in mind until we're sure we're done.
-            if (controlColors.Count == 0) FillControlDict(form, controlColors);
+            if (controlColors.Count == 0) FillControlDict(form, controlColors, alsoCreateControlHandles);
 
             #region Add native dark scroll bars to their closest addable parents
 

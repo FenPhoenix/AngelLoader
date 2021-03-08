@@ -25,6 +25,7 @@ namespace AngelLoader.WinAPI
         internal const int WM_MOVE = 0x0003;
         internal const int WM_SIZE = 0x0005;
         internal const int WM_ACTIVATE = 0x0006;
+        internal const int WM_WINDOWPOSCHANGED = 0x0047;
 
         internal const uint WM_CTLCOLORLISTBOX = 0x0134;
         internal const int SWP_NOSIZE = 0x0001;
