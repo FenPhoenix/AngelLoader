@@ -102,8 +102,20 @@
     <Compile Update="Forms\CustomControls\DarkContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Forms\CustomControls\DarkDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\CustomControls\DarkDialog.Designer.cs">
+      <DependentUpon>DarkDialog.cs</DependentUpon>
+    </Compile>
     <Compile Update="Forms\CustomControls\DarkGroupBox.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Forms\CustomControls\DarkMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\CustomControls\DarkMessageBox.Designer.cs">
+      <DependentUpon>DarkMessageBox.cs</DependentUpon>
     </Compile>
     <Compile Update="Forms\CustomControls\DarkNumericUpDown.cs">
       <SubType>Component</SubType>
@@ -137,6 +149,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Forms\CustomControls\DarkDialog.resx">
+      <DependentUpon>DarkDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Forms\CustomControls\DarkMessageBox.resx">
+      <DependentUpon>DarkMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
