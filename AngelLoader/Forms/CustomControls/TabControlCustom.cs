@@ -153,7 +153,7 @@ namespace AngelLoader.Forms.CustomControls
                 return;
             }
 
-            var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location);
+            var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location, xOnly: true);
             if (bNewTabIndex == -1 || newTab == null || newTab == _dragTab) return;
 
             int newTabIndex = TabPages.IndexOf(newTab);
@@ -166,12 +166,20 @@ namespace AngelLoader.Forms.CustomControls
             SelectedTab = _dragTab;
         }
 
+
         private (int BackingTabIndex, TabPage? TabPage)
-        GetTabAtPoint(Point position)
+        GetTabAtPoint(Point position, bool xOnly = false)
         {
             for (int i = 0; i < TabCount; i++)
             {
-                if (GetTabRect(i).Contains(position))
+                var tabRect = GetTabRect(i);
+
+                bool contains =
+                    xOnly
+                        ? position.X >= tabRect.X && position.X <= tabRect.Width + tabRect.X
+                        : tabRect.Contains(position);
+
+                if (contains)
                 {
                     TabPage tabPage = TabPages[i];
                     var (index, backingTab) = FindBackingTab(tabPage);
