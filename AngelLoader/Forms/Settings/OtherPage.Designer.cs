@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.Forms.CustomControls.SettingsPages
+﻿namespace AngelLoader.Forms
 {
     partial class OtherPage
     {

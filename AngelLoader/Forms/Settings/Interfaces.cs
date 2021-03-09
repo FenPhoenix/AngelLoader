@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls.SettingsPages
+namespace AngelLoader.Forms
 {
     internal static class Interfaces
     {

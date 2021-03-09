@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using AL_Common;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls.SettingsPages
+namespace AngelLoader.Forms
 {
     [PublicAPI]
     public partial class OtherPage : UserControl, Interfaces.ISettingsPage

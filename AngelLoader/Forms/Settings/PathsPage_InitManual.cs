@@ -1,7 +1,8 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
-namespace AngelLoader.Forms.CustomControls.SettingsPages
+namespace AngelLoader.Forms
 {
     public sealed partial class PathsPage
     {

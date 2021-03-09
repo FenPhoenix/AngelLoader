@@ -2,7 +2,7 @@
 using AL_Common;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls.SettingsPages
+namespace AngelLoader.Forms
 {
     [PublicAPI]
     public partial class AppearancePage : UserControl, Interfaces.ISettingsPage
