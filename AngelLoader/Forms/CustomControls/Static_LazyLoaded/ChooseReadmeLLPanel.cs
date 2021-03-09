@@ -85,6 +85,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Panel.CenterHV(container);
             container.Controls.Add(Panel);
 
+            ListBox.VerticalVisualScrollBar.AddToParent();
+            ListBox.HorizontalVisualScrollBar.AddToParent();
+            ListBox.VisualScrollBarCorner.AddToParent();
+
             _constructed = true;
 
             Localize();

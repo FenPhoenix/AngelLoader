@@ -9,17 +9,36 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         internal static bool Constructed { get; private set; }
 
-        internal static ListBox ListBox = null!;
+        internal static DarkListBox ListBox = null!;
+
+        private static bool _darkModeEnabled;
+        internal static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                if (_darkModeEnabled == value) return;
+                _darkModeEnabled = value;
+
+                if (!Constructed) return;
+
+                ListBox!.DarkModeEnabled = _darkModeEnabled;
+            }
+        }
 
         internal static void Construct(MainForm owner)
         {
             if (Constructed) return;
 
-            ListBox = new ListBox();
+            ListBox = new DarkListBox();
             owner.EverythingPanel.Controls.Add(ListBox);
-            ListBox.FormattingEnabled = true;
+            ListBox.DarkModeEnabled = _darkModeEnabled;
+            ListBox.Scrollable = true;
             ListBox.TabIndex = 3;
             ListBox.Visible = false;
+            ListBox.VerticalVisualScrollBar.AddToParent();
+            ListBox.HorizontalVisualScrollBar.AddToParent();
+            ListBox.VisualScrollBarCorner.AddToParent();
             ListBox.SelectedIndexChanged += owner.AddTagListBox_SelectedIndexChanged;
             ListBox.KeyDown += owner.AddTagTextBoxOrListBox_KeyDown;
             ListBox.Leave += owner.AddTagTextBoxOrListBox_Leave;
@@ -32,8 +51,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             Construct(owner);
 
+            ListBox.BeginUpdate();
             ListBox.Items.Clear();
             foreach (string item in list) ListBox.Items.Add(item);
+            ListBox.EndUpdate();
 
             Point p = owner.PointToClient(owner.AddTagTextBox.PointToScreen(new Point(0, 0)));
             ListBox.Location = new Point(p.X, p.Y + owner.AddTagTextBox.Height);

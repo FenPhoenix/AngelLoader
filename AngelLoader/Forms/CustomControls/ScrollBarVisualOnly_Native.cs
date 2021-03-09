@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
-using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 
 namespace AngelLoader.Forms.CustomControls

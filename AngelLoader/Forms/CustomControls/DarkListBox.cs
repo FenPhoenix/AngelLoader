@@ -28,15 +28,15 @@ namespace AngelLoader.Forms.CustomControls
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; }
+        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; }
+        public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -126,7 +126,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 SelectedIndices.Clear();
-                SelectedIndices.Add(value);
+                if (value > -1) SelectedIndices.Add(value);
             }
         }
 
@@ -150,12 +150,26 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        public new void BringToFront()
+        {
+            base.BringToFront();
+            VerticalVisualScrollBar.BringToFront();
+            HorizontalVisualScrollBar.BringToFront();
+            VisualScrollBarCorner.BringToFront();
+        }
+
         #region Event overrides
 
         protected override void OnSelectedIndexChanged(EventArgs e)
         {
             base.OnSelectedIndexChanged(e);
             Refresh();
+        }
+
+        protected override void OnClientSizeChanged(EventArgs e)
+        {
+            base.OnClientSizeChanged(e);
+            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnDrawItem(DrawListViewItemEventArgs e)
@@ -259,6 +273,7 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.LVM_INSERTITEMW:
                 case Native.LVM_DELETEITEM:
                 case Native.LVM_DELETEALLITEMS:
+                    if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     // This must come BEFORE the autosize or it won't work.
                     base.WndProc(ref m);
                     AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);

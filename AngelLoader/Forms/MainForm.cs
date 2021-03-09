@@ -1440,6 +1440,7 @@ namespace AngelLoader.Forms
                 ImportFromLLMenu.DarkModeEnabled = darkMode;
                 TopRightLLMenu.DarkModeEnabled = darkMode;
                 AddTagLLMenu.DarkModeEnabled = darkMode;
+                AddTagLLDropDown.DarkModeEnabled = darkMode;
                 AltTitlesLLMenu.DarkModeEnabled = darkMode;
                 FilterControlsLLMenu.DarkModeEnabled = darkMode;
                 PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
