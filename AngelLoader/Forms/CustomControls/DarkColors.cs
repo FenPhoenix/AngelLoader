@@ -16,6 +16,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public static readonly Color Fen_ControlBackground = Color.FromArgb(48, 48, 48);
         public static readonly Color Fen_DeselectedTabBackground = Color.FromArgb(44, 44, 44);
+        public static readonly Color Fen_HotTabBackground = Color.FromArgb(62, 62, 62);
 
         public static readonly Color Fen_RedHighlight = Color.FromArgb(64, 24, 24);
 
@@ -58,6 +59,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Pen Fen_DarkForegroundPen = new Pen(Fen_DarkForeground);
         public static readonly Pen Fen_ControlBackgroundPen = new Pen(Fen_ControlBackground);
         public static readonly Pen Fen_DeselectedTabBackgroundPen = new Pen(Fen_DeselectedTabBackground);
+        public static readonly Pen Fen_HotTabBackgroundPen = new Pen(Fen_HotTabBackground);
         public static readonly Pen Fen_RedHighlightPen = new Pen(Fen_RedHighlight);
         public static readonly Pen Fen_DGVCellBordersPen = new Pen(Fen_DGVCellBorders);
         public static readonly Pen Fen_DGVColumnHeaderHighlightPen = new Pen(Fen_DGVColumnHeaderHighlight);
@@ -93,6 +95,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly SolidBrush Fen_DarkForegroundBrush = new SolidBrush(Fen_DarkForeground);
         public static readonly SolidBrush Fen_ControlBackgroundBrush = new SolidBrush(Fen_ControlBackground);
         public static readonly SolidBrush Fen_DeselectedTabBackgroundBrush = new SolidBrush(Fen_DeselectedTabBackground);
+        public static readonly SolidBrush Fen_HotTabBackgroundBrush = new SolidBrush(Fen_HotTabBackground);
         public static readonly SolidBrush Fen_RedHighlightBrush = new SolidBrush(Fen_RedHighlight);
         public static readonly SolidBrush Fen_DGVCellBordersBrush = new SolidBrush(Fen_DGVCellBorders);
         public static readonly SolidBrush Fen_DGVColumnHeaderHighlightBrush = new SolidBrush(Fen_DGVColumnHeaderHighlight);

@@ -45,7 +45,6 @@ namespace AngelLoader.Forms.CustomControls
             Refresh();
         }
 
-        // TODO: @DarkMode(DarkTabControl): Implement hot-tracked coloring
         protected override void OnPaint(PaintEventArgs e)
         {
             if (_darkModeEnabled)
@@ -85,8 +84,21 @@ namespace AngelLoader.Forms.CustomControls
 
                         bool focused = SelectedTab == tabPage;
 
-                        var backColorBrush = focused ? DarkColors.LightBackgroundBrush : DarkColors.Fen_DeselectedTabBackgroundBrush;
-                        //var backColorBrush = focused ? DarkColors.Fen_ControlBackgroundBrush : DarkColors.Fen_DarkBackgroundBrush;
+                        if (focused)
+                        {
+                            tabRect = new Rectangle(
+                                tabRect.X,
+                                tabRect.Y - 2,
+                                tabRect.Width,
+                                tabRect.Height + 2
+                            );
+                        }
+
+                        var backColorBrush = focused
+                            ? DarkColors.LightBackgroundBrush
+                            : tabRect.Contains(PointToClient(Cursor.Position))
+                            ? DarkColors.Fen_HotTabBackgroundBrush
+                            : DarkColors.Fen_DeselectedTabBackgroundBrush;
 
                         // Draw tab background
                         g.FillRectangle(backColorBrush, tabRect);
