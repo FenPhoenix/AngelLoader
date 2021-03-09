@@ -254,7 +254,7 @@
             this.FMArchivePathsListBox.Location = new System.Drawing.Point(16, 24);
             this.FMArchivePathsListBox.MultiSelect = false;
             this.FMArchivePathsListBox.Name = "FMArchivePathsListBox";
-            this.FMArchivePathsListBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.FMArchivePathsListBox.Scrollable = true;
             this.FMArchivePathsListBox.Size = new System.Drawing.Size(392, 199);
             this.FMArchivePathsListBox.TabIndex = 0;
             // 

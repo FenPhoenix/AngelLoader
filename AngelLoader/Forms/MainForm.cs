@@ -2913,7 +2913,7 @@ namespace AngelLoader.Forms
                 if (d.ShowDialog() != DialogResult.OK || d.FileNames.Length == 0) return;
                 dmlFiles.AddRange(d.FileNames);
             }
-            PatchDMLsListBox.SuspendDrawing();
+            PatchDMLsListBox.BeginUpdate();
             foreach (string f in dmlFiles)
             {
                 if (f.IsEmpty()) continue;
@@ -2922,12 +2922,12 @@ namespace AngelLoader.Forms
                 if (!success) return;
 
                 string dmlFileName = Path.GetFileName(f);
-                if (!PatchDMLsListBox.GetRowValuesAsStrings().ContainsI(dmlFileName))
+                if (!PatchDMLsListBox.ItemsAsStrings.ContainsI(dmlFileName))
                 {
-                    PatchDMLsListBox.Rows.Add(dmlFileName);
+                    PatchDMLsListBox.Items.Add(dmlFileName);
                 }
             }
-            PatchDMLsListBox.ResumeDrawing();
+            PatchDMLsListBox.EndUpdate();
         }
 
         private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
@@ -3613,7 +3613,7 @@ namespace AngelLoader.Forms
         {
             // This is only hooked up after construction, so no Construct() call needed
 
-            if (ChooseReadmeLLPanel.ListBox.Rows.Count == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
+            if (ChooseReadmeLLPanel.ListBox.Items.Count == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
             {
                 return;
             }
@@ -3631,7 +3631,7 @@ namespace AngelLoader.Forms
                 SetReadmeVisible(true);
             }
 
-            if (ChooseReadmeLLPanel.ListBox.Rows.Count > 1)
+            if (ChooseReadmeLLPanel.ListBox.Items.Count > 1)
             {
                 ReadmeComboBoxFillAndSelect(ChooseReadmeLLPanel.ListBox.BackingItems, fm.SelectedReadme);
                 ShowReadmeControls(CursorOverReadmeArea());
@@ -3950,7 +3950,7 @@ namespace AngelLoader.Forms
 
         private void HidePatchSectionWithMessage(string message)
         {
-            PatchDMLsListBox.Rows.Clear();
+            PatchDMLsListBox.Items.Clear();
             PatchMainPanel.Hide();
             PatchFMNotInstalledLabel.Text = message;
             PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
@@ -3959,7 +3959,7 @@ namespace AngelLoader.Forms
 
         private void ShowPatchSection(bool enable)
         {
-            PatchDMLsListBox.Rows.Clear();
+            PatchDMLsListBox.Items.Clear();
             PatchMainPanel.Show();
             PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
             PatchFMNotInstalledLabel.Hide();
@@ -4137,18 +4137,17 @@ namespace AngelLoader.Forms
                 {
                     PatchMainPanel.Show();
                     PatchFMNotInstalledLabel.Hide();
-                    PatchDMLsListBox.SuspendDrawing();
-                    PatchDMLsListBox.Rows.Clear();
+                    PatchDMLsListBox.BeginUpdate();
+                    PatchDMLsListBox.Items.Clear();
                     (bool success, List<string> dmlFiles) = Core.GetDMLFiles(fm);
                     if (success)
                     {
                         foreach (string f in dmlFiles)
                         {
-                            if (!f.IsEmpty()) PatchDMLsListBox.Rows.Add(f);
+                            if (!f.IsEmpty()) PatchDMLsListBox.Items.Add(f);
                         }
                     }
-                    PatchDMLsListBox.ClearSelection();
-                    PatchDMLsListBox.ResumeDrawing();
+                    PatchDMLsListBox.EndUpdate();
                 }
             }
 
@@ -4226,15 +4225,13 @@ namespace AngelLoader.Forms
 
                         ChooseReadmeLLPanel.Construct(this, MainSplitContainer.Panel2);
 
-                        ChooseReadmeLLPanel.ListBox.SuspendDrawing();
+                        ChooseReadmeLLPanel.ListBox.BeginUpdate();
                         ChooseReadmeLLPanel.ListBox.ClearFullItems();
                         foreach (string f in readmeFiles)
                         {
                             ChooseReadmeLLPanel.ListBox.AddFullItem(f, f.GetFileNameFast());
                         }
-                        // @DarkMode: Hack because the internal selection clearer isn't working in this case
-                        ChooseReadmeLLPanel.ListBox.ClearSelection();
-                        ChooseReadmeLLPanel.ListBox.ResumeDrawing();
+                        ChooseReadmeLLPanel.ListBox.EndUpdate();
 
                         ShowReadmeControls(false);
 

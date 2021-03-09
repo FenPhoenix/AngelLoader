@@ -104,7 +104,7 @@ namespace AngelLoader.Forms
                 // Set this first: the list is now populated
                 for (int i = 0; i < choiceStrings!.Length; i++)
                 {
-                    ChoiceListBox.Rows.Add(choiceStrings[i]);
+                    ChoiceListBox.Items.Add(choiceStrings[i]);
                 }
             }
             else
@@ -126,7 +126,7 @@ namespace AngelLoader.Forms
             {
                 // Set this second: the list is now sized based on its content
                 ChoiceListBox.Size = new Size(innerControlWidth,
-                    (ChoiceListBox.ItemHeight * ChoiceListBox.Rows.Count.Clamp(5, 20)) +
+                    (ChoiceListBox.ItemHeight * ChoiceListBox.Items.Count.Clamp(5, 20)) +
                     ((SystemInformation.BorderSize.Height * 4) + 3));
 
                 // Set this before window autosizing
@@ -200,7 +200,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            if (ChoiceListBox.Rows.Count > 0) ChoiceListBox.Rows[0].Selected = false;
+            if (ChoiceListBox.Items.Count > 0) ChoiceListBox.Items[0].Selected = false;
         }
 
         private void SetTheme(VisualTheme theme)
@@ -263,11 +263,11 @@ namespace AngelLoader.Forms
 
         private void SelectAllButton_Click(object sender, EventArgs e)
         {
-            if (ChoiceListBox.Rows.Count > 0)
+            if (ChoiceListBox.Items.Count > 0)
             {
-                for (int i = 0; i < ChoiceListBox.Rows.Count; i++)
+                for (int i = 0; i < ChoiceListBox.Items.Count; i++)
                 {
-                    ChoiceListBox.Rows[i].Selected = true;
+                    ChoiceListBox.Items[i].Selected = true;
                 }
             }
         }
@@ -282,10 +282,7 @@ namespace AngelLoader.Forms
         {
             if (DialogResult == DialogResult.OK && _multiChoice && ChoiceListBox.SelectedIndex > -1)
             {
-                foreach (object item in ChoiceListBox.SelectedItems)
-                {
-                    SelectedItems.Add(item.ToString());
-                }
+                SelectedItems.AddRange(ChoiceListBox.SelectedItemsAsStrings);
             }
         }
     }

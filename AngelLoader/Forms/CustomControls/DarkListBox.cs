@@ -1,17 +1,61 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class DarkListBox : DarkDataGridView
+    public class DarkListBox : ListView, IDarkableScrollableNative
     {
-        // TODO: @DarkMode(DarkListBox): The auto-select is very problematic. Try custom ListView...
+        /*
+        TODO: @DarkMode(DarkListBox:ListView):
+        -Draw border (probably need to do the 1px border - 1px background color thing
+        -Make all colors correct in both classic and dark modes
+        -Test with AddTagDropDown!
+        -Match ListBox selection behavior when clicking on blank area - does it keep the last selection?
+        -Look into "select bottom item, pause, scroll down one" behavior - are we just 1px too tall or something?
+        -We're having the scroll issue where a click-and-release moves the scroll bar along one notch. Probably
+         an issue in ScrollBarVisualOnly_Native that just only shows up in specific cases... Failure to account
+         for padding, or parent position somehow?
+        */
 
-        private bool _loaded;
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool Suspended { get; set; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public event EventHandler? Scroll;
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Control? ClosestAddableParent => Parent;
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public event EventHandler? DarkModeChanged;
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public event EventHandler? RefreshIfNeededForceCorner;
 
         private bool _darkModeEnabled;
-        public override bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -21,63 +65,55 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_darkModeEnabled)
                 {
-                    BackgroundColor = DarkColors.Fen_DarkBackground;
+                    BackColor = DarkColors.Fen_DarkBackground;
                 }
                 else
                 {
-                    BackgroundColor = SystemColors.Window;
+                    BackColor = SystemColors.Window;
                 }
-                base.DarkModeEnabled = value;
+                DarkModeChanged?.Invoke(this, EventArgs.Empty);
+                Refresh();
             }
         }
 
         public DarkListBox()
         {
+            FullRowSelect = true;
+            HeaderStyle = ColumnHeaderStyle.None;
+            HideSelection = false;
+            LabelWrap = false;
+            ShowGroups = false;
+            UseCompatibleStateImageBehavior = false;
+
+            // We would like to just do View.List, but then we get our items in implicit columns going across,
+            // instead of just one column going downwards. So we have to use View.Details and add an invisible-
+            // headered column.
+            View = View.Details;
+            Columns.Add("");
+
             BorderStyle = BorderStyle.FixedSingle;
 
-            AllowUserToAddRows = false;
-            AllowUserToDeleteRows = false;
-            AllowUserToOrderColumns = true;
-            AllowUserToResizeColumns = false;
-            AllowUserToResizeRows = false;
+            OwnerDraw = true;
+            base.DoubleBuffered = true;
 
-            BackgroundColor = SystemColors.Window;
-            CellBorderStyle = DataGridViewCellBorderStyle.None;
-
-            ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            ColumnHeadersVisible = false;
-            Columns.Add(new DataGridViewColumn());
-            RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft;
-            RowTemplate.ReadOnly = true;
-
-            // Full-width item hack part un: Set the column to accomodate to the longest item.
-            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-
-            RowHeadersVisible = false;
-            RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-
-            RowsDefaultCellStyle.BackColor = SystemColors.Window;
-
-            Columns[0].CellTemplate = new DataGridViewTextBoxCell();
-
-            StandardTab = true;
-
-            ShowCellToolTips = false;
+            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
+            HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
+            VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
         }
 
         #region Public methods
 
-        public string[] GetRowValuesAsStrings()
+        public string[] ItemsAsStrings
         {
-            var ret = new string[RowCount];
-            for (int i = 0; i < RowCount; i++)
+            get
             {
-                ret[i] = Rows[i].Cells[0].Value?.ToString() ?? "";
+                string[] ret = new string[Items.Count];
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    ret[i] = Items[i]?.Text ?? "";
+                }
+                return ret;
             }
-            return ret;
         }
 
         #endregion
@@ -86,118 +122,178 @@ namespace AngelLoader.Forms.CustomControls
 
         public int SelectedIndex
         {
-            get => SelectedRows.Count == 0 ? -1 : SelectedRows[0].Index;
+            get => SelectedIndices.Count == 0 ? -1 : SelectedIndices[0];
             set
             {
-                if (value < -1 || value >= RowCount)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(SelectedIndex), value, "Index was outside the bounds of the row count");
-                }
-
-                if (value == -1)
-                {
-                    ClearSelection();
-                }
-                else
-                {
-                    Rows[value].Selected = true;
-                }
+                SelectedIndices.Clear();
+                SelectedIndices.Add(value);
             }
         }
 
-        public string SelectedItem => SelectedRows.Count == 0 ? "" : SelectedRows[0].Cells[0].Value?.ToString() ?? "";
+        public string SelectedItem => SelectedItems.Count == 0 ? "" : SelectedItems[0]?.Text ?? "";
 
-        public string[] SelectedItems
+        public string[] SelectedItemsAsStrings
         {
             get
             {
-                string[] ret = new string[SelectedRows.Count];
-                for (int i = 0; i < SelectedRows.Count; i++)
+                string[] ret = new string[SelectedItems.Count];
+                for (int i = 0; i < SelectedItems.Count; i++)
                 {
-                    ret[i] = SelectedRows[i].Cells[0].Value?.ToString() ?? "";
+                    ret[i] = SelectedItems[i]?.Text ?? "";
                 }
                 return ret;
             }
         }
 
+        // TODO: @DarkMode(DarkListBox:ListView): Determine the actual item height (this is for the old DGV version)
         public int ItemHeight => Font.Height + 4;
 
         #endregion
 
         #region Event overrides
 
-        protected override void OnSelectionChanged(EventArgs e)
+        protected override void OnSelectedIndexChanged(EventArgs e)
         {
-            if (!_loaded) return;
-            base.OnSelectionChanged(e);
+            base.OnSelectedIndexChanged(e);
+            Refresh();
         }
 
-        protected override void OnVisibleChanged(EventArgs e)
+        protected override void OnDrawItem(DrawListViewItemEventArgs e)
         {
-            // Hack to get the damn first row unselected on first show
-            if (Visible && !_loaded)
+            base.OnDrawItem(e);
+
+            bool itemSelected = Items[e.ItemIndex].Selected;
+
+            // Full-width item hack part deux: We can't tell it to make the actual selection area full-width, so
+            // we just draw it full-width ourselves and handle the click interaction later (see WndProc).
+            var selRect = new Rectangle(
+                e.Bounds.X,
+                e.Bounds.Y,
+                ClientRectangle.Width - e.Bounds.X,
+                e.Bounds.Height
+            );
+
+            if (itemSelected)
             {
-                ClearSelection();
-                _loaded = true;
-            }
-
-            base.OnVisibleChanged(e);
-        }
-
-        protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
-        {
-            // Hack to get the horizontal scroll bar to disappear if there's no rows
-            ScrollBars = ScrollBars.Both;
-            for (int i = e.RowIndex; i < e.RowIndex + e.RowCount; i++)
-            {
-                Rows[i].MinimumHeight = Font.Height + 4;
-                Rows[i].Height = Font.Height + 4;
-            }
-
-            base.OnRowsAdded(e);
-        }
-
-        protected override void OnRowsRemoved(DataGridViewRowsRemovedEventArgs e)
-        {
-            // Hack to get the horizontal scroll bar to disappear if there's no rows
-            if (Rows.Count == 0) ScrollBars = ScrollBars.Vertical;
-            base.OnRowsRemoved(e);
-        }
-
-        protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
-        {
-            base.OnCellPainting(e);
-
-            if (Rows[e.RowIndex].Selected)
-            {
-                // Full-width item hack part deux: The AllCells autosize mode will still end up making the column
-                // shorter than the canvas if the longest ITEM is shorter than the canvas. We want it to be max
-                // the longest item, and min the client width. But we can't. Even when we try to set the minimum
-                // width in OnClientSize(), it doesn't work. By which I mean, it sets the size the FIRST time
-                // it's run, but not any subsequent run. I don't have time to deal with this shit, so:
-                // Just draw the selection rectangle the width of the client. That takes care of the visual part.
-                var selRect = new Rectangle(
-                    e.CellBounds.X,
-                    e.CellBounds.Y,
-                    ClientRectangle.Width - e.CellBounds.X,
-                    e.CellBounds.Height
-                );
-
                 Brush brush = _darkModeEnabled ? DarkColors.BlueSelectionBrush : SystemBrushes.Highlight;
-
                 e.Graphics.FillRectangle(brush, selRect);
-                e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
-                e.Handled = true;
+            }
+            else
+            {
+                Brush brush = _darkModeEnabled ? DarkColors.Fen_DarkBackgroundBrush : SystemBrushes.Window;
+                e.Graphics.FillRectangle(brush, selRect);
+            }
+
+            Color textColor =
+                _darkModeEnabled
+                    ? itemSelected
+                        ? DarkColors.LightText
+                        : DarkColors.LightText
+                    : itemSelected
+                        ? SystemColors.HighlightText
+                        : SystemColors.ControlText;
+
+            TextFormatFlags textFormatFlags =
+                TextFormatFlags.Left |
+                TextFormatFlags.VerticalCenter |
+                TextFormatFlags.NoPrefix |
+                TextFormatFlags.NoClipping |
+                TextFormatFlags.EndEllipsis |
+                TextFormatFlags.SingleLine;
+
+            TextRenderer.DrawText(e.Graphics, e.Item.Text, e.Item.Font, e.Bounds, textColor, itemSelected ? DarkColors.BlueSelection : DarkColors.Fen_DarkBackground, textFormatFlags);
+        }
+
+        #region Visible / Show / Hide overrides
+
+        [PublicAPI]
+        public new bool Visible
+        {
+            get => base.Visible;
+            set
+            {
+                if (value)
+                {
+                    // Do this before setting the Visible value to avoid the classic-bar-flicker
+                    VerticalVisualScrollBar?.ForceSetVisibleState(true);
+                    HorizontalVisualScrollBar?.ForceSetVisibleState(true);
+                    base.Visible = true;
+                }
+                else
+                {
+                    base.Visible = false;
+                    VerticalVisualScrollBar?.ForceSetVisibleState(false);
+                    HorizontalVisualScrollBar?.ForceSetVisibleState(false);
+                }
             }
         }
 
-        protected override void OnMouseDown(MouseEventArgs e)
+        [PublicAPI]
+        public new void Show()
         {
-            // Full-width item hack part trois: Even though we're drawing the selection full-width, the mouse
-            // down will still do nothing if it's outside the actual column rectangle. So just set the X coord
-            // to way over on the left all the time, and that makes it work like you'd expect. Repulsive, but
-            // there you are.
-            base.OnMouseDown(new MouseEventArgs(e.Button, e.Clicks, 2, e.Y, e.Delta));
+            VerticalVisualScrollBar?.ForceSetVisibleState(true);
+            HorizontalVisualScrollBar?.ForceSetVisibleState(true);
+            base.Show();
+        }
+
+        [PublicAPI]
+        public new void Hide()
+        {
+            base.Hide();
+            VerticalVisualScrollBar?.ForceSetVisibleState(false);
+            HorizontalVisualScrollBar?.ForceSetVisibleState(false);
+        }
+
+        #endregion
+
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                // Because we have to have an explicit column and all that (see ctor), we have to tell it to
+                // autosize to accomodate its content whenever the items list changes in a way that could change
+                // the max width of it.
+                case Native.LVM_SETITEMA:
+                case Native.LVM_SETITEMW:
+                case Native.LVM_INSERTITEMA:
+                case Native.LVM_INSERTITEMW:
+                case Native.LVM_DELETEITEM:
+                case Native.LVM_DELETEALLITEMS:
+                    // This must come BEFORE the autosize or it won't work.
+                    base.WndProc(ref m);
+                    AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                    break;
+                // Full-width item hack part trois: Even though we're drawing the selection full-width, the mouse
+                // down will still do nothing if it's outside the actual column rectangle. So just set the X coord
+                // to way over on the left all the time, and that makes it work like you'd expect. Repulsive, but
+                // there you are.
+                case Native.WM_LBUTTONDOWN:
+                case Native.WM_LBUTTONUP:
+                case Native.WM_LBUTTONDBLCLK:
+                    m.LParam = Native.MAKELPARAM(2, Native.SignedHIWORD(m.LParam));
+                    base.WndProc(ref m);
+                    break;
+                case Native.WM_PAINT:
+                case Native.WM_VSCROLL:
+                case Native.WM_HSCROLL:
+                    base.WndProc(ref m);
+                    if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+                    break;
+                case Native.WM_CTLCOLORSCROLLBAR:
+                case Native.WM_NCPAINT:
+                    if (_darkModeEnabled)
+                    {
+                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+                    }
+                    else
+                    {
+                        base.WndProc(ref m);
+                    }
+                    break;
+                default:
+                    base.WndProc(ref m);
+                    break;
+            }
         }
 
         #endregion

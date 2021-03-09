@@ -106,10 +106,10 @@
             this.ChoiceListBox.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
             this.ChoiceListBox.MultiSelect = true;
             this.ChoiceListBox.Name = "ChoiceListBox";
-            this.ChoiceListBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.ChoiceListBox.Scrollable = true;
             this.ChoiceListBox.Size = new System.Drawing.Size(493, 95);
             this.ChoiceListBox.TabIndex = 1;
-            this.ChoiceListBox.SelectionChanged += new System.EventHandler(this.ChoiceListBox_SelectedIndexChanged);
+            this.ChoiceListBox.SelectedIndexChanged += new System.EventHandler(this.ChoiceListBox_SelectedIndexChanged);
             // 
             // SelectButtonsFLP
             // 

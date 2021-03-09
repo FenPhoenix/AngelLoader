@@ -204,7 +204,7 @@ namespace AngelLoader.Forms
             FMArchivePathsListBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             FMArchivePathsListBox.Location = new Point(16, 24);
             FMArchivePathsListBox.MultiSelect = false;
-            FMArchivePathsListBox.ScrollBars = ScrollBars.Both;
+            FMArchivePathsListBox.Scrollable = true;
             FMArchivePathsListBox.Size = new Size(392, 199);
             FMArchivePathsListBox.TabIndex = 0;
             // 

@@ -13,13 +13,13 @@ namespace AngelLoader.Forms.CustomControls
         internal void AddFullItem(string backingItem, string item)
         {
             BackingItems.Add(backingItem);
-            Rows.Add(item);
+            Items.Add(item);
         }
 
         internal void ClearFullItems()
         {
             BackingItems.Clear();
-            Rows.Clear();
+            Items.Clear();
         }
 
         internal string SelectedBackingItem() => BackingItems[SelectedIndex];

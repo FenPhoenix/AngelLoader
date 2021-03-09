@@ -77,9 +77,9 @@ namespace AngelLoader.Forms
             // 
             ChoiceListBox.Margin = new Padding(0, 3, 3, 0);
             ChoiceListBox.MultiSelect = true;
-            ChoiceListBox.ScrollBars = ScrollBars.Both;
+            ChoiceListBox.Scrollable = true;
             ChoiceListBox.TabIndex = 1;
-            ChoiceListBox.SelectionChanged += ChoiceListBox_SelectedIndexChanged;
+            ChoiceListBox.SelectedIndexChanged += ChoiceListBox_SelectedIndexChanged;
             // 
             // SelectButtonsFLP
             // 

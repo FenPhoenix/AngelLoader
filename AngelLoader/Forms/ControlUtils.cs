@@ -157,17 +157,17 @@ namespace AngelLoader.Forms
 
             int oldSelectedIndex = listBox.SelectedIndex;
 
-            listBox.Rows.RemoveAt(listBox.SelectedIndex);
+            listBox.Items.RemoveAt(listBox.SelectedIndex);
 
-            if (oldSelectedIndex < listBox.Rows.Count && listBox.Rows.Count > 1)
+            if (oldSelectedIndex < listBox.Items.Count && listBox.Items.Count > 1)
             {
                 listBox.SelectedIndex = oldSelectedIndex;
             }
-            else if (listBox.Rows.Count > 1)
+            else if (listBox.Items.Count > 1)
             {
                 listBox.SelectedIndex = oldSelectedIndex - 1;
             }
-            else if (listBox.Rows.Count == 1)
+            else if (listBox.Items.Count == 1)
             {
                 listBox.SelectedIndex = 0;
             }

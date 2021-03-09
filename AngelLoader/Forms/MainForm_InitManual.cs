@@ -1403,7 +1403,7 @@ namespace AngelLoader.Forms
             // 
             PatchDMLsListBox.Location = new Point(8, 24);
             PatchDMLsListBox.MultiSelect = false;
-            PatchDMLsListBox.ScrollBars = ScrollBars.Both;
+            PatchDMLsListBox.Scrollable = true;
             PatchDMLsListBox.Size = new Size(160, 69);
             PatchDMLsListBox.TabIndex = 41;
             // 

@@ -1713,7 +1713,7 @@
             this.PatchDMLsListBox.Location = new System.Drawing.Point(8, 24);
             this.PatchDMLsListBox.MultiSelect = false;
             this.PatchDMLsListBox.Name = "PatchDMLsListBox";
-            this.PatchDMLsListBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.PatchDMLsListBox.Scrollable = true;
             this.PatchDMLsListBox.Size = new System.Drawing.Size(160, 69);
             this.PatchDMLsListBox.TabIndex = 41;
             // 

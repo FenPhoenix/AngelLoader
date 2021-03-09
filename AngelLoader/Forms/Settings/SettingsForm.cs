@@ -296,8 +296,8 @@ namespace AngelLoader.Forms
 
             PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
 
-            PathsPage.FMArchivePathsListBox.Rows.Clear();
-            foreach (string path in config.FMArchivePaths) PathsPage.FMArchivePathsListBox.Rows.Add(path);
+            PathsPage.FMArchivePathsListBox.Items.Clear();
+            foreach (string path in config.FMArchivePaths) PathsPage.FMArchivePathsListBox.Items.Add(path);
 
             PathsPage.IncludeSubfoldersCheckBox.Checked = config.FMArchivePathsIncludeSubfolders;
 
@@ -915,7 +915,7 @@ namespace AngelLoader.Forms
 
             // Manual so we can use Trim() on each
             OutConfig.FMArchivePaths.Clear();
-            foreach (string path in PathsPage.FMArchivePathsListBox.GetRowValuesAsStrings()) OutConfig.FMArchivePaths.Add(path.Trim());
+            foreach (string path in PathsPage.FMArchivePathsListBox.ItemsAsStrings) OutConfig.FMArchivePaths.Add(path.Trim());
 
             OutConfig.FMArchivePathsIncludeSubfolders = PathsPage.IncludeSubfoldersCheckBox.Checked;
 
@@ -1239,7 +1239,7 @@ namespace AngelLoader.Forms
 
         private bool FMArchivePathExistsInBox(string path)
         {
-            foreach (string item in PathsPage.FMArchivePathsListBox.GetRowValuesAsStrings())
+            foreach (string item in PathsPage.FMArchivePathsListBox.ItemsAsStrings)
             {
                 if (item.PathEqualsI(path)) return true;
             }
@@ -1254,7 +1254,7 @@ namespace AngelLoader.Forms
             var lb = PathsPage.FMArchivePathsListBox;
             string initDir =
                 lb.SelectedIndex > -1 ? lb.SelectedItem :
-                lb.Rows.Count > 0 ? lb.GetRowValuesAsStrings()[lb.Rows.Count - 1] :
+                lb.Items.Count > 0 ? lb.ItemsAsStrings[lb.Items.Count - 1] :
                 "";
             if (!initDir.IsWhiteSpace())
             {
@@ -1270,12 +1270,12 @@ namespace AngelLoader.Forms
             d.MultiSelect = true;
             if (d.ShowDialog() == DialogResult.OK)
             {
-                PathsPage.FMArchivePathsListBox.SuspendDrawing();
+                PathsPage.FMArchivePathsListBox.BeginUpdate();
                 foreach (string dir in d.DirectoryNames)
                 {
-                    if (!FMArchivePathExistsInBox(dir)) PathsPage.FMArchivePathsListBox.Rows.Add(dir);
+                    if (!FMArchivePathExistsInBox(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
                 }
-                PathsPage.FMArchivePathsListBox.ResumeDrawing();
+                PathsPage.FMArchivePathsListBox.EndUpdate();
             }
         }
 

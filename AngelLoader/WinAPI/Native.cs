@@ -14,6 +14,18 @@ namespace AngelLoader.WinAPI
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static class Native
     {
+        #region ListView
+
+        internal const int LVM_FIRST = 0x1000;
+        internal const int LVM_SETITEMA = (LVM_FIRST + 6);
+        internal const int LVM_SETITEMW = (LVM_FIRST + 76);
+        internal const int LVM_INSERTITEMA = (LVM_FIRST + 7);
+        internal const int LVM_INSERTITEMW = (LVM_FIRST + 77);
+        internal const int LVM_DELETEITEM = (LVM_FIRST + 8);
+        internal const int LVM_DELETEALLITEMS = (LVM_FIRST + 9);
+
+        #endregion
+
         internal const int WM_USER = 0x0400;
         internal const int WM_REFLECT = WM_USER + 0x1C00;
         internal const int WM_NOTIFY = 0x004E;
