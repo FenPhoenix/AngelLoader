@@ -10,12 +10,6 @@ namespace AngelLoader.Forms.CustomControls
 {
     public class DarkListBox : ListView, IDarkableScrollableNative
     {
-        /*
-        TODO: @DarkMode(DarkListBox:ListView):
-        -Make all colors correct in both classic and dark modes - including disabled colors!
-        -Match ListBox selection behavior when clicking on blank area - does it keep the last selection?
-        */
-
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Suspended { get; set; }
@@ -222,7 +216,16 @@ namespace AngelLoader.Forms.CustomControls
                         ? SystemColors.HighlightText
                         : SystemColors.ControlText;
 
-            TextFormatFlags textFormatFlags =
+            Color textBackColor =
+                _darkModeEnabled
+                    ? itemSelected
+                        ? DarkColors.BlueSelection
+                        : DarkColors.Fen_DarkBackground
+                    : itemSelected
+                        ? SystemColors.Highlight
+                        : SystemColors.Window;
+
+            const TextFormatFlags textFormatFlags =
                 TextFormatFlags.Left |
                 TextFormatFlags.VerticalCenter |
                 TextFormatFlags.NoPrefix |
@@ -230,7 +233,7 @@ namespace AngelLoader.Forms.CustomControls
                 TextFormatFlags.EndEllipsis |
                 TextFormatFlags.SingleLine;
 
-            TextRenderer.DrawText(e.Graphics, e.Item.Text, e.Item.Font, e.Bounds, textColor, itemSelected ? DarkColors.BlueSelection : DarkColors.Fen_DarkBackground, textFormatFlags);
+            TextRenderer.DrawText(e.Graphics, e.Item.Text, e.Item.Font, e.Bounds, textColor, textBackColor, textFormatFlags);
         }
 
         #region Visible / Show / Hide overrides
