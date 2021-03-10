@@ -12,8 +12,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         /*
         TODO: @DarkMode(DarkListBox:ListView):
-        -Draw border (probably need to do the 1px border - 1px background color thing
-        -Make all colors correct in both classic and dark modes
+        -Make all colors correct in both classic and dark modes - including disabled colors!
         -Match ListBox selection behavior when clicking on blank area - does it keep the last selection?
         */
 
@@ -276,6 +275,16 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        private void DrawBorder(IntPtr hWnd)
+        {
+            if (!_darkModeEnabled || BorderStyle == BorderStyle.None) return;
+
+            using var dc = new Native.DeviceContext(hWnd);
+            using Graphics g = Graphics.FromHdc(dc.DC);
+            g.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
+            g.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
+        }
+
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
@@ -321,6 +330,10 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_NCPAINT:
                     if (_darkModeEnabled)
                     {
+                        if (m.Msg == Native.WM_NCPAINT)
+                        {
+                            DrawBorder(m.HWnd);
+                        }
                         RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     }
                     else
