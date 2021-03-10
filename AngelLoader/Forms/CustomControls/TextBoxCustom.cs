@@ -2,13 +2,23 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 using AL_Common;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
     // Also lifted straight from Autovid but with a couple improvements
     public sealed class TextBoxCustom : DarkTextBox
     {
-        [Browsable(true)] public string DisallowedCharacters { get; set; } = "";
+        [PublicAPI]
+        public string DisallowedCharacters { get; set; } = "";
+
+        /// <summary>
+        /// Set to true to block TextChanged from firing unless the text really did change. Otherwise it's the
+        /// default fast-and-loose behavior.
+        /// </summary>
+        [PublicAPI]
+        [DefaultValue(true)]
+        public bool StrictTextChangedEvent { get; set; } = true;
 
         private string _backingText = "";
 
@@ -57,7 +67,14 @@ namespace AngelLoader.Forms.CustomControls
             // Prevents non-text key combinations from firing the TextChanged event.
             // How in the hell does "text changed" mean "key pressed but literally no text changed at all".
             // Microsoft...
-            if (oldBackingText != Text) base.OnTextChanged(e);
+            // 2021-03-09:
+            // I guess I finally figured out why they did this. It's probably so that you can select a character,
+            // overwrite it with the same one, and now your text is the same but you can still run things that
+            // react to "text entry" (like I'm having to do with my search drop-down).
+            if (!StrictTextChangedEvent || oldBackingText != Text)
+            {
+                base.OnTextChanged(e);
+            }
         }
     }
 }

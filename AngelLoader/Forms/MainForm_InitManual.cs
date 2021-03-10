@@ -1312,6 +1312,7 @@ namespace AngelLoader.Forms
             AddTagTextBox.DisallowedCharacters = ",;";
             AddTagTextBox.Location = new Point(8, 8);
             AddTagTextBox.Size = new Size(440, 20);
+            AddTagTextBox.StrictTextChangedEvent = false;
             AddTagTextBox.TabIndex = 0;
             AddTagTextBox.TextChanged += AddTagTextBox_TextChanged;
             AddTagTextBox.KeyDown += AddTagTextBoxOrListBox_KeyDown;

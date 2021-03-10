@@ -1596,6 +1596,7 @@
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
             this.AddTagTextBox.Name = "AddTagTextBox";
             this.AddTagTextBox.Size = new System.Drawing.Size(440, 20);
+            this.AddTagTextBox.StrictTextChangedEvent = false;
             this.AddTagTextBox.TabIndex = 0;
             this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
             this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
