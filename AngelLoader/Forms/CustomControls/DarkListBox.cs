@@ -10,6 +10,8 @@ namespace AngelLoader.Forms.CustomControls
 {
     public class DarkListBox : ListView, IDarkableScrollableNative
     {
+        // TODO: BUG: @DarkMode(DarkListBox/ListView): We #@$!ing can't deselect items once they're selected in a multi-select scenario
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Suspended { get; set; }
@@ -108,6 +110,11 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public methods
 
+
+        #endregion
+
+        #region Public properties
+
         public string[] ItemsAsStrings
         {
             get
@@ -120,10 +127,6 @@ namespace AngelLoader.Forms.CustomControls
                 return ret;
             }
         }
-
-        #endregion
-
-        #region Public properties
 
         public int SelectedIndex
         {
