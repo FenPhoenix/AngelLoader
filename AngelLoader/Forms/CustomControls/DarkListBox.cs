@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 
@@ -14,7 +15,6 @@ namespace AngelLoader.Forms.CustomControls
         -Draw border (probably need to do the 1px border - 1px background color thing
         -Make all colors correct in both classic and dark modes
         -Match ListBox selection behavior when clicking on blank area - does it keep the last selection?
-        -Adding items is glacial. Try virtual mode / caching / whatever...
         */
 
         [Browsable(false)]
@@ -68,6 +68,27 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 DarkModeChanged?.Invoke(this, EventArgs.Empty);
                 Refresh();
+            }
+        }
+
+        private int _updatingItems;
+
+        public new void BeginUpdate()
+        {
+            base.BeginUpdate();
+            _updatingItems++;
+        }
+
+        public new void EndUpdate()
+        {
+            base.EndUpdate();
+            _updatingItems = (_updatingItems - 1).ClampToZero();
+            if (_updatingItems == 0)
+            {
+                if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+                // It's way too slow to do this for every single item added, so when we're in update mode, just
+                // do it only once at the end of the update. This keeps us fast enough to get on with.
+                AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             }
         }
 
@@ -268,10 +289,17 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.LVM_INSERTITEMW:
                 case Native.LVM_DELETEITEM:
                 case Native.LVM_DELETEALLITEMS:
-                    if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-                    // This must come BEFORE the autosize or it won't work.
-                    base.WndProc(ref m);
-                    AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                    if (_updatingItems == 0)
+                    {
+                        if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+                        // This must come BEFORE the autosize or it won't work.
+                        base.WndProc(ref m);
+                        AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                    }
+                    else
+                    {
+                        base.WndProc(ref m);
+                    }
                     break;
                 // Full-width item hack part trois: Even though we're drawing the selection full-width, the mouse
                 // down will still do nothing if it's outside the actual column rectangle. So just set the X coord

@@ -101,11 +101,13 @@ namespace AngelLoader.Forms
 
             if (_multiChoice)
             {
+                ChoiceListBox.BeginUpdate();
                 // Set this first: the list is now populated
                 for (int i = 0; i < choiceStrings!.Length; i++)
                 {
                     ChoiceListBox.Items.Add(choiceStrings[i]);
                 }
+                ChoiceListBox.EndUpdate();
             }
             else
             {

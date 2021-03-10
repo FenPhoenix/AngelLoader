@@ -296,8 +296,10 @@ namespace AngelLoader.Forms
 
             PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
 
+            PathsPage.FMArchivePathsListBox.BeginUpdate();
             PathsPage.FMArchivePathsListBox.Items.Clear();
             foreach (string path in config.FMArchivePaths) PathsPage.FMArchivePathsListBox.Items.Add(path);
+            PathsPage.FMArchivePathsListBox.EndUpdate();
 
             PathsPage.IncludeSubfoldersCheckBox.Checked = config.FMArchivePathsIncludeSubfolders;
 
