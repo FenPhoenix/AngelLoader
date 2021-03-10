@@ -129,7 +129,7 @@ namespace AngelLoader.Forms
                 // Set this second: the list is now sized based on its content
                 ChoiceListBox.Size = new Size(innerControlWidth,
                     (ChoiceListBox.ItemHeight * ChoiceListBox.Items.Count.Clamp(5, 20)) +
-                    ((SystemInformation.BorderSize.Height * 4) + 3));
+                    (SystemInformation.BorderSize.Height * 2));
 
                 // Set this before window autosizing
                 SelectButtonsFLP.Width = innerControlWidth + 1;

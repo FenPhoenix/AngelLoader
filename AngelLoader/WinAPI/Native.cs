@@ -23,6 +23,14 @@ namespace AngelLoader.WinAPI
         internal const int LVM_INSERTITEMW = (LVM_FIRST + 77);
         internal const int LVM_DELETEITEM = (LVM_FIRST + 8);
         internal const int LVM_DELETEALLITEMS = (LVM_FIRST + 9);
+        internal const int LVM_SCROLL = LVM_FIRST + 20;
+        internal const int LVM_REDRAWITEMS = (LVM_FIRST + 21);
+        internal const int LVM_GETITEMA = (LVM_FIRST + 5);
+        internal const int LVM_GETITEMW = (LVM_FIRST + 75);
+        internal const int LVM_GETSELECTEDCOUNT = (LVM_FIRST + 50);
+        internal const int LVM_FINDITEMW = (LVM_FIRST + 83);
+        internal const int LVM_GETITEMSTATE = (LVM_FIRST + 44);
+        internal const int LVM_HITTEST = (LVM_FIRST + 18);
 
         #endregion
 

@@ -329,6 +329,16 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_PAINT:
                 case Native.WM_VSCROLL:
                 case Native.WM_HSCROLL:
+                // TODO: @DarkMode(DarkListBox/ListView): We need to find the message that prevents buggy scrolling
+                // This set of them works, but we should be more specific to avoid an undue perf hit
+                case Native.LVM_SCROLL:
+                case Native.LVM_REDRAWITEMS:
+                case Native.LVM_GETITEMA:
+                case Native.LVM_GETITEMW:
+                case Native.LVM_GETSELECTEDCOUNT:
+                case Native.LVM_FINDITEMW:
+                case Native.LVM_GETITEMSTATE:
+                case Native.LVM_HITTEST:
                     base.WndProc(ref m);
                     if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                     break;
