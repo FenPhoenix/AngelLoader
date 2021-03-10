@@ -234,9 +234,9 @@ namespace AngelLoader.WinAPI
 
         public static int SignedLOWORD(IntPtr n) => SignedLOWORD((int)(long)n);
 
-        public static int SignedHIWORD(int n) => (int)(short)(n >> 16 & (int)ushort.MaxValue);
+        public static int SignedHIWORD(int n) => (int)(short)(HIWORD(n));
 
-        public static int SignedLOWORD(int n) => (int)(short)(n & (int)ushort.MaxValue);
+        public static int SignedLOWORD(int n) => (int)(short)(LOWORD(n));
 
         #endregion
 
@@ -531,26 +531,10 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
-        public struct POINTS
-        {
-            public short x;
-            public short y;
-
-            public POINTS(short x, short y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-        }
+        #region Scroll bars
 
         public const int HTHSCROLL = 6;
         public const int HTVSCROLL = 7;
-
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, POINTS lParam);
-
-        #region Scroll bars
 
         public struct RECT
         {

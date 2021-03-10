@@ -367,24 +367,35 @@ namespace AngelLoader.Forms.CustomControls
                     int y = Native.SignedHIWORD(_m.LParam);
                     Point ownerScreenLoc = _owner.Parent.PointToScreen(_owner.Location);
 
+                    int sbVertWidth = _owner.VerticalVisualScrollBar?.Visible == true
+                        ? SystemInformation.VerticalScrollBarWidth
+                        : 0;
+                    int sbHorzHeight = _owner.HorizontalVisualScrollBar?.Visible == true
+                        ? SystemInformation.HorizontalScrollBarHeight
+                        : 0;
+
+                    int clientWidth = _owner.ClientSize.Width;
+                    int widthWithoutScrollBar = _owner.Size.Width - sbVertWidth;
+
+                    int clientHeight = _owner.ClientSize.Height;
+                    int heightWithoutScrollBar = _owner.Size.Height - sbHorzHeight;
+
                     if (_isVertical)
                     {
-                        int sbWidthOrHeight = SystemInformation.VerticalScrollBarWidth;
-                        x += ownerScreenLoc.X + (_owner.Size.Width - sbWidthOrHeight);
-                        y += ownerScreenLoc.Y;
+                        x += ownerScreenLoc.X + _owner.ClientSize.Width + ((widthWithoutScrollBar - clientWidth) / 2);
+                        y += ownerScreenLoc.Y + ((heightWithoutScrollBar - clientHeight) / 2);
                         wParam = Native.HTVSCROLL;
                     }
                     else
                     {
-                        int sbWidthOrHeight = SystemInformation.HorizontalScrollBarHeight;
-                        x += ownerScreenLoc.X;
-                        y += ownerScreenLoc.Y + (_owner.Size.Height - sbWidthOrHeight);
+                        x += ownerScreenLoc.X + ((widthWithoutScrollBar - clientWidth) / 2);
+                        y += ownerScreenLoc.Y + _owner.ClientSize.Height + ((heightWithoutScrollBar - clientHeight) / 2);
                         wParam = Native.HTHSCROLL;
                     }
 
-                    var points = new Native.POINTS((short)x, (short)y);
+                    IntPtr lParam = Native.MAKELPARAM((short)x, (short)y);
 
-                    Native.PostMessage(_owner.Handle, ncMsg, (IntPtr)wParam, points);
+                    Native.PostMessage(_owner.Handle, ncMsg, (IntPtr)wParam, lParam);
                 }
                 else if (_m.Msg == Native.WM_MOUSEWHEEL || _m.Msg == Native.WM_MOUSEHWHEEL)
                 {
