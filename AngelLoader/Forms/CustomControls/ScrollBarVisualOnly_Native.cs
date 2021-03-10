@@ -363,6 +363,8 @@ namespace AngelLoader.Forms.CustomControls
                     // Tested, the signedness carries over properly and works with multiple monitors where one
                     // of them has negative positions.
                     int wParam;
+                    // SignedLOWORD()/SignedHIWORD() are equivalent to GET_X_PARAM/GET_Y_PARAM, which is what
+                    // we're supposed to use
                     int x = Native.SignedLOWORD(_m.LParam);
                     int y = Native.SignedHIWORD(_m.LParam);
                     Point ownerScreenLoc = _owner.Parent.PointToScreen(_owner.Location);
@@ -382,14 +384,14 @@ namespace AngelLoader.Forms.CustomControls
 
                     if (_isVertical)
                     {
-                        x += ownerScreenLoc.X + _owner.ClientSize.Width + ((widthWithoutScrollBar - clientWidth) / 2);
+                        x += ownerScreenLoc.X + clientWidth + ((widthWithoutScrollBar - clientWidth) / 2);
                         y += ownerScreenLoc.Y + ((heightWithoutScrollBar - clientHeight) / 2);
                         wParam = Native.HTVSCROLL;
                     }
                     else
                     {
                         x += ownerScreenLoc.X + ((widthWithoutScrollBar - clientWidth) / 2);
-                        y += ownerScreenLoc.Y + _owner.ClientSize.Height + ((heightWithoutScrollBar - clientHeight) / 2);
+                        y += ownerScreenLoc.Y + clientHeight + ((heightWithoutScrollBar - clientHeight) / 2);
                         wParam = Native.HTHSCROLL;
                     }
 
