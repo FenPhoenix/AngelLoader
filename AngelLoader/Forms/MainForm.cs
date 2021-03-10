@@ -2712,6 +2712,8 @@ namespace AngelLoader.Forms
                         box.SelectedIndex == -1 ? box.Items.Count - 1 :
                         box.SelectedIndex == 0 ? -1 :
                         box.SelectedIndex - 1;
+                    // We need this call to make the thing scroll...
+                    if (box.SelectedIndex > -1) box.EnsureVisible(box.SelectedIndex);
                     e.Handled = true;
                     break;
                 case Keys.Down when box.Items.Count > 0:
@@ -2719,6 +2721,7 @@ namespace AngelLoader.Forms
                         box.SelectedIndex == -1 ? 0 :
                         box.SelectedIndex == box.Items.Count - 1 ? -1 :
                         box.SelectedIndex + 1;
+                    if (box.SelectedIndex > -1) box.EnsureVisible(box.SelectedIndex);
                     e.Handled = true;
                     break;
                 case Keys.Enter:
