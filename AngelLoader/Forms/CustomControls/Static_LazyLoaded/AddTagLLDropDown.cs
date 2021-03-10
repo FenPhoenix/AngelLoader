@@ -53,8 +53,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             ListBox.BeginUpdate();
             ListBox.Items.Clear();
-            foreach (string item in list) ListBox.Items.Add(item);
             ListBox.EndUpdate();
+
+            var listItems = new ListViewItem[list.Count];
+            for (int i = 0; i < list.Count; i++)
+            {
+                listItems[i] = new ListViewItem { Text = list[i] };
+            }
+
+            ListBox.Items.AddRange(listItems);
 
             Point p = owner.PointToClient(owner.AddTagTextBox.PointToScreen(new Point(0, 0)));
             ListBox.Location = new Point(p.X, p.Y + owner.AddTagTextBox.Height);

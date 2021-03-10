@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
@@ -14,12 +13,8 @@ namespace AngelLoader.Forms.CustomControls
         TODO: @DarkMode(DarkListBox:ListView):
         -Draw border (probably need to do the 1px border - 1px background color thing
         -Make all colors correct in both classic and dark modes
-        -Test with AddTagDropDown!
         -Match ListBox selection behavior when clicking on blank area - does it keep the last selection?
-        -Look into "select bottom item, pause, scroll down one" behavior - are we just 1px too tall or something?
-        -We're having the scroll issue where a click-and-release moves the scroll bar along one notch. Probably
-         an issue in ScrollBarVisualOnly_Native that just only shows up in specific cases... Failure to account
-         for padding, or parent position somehow?
+        -Adding items is glacial. Try virtual mode / caching / whatever...
         */
 
         [Browsable(false)]
