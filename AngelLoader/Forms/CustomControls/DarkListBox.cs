@@ -10,7 +10,9 @@ namespace AngelLoader.Forms.CustomControls
 {
     public class DarkListBox : ListView, IDarkableScrollableNative
     {
-        // TODO: BUG: @DarkMode(DarkListBox/ListView): We #@$!ing can't deselect items once they're selected in a multi-select scenario
+        private bool _ctrlDown;
+        private bool _shiftDown;
+        private int _updatingItems;
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -61,8 +63,6 @@ namespace AngelLoader.Forms.CustomControls
                 Refresh();
             }
         }
-
-        private int _updatingItems;
 
         public new void BeginUpdate()
         {
@@ -168,10 +168,25 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Event overrides
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Control) _ctrlDown = true;
+            if (e.Shift) _shiftDown = true;
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+            if (!e.Control) _ctrlDown = false;
+            if (!e.Shift) _shiftDown = false;
+        }
+
         protected override void OnSelectedIndexChanged(EventArgs e)
         {
             base.OnSelectedIndexChanged(e);
-            Refresh();
+            // Invalidate() for performance (Refresh() causes lag)
+            Invalidate();
         }
 
         protected override void OnClientSizeChanged(EventArgs e)
@@ -287,6 +302,55 @@ namespace AngelLoader.Forms.CustomControls
             g.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
         }
 
+        // TODO: @DarkMode(DarkListBox/ListView): We could get super thorough and handle multi-select with shift properly...
+        // But, meh... how it works is fine enough probably?
+        private void HandleLButtonDown(ref Message m)
+        {
+            m.LParam = Native.MAKELPARAM(2, Native.SignedHIWORD(m.LParam));
+
+            var modCursorPos = new Point(2, PointToClient(Cursor.Position).Y);
+
+            ListViewHitTestInfo hitTest = HitTest(modCursorPos);
+
+            var item = hitTest.Item;
+
+            if (item != null)
+            {
+                if (item.Selected)
+                {
+                    if (MultiSelect)
+                    {
+                        if (_ctrlDown)
+                        {
+                            item.Selected = false;
+                            return;
+                        }
+                        else if (!_shiftDown)
+                        {
+                            SelectedItems.Clear();
+                            item.Selected = true;
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    if (MultiSelect && _ctrlDown)
+                    {
+                        item.Selected = true;
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                SelectedItems.Clear();
+                return;
+            }
+
+            base.WndProc(ref m);
+        }
+
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
@@ -317,10 +381,7 @@ namespace AngelLoader.Forms.CustomControls
                 // to way over on the left all the time, and that makes it work like you'd expect. Repulsive, but
                 // there you are.
                 case Native.WM_LBUTTONDOWN:
-                case Native.WM_LBUTTONUP:
-                case Native.WM_LBUTTONDBLCLK:
-                    m.LParam = Native.MAKELPARAM(2, Native.SignedHIWORD(m.LParam));
-                    base.WndProc(ref m);
+                    HandleLButtonDown(ref m);
                     break;
                 case Native.WM_MBUTTONDOWN:
                 case Native.WM_MBUTTONUP:
@@ -328,6 +389,8 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_RBUTTONDOWN:
                 case Native.WM_RBUTTONUP:
                 case Native.WM_RBUTTONDBLCLK:
+                case Native.WM_LBUTTONUP:
+                case Native.WM_LBUTTONDBLCLK:
                     break;
                 case Native.WM_PAINT:
                 case Native.WM_VSCROLL:
@@ -336,8 +399,9 @@ namespace AngelLoader.Forms.CustomControls
                 // This set of them works, but we should be more specific to avoid an undue perf hit
                 case Native.LVM_SCROLL:
                 case Native.LVM_REDRAWITEMS:
-                case Native.LVM_GETITEMA:
-                case Native.LVM_GETITEMW:
+                // NOTE: These ones cause scrolling lag
+                //case Native.LVM_GETITEMA:
+                //case Native.LVM_GETITEMW:
                 case Native.LVM_GETSELECTEDCOUNT:
                 case Native.LVM_FINDITEMW:
                 case Native.LVM_GETITEMSTATE:

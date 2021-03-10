@@ -340,9 +340,21 @@ namespace AngelLoader.Forms
                 else if (CursorOutsideAddTagsDropDownArea())
                 {
                     AddTagLLDropDown.HideAndClear();
-                    if (m.Msg != Native.WM_LBUTTONUP && m.Msg != Native.WM_NCLBUTTONUP &&
-                        m.Msg != Native.WM_MBUTTONUP && m.Msg != Native.WM_NCMBUTTONUP &&
-                        m.Msg != Native.WM_RBUTTONUP && m.Msg != Native.WM_NCRBUTTONUP)
+                    if (m.Msg != Native.WM_LBUTTONUP &&
+                        m.Msg != Native.WM_MBUTTONUP &&
+                        m.Msg != Native.WM_RBUTTONUP &&
+
+                        m.Msg != Native.WM_NCLBUTTONUP &&
+                        m.Msg != Native.WM_NCMBUTTONUP &&
+                        m.Msg != Native.WM_NCRBUTTONUP &&
+
+                        m.Msg != Native.WM_NCLBUTTONDOWN &&
+                        m.Msg != Native.WM_NCMBUTTONDOWN &&
+                        m.Msg != Native.WM_NCRBUTTONDOWN &&
+
+                        m.Msg != Native.WM_NCLBUTTONDBLCLK &&
+                        m.Msg != Native.WM_NCMBUTTONDBLCLK &&
+                        m.Msg != Native.WM_NCRBUTTONDBLCLK)
                     {
                         return BlockMessage;
                     }

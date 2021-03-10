@@ -31,6 +31,8 @@ namespace AngelLoader.WinAPI
         internal const int LVM_FINDITEMW = (LVM_FIRST + 83);
         internal const int LVM_GETITEMSTATE = (LVM_FIRST + 44);
         internal const int LVM_HITTEST = (LVM_FIRST + 18);
+        internal const int LVN_FIRST = -100;
+        internal const int LVN_MARQUEEBEGIN = (LVN_FIRST - 56);
 
         #endregion
 
