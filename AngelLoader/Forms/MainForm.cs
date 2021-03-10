@@ -277,7 +277,7 @@ namespace AngelLoader.Forms
                     // Stupid hack to fix "send mousewheel to underlying control and block further messages"
                     // functionality still not being fully reliable. We need to focus the parent control sometimes
                     // inexplicably. Sure. Whole point is to avoid having to do that, but sure.
-                    if (!(AddTagLLDropDown.Constructed && CursorOverControl(AddTagLLDropDown.ListBox)))
+                    if (!(AddTagLLDropDown.Constructed && CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true)))
                     {
                         if (CursorOverControl(TopSplitContainer.Panel2))
                         {
