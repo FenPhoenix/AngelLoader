@@ -26,7 +26,6 @@ namespace AngelLoader.Forms.CustomControls
         new IntPtr Handle { get; }
         event EventHandler? Scroll;
         Control? Parent { get; }
-        Control? ClosestAddableParent { get; }
         Point Location { get; }
         Size ClientSize { get; }
         Size Size { get; }

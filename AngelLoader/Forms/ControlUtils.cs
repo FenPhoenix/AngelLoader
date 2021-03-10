@@ -389,5 +389,24 @@ namespace AngelLoader.Forms
             IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)SB_THUMBTRACK;
             SendMessage(handle, direction == SB_VERT ? WM_VSCROLL : WM_HSCROLL, wp, ptrLParam);
         }
+
+        internal static Control? ClosestAddableParent(IDarkableScrollableNative owner)
+        {
+            Control? parent = owner.Parent;
+            while (true)
+            {
+                if (parent == null ||
+                    (parent is not TabControl &&
+                     parent is not FlowLayoutPanel &&
+                     parent is not TableLayoutPanel))
+                {
+                    return parent;
+                }
+                else
+                {
+                    parent = parent.Parent;
+                }
+            }
+        }
     }
 }

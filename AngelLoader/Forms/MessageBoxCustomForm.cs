@@ -150,8 +150,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            SetTheme(Config.VisualTheme);
-
             Localize();
 
             SelectButtonsFLP.Height = SelectAllButton.Height;
@@ -203,6 +201,8 @@ namespace AngelLoader.Forms
             #endregion
 
             if (ChoiceListBox.Items.Count > 0) ChoiceListBox.Items[0].Selected = false;
+
+            SetTheme(Config.VisualTheme);
         }
 
         private void SetTheme(VisualTheme theme)

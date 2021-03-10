@@ -18,8 +18,8 @@ namespace AngelLoader.Forms.CustomControls
 
         public void AddToParent()
         {
-            Control parent;
-            if (!_addedToControls && (parent = _owner.ClosestAddableParent) != null)
+            Control? parent;
+            if (!_addedToControls && (parent = ControlUtils.ClosestAddableParent(_owner)) != null)
             {
                 parent.Controls.Add(this);
                 Size = new Size(SystemInformation.VerticalScrollBarWidth, SystemInformation.HorizontalScrollBarHeight);

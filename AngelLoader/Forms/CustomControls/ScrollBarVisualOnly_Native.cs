@@ -66,9 +66,10 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         public void AddToParent()
         {
-            if (!_addedToControls && _owner.ClosestAddableParent != null)
+            Control? parent;
+            if (!_addedToControls && (parent = ControlUtils.ClosestAddableParent(_owner)) != null)
             {
-                _owner.ClosestAddableParent.Controls.Add(this);
+                parent.Controls.Add(this);
                 BringToFront();
                 _addedToControls = true;
             }
@@ -239,10 +240,11 @@ namespace AngelLoader.Forms.CustomControls
                 dontShowCorner = true;
             }
 
-            if (Visible && _owner.Parent != null)
+            Control? closestAddableParent = ControlUtils.ClosestAddableParent(_owner);
+            if (Visible && closestAddableParent != null)
             {
-                var topLeft = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.left, sbi.rcScrollBar.top));
-                var bottomRight = _owner.Parent.PointToClient(new Point(sbi.rcScrollBar.right, sbi.rcScrollBar.bottom));
+                var topLeft = closestAddableParent.PointToClient(new Point(sbi.rcScrollBar.left, sbi.rcScrollBar.top));
+                var bottomRight = closestAddableParent.PointToClient(new Point(sbi.rcScrollBar.right, sbi.rcScrollBar.bottom));
 
                 var loc = new Rectangle(
                     topLeft.X,

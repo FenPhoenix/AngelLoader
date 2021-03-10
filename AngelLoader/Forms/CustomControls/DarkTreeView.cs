@@ -34,10 +34,6 @@ namespace AngelLoader.Forms.CustomControls
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Control? ClosestAddableParent => Parent;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? DarkModeChanged;
 
         [Browsable(false)]

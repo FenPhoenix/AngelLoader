@@ -61,10 +61,6 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? RefreshIfNeededForceCorner;
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Control? ClosestAddableParent => Parent.Parent;
-
         public override bool AutoScroll
         {
             get => base.AutoScroll;

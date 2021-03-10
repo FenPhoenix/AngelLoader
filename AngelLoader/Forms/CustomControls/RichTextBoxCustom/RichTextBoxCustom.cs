@@ -47,21 +47,32 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; }
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; }
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; }
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? Scroll;
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Suspended { get; set; }
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? DarkModeChanged;
+
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public event EventHandler? RefreshIfNeededForceCorner;
-        [Browsable(false)]
-        public Control? ClosestAddableParent => Parent;
 
         public RichTextBoxCustom()
         {
