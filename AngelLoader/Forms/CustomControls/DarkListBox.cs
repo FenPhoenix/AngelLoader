@@ -320,6 +320,13 @@ namespace AngelLoader.Forms.CustomControls
                     m.LParam = Native.MAKELPARAM(2, Native.SignedHIWORD(m.LParam));
                     base.WndProc(ref m);
                     break;
+                case Native.WM_MBUTTONDOWN:
+                case Native.WM_MBUTTONUP:
+                case Native.WM_MBUTTONDBLCLK:
+                case Native.WM_RBUTTONDOWN:
+                case Native.WM_RBUTTONUP:
+                case Native.WM_RBUTTONDBLCLK:
+                    break;
                 case Native.WM_PAINT:
                 case Native.WM_VSCROLL:
                 case Native.WM_HSCROLL:
