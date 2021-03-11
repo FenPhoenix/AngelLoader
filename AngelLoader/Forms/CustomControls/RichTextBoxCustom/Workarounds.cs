@@ -29,7 +29,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (_fullDetectUrlsSet) return;
 
-            Native.SendMessage(Handle, 1115, (IntPtr)(Native.AURL_ENABLEURL | Native.AURL_ENABLEEMAILADDR), IntPtr.Zero);
+            Native.SendMessage(Handle, Native.EM_AUTOURLDETECT, (IntPtr)(Native.AURL_ENABLEURL | Native.AURL_ENABLEEMAILADDR), IntPtr.Zero);
             _fullDetectUrlsSet = true;
         }
 
