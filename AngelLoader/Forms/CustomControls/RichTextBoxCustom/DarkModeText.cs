@@ -346,15 +346,13 @@ namespace AngelLoader.Forms.CustomControls
             \rtf1 \fbidis? <character set> <from>? <deffont> <deflang> <fonttbl>? <filetbl>? 
             <colortbl>? <stylesheet>? <stylerestrictions>? <listtables>? <revtbl>? <rsidtable>? 
             <mathprops>? <generator>? 
-            */
+            
+            Despite extensive trying with EM_SETCHARFORMAT to tell it to set a new default text color, it just
+            doesn't want to work (best it can do is make ALL the text the default color, rather than just the
+            default text). So we just insert \cf0 directly after each \plain (which resets the character
+            properties). Ugly, but at this point whatever. Of _course_ we have to do this, but it's fast enough
+            and works, so meh.
 
-            // Despite extensive trying with EM_SETCHARFORMAT to tell it to set a new default text color, it just
-            // doesn't want to work (best it can do is make ALL the text the default color, rather than just the
-            // default text). So we just insert \cf0 directly after each \plain (which resets the character
-            // properties). Ugly, but at this point whatever. Of _course_ we have to do this, but it's fast enough
-            // and works, so meh.
-
-            /*
             TODO: @DarkMode(RTF/DarkTextMode) issues/quirks/etc:
             -Image-as-first-item issue with the \cf0 inserts
              If we put a \cf0 before a transparent image, it makes the background of it white.
