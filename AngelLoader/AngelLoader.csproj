@@ -72,7 +72,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.3.283" />
+    <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.3.318" />
     <PackageReference Include="xFFmpeg.NET" Version="3.4.0" />
   </ItemGroup>
 
@@ -90,57 +90,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Forms\CustomControls\DarkButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\DarkCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\DarkComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\DarkContextMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\DarkDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="Forms\CustomControls\DarkButton.cs" />
+    <Compile Update="Forms\CustomControls\DarkCheckBox.cs" />
+    <Compile Update="Forms\CustomControls\DarkComboBox.cs" />
+    <Compile Update="Forms\CustomControls\DarkContextMenu.cs" />
+    <Compile Update="Forms\CustomControls\DarkDialog.cs" />
     <Compile Update="Forms\CustomControls\DarkDialog.Designer.cs">
       <DependentUpon>DarkDialog.cs</DependentUpon>
     </Compile>
-    <Compile Update="Forms\CustomControls\DarkGroupBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\DarkMessageBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="Forms\CustomControls\DarkGroupBox.cs" />
+    <Compile Update="Forms\CustomControls\DarkMessageBox.cs" />
     <Compile Update="Forms\CustomControls\DarkMessageBox.Designer.cs">
       <DependentUpon>DarkMessageBox.cs</DependentUpon>
     </Compile>
-    <Compile Update="Forms\CustomControls\DarkNumericUpDown.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\DarkRadioButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\DarkTabControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\DarkTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly_Base.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly_Corner.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly_Native.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Update="Forms\CustomControls\DarkNumericUpDown.cs" />
+    <Compile Update="Forms\CustomControls\DarkRadioButton.cs" />
+    <Compile Update="Forms\CustomControls\DarkTabControl.cs" />
+    <Compile Update="Forms\CustomControls\DarkTextBox.cs" />
+    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly.cs" />
+    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly_Base.cs" />
+    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly_Corner.cs" />
+    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly_Native.cs" />
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
