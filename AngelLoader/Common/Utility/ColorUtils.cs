@@ -159,7 +159,7 @@ namespace AngelLoader
                 lch = new LCh(lch.L.Clamp(0.6f, 1.0f), lch.C, lch.h);
                 if (lch.L >= 0.5f && lch.L <= 0.7f)
                 {
-                    lch = new LCh(lch.L, lch.C - 0.025f, lch.h);
+                    lch = new LCh(lch.L, (lch.C - 0.025f).Clamp(0, 1.0f), lch.h);
                     redDesaturated = true;
                 }
             }
@@ -167,7 +167,7 @@ namespace AngelLoader
             #endregion
 
             // Slight global desaturation
-            lab = LChToOklab(new LCh(lch.L, lch.C - (redDesaturated ? 0.015f : 0.04f), lch.h));
+            lab = LChToOklab(new LCh(lch.L, (lch.C - (redDesaturated ? 0.015f : 0.04f)).Clamp(0, 1.0f), lch.h));
 
             #endregion
 
