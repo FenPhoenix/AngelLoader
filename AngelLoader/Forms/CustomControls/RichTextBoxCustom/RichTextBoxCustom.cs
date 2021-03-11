@@ -232,6 +232,11 @@ namespace AngelLoader.Forms.CustomControls
         {
             AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
 
+            // Do it here because it doesn't work if we set it before we've shown or whatever, and CreateHandle()
+            // doesn't make it work either due to it being set back to non-full-detect there or whatever other
+            // reason. It's fine, this works, fixed, moving on.
+            SetFullUrlsDetect();
+
             try
             {
                 SuspendState();

@@ -19,6 +19,20 @@ namespace AngelLoader.Forms.CustomControls
             InitReaderMode();
         }
 
+        private bool _fullDetectUrlsSet;
+
+        /// <summary>
+        /// Sets URL detection to include email addresses. This fixes the dark-on-dark coloring of email addresses
+        /// that don't have "mailto:" in front of them.
+        /// </summary>
+        private void SetFullUrlsDetect()
+        {
+            if (_fullDetectUrlsSet) return;
+
+            Native.SendMessage(Handle, 1115, (IntPtr)(Native.AURL_ENABLEURL | Native.AURL_ENABLEEMAILADDR), IntPtr.Zero);
+            _fullDetectUrlsSet = true;
+        }
+
         protected override void WndProc(ref Message m)
         {
             switch ((uint)m.Msg)

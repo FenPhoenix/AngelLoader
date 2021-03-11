@@ -567,6 +567,14 @@ namespace AngelLoader.WinAPI
         internal const int EM_SETCHARFORMAT = (WM_USER + 68);
         internal const int CFM_COLOR = 0x40000000;
         internal const int CFE_AUTOCOLOR = 0x40000000;
+        internal const int EM_AUTOURLDETECT = (WM_USER + 91);
+
+        internal const int AURL_ENABLEURL = 1;
+        internal const int AURL_ENABLEEMAILADDR = 2;
+        internal const int AURL_ENABLETELNO = 4;
+        internal const int AURL_ENABLEEAURLS = 8;
+        internal const int AURL_ENABLEDRIVELETTERS = 16;
+        internal const int AURL_DISABLEMIXEDLGC = 32; // Disable mixed Latin Greek Cyrillic IDNs
 
         internal static Native.CHARFORMATA GetCharFormat(RichTextBox rtb)
         {
@@ -589,7 +597,7 @@ namespace AngelLoader.WinAPI
             charFormat.dwMask = Native.CFM_COLOR;
             charFormat.dwEffects = 0;
             charFormat.crTextColor = ColorTranslator.ToWin32(color);
-            Native.SendMessage(new HandleRef(rtb, rtb.Handle), Native.EM_SETCHARFORMAT, Native.SCF_SELECTION, charFormat);
+            Native.SendMessage(new HandleRef(rtb, rtb.Handle), Native.EM_SETCHARFORMAT, Native.SCF_DEFAULT, charFormat);
         }
         #endregion
 

@@ -356,11 +356,6 @@ namespace AngelLoader.Forms.CustomControls
 
             /*
             TODO: @DarkMode(RTF/DarkTextMode) issues/quirks/etc:
-            -Hyperlinks: \fldinst HYPERLINK fields must have "mailto:" at the start if they're emails, or "http://"
-             or "https://" at the start if they're URLs, in order to be colored correctly. Otherwise they just
-             color themselves however tf they want, sometimes ending up dark-on-dark (see Mystic Gems I and II).
-             We should write a mini \fldinst parser that will add this in for us.
-
             -Image-as-first-item issue with the \cf0 inserts
              If we put a \cf0 before a transparent image, it makes the background of it white.
              See 2006-09-18_WC_WhatLiesBelow_v1
