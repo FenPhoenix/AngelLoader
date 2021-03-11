@@ -200,7 +200,17 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            if (ChoiceListBox.Items.Count > 0) ChoiceListBox.Items[0].Selected = false;
+            if (_multiChoice)
+            {
+                if (ChoiceListBox.Items.Count > 0)
+                {
+                    ChoiceListBox.Items[0].Selected = true;
+                }
+                else
+                {
+                    OKButton.Enabled = false;
+                }
+            }
 
             SetTheme(Config.VisualTheme);
         }
