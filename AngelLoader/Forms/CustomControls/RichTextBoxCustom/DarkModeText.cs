@@ -370,6 +370,8 @@ namespace AngelLoader.Forms.CustomControls
              It has dark text on a not-quite-white background, which inverts to light text on an also bright
              background, due to us preventing downward lightness inversion. Probably too much trouble to fix,
              and worst case the user can always just select the text and it'll be visible, but note it...
+
+            -Mystic Gems I and II: Readme has a non-link email that stays dark on color invert. Have a look at it.
             */
             int index = 0;
             while ((index = FindIndexOfByteSequence(darkModeBytes, plain, index)) > -1)
