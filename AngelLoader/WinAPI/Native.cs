@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
 
@@ -418,6 +419,8 @@ namespace AngelLoader.WinAPI
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal static extern IntPtr SetCursor(HandleRef hcursor);
 
+        #region RichTextBox
+
         #region Reader mode
 
         [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -490,6 +493,104 @@ namespace AngelLoader.WinAPI
             internal int cpMax;
         }
 
+        #endregion
+
+        // "A" version because RichTextBox uses the "A" version.
+        // You'd think this should be a struct, but RichTextBox uses this class version. Shrug.
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public class CHARFORMAT2A
+        {
+            public int cbSize = Marshal.SizeOf(typeof(CHARFORMAT2A));
+            public int dwMask;
+            public int dwEffects;
+            public int yHeight;
+            public int yOffset;
+            public int crTextColor;
+            public byte bCharSet;
+            public byte bPitchAndFamily;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+            public byte[] szFaceName = new byte[32];
+            public short wWeight;
+            public short sSpacing;
+            public int crBackColor;
+            public int lcid;
+            public int dwReserved;
+            public short sStyle;
+            public short wKerning;
+            public byte bUnderlineType;
+            public byte bAnimation;
+            public byte bRevAuthor;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public class CHARFORMATA
+        {
+            public int cbSize = Marshal.SizeOf(typeof(CHARFORMATA));
+            public int dwMask;
+            public int dwEffects;
+            public int yHeight;
+            public int yOffset;
+            public int crTextColor;
+            public byte bCharSet;
+            public byte bPitchAndFamily;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+            public byte[] szFaceName = new byte[32];
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(
+            HandleRef hWnd,
+            int msg,
+            int wParam,
+            [MarshalAs(UnmanagedType.LPStruct), In, Out] CHARFORMATA lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(
+            HandleRef hWnd,
+            int msg,
+            int wParam,
+            [MarshalAs(UnmanagedType.LPStruct), In, Out] CHARFORMAT2A lParam);
+
+        internal const int SCF_SELECTION = 0x0001;
+        internal const int SCF_WORD = 0x0002;
+        internal const int SCF_DEFAULT = 0x0000;
+        internal const int SCF_ALL = 0x0004;
+        internal const int SCF_USEUIRULES = 0x0008;
+        internal const int SCF_ASSOCIATEFONT = 0x0010;
+        internal const int SCF_NOKBUPDATE = 0x0020;
+        internal const int SCF_ASSOCIATEFONT2 = 0x0040;
+        internal const int SCF_SMARTFONT = 0x0080;
+        internal const int SCF_CHARREPFROMLCID = 0x0100;
+        internal const int SPF_DONTSETDEFAULT = 0x0002;
+        internal const int SPF_SETDEFAULT = 0x0004;
+        internal const int EM_GETCHARFORMAT = (WM_USER + 58);
+        internal const int EM_SETCHARFORMAT = (WM_USER + 68);
+        internal const int CFM_COLOR = 0x40000000;
+        internal const int CFE_AUTOCOLOR = 0x40000000;
+
+        internal static Native.CHARFORMATA GetCharFormat(RichTextBox rtb)
+        {
+            Native.CHARFORMATA lParam = new Native.CHARFORMATA();
+            Native.SendMessage(new HandleRef(rtb, rtb.Handle), Native.EM_GETCHARFORMAT, Native.SCF_DEFAULT, lParam);
+            return lParam;
+        }
+
+        internal static Native.CHARFORMAT2A GetCharFormat2(RichTextBox rtb)
+        {
+            Native.CHARFORMAT2A lParam = new Native.CHARFORMAT2A() { dwMask = Native.CFM_COLOR };
+            Native.SendMessage(new HandleRef(rtb, rtb.Handle), Native.EM_GETCHARFORMAT, Native.SCF_DEFAULT, lParam);
+            return lParam;
+        }
+
+        internal static void SetRichTextBoxDefaultColor(RichTextBox rtb, Color color)
+        {
+            Native.CHARFORMATA charFormat = GetCharFormat(rtb);
+
+            charFormat.dwMask = Native.CFM_COLOR;
+            charFormat.dwEffects = 0;
+            charFormat.crTextColor = ColorTranslator.ToWin32(color);
+            Native.SendMessage(new HandleRef(rtb, rtb.Handle), Native.EM_SETCHARFORMAT, Native.SCF_SELECTION, charFormat);
+        }
         #endregion
 
         #region Scroll

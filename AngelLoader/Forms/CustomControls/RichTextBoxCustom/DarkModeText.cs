@@ -273,8 +273,8 @@ namespace AngelLoader.Forms.CustomControls
                     invertedColor = currentColor.R == 0 && currentColor.G == 0 && currentColor.B == 0
                         ? DarkColors.Fen_DarkForeground
                         : ColorIsTheSameAsBackground(currentColor)
-                            ? DarkColors.Fen_DarkBackground
-                            : ColorUtils.InvertLightness(currentColor);
+                        ? DarkColors.Fen_DarkBackground
+                        : ColorUtils.InvertLightness(currentColor);
                 }
 
                 colorEntriesBytesList.AddRange(_redFieldBytes);
@@ -361,14 +361,6 @@ namespace AngelLoader.Forms.CustomControls
              color themselves however tf they want, sometimes ending up dark-on-dark (see Mystic Gems I and II).
              We should write a mini \fldinst parser that will add this in for us.
 
-            NOTE: We may be able to set the "auto color" using some combination of these:
-            https://docs.microsoft.com/en-us/windows/win32/controls/em-getcharformat
-            https://docs.microsoft.com/en-us/windows/win32/controls/em-setcharformat
-            https://docs.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-charformatw
-            https://docs.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-charformat2w
-
-            That would (probably?) let us remove the \cf0 junk?
-            
             -Image-as-first-item issue with the \cf0 inserts
              If we put a \cf0 before a transparent image, it makes the background of it white.
              See 2006-09-18_WC_WhatLiesBelow_v1
