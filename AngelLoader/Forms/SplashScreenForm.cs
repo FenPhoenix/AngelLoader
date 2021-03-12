@@ -27,20 +27,25 @@ namespace AngelLoader.Forms
 
         // TODO: @DarkMode(SplashScreen): Maybe draw a border and make the classic-mode one Window (white) instead of Control
 
-        private readonly Native.DeviceContext _deviceContext;
-        private readonly Graphics _graphics;
+        #region Private fields
+
+        private VisualTheme _theme;
         private bool _themeSet;
         private bool _closingAllowed;
-        private readonly Font _messageFont = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+
         private readonly Rectangle _messageRect = new Rectangle(0, 120, 648, 64);
-        private const TextFormatFlags _messageTextFormatFlags =
-            TextFormatFlags.HorizontalCenter |
-            TextFormatFlags.Top |
-            TextFormatFlags.NoPrefix |
-            TextFormatFlags.NoClipping |
-            TextFormatFlags.WordBreak;
-        private VisualTheme _theme;
+
+        #region Disposables
+
+        private readonly Native.DeviceContext _deviceContext;
+        private readonly Graphics _graphics;
+
+        private readonly Font _messageFont = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
         private readonly Bitmap _logoBitmap = new Icon(Images.AngelLoader, 48, 48).ToBitmap();
+
+        #endregion
+
+        #endregion
 
         public SplashScreenForm()
         {
@@ -52,14 +57,13 @@ namespace AngelLoader.Forms
 
             Text = "AngelLoader " + Application.ProductVersion;
 
-            CreateHandle();
             _deviceContext = new Native.DeviceContext(Handle);
             _graphics = Graphics.FromHdc(_deviceContext.DC);
         }
 
         public void Show(VisualTheme theme)
         {
-            if (Visible && Opacity != 0d) return;
+            if (Visible) return;
 
             if (!_themeSet)
             {
@@ -77,18 +81,27 @@ namespace AngelLoader.Forms
 
             base.Show();
 
-            // Must draw these after Show(), or they don't show up
+            // Must draw these after Show(), or they don't show up.
+            // These will stay visible for the life of the form, due to our setup.
             _graphics.DrawImage(_logoBitmap, 152, 48);
             _graphics.DrawImage(theme == VisualTheme.Dark ? Resources.About_DarkMode : Resources.About, 200, 48);
         }
 
         public void SetMessage(string message)
         {
-            var bgColorBrush = _theme == VisualTheme.Dark
+            Brush bgColorBrush = _theme == VisualTheme.Dark
                 ? DarkColors.Fen_ControlBackgroundBrush
                 : SystemBrushes.Control;
 
             _graphics.FillRectangle(bgColorBrush, _messageRect);
+
+            const TextFormatFlags _messageTextFormatFlags =
+                TextFormatFlags.HorizontalCenter |
+                TextFormatFlags.Top |
+                TextFormatFlags.NoPrefix |
+                TextFormatFlags.NoClipping |
+                TextFormatFlags.WordBreak;
+
             TextRenderer.DrawText(_graphics, message, _messageFont, _messageRect, ForeColor, BackColor, _messageTextFormatFlags);
         }
 
@@ -96,7 +109,6 @@ namespace AngelLoader.Forms
         {
             _closingAllowed = true;
             Close();
-            Dispose();
         }
 
         // Don't let the user close the splash screen; that would put us in an unexpected/undefined state.
