@@ -43,7 +43,7 @@ namespace AngelLoader
         // And it doesn't get painted over with junk either, both the background color and text stayed put during
         // tests even when another window was moved in front, and even when the thread was blocked for a long time.
         // More thorough testing is needed, but promising.
-        internal static async void Init()
+        internal static async void Init(Task configTask)
         {
             bool openSettings;
             // This is if we have no config file; in that case we assume we're starting for the first time ever
@@ -51,143 +51,146 @@ namespace AngelLoader
 
             List<int>? fmsViewListUnscanned = null;
 
-            #region Create required directories
-
             try
             {
-                Directory.CreateDirectory(Paths.Data);
-                Directory.CreateDirectory(Paths.Languages);
-            }
-            catch (Exception ex)
-            {
-                // ReSharper disable once ConvertToConstant.Local
-                string message = "Failed to create required application directories on startup.";
-                Log(message, ex);
-                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.Exit(1);
-            }
+                #region Create required directories
 
-            #endregion
-
-            #region Read config file if it exists
-
-            if (File.Exists(Paths.ConfigIni))
-            {
                 try
                 {
-                    Ini.ReadConfigIni(Paths.ConfigIni, Config);
-
-                    openSettings = !Directory.Exists(Config.FMsBackupPath);
+                    Directory.CreateDirectory(Paths.Data);
+                    Directory.CreateDirectory(Paths.Languages);
                 }
                 catch (Exception ex)
                 {
-                    string message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                    // ReSharper disable once ConvertToConstant.Local
+                    string message = "Failed to create required application directories on startup.";
                     Log(message, ex);
-                    openSettings = true;
+                    MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(1);
                 }
+
+                #endregion
+
+                #region Read config file if it exists
+
+                if (File.Exists(Paths.ConfigIni))
+                {
+                    try
+                    {
+                        Ini.ReadConfigIni(Paths.ConfigIni, Config);
+
+                        openSettings = !Directory.Exists(Config.FMsBackupPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        string message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                        Log(message, ex);
+                        openSettings = true;
+                    }
+                }
+                else
+                {
+                    openSettings = true;
+                    // We're starting for the first time ever (assumed)
+                    cleanStart = true;
+                }
+
+                #endregion
             }
-            else
+            finally
             {
-                openSettings = true;
-                // We're starting for the first time ever (assumed)
-                cleanStart = true;
+                configTask.Wait();
+                configTask.Dispose();
+            }
+
+            // We can't show the splash screen until we know our theme, which we have to get from the config
+            // file, so we can't show it any earlier than this.
+            using var splashScreen = new SplashScreen();
+
+            if (!openSettings) splashScreen.Show(Config.VisualTheme);
+            // We can't show a message until we've read the config file (to know which language to use) and
+            // the current language file (to get the translated message strings). So just show the splash
+            // screen with no message to start with.
+            splashScreen.SetMessage("");
+
+            #region Read languages
+
+            // Have to read langs here because which language to use will be stored in the config file.
+            // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
+            // name in its own language
+            var langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
+            bool selFound = false;
+
+            // Do it ONCE here, not every loop!
+            Config.LanguageNames.Clear();
+
+            for (int i = 0; i < langFiles.Count; i++)
+            {
+                string f = langFiles[i];
+                string fn = f.GetFileNameFast().RemoveExtension();
+                if (!selFound && fn.EqualsI(Config.Language))
+                {
+                    try
+                    {
+                        LText = Ini.ReadLocalizationIni(f);
+                        selFound = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Error while reading " + f + ".", ex);
+                    }
+                }
+                Ini.AddLanguageFromFile(f, Config.LanguageNames);
             }
 
             #endregion
 
-            try
+            splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigurations);
+
+            #region Set paths
+
+            // PERF: 9ms, but it's mostly IO. Darn.
+            bool[] gameExeExists = new bool[SupportedGameCount];
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                // We can't show the splash screen until we know our theme, which we have to get from the config
-                // file, so we can't show it any earlier than this.
-                SplashScreen.Init();
-                SplashScreen.Show(Config.VisualTheme);
-                // We can't show a message until we've read the config file (to know which language to use) and
-                // the current language file (to get the translated message strings). So just show the splash
-                // screen with no message to start with.
-                SplashScreen.SetMessage("");
+                // Existence checks on startup are merely a perf optimization: values start blank so just don't
+                // set them if we don't have a game exe
+                string gameExe = Config.GetGameExe((GameIndex)i);
+                gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
+                if (gameExeExists[i]) SetGameDataFromDisk((GameIndex)i, storeConfigInfo: true);
+            }
 
-                #region Read languages
+            #endregion
 
-                // Have to read langs here because which language to use will be stored in the config file.
-                // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
-                // name in its own language
-                var langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
-                bool selFound = false;
-
-                // Do it ONCE here, not every loop!
-                Config.LanguageNames.Clear();
-
-                for (int i = 0; i < langFiles.Count; i++)
+            Task DoParallelLoad()
+            {
+                splashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs);
+                using (Task findFMsTask = Task.Run(() => fmsViewListUnscanned = FindFMs.Find(startup: true)))
                 {
-                    string f = langFiles[i];
-                    string fn = f.GetFileNameFast().RemoveExtension();
-                    if (!selFound && fn.EqualsI(Config.Language))
-                    {
-                        try
-                        {
-                            LText = Ini.ReadLocalizationIni(f);
-                            selFound = true;
-                        }
-                        catch (Exception ex)
-                        {
-                            Log("Error while reading " + f + ".", ex);
-                        }
-                    }
-                    Ini.AddLanguageFromFile(f, Config.LanguageNames);
+                    // Construct and init the view both right here, because they're both heavy operations and
+                    // we want them both to run in parallel with Find() to the greatest extent possible.
+                    View = new MainForm();
+                    View.InitThreadable();
+
+                    findFMsTask.Wait();
                 }
 
-                #endregion
+                splashScreen.SetMessage(LText.SplashScreen.LoadingMainApp);
+                return View.FinishInitAndShow(fmsViewListUnscanned!);
+            }
 
-                SplashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigurations);
-
-                #region Set paths
-
-                // PERF: 9ms, but it's mostly IO. Darn.
-                bool[] gameExeExists = new bool[SupportedGameCount];
-                for (int i = 0; i < SupportedGameCount; i++)
+            if (!openSettings)
+            {
+                await DoParallelLoad();
+            }
+            else
+            {
+                splashScreen.Hide();
+                if (!OpenSettings(startup: true, cleanStart: cleanStart).Canceled)
                 {
-                    // Existence checks on startup are merely a perf optimization: values start blank so just don't
-                    // set them if we don't have a game exe
-                    string gameExe = Config.GetGameExe((GameIndex)i);
-                    gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
-                    if (gameExeExists[i]) SetGameDataFromDisk((GameIndex)i, storeConfigInfo: true);
-                }
-
-                #endregion
-
-                Task DoParallelLoad()
-                {
-                    SplashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs);
-                    using (Task findFMsTask = Task.Run(() => fmsViewListUnscanned = FindFMs.Find(startup: true)))
-                    {
-                        // Construct and init the view both right here, because they're both heavy operations and
-                        // we want them both to run in parallel with Find() to the greatest extent possible.
-                        View = new MainForm();
-                        View.InitThreadable();
-
-                        findFMsTask.Wait();
-                    }
-
-                    SplashScreen.SetMessage(LText.SplashScreen.LoadingMainApp);
-                    return View.FinishInitAndShow(fmsViewListUnscanned!);
-                }
-
-                if (!openSettings)
-                {
+                    splashScreen.Show(Config.VisualTheme);
                     await DoParallelLoad();
                 }
-                else
-                {
-                    if (!OpenSettings(startup: true, cleanStart: cleanStart).Canceled)
-                    {
-                        SplashScreen.Show(Config.VisualTheme);
-                        await DoParallelLoad();
-                    }
-                }
-            }
-            finally
-            {
-                SplashScreen.Close();
             }
         }
 

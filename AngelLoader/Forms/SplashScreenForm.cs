@@ -9,6 +9,24 @@ namespace AngelLoader.Forms
 {
     public sealed partial class SplashScreenForm : Form
     {
+        /*
+        Here's the deal with this:
+        We want this form to be fully and properly painted at all times. Normally, we would achieve this by simply
+        running all init tasks in the background so that this form's thread is always free. However, part of our
+        init time includes initializing the main form (which is heavy, and even more so if we're setting dark mode).
+        Since all UI stuff has to run on the same thread, this form would end up in a blocked, and quite likely
+        partially-painted, state. We can put this form into another thread via a separate ApplicationContext,
+        and that works, except then we have insurmountable focus issues (the main form _usually_, but not always,
+        takes focus as it should).
+        The other option we have is to bypass the normal way to display a form entirely, and just paint everything
+        directly onto its device context. That way, we paint it _once_ and never change it until we repaint the
+        message text, and it never gets into an ugly half-painted state, even when its thread is blocked, as it
+        will be during main form init. But it does mean we have some very unorthodox code in here. Don't worry
+        about it.
+        */
+
+        // TODO: @DarkMode(SplashScreen): Maybe draw a border and make the classic-mode one Window (white) instead of Control
+
         private readonly Native.DeviceContext _deviceContext;
         private readonly Graphics _graphics;
         private bool _themeSet;
@@ -26,7 +44,11 @@ namespace AngelLoader.Forms
 
         public SplashScreenForm()
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitializeComponentSlim();
+#endif
 
             Text = "AngelLoader " + Application.ProductVersion;
 
@@ -53,15 +75,11 @@ namespace AngelLoader.Forms
                 _themeSet = true;
             }
 
-            if (Misc.WinVersionIs8OrAbove()) Opacity = 0d;
-
             base.Show();
 
             // Must draw these after Show(), or they don't show up
             _graphics.DrawImage(_logoBitmap, 152, 48);
             _graphics.DrawImage(theme == VisualTheme.Dark ? Resources.About_DarkMode : Resources.About, 200, 48);
-
-            if (Misc.WinVersionIs8OrAbove()) Opacity = 1.0d;
         }
 
         public void SetMessage(string message)
@@ -81,6 +99,7 @@ namespace AngelLoader.Forms
             Dispose();
         }
 
+        // Don't let the user close the splash screen; that would put us in an unexpected/undefined state.
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (!_closingAllowed)
