@@ -57,7 +57,7 @@ if %ConfigurationName% == Release_Public (
 ) else if %ConfigurationName% == Release_Beta (
 "%system%xcopy" "%ProjectDir%Languages\English.ini" "%destDir%Data\Languages\" /y
 ) else (
-"%system%xcopy" "%ProjectDir%Languages" "%destDir%Data\Languages\" /y /i /e
+"%system%xcopy" "%ProjectDir%Languages\*.ini" "%destDir%Data\Languages\" /y /i /e
 )
 
 "%system%xcopy" "%SolutionDir%BinReleaseOnly" "%destDir%" /y /i /e
