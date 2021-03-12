@@ -45,7 +45,7 @@ namespace AngelLoader
         // More thorough testing is needed, but promising.
         internal static async void Init(Task configTask)
         {
-            bool openSettings;
+            bool openSettings = false;
             // This is if we have no config file; in that case we assume we're starting for the first time ever
             bool cleanStart = false;
 
@@ -79,7 +79,6 @@ namespace AngelLoader
                     {
                         Ini.ReadConfigIni(Paths.ConfigIni, Config);
 
-                        openSettings = !Directory.Exists(Config.FMsBackupPath);
                     }
                     catch (Exception ex)
                     {
@@ -107,47 +106,65 @@ namespace AngelLoader
             // file, so we can't show it any earlier than this.
             using var splashScreen = new SplashScreen();
 
-            if (!openSettings) splashScreen.Show(Config.VisualTheme);
-            // We can't show a message until we've read the config file (to know which language to use) and
-            // the current language file (to get the translated message strings). So just show the splash
-            // screen with no message to start with.
-            splashScreen.SetMessage("");
-
-            #region Read languages
-
-            // Have to read langs here because which language to use will be stored in the config file.
-            // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
-            // name in its own language
-            var langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
-            bool selFound = false;
-
-            // Do it ONCE here, not every loop!
-            Config.LanguageNames.Clear();
-
-            for (int i = 0; i < langFiles.Count; i++)
+            static void ReadLanguages(SplashScreen splashScreen)
             {
-                string f = langFiles[i];
-                string fn = f.GetFileNameFast().RemoveExtension();
-                if (!selFound && fn.EqualsI(Config.Language))
+                // We can't show a message until we've read the config file (to know which language to use) and
+                // the current language file (to get the translated message strings). So just show language dir/
+                // language file names, so it's as clear as possible what we're doing without actually having to
+                // display a translated string.
+                splashScreen.SetMessage(Paths.Languages);
+
+                // Have to read langs here because which language to use will be stored in the config file.
+                // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
+                // name in its own language
+                var langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
+                bool selFound = false;
+
+                // Do it ONCE here, not every loop!
+                Config.LanguageNames.Clear();
+
+                for (int i = 0; i < langFiles.Count; i++)
                 {
-                    try
+                    string f = langFiles[i];
+                    string fn = f.GetFileNameFast().RemoveExtension();
+
+                    splashScreen.SetMessage(f);
+
+                    if (!selFound && fn.EqualsI(Config.Language))
                     {
-                        LText = Ini.ReadLocalizationIni(f);
-                        selFound = true;
+                        try
+                        {
+                            LText = Ini.ReadLocalizationIni(f);
+                            selFound = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Error while reading " + f + ".", ex);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Log("Error while reading " + f + ".", ex);
-                    }
+                    Ini.AddLanguageFromFile(f, Config.LanguageNames);
                 }
-                Ini.AddLanguageFromFile(f, Config.LanguageNames);
             }
 
-            #endregion
+            if (!openSettings)
+            {
+                splashScreen.Show(Config.VisualTheme);
+
+                ReadLanguages(splashScreen);
+
+                splashScreen.SetMessage(LText.SplashScreen.CheckingPaths);
+
+                openSettings = !Directory.Exists(Config.FMsBackupPath);
+            }
+            // Don't show the splash screen on first start, because it looks awkward
+            else
+            {
+                ReadLanguages(splashScreen);
+            }
 
             splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigurations);
 
-            #region Set paths
+            #region Set game data
 
             // PERF: 9ms, but it's mostly IO. Darn.
             bool[] gameExeExists = new bool[SupportedGameCount];

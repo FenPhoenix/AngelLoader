@@ -104,6 +104,7 @@ namespace AngelLoader.DataClasses
 
         internal sealed class SplashScreen_Class
         {
+            internal readonly string CheckingPaths = "Checking paths...";
             internal readonly string ReadingGameConfigurations = "Reading game configurations...";
             internal readonly string SearchingForNewFMs = "Searching for new FMs...";
             internal readonly string LoadingMainApp = "Loading main app...";
