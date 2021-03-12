@@ -36,7 +36,7 @@ namespace AngelLoader
             // takes 32ms to initialize(!). Rather than letting Form.ctor do it serially, we're going to do it in
             // the background while other stuff runs, thus chopping off even more startup time.
             // AppSettings is just a dummy value whose retrieval will cause the config manager to initialize.
-            Task configTask = Task.Run(() => System.Configuration.ConfigurationManager.AppSettings);
+            //Task configTask = Task.Run(() => System.Configuration.ConfigurationManager.AppSettings);
 
             // We need to clear this because FMScanner doesn't have a startup version
             ClearLogFileStartup(Paths.ScannerLogFile);
@@ -82,12 +82,12 @@ namespace AngelLoader
 
             #endregion
 
-            Application.Run(new AppContext(configTask));
+            Application.Run(new AppContext());
         }
     }
 
     internal sealed class AppContext : ApplicationContext
     {
-        internal AppContext(Task configTask) => Core.Init(configTask);
+        internal AppContext() => Core.Init();
     }
 }

@@ -25,6 +25,7 @@ namespace AngelLoader.DataClasses
 
         internal readonly Meta_Class Meta = new Meta_Class();
         internal readonly Global_Class Global = new Global_Class();
+        internal readonly SplashScreen_Class SplashScreen = new SplashScreen_Class();
         internal readonly BrowseDialogs_Class BrowseDialogs = new BrowseDialogs_Class();
         internal readonly AlertMessages_Class AlertMessages = new AlertMessages_Class();
         internal readonly MainMenu_Class MainMenu = new MainMenu_Class();
@@ -99,6 +100,13 @@ namespace AngelLoader.DataClasses
             internal readonly string ResetZoom = "Reset zoom (Ctrl+0)";
             [FenGenBlankLine]
             internal readonly string Exit = "Exit";
+        }
+
+        internal sealed class SplashScreen_Class
+        {
+            internal readonly string ReadingGameConfigurations = "Reading game configurations...";
+            internal readonly string SearchingForNewFMs = "Searching for new FMs...";
+            internal readonly string LoadingMainApp = "Loading main app...";
         }
 
         internal sealed class BrowseDialogs_Class
