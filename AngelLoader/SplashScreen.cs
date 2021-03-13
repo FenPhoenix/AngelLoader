@@ -24,10 +24,7 @@ namespace AngelLoader
         internal void SetMessage(string message)
         {
             // Small perf optimization
-            if (splashScreenForm.Visible)
-            {
-                splashScreenForm.SetMessage(message);
-            }
+            if (splashScreenForm.Visible) splashScreenForm.SetMessage(message);
         }
 
         public void Dispose() => splashScreenForm.ProgrammaticClose();
