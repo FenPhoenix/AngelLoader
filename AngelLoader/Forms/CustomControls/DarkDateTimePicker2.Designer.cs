@@ -8,19 +8,6 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
         #region Component Designer generated code
 
         /// <summary> 
@@ -30,6 +17,7 @@ namespace AngelLoader.Forms.CustomControls
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
+            this.DropDownButtonPanel = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // label1
@@ -42,15 +30,24 @@ namespace AngelLoader.Forms.CustomControls
             this.label1.TabIndex = 0;
             this.label1.Text = "4/21/2004";
             // 
+            // DropDownButtonPanel
+            // 
+            this.DropDownButtonPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.DropDownButtonPanel.Location = new System.Drawing.Point(129, 0);
+            this.DropDownButtonPanel.Name = "DropDownButtonPanel";
+            this.DropDownButtonPanel.Size = new System.Drawing.Size(34, 20);
+            this.DropDownButtonPanel.TabIndex = 1;
+            // 
             // DarkDateTimePicker2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.DropDownButtonPanel);
             this.Controls.Add(this.label1);
-            this.MaximumSize = new System.Drawing.Size(2147483647, 20);
+            this.MaximumSize = new System.Drawing.Size(65535, 20);
             this.MinimumSize = new System.Drawing.Size(0, 20);
             this.Name = "DarkDateTimePicker2";
-            this.Size = new System.Drawing.Size(160, 20);
+            this.Size = new System.Drawing.Size(163, 20);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -59,5 +56,6 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Panel DropDownButtonPanel;
     }
 }

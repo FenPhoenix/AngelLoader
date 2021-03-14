@@ -17,7 +17,7 @@ namespace AngelLoader.Forms
     internal static class ControlUtils
     {
         // Only one copy of the hook
-        internal static IMouseEvents? MouseHook;
+        internal static readonly IMouseEvents MouseHook = Hook.AppEvents();
 
         #region Suspend/resume drawing
 

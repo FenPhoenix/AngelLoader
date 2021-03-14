@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AngelLoader.WinAPI;
+using Gma.System.MouseKeyHook;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -43,9 +46,56 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        private readonly CalendarDropDown _calendarDropDown;
+
         public DarkDateTimePicker2()
         {
             InitializeComponent();
+
+            _calendarDropDown = new CalendarDropDown();
+
+            DropDownButtonPanel.BackColor = DarkColors.Fen_ControlBackground;
+
+            DropDownButtonPanel.MouseDown += DropDownButtonPanel_MouseDown;
+
+            ControlUtils.MouseHook.MouseDownExt += MouseHook_MouseDownExt;
+        }
+
+        protected override void OnGotFocus(EventArgs e)
+        {
+            Trace.WriteLine("FOCUSED");
+            base.OnGotFocus(e);
+        }
+
+        private void MouseHook_MouseDownExt(object sender, MouseEventExtArgs e)
+        {
+            if (_calendarDropDown.Visible)
+            {
+                _calendarDropDown.Close();
+                e.Handled = true;
+            }
+        }
+
+        private void DropDownButtonPanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!_calendarDropDown.Visible)
+            {
+                _calendarDropDown.Show(DropDownButtonPanel, 0, DropDownButtonPanel.Height);
+            }
+        }
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                components?.Dispose();
+                ControlUtils.MouseHook.MouseDownExt -= MouseHook_MouseDownExt;
+            }
+            base.Dispose(disposing);
         }
     }
 }

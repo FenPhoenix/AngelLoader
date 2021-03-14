@@ -86,8 +86,6 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Set up mouse hook
 
-            ControlUtils.MouseHook ??= Hook.AppEvents();
-
             ControlUtils.MouseHook.MouseDownExt += MouseDownExt_Handler;
             ControlUtils.MouseHook.MouseUpExt += MouseUpExt_Handler;
             ControlUtils.MouseHook.MouseMoveExt += MouseMoveExt_Handler;
@@ -443,12 +441,9 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (disposing)
             {
-                if (ControlUtils.MouseHook != null)
-                {
-                    ControlUtils.MouseHook.MouseDownExt -= MouseDownExt_Handler;
-                    ControlUtils.MouseHook.MouseUpExt -= MouseUpExt_Handler;
-                    ControlUtils.MouseHook.MouseMoveExt -= MouseMoveExt_Handler;
-                }
+                ControlUtils.MouseHook.MouseDownExt -= MouseDownExt_Handler;
+                ControlUtils.MouseHook.MouseUpExt -= MouseUpExt_Handler;
+                ControlUtils.MouseHook.MouseMoveExt -= MouseMoveExt_Handler;
             }
 
             base.Dispose(disposing);
