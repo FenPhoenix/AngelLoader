@@ -801,6 +801,17 @@ namespace AngelLoader.Forms
             UpdateGameScreenShotModes();
 #endif
 
+            // PERF: If we're in the classic theme, we don't need to do anything
+            // Do this here to prevent double-loading of RTF/GLML readmes
+            if (Config.VisualTheme != VisualTheme.Classic)
+            {
+                SetTheme(Config.VisualTheme, startup: true, alsoCreateControlHandles: true);
+            }
+            else
+            {
+                ControlUtils.CreateAllControlsHandles(this);
+            }
+
             // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
             // Find() to have been run first.
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
@@ -825,21 +836,6 @@ namespace AngelLoader.Forms
 #if !ReleasePublic
             //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
 #endif
-        }
-
-        [PublicAPI]
-        public new void Show()
-        {
-            // PERF: If we're in the classic theme, we don't need to do anything
-            if (Config.VisualTheme != VisualTheme.Classic)
-            {
-                SetTheme(Config.VisualTheme, startup: true, alsoCreateControlHandles: true);
-            }
-            else
-            {
-                ControlUtils.CreateAllControlsHandles(this);
-            }
-            base.Show();
         }
 
         private void SetWindowStateAndSize()
