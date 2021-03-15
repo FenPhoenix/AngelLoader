@@ -14,6 +14,33 @@ using AL_Common;
 using AngelLoader.WinAPI;
 using Gma.System.MouseKeyHook;
 
+/*
+Win32 DateTimePicker notes:
+-Updates format in real-time based on the system settings.
+-System formats for date are:
+ d    - numeric day, minimum digits possible    (eg. 1, 11)
+ dd   - numeric day, full digit                 (eg. 01, 11)
+ ddd  - named day, abbreviated                  (eg. Wed)
+ dddd - named day, full                         (eg. Wednesday)
+ M    - numeric month, minimum digits possible  (eg. 1, 11)
+ MM   - numeric month, full digits              (eg. 01, 11)
+ MMM  - named month, abbreviated                (eg. Jan)
+ MMMM - named month, full                       (eg. January)
+
+-Win32 DateTimePicker works like this:
+ -All fields are selectable EXCEPT ddd, dddd, separator chars, and non-field chars (like 'г.' and 'ý.').
+ -Unselectable fields get skipped over on arrow key field change, and the left mouse button causes the field to
+  the left to be selected, or if no selectable fields are to the left, then if no fields are selected, the first
+  selectable field is selected, otherwise the selection is not changed from current.
+ -If a field is partway off the canvas and is selected, the field section will be scrolled just enough to show
+  all of it.
+ -If there are multiple of the same field, they're treated as separate selectable fields, and modifying one also
+  updates any others (this would be done automatically with a TryParse-and-ToString-on-modify system).
+TODO: @DarkMode(DarkDateTimePicker):
+ -Typing numbers into the fields behaves in a very specific way, too, regarding which digit goes where in a 1-2
+  digit field when you type it. Look into this and note down its behavior exactly here.
+*/
+
 namespace AngelLoader.Forms.CustomControls
 {
     public sealed partial class DarkDateTimePicker2 : UserControl

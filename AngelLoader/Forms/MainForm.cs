@@ -57,7 +57,6 @@ using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
-using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
