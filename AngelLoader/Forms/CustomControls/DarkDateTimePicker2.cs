@@ -39,8 +39,6 @@ Win32 DateTimePicker notes:
 TODO: @DarkMode(DarkDateTimePicker):
  -Typing numbers into the fields behaves in a very specific way, too, regarding which digit goes where in a 1-2
   digit field when you type it. Look into this and note down its behavior exactly here.
--Could we get the graphics from the device context, perform a color matrix transformation (one for normal area
- and one for the selected area) and get dark colors that way?!
 */
 
 namespace AngelLoader.Forms.CustomControls
