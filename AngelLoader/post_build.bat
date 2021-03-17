@@ -46,6 +46,8 @@ del /F "%destDir%JetBrains.Annotations.dll"
 del /F "%destDir%*xunit*.dll"
 del /F "%destDir%*TestPlatform*.dll"
 del /F "%destDir%testhost.dll"
+del /F "%destDir%EasyLoad*.dll"
+del /F "%destDir%EasyHook64.dll"
 
 rem "%system%xcopy" "%SolutionDir%libs\x86\7z.dll" "%destDir%" /y
 rem "%system%xcopy" "%SolutionDir%\libs\x86\7z.dll" "%TargetDir%" /y
