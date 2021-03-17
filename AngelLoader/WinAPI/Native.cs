@@ -689,8 +689,11 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
-        public const int DTM_FIRST = 0x1000;
-        public const int DTM_GETDATETIMEPICKERINFO = 0x100E;
+        internal const int DTM_FIRST = 0x1000;
+        internal const int DTM_GETDATETIMEPICKERINFO = 0x100E;
+
+        internal const int STATE_SYSTEM_HOTTRACKED = 0x00000080;
+        internal const int STATE_SYSTEM_PRESSED = 0x00000008;
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct DATETIMEPICKERINFO
