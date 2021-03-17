@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
-using FFmpeg.NET;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -126,8 +125,7 @@ namespace AngelLoader
                         {
                             var fmSndPaths = GetFMSoundPathsByGame(fm);
 
-                            var engine = new Engine(Paths.FFmpegExe);
-                            var options = new ConversionOptions { AudioBitRate = 16 };
+                            var engine = new FFmpeg.NET.Engine(Paths.FFmpegExe);
 
                             foreach (string fmSndPath in fmSndPaths)
                             {
@@ -150,9 +148,7 @@ namespace AngelLoader
 
                                     string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
 
-                                    var inFile = new MediaFile(f);
-                                    var outFile = new MediaFile(tempFile);
-                                    await engine.ConvertAsync(inFile, outFile, options);
+                                    await engine.ConvertAsync(f, tempFile, FFmpeg.NET.ConvertType.AudioBitRateTo16Bit);
 
                                     File.Delete(f);
                                     File.Move(tempFile, f);
@@ -195,14 +191,15 @@ namespace AngelLoader
                                     return;
                                 }
 
+                                var engine = new FFmpeg.NET.Engine(Paths.FFmpegExe);
+
                                 foreach (string f in files)
                                 {
                                     File_UnSetReadOnly(f);
 
                                     try
                                     {
-                                        var engine = new Engine(Paths.FFmpegExe);
-                                        await engine.ConvertAsync(new MediaFile(f), new MediaFile(f.RemoveExtension() + ".wav"));
+                                        await engine.ConvertAsync(f, f.RemoveExtension() + ".wav", FFmpeg.NET.ConvertType.FormatConvert);
                                     }
                                     catch (Exception ex)
                                     {
