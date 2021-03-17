@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using AngelLoader.Forms.CustomControls;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
 
@@ -15,6 +14,12 @@ namespace AngelLoader.WinAPI
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static class Native
     {
+        [DllImport("uxtheme.dll")]
+        internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
+
+        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
+        internal static extern IntPtr CreateSolidBrush(int crColor);
+
         #region ListView
 
         internal const int LVM_FIRST = 0x1000;

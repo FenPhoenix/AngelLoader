@@ -21,8 +21,25 @@ namespace AngelLoader.Forms.CustomControls
         {
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            Native.SetWindowTheme(Handle, "", "");
+        }
+
+        // TODO: @DarkMode(DateTimePicker): Paint over the Win98-looking unthemed parts (border, button, etc.)
+
         protected override void WndProc(ref Message m)
         {
+            //if (m.Msg == Native.WM_PAINT)
+            //{
+            //    Trace.WriteLine("PAINT");
+            //}
+            //else if (m.Msg == Native.WM_NCPAINT)
+            //{
+            //    Trace.WriteLine("NC_PAINT");
+            //}
+
             base.WndProc(ref m);
             return;
 
@@ -41,7 +58,7 @@ namespace AngelLoader.Forms.CustomControls
                 DrawToBitmap(bmp, ClientRectangle);
 
                 //bmp.Save(@"C:\_DTP_\save_" + saveCount + ".png", ImageFormat.Png);
-                saveCount++;
+                //saveCount++;
             }
             base.WndProc(ref m);
         }

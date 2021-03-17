@@ -464,6 +464,8 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            NativeHooks.InstallHooks();
+
             #region Manual control init
 
             ReadmeFullScreenButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
