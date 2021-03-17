@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using FFmpeg.NET.Enums;
 
 namespace FFmpeg.NET
 {
@@ -11,20 +10,8 @@ namespace FFmpeg.NET
             if (parameters.HasCustomArguments)
                 return parameters.CustomArguments;
 
-            switch (parameters.Task)
-            {
-                case FFmpegTask.Convert:
-                    return Convert(parameters.InputFile, parameters.OutputFile, parameters.ConversionOptions);
-
-                case FFmpegTask.GetMetaData:
-                    return GetMetadata(parameters.InputFile);
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            return Convert(parameters.InputFile, parameters.OutputFile, parameters.ConversionOptions);
         }
-
-        private static string GetMetadata(MediaFile inputFile) => $"-i \"{inputFile.FileInfo.FullName}\" -f ffmetadata -";
 
         private static string Convert(MediaFile inputFile, MediaFile outputFile, ConversionOptions conversionOptions)
         {
@@ -36,11 +23,6 @@ namespace FFmpeg.NET
 
             if (conversionOptions.HideBanner) commandBuilder.Append(" -hide_banner ");
 
-            if (conversionOptions.Threads != 0)
-            {
-                commandBuilder.AppendFormat(" -threads {0} ", conversionOptions.Threads);
-            }
-
             commandBuilder.AppendFormat(" -i \"{0}\" ", inputFile.FileInfo.FullName);
 
             #region Audio
@@ -48,13 +30,6 @@ namespace FFmpeg.NET
             if (conversionOptions.AudioBitRate != null)
                 commandBuilder.AppendFormat(" -ab {0}k", conversionOptions.AudioBitRate);
 
-            // Audio sample rate
-            if (conversionOptions.AudioSampleRate != AudioSampleRate.Default)
-                commandBuilder.AppendFormat(" -ar {0} ", conversionOptions.AudioSampleRate.ToString().Replace("Hz", ""));
-
-            // Remove Audio
-            if (conversionOptions.RemoveAudio)
-                commandBuilder.Append(" -an ");
             #endregion
 
             if (conversionOptions.MapMetadata) commandBuilder.Append(" -map_metadata 0 ");
