@@ -100,7 +100,7 @@ namespace AngelLoader.WinAPI
                     COLOR_WINDOW => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
                     COLOR_WINDOWTEXT => ColorTranslator.ToWin32(DarkColors.LightText),
                     COLOR_HIGHLIGHT => ColorTranslator.ToWin32(DarkColors.BlueSelection),
-                    COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.LightText),
+                    COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
                     _ => GetSysColorOriginal!(nIndex)
                 }
                 : GetSysColorOriginal!(nIndex);
@@ -115,7 +115,7 @@ namespace AngelLoader.WinAPI
                     COLOR_WINDOW => DarkColors.Fen_ControlBackground,
                     COLOR_WINDOWTEXT => DarkColors.LightText,
                     COLOR_HIGHLIGHT => DarkColors.BlueSelection,
-                    COLOR_HIGHLIGHT_TEXT => DarkColors.LightText,
+                    COLOR_HIGHLIGHT_TEXT => DarkColors.Fen_HighlightText,
                     _ => null
                 };
 

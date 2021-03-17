@@ -24,6 +24,10 @@ namespace AngelLoader.Forms.CustomControls
 
         public static readonly Color Fen_DGVColumnHeaderHighlight = Color.FromArgb(77, 90, 114);
         public static readonly Color Fen_DGVColumnHeaderPressed = Color.FromArgb(82, 103, 142);
+        // The same as SystemColors.HighlightText is normally, but that could in theory change (unlikely scenario,
+        // but still) so just use an explicit color so we know we'll always look right.
+        // TODO: @DarkMode(Colors): Make sure all dark mode colors are explicit, and not using premade ones that could change!
+        public static readonly Color Fen_HighlightText = Color.FromArgb(255, 255, 255);
 
         #endregion
 
@@ -64,6 +68,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Pen Fen_DGVCellBordersPen = new Pen(Fen_DGVCellBorders);
         public static readonly Pen Fen_DGVColumnHeaderHighlightPen = new Pen(Fen_DGVColumnHeaderHighlight);
         public static readonly Pen Fen_DGVColumnHeaderPressedPen = new Pen(Fen_DGVColumnHeaderPressed);
+        public static readonly Pen Fen_HighlightTextPen = new Pen(Fen_HighlightText);
 
         public static readonly Pen GreyBackgroundPen = new Pen(GreyBackground);
         public static readonly Pen HeaderBackgroundPen = new Pen(HeaderBackground);
@@ -100,6 +105,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly SolidBrush Fen_DGVCellBordersBrush = new SolidBrush(Fen_DGVCellBorders);
         public static readonly SolidBrush Fen_DGVColumnHeaderHighlightBrush = new SolidBrush(Fen_DGVColumnHeaderHighlight);
         public static readonly SolidBrush Fen_DGVColumnHeaderPressedBrush = new SolidBrush(Fen_DGVColumnHeaderPressed);
+        public static readonly SolidBrush Fen_HighlightTextBrush = new SolidBrush(Fen_HighlightText);
 
         public static readonly SolidBrush GreyBackgroundBrush = new SolidBrush(GreyBackground);
         public static readonly SolidBrush HeaderBackgroundBrush = new SolidBrush(HeaderBackground);

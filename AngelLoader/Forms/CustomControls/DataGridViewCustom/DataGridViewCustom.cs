@@ -339,7 +339,15 @@ namespace AngelLoader.Forms.CustomControls
 
                 #endregion
 
+                #region Draw content
+
+                e.CellStyle.ForeColor = selectedIndex == e.RowIndex
+                    ? DarkColors.Fen_HighlightText
+                    : DarkColors.Fen_DarkForeground;
+
                 e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
+
+                #endregion
 
                 #region Draw cell borders
 
