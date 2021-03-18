@@ -6,22 +6,33 @@ using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class DTP_Subclass_Test : DateTimePicker
+    public sealed class DTP_Subclass_Test : DateTimePicker, IDarkable
     {
-        // TODO: @DarkMode(DateTimePicker): Only redraw the button on mousemove when its state has changed (to prevent flicker)
-
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-            Native.SetWindowTheme(Handle, "", "");
-        }
-
-        public DTP_Subclass_Test()
-        {
-            //SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
-        }
-
         private bool _mouseOverButton;
+
+        private bool _darkModeEnabled;
+        public bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                if (_darkModeEnabled == value) return;
+                _darkModeEnabled = value;
+
+                if (_darkModeEnabled)
+                {
+                    Native.SetWindowTheme(Handle, "", "");
+                }
+                else
+                {
+                    // I can't get SetWindowTheme() to work for resetting the theme back to normal, but recreating
+                    // the handle does the job.
+                    RecreateHandle();
+                }
+
+                Invalidate();
+            }
+        }
 
         private (Native.DATETIMEPICKERINFO DateTimePickerInfo, Rectangle ButtonRectangle)
         GetDTPInfoAndButtonRect()
@@ -39,24 +50,31 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            var (_, buttonRect) = GetDTPInfoAndButtonRect();
-            _mouseOverButton = buttonRect.Contains(PointToClient(Cursor.Position));
-
-            using Native.DeviceContext dc = new Native.DeviceContext(Handle);
-            using Graphics g = Graphics.FromHdc(dc.DC);
-
-            DrawButton(g);
-
             base.OnMouseMove(e);
+
+            if (!_darkModeEnabled) return;
+
+            var (_, buttonRect) = GetDTPInfoAndButtonRect();
+            bool newMouseOverButton = buttonRect.Contains(PointToClient(Cursor.Position));
+
+            if (newMouseOverButton != _mouseOverButton)
+            {
+                _mouseOverButton = newMouseOverButton;
+                DrawButton();
+            }
         }
 
         protected override void OnMouseLeave(EventArgs e)
         {
-            _mouseOverButton = false;
-
-            DrawButton();
-
             base.OnMouseLeave(e);
+
+            if (!_darkModeEnabled) return;
+
+            if (_mouseOverButton)
+            {
+                _mouseOverButton = false;
+                DrawButton();
+            }
         }
 
         private void DrawButton(Graphics? g = null)
@@ -71,6 +89,7 @@ namespace AngelLoader.Forms.CustomControls
                 g = Graphics.FromHdc(dc.DC);
                 disposeGraphics = true;
             }
+
             try
             {
                 var (dtpInfo, buttonRect) = GetDTPInfoAndButtonRect();
@@ -104,10 +123,17 @@ namespace AngelLoader.Forms.CustomControls
             DrawButton(g);
         }
 
-        // TODO: @DarkMode(DateTimePicker): Paint over the Win98-looking unthemed parts (border, button, etc.)
-
         protected override void WndProc(ref Message m)
         {
+            if (!_darkModeEnabled)
+            {
+                base.WndProc(ref m);
+                return;
+            }
+
+            // TODO: @DarkMode(DateTimePicker): Still flickers the classic border somewhat on move/resize
+            // Not the end of the world, but if we find a quick way to fix it, we should do it. Otherwise, we'll
+            // just call it done.
             if (m.Msg == Native.WM_PAINT)
             {
                 base.WndProc(ref m);
@@ -115,6 +141,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             else if (m.Msg == Native.WM_NCPAINT)
             {
+                // Attempt to reduce flicker (only reduces the chance very slightly)
                 PaintCustom();
             }
             else

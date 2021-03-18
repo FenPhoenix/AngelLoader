@@ -707,5 +707,11 @@ namespace AngelLoader.WinAPI
             internal IntPtr hwndUD;
             internal IntPtr hwndDropDown;
         }
+
+        [DllImport("uxtheme", ExactSpelling = true)]
+        internal static extern IntPtr GetWindowTheme(IntPtr hWnd);
+
+        [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
+        internal static extern IntPtr OpenThemeData(IntPtr hWnd, String classList);
     }
 }
