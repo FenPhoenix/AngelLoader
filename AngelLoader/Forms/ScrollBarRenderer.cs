@@ -23,6 +23,8 @@ namespace AngelLoader.Forms
 
             #region Background
 
+            var rect = Rectangle.FromLTRB(pRect.left, pRect.top, pRect.right, pRect.bottom);
+
             Brush brush;
             switch (partId)
             {
@@ -33,6 +35,28 @@ namespace AngelLoader.Forms
                 case Native.SBP_THUMBBTNVERT:
                 case Native.SBP_GRIPPERHORZ:
                 case Native.SBP_GRIPPERVERT:
+                    #region Correct the thumb width
+
+                    /* Should do this, but doesn't work quite right at the moment
+                    // Match Windows behavior - the thumb is 1px in from each side
+                    // The "gripper" rect gives us the right width, but the wrong length
+                    switch (partId)
+                    {
+                        case Native.SBP_THUMBBTNHORZ:
+                            g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.Right, rect.Y);
+                            g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Bottom, rect.Right, rect.Bottom);
+                            rect = new Rectangle(rect.X, rect.Y + 1, rect.Width, rect.Height - 2);
+                            break;
+                        case Native.SBP_THUMBBTNVERT:
+                            g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.X, rect.Bottom);
+                            g.DrawLine(DarkColors.DarkBackgroundPen, rect.Right, rect.Y, rect.Right, rect.Bottom);
+                            rect = new Rectangle(rect.X + 1, rect.Y, rect.Width - 2, rect.Height);
+                            break;
+                    }
+                    */
+
+                    #endregion
+
                     brush = stateId switch
                     {
                         Native.SCRBS_NORMAL => DarkColors.GreySelectionBrush,
@@ -47,7 +71,6 @@ namespace AngelLoader.Forms
                     break;
             }
 
-            var rect = Rectangle.FromLTRB(pRect.left, pRect.top, pRect.right, pRect.bottom);
 
             g.FillRectangle(brush, rect);
 

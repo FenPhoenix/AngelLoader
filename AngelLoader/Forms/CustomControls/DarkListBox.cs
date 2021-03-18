@@ -1,46 +1,16 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.WinAPI;
-using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class DarkListBox : ListView, IDarkableScrollableNative
+    public class DarkListBox : ListView, IDarkable
     {
         private bool _ctrlDown;
         private bool _shiftDown;
         private int _updatingItems;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool Suspended { get; set; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native VerticalVisualScrollBar { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native HorizontalVisualScrollBar { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Corner VisualScrollBarCorner { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? Scroll;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? DarkModeChanged;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? RefreshIfNeededForceCorner;
 
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
@@ -59,7 +29,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     BackColor = SystemColors.Window;
                 }
-                DarkModeChanged?.Invoke(this, EventArgs.Empty);
+
                 Refresh();
             }
         }
@@ -76,7 +46,6 @@ namespace AngelLoader.Forms.CustomControls
             _updatingItems = (_updatingItems - 1).ClampToZero();
             if (_updatingItems == 0)
             {
-                if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                 // It's way too slow to do this for every single item added, so when we're in update mode, just
                 // do it only once at the end of the update. This keeps us fast enough to get on with.
                 AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
@@ -102,10 +71,6 @@ namespace AngelLoader.Forms.CustomControls
 
             OwnerDraw = true;
             base.DoubleBuffered = true;
-
-            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
-            HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
-            VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
         }
 
         #region Public methods
@@ -158,14 +123,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        public new void BringToFront()
-        {
-            base.BringToFront();
-            VerticalVisualScrollBar.BringToFront();
-            HorizontalVisualScrollBar.BringToFront();
-            VisualScrollBarCorner.BringToFront();
-        }
-
         #region Event overrides
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -187,12 +144,6 @@ namespace AngelLoader.Forms.CustomControls
             base.OnSelectedIndexChanged(e);
             // Invalidate() for performance (Refresh() causes lag)
             Invalidate();
-        }
-
-        protected override void OnClientSizeChanged(EventArgs e)
-        {
-            base.OnClientSizeChanged(e);
-            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnDrawItem(DrawListViewItemEventArgs e)
@@ -249,48 +200,6 @@ namespace AngelLoader.Forms.CustomControls
 
             TextRenderer.DrawText(e.Graphics, e.Item.Text, e.Item.Font, e.Bounds, textColor, textBackColor, textFormatFlags);
         }
-
-        #region Visible / Show / Hide overrides
-
-        [PublicAPI]
-        public new bool Visible
-        {
-            get => base.Visible;
-            set
-            {
-                if (value)
-                {
-                    // Do this before setting the Visible value to avoid the classic-bar-flicker
-                    VerticalVisualScrollBar?.ForceSetVisibleState(true);
-                    HorizontalVisualScrollBar?.ForceSetVisibleState(true);
-                    base.Visible = true;
-                }
-                else
-                {
-                    base.Visible = false;
-                    VerticalVisualScrollBar?.ForceSetVisibleState(false);
-                    HorizontalVisualScrollBar?.ForceSetVisibleState(false);
-                }
-            }
-        }
-
-        [PublicAPI]
-        public new void Show()
-        {
-            VerticalVisualScrollBar?.ForceSetVisibleState(true);
-            HorizontalVisualScrollBar?.ForceSetVisibleState(true);
-            base.Show();
-        }
-
-        [PublicAPI]
-        public new void Hide()
-        {
-            base.Hide();
-            VerticalVisualScrollBar?.ForceSetVisibleState(false);
-            HorizontalVisualScrollBar?.ForceSetVisibleState(false);
-        }
-
-        #endregion
 
         private void DrawBorder(IntPtr hWnd)
         {
@@ -366,7 +275,6 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.LVM_DELETEALLITEMS:
                     if (_updatingItems == 0)
                     {
-                        if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
                         // This must come BEFORE the autosize or it won't work.
                         base.WndProc(ref m);
                         AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
@@ -392,37 +300,9 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_LBUTTONUP:
                 case Native.WM_LBUTTONDBLCLK:
                     break;
-                case Native.WM_PAINT:
-                case Native.WM_VSCROLL:
-                case Native.WM_HSCROLL:
-                // TODO: @DarkMode(DarkListBox/ListView): We need to find the message that prevents buggy scrolling
-                // This set of them works, but we should be more specific to avoid an undue perf hit
-                case Native.LVM_SCROLL:
-                case Native.LVM_REDRAWITEMS:
-                // NOTE: These ones cause scrolling lag
-                //case Native.LVM_GETITEMA:
-                //case Native.LVM_GETITEMW:
-                case Native.LVM_GETSELECTEDCOUNT:
-                case Native.LVM_FINDITEMW:
-                case Native.LVM_GETITEMSTATE:
-                case Native.LVM_HITTEST:
-                    base.WndProc(ref m);
-                    if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-                    break;
-                case Native.WM_CTLCOLORSCROLLBAR:
                 case Native.WM_NCPAINT:
-                    if (_darkModeEnabled)
-                    {
-                        if (m.Msg == Native.WM_NCPAINT)
-                        {
-                            DrawBorder(m.HWnd);
-                        }
-                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-                    }
-                    else
-                    {
-                        base.WndProc(ref m);
-                    }
+                    if (_darkModeEnabled) DrawBorder(m.HWnd);
+                    base.WndProc(ref m);
                     break;
                 default:
                     base.WndProc(ref m);

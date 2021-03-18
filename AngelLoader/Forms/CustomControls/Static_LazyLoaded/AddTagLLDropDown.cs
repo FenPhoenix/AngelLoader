@@ -36,9 +36,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ListBox.Scrollable = true;
             ListBox.TabIndex = 3;
             ListBox.Visible = false;
-            ListBox.VerticalVisualScrollBar.AddToParent();
-            ListBox.HorizontalVisualScrollBar.AddToParent();
-            ListBox.VisualScrollBarCorner.AddToParent();
             ListBox.SelectedIndexChanged += owner.AddTagListBox_SelectedIndexChanged;
             ListBox.KeyDown += owner.AddTagTextBoxOrListBox_KeyDown;
             ListBox.Leave += owner.AddTagTextBoxOrListBox_Leave;

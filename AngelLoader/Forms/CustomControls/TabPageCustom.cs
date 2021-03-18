@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class TabPageCustom : TabPage, IDarkableScrollableNative
+    public sealed class TabPageCustom : TabPage, IDarkable
     {
         private Color? _origBackColor;
 
@@ -31,96 +31,6 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     if (_origBackColor != null) BackColor = (Color)_origBackColor;
                 }
-                DarkModeChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; private set; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; private set; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; private set; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool Suspended { get; set; }
-
-        public new event EventHandler? Scroll;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? DarkModeChanged;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? RefreshIfNeededForceCorner;
-
-        public override bool AutoScroll
-        {
-            get => base.AutoScroll;
-            set
-            {
-                base.AutoScroll = value;
-                if (value &&
-                    VerticalVisualScrollBar == null &&
-                    HorizontalVisualScrollBar == null &&
-                    VisualScrollBarCorner == null)
-                {
-                    VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
-                    HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
-                    VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
-                }
-            }
-        }
-
-        protected override void OnScroll(ScrollEventArgs se)
-        {
-            base.OnScroll(se);
-            if (_darkModeEnabled) Scroll?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            base.OnVisibleChanged(e);
-            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected override void OnClientSizeChanged(EventArgs e)
-        {
-            base.OnClientSizeChanged(e);
-            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            switch (m.Msg)
-            {
-                case Native.WM_NCPAINT:
-                    if (_darkModeEnabled)
-                    {
-                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-                    }
-                    else
-                    {
-                        base.WndProc(ref m);
-                    }
-                    break;
-                case Native.WM_PAINT:
-                    if (_darkModeEnabled)
-                    {
-                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-                    }
-                    base.WndProc(ref m);
-                    break;
-                default:
-                    base.WndProc(ref m);
-                    break;
             }
         }
     }

@@ -3,42 +3,13 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
-using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed class DarkTreeView : TreeView, IDarkableScrollableNative
+    internal sealed class DarkTreeView : TreeView, IDarkable
     {
         [DefaultValue(false)]
         public bool AlwaysDrawNodesFocused { get; set; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool Suspended { get; set; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? Scroll;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? DarkModeChanged;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? RefreshIfNeededForceCorner;
 
         private bool _darkModeEnabled;
         public bool DarkModeEnabled
@@ -57,8 +28,6 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     BackColor = SystemColors.Window;
                 }
-
-                DarkModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -71,52 +40,7 @@ namespace AngelLoader.Forms.CustomControls
 
             HideSelection = false;
 
-            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
-            HorizontalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: false, passMouseWheel: true);
-            VisualScrollBarCorner = new ScrollBarVisualOnly_Corner(this);
         }
-
-        #region Visible / Show / Hide overrides
-
-        [PublicAPI]
-        public new bool Visible
-        {
-            get => base.Visible;
-            set
-            {
-                if (value)
-                {
-                    // Do this before setting the Visible value to avoid the classic-bar-flicker
-                    VerticalVisualScrollBar?.ForceSetVisibleState(true);
-                    HorizontalVisualScrollBar?.ForceSetVisibleState(true);
-                    base.Visible = true;
-                }
-                else
-                {
-                    base.Visible = false;
-                    VerticalVisualScrollBar?.ForceSetVisibleState(false);
-                    HorizontalVisualScrollBar?.ForceSetVisibleState(false);
-                }
-            }
-        }
-
-        [PublicAPI]
-        public new void Show()
-        {
-            VerticalVisualScrollBar?.ForceSetVisibleState(true);
-            HorizontalVisualScrollBar?.ForceSetVisibleState(true);
-            base.Show();
-        }
-
-        [PublicAPI]
-        public new void Hide()
-        {
-            base.Hide();
-            VerticalVisualScrollBar?.ForceSetVisibleState(false);
-            HorizontalVisualScrollBar?.ForceSetVisibleState(false);
-        }
-
-        #endregion
 
         #region Event overrides
 
@@ -169,18 +93,6 @@ namespace AngelLoader.Forms.CustomControls
             base.OnDrawNode(e);
         }
 
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            base.OnVisibleChanged(e);
-            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected override void OnClientSizeChanged(EventArgs e)
-        {
-            base.OnClientSizeChanged(e);
-            if (_darkModeEnabled) RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-        }
-
         #endregion
 
         private void DrawBorder(IntPtr hWnd)
@@ -198,26 +110,12 @@ namespace AngelLoader.Forms.CustomControls
             switch (m.Msg)
             {
                 case Native.WM_PAINT:
-                case Native.WM_VSCROLL:
-                case Native.WM_HSCROLL:
                     base.WndProc(ref m);
-                    if (_darkModeEnabled)
-                    {
-                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-                        if (m.Msg == Native.WM_PAINT) DrawBorder(m.HWnd);
-                    }
+                    if (_darkModeEnabled) DrawBorder(m.HWnd);
                     break;
-                case Native.WM_CTLCOLORSCROLLBAR:
                 case Native.WM_NCPAINT:
-                    if (_darkModeEnabled)
-                    {
-                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-                        if (m.Msg == Native.WM_NCPAINT) DrawBorder(m.HWnd);
-                    }
-                    else
-                    {
-                        base.WndProc(ref m);
-                    }
+                    if (_darkModeEnabled) DrawBorder(m.HWnd);
+                    base.WndProc(ref m);
                     break;
                 default:
                     base.WndProc(ref m);
