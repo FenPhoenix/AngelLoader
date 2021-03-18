@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms;
 using AngelLoader.Forms.CustomControls;
 using EasyHook;
 
@@ -38,16 +39,47 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
+        #region DrawThemeBackground
+
+        private static LocalHook? _drawThemeBackgroundHook;
+
+        private static DrawThemeBackgroundDelegate? DrawThemeBackgroundOriginal;
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+        private delegate int DrawThemeBackgroundDelegate(
+            IntPtr hTheme,
+            IntPtr hdc,
+            int partId,
+            int stateId,
+            ref Native.RECT pRect,
+            ref Native.RECT pClipRect);
+
         #endregion
 
-        private static KnownColor SysColorToKnownColor(int systemColorIndex)
-        {
-            // OLE colors are like 0x800000xx where xx is the system color index
-            return ColorTranslator.FromOle((int)unchecked(systemColorIndex + 0x80000000)).ToKnownColor();
-        }
+        #region GetThemeColor
+
+        private static LocalHook? _getThemeColorHook;
+
+        private static GetThemeColorDelegate? GetThemeColorOriginal;
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+        private delegate int GetThemeColorDelegate(
+            IntPtr hTheme,
+            int iPartId,
+            int iStateId,
+            int iPropId,
+            out int pColor);
+
+        #endregion
+
+        private static bool _hooksInstalled;
+
+        #endregion
 
         internal static void InstallHooks()
         {
+            if (_hooksInstalled) return;
+
             try
             {
                 (_getSysColorHook, GetSysColorOriginal) = InstallHook<GetSysColorDelegate>(
@@ -66,6 +98,27 @@ namespace AngelLoader.WinAPI
                 _getSysColorHook?.Dispose();
                 _getSysColorBrushHook?.Dispose();
             }
+            try
+            {
+                (_drawThemeBackgroundHook, DrawThemeBackgroundOriginal) = InstallHook<DrawThemeBackgroundDelegate>(
+                    "uxtheme.dll",
+                    "DrawThemeBackground",
+                    DrawThemeBackgroundHook);
+
+                (_getThemeColorHook, GetThemeColorOriginal) = InstallHook<GetThemeColorDelegate>(
+                    "uxtheme.dll",
+                    "GetThemeColor",
+                    GetThemeColorHook);
+
+                ScrollBarPainter.Reload();
+            }
+            catch
+            {
+                _drawThemeBackgroundHook?.Dispose();
+                _getThemeColorHook?.Dispose();
+            }
+
+            _hooksInstalled = true;
         }
 
         private static (LocalHook Hook, TDelegate OriginalMethod)
@@ -90,7 +143,46 @@ namespace AngelLoader.WinAPI
             return (hook, originalMethod);
         }
 
+        internal static void ReloadTheme()
+        {
+            if (!Native.IsThemeActive()) return;
+            ScrollBarPainter.Reload();
+        }
+
         #region Hooked method overrides
+
+        private static int DrawThemeBackgroundHook(
+            IntPtr hTheme,
+            IntPtr hdc,
+            int PartId,
+            int stateId,
+            ref Native.RECT pRect,
+            ref Native.RECT pClipRect)
+        {
+            const int success = 0;
+
+            return Misc.Config.VisualTheme == VisualTheme.Dark &&
+                   ScrollBarPainter.HTheme == hTheme &&
+                   ScrollBarPainter.Paint(hdc, PartId, stateId, pRect)
+                ? success
+                : DrawThemeBackgroundOriginal!(hTheme, hdc, PartId, stateId, ref pRect, ref pClipRect);
+        }
+
+        private static int GetThemeColorHook(
+            IntPtr hTheme,
+            int iPartId,
+            int iStateId,
+            int iPropId,
+            out int pColor)
+        {
+            const int success = 0;
+
+            return Misc.Config.VisualTheme == VisualTheme.Dark &&
+                   ScrollBarPainter.HTheme == hTheme &&
+                   ScrollBarPainter.TryGetThemeColor(iPartId, iPropId, out pColor)
+                ? success
+                : GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
+        }
 
         private static int GetSysColor(int nIndex)
         {

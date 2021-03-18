@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
+using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Dialogs;
 using static AL_Common.CommonUtils;
 using static AngelLoader.Forms.Interfaces;
@@ -78,6 +79,15 @@ namespace AngelLoader.Forms
 
         public readonly ConfigData OutConfig;
 
+        protected override void WndProc(ref Message m)
+        {
+            if (_startup && m.Msg == Native.WM_THEMECHANGED)
+            {
+                NativeHooks.ReloadTheme();
+            }
+            base.WndProc(ref m);
+        }
+
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal SettingsForm(ISettingsChangeableWindow? ownerForm, ConfigData config, bool startup, bool cleanStart)
         {
@@ -86,6 +96,8 @@ namespace AngelLoader.Forms
 #else
             InitComponentManual();
 #endif
+
+            if (_startup) NativeHooks.InstallHooks();
 
             _selfTheme = config.VisualTheme;
 

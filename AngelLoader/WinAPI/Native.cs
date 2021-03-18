@@ -14,9 +14,6 @@ namespace AngelLoader.WinAPI
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static class Native
     {
-        [DllImport("uxtheme.dll")]
-        internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
-
         [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
         internal static extern IntPtr CreateSolidBrush(int crColor);
 
@@ -708,10 +705,84 @@ namespace AngelLoader.WinAPI
             internal IntPtr hwndDropDown;
         }
 
-        [DllImport("uxtheme", ExactSpelling = true)]
+        #region Theming
+
+        [DllImport("uxtheme.dll")]
+        internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
+
+        [DllImport("uxtheme.dll", ExactSpelling = true)]
         internal static extern IntPtr GetWindowTheme(IntPtr hWnd);
 
         [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
         internal static extern IntPtr OpenThemeData(IntPtr hWnd, String classList);
+
+        [DllImport("uxtheme.dll", ExactSpelling = true)]
+        public static extern int CloseThemeData(IntPtr hTheme);
+
+//        [StructLayout(LayoutKind.Sequential)]
+//        public class RECTCLS
+//        {
+//#pragma warning disable 649
+//            public int Left;
+//            public int Top;
+//            public int Right;
+//            public int Bottom;
+//#pragma warning restore 649
+
+//            public static implicit operator Rectangle(RECTCLS r)
+//                => Rectangle.FromLTRB(r.Left, r.Top, r.Right, r.Bottom);
+//        }
+
+        internal const int
+            ABS_UPNORMAL = 1,
+            ABS_UPHOT = 2,
+            ABS_UPPRESSED = 3,
+            ABS_UPDISABLED = 4,
+            ABS_DOWNNORMAL = 5,
+            ABS_DOWNHOT = 6,
+            ABS_DOWNPRESSED = 7,
+            ABS_DOWNDISABLED = 8,
+            ABS_LEFTNORMAL = 9,
+            ABS_LEFTHOT = 10,
+            ABS_LEFTPRESSED = 11,
+            ABS_LEFTDISABLED = 12,
+            ABS_RIGHTNORMAL = 13,
+            ABS_RIGHTHOT = 14,
+            ABS_RIGHTPRESSED = 15,
+            ABS_RIGHTDISABLED = 16,
+            ABS_UPHOVER = 17,
+            ABS_DOWNHOVER = 18,
+            ABS_LEFTHOVER = 19,
+            ABS_RIGHTHOVER = 20;
+
+        internal const int
+            SCRBS_NORMAL = 1,
+            SCRBS_HOT = 2,
+            SCRBS_PRESSED = 3,
+            SCRBS_DISABLED = 4,
+            SCRBS_HOVER = 5;
+
+        internal const int
+            SBP_ARROWBTN = 1,
+            SBP_THUMBBTNHORZ = 2,
+            SBP_THUMBBTNVERT = 3,
+            SBP_LOWERTRACKHORZ = 4,
+            SBP_UPPERTRACKHORZ = 5,
+            SBP_LOWERTRACKVERT = 6,
+            SBP_UPPERTRACKVERT = 7,
+            SBP_GRIPPERHORZ = 8,
+            SBP_GRIPPERVERT = 9,
+            SBP_SIZEBOX = 10,
+            // Uh, this one isn't listed in vsstyle.h, but it works...?
+            SBP_CORNER = 11;
+
+        internal const int WM_THEMECHANGED = 0x031A;
+
+        internal const int TMT_FILLCOLOR = 3802;
+
+        [DllImport("uxtheme.dll", ExactSpelling = true)]
+        internal static extern bool IsThemeActive();
+
+        #endregion
     }
 }

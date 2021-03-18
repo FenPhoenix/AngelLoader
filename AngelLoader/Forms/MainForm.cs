@@ -223,6 +223,10 @@ namespace AngelLoader.Forms
                 if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
                 Activate();
             }
+            else if (m.Msg == Native.WM_THEMECHANGED)
+            {
+                NativeHooks.ReloadTheme();
+            }
             base.WndProc(ref m);
         }
 
