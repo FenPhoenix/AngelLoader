@@ -107,8 +107,6 @@
     <Compile Update="Forms\CustomControls\DarkRadioButton.cs" />
     <Compile Update="Forms\CustomControls\DarkTabControl.cs" />
     <Compile Update="Forms\CustomControls\DarkTextBox.cs" />
-    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly.cs" />
-    <Compile Update="Forms\CustomControls\ScrollBarVisualOnly_Base.cs" />
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

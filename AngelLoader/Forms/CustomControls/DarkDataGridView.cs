@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class DarkDataGridView : DataGridView, IDarkableScrollable
+    public class DarkDataGridView : DataGridView, IDarkable
     {
         private bool _darkModeEnabled;
 
@@ -36,28 +36,9 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new ScrollBar VerticalScrollBar => base.VerticalScrollBar;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new ScrollBar HorizontalScrollBar => base.HorizontalScrollBar;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly VerticalVisualScrollBar { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly HorizontalVisualScrollBar { get; }
-
         public DarkDataGridView()
         {
             base.DoubleBuffered = true;
-
-            VerticalVisualScrollBar = new ScrollBarVisualOnly(VerticalScrollBar);
-            HorizontalVisualScrollBar = new ScrollBarVisualOnly(HorizontalScrollBar);
         }
 
         /// <summary>
@@ -115,16 +96,19 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch (m.Msg)
             {
-                case Native.WM_CTLCOLORSCROLLBAR:
+                case Native.WM_PAINT:
+                    base.WndProc(ref m);
                     if (_darkModeEnabled)
                     {
-                        // Needed for scrollbar thumbs to show up immediately without using a timer
-                        VerticalVisualScrollBar.RefreshScrollBar();
-                        HorizontalVisualScrollBar.RefreshScrollBar();
-                    }
-                    else
-                    {
-                        base.WndProc(ref m);
+                        using var dc = new Native.DeviceContext(Handle);
+                        using var g = Graphics.FromHdc(dc.DC);
+                        var vertScrollBarWidth = SystemInformation.VerticalScrollBarWidth;
+                        var horzScrollBarHeight = SystemInformation.HorizontalScrollBarHeight;
+                        g.FillRectangle(DarkColors.DarkBackgroundBrush,
+                            VerticalScrollBar.Left,
+                            HorizontalScrollBar.Top,
+                            vertScrollBarWidth,
+                            horzScrollBarHeight);
                     }
                     break;
                 default:

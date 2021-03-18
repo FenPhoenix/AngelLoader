@@ -21,21 +21,6 @@ namespace AngelLoader.Forms
 
         #region Suspend/resume drawing
 
-        internal static void SuspendDrawing_Native(this ISuspendResumable control)
-        {
-            if (!control.IsHandleCreated || !control.Visible) return;
-            SendMessage(control.Handle, WM_SETREDRAW, false, 0);
-            control.Suspended = true;
-        }
-
-        internal static void ResumeDrawing_Native(this ISuspendResumable control)
-        {
-            if (!control.IsHandleCreated || !control.Visible) return;
-            SendMessage(control.Handle, WM_SETREDRAW, true, 0);
-            control.Suspended = false;
-            control.Refresh();
-        }
-
         internal static void SuspendDrawing(this Control control)
         {
             if (!control.IsHandleCreated || !control.Visible) return;
@@ -272,14 +257,6 @@ namespace AngelLoader.Forms
             foreach (var item in controlColors)
             {
                 Control control = item.Key;
-
-                // Visual scroll bars are always themed by definition of how they work, so just always exclude
-                // them here.
-                if (control is ScrollBarVisualOnly_Base ||
-                    excludePredicate?.Invoke(control) == true)
-                {
-                    continue;
-                }
 
                 // Separate if because a control could be IDarkable AND be a ToolStrip
                 if (control is ToolStrip ts)
