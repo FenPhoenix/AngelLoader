@@ -37,16 +37,6 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch ((uint)m.Msg)
             {
-                case Native.WM_NCPAINT:
-                    if (_darkModeEnabled)
-                    {
-                        RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-                    }
-                    else
-                    {
-                        base.WndProc(ref m);
-                    }
-                    break;
                 case Native.WM_MOUSEWHEEL:
                     // Intercept the mousewheel call and direct it to use the fixed scrolling
                     InterceptMousewheel(ref m);
@@ -121,7 +111,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             Native.SCROLLINFO si = _scrollInfo;
 
-            this.SuspendDrawing_Native();
+            this.SuspendDrawing();
             try
             {
                 await Task.Delay(20);
@@ -132,7 +122,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             finally
             {
-                this.ResumeDrawing_Native();
+                this.ResumeDrawing();
             }
         }
 

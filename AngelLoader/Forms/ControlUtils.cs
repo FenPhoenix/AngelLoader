@@ -269,31 +269,6 @@ namespace AngelLoader.Forms
             // We fixed the Settings window case, but keep this in mind until we're sure we're done.
             if (controlColors.Count == 0) FillControlDict(form, controlColors, alsoCreateControlHandles);
 
-            #region Add native dark scroll bars to their closest addable parents
-
-            // This prevents other controls in the collection from having their size/location bumped around if we
-            // were to just call this just-in-time while the user is dragging. We want to do it while everything
-            // is stationary.
-            // We could just add these scroll bars to each control manually at init-component time, but we want
-            // to avoid doing that as it's error-prone and easy to forget.
-
-            // TODO: @DarkMode(Add native dark scroll bars to their parents):
-            // Lazy-loaded controls will be a problem here. We should probably just convert any lazy-loaded
-            // scrollable controls back to immediately-loaded again.
-            // Menus and buttons are fine to stay lazy-loaded, but check list boxes and panels etc.
-
-            foreach (Control c in controlColors.Keys)
-            {
-                if (c is IDarkableScrollableNative ids)
-                {
-                    ids.VerticalVisualScrollBar?.AddToParent();
-                    ids.HorizontalVisualScrollBar?.AddToParent();
-                    ids.VisualScrollBarCorner?.AddToParent();
-                }
-            }
-
-            #endregion
-
             foreach (var item in controlColors)
             {
                 Control control = item.Key;
@@ -388,25 +363,6 @@ namespace AngelLoader.Forms
 
             IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)SB_THUMBTRACK;
             SendMessage(handle, direction == SB_VERT ? WM_VSCROLL : WM_HSCROLL, wp, ptrLParam);
-        }
-
-        internal static Control? ClosestAddableParent(IDarkableScrollableNative owner)
-        {
-            Control? parent = owner.Parent;
-            while (true)
-            {
-                if (parent == null ||
-                    (parent is not TabControl &&
-                     parent is not FlowLayoutPanel &&
-                     parent is not TableLayoutPanel))
-                {
-                    return parent;
-                }
-                else
-                {
-                    parent = parent.Parent;
-                }
-            }
         }
     }
 }

@@ -17,7 +17,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkableScrollableNative
+    internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     {
         #region Private fields / properties
 
@@ -46,40 +46,8 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native? VerticalVisualScrollBar { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Native? HorizontalVisualScrollBar { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ScrollBarVisualOnly_Corner? VisualScrollBarCorner { get; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? Scroll;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool Suspended { get; set; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? DarkModeChanged;
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public event EventHandler? RefreshIfNeededForceCorner;
-
         public RichTextBoxCustom()
         {
-            VerticalVisualScrollBar = new ScrollBarVisualOnly_Native(this, isVertical: true, passMouseWheel: true);
-            HorizontalVisualScrollBar = null;
-            VisualScrollBarCorner = null;
-
             InitWorkarounds();
         }
 
@@ -94,7 +62,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (outsideCall)
                 {
                     SaveZoom();
-                    this.SuspendDrawing_Native();
+                    this.SuspendDrawing();
                 }
 
                 Font = useFixed ? MonospaceFont : DefaultFont;
@@ -115,7 +83,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (outsideCall)
                 {
                     RestoreZoom();
-                    this.ResumeDrawing_Native();
+                    this.ResumeDrawing();
                 }
             }
         }
@@ -123,7 +91,7 @@ namespace AngelLoader.Forms.CustomControls
         private void SuspendState()
         {
             SaveZoom();
-            this.SuspendDrawing_Native();
+            this.SuspendDrawing();
 
             // On Windows 10 at least, RTF images don't display if we're ReadOnly. Sure why not. We need to be
             // ReadOnly though - it doesn't make sense to let the user edit a readme - so un-set us just long
@@ -138,14 +106,8 @@ namespace AngelLoader.Forms.CustomControls
         private void ResumeState()
         {
             ReadOnly = true;
-
             RestoreZoom();
-            // Force visible state update before resuming to avoid a flicker of the classic bar showing up
-            VerticalVisualScrollBar?.ForceSetVisibleState();
-            this.ResumeDrawing_Native();
-            // Invoke this after resuming to prevent the scroll bar from disappearing when you move through
-            // entries by holding down a key
-            RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
+            this.ResumeDrawing();
         }
 
         #endregion
@@ -186,13 +148,13 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ResetZoomFactor()
         {
-            this.SuspendDrawing_Native();
+            this.SuspendDrawing();
 
             // We have to set another value first, or it won't take.
             ZoomFactor = 1.1f;
             ZoomFactor = 1.0f;
 
-            this.ResumeDrawing_Native();
+            this.ResumeDrawing();
         }
 
         #endregion
@@ -311,71 +273,10 @@ namespace AngelLoader.Forms.CustomControls
             // ridiculous system for getting around it! I totally knew all along!
         }
 
-        protected override void OnHScroll(EventArgs e)
-        {
-            base.OnHScroll(e);
-            Scroll?.Invoke(this, EventArgs.Empty);
-        }
-
         protected override void OnVScroll(EventArgs e)
         {
             Workarounds_OnVScroll();
             base.OnVScroll(e);
-            Scroll?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            base.OnVisibleChanged(e);
-            RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected override void OnClientSizeChanged(EventArgs e)
-        {
-            base.OnClientSizeChanged(e);
-            RefreshIfNeededForceCorner?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
-
-        #region Visible / Show / Hide overrides
-
-        [PublicAPI]
-        public new bool Visible
-        {
-            get => base.Visible;
-            set
-            {
-                if (value)
-                {
-                    // Do this before setting the Visible value to avoid the classic-bar-flicker
-                    VerticalVisualScrollBar?.ForceSetVisibleState(true);
-                    HorizontalVisualScrollBar?.ForceSetVisibleState(true);
-                    base.Visible = value;
-                }
-                else
-                {
-                    base.Visible = value;
-                    VerticalVisualScrollBar?.ForceSetVisibleState(false);
-                    HorizontalVisualScrollBar?.ForceSetVisibleState(false);
-                }
-            }
-        }
-
-        [PublicAPI]
-        public new void Show()
-        {
-            VerticalVisualScrollBar?.ForceSetVisibleState(true);
-            HorizontalVisualScrollBar?.ForceSetVisibleState(true);
-            base.Show();
-        }
-
-        [PublicAPI]
-        public new void Hide()
-        {
-            base.Hide();
-            VerticalVisualScrollBar?.ForceSetVisibleState(false);
-            HorizontalVisualScrollBar?.ForceSetVisibleState(false);
         }
 
         #endregion
@@ -386,7 +287,6 @@ namespace AngelLoader.Forms.CustomControls
             {
                 DisposeWorkarounds();
                 _monospaceFont?.Dispose();
-                VerticalVisualScrollBar?.Dispose();
             }
             base.Dispose(disposing);
         }

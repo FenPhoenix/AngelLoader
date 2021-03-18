@@ -146,7 +146,6 @@ namespace AngelLoader.Forms.CustomControls
                 SetReadmeTypeAndColorState(_currentReadmeType);
                 // Perf: Don't load readme twice on startup, and don't load it again if we're on HTML or no FM selected or whatever
                 if (Visible) RefreshDarkModeState();
-                DarkModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -419,7 +418,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (!skipSuspend)
                 {
                     if (!plainText) SaveZoom();
-                    this.SuspendDrawing_Native();
+                    this.SuspendDrawing();
                     if (!plainText) ReadOnly = false;
                 }
 
@@ -448,7 +447,7 @@ namespace AngelLoader.Forms.CustomControls
                     }
 
                     ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
-                    this.ResumeDrawing_Native();
+                    this.ResumeDrawing();
                 }
             }
         }
