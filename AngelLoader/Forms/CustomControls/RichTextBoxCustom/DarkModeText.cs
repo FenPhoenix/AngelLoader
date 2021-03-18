@@ -340,6 +340,12 @@ namespace AngelLoader.Forms.CustomControls
             if (fonttbl_EndIndex > -1) darkModeBytes.InsertRange(fonttbl_EndIndex, cf0);
 
             /*
+            TODO @DarkMode(RTF):
+            Now that we're using the system color hooks, we can get rid of these default-color command inserts.
+            But, we would get the slightly brighter (220,220,220) text, instead of the (200,200,200) text we have
+            for the RichTextBox currently. We should decide if we want to keep one brightness or stick with the
+            like 3 levels we have now (dark bg text, control bg text, highlighted text).
+
             TODO: @DarkMode: Insert \cf0 after every single one of these in case it ends up being the last one in the header
             I mean that's just being paranoid, but still...
 
