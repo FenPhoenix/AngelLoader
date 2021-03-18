@@ -34,6 +34,27 @@ namespace AngelLoader.Forms
             SetTheme(Config.VisualTheme);
 
             Localize();
+
+            var tv = OriginTreeView;
+
+            tv.BeginUpdate();
+            _sourceTags.SortAndMoveMiscToEnd();
+
+            foreach (CatAndTags catAndTags in _sourceTags)
+            {
+                tv.Nodes.Add(catAndTags.Category);
+                var last = tv.Nodes[tv.Nodes.Count - 1];
+                foreach (string tag in catAndTags.Tags) last.Nodes.Add(tag);
+            }
+
+            tv.ExpandAll();
+            tv.SelectedNode = tv.Nodes[0];
+
+            tv.EndUpdate();
+
+            if (TagsFilter.AndTags.Count > 0) FillTreeView(TagsFilter.AndTags);
+            if (TagsFilter.OrTags.Count > 0) FillTreeView(TagsFilter.OrTags);
+            if (TagsFilter.NotTags.Count > 0) FillTreeView(TagsFilter.NotTags);
         }
 
         private void SetTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
@@ -75,27 +96,6 @@ namespace AngelLoader.Forms
             ResetButton.Text = LText.TagsFilterBox.Reset;
             OKButton.Text = LText.Global.OK;
             Cancel_Button.Text = LText.Global.Cancel;
-        }
-
-        private void FilterTagsForm_Load(object sender, EventArgs e)
-        {
-            var tv = OriginTreeView;
-
-            _sourceTags.SortAndMoveMiscToEnd();
-
-            foreach (CatAndTags catAndTags in _sourceTags)
-            {
-                tv.Nodes.Add(catAndTags.Category);
-                var last = tv.Nodes[tv.Nodes.Count - 1];
-                foreach (string tag in catAndTags.Tags) last.Nodes.Add(tag);
-            }
-
-            tv.ExpandAll();
-            tv.SelectedNode = tv.Nodes[0];
-
-            if (TagsFilter.AndTags.Count > 0) FillTreeView(TagsFilter.AndTags);
-            if (TagsFilter.OrTags.Count > 0) FillTreeView(TagsFilter.OrTags);
-            if (TagsFilter.NotTags.Count > 0) FillTreeView(TagsFilter.NotTags);
         }
 
         #region Find box

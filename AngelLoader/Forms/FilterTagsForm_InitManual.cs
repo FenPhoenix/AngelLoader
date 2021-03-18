@@ -284,7 +284,6 @@ namespace AngelLoader.Forms
             MinimumSize = new Size(1056, 242);
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
-            Load += FilterTagsForm_Load;
             FilterLabelsPanel.ResumeLayout(false);
             FilterLabelsPanel.PerformLayout();
             BottomButtonsFLP.ResumeLayout(false);
