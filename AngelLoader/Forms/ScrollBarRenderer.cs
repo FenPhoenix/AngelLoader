@@ -31,29 +31,31 @@ namespace AngelLoader.Forms
                 case Native.SBP_ARROWBTN:
                     brush = DarkColors.DarkBackgroundBrush;
                     break;
-                case Native.SBP_THUMBBTNHORZ:
-                case Native.SBP_THUMBBTNVERT:
                 case Native.SBP_GRIPPERHORZ:
                 case Native.SBP_GRIPPERVERT:
+                    // The "gripper" is a subset of the thumb, except sometimes it extends outside of it and
+                    // causes problems with our thumb width correction, so just don't draw it
+                    return true;
+                case Native.SBP_THUMBBTNHORZ:
+                case Native.SBP_THUMBBTNVERT:
+
                     #region Correct the thumb width
 
-                    /* Should do this, but doesn't work quite right at the moment
                     // Match Windows behavior - the thumb is 1px in from each side
                     // The "gripper" rect gives us the right width, but the wrong length
                     switch (partId)
                     {
                         case Native.SBP_THUMBBTNHORZ:
                             g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.Right, rect.Y);
-                            g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Bottom, rect.Right, rect.Bottom);
+                            g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Bottom - 1, rect.Right, rect.Bottom - 1);
                             rect = new Rectangle(rect.X, rect.Y + 1, rect.Width, rect.Height - 2);
                             break;
                         case Native.SBP_THUMBBTNVERT:
                             g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.X, rect.Bottom);
-                            g.DrawLine(DarkColors.DarkBackgroundPen, rect.Right, rect.Y, rect.Right, rect.Bottom);
+                            g.DrawLine(DarkColors.DarkBackgroundPen, rect.Right - 1, rect.Y, rect.Right - 1, rect.Bottom);
                             rect = new Rectangle(rect.X + 1, rect.Y, rect.Width - 2, rect.Height);
                             break;
                     }
-                    */
 
                     #endregion
 
