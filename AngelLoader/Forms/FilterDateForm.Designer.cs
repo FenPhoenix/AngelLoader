@@ -28,17 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.Cancel_Button = new System.Windows.Forms.Button();
-            this.OKButton = new System.Windows.Forms.Button();
-            this.ResetButton = new System.Windows.Forms.Button();
-            this.ToLabel = new System.Windows.Forms.Label();
-            this.FromLabel = new System.Windows.Forms.Label();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ToLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.FromLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.FromDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
             this.ToDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
-            this.FromCheckBox = new System.Windows.Forms.CheckBox();
-            this.ToCheckBox = new System.Windows.Forms.CheckBox();
-            this.NoMinLabel = new System.Windows.Forms.TextBox();
-            this.NoMaxLabel = new System.Windows.Forms.TextBox();
+            this.FromCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.ToCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.NoMinLabel = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.NoMaxLabel = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.SuspendLayout();
             // 
             // Cancel_Button
@@ -183,16 +183,16 @@
         #endregion
 #endif
 
-        private System.Windows.Forms.Button Cancel_Button;
-        private System.Windows.Forms.Button OKButton;
-        private System.Windows.Forms.Button ResetButton;
-        private System.Windows.Forms.Label ToLabel;
-        private System.Windows.Forms.Label FromLabel;
+        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
+        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
+        private AngelLoader.Forms.CustomControls.DarkButton ResetButton;
+        private AngelLoader.Forms.CustomControls.DarkLabel ToLabel;
+        private AngelLoader.Forms.CustomControls.DarkLabel FromLabel;
         private AngelLoader.Forms.CustomControls.DarkDateTimePicker FromDateTimePicker;
         private AngelLoader.Forms.CustomControls.DarkDateTimePicker ToDateTimePicker;
-        private System.Windows.Forms.CheckBox FromCheckBox;
-        private System.Windows.Forms.CheckBox ToCheckBox;
-        private System.Windows.Forms.TextBox NoMinLabel;
-        private System.Windows.Forms.TextBox NoMaxLabel;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox FromCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkCheckBox ToCheckBox;
+        private AngelLoader.Forms.CustomControls.DarkTextBox NoMinLabel;
+        private AngelLoader.Forms.CustomControls.DarkTextBox NoMaxLabel;
     }
 }

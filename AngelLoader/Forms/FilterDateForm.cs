@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
@@ -7,6 +10,8 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterDateForm : DarkForm, IEventDisabler
     {
+        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+
         internal DateTime? DateFrom;
         internal DateTime? DateTo;
 
@@ -21,6 +26,8 @@ namespace AngelLoader.Forms
 #else
             InitComponentManual();
 #endif
+
+            SetTheme(Config.VisualTheme);
 
             Localize();
 
@@ -38,6 +45,8 @@ namespace AngelLoader.Forms
             if (from != null) FromDateTimePicker.Value = (DateTime)from;
             if (to != null) ToDateTimePicker.Value = (DateTime)to;
         }
+
+        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {

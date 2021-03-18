@@ -7,17 +7,17 @@ namespace AngelLoader.Forms
     {
         private void InitComponentManual()
         {
-            Cancel_Button = new Button();
-            OKButton = new Button();
-            ResetButton = new Button();
-            ToLabel = new Label();
-            FromLabel = new Label();
+            Cancel_Button = new DarkButton();
+            OKButton = new DarkButton();
+            ResetButton = new DarkButton();
+            ToLabel = new DarkLabel();
+            FromLabel = new DarkLabel();
             FromDateTimePicker = new DarkDateTimePicker();
             ToDateTimePicker = new DarkDateTimePicker();
-            FromCheckBox = new CheckBox();
-            ToCheckBox = new CheckBox();
-            NoMinLabel = new TextBox();
-            NoMaxLabel = new TextBox();
+            FromCheckBox = new DarkCheckBox();
+            ToCheckBox = new DarkCheckBox();
+            NoMinLabel = new DarkTextBox();
+            NoMaxLabel = new DarkTextBox();
             SuspendLayout();
             // 
             // Cancel_Button
