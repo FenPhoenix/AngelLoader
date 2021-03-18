@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms
 {
@@ -11,8 +12,8 @@ namespace AngelLoader.Forms
             ResetButton = new Button();
             ToLabel = new Label();
             FromLabel = new Label();
-            FromDateTimePicker = new DateTimePicker();
-            ToDateTimePicker = new DateTimePicker();
+            FromDateTimePicker = new DarkDateTimePicker();
+            ToDateTimePicker = new DarkDateTimePicker();
             FromCheckBox = new CheckBox();
             ToCheckBox = new CheckBox();
             NoMinLabel = new TextBox();

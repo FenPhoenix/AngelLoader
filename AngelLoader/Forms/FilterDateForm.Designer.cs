@@ -33,8 +33,8 @@
             this.ResetButton = new System.Windows.Forms.Button();
             this.ToLabel = new System.Windows.Forms.Label();
             this.FromLabel = new System.Windows.Forms.Label();
-            this.FromDateTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.ToDateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.FromDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
+            this.ToDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
             this.FromCheckBox = new System.Windows.Forms.CheckBox();
             this.ToCheckBox = new System.Windows.Forms.CheckBox();
             this.NoMinLabel = new System.Windows.Forms.TextBox();
@@ -188,8 +188,8 @@
         private System.Windows.Forms.Button ResetButton;
         private System.Windows.Forms.Label ToLabel;
         private System.Windows.Forms.Label FromLabel;
-        private System.Windows.Forms.DateTimePicker FromDateTimePicker;
-        private System.Windows.Forms.DateTimePicker ToDateTimePicker;
+        private AngelLoader.Forms.CustomControls.DarkDateTimePicker FromDateTimePicker;
+        private AngelLoader.Forms.CustomControls.DarkDateTimePicker ToDateTimePicker;
         private System.Windows.Forms.CheckBox FromCheckBox;
         private System.Windows.Forms.CheckBox ToCheckBox;
         private System.Windows.Forms.TextBox NoMinLabel;

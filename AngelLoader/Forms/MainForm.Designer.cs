@@ -125,8 +125,8 @@
             this.EditFMFinishedOnButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.EditFMRatingComboBox = new AngelLoader.Forms.CustomControls.ComboBoxWithBackingItems();
             this.EditFMRatingLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.EditFMLastPlayedDateTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.EditFMReleaseDateDateTimePicker = new AngelLoader.Forms.CustomControls.DTP_Subclass_Test();
+            this.EditFMLastPlayedDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
+            this.EditFMReleaseDateDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
             this.EditFMLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.EditFMReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.EditFMDisableAllModsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -1992,8 +1992,8 @@
         internal AngelLoader.Forms.CustomControls.TextBoxCustom FilterAuthorTextBox;
         internal AngelLoader.Forms.CustomControls.DarkLabel FilterAuthorLabel;
         internal AngelLoader.Forms.CustomControls.TabPageCustom EditFMTabPage;
-        internal System.Windows.Forms.DateTimePicker EditFMLastPlayedDateTimePicker;
-        internal AngelLoader.Forms.CustomControls.DTP_Subclass_Test EditFMReleaseDateDateTimePicker;
+        internal AngelLoader.Forms.CustomControls.DarkDateTimePicker EditFMLastPlayedDateTimePicker;
+        internal AngelLoader.Forms.CustomControls.DarkDateTimePicker EditFMReleaseDateDateTimePicker;
         internal AngelLoader.Forms.CustomControls.DarkTextBox EditFMAuthorTextBox;
         internal AngelLoader.Forms.CustomControls.DarkLabel EditFMAuthorLabel;
         internal AngelLoader.Forms.CustomControls.DarkLabel EditFMTitleLabel;
