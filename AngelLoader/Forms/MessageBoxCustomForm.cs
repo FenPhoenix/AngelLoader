@@ -212,7 +212,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            SetTheme(Config.VisualTheme);
+            if (Config.VisualTheme == VisualTheme.Dark) SetTheme(Config.VisualTheme);
         }
 
         private void SetTheme(VisualTheme theme)
@@ -220,8 +220,11 @@ namespace AngelLoader.Forms
             ControlUtils.ChangeFormThemeMode(
                 theme,
                 this,
-                _controlColors
+                _controlColors,
+                x => x == BottomFLP
             );
+
+            BottomFLP.BackColor = DarkColors.Fen_DarkBackground;
         }
 
         private void SetMessageBoxIcon(MessageBoxIcon icon)
