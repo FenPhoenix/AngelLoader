@@ -54,7 +54,7 @@ namespace AngelLoader.Forms
             }
             // @GENGAMES (GameVersionsForm): End
 
-            SetTheme(Config.VisualTheme);
+            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme);
 
             Localize();
         }

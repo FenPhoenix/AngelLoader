@@ -33,19 +33,12 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            SetTheme(Config.VisualTheme);
+            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme);
         }
 
         private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e) => Localize();
 
-        private void SetTheme(VisualTheme theme)
-        {
-            ControlUtils.ChangeFormThemeMode(
-                theme,
-                this,
-                _controlColors
-            );
-        }
+        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {

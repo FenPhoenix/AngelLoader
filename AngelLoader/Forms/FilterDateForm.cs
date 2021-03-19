@@ -27,7 +27,7 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            SetTheme(Config.VisualTheme);
+            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme);
 
             Localize();
 

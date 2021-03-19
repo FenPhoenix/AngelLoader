@@ -38,7 +38,7 @@ namespace AngelLoader.Forms
                 TagsCheckBox
             };
 
-            SetTheme(Config.VisualTheme);
+            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme);
 
             Localize();
         }
