@@ -1131,7 +1131,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region IPreviewable
+        #region ISettingsChangeableWindow
 
         public void Localize() => Localize(startup: false);
 
