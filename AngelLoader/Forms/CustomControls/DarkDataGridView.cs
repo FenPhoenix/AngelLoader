@@ -98,7 +98,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 case Native.WM_PAINT:
                     base.WndProc(ref m);
-                    if (_darkModeEnabled)
+                    if (_darkModeEnabled && VerticalScrollBar.Visible && HorizontalScrollBar.Visible)
                     {
                         using var dc = new Native.DeviceContext(Handle);
                         using var g = Graphics.FromHdc(dc.DC);
