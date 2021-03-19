@@ -86,34 +86,22 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnPaint(e);
 
-            if (_darkModeEnabled && BorderStyle == BorderStyle.FixedSingle)
+            if (!_darkModeEnabled) return;
+
+            if (BorderStyle == BorderStyle.FixedSingle)
             {
                 e.Graphics.DrawRectangle(DarkColors.GreySelectionPen, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
             }
-        }
 
-        protected override void WndProc(ref Message m)
-        {
-            switch (m.Msg)
+            if (VerticalScrollBar.Visible && HorizontalScrollBar.Visible)
             {
-                case Native.WM_PAINT:
-                    base.WndProc(ref m);
-                    if (_darkModeEnabled && VerticalScrollBar.Visible && HorizontalScrollBar.Visible)
-                    {
-                        using var dc = new Native.DeviceContext(Handle);
-                        using var g = Graphics.FromHdc(dc.DC);
-                        var vertScrollBarWidth = SystemInformation.VerticalScrollBarWidth;
-                        var horzScrollBarHeight = SystemInformation.HorizontalScrollBarHeight;
-                        g.FillRectangle(DarkColors.DarkBackgroundBrush,
-                            VerticalScrollBar.Left,
-                            HorizontalScrollBar.Top,
-                            vertScrollBarWidth,
-                            horzScrollBarHeight);
-                    }
-                    break;
-                default:
-                    base.WndProc(ref m);
-                    break;
+                int vertScrollBarWidth = SystemInformation.VerticalScrollBarWidth;
+                int horzScrollBarHeight = SystemInformation.HorizontalScrollBarHeight;
+                e.Graphics.FillRectangle(DarkColors.DarkBackgroundBrush,
+                    VerticalScrollBar.Left,
+                    HorizontalScrollBar.Top,
+                    vertScrollBarWidth,
+                    horzScrollBarHeight);
             }
         }
     }
