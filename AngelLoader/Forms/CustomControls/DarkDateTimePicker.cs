@@ -136,7 +136,12 @@ namespace AngelLoader.Forms.CustomControls
             // just call it done.
             if (m.Msg == Native.WM_PAINT)
             {
+                // We have to override global colors for this, and we have no proper way to only override them
+                // for this one control specifically, so this is the best we can do. This prevents the colors
+                // from being changed for other controls (stock MessageBoxes, for one).
+                NativeHooks.OverrideColorsForDateTimePicker = true;
                 base.WndProc(ref m);
+                NativeHooks.OverrideColorsForDateTimePicker = false;
                 PaintCustom();
             }
             else if (m.Msg == Native.WM_NCPAINT)

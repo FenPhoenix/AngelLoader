@@ -33,6 +33,7 @@
 
  TODO: @DarkMode: Make sure all controls' disabled colors are working!
  TODO: @DarkMode: Test all parts of the app with high DPI!
+ TODO: @DarkMode: Replace ALL MessageBox.Show() calls with custom darkable messageboxes (unless they come before we know the theme)
 
  @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */
@@ -194,6 +195,25 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
+            //using var mb = new MessageBoxCustomForm(
+            //    "Top message",
+            //    "",
+            //    "Title",
+            //    MessageBoxIcon.Warning,
+            //    "This is a very long string of text that would certainly cause resizing that is if I have implemented it anyway and yeah",
+            //    "Cancel", true);
+            //mb.ShowDialog();
+            //var result = AskToContinueYesNoCustomStrings(
+            //    "Message that is extremely long so we can know what the maximum width of these fricking things is yes and blah blah blah blah blah blah blah blah blah",
+            //    "Title",
+            //    TaskDialogIcon.Warning,
+            //    showDontAskAgain: true,
+            //    "This is a very long string of text that would certainly cause resizing that is if I have implemented it anyway and yeah",
+            //    "No",
+            //    ButtonType.Ok
+            //);
+
+            MessageBox.Show("yes", "yeah", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void Test4Button_Click(object sender, EventArgs e)

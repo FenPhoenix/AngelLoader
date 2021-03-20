@@ -16,42 +16,6 @@ namespace AngelLoader.Forms
     {
         // TODO: @DarkMode(MessageBoxFormCustom): Paint icon on OK button (or just fix DarkButton's image alignment)
 
-        #region P/Invoke crap
-
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        private enum SHSTOCKICONID : uint
-        {
-            SIID_HELP = 23,
-            SIID_WARNING = 78,
-            SIID_INFO = 79,
-            SIID_ERROR = 80
-        }
-
-        private const uint SHGSI_ICON = 0x000000100;
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        private struct SHSTOCKICONINFO
-        {
-            internal uint cbSize;
-            internal IntPtr hIcon;
-            internal int iSysIconIndex;
-            internal int iIcon;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260/*MAX_PATH*/)]
-            internal string szPath;
-        }
-
-        [DllImport("Shell32.dll", SetLastError = false)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        private static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool DestroyIcon(IntPtr hIcon);
-
-        #endregion
-
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
         private readonly bool _multiChoice;
@@ -93,7 +57,7 @@ namespace AngelLoader.Forms
 
             #region Set passed-in values
 
-            if (icon != MessageBoxIcon.None) SetMessageBoxIcon(icon);
+            if (icon != MessageBoxIcon.None) ControlUtils.SetMessageBoxIcon(IconPictureBox, icon);
 
             Text = title;
             MessageTopLabel.Text = messageTop;
@@ -225,47 +189,6 @@ namespace AngelLoader.Forms
             );
 
             BottomFLP.BackColor = DarkColors.Fen_DarkBackground;
-        }
-
-        private void SetMessageBoxIcon(MessageBoxIcon icon)
-        {
-            var sii = new SHSTOCKICONINFO();
-            try
-            {
-                // ReSharper disable ConditionIsAlwaysTrueOrFalse
-                SHSTOCKICONID sysIcon =
-                      icon == MessageBoxIcon.Error ||
-                      icon == MessageBoxIcon.Hand ||
-                      icon == MessageBoxIcon.Stop
-                    ? SHSTOCKICONID.SIID_ERROR
-                    : icon == MessageBoxIcon.Question
-                    ? SHSTOCKICONID.SIID_HELP
-                    : icon == MessageBoxIcon.Exclamation ||
-                      icon == MessageBoxIcon.Warning
-                    ? SHSTOCKICONID.SIID_WARNING
-                    : icon == MessageBoxIcon.Asterisk ||
-                      icon == MessageBoxIcon.Information
-                    ? SHSTOCKICONID.SIID_INFO
-                    : throw new ArgumentOutOfRangeException();
-                // ReSharper restore ConditionIsAlwaysTrueOrFalse
-
-                sii.cbSize = (uint)Marshal.SizeOf(typeof(SHSTOCKICONINFO));
-
-                int result = SHGetStockIconInfo(sysIcon, SHGSI_ICON, ref sii);
-                Marshal.ThrowExceptionForHR(result, new IntPtr(-1));
-
-                IconPictureBox.Image = Icon.FromHandle(sii.hIcon).ToBitmap();
-            }
-            catch
-            {
-                // "Wrong style" image (different style from the MessageBox one) but better than nothing if the
-                // above fails
-                IconPictureBox.Image = SystemIcons.Warning.ToBitmap();
-            }
-            finally
-            {
-                DestroyIcon(sii.hIcon);
-            }
         }
 
         private void Localize()

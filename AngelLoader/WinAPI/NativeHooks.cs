@@ -74,6 +74,10 @@ namespace AngelLoader.WinAPI
 
         private static bool _hooksInstalled;
 
+        // We set/unset this while painting DateTimePickers, so other controls aren't affected by the global
+        // color change
+        internal static bool OverrideColorsForDateTimePicker = false;
+
         #endregion
 
         internal static void InstallHooks()
@@ -186,7 +190,7 @@ namespace AngelLoader.WinAPI
 
         private static int GetSysColor(int nIndex)
         {
-            return Misc.Config.VisualTheme == VisualTheme.Dark
+            return Misc.Config.VisualTheme == VisualTheme.Dark && OverrideColorsForDateTimePicker
                 ? nIndex switch
                 {
                     COLOR_WINDOW => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
@@ -200,7 +204,7 @@ namespace AngelLoader.WinAPI
 
         private static IntPtr GetSysColorBrush(int nIndex)
         {
-            if (Misc.Config.VisualTheme == VisualTheme.Dark)
+            if (Misc.Config.VisualTheme == VisualTheme.Dark && OverrideColorsForDateTimePicker)
             {
                 Color? color = nIndex switch
                 {

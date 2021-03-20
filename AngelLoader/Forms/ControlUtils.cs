@@ -341,5 +341,46 @@ namespace AngelLoader.Forms
             IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)SB_THUMBTRACK;
             SendMessage(handle, direction == SB_VERT ? WM_VSCROLL : WM_HSCROLL, wp, ptrLParam);
         }
+
+        internal static void SetMessageBoxIcon(PictureBox pictureBox, MessageBoxIcon icon)
+        {
+            var sii = new SHSTOCKICONINFO();
+            try
+            {
+                // ReSharper disable ConditionIsAlwaysTrueOrFalse
+                SHSTOCKICONID sysIcon =
+                    icon == MessageBoxIcon.Error ||
+                    icon == MessageBoxIcon.Hand ||
+                    icon == MessageBoxIcon.Stop
+                  ? SHSTOCKICONID.SIID_ERROR
+                  : icon == MessageBoxIcon.Question
+                  ? SHSTOCKICONID.SIID_HELP
+                  : icon == MessageBoxIcon.Exclamation ||
+                    icon == MessageBoxIcon.Warning
+                  ? SHSTOCKICONID.SIID_WARNING
+                  : icon == MessageBoxIcon.Asterisk ||
+                    icon == MessageBoxIcon.Information
+                  ? SHSTOCKICONID.SIID_INFO
+                  : throw new ArgumentOutOfRangeException();
+                // ReSharper restore ConditionIsAlwaysTrueOrFalse
+
+                sii.cbSize = (uint)Marshal.SizeOf(typeof(SHSTOCKICONINFO));
+
+                int result = SHGetStockIconInfo(sysIcon, SHGSI_ICON, ref sii);
+                Marshal.ThrowExceptionForHR(result, new IntPtr(-1));
+
+                pictureBox.Image = Icon.FromHandle(sii.hIcon).ToBitmap();
+            }
+            catch
+            {
+                // "Wrong style" image (different style from the MessageBox one) but better than nothing if the
+                // above fails
+                pictureBox.Image = SystemIcons.Warning.ToBitmap();
+            }
+            finally
+            {
+                DestroyIcon(sii.hIcon);
+            }
+        }
     }
 }

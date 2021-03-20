@@ -784,5 +784,41 @@ namespace AngelLoader.WinAPI
         internal static extern bool IsThemeActive();
 
         #endregion
+
+        #region MessageBox/TaskDialog
+
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal enum SHSTOCKICONID : uint
+        {
+            SIID_HELP = 23,
+            SIID_WARNING = 78,
+            SIID_INFO = 79,
+            SIID_ERROR = 80
+        }
+
+        internal const uint SHGSI_ICON = 0x000000100;
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
+        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal struct SHSTOCKICONINFO
+        {
+            internal uint cbSize;
+            internal IntPtr hIcon;
+            internal int iSysIconIndex;
+            internal int iIcon;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260/*MAX_PATH*/)]
+            internal string szPath;
+        }
+
+        [DllImport("Shell32.dll", SetLastError = false)]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern bool DestroyIcon(IntPtr hIcon);
+
+        #endregion
     }
 }
