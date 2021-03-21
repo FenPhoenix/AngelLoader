@@ -36,6 +36,7 @@ namespace AngelLoader.WinAPI
         internal const int LVM_HITTEST = (LVM_FIRST + 18);
         internal const int LVN_FIRST = -100;
         internal const int LVN_MARQUEEBEGIN = (LVN_FIRST - 56);
+        internal const int LVM_SETBKCOLOR = (LVM_FIRST + 1);
 
         #endregion
 
@@ -51,6 +52,7 @@ namespace AngelLoader.WinAPI
         internal const int WM_SIZE = 0x0005;
         internal const int WM_ACTIVATE = 0x0006;
         internal const int WM_WINDOWPOSCHANGED = 0x0047;
+        internal const int WM_ENABLE = 0x000A;
 
         internal const uint WM_CTLCOLORLISTBOX = 0x0134;
         internal const int SWP_NOSIZE = 0x0001;
@@ -719,19 +721,19 @@ namespace AngelLoader.WinAPI
         [DllImport("uxtheme.dll", ExactSpelling = true)]
         public static extern int CloseThemeData(IntPtr hTheme);
 
-//        [StructLayout(LayoutKind.Sequential)]
-//        public class RECTCLS
-//        {
-//#pragma warning disable 649
-//            public int Left;
-//            public int Top;
-//            public int Right;
-//            public int Bottom;
-//#pragma warning restore 649
+        //        [StructLayout(LayoutKind.Sequential)]
+        //        public class RECTCLS
+        //        {
+        //#pragma warning disable 649
+        //            public int Left;
+        //            public int Top;
+        //            public int Right;
+        //            public int Bottom;
+        //#pragma warning restore 649
 
-//            public static implicit operator Rectangle(RECTCLS r)
-//                => Rectangle.FromLTRB(r.Left, r.Top, r.Right, r.Bottom);
-//        }
+        //            public static implicit operator Rectangle(RECTCLS r)
+        //                => Rectangle.FromLTRB(r.Left, r.Top, r.Right, r.Bottom);
+        //        }
 
         internal const int
             ABS_UPNORMAL = 1,

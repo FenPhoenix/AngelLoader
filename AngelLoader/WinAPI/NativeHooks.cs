@@ -16,6 +16,8 @@ namespace AngelLoader.WinAPI
         private const int COLOR_HIGHLIGHT_TEXT = 14;
         private const int COLOR_WINDOW = 5;
         private const int COLOR_WINDOWTEXT = 8;
+        private const int COLOR_3DFACE = 15;
+        private const int COLOR_GRAYTEXT = 17;
 
         #region GetSysColor
 
@@ -74,9 +76,9 @@ namespace AngelLoader.WinAPI
 
         private static bool _hooksInstalled;
 
-        // We set/unset this while painting DateTimePickers, so other controls aren't affected by the global
+        // We set/unset this while painting specific controls, so other controls aren't affected by the global
         // color change
-        internal static bool OverrideColorsForDateTimePicker = false;
+        internal static bool EnableSysColorOverride = false;
 
         #endregion
 
@@ -190,13 +192,15 @@ namespace AngelLoader.WinAPI
 
         private static int GetSysColor(int nIndex)
         {
-            return Misc.Config.VisualTheme == VisualTheme.Dark && OverrideColorsForDateTimePicker
+            return Misc.Config.VisualTheme == VisualTheme.Dark && EnableSysColorOverride
                 ? nIndex switch
                 {
                     COLOR_WINDOW => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
                     COLOR_WINDOWTEXT => ColorTranslator.ToWin32(DarkColors.LightText),
                     COLOR_HIGHLIGHT => ColorTranslator.ToWin32(DarkColors.BlueSelection),
                     COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
+                    COLOR_3DFACE => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
+                    COLOR_GRAYTEXT => ColorTranslator.ToWin32(DarkColors.DisabledText),
                     _ => GetSysColorOriginal!(nIndex)
                 }
                 : GetSysColorOriginal!(nIndex);
@@ -204,25 +208,18 @@ namespace AngelLoader.WinAPI
 
         private static IntPtr GetSysColorBrush(int nIndex)
         {
-            if (Misc.Config.VisualTheme == VisualTheme.Dark && OverrideColorsForDateTimePicker)
-            {
-                Color? color = nIndex switch
+            return Misc.Config.VisualTheme == VisualTheme.Dark && EnableSysColorOverride
+                ? nIndex switch
                 {
-                    COLOR_WINDOW => DarkColors.Fen_ControlBackground,
-                    COLOR_WINDOWTEXT => DarkColors.LightText,
-                    COLOR_HIGHLIGHT => DarkColors.BlueSelection,
-                    COLOR_HIGHLIGHT_TEXT => DarkColors.Fen_HighlightText,
-                    _ => null
-                };
-
-                return color != null
-                    ? Native.CreateSolidBrush(ColorTranslator.ToWin32((Color)color))
-                    : GetSysColorBrushOriginal!(nIndex);
-            }
-            else
-            {
-                return GetSysColorBrushOriginal!(nIndex);
-            }
+                    COLOR_WINDOW => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground)),
+                    COLOR_WINDOWTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText)),
+                    COLOR_HIGHLIGHT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection)),
+                    COLOR_HIGHLIGHT_TEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText)),
+                    COLOR_3DFACE => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground)),
+                    COLOR_GRAYTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText)),
+                    _ => GetSysColorBrushOriginal!(nIndex)
+                }
+                : GetSysColorBrushOriginal!(nIndex);
         }
 
         #endregion

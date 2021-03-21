@@ -161,34 +161,54 @@ namespace AngelLoader.Forms.CustomControls
                 e.Bounds.Height
             );
 
-            if (itemSelected)
-            {
-                Brush brush = _darkModeEnabled ? DarkColors.BlueSelectionBrush : SystemBrushes.Highlight;
-                e.Graphics.FillRectangle(brush, selRect);
-            }
-            else
-            {
-                Brush brush = _darkModeEnabled ? DarkColors.Fen_DarkBackgroundBrush : SystemBrushes.Window;
-                e.Graphics.FillRectangle(brush, selRect);
-            }
+            Brush bgBrush =
+                itemSelected
+                    ? _darkModeEnabled
+                        ? !Enabled
+                            ? DarkColors.LightBackgroundBrush
+                            : DarkColors.BlueSelectionBrush
+                        : !Enabled
+                            ? SystemBrushes.ControlLight
+                            : SystemBrushes.Highlight
+                    : _darkModeEnabled
+                        ? !Enabled
+                            ? DarkColors.Fen_ControlBackgroundBrush
+                            : DarkColors.Fen_DarkBackgroundBrush
+                        : !Enabled
+                            ? SystemBrushes.Control
+                            : SystemBrushes.Window;
+
+            e.Graphics.FillRectangle(bgBrush, selRect);
 
             Color textColor =
                 _darkModeEnabled
-                    ? itemSelected
-                        ? DarkColors.LightText
-                        : DarkColors.LightText
-                    : itemSelected
-                        ? SystemColors.HighlightText
-                        : SystemColors.ControlText;
+                    ? !Enabled
+                        ? DarkColors.DisabledText
+                        : itemSelected
+                            ? DarkColors.Fen_HighlightText
+                            : DarkColors.LightText
+                    : !Enabled
+                        ? SystemColors.GrayText
+                        : itemSelected
+                            ? SystemColors.HighlightText
+                            : SystemColors.ControlText;
 
             Color textBackColor =
                 _darkModeEnabled
-                    ? itemSelected
-                        ? DarkColors.BlueSelection
-                        : DarkColors.Fen_DarkBackground
-                    : itemSelected
-                        ? SystemColors.Highlight
-                        : SystemColors.Window;
+                    ? !Enabled
+                        ? itemSelected
+                            ? DarkColors.LightBackground
+                            : DarkColors.Fen_ControlBackground
+                        : itemSelected
+                            ? DarkColors.BlueSelection
+                            : DarkColors.Fen_DarkBackground
+                    : !Enabled
+                        ? itemSelected
+                            ? SystemColors.ControlLight
+                            : SystemColors.Control
+                        : itemSelected
+                            ? SystemColors.Highlight
+                            : SystemColors.Window;
 
             const TextFormatFlags textFormatFlags =
                 TextFormatFlags.Left |
@@ -303,6 +323,18 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_NCPAINT:
                     if (_darkModeEnabled) DrawBorder(m.HWnd);
                     base.WndProc(ref m);
+                    break;
+                case Native.WM_ENABLE:
+                    if (_darkModeEnabled && m.WParam == IntPtr.Zero)
+                    {
+                        NativeHooks.EnableSysColorOverride = true;
+                        base.WndProc(ref m);
+                        NativeHooks.EnableSysColorOverride = false;
+                    }
+                    else
+                    {
+                        base.WndProc(ref m);
+                    }
                     break;
                 default:
                     base.WndProc(ref m);
