@@ -245,9 +245,6 @@ namespace AngelLoader.Forms
             bool alsoCreateControlHandles = false
             )
         {
-            // TODO: @DarkMode(SetTheme): Eventually just codegen the set of all darkable controls
-            // So we don't have to have this awkward dictionary fill/loop/manual-set system.
-
             bool darkMode = theme == VisualTheme.Dark;
 
             // TODO: @DarkMode(FillControlDict): Controls might change their colors after construct
@@ -290,7 +287,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        // TODO: @DarkMode: Add this to all controls with alignable text
         internal static TextFormatFlags GetTextAlignmentFlags(ContentAlignment textAlign) => textAlign switch
         {
             ContentAlignment.TopLeft => TextFormatFlags.Top | TextFormatFlags.Left,
