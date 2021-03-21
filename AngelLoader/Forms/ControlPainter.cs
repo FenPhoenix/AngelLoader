@@ -412,9 +412,11 @@ namespace AngelLoader.Forms
 
         internal static Brush BlackForegroundBrush => DarkModeEnabled ? DarkColors.Fen_DarkForegroundBrush : Brushes.Black;
 
+        // TODO: @DarkMode: Explicit color
         private static readonly Brush _darkModeArrowButtonEnabledBrush = new SolidBrush(Color.FromArgb(150, 156, 160));
         private static Brush ArrowButtonEnabledBrush => DarkModeEnabled ? _darkModeArrowButtonEnabledBrush : SystemBrushes.ControlText;
 
+        // TODO: @DarkMode: Explicit color
         private static readonly Pen _darkModeArrowButtonEnabledPen = new Pen(Color.FromArgb(150, 156, 160));
         private static Pen ArrowButtonEnabledPen => DarkModeEnabled ? _darkModeArrowButtonEnabledPen : SystemPens.ControlText;
 

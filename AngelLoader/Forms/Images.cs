@@ -409,6 +409,7 @@ namespace AngelLoader.Forms
 
                 var borderRect = new Rectangle(0, 0, 78, 22);
 
+                // TODO: @DarkMode: Explicit color
                 using var pen = new Pen(darkMode ? Color.FromArgb(64, 64, 64) : Color.FromArgb(160, 160, 160));
                 g.DrawRectangle(pen, borderRect);
 
