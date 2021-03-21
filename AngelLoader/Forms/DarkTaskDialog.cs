@@ -132,9 +132,24 @@ namespace AngelLoader.Forms
             }
             int width = Math.Max(bottomBarContentWidth, 350);
             MessageLabel.MaximumSize = new Size((width - imageMarginX) - 7, MessageLabel.MaximumSize.Height);
-            int height = MessageLabel.Top + MessageLabel.Height + 15 + BottomFLP.Height + 10;
+            int height = MessageLabel.Top + MessageLabel.Height + 15 + BottomFLP.Height;
+
+            if (icon != MessageBoxIcon.None && MessageLabel.Bottom <= IconPictureBox.Bottom + 10)
+            {
+                height += 8;
+            }
 
             ClientSize = new Size(width, height);
+
+            // +2 fudge factor because the label height and the font height are not exactly the same (height is
+            // 1px less than font height in this case, but I don't know how consistent that is)
+            if (MessageLabel.Height <= MessageLabel.Font.Height + 2)
+            {
+                MessageLabel.Location = new Point(
+                    MessageLabel.Location.X,
+                    (BottomFLP.Top / 2) - (MessageLabel.Height / 2)
+                );
+            }
 
             DialogResult = DialogResult.Cancel;
 

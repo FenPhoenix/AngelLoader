@@ -46,12 +46,12 @@ namespace AngelLoader
             if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
             {
                 (bool cancel, bool dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(
-                    LText.AlertMessages.Play_ConfirmMessage,
-                    LText.AlertMessages.Confirm,
+                    message: LText.AlertMessages.Play_ConfirmMessage,
+                    title: LText.AlertMessages.Confirm,
                     icon: MessageBoxIcon.None,
                     showDontAskAgain: true,
-                    yes: null,
-                    no: null);
+                    yes: LText.Global.Yes,
+                    no: LText.Global.No);
 
                 if (cancel) return;
 
@@ -740,12 +740,12 @@ namespace AngelLoader
             if (Config.ConfirmUninstall)
             {
                 (bool cancel, bool dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(
-                        LText.AlertMessages.Uninstall_Confirm,
-                        LText.AlertMessages.Confirm,
-                        MessageBoxIcon.Warning,
+                        message: LText.AlertMessages.Uninstall_Confirm,
+                        title: LText.AlertMessages.Confirm,
+                        icon: MessageBoxIcon.Warning,
                         showDontAskAgain: true,
-                        LText.AlertMessages.Uninstall,
-                        LText.Global.Cancel);
+                        yes: LText.AlertMessages.Uninstall,
+                        no: LText.Global.Cancel);
 
                 if (cancel) return;
 
@@ -786,12 +786,12 @@ namespace AngelLoader
                 if (fmArchivePath!.IsEmpty())
                 {
                     (bool cancel, _) = Core.View.AskToContinueYesNoCustomStrings(
-                        LText.AlertMessages.Uninstall_ArchiveNotFound,
-                        LText.AlertMessages.Warning,
-                        MessageBoxIcon.Warning,
+                        message: LText.AlertMessages.Uninstall_ArchiveNotFound,
+                        title: LText.AlertMessages.Warning,
+                        icon: MessageBoxIcon.Warning,
                         showDontAskAgain: false,
-                        LText.AlertMessages.Uninstall,
-                        LText.Global.Cancel);
+                        yes: LText.AlertMessages.Uninstall,
+                        no: LText.Global.Cancel);
 
                     if (cancel) return;
                 }
@@ -822,13 +822,13 @@ namespace AngelLoader
                         : LText.AlertMessages.Uninstall_BackupAllData;
                     (bool cancel, bool cont, bool dontAskAgain) =
                         Core.View.AskToContinueWithCancelCustomStrings(
-                            message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
-                            LText.AlertMessages.Confirm,
-                            MessageBoxIcon.None,
+                            message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
+                            title: LText.AlertMessages.Confirm,
+                            icon: MessageBoxIcon.None,
                             showDontAskAgain: true,
-                            LText.AlertMessages.BackUp,
-                            LText.AlertMessages.DontBackUp,
-                            LText.Global.Cancel);
+                            yes: LText.AlertMessages.BackUp,
+                            no: LText.AlertMessages.DontBackUp,
+                            cancel: LText.Global.Cancel);
 
                     if (cancel) return;
 

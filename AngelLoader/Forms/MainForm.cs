@@ -218,7 +218,7 @@ namespace AngelLoader.Forms
             using var f = new DarkTaskDialog(
                 message: "Message test sdaf sdf ads adsf s saf asf as sda das dsaf dsaf asdf sad sadf sda sdaf d  sad dsaf dsaf dsaf dasf dasf dsaf sda fas fsaf sad fsf",
                 title: "Title",
-                icon: MessageBoxIcon.None,
+                icon: MessageBoxIcon.Warning,
                 yesText: "This is a very long string of text that would certainly cause resizing that is if I have implemented it anyway and yeah",
                 //yesText: "Yes",
                 noText: "No",
@@ -1528,12 +1528,28 @@ namespace AngelLoader.Forms
 
         #region Messageboxes
 
-        public bool AskToContinue(string message, string title, bool noIcon = false) =>
-            MessageBox.Show(
-                message,
-                title,
-                MessageBoxButtons.YesNo,
-                noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning) == DialogResult.Yes;
+        public bool AskToContinue(string message, string title, bool noIcon = false)
+        {
+            if (Config.VisualTheme == VisualTheme.Dark)
+            {
+                using var d = new DarkTaskDialog(
+                    message: message,
+                    title: title,
+                    icon: noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning,
+                    yesText: LText.Global.Yes,
+                    noText: LText.Global.No,
+                    defaultButton: DarkTaskDialog.Button.No);
+                return d.ShowDialog() == DialogResult.Yes;
+            }
+            else
+            {
+                return MessageBox.Show(
+                    message,
+                    title,
+                    MessageBoxButtons.YesNo,
+                    noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning) == DialogResult.Yes;
+            }
+        }
 
         public (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancelCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
@@ -1592,7 +1608,23 @@ namespace AngelLoader.Forms
             //return (cancel, dontAskAgain);
         }
 
-        public void ShowAlert(string message, string title) => MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        public void ShowAlert(string message, string title)
+        {
+            if (Config.VisualTheme == VisualTheme.Dark)
+            {
+                using var d = new DarkTaskDialog(
+                    message: message,
+                    title: title,
+                    icon: MessageBoxIcon.Warning,
+                    yesText: LText.Global.OK,
+                    defaultButton: DarkTaskDialog.Button.Yes);
+                d.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
 
         #endregion
 
