@@ -21,7 +21,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             // Cover up the flash of bright/half-drawn controls on startup when in dark mode
             if (_loading &&
-                Misc.Config.VisualTheme == VisualTheme.Dark &&
+                Misc.Config.DarkMode &&
                 IsHandleCreated &&
                 (m.Msg == Native.WM_PAINT
                  || m.Msg == Native.WM_SIZE

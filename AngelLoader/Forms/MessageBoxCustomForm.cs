@@ -160,7 +160,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme);
+            if (Config.DarkMode) SetTheme(Config.VisualTheme);
         }
 
         private void SetTheme(VisualTheme theme)

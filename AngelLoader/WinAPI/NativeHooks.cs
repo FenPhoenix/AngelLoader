@@ -168,7 +168,7 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            if (Misc.Config.VisualTheme == VisualTheme.Dark)
+            if (Misc.Config.DarkMode)
             {
                 if (ScrollBarPainter.HTheme == hTheme)
                 {
@@ -202,7 +202,7 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            if (Misc.Config.VisualTheme == VisualTheme.Dark)
+            if (Misc.Config.DarkMode)
             {
                 if (ScrollBarPainter.HTheme == hTheme)
                 {
@@ -229,7 +229,7 @@ namespace AngelLoader.WinAPI
 
         private static int GetSysColor(int nIndex)
         {
-            return Misc.Config.VisualTheme == VisualTheme.Dark && EnableSysColorOverride
+            return Misc.Config.DarkMode && EnableSysColorOverride
                 ? nIndex switch
                 {
                     COLOR_WINDOW => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
@@ -245,7 +245,7 @@ namespace AngelLoader.WinAPI
 
         private static IntPtr GetSysColorBrush(int nIndex)
         {
-            return Misc.Config.VisualTheme == VisualTheme.Dark && EnableSysColorOverride
+            return Misc.Config.DarkMode && EnableSysColorOverride
                 ? nIndex switch
                 {
                     COLOR_WINDOW => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground)),

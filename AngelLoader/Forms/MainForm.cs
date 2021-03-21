@@ -171,7 +171,7 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-            Config.VisualTheme = Config.VisualTheme == VisualTheme.Classic ? VisualTheme.Dark : VisualTheme.Classic;
+            Config.VisualTheme = Config.DarkMode ? VisualTheme.Classic : VisualTheme.Dark;
             SetTheme(Config.VisualTheme);
         }
 
@@ -839,7 +839,7 @@ namespace AngelLoader.Forms
 
             // PERF: If we're in the classic theme, we don't need to do anything
             // Do this here to prevent double-loading of RTF/GLML readmes
-            if (Config.VisualTheme != VisualTheme.Classic)
+            if (Config.DarkMode)
             {
                 SetTheme(Config.VisualTheme, startup: true, alsoCreateControlHandles: true);
             }

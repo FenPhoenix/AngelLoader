@@ -404,7 +404,7 @@ namespace AngelLoader.Forms
 
         public static bool AskToContinue(string message, string title, bool noIcon = false)
         {
-            if (Config.VisualTheme == VisualTheme.Dark)
+            if (Config.DarkMode)
             {
                 using var d = new DarkTaskDialog(
                     message: message,
@@ -469,7 +469,7 @@ namespace AngelLoader.Forms
 
         public static void ShowAlert(string message, string title, MessageBoxIcon icon = MessageBoxIcon.Warning)
         {
-            if (Config.VisualTheme == VisualTheme.Dark)
+            if (Config.DarkMode)
             {
                 using var d = new DarkTaskDialog(
                     message: message,

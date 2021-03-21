@@ -398,6 +398,8 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
+        internal bool DarkMode => VisualTheme == VisualTheme.Dark;
+
         internal VisualTheme VisualTheme = VisualTheme.Classic;
 
 #if !ReleaseBeta && !ReleasePublic

@@ -31,7 +31,7 @@ namespace AngelLoader.Forms
             sourceTags.DeepCopyTo(_sourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);
 
-            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme);
+            if (Config.DarkMode) SetTheme(Config.VisualTheme);
 
             Localize();
 

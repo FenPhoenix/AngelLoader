@@ -39,7 +39,7 @@ namespace AngelLoader.Forms
 
             if (ImportType == ImportType.FMSel) ImportSizeCheckBox.Hide();
 
-            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme);
+            if (Config.DarkMode) SetTheme(Config.VisualTheme);
 
             Localize();
         }
