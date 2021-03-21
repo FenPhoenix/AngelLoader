@@ -22,6 +22,11 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Color? DarkModeBackColor { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new bool UseMnemonic
         {
             get => base.UseMnemonic;
@@ -355,7 +360,7 @@ namespace AngelLoader.Forms.CustomControls
             Color? parentBackColor = Parent?.BackColor;
             if (parentBackColor != null)
             {
-                using var b = new SolidBrush((Color)parentBackColor);
+                using var b = new SolidBrush(DarkModeBackColor ?? (Color)parentBackColor);
                 g.FillRectangle(b, rect);
             }
             else
@@ -398,7 +403,7 @@ namespace AngelLoader.Forms.CustomControls
             TextFormatFlags textFormatFlags =
                 ControlUtils.GetTextAlignmentFlags(TextAlign) |
                 TextFormatFlags.NoPrefix |
-                TextFormatFlags.NoClipping|
+                TextFormatFlags.NoClipping |
                 TextFormatFlags.WordBreak;
 
             var textRect = new Rectangle(size + 4, 0, rect.Width - size, rect.Height);

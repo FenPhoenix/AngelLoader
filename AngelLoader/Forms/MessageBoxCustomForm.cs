@@ -124,23 +124,9 @@ namespace AngelLoader.Forms
 
             #region Local functions
 
-            static int GetFlowLayoutPanelControlsWidthAll(FlowLayoutPanel flp)
-            {
-                int ret = 0;
-                for (int i = 0; i < flp.Controls.Count; i++)
-                {
-                    Control c = flp.Controls[i];
-                    ret += c.Margin.Left + c.Margin.Right + c.Width;
-                }
-                ret += flp.Padding.Left + flp.Padding.Right;
-
-                return ret;
-            }
-
             int GetControlFullHeight(Control control, bool onlyIfVisible = false) =>
                 !onlyIfVisible || _multiChoice
-                    ? control.Margin.Top +
-                      control.Margin.Bottom +
+                    ? control.Margin.Vertical +
                       control.Height
                     : 0;
 
@@ -151,7 +137,7 @@ namespace AngelLoader.Forms
             // Set this last: all controls sizes are now set, so we can size the window
             ClientSize = new Size(
                  width: _leftAreaWidth +
-                        MathMax4(GetFlowLayoutPanelControlsWidthAll(BottomFLP),
+                        MathMax4(ControlUtils.GetFlowLayoutPanelControlsWidthAll(BottomFLP),
                                  MessageTopLabel.Width,
                                  _multiChoice ? MessageBottomLabel.Width : 0,
                                  _multiChoice ? SelectButtonsFLP.Width : 0) +

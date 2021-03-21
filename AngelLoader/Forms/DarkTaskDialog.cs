@@ -30,7 +30,7 @@ namespace AngelLoader.Forms
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
         [PublicAPI]
-        public bool IsVerificationChecked;
+        public bool IsVerificationChecked => VerificationCheckBox.Checked;
 
         [PublicAPI]
         public enum Button
@@ -65,10 +65,14 @@ namespace AngelLoader.Forms
             YesButton.Font = SystemFonts.MessageBoxFont;
             NoButton.Font = SystemFonts.MessageBoxFont;
             Cancel_Button.Font = SystemFonts.MessageBoxFont;
+            VerificationCheckBox.Font = SystemFonts.MessageBoxFont;
 
             #endregion
 
-            int imageMarginX = icon != MessageBoxIcon.None ? 52 : 10;
+            // All numbers are just matching the original Win32 task dialog as closely as possible. Don't worry
+            // about them.
+
+            int imageMarginX = icon != MessageBoxIcon.None ? 49 : 7;
 
             MessageLabel.Location = new Point(imageMarginX, MessageLabel.Location.Y);
 
@@ -121,49 +125,23 @@ namespace AngelLoader.Forms
 
             if (icon != MessageBoxIcon.None) ControlUtils.SetMessageBoxIcon(IconPictureBox, icon);
 
-            #region Local functions
-
-            static int GetFlowLayoutPanelControlsWidthAll(FlowLayoutPanel flp)
+            int bottomBarContentWidth = ControlUtils.GetFlowLayoutPanelControlsWidthAll(BottomFLP);
+            if (checkBoxVisible)
             {
-                int ret = 0;
-                for (int i = 0; i < flp.Controls.Count; i++)
-                {
-                    Control c = flp.Controls[i];
-                    ret += c.Margin.Left + c.Margin.Right + c.Width;
-                }
-                ret += flp.Padding.Left + flp.Padding.Right;
-
-                return ret;
+                bottomBarContentWidth += VerificationCheckBox.Margin.Horizontal + VerificationCheckBox.Width + 22;
             }
-
-            #endregion
-
-            int width = Math.Max(GetFlowLayoutPanelControlsWidthAll(BottomFLP), 350);
-            MessageLabel.MaximumSize = new Size((width - imageMarginX) - 10, MessageLabel.MaximumSize.Height);
-            int height = MessageLabel.Top + MessageLabel.Height + 18 + BottomFLP.Height;
+            int width = Math.Max(bottomBarContentWidth, 350);
+            MessageLabel.MaximumSize = new Size((width - imageMarginX) - 7, MessageLabel.MaximumSize.Height);
+            int height = MessageLabel.Top + MessageLabel.Height + 15 + BottomFLP.Height + 10;
 
             ClientSize = new Size(width, height);
 
-            if (checkBoxVisible)
-            {
-                VerificationCheckBox.Margin = new Padding(
-                    VerificationCheckBox.Margin.Left,
-                    VerificationCheckBox.Margin.Top,
-                    VerificationCheckBox.Margin.Right + ((VerificationCheckBox.Left - VerificationCheckBox.Margin.Left) - 10),
-                    VerificationCheckBox.Margin.Bottom
-                );
-            }
-
-            if (Config.VisualTheme != VisualTheme.Classic) SetTheme(Config.VisualTheme);
-
             DialogResult = DialogResult.Cancel;
-
-            Trace.WriteLine(AcceptButton);
-            Trace.WriteLine(CancelButton);
 
             if (yesButtonVisible) YesButton.Click += YesButton_Click;
             if (noButtonVisible) NoButton.Click += NoButton_Click;
             if (cancelButtonVisible) Cancel_Button.Click += CancelButton_Click;
+            SetTheme(Config.VisualTheme);
         }
 
         private void YesButton_Click(object sender, EventArgs e)
@@ -186,8 +164,16 @@ namespace AngelLoader.Forms
 
         private void SetTheme(VisualTheme theme)
         {
-            ControlUtils.ChangeFormThemeMode(theme, this, _controlColors, x => x == BottomFLP);
-            BottomFLP.BackColor = DarkColors.Fen_DarkBackground;
+            if (theme == VisualTheme.Dark)
+            {
+                ControlUtils.ChangeFormThemeMode(theme, this, _controlColors, x => x == BottomFLP || x == VerificationCheckBox);
+                BottomFLP.BackColor = DarkColors.Fen_DarkBackground;
+                VerificationCheckBox.DarkModeBackColor = DarkColors.Fen_DarkBackground;
+            }
+            else
+            {
+                VerificationCheckBox.BackColor = SystemColors.Control;
+            }
         }
     }
 }

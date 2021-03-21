@@ -219,8 +219,8 @@ namespace AngelLoader.Forms
                 message: "Message test sdaf sdf ads adsf s saf asf as sda das dsaf dsaf asdf sad sadf sda sdaf d  sad dsaf dsaf dsaf dasf dasf dsaf sda fas fsaf sad fsf",
                 title: "Title",
                 icon: MessageBoxIcon.None,
-                //yesText: "This is a very long string of text that would certainly cause resizing that is if I have implemented it anyway and yeah",
-                yesText: "Yes",
+                yesText: "This is a very long string of text that would certainly cause resizing that is if I have implemented it anyway and yeah",
+                //yesText: "Yes",
                 noText: "No",
                 cancelText: "Cancel",
                 checkBoxText: "Don't ask again",
@@ -1539,10 +1539,6 @@ namespace AngelLoader.Forms
         AskToContinueWithCancelCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
                                              string yes, string no, string cancel, DarkTaskDialog.Button? defaultButton = null)
         {
-            //var yesButton = new TaskDialogButton(yes);
-            //var noButton = new TaskDialogButton(no);
-            //var cancelButton = new TaskDialogButton(cancel);
-
             using var d = new DarkTaskDialog(
                 title: title,
                 message: message,
@@ -1562,23 +1558,38 @@ namespace AngelLoader.Forms
         }
 
         public (bool Cancel, bool DontAskAgain)
-        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-                                        string? yes, string? no, ButtonType? defaultButton = null)
+        AskToContinueYesNoCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
+                                        string? yes, string? no, DarkTaskDialog.Button? defaultButton = null)
         {
-            var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
-            var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No);
-
-            using var d = new TaskDialog(
+            using var d = new DarkTaskDialog(
                 title: title,
                 message: message,
-                buttons: new[] { yesButton, noButton },
-                defaultButton: defaultButton == ButtonType.No ? noButton : yesButton,
-                verificationText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
-                mainIcon: icon);
+                yesText: yes,
+                noText: no,
+                defaultButton: defaultButton ?? DarkTaskDialog.Button.No,
+                checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
+                icon: icon);
 
-            bool cancel = d.ShowDialog() != yesButton;
+            var result = d.ShowDialog();
+
+            bool cancel = result != DialogResult.Yes;
             bool dontAskAgain = d.IsVerificationChecked;
             return (cancel, dontAskAgain);
+
+            //var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
+            //var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No);
+
+            //using var d = new TaskDialog(
+            //    title: title,
+            //    message: message,
+            //    buttons: new[] { yesButton, noButton },
+            //    defaultButton: defaultButton == ButtonType.No ? noButton : yesButton,
+            //    verificationText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
+            //    mainIcon: icon);
+
+            //bool cancel = d.ShowDialog() != yesButton;
+            //bool dontAskAgain = d.IsVerificationChecked;
+            //return (cancel, dontAskAgain);
         }
 
         public void ShowAlert(string message, string title) => MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);

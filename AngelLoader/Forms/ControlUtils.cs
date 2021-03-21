@@ -382,5 +382,18 @@ namespace AngelLoader.Forms
                 DestroyIcon(sii.hIcon);
             }
         }
+
+        internal static int GetFlowLayoutPanelControlsWidthAll(FlowLayoutPanel flp)
+        {
+            int ret = 0;
+            for (int i = 0; i < flp.Controls.Count; i++)
+            {
+                Control c = flp.Controls[i];
+                ret += c.Margin.Horizontal + c.Width;
+            }
+            ret += flp.Padding.Horizontal;
+
+            return ret;
+        }
     }
 }

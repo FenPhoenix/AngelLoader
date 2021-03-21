@@ -124,12 +124,12 @@ namespace AngelLoader.Forms
         bool AskToContinue(string message, string title, bool noIcon = false);
 
         (bool Cancel, bool DontAskAgain)
-        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-                                        string? yes, string? no, ButtonType? defaultButton = null);
+        AskToContinueYesNoCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
+                                        string? yes, string? no, DarkTaskDialog.Button? defaultButton = null);
 
         (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancelCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
-            string yes, string no, string cancel, DarkTaskDialog.Button? defaultButton = null);
+                                             string yes, string no, string cancel, DarkTaskDialog.Button? defaultButton = null);
 
         #endregion
 

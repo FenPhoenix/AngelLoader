@@ -48,7 +48,7 @@ namespace AngelLoader
                 (bool cancel, bool dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(
                     LText.AlertMessages.Play_ConfirmMessage,
                     LText.AlertMessages.Confirm,
-                    icon: null,
+                    icon: MessageBoxIcon.None,
                     showDontAskAgain: true,
                     yes: null,
                     no: null);
@@ -742,7 +742,7 @@ namespace AngelLoader
                 (bool cancel, bool dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(
                         LText.AlertMessages.Uninstall_Confirm,
                         LText.AlertMessages.Confirm,
-                        TaskDialogIcon.Warning,
+                        MessageBoxIcon.Warning,
                         showDontAskAgain: true,
                         LText.AlertMessages.Uninstall,
                         LText.Global.Cancel);
@@ -788,7 +788,7 @@ namespace AngelLoader
                     (bool cancel, _) = Core.View.AskToContinueYesNoCustomStrings(
                         LText.AlertMessages.Uninstall_ArchiveNotFound,
                         LText.AlertMessages.Warning,
-                        TaskDialogIcon.Warning,
+                        MessageBoxIcon.Warning,
                         showDontAskAgain: false,
                         LText.AlertMessages.Uninstall,
                         LText.Global.Cancel);
