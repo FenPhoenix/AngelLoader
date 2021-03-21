@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
-using Gma.System.MouseKeyHook;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 using static AngelLoader.WinAPI.Native;
@@ -18,9 +17,6 @@ namespace AngelLoader.Forms
 {
     internal static class ControlUtils
     {
-        // Only one copy of the hook
-        internal static readonly IMouseEvents MouseHook = Hook.AppEvents();
-
         #region Suspend/resume drawing
 
         internal static void SuspendDrawing(this Control control)
