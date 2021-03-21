@@ -555,6 +555,10 @@ namespace AngelLoader.Forms
         {
             _selfTheme = theme;
 
+            // Some parts of the code check this (eg. theme renderers) so we need to set it. We'll revert it
+            // back to the passed-in theme if we cancel.
+            Config.VisualTheme = theme;
+
             bool darkMode = theme == VisualTheme.Dark;
 
             try
@@ -893,6 +897,7 @@ namespace AngelLoader.Forms
 
                     if (_inTheme != _selfTheme)
                     {
+                        Config.VisualTheme = _inTheme;
                         ThemeOwnerForm(_inTheme);
                     }
                 }
