@@ -394,9 +394,12 @@ namespace FenGen
                     i--;
                 }
                 else if (destNode.PropName == "Size" &&
-                         ((props.Size != null && props.MinimumSize != null && props.Size == props.MinimumSize) ||
-                         (props.Size != null && props.AutoSize == true) ||
-                         props.AutoSize == true))
+                         ((props.Size != null && props.MinimumSize != null && props.Size == props.MinimumSize)
+                         // Some controls (eg. CheckBox) need an explicit size even with AutoSize set, otherwise
+                         // their location is wrong(?!)
+                         //(props.Size != null && props.AutoSize == true) ||
+                         //props.AutoSize == true)
+                         ))
                 {
                     destNodes.RemoveAt(i);
                     i--;

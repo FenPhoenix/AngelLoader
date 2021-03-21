@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.Forms;
 using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
@@ -159,8 +160,7 @@ namespace AngelLoader
             Error soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
             if (soError != Error.None)
             {
-                // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
-                MessageBox.Show(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ControlUtils.ShowAlert(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert);
                 return (soError, false, "", "", false);
             }
 

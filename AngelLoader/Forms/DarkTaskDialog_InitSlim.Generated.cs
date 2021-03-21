@@ -46,6 +46,7 @@
             this.VerificationCheckBox.AutoSize = true;
             this.VerificationCheckBox.Location = new System.Drawing.Point(13, 184);
             this.VerificationCheckBox.Margin = new System.Windows.Forms.Padding(5, 13, 5, 3);
+            this.VerificationCheckBox.Size = new System.Drawing.Size(57, 17);
             this.VerificationCheckBox.TabIndex = 3;
             this.VerificationCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -86,6 +87,7 @@
             // 
             this.MessageLabel.AutoSize = true;
             this.MessageLabel.Location = new System.Drawing.Point(52, 15);
+            this.MessageLabel.Size = new System.Drawing.Size(55, 13);
             this.MessageLabel.TabIndex = 0;
             // 
             // DarkTaskDialog

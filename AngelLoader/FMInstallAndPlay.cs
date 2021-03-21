@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
 using static AL_Common.CommonUtils;
@@ -45,7 +46,7 @@ namespace AngelLoader
 
             if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
             {
-                (bool cancel, bool dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(
+                (bool cancel, bool dontAskAgain) = ControlUtils.AskToContinueYesNoCustomStrings(
                     message: LText.AlertMessages.Play_ConfirmMessage,
                     title: LText.AlertMessages.Confirm,
                     icon: MessageBoxIcon.None,
@@ -62,7 +63,7 @@ namespace AngelLoader
 
             if (playMP && fm.Game == Game.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
-                Core.View.ShowAlert(
+                ControlUtils.ShowAlert(
                     LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound,
                     LText.AlertMessages.Alert);
                 return;
@@ -106,7 +107,7 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Core.View.ShowAlert(LText.AlertMessages.Play_UnknownGameType, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Play_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -170,7 +171,7 @@ namespace AngelLoader
             {
                 Log("Game is not Dark, is unknown, or is unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
-                Core.View.ShowAlert(LText.AlertMessages.DromEd_UnknownGameType, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.DromEd_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -191,7 +192,7 @@ namespace AngelLoader
             string editorExe = Config.GetEditorExe_FromDisk(game);
             if (editorExe.IsEmpty())
             {
-                Core.View.ShowAlert(fm.Game == Game.SS2
+                ControlUtils.ShowAlert(fm.Game == Game.SS2
                     ? LText.AlertMessages.ShockEd_ExecutableNotFound
                     : LText.AlertMessages.DromEd_ExecutableNotFound, LText.AlertMessages.Alert);
                 return false;
@@ -322,7 +323,7 @@ namespace AngelLoader
             string gamePath = Config.GetGamePath(gameIndex);
             if (gamePath.IsEmpty())
             {
-                Core.View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GamePathNotFound,
+                ControlUtils.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GamePathNotFound,
                     LText.AlertMessages.Alert);
                 return failed;
             }
@@ -338,7 +339,7 @@ namespace AngelLoader
                 string exeNotFoundMessage = playingOriginalGame
                     ? LText.AlertMessages.Play_ExecutableNotFound
                     : LText.AlertMessages.Play_ExecutableNotFoundFM;
-                Core.View.ShowAlert(gameName + ":\r\n" + exeNotFoundMessage, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(gameName + ":\r\n" + exeNotFoundMessage, LText.AlertMessages.Alert);
                 return failed;
             }
 
@@ -348,7 +349,7 @@ namespace AngelLoader
 
             if (GameIsRunning(gameExe, checkAllGames: true))
             {
-                Core.View.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
                 return failed;
             }
 
@@ -466,13 +467,13 @@ namespace AngelLoader
 
             if (fm.Game == Game.Null)
             {
-                Core.View.ShowAlert(LText.AlertMessages.Install_UnknownGameType, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Install_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (fm.Game == Game.Unsupported)
             {
-                Core.View.ShowAlert(LText.AlertMessages.Install_UnsupportedGameType, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Install_UnsupportedGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -480,7 +481,7 @@ namespace AngelLoader
 
             if (fmArchivePath.IsEmpty())
             {
-                Core.View.ShowAlert(LText.AlertMessages.Install_ArchiveNotFound, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Install_ArchiveNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -488,8 +489,8 @@ namespace AngelLoader
             string gameName = GetLocalizedGameName(fm.Game);
             if (!File.Exists(gameExe))
             {
-                Core.View.ShowAlert(gameName + ":\r\n" +
-                               LText.AlertMessages.Install_ExecutableNotFound, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(gameName + ":\r\n" +
+                                       LText.AlertMessages.Install_ExecutableNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -497,15 +498,15 @@ namespace AngelLoader
 
             if (!Directory.Exists(instBasePath))
             {
-                Core.View.ShowAlert(gameName + ":\r\n" +
-                    LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(gameName + ":\r\n" +
+                                       LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (GameIsRunning(gameExe))
             {
-                Core.View.ShowAlert(gameName + ":\r\n" +
-                               LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(gameName + ":\r\n" +
+                                       LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -646,7 +647,7 @@ namespace AngelLoader
             {
                 Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
                 Core.View.InvokeSync(new Action(() =>
-                    Core.View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
+                    ControlUtils.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                         LText.AlertMessages.Alert)));
             }
 
@@ -698,7 +699,7 @@ namespace AngelLoader
                         + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
 
                     Core.View.InvokeSync(new Action(() =>
-                        Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                        ControlUtils.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
 
                     return !result.Canceled;
@@ -720,7 +721,7 @@ namespace AngelLoader
                 Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n", ex);
 
                 Core.View.InvokeSync(new Action(() =>
-                    Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                    ControlUtils.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                         LText.AlertMessages.Alert)));
 
                 return !canceled;
@@ -739,7 +740,7 @@ namespace AngelLoader
 
             if (Config.ConfirmUninstall)
             {
-                (bool cancel, bool dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(
+                (bool cancel, bool dontAskAgain) = ControlUtils.AskToContinueYesNoCustomStrings(
                         message: LText.AlertMessages.Uninstall_Confirm,
                         title: LText.AlertMessages.Confirm,
                         icon: MessageBoxIcon.Warning,
@@ -756,7 +757,7 @@ namespace AngelLoader
             string gameName = GetLocalizedGameName(fm.Game);
             if (GameIsRunning(gameExe))
             {
-                Core.View.ShowAlert(
+                ControlUtils.ShowAlert(
                     gameName + ":\r\n" + LText.AlertMessages.Uninstall_GameIsRunning,
                     LText.AlertMessages.Alert);
                 return;
@@ -771,7 +772,7 @@ namespace AngelLoader
                 bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)
                 {
-                    bool yes = Core.View.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
+                    bool yes = ControlUtils.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
                         LText.AlertMessages.Alert);
                     if (yes)
                     {
@@ -785,7 +786,7 @@ namespace AngelLoader
 
                 if (fmArchivePath!.IsEmpty())
                 {
-                    (bool cancel, _) = Core.View.AskToContinueYesNoCustomStrings(
+                    (bool cancel, _) = ControlUtils.AskToContinueYesNoCustomStrings(
                         message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                         title: LText.AlertMessages.Warning,
                         icon: MessageBoxIcon.Warning,
@@ -821,7 +822,7 @@ namespace AngelLoader
                         ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                         : LText.AlertMessages.Uninstall_BackupAllData;
                     (bool cancel, bool cont, bool dontAskAgain) =
-                        Core.View.AskToContinueWithCancelCustomStrings(
+                        ControlUtils.AskToContinueWithCancelCustomStrings(
                             message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                             title: LText.AlertMessages.Confirm,
                             icon: MessageBoxIcon.None,
@@ -848,7 +849,7 @@ namespace AngelLoader
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
                     // TODO: Make option to open the folder in Explorer and delete it manually?
-                    Core.View.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted, LText.AlertMessages.Alert);
+                    ControlUtils.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted, LText.AlertMessages.Alert);
                 }
 
                 fm.Installed = false;
@@ -869,7 +870,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
-                Core.View.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially, LText.AlertMessages.Alert);
             }
             finally
             {

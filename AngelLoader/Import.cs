@@ -69,7 +69,7 @@ namespace AngelLoader
 
                 if (!importFMData && !importSaves)
                 {
-                    MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                    ControlUtils.ShowAlert(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
                     return;
                 }
 
@@ -116,7 +116,7 @@ namespace AngelLoader
 
                 if (iniFiles.All(x => x.IsWhiteSpace()))
                 {
-                    MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                    ControlUtils.ShowAlert(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
                     return;
                 }
 
@@ -178,7 +178,7 @@ namespace AngelLoader
                                 ? (LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert)
                                 : (dlErrorMessage, LText.AlertMessages.Error);
 
-                            Core.View.ShowAlert(message, title);
+                            ControlUtils.ShowAlert(message, title);
                         }
                     }
                     else // No error
@@ -206,7 +206,7 @@ namespace AngelLoader
 
                     if (importType == ImportType.DarkLoader)
                     {
-                        Core.View.ShowAlert(dlErrorMessage, LText.AlertMessages.Error);
+                        ControlUtils.ShowAlert(dlErrorMessage, LText.AlertMessages.Error);
                     }
                 }
                 finally
@@ -358,7 +358,7 @@ namespace AngelLoader
                                     }
                                 }
 
-                                breakout:
+                            breakout:
 
                                 archive += ".zip";
 
@@ -533,7 +533,7 @@ namespace AngelLoader
                 }
             }
 
-            breakout:
+        breakout:
 
             if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace() && ss2Dir.IsWhiteSpace()) return true;
 

@@ -107,7 +107,7 @@ namespace AngelLoader
             var archives = FindAllMatches(fm.Archive);
             if (archives.Count == 0)
             {
-                Core.View.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
+                ControlUtils.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
                 return;
             }
 
@@ -166,7 +166,7 @@ namespace AngelLoader
                             Log("Exception deleting archive '" + archive + "'", ex);
                             Core.View.InvokeSync(new Action(() =>
                             {
-                                Core.View.ShowAlert(
+                                ControlUtils.ShowAlert(
                                      LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" +
                                      archive,
                                      LText.AlertMessages.Error);

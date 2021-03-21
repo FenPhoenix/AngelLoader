@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -243,7 +244,7 @@ namespace AngelLoader
             string gameName = GetLocalizedGameName(fm.Game);
             if (GameIsRunning(gameExe))
             {
-                Core.View.ShowAlert(
+                ControlUtils.ShowAlert(
                     gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,
                     LText.AlertMessages.Alert);
 
@@ -252,7 +253,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                bool yes = Core.View.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
+                bool yes = ControlUtils.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
                     LText.AlertMessages.Alert);
                 if (yes)
                 {

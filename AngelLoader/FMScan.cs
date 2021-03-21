@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -290,7 +291,7 @@ namespace AngelLoader
                 string message = scanningOne
                     ? LText.AlertMessages.Scan_ExceptionInScanOne
                     : LText.AlertMessages.Scan_ExceptionInScanMultiple;
-                Core.View.ShowAlert(message, LText.AlertMessages.Error);
+                ControlUtils.ShowAlert(message, LText.AlertMessages.Error);
                 return false;
             }
             finally

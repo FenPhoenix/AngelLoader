@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms;
 using AngelLoader.WinAPI;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
@@ -72,8 +73,8 @@ namespace AngelLoader
                     if (startup)
                     {
                         // Language will be loaded by this point
-                        MessageBox.Show(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni,
-                            LText.AlertMessages.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ControlUtils.ShowAlert(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni,
+                            LText.AlertMessages.Error, MessageBoxIcon.Error);
                         Core.EnvironmentExitDoShutdownTasks(1);
                     }
                     else

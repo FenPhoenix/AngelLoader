@@ -61,6 +61,7 @@ namespace AngelLoader
                     // ReSharper disable once ConvertToConstant.Local
                     string message = "Failed to create required application directories on startup.";
                     Log(message, ex);
+                    // We're not even close to having a theme at this point, so just use regular MessageBox
                     MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Environment.Exit(1);
                 }
@@ -1044,7 +1045,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                View.ShowAlert(LText.AlertMessages.Patch_AddDML_InstallDirNotFound, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Patch_AddDML_InstallDirNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1058,7 +1059,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Unable to add .dml to installed folder " + fm.InstalledDir, ex);
-                View.ShowAlert(LText.AlertMessages.Patch_AddDML_UnableToAdd, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Patch_AddDML_UnableToAdd, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1071,7 +1072,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                View.ShowAlert(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1083,7 +1084,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Unable to remove .dml from installed folder " + fm.InstalledDir, ex);
-                View.ShowAlert(LText.AlertMessages.Patch_RemoveDML_UnableToRemove, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Patch_RemoveDML_UnableToRemove, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1340,7 +1341,7 @@ namespace AngelLoader
             string fmDir;
             if (installsBasePath.IsEmpty() || !Directory.Exists(fmDir = Path.Combine(installsBasePath, fm.InstalledDir)))
             {
-                View.ShowAlert(LText.AlertMessages.Patch_FMFolderNotFound, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Patch_FMFolderNotFound, LText.AlertMessages.Alert);
                 return;
             }
 
@@ -1382,7 +1383,7 @@ namespace AngelLoader
             catch (Win32Exception ex)
             {
                 Log("Problem opening web search URL", ex);
-                View.ShowAlert(LText.AlertMessages.WebSearchURL_ProblemOpening, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.WebSearchURL_ProblemOpening, LText.AlertMessages.Alert);
             }
         }
 
@@ -1432,7 +1433,7 @@ namespace AngelLoader
 
             if (!File.Exists(Paths.DocFile))
             {
-                View.ShowAlert(LText.AlertMessages.Help_HelpFileNotFound, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Help_HelpFileNotFound, LText.AlertMessages.Alert);
                 return;
             }
 
@@ -1463,7 +1464,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception in " + nameof(ProcessStart_UseShellExecute) + ". Couldn't open help file.", ex);
-                View.ShowAlert(LText.AlertMessages.Help_UnableToOpenHelpFile, LText.AlertMessages.Alert);
+                ControlUtils.ShowAlert(LText.AlertMessages.Help_UnableToOpenHelpFile, LText.AlertMessages.Alert);
             }
         }
 

@@ -164,6 +164,7 @@
             // 
             this.DateCurrentCultureShortRadioButton.AutoSize = true;
             this.DateCurrentCultureShortRadioButton.Location = new System.Drawing.Point(0, 3);
+            this.DateCurrentCultureShortRadioButton.Size = new System.Drawing.Size(119, 17);
             this.DateCurrentCultureShortRadioButton.TabIndex = 22;
             this.DateCurrentCultureShortRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -171,6 +172,7 @@
             // 
             this.DateCurrentCultureLongRadioButton.AutoSize = true;
             this.DateCurrentCultureLongRadioButton.Location = new System.Drawing.Point(0, 27);
+            this.DateCurrentCultureLongRadioButton.Size = new System.Drawing.Size(116, 17);
             this.DateCurrentCultureLongRadioButton.TabIndex = 23;
             this.DateCurrentCultureLongRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -178,6 +180,7 @@
             // 
             this.DateCustomRadioButton.AutoSize = true;
             this.DateCustomRadioButton.Location = new System.Drawing.Point(0, 51);
+            this.DateCustomRadioButton.Size = new System.Drawing.Size(63, 17);
             this.DateCustomRadioButton.TabIndex = 24;
             this.DateCustomRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -194,6 +197,7 @@
             // RatingNDLDisplayStyleRadioButton
             // 
             this.RatingNDLDisplayStyleRadioButton.AutoSize = true;
+            this.RatingNDLDisplayStyleRadioButton.Size = new System.Drawing.Size(219, 17);
             this.RatingNDLDisplayStyleRadioButton.TabIndex = 7;
             this.RatingNDLDisplayStyleRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -202,6 +206,7 @@
             this.RatingFMSelDisplayStyleRadioButton.AutoSize = true;
             this.RatingFMSelDisplayStyleRadioButton.Checked = true;
             this.RatingFMSelDisplayStyleRadioButton.Location = new System.Drawing.Point(0, 24);
+            this.RatingFMSelDisplayStyleRadioButton.Size = new System.Drawing.Size(174, 17);
             this.RatingFMSelDisplayStyleRadioButton.TabIndex = 9;
             this.RatingFMSelDisplayStyleRadioButton.TabStop = true;
             this.RatingFMSelDisplayStyleRadioButton.UseVisualStyleBackColor = true;
@@ -240,6 +245,7 @@
             // 
             this.UseShortGameTabNamesCheckBox.AutoSize = true;
             this.UseShortGameTabNamesCheckBox.Location = new System.Drawing.Point(24, 40);
+            this.UseShortGameTabNamesCheckBox.Size = new System.Drawing.Size(172, 17);
             this.UseShortGameTabNamesCheckBox.TabIndex = 1;
             this.UseShortGameTabNamesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -283,6 +289,7 @@
             this.PreviewDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.PreviewDateLabel.AutoSize = true;
             this.PreviewDateLabel.Location = new System.Drawing.Point(378, 0);
+            this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
             this.PreviewDateLabel.TabIndex = 0;
             // 
             // DateCustomFormatPanel
@@ -348,6 +355,7 @@
             this.RatingUseStarsCheckBox.AutoSize = true;
             this.RatingUseStarsCheckBox.Checked = true;
             this.RatingUseStarsCheckBox.Location = new System.Drawing.Point(32, 360);
+            this.RatingUseStarsCheckBox.Size = new System.Drawing.Size(70, 17);
             this.RatingUseStarsCheckBox.TabIndex = 10;
             this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -363,30 +371,35 @@
             // 
             this.RecentFMsHeaderLabel.AutoSize = true;
             this.RecentFMsHeaderLabel.Location = new System.Drawing.Point(8, 608);
+            this.RecentFMsHeaderLabel.Size = new System.Drawing.Size(68, 13);
             this.RecentFMsHeaderLabel.TabIndex = 6;
             // 
             // DateFormatLabel
             // 
             this.DateFormatLabel.AutoSize = true;
             this.DateFormatLabel.Location = new System.Drawing.Point(8, 432);
+            this.DateFormatLabel.Size = new System.Drawing.Size(65, 13);
             this.DateFormatLabel.TabIndex = 6;
             // 
             // RatingDisplayStyleLabel
             // 
             this.RatingDisplayStyleLabel.AutoSize = true;
             this.RatingDisplayStyleLabel.Location = new System.Drawing.Point(8, 288);
+            this.RatingDisplayStyleLabel.Size = new System.Drawing.Size(100, 13);
             this.RatingDisplayStyleLabel.TabIndex = 6;
             // 
             // GameOrganizationLabel
             // 
             this.GameOrganizationLabel.AutoSize = true;
             this.GameOrganizationLabel.Location = new System.Drawing.Point(8, 24);
+            this.GameOrganizationLabel.Size = new System.Drawing.Size(98, 13);
             this.GameOrganizationLabel.TabIndex = 6;
             // 
             // SortingLabel
             // 
             this.SortingLabel.AutoSize = true;
             this.SortingLabel.Location = new System.Drawing.Point(8, 160);
+            this.SortingLabel.Size = new System.Drawing.Size(43, 13);
             this.SortingLabel.TabIndex = 6;
             // 
             // MoveArticlesToEndCheckBox
@@ -495,6 +508,7 @@
             // 
             this.DarkThemeRadioButton.AutoSize = true;
             this.DarkThemeRadioButton.Location = new System.Drawing.Point(16, 48);
+            this.DarkThemeRadioButton.Size = new System.Drawing.Size(48, 17);
             this.DarkThemeRadioButton.TabIndex = 0;
             this.DarkThemeRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -503,6 +517,7 @@
             this.ClassicThemeRadioButton.AutoSize = true;
             this.ClassicThemeRadioButton.Checked = true;
             this.ClassicThemeRadioButton.Location = new System.Drawing.Point(16, 24);
+            this.ClassicThemeRadioButton.Size = new System.Drawing.Size(58, 17);
             this.ClassicThemeRadioButton.TabIndex = 0;
             this.ClassicThemeRadioButton.TabStop = true;
             this.ClassicThemeRadioButton.UseVisualStyleBackColor = true;

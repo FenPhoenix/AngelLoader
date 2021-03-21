@@ -395,5 +395,107 @@ namespace AngelLoader.Forms
 
             return ret;
         }
+
+        #region Messageboxes
+
+        public static bool AskToContinue(string message, string title, bool noIcon = false)
+        {
+            if (Config.VisualTheme == VisualTheme.Dark)
+            {
+                using var d = new DarkTaskDialog(
+                    message: message,
+                    title: title,
+                    icon: noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning,
+                    yesText: LText.Global.Yes,
+                    noText: LText.Global.No,
+                    defaultButton: DarkTaskDialog.Button.No);
+                return d.ShowDialog() == DialogResult.Yes;
+            }
+            else
+            {
+                return MessageBox.Show(
+                    message,
+                    title,
+                    MessageBoxButtons.YesNo,
+                    noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning) == DialogResult.Yes;
+            }
+        }
+
+        public static (bool Cancel, bool Continue, bool DontAskAgain)
+        AskToContinueWithCancelCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
+                                             string yes, string no, string cancel, DarkTaskDialog.Button? defaultButton = null)
+        {
+            using var d = new DarkTaskDialog(
+                title: title,
+                message: message,
+                yesText: yes,
+                noText: no,
+                cancelText: cancel,
+                defaultButton: defaultButton ?? DarkTaskDialog.Button.Cancel,
+                checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
+                icon: icon);
+
+            var result = d.ShowDialog();
+
+            bool canceled = result == DialogResult.Cancel;
+            bool cont = result == DialogResult.Yes;
+            bool dontAskAgain = d.IsVerificationChecked;
+            return (canceled, cont, dontAskAgain);
+        }
+
+        public static (bool Cancel, bool DontAskAgain)
+        AskToContinueYesNoCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
+                                        string? yes, string? no, DarkTaskDialog.Button? defaultButton = null)
+        {
+            using var d = new DarkTaskDialog(
+                title: title,
+                message: message,
+                yesText: yes,
+                noText: no,
+                defaultButton: defaultButton ?? DarkTaskDialog.Button.No,
+                checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
+                icon: icon);
+
+            var result = d.ShowDialog();
+
+            bool cancel = result != DialogResult.Yes;
+            bool dontAskAgain = d.IsVerificationChecked;
+            return (cancel, dontAskAgain);
+
+            //var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
+            //var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No);
+
+            //using var d = new TaskDialog(
+            //    title: title,
+            //    message: message,
+            //    buttons: new[] { yesButton, noButton },
+            //    defaultButton: defaultButton == ButtonType.No ? noButton : yesButton,
+            //    verificationText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
+            //    mainIcon: icon);
+
+            //bool cancel = d.ShowDialog() != yesButton;
+            //bool dontAskAgain = d.IsVerificationChecked;
+            //return (cancel, dontAskAgain);
+        }
+
+        public static void ShowAlert(string message, string title, MessageBoxIcon icon = MessageBoxIcon.Warning)
+        {
+            if (Config.VisualTheme == VisualTheme.Dark)
+            {
+                using var d = new DarkTaskDialog(
+                    message: message,
+                    title: title,
+                    icon: icon,
+                    yesText: LText.Global.OK,
+                    defaultButton: DarkTaskDialog.Button.Yes);
+                d.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show(message, title, MessageBoxButtons.OK, icon);
+            }
+        }
+
+        #endregion
     }
 }
