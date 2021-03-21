@@ -52,7 +52,7 @@
             this.ResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.BottomButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.MoveButtonsPanel = new System.Windows.Forms.Panel();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.MainToolTip = new AngelLoader.Forms.CustomControls.DarkToolTip(this.components);
             this.FindTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.FilterLabelsPanel.SuspendLayout();
             this.BottomButtonsFLP.SuspendLayout();
@@ -390,7 +390,7 @@
         private AngelLoader.Forms.CustomControls.DarkButton ResetButton;
         private System.Windows.Forms.FlowLayoutPanel BottomButtonsFLP;
         private System.Windows.Forms.Panel MoveButtonsPanel;
-        private System.Windows.Forms.ToolTip MainToolTip;
+        private AngelLoader.Forms.CustomControls.DarkToolTip MainToolTip;
         private AngelLoader.Forms.CustomControls.DarkTextBox FindTagTextBox;
     }
 }

@@ -688,6 +688,15 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
+        internal const int
+            TTP_STANDARD = 1,
+            TTP_STANDARDTITLE = 2,
+            TTP_BALLOON = 3,
+            TTP_BALLOONTITLE = 4,
+            TTP_CLOSE = 5,
+            TTP_BALLOONSTEM = 6,
+            TTP_WRENCH = 7;
+
         internal const int DTM_FIRST = 0x1000;
         internal const int DTM_GETDATETIMEPICKERINFO = 0x100E;
 
@@ -720,20 +729,6 @@ namespace AngelLoader.WinAPI
 
         [DllImport("uxtheme.dll", ExactSpelling = true)]
         public static extern int CloseThemeData(IntPtr hTheme);
-
-        //        [StructLayout(LayoutKind.Sequential)]
-        //        public class RECTCLS
-        //        {
-        //#pragma warning disable 649
-        //            public int Left;
-        //            public int Top;
-        //            public int Right;
-        //            public int Bottom;
-        //#pragma warning restore 649
-
-        //            public static implicit operator Rectangle(RECTCLS r)
-        //                => Rectangle.FromLTRB(r.Left, r.Top, r.Right, r.Bottom);
-        //        }
 
         internal const int
             ABS_UPNORMAL = 1,
@@ -781,6 +776,8 @@ namespace AngelLoader.WinAPI
         internal const int WM_THEMECHANGED = 0x031A;
 
         internal const int TMT_FILLCOLOR = 3802;
+        internal const int TMT_TEXTCOLOR = 3803;
+        internal const int TTM_SETWINDOWTHEME = 0x200B;
 
         [DllImport("uxtheme.dll", ExactSpelling = true)]
         internal static extern bool IsThemeActive();

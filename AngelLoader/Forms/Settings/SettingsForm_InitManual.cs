@@ -14,7 +14,7 @@ namespace AngelLoader.Forms
             Cancel_Button = new DarkButton();
             OKButton = new DarkButton();
             ErrorLabel = new DarkLabel();
-            MainToolTip = new ToolTip(components);
+            MainToolTip = new DarkToolTip(components);
             MainErrorProvider = new ErrorProvider(components);
             MainSplitContainer = new SplitContainerCustom();
             OtherRadioButton = new RadioButtonCustom();

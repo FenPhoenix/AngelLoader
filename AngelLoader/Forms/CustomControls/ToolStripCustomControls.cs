@@ -21,6 +21,10 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
                 BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
+
+                // Need to do this or else the text color doesn't update
+                ControlUtils.InvokeToolTipRecreateHandle(this);
+
                 Refresh();
             }
         }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL_Common;
@@ -457,21 +459,6 @@ namespace AngelLoader.Forms
             bool cancel = result != DialogResult.Yes;
             bool dontAskAgain = d.IsVerificationChecked;
             return (cancel, dontAskAgain);
-
-            //var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
-            //var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No);
-
-            //using var d = new TaskDialog(
-            //    title: title,
-            //    message: message,
-            //    buttons: new[] { yesButton, noButton },
-            //    defaultButton: defaultButton == ButtonType.No ? noButton : yesButton,
-            //    verificationText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
-            //    mainIcon: icon);
-
-            //bool cancel = d.ShowDialog() != yesButton;
-            //bool dontAskAgain = d.IsVerificationChecked;
-            //return (cancel, dontAskAgain);
         }
 
         public static void ShowAlert(string message, string title, MessageBoxIcon icon = MessageBoxIcon.Warning)
@@ -490,6 +477,77 @@ namespace AngelLoader.Forms
             {
                 MessageBox.Show(message, title, MessageBoxButtons.OK, icon);
             }
+        }
+
+        #endregion
+
+        #region ToolTips
+
+        // Make ABSOLUTELY SURE we're able to do every single reflection thing we need to do to make this work.
+        // Any failure whatsoever should result in falling back to classic-mode tooltips so we don't end up with
+        // unreadable text!
+
+        private static PropertyInfo? _toolStripToolTipProperty;
+        private static MethodInfo? _toolTipRecreateHandleMethod;
+
+        private static bool? _toolTipsReflectable;
+        [MemberNotNullWhen(true, nameof(_toolStripToolTipProperty), nameof(_toolTipRecreateHandleMethod))]
+        internal static bool ToolTipsReflectable
+        {
+            get
+            {
+                if (_toolTipsReflectable == null)
+                {
+                    bool toolTipRecreateHandleMethodFound;
+                    try
+                    {
+                        using var testToolTip = new ToolTip();
+                        _toolTipRecreateHandleMethod = typeof(ToolTip)
+                            .GetMethod(
+                                "RecreateHandle",
+                                BindingFlags.NonPublic | BindingFlags.Instance);
+                        // Make sure we can invoke the method and it has right param count (none in this case)
+                        _toolTipRecreateHandleMethod?.Invoke(testToolTip, null);
+                        toolTipRecreateHandleMethodFound = _toolTipRecreateHandleMethod != null;
+                    }
+                    catch
+                    {
+                        toolTipRecreateHandleMethodFound = false;
+                        _toolTipRecreateHandleMethod = null;
+                    }
+
+                    bool toolStripToolTipPropertyFound;
+                    try
+                    {
+                        using var testToolStrip = new ToolStrip();
+                        _toolStripToolTipProperty = typeof(ToolStrip)
+                            .GetProperty(
+                                "ToolTip",
+                                BindingFlags.NonPublic | BindingFlags.Instance);
+                        toolStripToolTipPropertyFound = _toolStripToolTipProperty != null &&
+                                                        _toolStripToolTipProperty.GetValue(testToolStrip) is ToolTip;
+                    }
+                    catch
+                    {
+                        toolStripToolTipPropertyFound = false;
+                        _toolStripToolTipProperty = null;
+                    }
+
+                    _toolTipsReflectable = toolTipRecreateHandleMethodFound && toolStripToolTipPropertyFound;
+                }
+
+                return _toolTipsReflectable == true;
+            }
+        }
+
+        internal static void InvokeToolTipRecreateHandle(ToolTip obj)
+        {
+            if (ToolTipsReflectable) _toolTipRecreateHandleMethod.Invoke(obj, null);
+        }
+
+        internal static void InvokeToolTipRecreateHandle(ToolStrip obj)
+        {
+            if (ToolTipsReflectable) _toolTipRecreateHandleMethod.Invoke((ToolTip)_toolStripToolTipProperty.GetValue(obj), null);
         }
 
         #endregion

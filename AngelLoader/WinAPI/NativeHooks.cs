@@ -116,7 +116,7 @@ namespace AngelLoader.WinAPI
                     "GetThemeColor",
                     GetThemeColorHook);
 
-                ScrollBarPainter.Reload();
+                ReloadTheme();
             }
             catch
             {
@@ -153,6 +153,7 @@ namespace AngelLoader.WinAPI
         {
             if (!Native.IsThemeActive()) return;
             ScrollBarPainter.Reload();
+            ToolTipRenderer.Reload();
         }
 
         #region Hooked method overrides
@@ -160,18 +161,36 @@ namespace AngelLoader.WinAPI
         private static int DrawThemeBackgroundHook(
             IntPtr hTheme,
             IntPtr hdc,
-            int PartId,
+            int partId,
             int stateId,
             ref Native.RECT pRect,
             ref Native.RECT pClipRect)
         {
             const int success = 0;
 
-            return Misc.Config.VisualTheme == VisualTheme.Dark &&
-                   ScrollBarPainter.HTheme == hTheme &&
-                   ScrollBarPainter.Paint(hdc, PartId, stateId, pRect)
-                ? success
-                : DrawThemeBackgroundOriginal!(hTheme, hdc, PartId, stateId, ref pRect, ref pClipRect);
+            if (Misc.Config.VisualTheme == VisualTheme.Dark)
+            {
+                if (ScrollBarPainter.HTheme == hTheme)
+                {
+                    return ScrollBarPainter.Paint(hdc, partId, stateId, pRect)
+                        ? success
+                        : DrawThemeBackgroundOriginal!(hTheme, hdc, partId, stateId, ref pRect, ref pClipRect);
+                }
+                else if (ControlUtils.ToolTipsReflectable && ToolTipRenderer.HTheme == hTheme)
+                {
+                    return ToolTipRenderer.Paint(hdc, partId, pRect)
+                        ? success
+                        : DrawThemeBackgroundOriginal!(hTheme, hdc, partId, stateId, ref pRect, ref pClipRect);
+                }
+                else
+                {
+                    return DrawThemeBackgroundOriginal!(hTheme, hdc, partId, stateId, ref pRect, ref pClipRect);
+                }
+            }
+            else
+            {
+                return DrawThemeBackgroundOriginal!(hTheme, hdc, partId, stateId, ref pRect, ref pClipRect);
+            }
         }
 
         private static int GetThemeColorHook(
@@ -183,11 +202,29 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            return Misc.Config.VisualTheme == VisualTheme.Dark &&
-                   ScrollBarPainter.HTheme == hTheme &&
-                   ScrollBarPainter.TryGetThemeColor(iPartId, iPropId, out pColor)
-                ? success
-                : GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
+            if (Misc.Config.VisualTheme == VisualTheme.Dark)
+            {
+                if (ScrollBarPainter.HTheme == hTheme)
+                {
+                    return ScrollBarPainter.TryGetThemeColor(iPartId, iPropId, out pColor)
+                        ? success
+                        : GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
+                }
+                else if (ControlUtils.ToolTipsReflectable && ToolTipRenderer.HTheme == hTheme)
+                {
+                    return ToolTipRenderer.TryGetThemeColor(iPropId, out pColor)
+                        ? success
+                        : GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
+                }
+                else
+                {
+                    return GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
+                }
+            }
+            else
+            {
+                return GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
+            }
         }
 
         private static int GetSysColor(int nIndex)
