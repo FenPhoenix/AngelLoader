@@ -128,8 +128,8 @@ namespace AngelLoader.Forms
                                         string? yes, string? no, ButtonType? defaultButton = null);
 
         (bool Cancel, bool Continue, bool DontAskAgain)
-        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-                                             string yes, string no, string cancel, ButtonType? defaultButton = null);
+        AskToContinueWithCancelCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
+            string yes, string no, string cancel, DarkTaskDialog.Button? defaultButton = null);
 
         #endregion
 

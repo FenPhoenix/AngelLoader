@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
@@ -823,7 +824,7 @@ namespace AngelLoader
                         Core.View.AskToContinueWithCancelCustomStrings(
                             message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                             LText.AlertMessages.Confirm,
-                            null,
+                            MessageBoxIcon.None,
                             showDontAskAgain: true,
                             LText.AlertMessages.BackUp,
                             LText.AlertMessages.DontBackUp,

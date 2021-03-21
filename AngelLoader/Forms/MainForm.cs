@@ -1536,29 +1536,27 @@ namespace AngelLoader.Forms
                 noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning) == DialogResult.Yes;
 
         public (bool Cancel, bool Continue, bool DontAskAgain)
-        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-                                             string yes, string no, string cancel, ButtonType? defaultButton = null)
+        AskToContinueWithCancelCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
+                                             string yes, string no, string cancel, DarkTaskDialog.Button? defaultButton = null)
         {
-            var yesButton = new TaskDialogButton(yes);
-            var noButton = new TaskDialogButton(no);
-            var cancelButton = new TaskDialogButton(cancel);
+            //var yesButton = new TaskDialogButton(yes);
+            //var noButton = new TaskDialogButton(no);
+            //var cancelButton = new TaskDialogButton(cancel);
 
-            using var d = new TaskDialog(
+            using var d = new DarkTaskDialog(
                 title: title,
                 message: message,
-                buttons: new[] { yesButton, noButton, cancelButton },
-                defaultButton: defaultButton switch
-                {
-                    ButtonType.No => noButton,
-                    ButtonType.Cancel => cancelButton,
-                    _ => yesButton
-                },
-                verificationText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
-                mainIcon: icon);
+                yesText: yes,
+                noText: no,
+                cancelText: cancel,
+                defaultButton: defaultButton ?? DarkTaskDialog.Button.Cancel,
+                checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
+                icon: icon);
 
-            TaskDialogButton? buttonClicked = d.ShowDialog();
-            bool canceled = buttonClicked == null || buttonClicked == cancelButton;
-            bool cont = buttonClicked == yesButton;
+            var result = d.ShowDialog();
+
+            bool canceled = result == DialogResult.Cancel;
+            bool cont = result == DialogResult.Yes;
             bool dontAskAgain = d.IsVerificationChecked;
             return (canceled, cont, dontAskAgain);
         }
