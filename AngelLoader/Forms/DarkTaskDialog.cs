@@ -25,7 +25,7 @@ namespace AngelLoader.Forms
     -Allow up to 3 buttons (yes, no, cancel)
     -Allow an optional checkbox
     */
-    public sealed partial class DarkTaskDialog : Form
+    public sealed partial class DarkTaskDialog : DarkForm
     {
         private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
 
