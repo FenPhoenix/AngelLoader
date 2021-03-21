@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.WinAPI.Ookii.Dialogs;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
