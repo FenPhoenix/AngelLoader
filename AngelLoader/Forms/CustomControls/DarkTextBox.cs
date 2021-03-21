@@ -85,5 +85,26 @@ namespace AngelLoader.Forms.CustomControls
                 }
             }
         }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (!_darkModeEnabled)
+            {
+                base.WndProc(ref m);
+                return;
+            }
+
+            switch (m.Msg)
+            {
+                case Native.WM_PAINT:
+                    NativeHooks.EnableSysColorOverride = true;
+                    base.WndProc(ref m);
+                    NativeHooks.EnableSysColorOverride = false;
+                    break;
+                default:
+                    base.WndProc(ref m);
+                    break;
+            }
+        }
     }
 }
