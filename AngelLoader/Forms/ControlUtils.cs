@@ -156,8 +156,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
-
         internal static void HideFocusRectangle(this Control control) => SendMessage(
             control.Handle,
             WM_CHANGEUISTATE,
@@ -180,6 +178,8 @@ namespace AngelLoader.Forms
                 column.Width++;
             }
         }
+
+        #region Theming
 
         private static void FillControlDict(
             Control control,
@@ -285,6 +285,10 @@ namespace AngelLoader.Forms
             }
         }
 
+        #endregion
+
+        #region Text alignment flags
+
         internal static TextFormatFlags GetTextAlignmentFlags(ContentAlignment textAlign) => textAlign switch
         {
             ContentAlignment.TopLeft => TextFormatFlags.Top | TextFormatFlags.Left,
@@ -313,6 +317,10 @@ namespace AngelLoader.Forms
             _ => TextFormatFlags.Top | TextFormatFlags.Left
         };
 
+        #endregion
+
+        #region Scrolling
+
         internal static SCROLLINFO GetCurrentScrollInfo(IntPtr handle, int direction)
         {
             var si = new SCROLLINFO();
@@ -335,6 +343,10 @@ namespace AngelLoader.Forms
             IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)SB_THUMBTRACK;
             SendMessage(handle, direction == SB_VERT ? WM_VSCROLL : WM_HSCROLL, wp, ptrLParam);
         }
+
+        #endregion
+
+        #region Messageboxes
 
         internal static void SetMessageBoxIcon(PictureBox pictureBox, MessageBoxIcon icon)
         {
@@ -389,8 +401,6 @@ namespace AngelLoader.Forms
 
             return ret;
         }
-
-        #region Messageboxes
 
         public static bool AskToContinue(string message, string title, bool noIcon = false)
         {

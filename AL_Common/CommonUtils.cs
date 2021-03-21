@@ -706,5 +706,6 @@ namespace AL_Common
             return -1;
         }
 
+        public static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
     }
 }
