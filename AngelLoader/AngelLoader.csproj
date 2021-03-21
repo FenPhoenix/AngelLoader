@@ -94,15 +94,7 @@
     <Compile Update="Forms\CustomControls\DarkCheckBox.cs" />
     <Compile Update="Forms\CustomControls\DarkComboBox.cs" />
     <Compile Update="Forms\CustomControls\DarkContextMenu.cs" />
-    <Compile Update="Forms\CustomControls\DarkDialog.cs" />
-    <Compile Update="Forms\CustomControls\DarkDialog.Designer.cs">
-      <DependentUpon>DarkDialog.cs</DependentUpon>
-    </Compile>
     <Compile Update="Forms\CustomControls\DarkGroupBox.cs" />
-    <Compile Update="Forms\CustomControls\DarkMessageBox.cs" />
-    <Compile Update="Forms\CustomControls\DarkMessageBox.Designer.cs">
-      <DependentUpon>DarkMessageBox.cs</DependentUpon>
-    </Compile>
     <Compile Update="Forms\CustomControls\DarkNumericUpDown.cs" />
     <Compile Update="Forms\CustomControls\DarkRadioButton.cs" />
     <Compile Update="Forms\CustomControls\DarkTabControl.cs" />
@@ -115,12 +107,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Forms\CustomControls\DarkDialog.resx">
-      <DependentUpon>DarkDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Forms\CustomControls\DarkMessageBox.resx">
-      <DependentUpon>DarkMessageBox.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
