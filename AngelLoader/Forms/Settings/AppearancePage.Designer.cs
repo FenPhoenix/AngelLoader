@@ -300,7 +300,6 @@ namespace AngelLoader.Forms
             this.UseShortGameTabNamesCheckBox.Size = new System.Drawing.Size(172, 17);
             this.UseShortGameTabNamesCheckBox.TabIndex = 1;
             this.UseShortGameTabNamesCheckBox.Text = "Use short names on game tabs";
-            this.UseShortGameTabNamesCheckBox.UseMnemonic = false;
             this.UseShortGameTabNamesCheckBox.UseVisualStyleBackColor = true;
             // 
             // RecentFMsNumericUpDown
@@ -429,7 +428,6 @@ namespace AngelLoader.Forms
             this.RatingUseStarsCheckBox.Size = new System.Drawing.Size(70, 17);
             this.RatingUseStarsCheckBox.TabIndex = 10;
             this.RatingUseStarsCheckBox.Text = "Use stars";
-            this.RatingUseStarsCheckBox.UseMnemonic = false;
             this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
             // 
             // RatingExamplePictureBox
@@ -497,7 +495,6 @@ namespace AngelLoader.Forms
             this.MoveArticlesToEndCheckBox.Size = new System.Drawing.Size(456, 32);
             this.MoveArticlesToEndCheckBox.TabIndex = 5;
             this.MoveArticlesToEndCheckBox.Text = "Move articles to the end of names when displaying them";
-            this.MoveArticlesToEndCheckBox.UseMnemonic = false;
             this.MoveArticlesToEndCheckBox.UseVisualStyleBackColor = true;
             // 
             // EnableIgnoreArticlesCheckBox
@@ -511,7 +508,6 @@ namespace AngelLoader.Forms
             this.EnableIgnoreArticlesCheckBox.Size = new System.Drawing.Size(456, 32);
             this.EnableIgnoreArticlesCheckBox.TabIndex = 3;
             this.EnableIgnoreArticlesCheckBox.Text = "Ignore the following leading articles when sorting by title:";
-            this.EnableIgnoreArticlesCheckBox.UseMnemonic = false;
             this.EnableIgnoreArticlesCheckBox.UseVisualStyleBackColor = true;
             // 
             // ArticlesTextBox
@@ -547,7 +543,6 @@ namespace AngelLoader.Forms
             this.ReadmeFixedWidthFontCheckBox.Size = new System.Drawing.Size(456, 32);
             this.ReadmeFixedWidthFontCheckBox.TabIndex = 0;
             this.ReadmeFixedWidthFontCheckBox.Text = "Use a fixed-width font when displaying plain text";
-            this.ReadmeFixedWidthFontCheckBox.UseMnemonic = false;
             this.ReadmeFixedWidthFontCheckBox.UseVisualStyleBackColor = true;
             // 
             // ShowOrHideUIElementsGroupBox
@@ -576,7 +571,6 @@ namespace AngelLoader.Forms
             this.HideExitButtonCheckBox.Size = new System.Drawing.Size(456, 32);
             this.HideExitButtonCheckBox.TabIndex = 3;
             this.HideExitButtonCheckBox.Text = "Hide exit button";
-            this.HideExitButtonCheckBox.UseMnemonic = false;
             this.HideExitButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideFMListZoomButtonsCheckBox
@@ -588,7 +582,6 @@ namespace AngelLoader.Forms
             this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(456, 32);
             this.HideFMListZoomButtonsCheckBox.TabIndex = 2;
             this.HideFMListZoomButtonsCheckBox.Text = "Hide FM list zoom buttons";
-            this.HideFMListZoomButtonsCheckBox.UseMnemonic = false;
             this.HideFMListZoomButtonsCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideUninstallButtonCheckBox
@@ -600,7 +593,6 @@ namespace AngelLoader.Forms
             this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(456, 32);
             this.HideUninstallButtonCheckBox.TabIndex = 1;
             this.HideUninstallButtonCheckBox.Text = "Hide \"Install / Uninstall FM\" button (like FMSel)";
-            this.HideUninstallButtonCheckBox.UseMnemonic = false;
             this.HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // VisualThemeGroupBox

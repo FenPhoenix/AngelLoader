@@ -91,7 +91,6 @@
             this.ConfirmPlayOnDCOrEnterCheckBox.Size = new System.Drawing.Size(119, 17);
             this.ConfirmPlayOnDCOrEnterCheckBox.TabIndex = 0;
             this.ConfirmPlayOnDCOrEnterCheckBox.Text = "Ask for confirmation";
-            this.ConfirmPlayOnDCOrEnterCheckBox.UseMnemonic = false;
             this.ConfirmPlayOnDCOrEnterCheckBox.UseVisualStyleBackColor = true;
             // 
             // WebSearchGroupBox
@@ -117,7 +116,6 @@
             this.WebSearchUrlResetButton.Name = "WebSearchUrlResetButton";
             this.WebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);
             this.WebSearchUrlResetButton.TabIndex = 2;
-            this.WebSearchUrlResetButton.UseMnemonic = false;
             this.WebSearchUrlResetButton.UseVisualStyleBackColor = true;
             this.WebSearchUrlResetButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.WebSearchUrlResetButton_Paint);
             // 
@@ -177,7 +175,6 @@
             this.ConfirmUninstallCheckBox.Size = new System.Drawing.Size(149, 17);
             this.ConfirmUninstallCheckBox.TabIndex = 0;
             this.ConfirmUninstallCheckBox.Text = "Confirm before uninstalling";
-            this.ConfirmUninstallCheckBox.UseMnemonic = false;
             this.ConfirmUninstallCheckBox.UseVisualStyleBackColor = true;
             // 
             // WhatToBackUpLabel
@@ -199,7 +196,6 @@
             this.BackupAlwaysAskCheckBox.Size = new System.Drawing.Size(79, 17);
             this.BackupAlwaysAskCheckBox.TabIndex = 5;
             this.BackupAlwaysAskCheckBox.Text = "Always ask";
-            this.BackupAlwaysAskCheckBox.UseMnemonic = false;
             this.BackupAlwaysAskCheckBox.UseVisualStyleBackColor = true;
             // 
             // BackupAllChangedDataRadioButton
@@ -247,7 +243,6 @@
             this.ConvertOGGsToWAVsOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
             this.ConvertOGGsToWAVsOnInstallCheckBox.TabIndex = 1;
             this.ConvertOGGsToWAVsOnInstallCheckBox.Text = "Convert .oggs to .wavs on install";
-            this.ConvertOGGsToWAVsOnInstallCheckBox.UseMnemonic = false;
             this.ConvertOGGsToWAVsOnInstallCheckBox.UseVisualStyleBackColor = true;
             // 
             // ConvertWAVsTo16BitOnInstallCheckBox
@@ -261,7 +256,6 @@
             this.ConvertWAVsTo16BitOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
             this.ConvertWAVsTo16BitOnInstallCheckBox.TabIndex = 0;
             this.ConvertWAVsTo16BitOnInstallCheckBox.Text = "Convert .wavs to 16 bit on install";
-            this.ConvertWAVsTo16BitOnInstallCheckBox.UseMnemonic = false;
             this.ConvertWAVsTo16BitOnInstallCheckBox.UseVisualStyleBackColor = true;
             // 
             // DummyAutoScrollPanel

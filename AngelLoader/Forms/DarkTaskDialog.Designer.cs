@@ -79,9 +79,6 @@ namespace AngelLoader.Forms
             // 
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Cancel_Button.DarkModeBackColor = null;
-            this.Cancel_Button.DarkModeHoverColor = null;
-            this.Cancel_Button.DarkModePressedColor = null;
             this.Cancel_Button.Location = new System.Drawing.Point(444, 9);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
@@ -90,16 +87,12 @@ namespace AngelLoader.Forms
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 2;
             this.Cancel_Button.Text = "Cancel";
-            this.Cancel_Button.UseMnemonic = false;
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
             // NoButton
             // 
             this.NoButton.AutoSize = true;
             this.NoButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.NoButton.DarkModeBackColor = null;
-            this.NoButton.DarkModeHoverColor = null;
-            this.NoButton.DarkModePressedColor = null;
             this.NoButton.Location = new System.Drawing.Point(363, 9);
             this.NoButton.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.NoButton.MinimumSize = new System.Drawing.Size(75, 23);
@@ -108,16 +101,12 @@ namespace AngelLoader.Forms
             this.NoButton.Size = new System.Drawing.Size(75, 23);
             this.NoButton.TabIndex = 1;
             this.NoButton.Text = "No";
-            this.NoButton.UseMnemonic = false;
             this.NoButton.UseVisualStyleBackColor = true;
             // 
             // YesButton
             // 
             this.YesButton.AutoSize = true;
             this.YesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.YesButton.DarkModeBackColor = null;
-            this.YesButton.DarkModeHoverColor = null;
-            this.YesButton.DarkModePressedColor = null;
             this.YesButton.Location = new System.Drawing.Point(282, 9);
             this.YesButton.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.YesButton.MinimumSize = new System.Drawing.Size(75, 23);
@@ -126,7 +115,6 @@ namespace AngelLoader.Forms
             this.YesButton.Size = new System.Drawing.Size(75, 23);
             this.YesButton.TabIndex = 0;
             this.YesButton.Text = "Yes";
-            this.YesButton.UseMnemonic = false;
             this.YesButton.UseVisualStyleBackColor = true;
             // 
             // VerificationCheckBox
@@ -139,7 +127,6 @@ namespace AngelLoader.Forms
             this.VerificationCheckBox.Size = new System.Drawing.Size(69, 17);
             this.VerificationCheckBox.TabIndex = 3;
             this.VerificationCheckBox.Text = "Check";
-            this.VerificationCheckBox.UseMnemonic = false;
             this.VerificationCheckBox.UseVisualStyleBackColor = true;
             // 
             // DarkTaskDialog

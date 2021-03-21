@@ -19,6 +19,15 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool UseMnemonic
+        {
+            get => base.UseMnemonic;
+            set => base.UseMnemonic = value;
+        }
+
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]

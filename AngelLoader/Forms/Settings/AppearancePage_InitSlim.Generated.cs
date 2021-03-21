@@ -241,7 +241,6 @@
             this.UseShortGameTabNamesCheckBox.AutoSize = true;
             this.UseShortGameTabNamesCheckBox.Location = new System.Drawing.Point(24, 40);
             this.UseShortGameTabNamesCheckBox.TabIndex = 1;
-            this.UseShortGameTabNamesCheckBox.UseMnemonic = false;
             this.UseShortGameTabNamesCheckBox.UseVisualStyleBackColor = true;
             // 
             // RecentFMsNumericUpDown
@@ -350,7 +349,6 @@
             this.RatingUseStarsCheckBox.Checked = true;
             this.RatingUseStarsCheckBox.Location = new System.Drawing.Point(32, 360);
             this.RatingUseStarsCheckBox.TabIndex = 10;
-            this.RatingUseStarsCheckBox.UseMnemonic = false;
             this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
             // 
             // RatingExamplePictureBox
@@ -399,7 +397,6 @@
             this.MoveArticlesToEndCheckBox.Location = new System.Drawing.Point(16, 232);
             this.MoveArticlesToEndCheckBox.Size = new System.Drawing.Size(456, 32);
             this.MoveArticlesToEndCheckBox.TabIndex = 5;
-            this.MoveArticlesToEndCheckBox.UseMnemonic = false;
             this.MoveArticlesToEndCheckBox.UseVisualStyleBackColor = true;
             // 
             // EnableIgnoreArticlesCheckBox
@@ -410,7 +407,6 @@
             this.EnableIgnoreArticlesCheckBox.Location = new System.Drawing.Point(16, 176);
             this.EnableIgnoreArticlesCheckBox.Size = new System.Drawing.Size(456, 32);
             this.EnableIgnoreArticlesCheckBox.TabIndex = 3;
-            this.EnableIgnoreArticlesCheckBox.UseMnemonic = false;
             this.EnableIgnoreArticlesCheckBox.UseVisualStyleBackColor = true;
             // 
             // ArticlesTextBox
@@ -440,7 +436,6 @@
             this.ReadmeFixedWidthFontCheckBox.Location = new System.Drawing.Point(16, 16);
             this.ReadmeFixedWidthFontCheckBox.Size = new System.Drawing.Size(456, 32);
             this.ReadmeFixedWidthFontCheckBox.TabIndex = 0;
-            this.ReadmeFixedWidthFontCheckBox.UseMnemonic = false;
             this.ReadmeFixedWidthFontCheckBox.UseVisualStyleBackColor = true;
             // 
             // ShowOrHideUIElementsGroupBox
@@ -464,7 +459,6 @@
             this.HideExitButtonCheckBox.Location = new System.Drawing.Point(16, 72);
             this.HideExitButtonCheckBox.Size = new System.Drawing.Size(456, 32);
             this.HideExitButtonCheckBox.TabIndex = 3;
-            this.HideExitButtonCheckBox.UseMnemonic = false;
             this.HideExitButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideFMListZoomButtonsCheckBox
@@ -474,7 +468,6 @@
             this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 44);
             this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(456, 32);
             this.HideFMListZoomButtonsCheckBox.TabIndex = 2;
-            this.HideFMListZoomButtonsCheckBox.UseMnemonic = false;
             this.HideFMListZoomButtonsCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideUninstallButtonCheckBox
@@ -484,7 +477,6 @@
             this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 16);
             this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(456, 32);
             this.HideUninstallButtonCheckBox.TabIndex = 1;
-            this.HideUninstallButtonCheckBox.UseMnemonic = false;
             this.HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // VisualThemeGroupBox

@@ -28,14 +28,26 @@ namespace AngelLoader.Forms.CustomControls
 
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool UseMnemonic
+        {
+            get => base.UseMnemonic;
+            set => base.UseMnemonic = value;
+        }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color? DarkModeBackColor { get; set; }
 
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color? DarkModeHoverColor { get; set; }
 
         [PublicAPI]
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color? DarkModePressedColor { get; set; }
 
         [PublicAPI]
