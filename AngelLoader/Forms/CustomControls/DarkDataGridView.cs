@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -24,6 +23,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled)
                 {
                     RowsDefaultCellStyle.ForeColor = DarkColors.Fen_DarkForeground;
+                    // TODO: @DarkMode: Explicit color
                     GridColor = Color.FromArgb(64, 64, 64);
                     RowsDefaultCellStyle.BackColor = DarkColors.Fen_DarkBackground;
                 }

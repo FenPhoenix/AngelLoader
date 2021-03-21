@@ -168,7 +168,6 @@ namespace AngelLoader.Forms.CustomControls
                                 : tabRect;
 
                         Color textColor = SelectedTab == tabPage
-                            //? Color.FromArgb(220,220,220)
                             ? DarkColors.LightText
                             : DarkColors.LightText;
 

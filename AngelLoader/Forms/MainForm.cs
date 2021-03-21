@@ -1497,6 +1497,7 @@ namespace AngelLoader.Forms
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
                 RefreshFiltersButton.Image = Images.Refresh;
                 MainToolTip.DarkModeEnabled = darkMode;
+                Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
 
                 // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
                 // while running(?) meh, whatever

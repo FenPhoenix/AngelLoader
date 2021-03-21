@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 #pragma warning disable 8509 // Switch expression doesn't handle all possible inputs
 #pragma warning disable CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
@@ -15,6 +16,30 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
     internal static class Lazy_ToolStripLabels
     {
+        private static bool _darkModeEnabled;
+
+        [PublicAPI]
+        internal static bool DarkModeEnabled
+        {
+            get => _darkModeEnabled;
+            set
+            {
+                if (_darkModeEnabled == value) return;
+                _darkModeEnabled = value;
+
+                for (int i = 0; i < _labels.Length; i++)
+                {
+                    if (_constructed[i])
+                    {
+                        ToolStripLabel label = _labels[i];
+                        label.ForeColor = LabelForeColor;
+                    }
+                }
+            }
+        }
+
+        private static Color LabelForeColor => _darkModeEnabled ? DarkColors.LightText : Color.Maroon;
+
         private static readonly bool[] _constructed = new bool[3];
 
         // Inits to null, don't worry
@@ -53,7 +78,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                     }
                 }
 
-                _label.ForeColor = Color.Maroon;
+                _label.ForeColor = LabelForeColor;
                 _label.Margin = new Padding(4, 5, 0, 2);
 
                 _constructed[li] = true;
