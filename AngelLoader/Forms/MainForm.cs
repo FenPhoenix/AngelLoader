@@ -41,6 +41,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -213,7 +214,21 @@ namespace AngelLoader.Forms
             //    ButtonType.Ok
             //);
 
-            MessageBox.Show("yes", "yeah", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //MessageBox.Show("yes", "yeah", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            using var f = new DarkTaskDialog(
+                message: "Message test sdaf sdf ads adsf s saf asf as sda das dsaf dsaf asdf sad sadf sda sdaf d  sad dsaf dsaf dsaf dasf dasf dsaf sda fas fsaf sad fsf",
+                title: "Title",
+                icon: MessageBoxIcon.None,
+                //yesText: "This is a very long string of text that would certainly cause resizing that is if I have implemented it anyway and yeah",
+                yesText: "Yes",
+                noText: "No",
+                cancelText: "Cancel",
+                checkBoxText: "Don't ask again",
+                checkBoxChecked: false,
+                defaultButton: DarkTaskDialog.Button.Cancel
+            );
+            var result = f.ShowDialog();
+            Trace.WriteLine(result);
         }
 
         private void Test4Button_Click(object sender, EventArgs e)

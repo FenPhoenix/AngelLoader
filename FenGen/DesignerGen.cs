@@ -373,7 +373,7 @@ namespace FenGen
                     if (props.IsFormProperty)
                     {
                         // Hack to avoid knowing the black art of how to construct code with Roslyn...
-                        destNode.OverrideLine = "            this.Text = \" \"";
+                        destNode.OverrideLine = "            this.Text = \" \";";
                     }
                     else
                     {
