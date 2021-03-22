@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
+using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 using static AngelLoader.WinAPI.Native;
@@ -493,67 +495,187 @@ namespace AngelLoader.Forms
         // Any failure whatsoever should result in falling back to classic-mode tooltips so we don't end up with
         // unreadable text!
 
-        private static PropertyInfo? _toolStripToolTipProperty;
         private static MethodInfo? _toolTipRecreateHandleMethod;
+        private static FieldInfo? _toolTipNativeWindowControlField;
+        private static Type? _toolTipNativeWindowClass;
 
         private static bool? _toolTipsReflectable;
-        [MemberNotNullWhen(true, nameof(_toolStripToolTipProperty), nameof(_toolTipRecreateHandleMethod))]
+
+        [MemberNotNullWhen(true,
+            nameof(_toolTipRecreateHandleMethod),
+            nameof(_toolTipNativeWindowControlField),
+            nameof(_toolTipNativeWindowClass))]
         internal static bool ToolTipsReflectable
         {
             get
             {
+                static bool SetFalse()
+                {
+                    _toolTipRecreateHandleMethod = null;
+                    _toolTipNativeWindowControlField = null;
+                    _toolTipNativeWindowClass = null;
+                    _toolTipsReflectable = false;
+                    return false;
+                }
+
                 if (_toolTipsReflectable == null)
                 {
-                    bool toolTipRecreateHandleMethodFound;
+                    using var testToolTip = new ToolTip();
+
+                    const BindingFlags bindingFlags =
+                        BindingFlags.Public |
+                        BindingFlags.NonPublic |
+                        BindingFlags.Instance;
+
+                    #region Check for RecreateHandle method
+
                     try
                     {
-                        using var testToolTip = new ToolTip();
                         _toolTipRecreateHandleMethod = typeof(ToolTip)
                             .GetMethod(
                                 "RecreateHandle",
-                                BindingFlags.NonPublic | BindingFlags.Instance);
-                        // Make sure we can invoke the method and it has right param count (none in this case)
-                        _toolTipRecreateHandleMethod?.Invoke(testToolTip, null);
-                        toolTipRecreateHandleMethodFound = _toolTipRecreateHandleMethod != null;
+                                bindingFlags);
+
+                        if (_toolTipRecreateHandleMethod == null)
+                        {
+                            return SetFalse();
+                        }
+
+                        // Make sure we can invoke the method and it has the right param count (none in this case)
+                        _toolTipRecreateHandleMethod.Invoke(testToolTip, null);
                     }
                     catch
                     {
-                        toolTipRecreateHandleMethodFound = false;
-                        _toolTipRecreateHandleMethod = null;
+                        return SetFalse();
                     }
 
-                    bool toolStripToolTipPropertyFound;
+                    #endregion
+
+                    #region Check for nested ToolTipNativeWindow class
+
                     try
                     {
-                        using var testToolStrip = new ToolStrip();
-                        _toolStripToolTipProperty = typeof(ToolStrip)
-                            .GetProperty(
-                                "ToolTip",
-                                BindingFlags.NonPublic | BindingFlags.Instance);
-                        toolStripToolTipPropertyFound = _toolStripToolTipProperty != null &&
-                                                        _toolStripToolTipProperty.GetValue(testToolStrip) is ToolTip;
+                        _toolTipNativeWindowClass = typeof(ToolTip)
+                            .GetNestedType(
+                                "ToolTipNativeWindow",
+                                bindingFlags);
+
+                        if (_toolTipNativeWindowClass == null)
+                        {
+                            return SetFalse();
+                        }
                     }
                     catch
                     {
-                        toolStripToolTipPropertyFound = false;
-                        _toolStripToolTipProperty = null;
+                        return SetFalse();
                     }
 
-                    _toolTipsReflectable = toolTipRecreateHandleMethodFound && toolStripToolTipPropertyFound;
+                    #endregion
+
+                    #region Check for ToolTip field in ToolTipNativeWindow class
+
+                    try
+                    {
+                        _toolTipNativeWindowControlField = _toolTipNativeWindowClass
+                            .GetField("control",
+                                bindingFlags);
+
+                        if (_toolTipNativeWindowControlField == null ||
+                            _toolTipNativeWindowControlField.FieldType != typeof(ToolTip))
+                        {
+                            return SetFalse();
+                        }
+                    }
+                    catch
+                    {
+                        return SetFalse();
+                    }
+
+                    #endregion
+
+                    #region Check for the ToolTip field to be initialized
+
+                    try
+                    {
+                        ConstructorInfo[] constructors = _toolTipNativeWindowClass
+                            .GetConstructors(
+                                bindingFlags);
+
+                        if (constructors.Length != 1)
+                        {
+                            return SetFalse();
+                        }
+
+                        ConstructorInfo? cons = constructors[0];
+
+                        if (cons == null)
+                        {
+                            return SetFalse();
+                        }
+
+                        var tsNativeWindow = Activator.CreateInstance(
+                            type: _toolTipNativeWindowClass,
+                            bindingAttr: bindingFlags,
+                            binder: null,
+                            args: new object[] { testToolTip },
+                            culture: CultureInfo.InvariantCulture);
+
+                        if (tsNativeWindow == null)
+                        {
+                            return SetFalse();
+                        }
+
+                        // At this point, we know we have only one instance constructor, that it takes one param
+                        // of type ToolTip, and that there is a ToolTip field in the class. If getting the ToolTip
+                        // field's value succeeds, then we know this field is guaranteed to be initialized by the
+                        // time the ToolTipNativeWindow class is constructed.
+                        _toolTipNativeWindowControlField!.GetValue(tsNativeWindow);
+
+                        _toolTipsReflectable = true;
+                    }
+                    catch
+                    {
+                        return SetFalse();
+                    }
+
+                    #endregion
                 }
 
                 return _toolTipsReflectable == true;
             }
         }
 
-        internal static void InvokeToolTipRecreateHandle(ToolTip obj)
+        // Tooltips cache their text color (though not their other colors), so they only call the GetThemeColor()
+        // method once. That means we can't change their text color at will. Recreating their handles causes them
+        // to call GetThemeColor() again, so we can set their text color again.
+        // We also can't try to do clever subclassing stuff, because some controls have internal tooltips that we
+        // can't set to our subclassed version.
+        internal static void RecreateAllToolTipHandles()
         {
-            if (ToolTipsReflectable) _toolTipRecreateHandleMethod.Invoke(obj, null);
-        }
+            if (!ToolTipsReflectable) return;
 
-        internal static void InvokeToolTipRecreateHandle(ToolStrip obj)
-        {
-            if (ToolTipsReflectable) _toolTipRecreateHandleMethod.Invoke((ToolTip)_toolStripToolTipProperty.GetValue(obj), null);
+            try
+            {
+                var handles = Native.GetAllWindowHandles();
+                foreach (var handle in handles)
+                {
+                    if (handle is not IntPtr hWnd) continue;
+
+                    NativeWindow? nw = NativeWindow.FromHandle(hWnd);
+                    if (nw == null || nw.GetType() != _toolTipNativeWindowClass) continue;
+
+                    _toolTipRecreateHandleMethod.Invoke((ToolTip)_toolTipNativeWindowControlField.GetValue(nw), null);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Because of our exhaustive reflection checks, there should be no exceptions here unless something
+                // very, very weird happens. If we do get an exception here, then we'll have wrong-colored (and
+                // possibly unreadable) text in tooltips until a restart.
+                Logger.Log(
+                    "Unable to recreate tooltip handles, meaning their text color has not changed with dark/light theme.",
+                    ex);
+            }
         }
 
         #endregion

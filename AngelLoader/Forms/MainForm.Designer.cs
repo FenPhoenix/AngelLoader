@@ -160,7 +160,7 @@
             this.ReadmeResetZoomButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.ComboBoxWithBackingItems();
             this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
-            this.MainToolTip = new AngelLoader.Forms.CustomControls.DarkToolTip(this.components);
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -1984,7 +1984,7 @@
         internal AngelLoader.Forms.CustomControls.TabPageCustom TagsTabPage;
         internal AngelLoader.Forms.CustomControls.DarkTreeView TagsTreeView;
         internal AngelLoader.Forms.CustomControls.DarkButton ResetLayoutButton;
-        internal AngelLoader.Forms.CustomControls.DarkToolTip MainToolTip;
+        internal System.Windows.Forms.ToolTip MainToolTip;
         internal AngelLoader.Forms.CustomControls.DarkButton RemoveTagButton;
         internal AngelLoader.Forms.CustomControls.DarkButton AddTagButton;
         internal AngelLoader.Forms.CustomControls.DarkButton AddTagFromListButton;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -819,6 +820,45 @@ namespace AngelLoader.WinAPI
 
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern bool DestroyIcon(IntPtr hIcon);
+
+        #endregion
+
+        #region Enumerate window handles
+
+        // ArrayList because we can't marshal generic types (so no List<T>)
+
+        private delegate bool EnumeratedWindow(IntPtr handleWindow, ArrayList handles);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool EnumWindows(EnumeratedWindow lpEnumFunc, ArrayList lParam);
+
+        [DllImport("user32")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool EnumChildWindows(IntPtr window, EnumeratedWindow callback, ArrayList lParam);
+
+        private static bool GetWindowHandle(IntPtr windowHandle, ArrayList windowHandles)
+        {
+            windowHandles.Add(windowHandle);
+            return true;
+        }
+
+        internal static ArrayList GetAllWindowHandles()
+        {
+            EnumeratedWindow callBackPtr = GetWindowHandle;
+            var windowHandles = new ArrayList();
+
+            EnumWindows(callBackPtr, windowHandles);
+
+            var windowHandlesArray = windowHandles.ToArray();
+            foreach (object windowHandle in windowHandlesArray)
+            {
+                if (windowHandle is not IntPtr hWnd) continue;
+                EnumChildWindows(hWnd, callBackPtr, windowHandles);
+            }
+
+            return windowHandles;
+        }
 
         #endregion
     }

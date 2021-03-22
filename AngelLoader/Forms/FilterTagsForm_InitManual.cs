@@ -32,7 +32,7 @@ namespace AngelLoader.Forms
             ResetButton = new DarkButton();
             BottomButtonsFLP = new FlowLayoutPanel();
             MoveButtonsPanel = new Panel();
-            MainToolTip = new DarkToolTip(components);
+            MainToolTip = new ToolTip(components);
             FindTagTextBox = new DarkTextBox();
             FilterLabelsPanel.SuspendLayout();
             BottomButtonsFLP.SuspendLayout();

@@ -21,7 +21,7 @@
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ErrorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.MainToolTip = new AngelLoader.Forms.CustomControls.DarkToolTip(this.components);
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.MainErrorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
             this.OtherRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
@@ -231,7 +231,7 @@
         private System.Windows.Forms.FlowLayoutPanel BottomFlowLayoutPanel;
         private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
         private AngelLoader.Forms.CustomControls.DarkButton OKButton;
-        private AngelLoader.Forms.CustomControls.DarkToolTip MainToolTip;
+        private System.Windows.Forms.ToolTip MainToolTip;
         private System.Windows.Forms.ErrorProvider MainErrorProvider;
         private AngelLoader.Forms.CustomControls.DarkLabel ErrorLabel;
         private AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;

@@ -164,7 +164,7 @@ namespace AngelLoader.Forms
             ReadmeResetZoomButton = new DarkButton();
             ChooseReadmeComboBox = new ComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
-            MainToolTip = new DarkToolTip(components);
+            MainToolTip = new ToolTip(components);
             MainMenuButton = new DarkButton();
 
             #endregion
