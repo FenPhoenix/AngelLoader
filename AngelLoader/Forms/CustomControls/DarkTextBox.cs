@@ -97,9 +97,9 @@ namespace AngelLoader.Forms.CustomControls
             switch (m.Msg)
             {
                 case Native.WM_PAINT:
-                    NativeHooks.EnableSysColorOverride = true;
+                    NativeHooks.SysColorOverride = NativeHooks.Override.Full;
                     base.WndProc(ref m);
-                    NativeHooks.EnableSysColorOverride = false;
+                    NativeHooks.SysColorOverride = NativeHooks.Override.None;
                     break;
                 default:
                     base.WndProc(ref m);

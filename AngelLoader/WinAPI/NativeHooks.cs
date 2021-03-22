@@ -76,9 +76,16 @@ namespace AngelLoader.WinAPI
 
         private static bool _hooksInstalled;
 
+        internal enum Override
+        {
+            None,
+            Full,
+            RichText
+        }
+
         // We set/unset this while painting specific controls, so other controls aren't affected by the global
         // color change
-        internal static bool EnableSysColorOverride = false;
+        internal static Override SysColorOverride = Override.None;
 
         #endregion
 
@@ -229,34 +236,72 @@ namespace AngelLoader.WinAPI
 
         private static int GetSysColor(int nIndex)
         {
-            return Misc.Config.DarkMode && EnableSysColorOverride
-                ? nIndex switch
+            if (Misc.Config.DarkMode)
+            {
+                return SysColorOverride switch
                 {
-                    COLOR_WINDOW => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
-                    COLOR_WINDOWTEXT => ColorTranslator.ToWin32(DarkColors.LightText),
-                    COLOR_HIGHLIGHT => ColorTranslator.ToWin32(DarkColors.BlueSelection),
-                    COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
-                    COLOR_3DFACE => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
-                    COLOR_GRAYTEXT => ColorTranslator.ToWin32(DarkColors.DisabledText),
+                    Override.Full => nIndex switch
+                    {
+                        COLOR_WINDOW => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
+                        COLOR_WINDOWTEXT => ColorTranslator.ToWin32(DarkColors.LightText),
+                        COLOR_HIGHLIGHT => ColorTranslator.ToWin32(DarkColors.BlueSelection),
+                        COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
+                        COLOR_3DFACE => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
+                        COLOR_GRAYTEXT => ColorTranslator.ToWin32(DarkColors.DisabledText),
+                        _ => GetSysColorOriginal!(nIndex)
+                    },
+                    Override.RichText => nIndex switch
+                    {
+                        // Darker background, more desaturated foreground color
+                        COLOR_WINDOW => ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground),
+                        COLOR_WINDOWTEXT => ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground),
+
+                        COLOR_HIGHLIGHT => ColorTranslator.ToWin32(DarkColors.BlueSelection),
+                        COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
+                        _ => GetSysColorOriginal!(nIndex)
+                    },
                     _ => GetSysColorOriginal!(nIndex)
-                }
-                : GetSysColorOriginal!(nIndex);
+                };
+            }
+            else
+            {
+                return GetSysColorOriginal!(nIndex);
+            }
         }
 
         private static IntPtr GetSysColorBrush(int nIndex)
         {
-            return Misc.Config.DarkMode && EnableSysColorOverride
-                ? nIndex switch
+            if (Misc.Config.DarkMode)
+            {
+                return SysColorOverride switch
                 {
-                    COLOR_WINDOW => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground)),
-                    COLOR_WINDOWTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText)),
-                    COLOR_HIGHLIGHT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection)),
-                    COLOR_HIGHLIGHT_TEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText)),
-                    COLOR_3DFACE => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground)),
-                    COLOR_GRAYTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText)),
+                    Override.Full => nIndex switch
+                    {
+                        COLOR_WINDOW => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground)),
+                        COLOR_WINDOWTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText)),
+                        COLOR_HIGHLIGHT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection)),
+                        COLOR_HIGHLIGHT_TEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText)),
+                        COLOR_3DFACE => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground)),
+                        COLOR_GRAYTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText)),
+                        _ => GetSysColorBrushOriginal!(nIndex)
+                    },
+                    Override.RichText => nIndex switch
+                    {
+                        // Darker background, more desaturated foreground color
+                        COLOR_WINDOW => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground)),
+                        COLOR_WINDOWTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground)),
+
+                        COLOR_HIGHLIGHT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection)),
+                        COLOR_HIGHLIGHT_TEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText)),
+                        _ => GetSysColorBrushOriginal!(nIndex)
+                    },
                     _ => GetSysColorBrushOriginal!(nIndex)
-                }
-                : GetSysColorBrushOriginal!(nIndex);
+                };
+            }
+            else
+            {
+                return GetSysColorBrushOriginal!(nIndex);
+            }
         }
 
         #endregion

@@ -37,6 +37,11 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch ((uint)m.Msg)
             {
+                case Native.WM_PAINT:
+                    NativeHooks.SysColorOverride = NativeHooks.Override.RichText;
+                    base.WndProc(ref m);
+                    NativeHooks.SysColorOverride = NativeHooks.Override.None;
+                    break;
                 case Native.WM_MOUSEWHEEL:
                     // Intercept the mousewheel call and direct it to use the fixed scrolling
                     InterceptMousewheel(ref m);

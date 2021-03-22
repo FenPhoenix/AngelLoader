@@ -572,6 +572,8 @@ namespace AngelLoader.WinAPI
         internal const int CFM_COLOR = 0x40000000;
         internal const int CFE_AUTOCOLOR = 0x40000000;
         internal const int EM_AUTOURLDETECT = (WM_USER + 91);
+        internal const int EM_SETTEXTEX = (WM_USER + 97);
+        internal const int EM_STREAMIN = (WM_USER + 73);
 
         internal const int AURL_ENABLEURL = 1;
         internal const int AURL_ENABLEEMAILADDR = 2;

@@ -256,9 +256,10 @@ namespace AngelLoader.Forms.CustomControls
                 Color currentColor = colorTable[i];
                 if (i == 0 && currentColor.A == 0)
                 {
-                    // Explicitly set color 0 to our desired default, so we can spam \cf0 everywhere to keep
-                    // our text looking right.
-                    invertedColor = DarkColors.Fen_DarkForeground;
+                    // We can just do the standard thing now, because with the sys color hook our default color
+                    // is now our bright foreground color
+                    colorEntriesBytesList.Add((byte)';');
+                    continue;
                 }
                 else if (_rtfColorStyle == RTFColorStyle.Monochrome)
                 {
@@ -313,15 +314,6 @@ namespace AngelLoader.Forms.CustomControls
             {
                 #region Write new color table
 
-                // Some files don't have a color table, so in that case just add the default black color that we
-                // would normally expect to be there.
-                if (colorTable.Count == 0)
-                {
-                    colorTable.Add(_rtfColorStyle == RTFColorStyle.Monochrome
-                        ? DarkColors.Fen_DarkForeground
-                        : Color.FromArgb(0, 0, 0));
-                }
-
                 List<byte> colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
 
                 // Fortunately, only the first color table is used, so we can just stick ourselves right at the
@@ -333,38 +325,17 @@ namespace AngelLoader.Forms.CustomControls
                 #endregion
             }
 
-            #region Insert \cf0 control words as needed
-
-            // Insert a \cf0 right after the \fonttbl group, in case we don't encounter a \plain before any text.
-            int fonttbl_EndIndex = FindEndOfGroup(darkModeBytes, _fonttbl);
-            if (fonttbl_EndIndex > -1) darkModeBytes.InsertRange(fonttbl_EndIndex, cf0);
+            #region Issues/quirks/etc.
 
             /*
-            TODO @DarkMode(RTF):
-            Now that we're using the system color hooks, we can get rid of these default-color command inserts.
-            But, we would get the slightly brighter (220,220,220) text, instead of the (200,200,200) text we have
-            for the RichTextBox currently. We should decide if we want to keep one brightness or stick with the
-            like 3 levels we have now (dark bg text, control bg text, highlighted text).
-
-            TODO: @DarkMode: Insert \cf0 after every single one of these in case it ends up being the last one in the header
-            I mean that's just being paranoid, but still...
-
-            \rtf1 \fbidis? <character set> <from>? <deffont> <deflang> <fonttbl>? <filetbl>? 
-            <colortbl>? <stylesheet>? <stylerestrictions>? <listtables>? <revtbl>? <rsidtable>? 
-            <mathprops>? <generator>? 
-            
-            Despite extensive trying with EM_SETCHARFORMAT to tell it to set a new default text color, it just
-            doesn't want to work (best it can do is make ALL the text the default color, rather than just the
-            default text). So we just insert \cf0 directly after each \plain (which resets the character
-            properties). Ugly, but at this point whatever. Of _course_ we have to do this, but it's fast enough
-            and works, so meh.
-
             TODO: @DarkMode(RTF/DarkTextMode) issues/quirks/etc:
             -Image-as-first-item issue with the \cf0 inserts
              If we put a \cf0 before a transparent image, it makes the background of it white.
              See 2006-09-18_WC_WhatLiesBelow_v1
              Not a huge deal really - lots of readmes end up with bright images due to non-transparency, and
              WLB's transparent title image doesn't look good in dark mode anyway, but, you know...
+            *Note: We don't put \cf0 inserts anymore, but the above still applies with having the default color
+             be bright which is what we have now.
 
             -Maybe don't invert if we're already light...?
              See: LostSouls14
@@ -375,12 +346,6 @@ namespace AngelLoader.Forms.CustomControls
              background, due to us preventing downward lightness inversion. Probably too much trouble to fix,
              and worst case the user can always just select the text and it'll be visible, but note it...
             */
-            int index = 0;
-            while ((index = FindIndexOfByteSequence(darkModeBytes, plain, index)) > -1)
-            {
-                darkModeBytes.InsertRange(index + plain.Length, cf0);
-                index += plain.Length + cf0.Length;
-            }
 
             #endregion
 

@@ -327,9 +327,9 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_ENABLE:
                     if (_darkModeEnabled && m.WParam == IntPtr.Zero)
                     {
-                        NativeHooks.EnableSysColorOverride = true;
+                        NativeHooks.SysColorOverride = NativeHooks.Override.Full;
                         base.WndProc(ref m);
-                        NativeHooks.EnableSysColorOverride = false;
+                        NativeHooks.SysColorOverride = NativeHooks.Override.None;
                     }
                     else
                     {
