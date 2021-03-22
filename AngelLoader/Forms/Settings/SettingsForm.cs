@@ -579,6 +579,9 @@ namespace AngelLoader.Forms
                 {
                     ShowPathError(ErrorableTextBoxes[i], PathErrorIsSet(ErrorableTextBoxes[i]));
                 }
+
+                // Have to do this here too, because we don't count as a "child window" of Main I guess
+                ControlUtils.RecreateAllToolTipHandles();
             }
             finally
             {
