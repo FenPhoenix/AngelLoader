@@ -35,7 +35,9 @@ namespace AngelLoader.Forms.CustomControls
         {
             BorderStyle = BorderStyle.FixedSingle;
 
-            // TODO: @DarkMode(DarkTreeView): Switch to OwnerDrawAll so we can draw dark plus/minus buttons
+            // @DarkModeNote(DarkTreeView): Our +/- buttons are not drawn dark, but they look okay for now.
+            // Apparently we have to switch to OwnerDrawAll in order to draw them. We can do that in the future
+            // if we feel like polishing it up.
             DrawMode = TreeViewDrawMode.OwnerDrawText;
 
             HideSelection = false;

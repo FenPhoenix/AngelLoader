@@ -1,11 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using AL_Common;
-using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 // TODO: @DarkMode(RichTextBoxCustom):

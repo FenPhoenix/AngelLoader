@@ -245,8 +245,8 @@ namespace AngelLoader.Forms
         {
             bool darkMode = theme == VisualTheme.Dark;
 
-            // TODO: @DarkMode(FillControlDict): Controls might change their colors after construct
-            // We fixed the Settings window case, but keep this in mind until we're sure we're done.
+            // @DarkModeNote(FillControlDict): Controls might change their colors after construct
+            // Remember to handle this if new controls are added that this applies to.
             if (controlColors.Count == 0) FillControlDict(form, controlColors, alsoCreateControlHandles);
 
             foreach (var item in controlColors)

@@ -33,6 +33,7 @@
 
  TODO: @DarkMode: Make sure all controls' disabled colors are working!
  TODO: @DarkMode: Test all parts of the app with high DPI!
+ TODO: @DarkMode: Test on Win7 to make sure the dark theme still looks as it should.
 
  @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */

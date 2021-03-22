@@ -231,7 +231,7 @@ namespace AngelLoader.Forms.CustomControls
             g.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
         }
 
-        // TODO: @DarkMode(DarkListBox/ListView): We could get super thorough and handle multi-select with shift properly...
+        // @DarkModeNote(DarkListBox/ListView): We could get super thorough and handle multi-select with shift properly...
         // But, meh... how it works is fine enough probably?
         private void HandleLButtonDown(ref Message m)
         {

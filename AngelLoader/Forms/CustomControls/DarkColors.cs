@@ -4,6 +4,8 @@ namespace AngelLoader.Forms.CustomControls
 {
     public static class DarkColors
     {
+        // TODO: @DarkMode(Colors): Make sure all dark mode colors are explicit, and not using premade ones that could change!
+
         #region Fen
 
         // Scroll arrows:
@@ -24,11 +26,15 @@ namespace AngelLoader.Forms.CustomControls
 
         public static readonly Color Fen_DGVColumnHeaderHighlight = Color.FromArgb(77, 90, 114);
         public static readonly Color Fen_DGVColumnHeaderPressed = Color.FromArgb(82, 103, 142);
+
         // The same as SystemColors.HighlightText is normally, but that could in theory change (unlikely scenario,
         // but still) so just use an explicit color so we know we'll always look right.
-        // TODO: @DarkMode(Colors): Make sure all dark mode colors are explicit, and not using premade ones that could change!
         public static readonly Color Fen_HighlightText = Color.FromArgb(255, 255, 255);
+
         public static readonly Color Fen_ThumbScrollBarHover = Color.FromArgb(110, 110, 110);
+        public static readonly Color Fen_Hyperlink = Color.FromArgb(121, 180, 240);
+        public static readonly Color Fen_Hyperlink_VS = Color.FromArgb(86, 156, 214); // Visual Studio's hyperlink dark color
+        public static readonly Color Fen_HyperlinkPressed = Color.FromArgb(243, 110, 110);
 
         #endregion
 

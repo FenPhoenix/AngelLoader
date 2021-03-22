@@ -7,8 +7,6 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed class DarkLinkLabel : LinkLabel, IDarkable
     {
-        // TODO: @DarkMode(DarkLinkLabel): Use some nice, dark-compatible link colors other than just white
-
         private Color? _origForeColor;
         private Color? _origLinkColor;
         private Color? _origActiveLinkColor;
@@ -36,9 +34,9 @@ namespace AngelLoader.Forms.CustomControls
                     _origDisabledLinkColor ??= DisabledLinkColor;
 
                     ForeColor = DarkColors.LightText;
-                    LinkColor = DarkColors.LightText;
-                    ActiveLinkColor = DarkColors.LightText;
-                    VisitedLinkColor = DarkColors.LightText;
+                    LinkColor = DarkColors.Fen_Hyperlink;
+                    ActiveLinkColor = DarkColors.Fen_HyperlinkPressed;
+                    VisitedLinkColor = DarkColors.Fen_Hyperlink;
                     DisabledLinkColor = DarkColors.DisabledText;
                 }
                 else

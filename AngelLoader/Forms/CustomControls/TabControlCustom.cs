@@ -106,13 +106,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Tab reordering
 
-        // TODO: BUG: We mis-order these in the following scenario:
-        // If you grab a tab, move the mouse out of the tab area, then move it back onto the tabs area multiple
-        // tabs away (ie, you drag the first tab straight to the end without going through the steps of bringing
-        // it past each other tab in turn).
-        // We could just move the tab if the mouse is ever moving horizontally, even if we're not vertically on
-        // the tab bar.
-
         protected override void OnMouseDown(MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left) (_, _dragTab) = GetTabAtPoint(e.Location);
@@ -153,6 +146,8 @@ namespace AngelLoader.Forms.CustomControls
                 return;
             }
 
+            // If the user has moved the mouse off of the tab bar vertically, still stay in the move. This prevents
+            // a mis-ordering bug if the user drags a tab off the bar then back onto the bar at a different position.
             var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location, xOnly: true);
             if (bNewTabIndex == -1 || newTab == null || newTab == _dragTab) return;
 
@@ -165,7 +160,6 @@ namespace AngelLoader.Forms.CustomControls
 
             SelectedTab = _dragTab;
         }
-
 
         private (int BackingTabIndex, TabPage? TabPage)
         GetTabAtPoint(Point position, bool xOnly = false)

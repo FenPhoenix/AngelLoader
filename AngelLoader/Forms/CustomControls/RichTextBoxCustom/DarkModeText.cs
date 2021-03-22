@@ -319,13 +319,17 @@ namespace AngelLoader.Forms.CustomControls
                 // Fortunately, only the first color table is used, so we can just stick ourselves right at the
                 // start and not even have to awkwardly delete the old color table.
                 // Now watch Windows get an update that breaks that.
-                // TODO: @DarkMode: Add code to delete the old color table at some point
+                // @DarkModeNote: We could add code to delete the old color table at some point.
+                // This would make us some amount slower, and it's not necessary currently, so let's just not do
+                // it for now.
                 darkModeBytes.InsertRange(FindIndexOfByteSequence(darkModeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length, colorEntriesBytesList);
 
                 #endregion
             }
 
             #region Issues/quirks/etc.
+
+            // TODO: @DarkMode(RTF): Go through all RTF readmes and compare them light and dark to ensure they all look fine.
 
             /*
             TODO: @DarkMode(RTF/DarkTextMode) issues/quirks/etc:

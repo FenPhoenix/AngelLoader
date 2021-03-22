@@ -131,7 +131,7 @@ namespace AngelLoader.Forms.CustomControls
                 return;
             }
 
-            // @DarkMode(DateTimePicker): Still flickers the classic border somewhat on move/resize
+            // @DarkModeNote(DateTimePicker): Still flickers the classic border somewhat on move/resize
             // Not the end of the world, but if we find a quick way to fix it, we should do it. Otherwise, we'll
             // just call it done.
             if (m.Msg == Native.WM_PAINT)

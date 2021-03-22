@@ -144,7 +144,7 @@ namespace AngelLoader.Forms.CustomControls
                             textHorzAlign |
                             TextFormatFlags.VerticalCenter |
                             TextFormatFlags.EndEllipsis |
-                            // TODO: @DarkMode(DarkTabControl/Mnemonic ampersands):
+                            // @DarkModeNote(DarkTabControl/Mnemonic ampersands):
                             // In classic mode, putting a single ampersand into a tab's text will still display
                             // it as a single ampersand, but will mess up the length-and-x-position slightly.
                             // Putting a double-ampersand in will also display as a single ampersand (indicating
