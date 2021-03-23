@@ -28,52 +28,60 @@ namespace AngelLoader.Forms
         // would fail silently, so really it's best to just leave these as hard-converts even though we really
         // want to get rid of individually-specified games.
         private static Bitmap? _thief1_16;
-        public static Bitmap Thief1_16 => _thief1_16 ??= Resources.Thief1_16;
-
         private static Bitmap? _thief1_16_dark;
-        public static Bitmap Thief1_16_Dark => _thief1_16_dark ??= Resources.Thief1_16_dark;
+        public static Bitmap Thief1_16 =>
+            DarkModeEnabled
+                ? _thief1_16_dark ??= Resources.Thief1_16_dark
+                : _thief1_16 ??= Resources.Thief1_16;
 
         private static Bitmap? _thief2_16;
-        public static Bitmap Thief2_16 => _thief2_16 ??= Resources.Thief2_16;
-
         private static Bitmap? _thief2_16_dark;
-        public static Bitmap Thief2_16_Dark => _thief2_16_dark ??= Resources.Thief2_16_dark;
+        public static Bitmap Thief2_16 =>
+            DarkModeEnabled
+                ? _thief2_16_dark ??= Resources.Thief2_16_dark
+                : _thief2_16 ??= Resources.Thief2_16;
 
         private static Bitmap? _thief3_16;
-        public static Bitmap Thief3_16 => _thief3_16 ??= Resources.Thief3_16;
-
         private static Bitmap? _thief3_16_dark;
-        public static Bitmap Thief3_16_Dark => _thief3_16_dark ??= Resources.Thief3_16_dark;
+        public static Bitmap Thief3_16 =>
+            DarkModeEnabled
+                ? _thief3_16_dark ??= Resources.Thief3_16_dark
+                : _thief3_16 ??= Resources.Thief3_16;
 
         private static Bitmap? _shock2_16;
-        public static Bitmap Shock2_16 => _shock2_16 ??= Resources.Shock2_16;
-
         private static Bitmap? _shock2_16_dark;
-        public static Bitmap Shock2_16_Dark => _shock2_16_dark ??= Resources.Shock2_16_dark;
+        public static Bitmap Shock2_16 =>
+            DarkModeEnabled
+                ? _shock2_16_dark ??= Resources.Shock2_16_dark
+                : _shock2_16 ??= Resources.Shock2_16;
 
         private static Bitmap? _thief1_21;
-        public static Bitmap Thief1_21 => _thief1_21 ??= Resources.Thief1_21;
-
         private static Bitmap? _thief1_21_dark;
-        public static Bitmap Thief1_21_Dark => _thief1_21_dark ??= Resources.Thief1_21_dark;
+        public static Bitmap Thief1_21 =>
+            DarkModeEnabled
+                ? _thief1_21_dark ??= Resources.Thief1_21_dark
+                : _thief1_21 ??= Resources.Thief1_21;
 
         private static Bitmap? _thief2_21;
-        public static Bitmap Thief2_21 => _thief2_21 ??= Resources.Thief2_21;
-
         private static Bitmap? _thief2_21_dark;
-        public static Bitmap Thief2_21_Dark => _thief2_21_dark ??= Resources.Thief2_21_dark;
+        public static Bitmap Thief2_21 =>
+            DarkModeEnabled
+                ? _thief2_21_dark ??= Resources.Thief2_21_dark
+                : _thief2_21 ??= Resources.Thief2_21;
 
         private static Bitmap? _thief3_21;
-        public static Bitmap Thief3_21 => _thief3_21 ??= Resources.Thief3_21;
-
         private static Bitmap? _thief3_21_dark;
-        public static Bitmap Thief3_21_Dark => _thief3_21_dark ??= Resources.Thief3_21_dark;
+        public static Bitmap Thief3_21 =>
+            DarkModeEnabled
+                ? _thief3_21_dark ??= Resources.Thief3_21_dark
+                : _thief3_21 ??= Resources.Thief3_21;
 
         private static Bitmap? _shock2_21;
-        public static Bitmap Shock2_21 => _shock2_21 ??= Resources.Shock2_21;
-
         private static Bitmap? _shock2_21_dark;
-        public static Bitmap Shock2_21_Dark => _shock2_21_dark ??= Resources.Shock2_21_dark;
+        public static Bitmap Shock2_21 =>
+            DarkModeEnabled
+                ? _shock2_21_dark ??= Resources.Shock2_21_dark
+                : _shock2_21 ??= Resources.Shock2_21;
         // @GENGAMES (Images): End
 
         #endregion

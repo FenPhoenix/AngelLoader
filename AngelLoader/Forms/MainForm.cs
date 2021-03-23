@@ -1467,19 +1467,15 @@ namespace AngelLoader.Forms
                 Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
                 ControlUtils.RecreateAllToolTipHandles();
 
-                FilterByThief1Button.Image = darkMode ? Images.Thief1_21_Dark : Images.Thief1_21;
-                FilterByThief2Button.Image = darkMode ? Images.Thief2_21_Dark : Images.Thief2_21;
-                FilterByThief3Button.Image = darkMode ? Images.Thief3_21_Dark : Images.Thief3_21;
-                FilterBySS2Button.Image = darkMode ? Images.Shock2_21_Dark : Images.Shock2_21;
+                FilterByThief1Button.Image = Images.Thief1_21;
+                FilterByThief2Button.Image = Images.Thief2_21;
+                FilterByThief3Button.Image = Images.Thief3_21;
+                FilterBySS2Button.Image = Images.Shock2_21;
 
-                GameTabsImageList.Images[0] = darkMode ? Images.Thief1_16_Dark : Images.Thief1_16;
-                GameTabsImageList.Images[1] = darkMode ? Images.Thief2_16_Dark : Images.Thief2_16;
-                GameTabsImageList.Images[2] = darkMode ? Images.Thief3_16_Dark : Images.Thief3_16;
-                GameTabsImageList.Images[3] = darkMode ? Images.Shock2_16_Dark : Images.Shock2_16;
-                GameTabsImageList.Images.SetKeyName(0, darkMode ? "Thief1_16_dark.png" : "Thief1_16.png");
-                GameTabsImageList.Images.SetKeyName(1, darkMode ? "Thief2_16_dark.png" : "Thief2_16.png");
-                GameTabsImageList.Images.SetKeyName(2, darkMode ? "Thief3_16_dark.png" : "Thief3_16.png");
-                GameTabsImageList.Images.SetKeyName(3, darkMode ? "Shock2_16_dark.png" : "Shock2_16.png");
+                GameTabsImageList.Images[0] = Images.Thief1_16;
+                GameTabsImageList.Images[1] = Images.Thief2_16;
+                GameTabsImageList.Images[2] = Images.Thief3_16;
+                GameTabsImageList.Images[3] = Images.Shock2_16;
 
                 // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
                 // while running(?) meh, whatever

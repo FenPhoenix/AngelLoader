@@ -220,10 +220,6 @@ namespace AngelLoader.Forms
             GameTabsImageList.Images.Add(Images.Thief3_16);
             GameTabsImageList.Images.Add(Images.Shock2_16);
             GameTabsImageList.ColorDepth = ColorDepth.Depth32Bit;
-            GameTabsImageList.Images.SetKeyName(0, "Thief1_16.png");
-            GameTabsImageList.Images.SetKeyName(1, "Thief2_16.png");
-            GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
-            GameTabsImageList.Images.SetKeyName(3, "Shock2_16.png");
             // 
             // ScanAllFMsButton
             // 

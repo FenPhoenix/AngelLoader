@@ -28,6 +28,12 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 if (!_constructed) return;
 
                 Menu!.DarkModeEnabled = _darkModeEnabled;
+
+                Thief1MenuItem.Image = Images.Thief1_16;
+                Thief2MenuItem.Image = Images.Thief2_16;
+                Thief2MPMenuItem.Image = Images.Thief2_16;
+                Thief3MenuItem.Image = Images.Thief3_16;
+                SS2MenuItem.Image = Images.Shock2_16;
             }
         }
 
