@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using AngelLoader.Forms;
 using AngelLoader.Forms.CustomControls;
+using AngelLoader.Forms.ThemeRenderers;
 using EasyHook;
 
 namespace AngelLoader.WinAPI

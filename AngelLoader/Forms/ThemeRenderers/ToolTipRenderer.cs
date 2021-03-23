@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.WinAPI;
 
-namespace AngelLoader.Forms
+namespace AngelLoader.Forms.ThemeRenderers
 {
     internal static class ToolTipRenderer
     {
