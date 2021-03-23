@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -825,39 +826,23 @@ namespace AngelLoader.WinAPI
 
         #region Enumerate window handles
 
-        // ArrayList because we can't marshal generic types (so no List<T>)
+        private delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
 
-        private delegate bool EnumeratedWindow(IntPtr handleWindow, ArrayList handles);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool EnumWindows(EnumeratedWindow lpEnumFunc, ArrayList lParam);
+        private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
 
-        [DllImport("user32")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool EnumChildWindows(IntPtr window, EnumeratedWindow callback, ArrayList lParam);
-
-        private static bool GetWindowHandle(IntPtr windowHandle, ArrayList windowHandles)
+        internal static List<IntPtr> GetProcessWindowHandles()
         {
-            windowHandles.Add(windowHandle);
-            return true;
-        }
+            var handles = new List<IntPtr>();
 
-        internal static ArrayList GetAllWindowHandles()
-        {
-            EnumeratedWindow callBackPtr = GetWindowHandle;
-            var windowHandles = new ArrayList();
-
-            EnumWindows(callBackPtr, windowHandles);
-
-            var windowHandlesArray = windowHandles.ToArray();
-            foreach (object windowHandle in windowHandlesArray)
+            var threads = Process.GetProcessById(Process.GetCurrentProcess().Id).Threads;
+            foreach (ProcessThread thread in threads)
             {
-                if (windowHandle is not IntPtr hWnd) continue;
-                EnumChildWindows(hWnd, callBackPtr, windowHandles);
+                EnumThreadWindows(thread.Id, (hWnd, _) => { handles.Add(hWnd); return true; }, IntPtr.Zero);
             }
 
-            return windowHandles;
+            return handles;
         }
 
         #endregion

@@ -656,12 +656,10 @@ namespace AngelLoader.Forms
 
             try
             {
-                var handles = Native.GetAllWindowHandles();
-                foreach (var handle in handles)
+                var handles = Native.GetProcessWindowHandles();
+                foreach (IntPtr handle in handles)
                 {
-                    if (handle is not IntPtr hWnd) continue;
-
-                    NativeWindow? nw = NativeWindow.FromHandle(hWnd);
+                    NativeWindow? nw = NativeWindow.FromHandle(handle);
                     if (nw == null || nw.GetType() != _toolTipNativeWindowClass) continue;
 
                     _toolTipRecreateHandleMethod.Invoke((ToolTip)_toolTipNativeWindowControlField.GetValue(nw), null);
