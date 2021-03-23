@@ -722,14 +722,14 @@ namespace AngelLoader.WinAPI
 
         #region Theming
 
-        [DllImport("uxtheme.dll")]
+        [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
         internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
 
         [DllImport("uxtheme.dll", ExactSpelling = true)]
         internal static extern IntPtr GetWindowTheme(IntPtr hWnd);
 
         [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
-        internal static extern IntPtr OpenThemeData(IntPtr hWnd, String classList);
+        internal static extern IntPtr OpenThemeData(IntPtr hWnd, string classList);
 
         [DllImport("uxtheme.dll", ExactSpelling = true)]
         public static extern int CloseThemeData(IntPtr hTheme);
