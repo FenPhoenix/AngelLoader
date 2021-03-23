@@ -836,7 +836,7 @@ namespace AngelLoader.WinAPI
         {
             var handles = new List<IntPtr>();
 
-            var threads = Process.GetProcessById(Process.GetCurrentProcess().Id).Threads;
+            var threads = Process.GetCurrentProcess().Threads;
             foreach (ProcessThread thread in threads)
             {
                 EnumThreadWindows(thread.Id, (hWnd, _) => { handles.Add(hWnd); return true; }, IntPtr.Zero);
