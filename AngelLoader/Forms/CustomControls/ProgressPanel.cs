@@ -60,6 +60,7 @@ namespace AngelLoader.Forms.CustomControls
             ProgressMessageLabel.ForeColor = fore;
             ProgressPercentLabel.ForeColor = fore;
             ProgressPercentLabel.ForeColor = fore;
+            ProgressBar.DarkModeEnabled = _darkModeEnabled;
         }
 
         public ProgressPanel()

@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.ProgressCancelButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.ProgressPercentLabel = new System.Windows.Forms.Label();
-            this.ProgressMessageLabel = new System.Windows.Forms.Label();
-            this.CurrentThingLabel = new System.Windows.Forms.Label();
-            this.ProgressBar = new System.Windows.Forms.ProgressBar();
+            this.ProgressCancelButton = new DarkButton();
+            this.ProgressPercentLabel = new DarkLabel();
+            this.ProgressMessageLabel = new DarkLabel();
+            this.CurrentThingLabel = new DarkLabel();
+            this.ProgressBar = new DarkProgressBar();
             this.SuspendLayout();
             // 
             // ProgressCancelButton
@@ -107,9 +107,9 @@
         #endregion
 #endif
         private DarkButton ProgressCancelButton;
-        private System.Windows.Forms.Label ProgressPercentLabel;
-        private System.Windows.Forms.Label ProgressMessageLabel;
-        private System.Windows.Forms.Label CurrentThingLabel;
-        private System.Windows.Forms.ProgressBar ProgressBar;
+        private DarkLabel ProgressPercentLabel;
+        private DarkLabel ProgressMessageLabel;
+        private DarkLabel CurrentThingLabel;
+        private DarkProgressBar ProgressBar;
     }
 }

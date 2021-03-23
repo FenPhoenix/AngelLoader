@@ -7,10 +7,10 @@ namespace AngelLoader.Forms.CustomControls
         private void InitComponentManual()
         {
             ProgressCancelButton = new DarkButton();
-            ProgressPercentLabel = new Label();
-            ProgressMessageLabel = new Label();
-            CurrentThingLabel = new Label();
-            ProgressBar = new ProgressBar();
+            ProgressPercentLabel = new DarkLabel();
+            ProgressMessageLabel = new DarkLabel();
+            CurrentThingLabel = new DarkLabel();
+            ProgressBar = new DarkProgressBar();
             SuspendLayout();
             // 
             // ProgressCancelButton
