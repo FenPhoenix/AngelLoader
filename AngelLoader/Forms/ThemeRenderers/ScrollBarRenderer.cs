@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Drawing;
-using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms.ThemeRenderers
 {
-    internal static class ScrollBarPainter
+    internal sealed class ScrollBarRenderer : ThemeRenderer
     {
-        internal static IntPtr HTheme { get; private set; }
+        private protected override string CLSID { get; } = "Scrollbar";
 
-        internal static void Reload()
-        {
-            Native.CloseThemeData(HTheme);
-            using var c = new Control();
-            HTheme = Native.OpenThemeData(c.Handle, "Scrollbar");
-        }
-
-        internal static bool Paint(IntPtr hdc, int partId, int stateId, Native.RECT pRect)
+        internal override bool TryDrawThemeBackground(IntPtr hTheme,
+            IntPtr hdc,
+            int iPartId,
+            int iStateId,
+            in Native.RECT pRect,
+            in Native.RECT pClipRect)
         {
             using var g = Graphics.FromHdc(hdc);
 
@@ -26,7 +23,7 @@ namespace AngelLoader.Forms.ThemeRenderers
             var rect = Rectangle.FromLTRB(pRect.left, pRect.top, pRect.right, pRect.bottom);
 
             Brush brush;
-            switch (partId)
+            switch (iPartId)
             {
                 case Native.SBP_ARROWBTN:
                     brush = DarkColors.DarkBackgroundBrush;
@@ -43,7 +40,7 @@ namespace AngelLoader.Forms.ThemeRenderers
 
                     // Match Windows behavior - the thumb is 1px in from each side
                     // The "gripper" rect gives us the right width, but the wrong length
-                    switch (partId)
+                    switch (iPartId)
                     {
                         case Native.SBP_THUMBBTNHORZ:
                             g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.Right, rect.Y);
@@ -59,7 +56,7 @@ namespace AngelLoader.Forms.ThemeRenderers
 
                     #endregion
 
-                    brush = stateId switch
+                    brush = iStateId switch
                     {
                         Native.SCRBS_NORMAL => DarkColors.GreySelectionBrush,
                         Native.SCRBS_HOVER => DarkColors.Fen_ThumbScrollBarHoverBrush,
@@ -80,10 +77,10 @@ namespace AngelLoader.Forms.ThemeRenderers
 
             #region Arrow
 
-            if (partId == Native.SBP_ARROWBTN)
+            if (iPartId == Native.SBP_ARROWBTN)
             {
                 Color foreColor;
-                switch (stateId)
+                switch (iStateId)
                 {
                     case Native.ABS_UPPRESSED:
                     case Native.ABS_DOWNPRESSED:
@@ -115,7 +112,7 @@ namespace AngelLoader.Forms.ThemeRenderers
                 using var pen = new Pen(foreColor);
 
                 Misc.Direction direction;
-                switch (stateId)
+                switch (iStateId)
                 {
                     case Native.ABS_LEFTNORMAL:
                     case Native.ABS_LEFTHOT:
@@ -161,7 +158,12 @@ namespace AngelLoader.Forms.ThemeRenderers
             return true;
         }
 
-        internal static bool TryGetThemeColor(int iPartId, int iPropId, out int pColor)
+        internal override bool TryGetThemeColor(
+            IntPtr hTheme,
+            int iPartId,
+            int iStateId,
+            int iPropId,
+            out int pColor)
         {
             if (iPartId == Native.SBP_CORNER && iPropId == Native.TMT_FILLCOLOR)
             {

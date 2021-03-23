@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Drawing;
-using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms.ThemeRenderers
 {
-    internal static class ToolTipRenderer
+    internal sealed class ToolTipRenderer : ThemeRenderer
     {
-        internal static IntPtr HTheme { get; private set; }
+        private protected override string CLSID { get; } = "ToolTip";
 
-        internal static void Reload()
-        {
-            Native.CloseThemeData(HTheme);
-            using var c = new Control();
-            HTheme = Native.OpenThemeData(c.Handle, "ToolTip");
-        }
+        internal override bool Enabled => ControlUtils.ToolTipsReflectable;
 
-        internal static bool Paint(IntPtr hdc, int partId, Native.RECT pRect)
+        internal override bool TryDrawThemeBackground(
+            IntPtr hTheme,
+            IntPtr hdc,
+            int iPartId,
+            int iStateId,
+            in Native.RECT pRect,
+            in Native.RECT pClipRect)
         {
             using var g = Graphics.FromHdc(hdc);
-            if (partId == Native.TTP_STANDARD || partId == Native.TTP_STANDARDTITLE)
+            if (iPartId == Native.TTP_STANDARD || iPartId == Native.TTP_STANDARDTITLE)
             {
                 var rect = Rectangle.FromLTRB(pRect.left, pRect.top, pRect.right, pRect.bottom);
 
@@ -41,7 +41,12 @@ namespace AngelLoader.Forms.ThemeRenderers
             }
         }
 
-        internal static bool TryGetThemeColor(int iPropId, out int pColor)
+        internal override bool TryGetThemeColor(
+            IntPtr hTheme,
+            int iPartId,
+            int iStateId,
+            int iPropId,
+            out int pColor)
         {
             if (iPropId == Native.TMT_TEXTCOLOR)
             {

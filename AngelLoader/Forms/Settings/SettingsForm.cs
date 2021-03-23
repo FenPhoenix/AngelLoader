@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
+using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Dialogs;
 using static AL_Common.CommonUtils;
@@ -96,6 +97,11 @@ namespace AngelLoader.Forms
 #else
             InitComponentManual();
 #endif
+
+            // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
+            // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
+            // even if we DID want to do more reflection crap!)
+            ErrorIconPictureBox.Image = Resources.ExclMarkCircleRed_14;
 
             if (_startup) NativeHooks.InstallHooks();
 
@@ -579,9 +585,6 @@ namespace AngelLoader.Forms
                 {
                     ShowPathError(ErrorableTextBoxes[i], PathErrorIsSet(ErrorableTextBoxes[i]));
                 }
-
-                // Have to do this here too, because we don't count as a "child window" of Main I guess
-                ControlUtils.RecreateAllToolTipHandles();
             }
             finally
             {
@@ -765,7 +768,6 @@ namespace AngelLoader.Forms
                 }
 
                 ErrorLabel.Text = LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid;
-                MainErrorProvider.SetError(ErrorLabel, LText.AlertMessages.Error);
             }
             finally
             {
@@ -848,6 +850,7 @@ namespace AngelLoader.Forms
                         : SystemColors.Window;
                     tb.Tag = PathError.False;
                 }
+                ErrorIconPictureBox.Hide();
                 ErrorLabel.Hide();
 
                 // Extremely petty visual nicety - makes the error stuff go away before the form closes
@@ -1084,7 +1087,7 @@ namespace AngelLoader.Forms
 #if !DEBUG
         static
 #endif
-        void Paths_RadioButton_MouseDown(object sender, MouseEventArgs e)
+        void SectionButtons_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left) ((RadioButtonCustom)sender).Checked = true;
         }
@@ -1532,13 +1535,14 @@ namespace AngelLoader.Forms
 
             if (!shown)
             {
-                foreach (var tb in ExePathTextBoxes)
+                foreach (var tb in ErrorableTextBoxes)
                 {
                     if (PathErrorIsSet(tb)) return;
                 }
             }
 
             ErrorLabel.Text = shown ? LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid : "";
+            ErrorIconPictureBox.Visible = shown;
             ErrorLabel.Visible = shown;
         }
 

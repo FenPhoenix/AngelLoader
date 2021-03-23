@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using AngelLoader.Forms;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.ThemeRenderers;
 using EasyHook;
@@ -18,6 +18,8 @@ namespace AngelLoader.WinAPI
         private const int COLOR_WINDOWTEXT = 8;
         private const int COLOR_3DFACE = 15;
         private const int COLOR_GRAYTEXT = 17;
+
+        private static readonly Dictionary<IntPtr, ThemeRenderer> _themeRenderers = new Dictionary<IntPtr, ThemeRenderer>();
 
         #region GetSysColor
 
@@ -93,6 +95,11 @@ namespace AngelLoader.WinAPI
         {
             if (_hooksInstalled) return;
 
+            var sbr = new ScrollBarRenderer();
+            var ttr = new ToolTipRenderer();
+            _themeRenderers[sbr.HTheme] = sbr;
+            _themeRenderers[ttr.HTheme] = ttr;
+
             try
             {
                 (_getSysColorHook, GetSysColorOriginal) = InstallHook<GetSysColorDelegate>(
@@ -122,8 +129,6 @@ namespace AngelLoader.WinAPI
                     "uxtheme.dll",
                     "GetThemeColor",
                     GetThemeColorHook);
-
-                ReloadTheme();
             }
             catch
             {
@@ -159,8 +164,7 @@ namespace AngelLoader.WinAPI
         internal static void ReloadTheme()
         {
             if (!Native.IsThemeActive()) return;
-            ScrollBarPainter.Reload();
-            ToolTipRenderer.Reload();
+            foreach (ThemeRenderer renderer in _themeRenderers.Values) renderer.Reload();
         }
 
         #region Hooked method overrides
@@ -168,36 +172,19 @@ namespace AngelLoader.WinAPI
         private static int DrawThemeBackgroundHook(
             IntPtr hTheme,
             IntPtr hdc,
-            int partId,
-            int stateId,
+            int iPartId,
+            int iStateId,
             ref Native.RECT pRect,
             ref Native.RECT pClipRect)
         {
             const int success = 0;
 
-            if (Misc.Config.DarkMode)
-            {
-                if (ScrollBarPainter.HTheme == hTheme)
-                {
-                    return ScrollBarPainter.Paint(hdc, partId, stateId, pRect)
-                        ? success
-                        : DrawThemeBackgroundOriginal!(hTheme, hdc, partId, stateId, ref pRect, ref pClipRect);
-                }
-                else if (ControlUtils.ToolTipsReflectable && ToolTipRenderer.HTheme == hTheme)
-                {
-                    return ToolTipRenderer.Paint(hdc, partId, pRect)
-                        ? success
-                        : DrawThemeBackgroundOriginal!(hTheme, hdc, partId, stateId, ref pRect, ref pClipRect);
-                }
-                else
-                {
-                    return DrawThemeBackgroundOriginal!(hTheme, hdc, partId, stateId, ref pRect, ref pClipRect);
-                }
-            }
-            else
-            {
-                return DrawThemeBackgroundOriginal!(hTheme, hdc, partId, stateId, ref pRect, ref pClipRect);
-            }
+            return Misc.Config.DarkMode &&
+                   _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
+                   renderer.Enabled &&
+                   renderer.TryDrawThemeBackground(hTheme, hdc, iPartId, iStateId, in pRect, in pClipRect)
+                ? success
+                : DrawThemeBackgroundOriginal!(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect);
         }
 
         private static int GetThemeColorHook(
@@ -209,29 +196,12 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            if (Misc.Config.DarkMode)
-            {
-                if (ScrollBarPainter.HTheme == hTheme)
-                {
-                    return ScrollBarPainter.TryGetThemeColor(iPartId, iPropId, out pColor)
-                        ? success
-                        : GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
-                }
-                else if (ControlUtils.ToolTipsReflectable && ToolTipRenderer.HTheme == hTheme)
-                {
-                    return ToolTipRenderer.TryGetThemeColor(iPropId, out pColor)
-                        ? success
-                        : GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
-                }
-                else
-                {
-                    return GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
-                }
-            }
-            else
-            {
-                return GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
-            }
+            return Misc.Config.DarkMode &&
+                   _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
+                   renderer.Enabled &&
+                   renderer.TryGetThemeColor(hTheme, iPartId, iStateId, iPropId, out pColor)
+                ? success
+                : GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
         }
 
         private static int GetSysColor(int nIndex)

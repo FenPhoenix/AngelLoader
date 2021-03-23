@@ -21,15 +21,15 @@
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ErrorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.MainErrorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
             this.OtherRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
             this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
             this.PathsRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.BottomFlowLayoutPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MainErrorProvider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
             this.MainSplitContainer.Panel2.SuspendLayout();
@@ -41,6 +41,7 @@
             this.BottomFlowLayoutPanel.Controls.Add(this.Cancel_Button);
             this.BottomFlowLayoutPanel.Controls.Add(this.OKButton);
             this.BottomFlowLayoutPanel.Controls.Add(this.ErrorLabel);
+            this.BottomFlowLayoutPanel.Controls.Add(this.ErrorIconPictureBox);
             this.BottomFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.BottomFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.BottomFlowLayoutPanel.Location = new System.Drawing.Point(0, 616);
@@ -83,9 +84,7 @@
             // ErrorLabel
             // 
             this.ErrorLabel.AutoSize = true;
-            this.MainErrorProvider.SetError(this.ErrorLabel, "Error");
             this.ErrorLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.MainErrorProvider.SetIconAlignment(this.ErrorLabel, System.Windows.Forms.ErrorIconAlignment.MiddleLeft);
             this.ErrorLabel.Location = new System.Drawing.Point(462, 12);
             this.ErrorLabel.Margin = new System.Windows.Forms.Padding(3, 12, 3, 0);
             this.ErrorLabel.Name = "ErrorLabel";
@@ -94,10 +93,15 @@
             this.ErrorLabel.Text = "[ErrorLabel]";
             this.ErrorLabel.Visible = false;
             // 
-            // MainErrorProvider
+            // ErrorIconPictureBox
             // 
-            this.MainErrorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
-            this.MainErrorProvider.ContainerControl = this;
+            this.ErrorIconPictureBox.Location = new System.Drawing.Point(445, 12);
+            this.ErrorIconPictureBox.Margin = new System.Windows.Forms.Padding(0, 12, 0, 0);
+            this.ErrorIconPictureBox.Name = "ErrorIconPictureBox";
+            this.ErrorIconPictureBox.Size = new System.Drawing.Size(14, 14);
+            this.ErrorIconPictureBox.TabIndex = 5;
+            this.ErrorIconPictureBox.TabStop = false;
+            this.ErrorIconPictureBox.Visible = false;
             // 
             // MainSplitContainer
             // 
@@ -141,7 +145,7 @@
             this.OtherRadioButton.UseVisualStyleBackColor = true;
             this.OtherRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
             this.OtherRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.OtherRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Paths_RadioButton_MouseDown);
+            this.OtherRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SectionButtons_MouseDown);
             // 
             // AppearanceRadioButton
             // 
@@ -154,14 +158,14 @@
             this.AppearanceRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
             this.AppearanceRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.AppearanceRadioButton.Location = new System.Drawing.Point(8, 32);
-            this.AppearanceRadioButton.Name = "FMDisplayRadioButton";
+            this.AppearanceRadioButton.Name = "AppearanceRadioButton";
             this.AppearanceRadioButton.Size = new System.Drawing.Size(136, 23);
             this.AppearanceRadioButton.TabIndex = 1;
             this.AppearanceRadioButton.Text = "FM Display";
             this.AppearanceRadioButton.UseVisualStyleBackColor = true;
             this.AppearanceRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
             this.AppearanceRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.AppearanceRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Paths_RadioButton_MouseDown);            // 
+            this.AppearanceRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SectionButtons_MouseDown);
             // 
             // PathsRadioButton
             // 
@@ -181,7 +185,7 @@
             this.PathsRadioButton.UseVisualStyleBackColor = true;
             this.PathsRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
             this.PathsRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.PathsRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Paths_RadioButton_MouseDown);
+            this.PathsRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SectionButtons_MouseDown);
             // 
             // PagePanel
             // 
@@ -215,7 +219,7 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SettingsForm_KeyDown);
             this.BottomFlowLayoutPanel.ResumeLayout(false);
             this.BottomFlowLayoutPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MainErrorProvider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).EndInit();
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).EndInit();
@@ -232,11 +236,11 @@
         private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
         private AngelLoader.Forms.CustomControls.DarkButton OKButton;
         private System.Windows.Forms.ToolTip MainToolTip;
-        private System.Windows.Forms.ErrorProvider MainErrorProvider;
         private AngelLoader.Forms.CustomControls.DarkLabel ErrorLabel;
         private AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
         private AngelLoader.Forms.CustomControls.RadioButtonCustom OtherRadioButton;
         private AngelLoader.Forms.CustomControls.RadioButtonCustom AppearanceRadioButton;
         private AngelLoader.Forms.CustomControls.RadioButtonCustom PathsRadioButton;
+        private System.Windows.Forms.PictureBox ErrorIconPictureBox;
     }
 }

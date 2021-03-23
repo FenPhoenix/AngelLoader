@@ -14,15 +14,15 @@ namespace AngelLoader.Forms
             Cancel_Button = new DarkButton();
             OKButton = new DarkButton();
             ErrorLabel = new DarkLabel();
+            ErrorIconPictureBox = new PictureBox();
             MainToolTip = new ToolTip(components);
-            MainErrorProvider = new ErrorProvider(components);
             MainSplitContainer = new SplitContainerCustom();
             OtherRadioButton = new RadioButtonCustom();
             AppearanceRadioButton = new RadioButtonCustom();
             PathsRadioButton = new RadioButtonCustom();
             PagePanel = new Panel();
             BottomFlowLayoutPanel.SuspendLayout();
-            ((ISupportInitialize)MainErrorProvider).BeginInit();
+            ((ISupportInitialize)ErrorIconPictureBox).BeginInit();
             ((ISupportInitialize)MainSplitContainer).BeginInit();
             MainSplitContainer.Panel1.SuspendLayout();
             MainSplitContainer.Panel2.SuspendLayout();
@@ -34,6 +34,7 @@ namespace AngelLoader.Forms
             BottomFlowLayoutPanel.Controls.Add(Cancel_Button);
             BottomFlowLayoutPanel.Controls.Add(OKButton);
             BottomFlowLayoutPanel.Controls.Add(ErrorLabel);
+            BottomFlowLayoutPanel.Controls.Add(ErrorIconPictureBox);
             BottomFlowLayoutPanel.Dock = DockStyle.Bottom;
             BottomFlowLayoutPanel.FlowDirection = FlowDirection.RightToLeft;
             BottomFlowLayoutPanel.Location = new Point(0, 616);
@@ -70,17 +71,19 @@ namespace AngelLoader.Forms
             // 
             ErrorLabel.AutoSize = true;
             ErrorLabel.ForeColor = SystemColors.ControlText;
-            MainErrorProvider.SetIconAlignment(ErrorLabel, ErrorIconAlignment.MiddleLeft);
             ErrorLabel.Location = new Point(462, 12);
             ErrorLabel.Margin = new Padding(3, 12, 3, 0);
             ErrorLabel.Size = new Size(61, 13);
             ErrorLabel.TabIndex = 4;
             ErrorLabel.Visible = false;
             // 
-            // MainErrorProvider
+            // ErrorIconPictureBox
             // 
-            MainErrorProvider.BlinkStyle = ErrorBlinkStyle.NeverBlink;
-            MainErrorProvider.ContainerControl = this;
+            ErrorIconPictureBox.Margin = new Padding(0, 12, 0, 0);
+            ErrorIconPictureBox.Size = new Size(14, 14);
+            ErrorIconPictureBox.TabIndex = 5;
+            ErrorIconPictureBox.TabStop = false;
+            ErrorIconPictureBox.Visible = false;
             // 
             // MainSplitContainer
             // 
@@ -120,7 +123,7 @@ namespace AngelLoader.Forms
             OtherRadioButton.UseVisualStyleBackColor = true;
             OtherRadioButton.CheckedChanged += PathsRadioButton_CheckedChanged;
             OtherRadioButton.Click += PageRadioButtons_Click;
-            OtherRadioButton.MouseDown += Paths_RadioButton_MouseDown;
+            OtherRadioButton.MouseDown += SectionButtons_MouseDown;
             // 
             // AppearanceRadioButton
             // 
@@ -137,7 +140,7 @@ namespace AngelLoader.Forms
             AppearanceRadioButton.UseVisualStyleBackColor = true;
             AppearanceRadioButton.CheckedChanged += PathsRadioButton_CheckedChanged;
             AppearanceRadioButton.Click += PageRadioButtons_Click;
-            AppearanceRadioButton.MouseDown += Paths_RadioButton_MouseDown;
+            AppearanceRadioButton.MouseDown += SectionButtons_MouseDown;
             // 
             // PathsRadioButton
             // 
@@ -154,7 +157,7 @@ namespace AngelLoader.Forms
             PathsRadioButton.UseVisualStyleBackColor = true;
             PathsRadioButton.CheckedChanged += PathsRadioButton_CheckedChanged;
             PathsRadioButton.Click += PageRadioButtons_Click;
-            PathsRadioButton.MouseDown += Paths_RadioButton_MouseDown;
+            PathsRadioButton.MouseDown += SectionButtons_MouseDown;
             // 
             // PagePanel
             // 
@@ -189,7 +192,7 @@ namespace AngelLoader.Forms
             KeyDown += SettingsForm_KeyDown;
             BottomFlowLayoutPanel.ResumeLayout(false);
             BottomFlowLayoutPanel.PerformLayout();
-            ((ISupportInitialize)MainErrorProvider).EndInit();
+            ((ISupportInitialize)ErrorIconPictureBox).EndInit();
             MainSplitContainer.Panel1.ResumeLayout(false);
             MainSplitContainer.Panel2.ResumeLayout(false);
             ((ISupportInitialize)MainSplitContainer).EndInit();
