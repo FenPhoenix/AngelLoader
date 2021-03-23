@@ -72,11 +72,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        [Category("Appearance")]
-        [Description("Determines the style of the button.")]
-        [DefaultValue(DarkButtonStyle.Normal)]
-        [PublicAPI]
-        public DarkButtonStyle ButtonStyle
+        private DarkButtonStyle ButtonStyle
         {
             get => _style;
             set
