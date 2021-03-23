@@ -105,8 +105,6 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         public DarkControlState ButtonState { get; private set; } = DarkControlState.Normal;
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [PublicAPI]
         public new FlatStyle FlatStyle
         {
