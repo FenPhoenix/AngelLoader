@@ -97,6 +97,13 @@ namespace AngelLoader
             return list;
         }
 
+        // TODO: @ShowUnavailableFMs: We should bite the bullet and switch to refreshing from disk here
+        // Instead of using the hack bool. This is so we know we'll be consistent if we delete and have the
+        // "show unavailable FMs" option turned on.
+        // We know there's a stumbling block to doing this, something to do with losing the FM selection position
+        // due to the way we're architected. We should just power through it and make it possible whatever it
+        // takes. It would make us more consistent and remove the iffy hack bool.
+
         /// <summary>
         /// Deletes <paramref name="fm"/>'s archive from disk, asking the user for confirmation first.
         /// </summary>
