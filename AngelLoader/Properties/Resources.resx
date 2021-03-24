@@ -232,8 +232,14 @@
   <data name="Thief1_16_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief1_16_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Thief1_16_dark_darkbg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\thief1_16_dark_darkbg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Thief1_21_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief1_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Thief1_21_dark_darkbg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\thief1_21_dark_darkbg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Thief2_16_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief2_16_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

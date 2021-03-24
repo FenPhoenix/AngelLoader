@@ -458,7 +458,7 @@ namespace AngelLoader.Forms
             FMsDGV.ColumnHeadersDefaultCellStyle.Padding = new Padding(1);
             */
             FMsDGV.CellDoubleClick += FMsDGV_CellDoubleClick;
-            FMsDGV.CellValueNeeded += FMsDGV_CellValueNeeded_Initial;
+            FMsDGV.CellValueNeeded += FMsDGV_CellValueNeeded;
             FMsDGV.ColumnHeaderMouseClick += FMsDGV_ColumnHeaderMouseClick;
             FMsDGV.SelectionChanged += FMsDGV_SelectionChanged;
             FMsDGV.KeyDown += FMsDGV_KeyDown;

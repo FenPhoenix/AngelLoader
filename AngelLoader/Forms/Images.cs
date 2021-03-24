@@ -21,6 +21,10 @@ namespace AngelLoader.Forms
 
         #region Games
 
+        // TODO: @DarkMode(Game images):
+        // Maybe have different versions with different lightnesses for different backgrounds?
+        // Images could use some possibly extreme desaturation (not lightening)
+
         // @GENGAMES (Images): Begin
         // Putting these into an array doesn't really gain us anything and loses us robustness, so leave them.
         // We would have to say ResourceManager.GetObject(nameof(gameIndex) + "_16") etc. and that doesn't even
@@ -31,21 +35,21 @@ namespace AngelLoader.Forms
         private static Bitmap? _thief1_16_dark;
         public static Bitmap Thief1_16 =>
             DarkModeEnabled
-                ? _thief1_16_dark ??= Resources.Thief1_16_dark
+                ? _thief1_16_dark ??= Resources.Thief1_16_dark_darkbg
                 : _thief1_16 ??= Resources.Thief1_16;
 
         private static Bitmap? _thief2_16;
         private static Bitmap? _thief2_16_dark;
         public static Bitmap Thief2_16 =>
             DarkModeEnabled
-                ? _thief2_16_dark ??= Resources.Thief2_16_dark
+                ? _thief2_16 ??= Resources.Thief2_16
                 : _thief2_16 ??= Resources.Thief2_16;
 
         private static Bitmap? _thief3_16;
         private static Bitmap? _thief3_16_dark;
         public static Bitmap Thief3_16 =>
             DarkModeEnabled
-                ? _thief3_16_dark ??= Resources.Thief3_16_dark
+                ? _thief3_16 ??= Resources.Thief3_16
                 : _thief3_16 ??= Resources.Thief3_16;
 
         private static Bitmap? _shock2_16;
@@ -62,18 +66,24 @@ namespace AngelLoader.Forms
                 ? _thief1_21_dark ??= Resources.Thief1_21_dark
                 : _thief1_21 ??= Resources.Thief1_21;
 
+        private static Bitmap? _thief1_21_dark_darkbg;
+        public static Bitmap Thief1_21_DGV =>
+            DarkModeEnabled
+                ? _thief1_21_dark_darkbg ??= Resources.Thief1_21_dark_darkbg
+                : _thief1_21 ??= Resources.Thief1_21;
+
         private static Bitmap? _thief2_21;
         private static Bitmap? _thief2_21_dark;
         public static Bitmap Thief2_21 =>
             DarkModeEnabled
-                ? _thief2_21_dark ??= Resources.Thief2_21_dark
+                ? _thief2_21 ??= Resources.Thief2_21
                 : _thief2_21 ??= Resources.Thief2_21;
 
         private static Bitmap? _thief3_21;
         private static Bitmap? _thief3_21_dark;
         public static Bitmap Thief3_21 =>
             DarkModeEnabled
-                ? _thief3_21_dark ??= Resources.Thief3_21_dark
+                ? _thief3_21 ??= Resources.Thief3_21
                 : _thief3_21 ??= Resources.Thief3_21;
 
         private static Bitmap? _shock2_21;

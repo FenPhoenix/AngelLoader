@@ -814,6 +814,7 @@ namespace AngelLoader.Forms
             else
             {
                 ControlUtils.CreateAllControlsHandles(this);
+                ReloadImages();
             }
 
             // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
@@ -1467,6 +1468,8 @@ namespace AngelLoader.Forms
                 Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
                 ControlUtils.RecreateAllToolTipHandles();
 
+                ReloadImages();
+
                 FilterByThief1Button.Image = Images.Thief1_21;
                 FilterByThief2Button.Image = Images.Thief2_21;
                 FilterByThief3Button.Image = Images.Thief3_21;
@@ -1489,6 +1492,29 @@ namespace AngelLoader.Forms
             {
                 if (!startup) this.ResumeDrawing();
             }
+        }
+
+        private void ReloadImages()
+        {
+            // Load this only once, as it's transparent and so doesn't have to change with the theme
+            BlankIcon ??= new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
+
+            // @GENGAMES (Game icons for FMs list): Begin
+            // We would prefer to put these in an array, but see Images class for why we can't really do that
+            GameIcons[(int)Thief1] = Images.Thief1_21_DGV;
+            GameIcons[(int)Thief2] = Images.Thief2_21;
+            GameIcons[(int)Thief3] = Images.Thief3_21;
+            GameIcons[(int)SS2] = Images.Shock2_21;
+            // @GENGAMES (Game icons for FMs list): End
+
+            CheckIcon = Resources.CheckCircle;
+            RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;
+            // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
+            // Then grab the internal object down below when we go to display them
+            StarIcons = Images.GetRatingImages();
+
+            FinishedOnIcons = Images.GetFinishedOnImages(BlankIcon);
+            FinishedOnUnknownIcon = Images.FinishedOnUnknown;
         }
 
         #endregion
@@ -3179,40 +3205,6 @@ namespace AngelLoader.Forms
         #endregion
 
         #region FMsDGV event handlers
-
-        private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
-        {
-            if (CellValueNeededDisabled) return;
-
-            // Lazy-load these in an attempt to save some kind of startup time
-            // @LAZYLOAD: Try lazy-loading these at a more granular level
-            // The arrays are obstacles to lazy-loading, but see if we still get good scrolling perf when we look
-            // them up and load the individual images as needed, rather than all at once here
-
-            // @GENGAMES (Game icons for FMs list): Begin
-            // We would prefer to put these in an array, but see Images class for why we can't really do that
-            GameIcons[(int)Thief1] = Images.Thief1_21;
-            GameIcons[(int)Thief2] = Images.Thief2_21;
-            GameIcons[(int)Thief3] = Images.Thief3_21;
-            GameIcons[(int)SS2] = Images.Shock2_21;
-            // @GENGAMES (Game icons for FMs list): End
-
-            BlankIcon = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
-            CheckIcon = Resources.CheckCircle;
-            RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;
-            // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
-            // Then grab the internal object down below when we go to display them
-            StarIcons = Images.GetRatingImages();
-
-            FinishedOnIcons = Images.GetFinishedOnImages(BlankIcon);
-            FinishedOnUnknownIcon = Images.FinishedOnUnknown;
-
-            // Prevents having to check the bool again forevermore even after we've already set the images.
-            // Taking an extremely minor technique from a data-oriented design talk, heck yeah!
-            FMsDGV.CellValueNeeded -= FMsDGV_CellValueNeeded_Initial;
-            FMsDGV.CellValueNeeded += FMsDGV_CellValueNeeded;
-            FMsDGV_CellValueNeeded(sender, e);
-        }
 
         private void FMsDGV_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {

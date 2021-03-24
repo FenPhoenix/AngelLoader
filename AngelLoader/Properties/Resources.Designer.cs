@@ -373,6 +373,16 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Thief1_16_dark_darkbg {
+            get {
+                object obj = ResourceManager.GetObject("Thief1_16_dark_darkbg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Thief1_21 {
             get {
                 object obj = ResourceManager.GetObject("Thief1_21", resourceCulture);
@@ -386,6 +396,16 @@ namespace AngelLoader.Properties {
         internal static System.Drawing.Bitmap Thief1_21_dark {
             get {
                 object obj = ResourceManager.GetObject("Thief1_21_dark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Thief1_21_dark_darkbg {
+            get {
+                object obj = ResourceManager.GetObject("Thief1_21_dark_darkbg", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
