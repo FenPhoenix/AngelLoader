@@ -229,6 +229,15 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Event overrides
 
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            if (FullScreen)
+            {
+                SplitterDistance = IsMain() ? CollapsedSize : Width - CollapsedSize;
+            }
+        }
+
         protected override void OnMouseDown(MouseEventArgs e)
         {
             if (FullScreen) return;
