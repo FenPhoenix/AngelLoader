@@ -232,7 +232,6 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
-            // Keep collapsed on resize
             if (FullScreen)
             {
                 SplitterDistance = IsMain() ? CollapsedSize : Width - CollapsedSize;
