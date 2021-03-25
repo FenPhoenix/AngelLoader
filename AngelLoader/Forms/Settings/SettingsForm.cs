@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
-using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Dialogs;
 using static AL_Common.CommonUtils;
@@ -101,7 +100,7 @@ namespace AngelLoader.Forms
             // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
             // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
             // even if we DID want to do more reflection crap!)
-            ErrorIconPictureBox.Image = Resources.ExclMarkCircleRed_14;
+            ErrorIconPictureBox.Image = Images.RedExclamationMarkCircle;
 
             if (_startup) NativeHooks.InstallHooks();
 
@@ -584,6 +583,7 @@ namespace AngelLoader.Forms
                 {
                     ShowPathError(ErrorableTextBoxes[i], PathErrorIsSet(ErrorableTextBoxes[i]));
                 }
+                ErrorIconPictureBox.Image = Images.RedExclamationMarkCircle;
             }
             finally
             {

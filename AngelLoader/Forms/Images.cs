@@ -133,6 +133,13 @@ namespace AngelLoader.Forms
                 ? _redQuestionMarkCircle_dark ??= Resources.red_circle_question_mark_21_dark
                 : _redQuestionMarkCircle ??= Resources.QuestionMarkCircleRed;
 
+        private static Bitmap? _redExclamationMarkCircle;
+        private static Bitmap? _redExclamationMarkCircle_dark;
+        public static Bitmap RedExclamationMarkCircle =>
+            DarkModeEnabled
+                ? _redExclamationMarkCircle_dark ??= Resources.red_circle_exclamation_mark_14_dark
+                : _redExclamationMarkCircle ??= Resources.ExclMarkCircleRed_14;
+
         #region Finished on
 
         private static Bitmap? _finishedOnUnknown;
