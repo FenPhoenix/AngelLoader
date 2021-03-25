@@ -1414,6 +1414,20 @@ namespace AngelLoader.Forms
                 // TODO: @DarkMode(SetTheme excludes): We need to exclude lazy-loaded controls also.
                 // Figure out some way to just say "if a control is part of a lazy-loaded class" so we don't
                 // have to write them out manually here again and keep both places in sync.
+                // 2021-03-25:
+                // Normally a duplicate-set situation would never happen, because if nothing has been lazy-loaded
+                // yet by the time we get here, we'll only fill our dictionary with controls that are loaded
+                // already, and then we won't ever update the dictionary again.
+                // HOWEVER! At least two things (install/uninstall button, exit button) may well have been
+                // constructed already by the time we get here, so duplicate setting of those would happen
+                // in that case.
+                // This is only a perf/efficiency issue, not a bug, we can release with this and we're fine, just
+                // suboptimally efficient.
+                // We can try to put the startup call to this even earlier to put it before the "setup form and
+                // control state" section to preempt any loading of lazy-loaded controls, but that would put it
+                // in InitThreadable() rather than FinishInitAndShow() (probably not a problem?) and also we're
+                // not 100% sure if there's anything in the form/control state setup that needs to get done before
+                // us. We should go through it with a fine-tooth comb and test it if we want to do this optimization.
 
                 ControlUtils.ChangeFormThemeMode(
                     theme,
