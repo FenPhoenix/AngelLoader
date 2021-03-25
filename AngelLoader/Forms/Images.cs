@@ -24,6 +24,8 @@ namespace AngelLoader.Forms
 
         public static bool DarkModeEnabled;
 
+        #region Image arrays
+
         // Load this only once, as it's transparent and so doesn't have to change with the theme
         internal static readonly Bitmap? Blank = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
 
@@ -34,26 +36,10 @@ namespace AngelLoader.Forms
 
         // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
         private const int _numRatings = 11;
-
         internal static readonly Bitmap?[] StarIcons = new Bitmap?[_numRatings];
         internal static readonly Bitmap?[] FinishedOnIcons = new Bitmap?[16];
 
-        internal static void ReloadImages()
-        {
-            // @GENGAMES (Game icons for FMs list): Begin
-            // We would prefer to put these in an array, but see Images class for why we can't really do that
-            GameIcons[(int)Thief1] = Thief1_21_DGV;
-            GameIcons[(int)Thief2] = Thief2_21;
-            GameIcons[(int)Thief3] = Thief3_21;
-            GameIcons[(int)SS2] = Shock2_21;
-            // @GENGAMES (Game icons for FMs list): End
-
-            // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
-            // Then grab the internal object down below when we go to display them
-            LoadRatingImages();
-
-            LoadFinishedOnImages();
-        }
+        #endregion
 
         #region Games
 
@@ -141,9 +127,10 @@ namespace AngelLoader.Forms
                 : _greenCheckCircle ??= Resources.CheckCircle;
 
         private static Bitmap? _redQuestionMarkCircle;
+        private static Bitmap? _redQuestionMarkCircle_dark;
         public static Bitmap RedQuestionMarkCircle =>
             DarkModeEnabled
-                ? _redQuestionMarkCircle ??= Resources.QuestionMarkCircleRed
+                ? _redQuestionMarkCircle_dark ??= Resources.red_circle_question_mark_21_dark
                 : _redQuestionMarkCircle ??= Resources.QuestionMarkCircleRed;
 
         #region Finished on
@@ -179,8 +166,8 @@ namespace AngelLoader.Forms
             {
                 width = 24;
                 height = 24;
-                outlineBrush = Images.FinishedOnFilterOutlineBrush;
-                fillBrush = Images.FinishedOnFilterFillBrush;
+                outlineBrush = FinishedOnFilterOutlineBrush;
+                fillBrush = FinishedOnFilterFillBrush;
             }
             else
             {
@@ -189,11 +176,11 @@ namespace AngelLoader.Forms
                 // raster images used to have, so that the new vector ones are drop-in replacements.
                 (width, outlineBrush, fillBrush) = difficulty switch
                 {
-                    Difficulty.Normal => (34, Images.NormalCheckOutlineBrush, Images.NormalCheckFillBrush),
-                    Difficulty.Hard => (35, Images.HardCheckOutlineBrush, Images.HardCheckFillBrush),
-                    Difficulty.Expert => (35, Images.ExpertCheckOutlineBrush, Images.ExpertCheckFillBrush),
-                    Difficulty.Extreme => (34, Images.ExtremeCheckOutlineBrush, Images.ExtremeCheckFillBrush),
-                    _ => (36, Images.UnknownCheckOutlineBrush, Images.UnknownCheckFillBrush)
+                    Difficulty.Normal => (34, NormalCheckOutlineBrush, NormalCheckFillBrush),
+                    Difficulty.Hard => (35, HardCheckOutlineBrush, HardCheckFillBrush),
+                    Difficulty.Expert => (35, ExpertCheckOutlineBrush, ExpertCheckFillBrush),
+                    Difficulty.Extreme => (34, ExtremeCheckOutlineBrush, ExtremeCheckFillBrush),
+                    _ => (36, UnknownCheckOutlineBrush, UnknownCheckFillBrush)
                 };
             }
 
@@ -203,9 +190,9 @@ namespace AngelLoader.Forms
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            var gp = Images.FinishedCheckOutlineGPath;
+            var gp = FinishedCheckOutlineGPath;
 
-            Images.FitRectInBounds(
+            FitRectInBounds(
                 g,
                 gp.GetBounds(),
                 new RectangleF(0, 0, width, height));
@@ -219,13 +206,13 @@ namespace AngelLoader.Forms
                 const int pointsCount = 14;
                 for (int i = 0, j = 7; j < pointsCount; i++, j++)
                 {
-                    Images.FinishedCheckInnerPoints[i] = gp.PathPoints[j];
-                    Images.FinishedCheckInnerTypes[i] = gp.PathTypes[j];
+                    FinishedCheckInnerPoints[i] = gp.PathPoints[j];
+                    FinishedCheckInnerTypes[i] = gp.PathTypes[j];
                 }
 
                 using var innerGP = new GraphicsPath(
-                    Images.FinishedCheckInnerPoints,
-                    Images.FinishedCheckInnerTypes);
+                    FinishedCheckInnerPoints,
+                    FinishedCheckInnerTypes);
 
                 g.FillPath(fillBrush, innerGP);
             }
@@ -302,7 +289,7 @@ namespace AngelLoader.Forms
         #region Stars
 
         private static Bitmap? _filterByRating;
-        public static Bitmap FilterByRating => _filterByRating ??= FillStarImage(Images.StarFullGPath, 24);
+        public static Bitmap FilterByRating => _filterByRating ??= FillStarImage(StarFullGPath, 24);
 
         private static Bitmap FillStarImage(GraphicsPath gp, int px)
         {
@@ -313,9 +300,9 @@ namespace AngelLoader.Forms
             using var g = Graphics.FromImage(bmp);
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            Images.FitRectInBounds(g, gp.GetBounds(), new RectangleF(0, 0, px, px));
+            FitRectInBounds(g, gp.GetBounds(), new RectangleF(0, 0, px, px));
 
-            Brush[] brushes = { Images.StarOutlineBrush, Images.StarFillBrush, Images.StarEmptyBrush };
+            Brush[] brushes = { StarOutlineBrush, StarFillBrush, StarEmptyBrush };
 
             int elemCount = 11;
 
@@ -351,9 +338,9 @@ namespace AngelLoader.Forms
             {
                 #region Image getters
 
-                Bitmap GetStarEmpty() => _starEmpty ??= FillStarImage(Images.StarEmptyGPath, 22);
-                Bitmap GetStarRightEmpty() => _starRightEmpty ??= FillStarImage(Images.StarRightEmptyGPath, 22);
-                Bitmap GetStarFull() => _starFull ??= FillStarImage(Images.StarFullGPath, 22);
+                Bitmap GetStarEmpty() => _starEmpty ??= FillStarImage(StarEmptyGPath, 22);
+                Bitmap GetStarRightEmpty() => _starRightEmpty ??= FillStarImage(StarRightEmptyGPath, 22);
+                Bitmap GetStarFull() => _starFull ??= FillStarImage(StarFullGPath, 22);
 
                 #endregion
 
@@ -435,11 +422,11 @@ namespace AngelLoader.Forms
                 _zoomImages[index] = new Bitmap(rect.Width, rect.Height);
                 using var g = Graphics.FromImage(_zoomImages[index]!);
                 g.SmoothingMode = SmoothingMode.AntiAlias;
-                Images.FitRectInBounds(
+                FitRectInBounds(
                     g,
-                    Images.GetZoomImageComplete(zoomType).GetBounds(),
+                    GetZoomImageComplete(zoomType).GetBounds(),
                     new RectangleF(0, 0, rect.Width, rect.Height));
-                g.FillPath(Images.BlackForegroundBrush, Images.GetZoomImageComplete(zoomType));
+                g.FillPath(BlackForegroundBrush, GetZoomImageComplete(zoomType));
             }
             return _zoomImages[index]!;
         }
@@ -481,9 +468,9 @@ namespace AngelLoader.Forms
             {
                 const int px = 14;
 
-                Bitmap GetStarEmpty() => _starEmpty = FillStarImage(Images.StarEmptyGPath, px);
-                Bitmap GetStarRightEmpty() => _starRightEmpty = FillStarImage(Images.StarRightEmptyGPath, px);
-                Bitmap GetStarFull() => _starFull ??= FillStarImage(Images.StarFullGPath, px);
+                Bitmap GetStarEmpty() => _starEmpty = FillStarImage(StarEmptyGPath, px);
+                Bitmap GetStarRightEmpty() => _starRightEmpty = FillStarImage(StarRightEmptyGPath, px);
+                Bitmap GetStarFull() => _starFull ??= FillStarImage(StarFullGPath, px);
 
                 ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
                 using var g = Graphics.FromImage(ret);
@@ -520,6 +507,23 @@ namespace AngelLoader.Forms
                 : _ratingExample_FMSel_Number_Classic ??= Resources.RatingExample_FMSel_Number;
 
         #endregion
+
+        internal static void ReloadImages()
+        {
+            // @GENGAMES (Game icons for FMs list): Begin
+            // We would prefer to put these in an array, but see Images class for why we can't really do that
+            GameIcons[(int)Thief1] = Thief1_21_DGV;
+            GameIcons[(int)Thief2] = Thief2_21;
+            GameIcons[(int)Thief3] = Thief3_21;
+            GameIcons[(int)SS2] = Shock2_21;
+            // @GENGAMES (Game icons for FMs list): End
+
+            // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
+            // Then grab the internal object down below when we go to display them
+            LoadRatingImages();
+
+            LoadFinishedOnImages();
+        }
 
         #endregion
 
