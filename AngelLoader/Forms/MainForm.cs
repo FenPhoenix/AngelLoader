@@ -43,7 +43,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -55,7 +54,6 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
-using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
@@ -102,21 +100,6 @@ namespace AngelLoader.Forms
         // FMsDGV tries to refresh when it shouldn't and all kinds of crap. Phew.
         private const int _ratingImageColumnWidth = 73;
         private const int _finishedColumnWidth = 91;
-
-        #region Bitmaps
-
-        // We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
-        // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
-        // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
-        private readonly Bitmap?[] GameIcons = new Bitmap?[SupportedGameCount];
-
-        private Bitmap? BlankIcon;
-
-        private Bitmap[]? StarIcons;
-        private readonly Bitmap?[] FinishedOnIcons = new Bitmap?[16];
-        private Bitmap? FinishedOnUnknownIcon;
-
-        #endregion
 
         public bool EventsDisabled { get; set; }
         public bool KeyPressesDisabled { get; set; }
@@ -812,7 +795,7 @@ namespace AngelLoader.Forms
             else
             {
                 ControlUtils.CreateAllControlsHandles(this);
-                ReloadImages();
+                Images.ReloadImages();
             }
 
             // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
@@ -1466,7 +1449,7 @@ namespace AngelLoader.Forms
                 Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
                 ControlUtils.RecreateAllToolTipHandles();
 
-                ReloadImages();
+                Images.ReloadImages();
 
                 FilterByThief1Button.Image = Images.Thief1_21;
                 FilterByThief2Button.Image = Images.Thief2_21;
@@ -1490,30 +1473,6 @@ namespace AngelLoader.Forms
             {
                 if (!startup) this.ResumeDrawing();
             }
-        }
-
-        private void ReloadImages()
-        {
-            // Load this only once, as it's transparent and so doesn't have to change with the theme
-            BlankIcon ??= new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
-
-            // @GENGAMES (Game icons for FMs list): Begin
-            // We would prefer to put these in an array, but see Images class for why we can't really do that
-            GameIcons[(int)Thief1] = Images.Thief1_21_DGV;
-            GameIcons[(int)Thief2] = Images.Thief2_21;
-            GameIcons[(int)Thief3] = Images.Thief3_21;
-            GameIcons[(int)SS2] = Images.Shock2_21;
-            // @GENGAMES (Game icons for FMs list): End
-
-            // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
-            // Then grab the internal object down below when we go to display them
-            StarIcons = Images.GetRatingImages();
-
-            Array.Clear(FinishedOnIcons, 0, FinishedOnIcons.Length);
-            FinishedOnIcons[0] = BlankIcon;
-
-            Images.GetFinishedOnImages(FinishedOnIcons);
-            FinishedOnUnknownIcon = Images.FinishedOnUnknown;
         }
 
         #endregion
@@ -3235,14 +3194,14 @@ namespace AngelLoader.Forms
             {
                 case Column.Game:
                     e.Value =
-                        GameIsKnownAndSupported(fm.Game) ? GameIcons[(int)GameToGameIndex(fm.Game)] :
+                        GameIsKnownAndSupported(fm.Game) ? Images.GameIcons[(int)GameToGameIndex(fm.Game)] :
                         fm.Game == Game.Unsupported ? Images.RedQuestionMarkCircle :
                         // Can't say null, or else it sets an ugly red-x image
-                        BlankIcon;
+                        Images.Blank;
                     break;
 
                 case Column.Installed:
-                    e.Value = fm.Installed ? Images.GreenCheckCircle : BlankIcon;
+                    e.Value = fm.Installed ? Images.GreenCheckCircle : Images.Blank;
                     break;
 
                 case Column.Title:
@@ -3289,7 +3248,7 @@ namespace AngelLoader.Forms
                     {
                         if (Config.RatingUseStars)
                         {
-                            e.Value = fm.Rating == -1 ? BlankIcon : StarIcons![fm.Rating];
+                            e.Value = fm.Rating == -1 ? Images.Blank : Images.StarIcons![fm.Rating];
                         }
                         else
                         {
@@ -3299,7 +3258,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Finished:
-                    e.Value = fm.FinishedOnUnknown ? FinishedOnUnknownIcon : FinishedOnIcons![fm.FinishedOn];
+                    e.Value = fm.FinishedOnUnknown ? Images.FinishedOnUnknown : Images.FinishedOnIcons![fm.FinishedOn];
                     break;
 
                 case Column.ReleaseDate:

@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
+using static AngelLoader.GameSupport;
+using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -18,6 +20,34 @@ namespace AngelLoader.Forms
     public static class Images
     {
         public static bool DarkModeEnabled;
+
+        // Load this only once, as it's transparent and so doesn't have to change with the theme
+        internal static readonly Bitmap? Blank = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
+
+        // We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
+        // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
+        // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
+        internal static readonly Bitmap?[] GameIcons = new Bitmap?[SupportedGameCount];
+
+        internal static Bitmap[]? StarIcons;
+        internal static readonly Bitmap?[] FinishedOnIcons = new Bitmap?[16];
+
+        internal static void ReloadImages()
+        {
+            // @GENGAMES (Game icons for FMs list): Begin
+            // We would prefer to put these in an array, but see Images class for why we can't really do that
+            GameIcons[(int)Thief1] = Thief1_21_DGV;
+            GameIcons[(int)Thief2] = Thief2_21;
+            GameIcons[(int)Thief3] = Thief3_21;
+            GameIcons[(int)SS2] = Shock2_21;
+            // @GENGAMES (Game icons for FMs list): End
+
+            // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
+            // Then grab the internal object down below when we go to display them
+            StarIcons = GetRatingImages();
+
+            GetFinishedOnImages();
+        }
 
         #region Games
 
@@ -197,9 +227,12 @@ namespace AngelLoader.Forms
             return bmp;
         }
 
-        public static void GetFinishedOnImages(Bitmap?[] bitmaps)
+        private static void GetFinishedOnImages()
         {
-            AssertR(bitmaps.Length == 16, "bitmaps.Length != 16");
+            AssertR(FinishedOnIcons.Length == 16, "bitmaps.Length != 16");
+
+            Array.Clear(FinishedOnIcons, 0, FinishedOnIcons.Length);
+            FinishedOnIcons[0] = Blank;
 
             Bitmap? _finishedOnNormal_single = null;
             Bitmap? _finishedOnHard_single = null;
@@ -218,7 +251,7 @@ namespace AngelLoader.Forms
 
                 var list = new List<Bitmap>(4);
 
-                for (int ai = 1; ai < bitmaps.Length; ai++)
+                for (int ai = 1; ai < FinishedOnIcons.Length; ai++)
                 {
                     Bitmap canvas = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
                     Difficulty difficulty = (Difficulty)ai;
@@ -246,7 +279,7 @@ namespace AngelLoader.Forms
                         x += subImage.Width;
                     }
 
-                    bitmaps[ai] = canvas;
+                    FinishedOnIcons[ai] = canvas;
                 }
             }
             finally
