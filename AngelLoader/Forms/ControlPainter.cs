@@ -238,8 +238,19 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static readonly Brush StarOutlineBrush = new SolidBrush(Color.FromArgb(192, 113, 0));
-        internal static readonly Brush StarFillBrush = new SolidBrush(Color.FromArgb(255, 180, 0));
+        private static readonly Brush _starOutlineBrushDark = new SolidBrush(Color.FromArgb(200, 128, 26));
+        private static readonly Brush _starOutlineBrush = new SolidBrush(Color.FromArgb(192, 113, 0));
+        internal static Brush StarOutlineBrush => DarkModeEnabled ? _starOutlineBrushDark : _starOutlineBrush;
+
+        private static readonly Brush _starFillBrushDark = new SolidBrush(Color.FromArgb(228, 185, 82));
+        private static readonly Brush _starFillBrush = new SolidBrush(Color.FromArgb(255, 180, 0));
+        internal static Brush StarFillBrush => DarkModeEnabled ? _starFillBrushDark : _starFillBrush;
+
+        private static readonly Brush _starEmptyBrushDark = new SolidBrush(DarkColors.Fen_DarkBackground);
+        private static readonly Brush _starEmptyBrush = Brushes.White;
+        internal static Brush StarEmptyBrush => DarkModeEnabled ? _starEmptyBrushDark : _starEmptyBrush;
+
+
 
         #endregion
 

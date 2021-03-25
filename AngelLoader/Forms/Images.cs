@@ -29,7 +29,10 @@ namespace AngelLoader.Forms
         // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
         internal static readonly Bitmap?[] GameIcons = new Bitmap?[SupportedGameCount];
 
-        internal static Bitmap[]? StarIcons;
+        // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
+        private const int _numRatings = 11;
+
+        internal static readonly Bitmap?[] StarIcons = new Bitmap?[_numRatings];
         internal static readonly Bitmap?[] FinishedOnIcons = new Bitmap?[16];
 
         internal static void ReloadImages()
@@ -44,9 +47,9 @@ namespace AngelLoader.Forms
 
             // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
             // Then grab the internal object down below when we go to display them
-            StarIcons = GetRatingImages();
+            LoadRatingImages();
 
-            GetFinishedOnImages();
+            LoadFinishedOnImages();
         }
 
         #region Games
@@ -227,7 +230,7 @@ namespace AngelLoader.Forms
             return bmp;
         }
 
-        private static void GetFinishedOnImages()
+        private static void LoadFinishedOnImages()
         {
             AssertR(FinishedOnIcons.Length == 16, "bitmaps.Length != 16");
 
@@ -309,7 +312,7 @@ namespace AngelLoader.Forms
 
             ControlPainter.FitRectInBounds(g, gp.GetBounds(), new RectangleF(0, 0, px, px));
 
-            Brush[] brushes = { ControlPainter.StarOutlineBrush, ControlPainter.StarFillBrush, Brushes.White };
+            Brush[] brushes = { ControlPainter.StarOutlineBrush, ControlPainter.StarFillBrush, ControlPainter.StarEmptyBrush };
 
             int elemCount = 11;
 
@@ -332,12 +335,11 @@ namespace AngelLoader.Forms
             return bmp;
         }
 
-        public static Bitmap[] GetRatingImages()
+        private static void LoadRatingImages()
         {
-            // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
-            const int numRatings = 11;
-            Bitmap[] retArray = new Bitmap[numRatings];
-            bool[] bits = new bool[numRatings];
+            Array.Clear(StarIcons, 0, StarIcons.Length);
+
+            bool[] bits = new bool[_numRatings];
 
             Bitmap? _starEmpty = null;
             Bitmap? _starRightEmpty = null;
@@ -352,7 +354,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                for (int bi = 0; bi < numRatings; bi++)
+                for (int bi = 0; bi < _numRatings; bi++)
                 {
                     var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
 
@@ -366,7 +368,7 @@ namespace AngelLoader.Forms
                     }
 
                     bits[bi] = true;
-                    retArray[bi] = canvas;
+                    StarIcons[bi] = canvas;
                 }
             }
             finally
@@ -375,8 +377,6 @@ namespace AngelLoader.Forms
                 _starRightEmpty?.Dispose();
                 _starFull?.Dispose();
             }
-
-            return retArray;
         }
 
         #endregion
