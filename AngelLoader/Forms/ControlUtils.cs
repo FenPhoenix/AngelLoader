@@ -595,6 +595,7 @@ namespace AngelLoader.Forms
 
                     #region Check for the ToolTip field to be initialized
 
+                    object? tsNativeWindow = null;
                     try
                     {
                         ConstructorInfo[] constructors = _toolTipNativeWindowClass
@@ -613,7 +614,7 @@ namespace AngelLoader.Forms
                             return SetFalse();
                         }
 
-                        var tsNativeWindow = Activator.CreateInstance(
+                        tsNativeWindow = Activator.CreateInstance(
                             type: _toolTipNativeWindowClass,
                             bindingAttr: bindingFlags,
                             binder: null,
@@ -635,6 +636,12 @@ namespace AngelLoader.Forms
                     }
                     catch
                     {
+                        // Ultra paranoid cleanup - this isn't disposable in .NET Framework 4.7.2 at the very
+                        // least, but in theory it could be, so dispose it if so!
+                        if (tsNativeWindow is IDisposable tsNativeWindowDisposable)
+                        {
+                            tsNativeWindowDisposable.Dispose();
+                        }
                         return SetFalse();
                     }
 
