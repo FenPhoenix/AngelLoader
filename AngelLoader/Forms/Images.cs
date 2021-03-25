@@ -96,6 +96,20 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private static Bitmap? _greenCheckCircle;
+        private static Bitmap? _greenCheckCircle_dark;
+
+        public static Bitmap GreenCheckCircle =>
+            DarkModeEnabled
+                ? _greenCheckCircle_dark ??= Resources.green_check_21_dark
+                : _greenCheckCircle ??= Resources.CheckCircle;
+
+        private static Bitmap? _redQuestionMarkCircle;
+        public static Bitmap RedQuestionMarkCircle =>
+            DarkModeEnabled
+                ? _redQuestionMarkCircle ??= Resources.QuestionMarkCircleRed
+                : _redQuestionMarkCircle ??= Resources.QuestionMarkCircleRed;
+
         #region Finished on
 
         private static Bitmap? _finishedOnUnknown;
@@ -183,16 +197,9 @@ namespace AngelLoader.Forms
             return bmp;
         }
 
-        /// <summary>
-        /// We use positionZeroBitmap so we can be passed an already-constructed BlankIcon bitmap so that we
-        /// don't have to have BlankIcon be in here and subject to a property call and null check every time
-        /// it gets displayed, which is a lot.
-        /// </summary>
-        /// <param name="positionZeroBitmap">Silly hack, see description.</param>
-        /// <returns></returns>
-        public static Bitmap[] GetFinishedOnImages(Bitmap positionZeroBitmap)
+        public static void GetFinishedOnImages(Bitmap?[] bitmaps)
         {
-            var retArray = new Bitmap[16];
+            AssertR(bitmaps.Length == 16, "bitmaps.Length != 16");
 
             Bitmap? _finishedOnNormal_single = null;
             Bitmap? _finishedOnHard_single = null;
@@ -211,8 +218,7 @@ namespace AngelLoader.Forms
 
                 var list = new List<Bitmap>(4);
 
-                retArray[0] = positionZeroBitmap;
-                for (int ai = 1; ai < retArray.Length; ai++)
+                for (int ai = 1; ai < bitmaps.Length; ai++)
                 {
                     Bitmap canvas = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
                     Difficulty difficulty = (Difficulty)ai;
@@ -240,7 +246,7 @@ namespace AngelLoader.Forms
                         x += subImage.Width;
                     }
 
-                    retArray[ai] = canvas;
+                    bitmaps[ai] = canvas;
                 }
             }
             finally
@@ -250,8 +256,6 @@ namespace AngelLoader.Forms
                 _finishedOnExpert_single?.Dispose();
                 _finishedOnExtreme_single?.Dispose();
             }
-
-            return retArray;
         }
 
         #endregion

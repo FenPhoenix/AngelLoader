@@ -111,11 +111,9 @@ namespace AngelLoader.Forms
         private readonly Bitmap?[] GameIcons = new Bitmap?[SupportedGameCount];
 
         private Bitmap? BlankIcon;
-        private Bitmap? CheckIcon;
-        private Bitmap? RedQuestionMarkIcon;
 
         private Bitmap[]? StarIcons;
-        private Bitmap[]? FinishedOnIcons;
+        private readonly Bitmap?[] FinishedOnIcons = new Bitmap?[16];
         private Bitmap? FinishedOnUnknownIcon;
 
         #endregion
@@ -1507,13 +1505,14 @@ namespace AngelLoader.Forms
             GameIcons[(int)SS2] = Images.Shock2_21;
             // @GENGAMES (Game icons for FMs list): End
 
-            CheckIcon = Resources.CheckCircle;
-            RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;
             // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
             // Then grab the internal object down below when we go to display them
             StarIcons = Images.GetRatingImages();
 
-            FinishedOnIcons = Images.GetFinishedOnImages(BlankIcon);
+            Array.Clear(FinishedOnIcons, 0, FinishedOnIcons.Length);
+            FinishedOnIcons[0] = BlankIcon;
+
+            Images.GetFinishedOnImages(FinishedOnIcons);
             FinishedOnUnknownIcon = Images.FinishedOnUnknown;
         }
 
@@ -3237,13 +3236,13 @@ namespace AngelLoader.Forms
                 case Column.Game:
                     e.Value =
                         GameIsKnownAndSupported(fm.Game) ? GameIcons[(int)GameToGameIndex(fm.Game)] :
-                        fm.Game == Game.Unsupported ? RedQuestionMarkIcon :
+                        fm.Game == Game.Unsupported ? Images.RedQuestionMarkCircle :
                         // Can't say null, or else it sets an ugly red-x image
                         BlankIcon;
                     break;
 
                 case Column.Installed:
-                    e.Value = fm.Installed ? CheckIcon : BlankIcon;
+                    e.Value = fm.Installed ? Images.GreenCheckCircle : BlankIcon;
                     break;
 
                 case Column.Title:

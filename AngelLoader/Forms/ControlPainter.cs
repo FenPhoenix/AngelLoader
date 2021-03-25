@@ -124,17 +124,37 @@ namespace AngelLoader.Forms
         private static GraphicsPath? _finishedCheckGPath;
         internal static GraphicsPath FinishedCheckOutlineGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
 
-        internal static readonly Brush NormalCheckOutlineBrush = new SolidBrush(Color.FromArgb(3, 100, 1));
-        internal static readonly Brush NormalCheckFillBrush = new SolidBrush(Color.FromArgb(0, 170, 0));
+        private static readonly Brush _normalCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(3, 100, 1));
+        private static readonly Brush _normalCheckOutlineBrush = new SolidBrush(Color.FromArgb(3, 100, 1));
+        internal static Brush NormalCheckOutlineBrush => DarkModeEnabled ? _normalCheckOutlineBrushDark : _normalCheckOutlineBrush;
 
-        internal static readonly Brush HardCheckOutlineBrush = new SolidBrush(Color.FromArgb(196, 157, 2));
-        internal static readonly Brush HardCheckFillBrush = new SolidBrush(Color.FromArgb(255, 210, 0));
+        private static readonly Brush _normalCheckFillBrushDark = new SolidBrush(Color.FromArgb(68, 178, 68));
+        private static readonly Brush _normalCheckFillBrush = new SolidBrush(Color.FromArgb(0, 170, 0));
+        internal static Brush NormalCheckFillBrush => DarkModeEnabled ? _normalCheckFillBrushDark : _normalCheckFillBrush;
 
-        internal static readonly Brush ExpertCheckOutlineBrush = new SolidBrush(Color.FromArgb(135, 2, 2));
-        internal static readonly Brush ExpertCheckFillBrush = new SolidBrush(Color.FromArgb(216, 0, 0));
+        private static readonly Brush _hardCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(139, 111, 0));
+        private static readonly Brush _hardCheckOutlineBrush = new SolidBrush(Color.FromArgb(196, 157, 2));
+        internal static Brush HardCheckOutlineBrush => DarkModeEnabled ? _hardCheckOutlineBrushDark : _hardCheckOutlineBrush;
 
-        internal static readonly Brush ExtremeCheckOutlineBrush = new SolidBrush(Color.FromArgb(19, 1, 100));
-        internal static readonly Brush ExtremeCheckFillBrush = new SolidBrush(Color.FromArgb(0, 53, 226));
+        private static readonly Brush _hardCheckFillBrushDark = new SolidBrush(Color.FromArgb(212, 187, 73));
+        private static readonly Brush _hardCheckFillBrush = new SolidBrush(Color.FromArgb(255, 210, 0));
+        internal static Brush HardCheckFillBrush => DarkModeEnabled ? _hardCheckFillBrushDark : _hardCheckFillBrush;
+
+        private static readonly Brush _expertCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(118, 14, 14));
+        private static readonly Brush _expertCheckOutlineBrush = new SolidBrush(Color.FromArgb(135, 2, 2));
+        internal static Brush ExpertCheckOutlineBrush => DarkModeEnabled ? _expertCheckOutlineBrushDark : _expertCheckOutlineBrush;
+
+        private static readonly Brush _expertCheckFillBrushDark = new SolidBrush(Color.FromArgb(209, 70, 70));
+        private static readonly Brush _expertCheckFillBrush = new SolidBrush(Color.FromArgb(216, 0, 0));
+        internal static Brush ExpertCheckFillBrush => DarkModeEnabled ? _expertCheckFillBrushDark : _expertCheckFillBrush;
+
+        private static readonly Brush _extremeCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(28, 76, 153));
+        private static readonly Brush _extremeCheckOutlineBrush = new SolidBrush(Color.FromArgb(19, 1, 100));
+        internal static Brush ExtremeCheckOutlineBrush => DarkModeEnabled ? _extremeCheckOutlineBrushDark : _extremeCheckOutlineBrush;
+
+        private static readonly Brush _extremeCheckFillBrushDark = new SolidBrush(Color.FromArgb(34, 148, 228));
+        private static readonly Brush _extremeCheckFillBrush = new SolidBrush(Color.FromArgb(0, 53, 226));
+        internal static Brush ExtremeCheckFillBrush => DarkModeEnabled ? _extremeCheckFillBrushDark : _extremeCheckFillBrush;
 
         internal static readonly Brush UnknownCheckOutlineBrush = new SolidBrush(Color.FromArgb(100, 100, 100));
         internal static readonly Brush UnknownCheckFillBrush = new SolidBrush(Color.FromArgb(170, 170, 170));
