@@ -103,7 +103,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 g.FillRectangle(buttonBrush, buttonRect);
 
-                ControlPainter.PaintArrow7x4(g, Misc.Direction.Down, buttonRect, Enabled);
+                Images.PaintArrow7x4(g, Misc.Direction.Down, buttonRect, Enabled);
             }
             finally
             {

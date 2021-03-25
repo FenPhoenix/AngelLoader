@@ -145,7 +145,7 @@ namespace AngelLoader.Forms.ThemeRenderers
                         break;
                 }
 
-                ControlPainter.PaintArrow7x4(
+                Images.PaintArrow7x4(
                     g,
                     direction,
                     rect,

@@ -578,7 +578,6 @@ namespace AngelLoader.Forms
                     x => x is SplitterPanel
                 );
 
-                ControlPainter.DarkModeEnabled = darkMode;
                 Images.DarkModeEnabled = darkMode;
                 SetRatingImage();
                 for (int i = 0; i < ErrorableTextBoxes.Length; i++)

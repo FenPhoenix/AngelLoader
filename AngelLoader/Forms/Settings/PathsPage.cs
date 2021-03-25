@@ -32,9 +32,9 @@ namespace AngelLoader.Forms
 
         public void HidePage() => Hide();
 
-        private void AddFMArchivePathButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlusButton(AddFMArchivePathButton, e);
+        private void AddFMArchivePathButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlusButton(AddFMArchivePathButton, e);
 
-        private void RemoveFMArchivePathButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintMinusButton(RemoveFMArchivePathButton, e);
+        private void RemoveFMArchivePathButton_Paint(object sender, PaintEventArgs e) => Images.PaintMinusButton(RemoveFMArchivePathButton, e);
 
         private void FlowLayoutPanel1_Layout(object sender, LayoutEventArgs e)
         {

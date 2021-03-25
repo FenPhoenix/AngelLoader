@@ -30,7 +30,7 @@ namespace AngelLoader.Forms
         private void WebSearchUrlResetButton_Paint(object sender, PaintEventArgs e)
         {
             var cr = WebSearchUrlResetButton.ClientRectangle;
-            ControlPainter.PaintBitmapButton(
+            Images.PaintBitmapButton(
                 WebSearchUrlResetButton,
                 e,
                 Images.Refresh,

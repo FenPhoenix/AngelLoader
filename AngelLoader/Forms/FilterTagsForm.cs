@@ -313,14 +313,14 @@ namespace AngelLoader.Forms
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
-        private void RemoveButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintMinusButton((Button)sender, e);
+        private void RemoveButtons_Paint(object sender, PaintEventArgs e) => Images.PaintMinusButton((Button)sender, e);
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
-        private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintExButton((Button)sender, e);
+        private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => Images.PaintExButton((Button)sender, e);
 
         private void BottomButtonsFLP_Paint(object sender, PaintEventArgs e)
         {
-            ControlPainter.PaintControlSeparators(
+            Images.PaintControlSeparators(
                 e: e,
                 pixelsFromVerticalEdges: 5,
                 items: new Control[] { OKButton });
@@ -329,7 +329,7 @@ namespace AngelLoader.Forms
         private void ArrowButtons_Paint(object sender, PaintEventArgs e)
         {
             Button button = (Button)sender;
-            ControlPainter.PaintArrow7x4(
+            Images.PaintArrow7x4(
                 g: e.Graphics,
                 direction: Direction.Right,
                 area: new Rectangle(0, 0, 15, button.Height),

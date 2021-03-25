@@ -180,7 +180,7 @@ namespace AngelLoader.Forms.CustomControls
                 arrowHeight
             );
 
-            ControlPainter.PaintArrow9x5(
+            Images.PaintArrow9x5(
                 g: g,
                 direction: Misc.Direction.Down,
                 area: arrowRect,

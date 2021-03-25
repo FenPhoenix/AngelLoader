@@ -184,7 +184,7 @@ namespace AngelLoader.Forms.CustomControls
                     : DarkColors.GreyHighlightPen
                 : DarkColors.GreySelectionPen;
 
-            ControlPainter.PaintArrow7x4(
+            Images.PaintArrow7x4(
                 g: g,
                 direction: Misc.Direction.Up,
                 area: upArea,
@@ -201,7 +201,7 @@ namespace AngelLoader.Forms.CustomControls
                     : DarkColors.GreyHighlightPen
                 : DarkColors.GreySelectionPen;
 
-            ControlPainter.PaintArrow7x4(
+            Images.PaintArrow7x4(
                 g: g,
                 direction: Misc.Direction.Down,
                 area: downArea,

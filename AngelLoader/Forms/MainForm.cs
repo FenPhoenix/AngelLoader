@@ -1441,7 +1441,6 @@ namespace AngelLoader.Forms
                 ExitLLButton.DarkModeEnabled = darkMode;
                 ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
                 ProgressBoxDarkModeEnabled = darkMode;
-                ControlPainter.DarkModeEnabled = darkMode;
                 Images.DarkModeEnabled = darkMode;
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
@@ -4356,18 +4355,18 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintControlSeparators(e, 2, items: _bottomAreaSeparatedItems);
+        private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomAreaSeparatedItems);
 
-        private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintToolStripSeparators(e, 5, _filtersToolStripSeparatedItems);
+        private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => Images.PaintToolStripSeparators(e, 5, _filtersToolStripSeparatedItems);
 
         private void RefreshAreaToolStrip_Paint(object sender, PaintEventArgs e)
         {
             // This one is a special case, so draw it explicitly here
-            Pen s1Pen = ControlPainter.GetSeparatorPenForCurrentVisualStyleMode();
+            Pen s1Pen = Images.GetSeparatorPenForCurrentVisualStyleMode();
             const int y1 = 5;
             const int y2 = 20;
 
-            ControlPainter.DrawSeparator(
+            Images.DrawSeparator(
                 e: e,
                 line1Pen: s1Pen,
                 line1DistanceBackFromLoc: 3,
@@ -4375,7 +4374,7 @@ namespace AngelLoader.Forms
                 line1Bottom: y2,
                 x: RefreshFromDiskButton.Bounds.Location.X);
 
-            ControlPainter.DrawSeparator(
+            Images.DrawSeparator(
                 e: e,
                 line1Pen: s1Pen,
                 // Right side hack
@@ -4386,11 +4385,11 @@ namespace AngelLoader.Forms
                 x: ClearFiltersButton.Bounds.Right + 6);
         }
 
-        private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintControlSeparators(e, -1, 5, 20, _filterLabels);
+        private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, -1, 5, 20, _filterLabels);
 
-        private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlayFMButton(PlayFMButton, e);
+        private void PlayFMButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayFMButton(PlayFMButton, e);
 
-        private void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintBitmapButton(
+        private void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => Images.PaintBitmapButton(
             PlayOriginalGameButton,
             e,
             PlayOriginalGameButton.Enabled ? Images.PlayOriginalGame : Images.PlayOriginalGame_Disabled,
@@ -4402,7 +4401,7 @@ namespace AngelLoader.Forms
             DarkButton button = InstallUninstallFMLLButton.Button;
             bool enabled = button.Enabled;
 
-            ControlPainter.PaintBitmapButton(
+            Images.PaintBitmapButton(
                 button,
                 e,
                 InstallUninstallFMLLButton.SayInstallState
@@ -4411,33 +4410,33 @@ namespace AngelLoader.Forms
                 10);
         }
 
-        private void ImportButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintBitmapButton(
+        private void ImportButton_Paint(object sender, PaintEventArgs e) => Images.PaintBitmapButton(
             ImportButton,
             e,
             ImportButton.Enabled ? Images.Import : Images.Import_Disabled,
             x: 10);
 
-        private void SettingsButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintBitmapButton(
+        private void SettingsButton_Paint(object sender, PaintEventArgs e) => Images.PaintBitmapButton(
             SettingsButton,
             e,
             SettingsButton.Enabled ? Images.Settings : Images.Settings_Disabled,
             x: 10);
 
-        private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlusButton(PatchAddDMLButton, e);
+        private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlusButton(PatchAddDMLButton, e);
 
-        private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintMinusButton(PatchRemoveDMLButton, e);
+        private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintMinusButton(PatchRemoveDMLButton, e);
 
-        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton_TopRight(TopRightMenuButton, e);
+        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton_TopRight(TopRightMenuButton, e);
 
-        private void MainMenuButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintHamburgerMenuButton24(MainMenuButton, e);
+        private void MainMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton24(MainMenuButton, e);
 
-        private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintWebSearchButton(WebSearchButton, e);
+        private void WebSearchButton_Paint(object sender, PaintEventArgs e) => Images.PaintWebSearchButton(WebSearchButton, e);
 
-        private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
+        private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
 
-        private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintResetLayoutButton(ResetLayoutButton, e);
+        private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 
-        private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintScanAllFMsButton(ScanAllFMsButton, e);
+        private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => Images.PaintScanAllFMsButton(ScanAllFMsButton, e);
 
         // Keep this one static because it calls out to the internal ButtonPainter rather than external Core, so
         // it's fine even if we modularize the view
@@ -4446,25 +4445,25 @@ namespace AngelLoader.Forms
 #if !DEBUG
         static
 #endif
-        void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintScanSmallButtons((Button)sender, e);
+        void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanSmallButtons((Button)sender, e);
 
         private
 #if !DEBUG
         static
 #endif
-        void ZoomInButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.In);
+        void ZoomInButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.In);
 
         private
 #if !DEBUG
         static
 #endif
-        void ZoomOutButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Out);
+        void ZoomOutButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.Out);
 
         private
 #if !DEBUG
         static
 #endif
-        void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Reset);
+        void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.Reset);
 
         #endregion
     }

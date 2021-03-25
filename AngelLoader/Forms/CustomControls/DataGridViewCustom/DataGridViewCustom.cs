@@ -649,7 +649,7 @@ namespace AngelLoader.Forms.CustomControls
                             ? Direction.Up
                             : Direction.Down;
 
-                        ControlPainter.PaintArrow9x5(
+                        Images.PaintArrow9x5(
                             g: e.Graphics,
                             direction: direction,
                             area: new Rectangle(e.CellBounds.Right - 17, 2, 17, e.CellBounds.Height),
