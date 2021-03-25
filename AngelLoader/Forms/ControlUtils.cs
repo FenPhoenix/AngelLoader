@@ -636,13 +636,16 @@ namespace AngelLoader.Forms
                     }
                     catch
                     {
+                        return SetFalse();
+                    }
+                    finally
+                    {
                         // Ultra paranoid cleanup - this isn't disposable in .NET Framework 4.7.2 at the very
                         // least, but in theory it could be, so dispose it if so!
                         if (tsNativeWindow is IDisposable tsNativeWindowDisposable)
                         {
                             tsNativeWindowDisposable.Dispose();
                         }
-                        return SetFalse();
                     }
 
                     #endregion
