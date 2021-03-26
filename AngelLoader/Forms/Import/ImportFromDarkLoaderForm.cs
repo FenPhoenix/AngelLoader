@@ -12,7 +12,7 @@ namespace AngelLoader.Forms
 {
     public sealed partial class ImportFromDarkLoaderForm : DarkForm
     {
-        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         internal string DarkLoaderIniFile = "";
         internal bool ImportFMData;

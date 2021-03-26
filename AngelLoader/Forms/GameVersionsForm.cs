@@ -13,7 +13,7 @@ namespace AngelLoader.Forms
     {
         private readonly (DarkLabel Label, DarkTextBox TextBox)[] GameVersionItems;
 
-        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         public GameVersionsForm()
         {

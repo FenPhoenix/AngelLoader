@@ -146,7 +146,7 @@ namespace AngelLoader.Forms
         }
 #endif
 
-        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
 

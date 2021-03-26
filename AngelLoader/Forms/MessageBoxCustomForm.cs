@@ -14,7 +14,7 @@ namespace AngelLoader.Forms
     {
         // TODO: @DarkMode(MessageBoxFormCustom): Paint icon on OK button (or just fix DarkButton's image alignment)
 
-        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         private readonly bool _multiChoice;
         private const int _bottomAreaHeight = 42;

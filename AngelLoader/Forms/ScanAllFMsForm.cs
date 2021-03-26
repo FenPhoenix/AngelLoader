@@ -14,7 +14,7 @@ namespace AngelLoader.Forms
     {
         private readonly DarkCheckBox[] _checkBoxes;
 
-        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         internal readonly ScanOptions ScanOptions = ScanOptions.FalseDefault();
         internal bool NoneSelected;

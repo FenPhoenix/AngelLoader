@@ -11,7 +11,7 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterRatingForm : DarkForm, IEventDisabler
     {
-        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         internal int RatingFrom;
         internal int RatingTo;

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -185,16 +186,13 @@ namespace AngelLoader.Forms
 
         private static void FillControlDict(
             Control control,
-            Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
+            List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> controlColors,
             bool alsoCreateControlHandles,
             int stackCounter = 0)
         {
             const int maxStackCount = 100;
 
-            if (!controlColors.ContainsKey(control))
-            {
-                controlColors[control] = (control.ForeColor, control.BackColor);
-            }
+            controlColors.Add(new KeyValuePair<Control, (Color ForeColor, Color BackColor)>(control, (control.ForeColor, control.BackColor)));
 
             if (alsoCreateControlHandles && !control.IsHandleCreated)
             {
@@ -240,7 +238,7 @@ namespace AngelLoader.Forms
         internal static void ChangeFormThemeMode(
             VisualTheme theme,
             Form form,
-            Dictionary<Control, (Color ForeColor, Color BackColor)> controlColors,
+            List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> controlColors,
             Func<Component, bool>? excludePredicate = null,
             bool alsoCreateControlHandles = false
             )

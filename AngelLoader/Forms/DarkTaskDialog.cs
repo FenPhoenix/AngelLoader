@@ -13,7 +13,7 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
-        private readonly Dictionary<Control, (Color ForeColor, Color BackColor)> _controlColors = new();
+        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         #endregion
 
