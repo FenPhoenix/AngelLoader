@@ -105,7 +105,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 PlayFMInMPMenuItem = new ToolStripMenuItemCustom(),
                 InstallUninstallMenuItem = new ToolStripMenuItemCustom(),
                 new ToolStripSeparator(),
-                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Resources.Trash_16 },
+                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16 },
                 OpenInDromEdSep = new ToolStripSeparator(),
                 OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
                 OpenFMFolderSep = new ToolStripSeparator(),

@@ -120,11 +120,17 @@ namespace AngelLoader.Forms
 
         private static Bitmap? _greenCheckCircle;
         private static Bitmap? _greenCheckCircle_dark;
-
         public static Bitmap GreenCheckCircle =>
             DarkModeEnabled
                 ? _greenCheckCircle_dark ??= Resources.green_check_21_dark
                 : _greenCheckCircle ??= Resources.CheckCircle;
+
+        private static Bitmap? _trash_16;
+        private static Bitmap? _trash_16_dark;
+        public static Bitmap Trash_16 =>
+            DarkModeEnabled
+                ? _trash_16_dark ??= Resources.trash_16_dark
+                : _trash_16 ??= Resources.Trash_16;
 
         private static Bitmap? _redQuestionMarkCircle;
         private static Bitmap? _redQuestionMarkCircle_dark;
@@ -143,7 +149,6 @@ namespace AngelLoader.Forms
         #region Finished on
 
         private static Bitmap? _finishedOnUnknown;
-
         public static Bitmap FinishedOnUnknown
         {
             get

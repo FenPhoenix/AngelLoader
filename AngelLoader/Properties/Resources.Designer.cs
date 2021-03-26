@@ -533,6 +533,16 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap trash_16_dark {
+            get {
+                object obj = ResourceManager.GetObject("trash_16_dark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Uninstall_24 {
             get {
                 object obj = ResourceManager.GetObject("Uninstall_24", resourceCulture);
