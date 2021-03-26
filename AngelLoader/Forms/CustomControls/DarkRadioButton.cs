@@ -17,6 +17,8 @@ namespace AngelLoader.Forms.CustomControls
 
         private bool _spacePressed;
 
+        private const int _radioButtonSize = 12;
+
         #endregion
 
         #region Property Region
@@ -228,8 +230,6 @@ namespace AngelLoader.Forms.CustomControls
 
             var g = e.Graphics;
 
-            var size = Consts.RadioButtonSize;
-
             var textColor = DarkColors.LightText;
             var borderColorPen = DarkColors.LightTextPen;
             var fillColorBrush = DarkColors.LightestBackgroundBrush;
@@ -264,12 +264,12 @@ namespace AngelLoader.Forms.CustomControls
 
             g.SmoothingMode = SmoothingMode.HighQuality;
 
-            var boxRect = new Rectangle(0, (ClientRectangle.Height / 2) - (size / 2), size, size);
+            var boxRect = new Rectangle(0, (ClientRectangle.Height / 2) - (_radioButtonSize / 2), _radioButtonSize, _radioButtonSize);
             g.DrawEllipse(borderColorPen, boxRect);
 
             if (Checked)
             {
-                var checkRect = new Rectangle(3, (ClientRectangle.Height / 2) - ((size - 7) / 2) - 1, size - 6, size - 6);
+                var checkRect = new Rectangle(3, (ClientRectangle.Height / 2) - ((_radioButtonSize - 7) / 2) - 1, _radioButtonSize - 6, _radioButtonSize - 6);
                 g.FillEllipse(fillColorBrush, checkRect);
             }
 
@@ -281,7 +281,7 @@ namespace AngelLoader.Forms.CustomControls
                 TextFormatFlags.NoPrefix |
                 TextFormatFlags.WordBreak;
 
-            var textRect = new Rectangle(size + 4, 0, ClientRectangle.Width - size, ClientRectangle.Height);
+            var textRect = new Rectangle(_radioButtonSize + 4, 0, ClientRectangle.Width - _radioButtonSize, ClientRectangle.Height);
             TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);
         }
 

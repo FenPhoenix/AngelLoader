@@ -17,6 +17,8 @@ namespace AngelLoader.Forms.CustomControls
 
         private bool _spacePressed;
 
+        private const int _checkBoxSize = 12;
+
         #endregion
 
         [PublicAPI]
@@ -325,8 +327,6 @@ namespace AngelLoader.Forms.CustomControls
             var g = e.Graphics;
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
-            var size = Consts.CheckBoxSize;
-
             var textColorPen = DarkColors.LightTextPen;
             var borderPen = DarkColors.LightTextPen;
             var fillBrush = DarkColors.LightTextBrush;
@@ -368,7 +368,7 @@ namespace AngelLoader.Forms.CustomControls
                 g.FillRectangle(DarkColors.GreyBackgroundBrush, rect);
             }
 
-            var outlineBoxRect = new Rectangle(0, (rect.Height / 2) - (size / 2), size, size);
+            var outlineBoxRect = new Rectangle(0, (rect.Height / 2) - (_checkBoxSize / 2), _checkBoxSize, _checkBoxSize);
             g.DrawRectangle(borderPen, outlineBoxRect);
 
             if (CheckState == CheckState.Checked)
@@ -396,7 +396,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             else if (CheckState == CheckState.Indeterminate)
             {
-                var boxRect = new Rectangle(3, ((rect.Height / 2) - ((size - 4) / 2)) + 1, size - 5, size - 5);
+                var boxRect = new Rectangle(3, ((rect.Height / 2) - ((_checkBoxSize - 4) / 2)) + 1, _checkBoxSize - 5, _checkBoxSize - 5);
                 g.FillRectangle(fillBrush, boxRect);
             }
 
@@ -406,7 +406,7 @@ namespace AngelLoader.Forms.CustomControls
                 TextFormatFlags.NoClipping |
                 TextFormatFlags.WordBreak;
 
-            var textRect = new Rectangle(size + 4, 0, rect.Width - size, rect.Height);
+            var textRect = new Rectangle(_checkBoxSize + 4, 0, rect.Width - _checkBoxSize, rect.Height);
             TextRenderer.DrawText(g, Text, Font, textRect, textColorPen.Color, textFormatFlags);
         }
 

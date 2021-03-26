@@ -23,6 +23,8 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        private const int _padding = 10;
+
         private void SetUpTheme()
         {
             // Original:
@@ -73,9 +75,9 @@ namespace AngelLoader.Forms.CustomControls
             g.DrawRectangle(DarkColors.LightBorderPen, borderRect);
 
             var textRect = new Rectangle(
-                rect.Left + Consts.Padding,
+                rect.Left + _padding,
                 rect.Top,
-                rect.Width - (Consts.Padding * 2),
+                rect.Width - (_padding * 2),
                 (int)stringSize.Height);
 
             var modRect = new Rectangle(textRect.Left, textRect.Top, Math.Min(textRect.Width, (int)stringSize.Width), textRect.Height);

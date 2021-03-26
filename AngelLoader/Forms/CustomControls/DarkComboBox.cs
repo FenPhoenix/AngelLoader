@@ -9,6 +9,8 @@ namespace AngelLoader.Forms.CustomControls
 {
     public class DarkComboBox : ComboBox, IDarkable
     {
+        private const int _padding = 10;
+
         // No TextAlign property, so leave constant
         private const TextFormatFlags _textFormat =
             TextFormatFlags.Default |
@@ -174,7 +176,7 @@ namespace AngelLoader.Forms.CustomControls
             const int arrowHeight = 4;
 
             var arrowRect = new Rectangle(
-                rect.Width - arrowWidth - (Consts.Padding / 2),
+                rect.Width - arrowWidth - (_padding / 2),
                 (rect.Height / 2) - (arrowHeight / 2),
                 arrowWidth,
                 arrowHeight
@@ -193,7 +195,7 @@ namespace AngelLoader.Forms.CustomControls
 
             var textRect = new Rectangle(rect.Left + padding,
                 rect.Top + padding,
-                rect.Width - arrowWidth - (Consts.Padding / 2) - (padding * 2),
+                rect.Width - arrowWidth - (_padding / 2) - (padding * 2),
                 rect.Height - (padding * 2));
 
             // Explicitly set the fill color so that the antialiasing/ClearType looks right
