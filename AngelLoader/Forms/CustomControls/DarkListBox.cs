@@ -34,24 +34,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public new void BeginUpdate()
-        {
-            base.BeginUpdate();
-            _updatingItems++;
-        }
-
-        public new void EndUpdate()
-        {
-            base.EndUpdate();
-            _updatingItems = (_updatingItems - 1).ClampToZero();
-            if (_updatingItems == 0)
-            {
-                // It's way too slow to do this for every single item added, so when we're in update mode, just
-                // do it only once at the end of the update. This keeps us fast enough to get on with.
-                AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            }
-        }
-
         public DarkListBox()
         {
             FullRowSelect = true;
@@ -75,6 +57,45 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public methods
 
+        public new void BeginUpdate()
+        {
+            base.BeginUpdate();
+            _updatingItems++;
+        }
+
+        public new void EndUpdate()
+        {
+            base.EndUpdate();
+            _updatingItems = (_updatingItems - 1).ClampToZero();
+            if (_updatingItems == 0)
+            {
+                // It's way too slow to do this for every single item added, so when we're in update mode, just
+                // do it only once at the end of the update. This keeps us fast enough to get on with.
+                AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            }
+        }
+
+        internal void RemoveAndSelectNearest()
+        {
+            if (SelectedIndex == -1) return;
+
+            int oldSelectedIndex = SelectedIndex;
+
+            Items.RemoveAt(SelectedIndex);
+
+            if (oldSelectedIndex < Items.Count && Items.Count > 1)
+            {
+                SelectedIndex = oldSelectedIndex;
+            }
+            else if (Items.Count > 1)
+            {
+                SelectedIndex = oldSelectedIndex - 1;
+            }
+            else if (Items.Count == 1)
+            {
+                SelectedIndex = 0;
+            }
+        }
 
         #endregion
 

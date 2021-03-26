@@ -122,7 +122,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 ProgressBar.Style = ProgressBarStyle.Blocks;
                 ProgressCancelButton.Visible = progressTask != ProgressTask.CacheFM;
-                ProgressBar.SetValueInstant(0);
+                ProgressBar.Value = 0;
             }
 
             if (!suppressShow) ShowThis();
@@ -146,7 +146,7 @@ namespace AngelLoader.Forms.CustomControls
             ProgressMessageLabel.Text = "";
             CurrentThingLabel.Text = "";
             ProgressPercentLabel.Text = "";
-            ProgressBar.SetValueInstant(0);
+            ProgressBar.Value = 0;
 
             ProgressBar.Style = ProgressBarStyle.Blocks;
             ProgressCancelButton.Show();
@@ -161,7 +161,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
         {
-            ProgressBar.SetValueInstant(percent);
+            ProgressBar.Value = percent;
             string first = LText.ProgressBox.ReportScanningFirst;
             string between = LText.ProgressBox.ReportScanningBetweenNumAndTotal;
             string last = LText.ProgressBox.ReportScanningLast;
@@ -174,7 +174,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ReportFMExtractProgress(int percent)
         {
-            ProgressBar.SetValueInstant(percent);
+            ProgressBar.Value = percent;
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
             ProgressPercentLabel.Text = percent + "%";
 
@@ -183,7 +183,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ReportCachingProgress(int percent)
         {
-            ProgressBar.SetValueInstant(percent);
+            ProgressBar.Value = percent;
             ProgressPercentLabel.Text = percent + "%";
 
             if (Visible)
@@ -201,7 +201,7 @@ namespace AngelLoader.Forms.CustomControls
             ProgressCancelButton.Hide();
             ProgressBar.Style = ProgressBarStyle.Marquee;
             ProgressMessageLabel.Text = LText.ProgressBox.CancelingInstall;
-            ProgressBar.SetValueInstant(0);
+            ProgressBar.Value = 0;
             ProgressPercentLabel.Text = "";
         }
 

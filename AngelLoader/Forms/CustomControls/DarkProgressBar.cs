@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -34,6 +31,31 @@ namespace AngelLoader.Forms.CustomControls
                 }
 
                 Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// Sets the progress bar's value instantly. Avoids the la-dee-dah catch-up-when-I-feel-like-it nature of
+        /// the progress bar that makes it look annoying and unprofessional.
+        /// </summary>
+        /// <param name="value"></param>
+        [PublicAPI]
+        public new int Value
+        {
+            get => base.Value;
+            set
+            {
+                value = value.Clamp(Minimum, Maximum);
+
+                if (value == Maximum)
+                {
+                    base.Value = Maximum;
+                }
+                else
+                {
+                    base.Value = (value + 1).Clamp(Minimum, Maximum);
+                    base.Value = value;
+                }
             }
         }
     }

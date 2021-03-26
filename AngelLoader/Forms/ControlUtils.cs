@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.WinAPI;
@@ -34,27 +33,6 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-
-        /// <summary>
-        /// Sets the progress bar's value instantly. Avoids the la-dee-dah catch-up-when-I-feel-like-it nature of
-        /// the progress bar that makes it look annoying and unprofessional.
-        /// </summary>
-        /// <param name="pb"></param>
-        /// <param name="value"></param>
-        public static void SetValueInstant(this ProgressBar pb, int value)
-        {
-            value = value.Clamp(pb.Minimum, pb.Maximum);
-
-            if (value == pb.Maximum)
-            {
-                pb.Value = pb.Maximum;
-            }
-            else
-            {
-                pb.Value = (value + 1).Clamp(pb.Minimum, pb.Maximum);
-                pb.Value = value;
-            }
-        }
 
         #region Centering
 
@@ -135,50 +113,11 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        internal static void RemoveAndSelectNearest(this DarkListBox listBox)
-        {
-            if (listBox.SelectedIndex == -1) return;
-
-            int oldSelectedIndex = listBox.SelectedIndex;
-
-            listBox.Items.RemoveAt(listBox.SelectedIndex);
-
-            if (oldSelectedIndex < listBox.Items.Count && listBox.Items.Count > 1)
-            {
-                listBox.SelectedIndex = oldSelectedIndex;
-            }
-            else if (listBox.Items.Count > 1)
-            {
-                listBox.SelectedIndex = oldSelectedIndex - 1;
-            }
-            else if (listBox.Items.Count == 1)
-            {
-                listBox.SelectedIndex = 0;
-            }
-        }
-
         internal static void HideFocusRectangle(this Control control) => Native.SendMessage(
             control.Handle,
             Native.WM_CHANGEUISTATE,
             new IntPtr(Native.SetControlFocusToHidden),
             new IntPtr(0));
-
-        internal static void MakeColumnVisible(DataGridViewColumn column, bool visible)
-        {
-            column.Visible = visible;
-            // Fix for zero-height glitch when Rating column gets swapped out when all columns are hidden
-            try
-            {
-                column.Width++;
-                column.Width--;
-            }
-            // stupid OCD check in case adding 1 would take us over 65536
-            catch (ArgumentOutOfRangeException)
-            {
-                column.Width--;
-                column.Width++;
-            }
-        }
 
         #region Theming
 

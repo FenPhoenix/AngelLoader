@@ -238,7 +238,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 col.DisplayIndex = colData.DisplayIndex;
                 if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
-                ControlUtils.MakeColumnVisible(col, colData.Visible);
+                MakeColumnVisible(col, colData.Visible);
 
                 FMsDGV_ColumnHeaderLLMenu.SetColumnChecked((int)colData.Id, colData.Visible);
             }
@@ -282,6 +282,23 @@ namespace AngelLoader.Forms.CustomControls
             finally
             {
                 if (suspendResume) this.ResumeDrawing();
+            }
+        }
+
+        internal void MakeColumnVisible(DataGridViewColumn column, bool visible)
+        {
+            column.Visible = visible;
+            // Fix for zero-height glitch when Rating column gets swapped out when all columns are hidden
+            try
+            {
+                column.Width++;
+                column.Width--;
+            }
+            // stupid OCD check in case adding 1 would take us over 65536
+            catch (ArgumentOutOfRangeException)
+            {
+                column.Width--;
+                column.Width++;
             }
         }
 

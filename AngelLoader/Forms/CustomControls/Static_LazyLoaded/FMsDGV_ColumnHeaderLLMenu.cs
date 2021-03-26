@@ -55,7 +55,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 switch (property)
                 {
                     case ColumnProperties.Visible:
-                        MakeColumnVisible(c, true);
+                        _owner.FMsDGV.MakeColumnVisible(c, true);
                         break;
                     case ColumnProperties.DisplayIndex:
                         c.DisplayIndex = c.Index;
@@ -84,7 +84,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static void CheckBoxMenuItems_Click(object sender, EventArgs e)
         {
             var s = (ToolStripMenuItemCustom)sender;
-            MakeColumnVisible(_owner.FMsDGV.Columns[(int)s.Tag], s.Checked);
+            _owner.FMsDGV.MakeColumnVisible(_owner.FMsDGV.Columns[(int)s.Tag], s.Checked);
             _owner.FMsDGV.SelectProperly();
         }
 
