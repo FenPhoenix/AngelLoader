@@ -192,7 +192,10 @@ namespace AngelLoader.Forms
         {
             const int maxStackCount = 100;
 
-            controlColors.Add(new KeyValuePair<Control, (Color ForeColor, Color BackColor)>(control, (control.ForeColor, control.BackColor)));
+            if (control.Tag is not LazyLoaded tag || tag != LazyLoaded.True)
+            {
+                controlColors.Add(new KeyValuePair<Control, (Color ForeColor, Color BackColor)>(control, (control.ForeColor, control.BackColor)));
+            }
 
             if (alsoCreateControlHandles && !control.IsHandleCreated)
             {

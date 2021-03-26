@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
@@ -34,14 +35,14 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components);
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
 
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 // Not localized because they consist solely of proper names! Don't remove these!
-                ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom("DarkLoader..."),
-                ImportFromFMSelMenuItem = new ToolStripMenuItemCustom("FMSel..."),
-                ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom("NewDarkLoader...")
+                ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom("DarkLoader...") { Tag = LazyLoaded.True },
+                ImportFromFMSelMenuItem = new ToolStripMenuItemCustom("FMSel...") { Tag = LazyLoaded.True },
+                ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom("NewDarkLoader...") { Tag = LazyLoaded.True }
             });
 
             foreach (ToolStripMenuItemCustom item in Menu.Items)

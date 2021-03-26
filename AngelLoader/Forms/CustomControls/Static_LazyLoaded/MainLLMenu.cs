@@ -38,15 +38,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Menu = new DarkContextMenu(_darkModeEnabled, components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                GameVersionsMenuItem = new ToolStripMenuItemCustom(),
+                GameVersionsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True},
 #if false
-                GlobalFMStatsMenuItem = new ToolStripMenuItemCustom()
+                GlobalFMStatsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True}
 #endif
-                new ToolStripSeparator(),
-                ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1 },
-                AboutMenuItem = new ToolStripMenuItemCustom(),
-                new ToolStripSeparator(),
-                ExitMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.Alt | Keys.F4 }
+                new ToolStripSeparator { Tag = LazyLoaded.True },
+                ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1, Tag = LazyLoaded.True },
+                AboutMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True},
+                new ToolStripSeparator { Tag = LazyLoaded.True },
+                ExitMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.Alt | Keys.F4, Tag = LazyLoaded.True }
             });
 
             GameVersionsMenuItem.Click += form.MainMenu_GameVersionsMenuItem_Click;

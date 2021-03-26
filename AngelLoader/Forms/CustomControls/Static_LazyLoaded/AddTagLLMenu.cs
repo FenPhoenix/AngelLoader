@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
@@ -26,7 +27,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components);
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
             Menu.Closed += form.AddTagMenu_Closed;
 
             _constructed = true;

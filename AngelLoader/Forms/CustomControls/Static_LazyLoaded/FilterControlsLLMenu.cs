@@ -46,18 +46,18 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             _owner = form;
 
-            Menu = new ContextMenuStripCustom(_darkModeEnabled, components);
+            Menu = new ContextMenuStripCustom(_darkModeEnabled, components) { Tag = LazyLoaded.True };
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                TitleMenuItem = new ToolStripMenuItemCustom(),
-                AuthorMenuItem = new ToolStripMenuItemCustom(),
-                ReleaseDateMenuItem = new ToolStripMenuItemCustom(),
-                LastPlayedMenuItem = new ToolStripMenuItemCustom(),
-                TagsMenuItem = new ToolStripMenuItemCustom(),
-                FinishedStateMenuItem = new ToolStripMenuItemCustom(),
-                RatingMenuItem = new ToolStripMenuItemCustom(),
-                ShowUnsupportedMenuItem = new ToolStripMenuItemCustom(),
-                ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom()
+                TitleMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                AuthorMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                ReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                LastPlayedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                TagsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                FinishedStateMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                RatingMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                ShowUnsupportedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True }
             });
 
             for (int i = 0; i < Menu.Items.Count; i++)

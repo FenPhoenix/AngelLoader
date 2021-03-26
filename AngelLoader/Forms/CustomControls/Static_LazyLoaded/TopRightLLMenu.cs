@@ -40,14 +40,14 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation and hookup events
 
-            Menu = new ContextMenuStripCustom(_darkModeEnabled, components);
+            Menu = new ContextMenuStripCustom(_darkModeEnabled, components) { Tag = LazyLoaded.True };
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                StatsMenuItem = new ToolStripMenuItemCustom(),
-                EditFMMenuItem = new ToolStripMenuItemCustom(),
-                CommentMenuItem = new ToolStripMenuItemCustom(),
-                TagsMenuItem = new ToolStripMenuItemCustom(),
-                PatchMenuItem = new ToolStripMenuItemCustom()
+                StatsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                EditFMMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                CommentMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                TagsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                PatchMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True }
             });
             for (int i = 0; i < Menu.Items.Count; i++)
             {

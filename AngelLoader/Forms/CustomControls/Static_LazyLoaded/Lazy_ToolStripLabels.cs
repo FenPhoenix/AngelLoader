@@ -17,7 +17,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     internal static class Lazy_ToolStripLabels
     {
         private static bool _darkModeEnabled;
-
         [PublicAPI]
         internal static bool DarkModeEnabled
         {
@@ -51,7 +50,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             if (!_constructed[li])
             {
-                _labels[li] = new ToolStripLabel();
+                _labels[li] = new ToolStripLabel { Tag = LazyLoaded.True };
                 var _label = _labels[li];
 
                 var container = owner.FilterIconButtonsToolStrip;

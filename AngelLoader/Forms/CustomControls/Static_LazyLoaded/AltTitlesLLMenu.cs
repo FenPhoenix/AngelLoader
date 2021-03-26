@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
@@ -28,7 +29,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (Constructed) return;
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components);
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
 
             Constructed = true;
         }
@@ -36,7 +37,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static void AddRange(List<ToolStripItem> items)
         {
             if (!Constructed) return;
-            Menu.Items.AddRange(items.ToArray());
+
+            ToolStripItem[] itemsArray = items.ToArray();
+
+            for (int i = 0; i < itemsArray.Length; i++)
+            {
+                itemsArray[i].Tag = LazyLoaded.True;
+            }
+
+            Menu.Items.AddRange(itemsArray);
         }
 
         internal static void ClearItems()

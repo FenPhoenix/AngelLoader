@@ -40,7 +40,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 {
                     var container = owner.BottomRightButtonsFLP;
 
-                    Button = new DarkButton();
+                    Button = new DarkButton { Tag = LazyLoaded.True };
 
                     container.Controls.Add(Button);
                     container.Controls.SetChildIndex(Button, 0);

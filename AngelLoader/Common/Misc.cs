@@ -58,6 +58,11 @@ namespace AngelLoader
 
         internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }
 
+        /// <summary>
+        /// Set a control's tag to this to tell the darkable control dictionary filler to ignore it if True.
+        /// </summary>
+        internal enum LazyLoaded { True, False };
+
         // Non-consts for file size; these aren't perf-critical at all
         [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
         internal static class HelpSections

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
@@ -30,7 +31,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (Constructed) return;
 
-            ListBox = new DarkListBox();
+            ListBox = new DarkListBox { Tag = LazyLoaded.True };
             owner.EverythingPanel.Controls.Add(ListBox);
             ListBox.DarkModeEnabled = _darkModeEnabled;
             ListBox.Scrollable = true;

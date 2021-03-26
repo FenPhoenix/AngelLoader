@@ -118,7 +118,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation
 
-            Menu = new ContextMenuStripCustom(_darkModeEnabled, _owner.GetComponents());
+            Menu = new ContextMenuStripCustom(_darkModeEnabled, _owner.GetComponents()) { Tag = LazyLoaded.True };
 
             #endregion
 
@@ -126,29 +126,29 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                    ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom(),
-                    ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom(),
-                    ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom(),
-                    new ToolStripSeparator()
+                    ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom{ Tag = LazyLoaded.True },
+                    ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    new ToolStripSeparator { Tag = LazyLoaded.True }
             });
 
             #region Fill ColumnHeaderCheckBoxMenuItems array
 
             ColumnHeaderCheckBoxMenuItems = new[]
             {
-                    ShowGameMenuItem = new ToolStripMenuItemCustom(),
-                    ShowInstalledMenuItem = new ToolStripMenuItemCustom(),
-                    ShowTitleMenuItem = new ToolStripMenuItemCustom(),
-                    ShowArchiveMenuItem = new ToolStripMenuItemCustom(),
-                    ShowAuthorMenuItem = new ToolStripMenuItemCustom(),
-                    ShowSizeMenuItem = new ToolStripMenuItemCustom(),
-                    ShowRatingMenuItem = new ToolStripMenuItemCustom(),
-                    ShowFinishedMenuItem = new ToolStripMenuItemCustom(),
-                    ShowReleaseDateMenuItem = new ToolStripMenuItemCustom(),
-                    ShowLastPlayedMenuItem = new ToolStripMenuItemCustom(),
-                    ShowDateAddedMenuItem = new ToolStripMenuItemCustom(),
-                    ShowDisabledModsMenuItem = new ToolStripMenuItemCustom(),
-                    ShowCommentMenuItem = new ToolStripMenuItemCustom()
+                    ShowGameMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowInstalledMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowTitleMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowArchiveMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowAuthorMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowSizeMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowRatingMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowFinishedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowLastPlayedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowDateAddedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowDisabledModsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                    ShowCommentMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True }
                 };
 
             for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)

@@ -2769,28 +2769,28 @@ namespace AngelLoader.Forms
             {
                 if (catAndTag.Tags.Count == 0)
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category + ":");
+                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category + ":") { Tag = LazyLoaded.True };
                     catItem.Click += AddTagMenuEmptyItem_Click;
                     addTagMenuItems.Add(catItem);
                 }
                 else
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category);
+                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Category) { Tag = LazyLoaded.True };
                     addTagMenuItems.Add(catItem);
 
                     var last = addTagMenuItems[addTagMenuItems.Count - 1];
 
                     if (catAndTag.Category != "misc")
                     {
-                        var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory);
+                        var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory) { Tag = LazyLoaded.True };
                         customItem.Click += AddTagMenuCustomItem_Click;
                         ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(customItem);
-                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator());
+                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator { Tag = LazyLoaded.True });
                     }
 
                     foreach (string tag in catAndTag.Tags)
                     {
-                        var tagItem = new ToolStripMenuItemWithBackingText(tag);
+                        var tagItem = new ToolStripMenuItemWithBackingText(tag) { Tag = LazyLoaded.True };
 
                         if (catAndTag.Category == "misc")
                         {
