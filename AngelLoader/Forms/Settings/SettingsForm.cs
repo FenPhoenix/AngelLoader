@@ -574,7 +574,8 @@ namespace AngelLoader.Forms
                     theme,
                     this,
                     _controlColors,
-                    x => x is SplitterPanel
+                    x => x is SplitterPanel,
+                    capacity: 150
                 );
 
                 Images.DarkModeEnabled = darkMode;

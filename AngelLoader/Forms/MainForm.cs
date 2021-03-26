@@ -1436,7 +1436,8 @@ namespace AngelLoader.Forms
                     x => x.EqualsIfNotNull(ProgressBox)
                          || (_progressBoxConstructed && x is Control xControl && ProgressBox!.Controls.Contains(xControl))
                          || x is SplitterPanel,
-                    alsoCreateControlHandles: alsoCreateControlHandles
+                    alsoCreateControlHandles: alsoCreateControlHandles,
+                    capacity: 150
                 );
 
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible, theme);

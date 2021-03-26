@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -243,14 +242,19 @@ namespace AngelLoader.Forms
             Form form,
             List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> controlColors,
             Func<Component, bool>? excludePredicate = null,
-            bool alsoCreateControlHandles = false
-            )
+            bool alsoCreateControlHandles = false,
+            int capacity = -1
+        )
         {
             bool darkMode = theme == VisualTheme.Dark;
 
             // @DarkModeNote(FillControlDict): Controls might change their colors after construct
             // Remember to handle this if new controls are added that this applies to.
-            if (controlColors.Count == 0) FillControlDict(form, controlColors, alsoCreateControlHandles);
+            if (controlColors.Count == 0)
+            {
+                if (capacity >= 0) controlColors.Capacity = capacity;
+                FillControlDict(form, controlColors, alsoCreateControlHandles);
+            }
 
             foreach (var item in controlColors)
             {
