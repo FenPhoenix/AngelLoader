@@ -13,7 +13,6 @@ using AngelLoader.Forms.CustomControls;
 using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
-using static AngelLoader.WinAPI.Native;
 
 namespace AngelLoader.Forms
 {
@@ -24,13 +23,13 @@ namespace AngelLoader.Forms
         internal static void SuspendDrawing(this Control control)
         {
             if (!control.IsHandleCreated || !control.Visible) return;
-            SendMessage(control.Handle, WM_SETREDRAW, false, 0);
+            Native.SendMessage(control.Handle, Native.WM_SETREDRAW, false, 0);
         }
 
         internal static void ResumeDrawing(this Control control)
         {
             if (!control.IsHandleCreated || !control.Visible) return;
-            SendMessage(control.Handle, WM_SETREDRAW, true, 0);
+            Native.SendMessage(control.Handle, Native.WM_SETREDRAW, true, 0);
             control.Refresh();
         }
 
@@ -158,10 +157,10 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static void HideFocusRectangle(this Control control) => SendMessage(
+        internal static void HideFocusRectangle(this Control control) => Native.SendMessage(
             control.Handle,
-            WM_CHANGEUISTATE,
-            new IntPtr(SetControlFocusToHidden),
+            Native.WM_CHANGEUISTATE,
+            new IntPtr(Native.SetControlFocusToHidden),
             new IntPtr(0));
 
         internal static void MakeColumnVisible(DataGridViewColumn column, bool visible)
@@ -328,27 +327,27 @@ namespace AngelLoader.Forms
 
         #region Scrolling
 
-        internal static SCROLLINFO GetCurrentScrollInfo(IntPtr handle, int direction)
+        internal static Native.SCROLLINFO GetCurrentScrollInfo(IntPtr handle, int direction)
         {
-            var si = new SCROLLINFO();
+            var si = new Native.SCROLLINFO();
             si.cbSize = (uint)Marshal.SizeOf(si);
-            si.fMask = (uint)ScrollInfoMask.SIF_ALL;
-            GetScrollInfo(handle, direction, ref si);
+            si.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
+            Native.GetScrollInfo(handle, direction, ref si);
             return si;
         }
 
-        internal static void RepositionScroll(IntPtr handle, SCROLLINFO si, int direction)
+        internal static void RepositionScroll(IntPtr handle, Native.SCROLLINFO si, int direction)
         {
             // Reposition scroll
-            SetScrollInfo(handle, direction, ref si, true);
+            Native.SetScrollInfo(handle, direction, ref si, true);
 
             // Send a WM_*SCROLL scroll message using SB_THUMBTRACK as wParam
             // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
-            IntPtr ptrWParam = new IntPtr(SB_THUMBTRACK + (0x10000 * si.nPos));
+            IntPtr ptrWParam = new IntPtr(Native.SB_THUMBTRACK + (0x10000 * si.nPos));
             IntPtr ptrLParam = new IntPtr(0);
 
-            IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)SB_THUMBTRACK;
-            SendMessage(handle, direction == SB_VERT ? WM_VSCROLL : WM_HSCROLL, wp, ptrLParam);
+            IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)Native.SB_THUMBTRACK;
+            Native.SendMessage(handle, direction == Native.SB_VERT ? Native.WM_VSCROLL : Native.WM_HSCROLL, wp, ptrLParam);
         }
 
         #endregion
@@ -357,29 +356,29 @@ namespace AngelLoader.Forms
 
         internal static void SetMessageBoxIcon(PictureBox pictureBox, MessageBoxIcon icon)
         {
-            var sii = new SHSTOCKICONINFO();
+            var sii = new Native.SHSTOCKICONINFO();
             try
             {
                 // ReSharper disable ConditionIsAlwaysTrueOrFalse
-                SHSTOCKICONID sysIcon =
+                Native.SHSTOCKICONID sysIcon =
                     icon == MessageBoxIcon.Error ||
                     icon == MessageBoxIcon.Hand ||
                     icon == MessageBoxIcon.Stop
-                  ? SHSTOCKICONID.SIID_ERROR
+                  ? Native.SHSTOCKICONID.SIID_ERROR
                   : icon == MessageBoxIcon.Question
-                  ? SHSTOCKICONID.SIID_HELP
+                  ? Native.SHSTOCKICONID.SIID_HELP
                   : icon == MessageBoxIcon.Exclamation ||
                     icon == MessageBoxIcon.Warning
-                  ? SHSTOCKICONID.SIID_WARNING
+                  ? Native.SHSTOCKICONID.SIID_WARNING
                   : icon == MessageBoxIcon.Asterisk ||
                     icon == MessageBoxIcon.Information
-                  ? SHSTOCKICONID.SIID_INFO
+                  ? Native.SHSTOCKICONID.SIID_INFO
                   : throw new ArgumentOutOfRangeException();
                 // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
-                sii.cbSize = (uint)Marshal.SizeOf(typeof(SHSTOCKICONINFO));
+                sii.cbSize = (uint)Marshal.SizeOf(typeof(Native.SHSTOCKICONINFO));
 
-                int result = SHGetStockIconInfo(sysIcon, SHGSI_ICON, ref sii);
+                int result = Native.SHGetStockIconInfo(sysIcon, Native.SHGSI_ICON, ref sii);
                 Marshal.ThrowExceptionForHR(result, new IntPtr(-1));
 
                 pictureBox.Image = Icon.FromHandle(sii.hIcon).ToBitmap();
@@ -392,7 +391,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                DestroyIcon(sii.hIcon);
+                Native.DestroyIcon(sii.hIcon);
             }
         }
 
