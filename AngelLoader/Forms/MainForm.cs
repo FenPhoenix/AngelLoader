@@ -1441,6 +1441,12 @@ namespace AngelLoader.Forms
 
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible, theme);
 
+                // Set these first so other controls get the right data when they reference them
+                Images.DarkModeEnabled = darkMode;
+                Images.ReloadImages();
+
+                ControlUtils.RecreateAllToolTipHandles();
+
                 MainLLMenu.DarkModeEnabled = darkMode;
                 FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
                 FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
@@ -1455,14 +1461,10 @@ namespace AngelLoader.Forms
                 ExitLLButton.DarkModeEnabled = darkMode;
                 ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
                 ProgressBoxDarkModeEnabled = darkMode;
-                Images.DarkModeEnabled = darkMode;
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
                 RefreshFiltersButton.Image = Images.Refresh;
                 Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
-                ControlUtils.RecreateAllToolTipHandles();
-
-                Images.ReloadImages();
 
                 FilterByThief1Button.Image = Images.Thief1_21;
                 FilterByThief2Button.Image = Images.Thief2_21;

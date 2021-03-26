@@ -80,6 +80,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
                 FMContextMenu!.DarkModeEnabled = _darkModeEnabled;
                 FinishedOnMenu!.DarkModeEnabled = _darkModeEnabled;
+
+                DeleteFMMenuItem!.Image = Images.Trash_16;
             }
         }
 
