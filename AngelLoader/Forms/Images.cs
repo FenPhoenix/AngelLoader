@@ -164,12 +164,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        // Designer file isn't able to use a method call. Whatever.
-#if DEBUG
-        public static Bitmap Debug_Finished => FillFinishedOnBitmap(Difficulty.None, filterFinished: true);
-        public static Bitmap Debug_Unfinished => FillFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
-#endif
-
         public static Bitmap FillFinishedOnBitmap(Difficulty difficulty, bool filterFinished = false, bool filterUnfinished = false)
         {
             int width, height;
