@@ -8,7 +8,14 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
     internal static class MainLLMenu
     {
+        #region Backing fields
+
         private static bool _constructed;
+        private static bool _scanAllFMsMenuItemEnabled;
+
+        #endregion
+
+        #region Menu items
 
         internal static DarkContextMenu Menu = null!;
         private static ToolStripMenuItemCustom GameVersionsMenuItem = null!;
@@ -16,6 +23,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom GlobalFMStatsMenuItem = null!;
 #endif
         private static ToolStripMenuItemCustom ImportMenuItem = null!;
+        private static ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
         private static ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
         private static ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
         [UsedImplicitly]
@@ -28,7 +36,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom AboutMenuItem = null!;
         private static ToolStripMenuItemCustom ExitMenuItem = null!;
 
+        #endregion
+
         private static bool _darkModeEnabled;
+        [PublicAPI]
         public static bool DarkModeEnabled
         {
             get => _darkModeEnabled;
@@ -56,6 +67,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 new ToolStripSeparator { Tag = LazyLoaded.True },
                 ImportMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
                 new ToolStripSeparator { Tag = LazyLoaded.True },
+                ScanAllFMsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                new ToolStripSeparator { Tag = LazyLoaded.True },
                 ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1, Tag = LazyLoaded.True },
                 AboutMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True},
                 new ToolStripSeparator { Tag = LazyLoaded.True },
@@ -70,15 +83,17 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom("NewDarkLoader...") { Tag = LazyLoaded.True }
             });
 
-            foreach (ToolStripMenuItemCustom item in ImportMenuItem.DropDown.Items)
-            {
-                item.Click += ImportMenuItems_Click;
-            }
+            ScanAllFMsMenuItem.Enabled = _scanAllFMsMenuItemEnabled;
 
             GameVersionsMenuItem.Click += MainMenu_GameVersionsMenuItem_Click;
 #if false
             GlobalFMStatsMenuItem.Click += form.GlobalFMStatsMenuItem_Click;
 #endif
+            foreach (ToolStripMenuItemCustom item in ImportMenuItem.DropDown.Items)
+            {
+                item.Click += ImportMenuItems_Click;
+            }
+            ScanAllFMsMenuItem.Click += form.ScanAllFMsMenuItem_Click;
             ViewHelpFileMenuItem.Click += ViewHelpFileMenuItemClick;
             AboutMenuItem.Click += AboutMenuItemClick;
             ExitMenuItem.Click += (_, _) => form.Close();
@@ -97,12 +112,29 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             GlobalFMStatsMenuItem.Text = LText.MainMenu.GlobalFMStats;
 #endif
             ImportMenuItem.Text = LText.MainMenu.Import;
+            ScanAllFMsMenuItem.Text = LText.MainMenu.ScanAllFMs;
             ViewHelpFileMenuItem.Text = LText.MainMenu.ViewHelpFile;
             AboutMenuItem.Text = LText.MainMenu.About;
             ExitMenuItem.Text = LText.Global.Exit;
         }
 
         internal static bool Visible => _constructed && Menu.Visible;
+
+        internal static bool ScanAllFMsMenuItemEnabled
+        {
+            get => _constructed && ScanAllFMsMenuItem.Enabled;
+            set
+            {
+                if (_constructed)
+                {
+                    ScanAllFMsMenuItem.Enabled = value;
+                }
+                else
+                {
+                    _scanAllFMsMenuItemEnabled = value;
+                }
+            }
+        }
 
         private static void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
         {

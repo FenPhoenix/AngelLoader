@@ -36,7 +36,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
-            this.ScanAllFMsButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.BottomRightButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SettingsButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -203,22 +202,6 @@
             this.GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
             this.GameTabsImageList.Images.SetKeyName(3, "Shock2_16.png");
             // 
-            // ScanAllFMsButton
-            // 
-            this.ScanAllFMsButton.AutoSize = true;
-            this.ScanAllFMsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ScanAllFMsButton.Location = new System.Drawing.Point(262, 3);
-            this.ScanAllFMsButton.Margin = new System.Windows.Forms.Padding(15, 3, 0, 3);
-            this.ScanAllFMsButton.MinimumSize = new System.Drawing.Size(0, 36);
-            this.ScanAllFMsButton.Name = "ScanAllFMsButton";
-            this.ScanAllFMsButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
-            this.ScanAllFMsButton.Size = new System.Drawing.Size(126, 36);
-            this.ScanAllFMsButton.TabIndex = 59;
-            this.ScanAllFMsButton.Text = "Scan all FMs...";
-            this.ScanAllFMsButton.UseVisualStyleBackColor = true;
-            this.ScanAllFMsButton.Click += new System.EventHandler(this.ScanAllFMsButton_Click);
-            this.ScanAllFMsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanAllFMsButton_Paint);
-            // 
             // BottomPanel
             // 
             this.BottomPanel.Controls.Add(this.BottomRightButtonsFLP);
@@ -262,7 +245,6 @@
             this.BottomLeftButtonsFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BottomLeftButtonsFLP.Controls.Add(this.PlayFMButton);
             this.BottomLeftButtonsFLP.Controls.Add(this.PlayOriginalGameButton);
-            this.BottomLeftButtonsFLP.Controls.Add(this.ScanAllFMsButton);
             this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftButtonsFLP.Name = "BottomLeftButtonsFLP";
@@ -1934,7 +1916,6 @@
         internal AngelLoader.Forms.CustomControls.DataGridViewCustom FMsDGV;
         internal AngelLoader.Forms.CustomControls.DarkButton PlayFMButton;
         internal AngelLoader.Forms.CustomControls.RichTextBoxCustom ReadmeRichTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkButton ScanAllFMsButton;
         internal AngelLoader.Forms.CustomControls.SplitContainerCustom TopSplitContainer;
         internal System.Windows.Forms.Panel EverythingPanel;
         internal AngelLoader.Forms.CustomControls.DarkButton SettingsButton;

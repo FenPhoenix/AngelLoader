@@ -604,7 +604,6 @@ namespace AngelLoader.Forms
 
             _bottomAreaSeparatedItems = new Control[]
             {
-                ScanAllFMsButton,
                 WebSearchButton
             };
 
@@ -1360,7 +1359,6 @@ namespace AngelLoader.Forms
 
                 PlayOriginalGameButton.Text = LText.MainButtons.PlayOriginalGame;
                 WebSearchButton.Text = LText.MainButtons.WebSearch;
-                ScanAllFMsButton.Text = LText.MainButtons.ScanAllFMs;
 
                 SettingsButton.Text = LText.MainButtons.Settings;
                 ExitLLButton.Localize();
@@ -1679,6 +1677,28 @@ namespace AngelLoader.Forms
         }
 
         private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
+
+        internal async void ScanAllFMsMenuItem_Click(object sender, EventArgs e)
+        {
+            if (FMsViewList.Count == 0) return;
+
+            FMScanner.ScanOptions? scanOptions = null;
+            bool noneSelected;
+            using (var f = new ScanAllFMsForm())
+            {
+                if (f.ShowDialog() != DialogResult.OK) return;
+                noneSelected = f.NoneSelected;
+                if (!noneSelected) scanOptions = f.ScanOptions;
+            }
+
+            if (noneSelected)
+            {
+                ControlUtils.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
+                return;
+            }
+
+            if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await SortAndSetFilter(forceDisplayFM: true);
+        }
 
         #endregion
 
@@ -3702,28 +3722,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private async void ScanAllFMsButton_Click(object sender, EventArgs e)
-        {
-            if (FMsViewList.Count == 0) return;
-
-            FMScanner.ScanOptions? scanOptions = null;
-            bool noneSelected;
-            using (var f = new ScanAllFMsForm())
-            {
-                if (f.ShowDialog() != DialogResult.OK) return;
-                noneSelected = f.NoneSelected;
-                if (!noneSelected) scanOptions = f.ScanOptions;
-            }
-
-            if (noneSelected)
-            {
-                ControlUtils.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
-                return;
-            }
-
-            if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await SortAndSetFilter(forceDisplayFM: true);
-        }
-
         private void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM().Title);
 
         #endregion
@@ -3753,7 +3751,7 @@ namespace AngelLoader.Forms
         // Perpetual TODO: Make sure this clears everything including the top right tab stuff
         private void ClearShownData()
         {
-            if (FMsViewList.Count == 0) ScanAllFMsButton.Enabled = false;
+            MainLLMenu.ScanAllFMsMenuItemEnabled = FMsViewList.Count > 0;
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(false);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(false);
@@ -3876,7 +3874,7 @@ namespace AngelLoader.Forms
             #region Toggles
 
             // We should never get here when FMsList.Count == 0, but hey
-            if (FMsViewList.Count > 0) ScanAllFMsButton.Enabled = true;
+            MainLLMenu.ScanAllFMsMenuItemEnabled = FMsViewList.Count > 0;
 
             FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
             // FinishedOnUnknownMenuItem text stays the same
@@ -4399,8 +4397,6 @@ namespace AngelLoader.Forms
         private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
 
         private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
-
-        private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => Images.PaintScanAllFMsButton(ScanAllFMsButton, e);
 
         // Keep this one static because it calls out to the internal ButtonPainter rather than external Core, so
         // it's fine even if we modularize the view

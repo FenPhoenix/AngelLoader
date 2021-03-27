@@ -1091,25 +1091,6 @@ namespace AngelLoader.Forms
             e.Graphics.DrawLine(pen, 2, 11, 18, 11);
         }
 
-        internal static void PaintScanAllFMsButton(Button button, PaintEventArgs e)
-        {
-            SetSmoothingMode(e, SmoothingMode.AntiAlias);
-
-            Brush brush = button.Enabled ? _al_LightBlueBrush : SystemBrushes.ControlDark;
-
-            var cr = button.ClientRectangle;
-
-            FitRectInBounds(
-                e.Graphics,
-                MagnifierEmptyGPath.GetBounds(),
-                new RectangleF(
-                    (cr.X + button.Padding.Left) - (cr.Height - 12),
-                    cr.Y + 6,
-                    cr.Height - 12,
-                    cr.Height - 12));
-            e.Graphics.FillPath(brush, MagnifierEmptyGPath);
-        }
-
         internal static void PaintScanSmallButtons(Button button, PaintEventArgs e)
         {
             SetSmoothingMode(e, SmoothingMode.AntiAlias);

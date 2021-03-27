@@ -41,7 +41,6 @@ namespace AngelLoader.Forms
             #region Instantiation
 
             GameTabsImageList = new ImageList(components);
-            ScanAllFMsButton = new DarkButton();
             BottomPanel = new Panel();
             BottomRightButtonsFLP = new FlowLayoutPanel();
             SettingsButton = new DarkButton();
@@ -220,18 +219,6 @@ namespace AngelLoader.Forms
             GameTabsImageList.Images.Add(Images.Shock2_16);
             GameTabsImageList.ColorDepth = ColorDepth.Depth32Bit;
             // 
-            // ScanAllFMsButton
-            // 
-            ScanAllFMsButton.AutoSize = true;
-            ScanAllFMsButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ScanAllFMsButton.MinimumSize = new Size(0, 36);
-            ScanAllFMsButton.Margin = new Padding(15, 3, 0, 3);
-            ScanAllFMsButton.Padding = new Padding(33, 0, 6, 0);
-            ScanAllFMsButton.TabIndex = 59;
-            ScanAllFMsButton.UseVisualStyleBackColor = true;
-            ScanAllFMsButton.Click += ScanAllFMsButton_Click;
-            ScanAllFMsButton.PaintCustom += ScanAllFMsButton_Paint;
-            // 
             // BottomPanel
             // 
             BottomPanel.Controls.Add(BottomRightButtonsFLP);
@@ -269,7 +256,6 @@ namespace AngelLoader.Forms
             BottomLeftButtonsFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BottomLeftButtonsFLP.Controls.Add(PlayFMButton);
             BottomLeftButtonsFLP.Controls.Add(PlayOriginalGameButton);
-            BottomLeftButtonsFLP.Controls.Add(ScanAllFMsButton);
             BottomLeftButtonsFLP.Controls.Add(WebSearchButton);
             BottomLeftButtonsFLP.Location = new Point(2, 0);
             BottomLeftButtonsFLP.TabIndex = 36;
