@@ -216,6 +216,7 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string MainMenuToolTip = "Main menu";
             internal readonly string GameVersions = "Game versions...";
+            internal readonly string Import = "Import";
             //internal readonly string GlobalFMStats = "Global FM stats...";
             internal readonly string ViewHelpFile = "View help file";
             internal readonly string About = "About AngelLoader";
@@ -482,7 +483,6 @@ namespace AngelLoader.DataClasses
             internal readonly string PlayOriginalGame = "Play original game...";
             internal readonly string WebSearch = "Web search";
             internal readonly string ScanAllFMs = "Scan all FMs...";
-            internal readonly string Import = "Import from...";
             internal readonly string Settings = "Settings...";
         }
 

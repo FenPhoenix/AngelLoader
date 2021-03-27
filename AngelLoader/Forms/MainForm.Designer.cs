@@ -40,7 +40,6 @@
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.BottomRightButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SettingsButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.ImportButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.BottomLeftButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PlayOriginalGameButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -236,7 +235,6 @@
             this.BottomRightButtonsFLP.AutoSize = true;
             this.BottomRightButtonsFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BottomRightButtonsFLP.Controls.Add(this.SettingsButton);
-            this.BottomRightButtonsFLP.Controls.Add(this.ImportButton);
             this.BottomRightButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.BottomRightButtonsFLP.Location = new System.Drawing.Point(1443, 0);
             this.BottomRightButtonsFLP.Name = "BottomRightButtonsFLP";
@@ -257,21 +255,6 @@
             this.SettingsButton.UseVisualStyleBackColor = true;
             this.SettingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
             this.SettingsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.SettingsButton_Paint);
-            // 
-            // ImportButton
-            // 
-            this.ImportButton.AutoSize = true;
-            this.ImportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ImportButton.Location = new System.Drawing.Point(3, 3);
-            this.ImportButton.MinimumSize = new System.Drawing.Size(0, 36);
-            this.ImportButton.Name = "ImportButton";
-            this.ImportButton.Padding = new System.Windows.Forms.Padding(30, 0, 6, 0);
-            this.ImportButton.Size = new System.Drawing.Size(114, 36);
-            this.ImportButton.TabIndex = 61;
-            this.ImportButton.Text = "Import from...";
-            this.ImportButton.UseVisualStyleBackColor = true;
-            this.ImportButton.Click += new System.EventHandler(this.ImportButton_Click);
-            this.ImportButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ImportButton_Paint);
             // 
             // BottomLeftButtonsFLP
             // 
@@ -2020,7 +2003,6 @@
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByRatingButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByTagsButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByReleaseDateButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton ImportButton;
         internal AngelLoader.Forms.CustomControls.ToolStripCustom RefreshAreaToolStrip;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom ClearFiltersButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByThief3Button;

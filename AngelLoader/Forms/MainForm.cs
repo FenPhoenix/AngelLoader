@@ -1362,7 +1362,6 @@ namespace AngelLoader.Forms
                 WebSearchButton.Text = LText.MainButtons.WebSearch;
                 ScanAllFMsButton.Text = LText.MainButtons.ScanAllFMs;
 
-                ImportButton.Text = LText.MainButtons.Import;
                 SettingsButton.Text = LText.MainButtons.Settings;
                 ExitLLButton.Localize();
 
@@ -1451,7 +1450,6 @@ namespace AngelLoader.Forms
                 MainLLMenu.DarkModeEnabled = darkMode;
                 FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
                 FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
-                ImportFromLLMenu.DarkModeEnabled = darkMode;
                 TopRightLLMenu.DarkModeEnabled = darkMode;
                 AddTagLLMenu.DarkModeEnabled = darkMode;
                 AddTagLLDropDown.DarkModeEnabled = darkMode;
@@ -1681,32 +1679,6 @@ namespace AngelLoader.Forms
         }
 
         private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
-
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
-        {
-            using var f = new GameVersionsForm();
-            f.ShowDialog();
-        }
-
-#if false
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
-        {
-            using var f = new GlobalFMStatsForm();
-            f.ShowDialog();
-        }
-#endif
-
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void ViewHelpFileMenuItemClick(object sender, EventArgs e) => Core.OpenHelpFile();
-
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void AboutMenuItemClick(object sender, EventArgs e)
-        {
-            using var f = new AboutForm();
-            f.ShowDialog();
-        }
 
         #endregion
 
@@ -3758,25 +3730,6 @@ namespace AngelLoader.Forms
 
         #region Right side
 
-        private void ImportButton_Click(object sender, EventArgs e)
-        {
-            ImportFromLLMenu.Construct(this, components);
-            ShowMenu(ImportFromLLMenu.Menu, ImportButton, MenuPos.TopLeft);
-        }
-
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal async void ImportMenuItems_Click(object sender, EventArgs e)
-        {
-            ImportType importType =
-                  sender == ImportFromLLMenu.ImportFromDarkLoaderMenuItem
-                ? ImportType.DarkLoader
-                : sender == ImportFromLLMenu.ImportFromFMSelMenuItem
-                ? ImportType.FMSel
-                : ImportType.NewDarkLoader;
-
-            await Import.ImportFrom(importType);
-        }
-
         private async void SettingsButton_Click(object sender, EventArgs e)
         {
             var ret = Core.OpenSettings();
@@ -4426,12 +4379,6 @@ namespace AngelLoader.Forms
                     : enabled ? Images.Uninstall_24 : Images.Uninstall_24_Disabled,
                 10);
         }
-
-        private void ImportButton_Paint(object sender, PaintEventArgs e) => Images.PaintBitmapButton(
-            ImportButton,
-            e,
-            ImportButton.Enabled ? Images.Import : Images.Import_Disabled,
-            x: 10);
 
         private void SettingsButton_Paint(object sender, PaintEventArgs e) => Images.PaintBitmapButton(
             SettingsButton,
