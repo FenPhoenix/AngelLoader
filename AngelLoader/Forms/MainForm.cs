@@ -774,16 +774,6 @@ namespace AngelLoader.Forms
             }
 
             ChangeGameOrganization(startup: true);
-        }
-
-        // This one can't be multithreaded because it depends on the FMs list
-        public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned)
-        {
-            if (Visible) return;
-
-#if !ReleaseBeta && !ReleasePublic
-            UpdateGameScreenShotModes();
-#endif
 
             // PERF: If we're in the classic theme, we don't need to do anything
             // Do this here to prevent double-loading of RTF/GLML readmes
@@ -796,6 +786,16 @@ namespace AngelLoader.Forms
                 ControlUtils.CreateAllControlsHandles(this);
                 Images.ReloadImages();
             }
+
+#if !ReleaseBeta && !ReleasePublic
+            UpdateGameScreenShotModes();
+#endif
+        }
+
+        // This one can't be multithreaded because it depends on the FMs list
+        public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned)
+        {
+            if (Visible) return;
 
             // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
             // Find() to have been run first.
