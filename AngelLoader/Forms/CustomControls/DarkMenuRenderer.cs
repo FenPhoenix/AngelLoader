@@ -12,7 +12,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.Initialize(toolStrip);
 
-            toolStrip.BackColor = DarkColors.GreyBackground;
+            toolStrip.BackColor = DarkColors.Fen_ControlBackground;
             toolStrip.ForeColor = DarkColors.LightText;
         }
 
@@ -20,7 +20,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.InitializeItem(item);
 
-            item.BackColor = DarkColors.GreyBackground;
+            item.BackColor = DarkColors.Fen_ControlBackground;
             item.ForeColor = DarkColors.LightText;
 
             if (item.GetType() == typeof(ToolStripSeparator))
@@ -35,7 +35,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
         {
-            e.Graphics.FillRectangle(DarkColors.GreyBackgroundBrush, e.AffectedBounds);
+            e.Graphics.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, e.AffectedBounds);
         }
 
         protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
@@ -51,7 +51,7 @@ namespace AngelLoader.Forms.CustomControls
             var rect = new Rectangle(e.ImageRectangle.Left - 2, e.ImageRectangle.Top - 2,
                                          e.ImageRectangle.Width + 4, e.ImageRectangle.Height + 4);
 
-            g.FillRectangle(DarkColors.LightBorderBrush, rect);
+            g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
 
             var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
             g.DrawRectangle(DarkColors.BlueHighlightPen, modRect);
