@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 
@@ -48,13 +47,14 @@ namespace AngelLoader.Forms.CustomControls
                     menu.RenderMode = ToolStripRenderMode.ManagerRenderMode;
 
                     // Prevents wrong back color on separators
-                    menu.BackColor = SystemColors.Control;
+                    menu.ResetBackColor();
+                    menu.ResetForeColor();
 
                     // Prevents wrong back/fore color on items
                     foreach (ToolStripItem item in menu.Items)
                     {
-                        item.BackColor = SystemColors.Control;
-                        item.ForeColor = SystemColors.ControlText;
+                        item.ResetBackColor();
+                        item.ResetForeColor();
                     }
                 }
 
