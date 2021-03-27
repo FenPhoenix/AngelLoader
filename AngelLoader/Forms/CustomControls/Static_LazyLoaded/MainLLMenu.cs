@@ -23,7 +23,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom GlobalFMStatsMenuItem = null!;
 #endif
         private static ToolStripMenuItemCustom ImportMenuItem = null!;
-        private static ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
         private static ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
         private static ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
         [UsedImplicitly]
@@ -31,6 +30,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 #pragma warning disable IDE0052 // Remove unread private members
         private static ToolStripMenuItemCustom ImportFromNewDarkLoaderMenuItem = null!;
 #pragma warning restore IDE0052 // Remove unread private members
+
+        private static ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
+
+        private static ToolStripMenuItemCustom SettingsMenuItem = null!;
 
         private static ToolStripMenuItemCustom ViewHelpFileMenuItem = null!;
         private static ToolStripMenuItemCustom AboutMenuItem = null!;
@@ -68,6 +71,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 ImportMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
                 new ToolStripSeparator { Tag = LazyLoaded.True },
                 ScanAllFMsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                SettingsMenuItem = new ToolStripMenuItemCustom{ Tag = LazyLoaded.True },
                 new ToolStripSeparator { Tag = LazyLoaded.True },
                 ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1, Tag = LazyLoaded.True },
                 AboutMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True},
@@ -94,6 +98,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 item.Click += ImportMenuItems_Click;
             }
             ScanAllFMsMenuItem.Click += form.ScanAllFMsMenuItem_Click;
+            SettingsMenuItem.Click += form.Settings_Click;
             ViewHelpFileMenuItem.Click += ViewHelpFileMenuItemClick;
             AboutMenuItem.Click += AboutMenuItemClick;
             ExitMenuItem.Click += (_, _) => form.Close();
@@ -113,6 +118,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 #endif
             ImportMenuItem.Text = LText.MainMenu.Import;
             ScanAllFMsMenuItem.Text = LText.MainMenu.ScanAllFMs;
+            SettingsMenuItem.Text = LText.MainButtons.Settings;
             ViewHelpFileMenuItem.Text = LText.MainMenu.ViewHelpFile;
             AboutMenuItem.Text = LText.MainMenu.About;
             ExitMenuItem.Text = LText.Global.Exit;

@@ -236,7 +236,7 @@
             this.SettingsButton.TabIndex = 62;
             this.SettingsButton.Text = "Settings...";
             this.SettingsButton.UseVisualStyleBackColor = true;
-            this.SettingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
+            this.SettingsButton.Click += new System.EventHandler(this.Settings_Click);
             this.SettingsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.SettingsButton_Paint);
             // 
             // BottomLeftButtonsFLP

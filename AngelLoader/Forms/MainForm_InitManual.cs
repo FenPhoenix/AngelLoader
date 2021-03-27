@@ -247,7 +247,7 @@ namespace AngelLoader.Forms
             SettingsButton.Padding = new Padding(30, 0, 6, 0);
             SettingsButton.TabIndex = 62;
             SettingsButton.UseVisualStyleBackColor = true;
-            SettingsButton.Click += SettingsButton_Click;
+            SettingsButton.Click += Settings_Click;
             SettingsButton.PaintCustom += SettingsButton_Paint;
             // 
             // BottomLeftButtonsFLP

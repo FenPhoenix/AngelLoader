@@ -3728,7 +3728,7 @@ namespace AngelLoader.Forms
 
         #region Right side
 
-        private async void SettingsButton_Click(object sender, EventArgs e)
+        internal async void Settings_Click(object sender, EventArgs e)
         {
             var ret = Core.OpenSettings();
             if (ret.Canceled) return;
