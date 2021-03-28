@@ -25,9 +25,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        [PublicAPI]
-        public TabControlCustom() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
-
         #region API methods
 
         /// <summary>

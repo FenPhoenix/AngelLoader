@@ -20,30 +20,26 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                SetUpTheme();
+
+                SetStyle(
+                    // Double-buffering prevents flickering when mouse is moved over in dark mode
+                    ControlStyles.UserPaint,
+                    _darkModeEnabled);
+
+                if (_darkModeEnabled)
+                {
+                    _originalFont ??= (Font)Font.Clone();
+                }
+                else
+                {
+                    if (_originalFont != null) Font = (Font)_originalFont.Clone();
+                }
+
+                Refresh();
             }
         }
 
-        private void SetUpTheme()
-        {
-            SetStyle(
-                // Double-buffering prevents flickering when mouse is moved over in dark mode
-                ControlStyles.OptimizedDoubleBuffer
-                | ControlStyles.UserPaint
-                | ControlStyles.AllPaintingInWmPaint,
-                _darkModeEnabled);
-
-            if (_darkModeEnabled)
-            {
-                _originalFont ??= (Font)Font.Clone();
-            }
-            else
-            {
-                if (_originalFont != null) Font = (Font)_originalFont.Clone();
-            }
-
-            Refresh();
-        }
+        public DarkTabControl() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 
         protected override void OnPaint(PaintEventArgs e)
         {
