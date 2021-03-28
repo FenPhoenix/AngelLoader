@@ -568,7 +568,7 @@ namespace AngelLoader.Forms
 
             try
             {
-                if (!startup) this.SuspendDrawing();
+                if (!startup) MainSplitContainer.SuspendDrawing();
 
                 ControlUtils.ChangeFormThemeMode(
                     theme,
@@ -588,7 +588,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                if (!startup) this.ResumeDrawing();
+                if (!startup) MainSplitContainer.ResumeDrawing();
             }
         }
 
@@ -643,7 +643,7 @@ namespace AngelLoader.Forms
 
         private void Localize(bool suspendResume = true)
         {
-            if (suspendResume) this.SuspendDrawing();
+            if (suspendResume) MainSplitContainer.SuspendDrawing();
             try
             {
                 Text = _startup ? LText.SettingsWindow.StartupTitleText : LText.SettingsWindow.TitleText;
@@ -771,7 +771,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                if (suspendResume) this.ResumeDrawing();
+                if (suspendResume) MainSplitContainer.ResumeDrawing();
             }
         }
 
@@ -1134,7 +1134,7 @@ namespace AngelLoader.Forms
                 bool pagePosWasStored = _pageVScrollValues[index] != null;
                 try
                 {
-                    if (!initialCall && pagePosWasStored) this.SuspendDrawing();
+                    if (!initialCall && pagePosWasStored) MainSplitContainer.SuspendDrawing();
 
                     Pages[index].ShowPage();
                     for (int i = 0; i < pagesLength; i++) if (i != index) Pages[i].HidePage();
@@ -1156,7 +1156,7 @@ namespace AngelLoader.Forms
                 }
                 finally
                 {
-                    if (!initialCall && pagePosWasStored) this.ResumeDrawing();
+                    if (!initialCall && pagePosWasStored) MainSplitContainer.ResumeDrawing();
                 }
             }
         }

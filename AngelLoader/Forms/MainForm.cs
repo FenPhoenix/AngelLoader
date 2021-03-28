@@ -1123,7 +1123,7 @@ namespace AngelLoader.Forms
 
             if (!startup)
             {
-                this.SuspendDrawing();
+                EverythingPanel.SuspendDrawing();
             }
             else
             {
@@ -1371,7 +1371,7 @@ namespace AngelLoader.Forms
             {
                 if (!startup)
                 {
-                    this.ResumeDrawing();
+                    EverythingPanel.ResumeDrawing();
                 }
                 else
                 {
@@ -1406,7 +1406,7 @@ namespace AngelLoader.Forms
 
             try
             {
-                if (!startup) this.SuspendDrawing();
+                if (!startup) EverythingPanel.SuspendDrawing();
 
                 // TODO: @DarkMode(SetTheme excludes): We need to exclude lazy-loaded controls also.
                 // Figure out some way to just say "if a control is part of a lazy-loaded class" so we don't
@@ -1489,7 +1489,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                if (!startup) this.ResumeDrawing();
+                if (!startup) EverythingPanel.ResumeDrawing();
             }
         }
 
@@ -1550,14 +1550,14 @@ namespace AngelLoader.Forms
             try
             {
                 // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
-                this.SuspendDrawing();
+                EverythingPanel.SuspendDrawing();
                 _viewBlocked = block;
                 ViewBlockingPanel.Visible = block;
                 ViewBlockingPanel.BringToFront();
             }
             finally
             {
-                this.ResumeDrawing();
+                EverythingPanel.ResumeDrawing();
             }
         }
 
