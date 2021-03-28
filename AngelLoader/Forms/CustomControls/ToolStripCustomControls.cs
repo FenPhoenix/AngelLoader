@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
@@ -103,6 +104,8 @@ namespace AngelLoader.Forms.CustomControls
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
     public sealed class ToolStripButtonCustom : ToolStripButton, IDarkable
     {
+        private bool _mouseOver;
+
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
@@ -118,11 +121,52 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        protected override void OnMouseEnter(EventArgs e)
+        {
+            if (!_mouseOver)
+            {
+                _mouseOver = true;
+                Invalidate();
+            }
+
+            base.OnMouseEnter(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            if (_mouseOver)
+            {
+                _mouseOver = false;
+                Invalidate();
+            }
+            base.OnMouseLeave(e);
+        }
+
+        // TODO: @DarkMode(ToolStripButton): Pressed, checked/hot, checked/pressed
         protected override void OnPaint(PaintEventArgs e)
         {
-            // Use the mouseover BackColor when it's checked, for a more visible checked experience
-            if (Checked) e.Graphics.FillRectangle(Brushes.LightSkyBlue, 0, 0, Width, Height);
-            base.OnPaint(e);
+            if (_darkModeEnabled)
+            {
+                SolidBrush bgBrush =
+                    Checked
+                        ? DarkColors.BlueSelectionBrush
+                        : _mouseOver
+                        ? DarkColors.BlueSelectionBrush
+                        : DarkColors.Fen_ControlBackgroundBrush;
+
+                e.Graphics.FillRectangle(bgBrush, 0, 0, Width - 1, Height - 1);
+                if (_mouseOver || Checked)
+                {
+                    e.Graphics.DrawRectangle(DarkColors.BlueHighlightPen, 0, 0, Width - 1, Height - 1);
+                }
+                e.Graphics.DrawImage(Image, 2, 2, Size.Width - 4, Size.Height - 4);
+            }
+            else
+            {
+                // Use the mouseover BackColor when it's checked, for a more visible checked experience
+                if (Checked) e.Graphics.FillRectangle(Brushes.LightSkyBlue, 0, 0, Width, Height);
+                base.OnPaint(e);
+            }
         }
     }
 
