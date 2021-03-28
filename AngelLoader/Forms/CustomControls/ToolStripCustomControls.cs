@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
@@ -10,6 +9,32 @@ namespace AngelLoader.Forms.CustomControls
 {
     internal sealed class ToolStripCustom : ToolStrip, IDarkable
     {
+        private sealed class DarkModeToolStripColorTable : ProfessionalColorTable
+        {
+            public override Color ButtonSelectedHighlight => DarkColors.Fen_DGVColumnHeaderPressed;
+            public override Color ButtonSelectedGradientBegin => DarkColors.Fen_DGVColumnHeaderPressed;
+            public override Color ButtonSelectedGradientEnd => DarkColors.Fen_DGVColumnHeaderPressed;
+            public override Color ButtonSelectedGradientMiddle => DarkColors.Fen_DGVColumnHeaderPressed;
+
+            public override Color ButtonPressedHighlight => DarkColors.Fen_DGVColumnHeaderHighlight;
+            public override Color ButtonPressedGradientBegin => DarkColors.Fen_DGVColumnHeaderHighlight;
+            public override Color ButtonPressedGradientEnd => DarkColors.Fen_DGVColumnHeaderHighlight;
+            public override Color ButtonPressedGradientMiddle => DarkColors.Fen_DGVColumnHeaderHighlight;
+
+            public override Color ButtonCheckedHighlight => DarkColors.BlueSelection;
+            public override Color ButtonCheckedGradientBegin => DarkColors.BlueSelection;
+            public override Color ButtonCheckedGradientEnd => DarkColors.BlueSelection;
+            public override Color ButtonCheckedGradientMiddle => DarkColors.BlueSelection;
+
+            public override Color ButtonSelectedBorder => DarkColors.BlueHighlight;
+            public override Color ButtonSelectedHighlightBorder => DarkColors.BlueHighlight;
+            public override Color ButtonPressedBorder => DarkColors.BlueHighlight;
+            public override Color ButtonPressedHighlightBorder => DarkColors.BlueHighlight;
+            public override Color ButtonCheckedHighlightBorder => DarkColors.BlueHighlight;
+        }
+
+        private readonly DarkModeToolStripColorTable _colorTable = new();
+
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
@@ -21,9 +46,20 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
 
-                Refresh();
+                if (_darkModeEnabled)
+                {
+                    BackColor = DarkColors.Fen_ControlBackground;
+                    // We can't cache the renderer because for some reason it only takes the first time if we do
+                    Renderer = new ToolStripProfessionalRenderer(_colorTable) { RoundedEdges = false };
+                }
+                else
+                {
+                    BackColor = SystemColors.Control;
+                    RenderMode = ToolStripRenderMode.ManagerRenderMode;
+                }
+
+                Invalidate();
             }
         }
 
@@ -104,9 +140,6 @@ namespace AngelLoader.Forms.CustomControls
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
     public sealed class ToolStripButtonCustom : ToolStripButton, IDarkable
     {
-        private bool _mouseOver;
-        private bool _leftButtonDown;
-
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
@@ -122,78 +155,14 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        protected override void OnMouseEnter(EventArgs e)
-        {
-            if (!_mouseOver)
-            {
-                _mouseOver = true;
-                Invalidate();
-            }
-
-            base.OnMouseEnter(e);
-        }
-
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            if (_mouseOver)
-            {
-                _leftButtonDown = false;
-                _mouseOver = false;
-                Invalidate();
-            }
-            base.OnMouseLeave(e);
-        }
-
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            if ((e.Button & MouseButtons.Left) == MouseButtons.Left) _leftButtonDown = true;
-            base.OnMouseDown(e);
-        }
-
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            // Match original behavior: any button up = left button counts as up for visual purposes
-            _leftButtonDown = false;
-            base.OnMouseUp(e);
-        }
-
         protected override void OnPaint(PaintEventArgs e)
         {
-            // @DarkMode: To match original exactly, we want to mess around with ToolStripItemRenderer/VisualStyleRenderer etc.
-            // This is good enough but mouse button behavior doesn't exactly match original (it's fine, just not
-            // exact)
-            if (_darkModeEnabled)
-            {
-                SolidBrush bgBrush =
-                    _mouseOver
-                        ? _leftButtonDown
-                            ? DarkColors.Fen_DGVColumnHeaderHighlightBrush
-                            : DarkColors.Fen_DGVColumnHeaderPressedBrush
-                        : Checked
-                            ? DarkColors.BlueSelectionBrush
-                            : DarkColors.Fen_ControlBackgroundBrush;
-
-                // Background
-                e.Graphics.FillRectangle(bgBrush, 0, 0, Width - 1, Height - 1);
-
-                // Border
-                if (_mouseOver || Checked)
-                {
-                    e.Graphics.DrawRectangle(DarkColors.BlueHighlightPen, 0, 0, Width - 1, Height - 1);
-                }
-
-                // Image
-                if (Image != null)
-                {
-                    Parent.Renderer.DrawItemImage(new ToolStripItemImageRenderEventArgs(e.Graphics, this, Image, ContentRectangle));
-                }
-            }
-            else
+            if (!_darkModeEnabled)
             {
                 // Use the mouseover BackColor when it's checked, for a more visible checked experience
                 if (Checked) e.Graphics.FillRectangle(Brushes.LightSkyBlue, 0, 0, Width, Height);
-                base.OnPaint(e);
             }
+            base.OnPaint(e);
         }
     }
 
