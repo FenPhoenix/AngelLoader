@@ -105,6 +105,7 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class ToolStripButtonCustom : ToolStripButton, IDarkable
     {
         private bool _mouseOver;
+        private bool _leftButtonDown;
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -136,30 +137,56 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (_mouseOver)
             {
+                _leftButtonDown = false;
                 _mouseOver = false;
                 Invalidate();
             }
             base.OnMouseLeave(e);
         }
 
-        // TODO: @DarkMode(ToolStripButton): Pressed, checked/hot, checked/pressed
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            if ((e.Button & MouseButtons.Left) == MouseButtons.Left) _leftButtonDown = true;
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            // Match original behavior: any button up = left button counts as up for visual purposes
+            _leftButtonDown = false;
+            base.OnMouseUp(e);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
+            // @DarkMode: To match original exactly, we want to mess around with ToolStripItemRenderer/VisualStyleRenderer etc.
+            // This is good enough but mouse button behavior doesn't exactly match original (it's fine, just not
+            // exact)
             if (_darkModeEnabled)
             {
                 SolidBrush bgBrush =
-                    Checked
-                        ? DarkColors.BlueSelectionBrush
-                        : _mouseOver
-                        ? DarkColors.BlueSelectionBrush
-                        : DarkColors.Fen_ControlBackgroundBrush;
+                    _mouseOver
+                        ? _leftButtonDown
+                            ? DarkColors.Fen_DGVColumnHeaderHighlightBrush
+                            : DarkColors.Fen_DGVColumnHeaderPressedBrush
+                        : Checked
+                            ? DarkColors.BlueSelectionBrush
+                            : DarkColors.Fen_ControlBackgroundBrush;
 
+                // Background
                 e.Graphics.FillRectangle(bgBrush, 0, 0, Width - 1, Height - 1);
+
+                // Border
                 if (_mouseOver || Checked)
                 {
                     e.Graphics.DrawRectangle(DarkColors.BlueHighlightPen, 0, 0, Width - 1, Height - 1);
                 }
-                e.Graphics.DrawImage(Image, 2, 2, Size.Width - 4, Size.Height - 4);
+
+                // Image
+                if (Image != null)
+                {
+                    Parent.Renderer.DrawItemImage(new ToolStripItemImageRenderEventArgs(e.Graphics, this, Image, ContentRectangle));
+                }
             }
             else
             {
