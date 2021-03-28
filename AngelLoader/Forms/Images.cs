@@ -164,6 +164,7 @@ namespace AngelLoader.Forms
             }
         }
 
+        // TODO: The code in here is horrible, this especially. See if anything reasonable can be done.
         public static Bitmap FillFinishedOnBitmap(Difficulty difficulty, bool filterFinished = false, bool filterUnfinished = false)
         {
             int width, height;
@@ -204,7 +205,7 @@ namespace AngelLoader.Forms
                 new RectangleF(0, 0, width, height));
 
             g.FillPath(
-                outlineBrush,
+                DarkModeEnabled && filterUnfinished ? _finishedOnFilterOutlineOnlyBrushDark : outlineBrush,
                 gp);
 
             if (!filterUnfinished)
@@ -638,23 +639,23 @@ namespace AngelLoader.Forms
         // Inner path starts at index 7
         private static readonly byte[] _finishedCheckTypes = MakeTypeArray((1, 5, 0, 129), (1, 5, 0, 129));
 
-        internal static readonly PointF[] FinishedCheckInnerPoints = new PointF[7];
-        internal static readonly byte[] FinishedCheckInnerTypes = new byte[7];
+        private static readonly PointF[] FinishedCheckInnerPoints = new PointF[7];
+        private static readonly byte[] FinishedCheckInnerTypes = new byte[7];
 
         private static GraphicsPath? _finishedCheckGPath;
-        internal static GraphicsPath FinishedCheckOutlineGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
+        private static GraphicsPath FinishedCheckOutlineGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
 
         private static readonly Brush _normalCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(3, 100, 1));
         private static readonly Brush _normalCheckOutlineBrush = new SolidBrush(Color.FromArgb(3, 100, 1));
-        internal static Brush NormalCheckOutlineBrush => DarkModeEnabled ? _normalCheckOutlineBrushDark : _normalCheckOutlineBrush;
+        private static Brush NormalCheckOutlineBrush => DarkModeEnabled ? _normalCheckOutlineBrushDark : _normalCheckOutlineBrush;
 
         private static readonly Brush _normalCheckFillBrushDark = new SolidBrush(Color.FromArgb(68, 178, 68));
         private static readonly Brush _normalCheckFillBrush = new SolidBrush(Color.FromArgb(0, 170, 0));
-        internal static Brush NormalCheckFillBrush => DarkModeEnabled ? _normalCheckFillBrushDark : _normalCheckFillBrush;
+        private static Brush NormalCheckFillBrush => DarkModeEnabled ? _normalCheckFillBrushDark : _normalCheckFillBrush;
 
         private static readonly Brush _hardCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(139, 111, 0));
         private static readonly Brush _hardCheckOutlineBrush = new SolidBrush(Color.FromArgb(196, 157, 2));
-        internal static Brush HardCheckOutlineBrush => DarkModeEnabled ? _hardCheckOutlineBrushDark : _hardCheckOutlineBrush;
+        private static Brush HardCheckOutlineBrush => DarkModeEnabled ? _hardCheckOutlineBrushDark : _hardCheckOutlineBrush;
 
         private static readonly Brush _hardCheckFillBrushDark = new SolidBrush(Color.FromArgb(212, 187, 73));
         private static readonly Brush _hardCheckFillBrush = new SolidBrush(Color.FromArgb(255, 210, 0));
@@ -662,25 +663,31 @@ namespace AngelLoader.Forms
 
         private static readonly Brush _expertCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(118, 14, 14));
         private static readonly Brush _expertCheckOutlineBrush = new SolidBrush(Color.FromArgb(135, 2, 2));
-        internal static Brush ExpertCheckOutlineBrush => DarkModeEnabled ? _expertCheckOutlineBrushDark : _expertCheckOutlineBrush;
+        private static Brush ExpertCheckOutlineBrush => DarkModeEnabled ? _expertCheckOutlineBrushDark : _expertCheckOutlineBrush;
 
         private static readonly Brush _expertCheckFillBrushDark = new SolidBrush(Color.FromArgb(209, 70, 70));
         private static readonly Brush _expertCheckFillBrush = new SolidBrush(Color.FromArgb(216, 0, 0));
-        internal static Brush ExpertCheckFillBrush => DarkModeEnabled ? _expertCheckFillBrushDark : _expertCheckFillBrush;
+        private static Brush ExpertCheckFillBrush => DarkModeEnabled ? _expertCheckFillBrushDark : _expertCheckFillBrush;
 
         private static readonly Brush _extremeCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(28, 76, 153));
         private static readonly Brush _extremeCheckOutlineBrush = new SolidBrush(Color.FromArgb(19, 1, 100));
-        internal static Brush ExtremeCheckOutlineBrush => DarkModeEnabled ? _extremeCheckOutlineBrushDark : _extremeCheckOutlineBrush;
+        private static Brush ExtremeCheckOutlineBrush => DarkModeEnabled ? _extremeCheckOutlineBrushDark : _extremeCheckOutlineBrush;
 
         private static readonly Brush _extremeCheckFillBrushDark = new SolidBrush(Color.FromArgb(34, 148, 228));
         private static readonly Brush _extremeCheckFillBrush = new SolidBrush(Color.FromArgb(0, 53, 226));
-        internal static Brush ExtremeCheckFillBrush => DarkModeEnabled ? _extremeCheckFillBrushDark : _extremeCheckFillBrush;
+        private static Brush ExtremeCheckFillBrush => DarkModeEnabled ? _extremeCheckFillBrushDark : _extremeCheckFillBrush;
 
-        internal static readonly Brush UnknownCheckOutlineBrush = new SolidBrush(Color.FromArgb(100, 100, 100));
-        internal static readonly Brush UnknownCheckFillBrush = new SolidBrush(Color.FromArgb(170, 170, 170));
+        private static readonly Brush UnknownCheckOutlineBrush = new SolidBrush(Color.FromArgb(100, 100, 100));
+        private static readonly Brush UnknownCheckFillBrush = new SolidBrush(Color.FromArgb(170, 170, 170));
 
-        internal static readonly Brush FinishedOnFilterOutlineBrush = new SolidBrush(Color.FromArgb(14, 101, 139));
-        internal static readonly Brush FinishedOnFilterFillBrush = new SolidBrush(Color.FromArgb(89, 159, 203));
+        private static readonly Brush _finishedOnFilterOutlineBrushDark = new SolidBrush(Color.FromArgb(89, 159, 203));
+        private static readonly Brush _finishedOnFilterOutlineOnlyBrushDark = new SolidBrush(Color.FromArgb(132, 206, 252));
+        private static readonly Brush _finishedOnFilterOutlineBrush = new SolidBrush(Color.FromArgb(14, 101, 139));
+        private static Brush FinishedOnFilterOutlineBrush => DarkModeEnabled ? _finishedOnFilterOutlineBrushDark : _finishedOnFilterOutlineBrush;
+
+        private static readonly Brush _finishedOnFilterFillBrushDark = new SolidBrush(Color.FromArgb(89, 159, 203));
+        private static readonly Brush _finishedOnFilterFillBrush = new SolidBrush(Color.FromArgb(89, 159, 203));
+        private static Brush FinishedOnFilterFillBrush => DarkModeEnabled ? _finishedOnFilterFillBrushDark : _finishedOnFilterFillBrush;
 
         #endregion
 

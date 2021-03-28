@@ -1439,6 +1439,10 @@ namespace AngelLoader.Forms
 
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible, theme);
 
+                // TODO: @DarkMode: Some images are set by default and get double-loaded here if we're themed.
+                // We should change to always calling this method, but selectively deciding what to run and what
+                // not to based on whether we're themed on startup, rather than the all-or-nothing we have now.
+
                 // Set these first so other controls get the right data when they reference them
                 Images.DarkModeEnabled = darkMode;
                 Images.ReloadImages();
@@ -1461,6 +1465,8 @@ namespace AngelLoader.Forms
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
                 RefreshFiltersButton.Image = Images.Refresh;
+                FilterByFinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterFinished: true);
+                FilterByUnfinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
                 Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
 
                 FilterByThief1Button.Image = Images.Thief1_21;
