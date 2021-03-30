@@ -1464,10 +1464,14 @@ namespace AngelLoader.Forms
                 ProgressBoxDarkModeEnabled = darkMode;
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
-                RefreshFiltersButton.Image = Images.Refresh;
+
                 FilterByFinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterFinished: true);
                 FilterByUnfinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
+                FilterByRatingButton.Image = Images.FilterByRating;
+                FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
+
                 Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
+                RefreshFiltersButton.Image = Images.Refresh;
 
                 FilterByThief1Button.Image = Images.Thief1_21;
                 FilterByThief2Button.Image = Images.Thief2_21;

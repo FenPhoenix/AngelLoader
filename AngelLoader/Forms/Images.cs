@@ -295,8 +295,7 @@ namespace AngelLoader.Forms
 
         #region Stars
 
-        private static Bitmap? _filterByRating;
-        public static Bitmap FilterByRating => _filterByRating ??= FillStarImage(StarFullGPath, 24);
+        public static Bitmap FilterByRating => FillStarImage(StarFullGPath, 24);
 
         private static Bitmap FillStarImage(GraphicsPath gp, int px)
         {
@@ -377,6 +376,13 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        private static Image? _showRecentAtTop;
+        private static Image? _showRecentAtTopDark;
+        public static Image FilterShowRecentAtTop =>
+            DarkModeEnabled
+                ? _showRecentAtTopDark ??= Resources.FilterShowRecentAtTop_Dark
+                : _showRecentAtTop ??= Resources.FilterShowRecentAtTop;
 
         private static Icon? _AngelLoader;
         public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;

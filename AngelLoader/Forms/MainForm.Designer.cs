@@ -853,7 +853,7 @@
             this.FilterShowRecentAtTopButton.AutoSize = false;
             this.FilterShowRecentAtTopButton.CheckOnClick = true;
             this.FilterShowRecentAtTopButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterShowRecentAtTopButton.Image = global::AngelLoader.Properties.Resources.FilterShowRecentAtTop;
+            this.FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
             this.FilterShowRecentAtTopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterShowRecentAtTopButton.Margin = new System.Windows.Forms.Padding(6, 0, 2, 0);
             this.FilterShowRecentAtTopButton.Name = "FilterShowRecentAtTopButton";
