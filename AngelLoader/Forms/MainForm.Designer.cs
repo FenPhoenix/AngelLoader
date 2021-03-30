@@ -801,6 +801,7 @@
             this.FilterByFinishedButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByFinishedButton.CheckOnClick = true;
             this.FilterByFinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByFinishedButton.Image = Images.FilterByFinished;
             this.FilterByFinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByFinishedButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByFinishedButton.Name = "FilterByFinishedButton";
@@ -814,6 +815,7 @@
             this.FilterByUnfinishedButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByUnfinishedButton.CheckOnClick = true;
             this.FilterByUnfinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
             this.FilterByUnfinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByUnfinishedButton.Margin = new System.Windows.Forms.Padding(0);
             this.FilterByUnfinishedButton.Name = "FilterByUnfinishedButton";

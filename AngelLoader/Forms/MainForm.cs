@@ -1465,8 +1465,8 @@ namespace AngelLoader.Forms
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
 
-                FilterByFinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterFinished: true);
-                FilterByUnfinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
+                FilterByFinishedButton.Image = Images.FilterByFinished;
+                FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
                 FilterByRatingButton.Image = Images.FilterByRating;
                 FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
 

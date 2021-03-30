@@ -146,6 +146,9 @@ namespace AngelLoader.Forms
                 ? _redExclamationMarkCircle_dark ??= Resources.red_circle_exclamation_mark_14_dark
                 : _redExclamationMarkCircle ??= Resources.ExclMarkCircleRed_14;
 
+        public static Bitmap FilterByFinished => FillFinishedOnBitmap(Difficulty.None, filterFinished: true);
+        public static Bitmap FilterByUnfinished => FillFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
+
         #region Finished on
 
         private static Bitmap? _finishedOnUnknown;
@@ -165,7 +168,7 @@ namespace AngelLoader.Forms
         }
 
         // TODO: The code in here is horrible, this especially. See if anything reasonable can be done.
-        public static Bitmap FillFinishedOnBitmap(Difficulty difficulty, bool filterFinished = false, bool filterUnfinished = false)
+        private static Bitmap FillFinishedOnBitmap(Difficulty difficulty, bool filterFinished = false, bool filterUnfinished = false)
         {
             int width, height;
             Brush outlineBrush, fillBrush;

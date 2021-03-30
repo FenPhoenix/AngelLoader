@@ -687,7 +687,7 @@ namespace AngelLoader.Forms
             FilterByFinishedButton.AutoSize = false;
             FilterByFinishedButton.CheckOnClick = true;
             FilterByFinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByFinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterFinished: true);
+            FilterByFinishedButton.Image = Images.FilterByFinished;
             FilterByFinishedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByFinishedButton.Size = new Size(25, 25);
             FilterByFinishedButton.Click += Filters_Changed;
@@ -697,7 +697,7 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton.AutoSize = false;
             FilterByUnfinishedButton.CheckOnClick = true;
             FilterByUnfinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByUnfinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
+            FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
             FilterByUnfinishedButton.Margin = new Padding(0);
             FilterByUnfinishedButton.Size = new Size(25, 25);
             FilterByUnfinishedButton.Click += Filters_Changed;
