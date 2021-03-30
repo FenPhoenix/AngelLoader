@@ -861,7 +861,12 @@ namespace AngelLoader.Forms
         internal static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
 
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
+        private static readonly Color _al_LightBlueDark = Color.FromArgb(54, 146, 204);
+        private static Color AL_LightBlue => DarkModeEnabled ? _al_LightBlueDark : _al_LightBlue;
+
         private static readonly SolidBrush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
+        private static readonly SolidBrush _al_LightBlueBrushDark = new SolidBrush(_al_LightBlueDark);
+        private static SolidBrush AL_LightBlueBrush => DarkModeEnabled ? _al_LightBlueBrushDark : _al_LightBlueBrush;
 
         internal static Pen GetSeparatorPenForCurrentVisualStyleMode() =>
             DarkModeEnabled
@@ -906,7 +911,11 @@ namespace AngelLoader.Forms
         #region Web search
 
         private static readonly Pen _webSearchCirclePen = new Pen(_al_LightBlue, 2);
+        private static readonly Pen _webSearchCirclePenDark = new Pen(_al_LightBlueDark, 2);
+        private static Pen WebSearchCirclePen => DarkModeEnabled ? _webSearchCirclePenDark : _webSearchCirclePen;
+
         private static readonly Pen _webSearchCircleDisabledPen = new Pen(SystemColors.ControlDark, 2);
+
         private static readonly RectangleF[] _webSearchRects =
         {
             new Rectangle(12, 11, 19, 2),
@@ -1073,7 +1082,7 @@ namespace AngelLoader.Forms
         {
             SetSmoothingMode(e, SmoothingMode.AntiAlias);
 
-            Pen pen = button.Enabled ? _webSearchCirclePen : _webSearchCircleDisabledPen;
+            Pen pen = button.Enabled ? WebSearchCirclePen : _webSearchCircleDisabledPen;
 
             e.Graphics.DrawEllipse(pen, 10, 6, 23, 23);
             e.Graphics.DrawEllipse(pen, 17, 6, 9, 23);
@@ -1102,7 +1111,7 @@ namespace AngelLoader.Forms
         {
             SetSmoothingMode(e, SmoothingMode.AntiAlias);
 
-            Brush brush = button.Enabled ? _al_LightBlueBrush : SystemBrushes.ControlDark;
+            Brush brush = button.Enabled ? AL_LightBlueBrush : SystemBrushes.ControlDark;
 
             var cr = button.ClientRectangle;
 
