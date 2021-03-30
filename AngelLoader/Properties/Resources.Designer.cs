@@ -113,6 +113,16 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ClearFilters_Dark {
+            get {
+                object obj = ResourceManager.GetObject("ClearFilters_Dark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap DarkUI_Tick {
             get {
                 object obj = ResourceManager.GetObject("DarkUI_Tick", resourceCulture);

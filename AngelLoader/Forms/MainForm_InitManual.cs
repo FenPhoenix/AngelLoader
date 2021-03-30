@@ -782,7 +782,7 @@ namespace AngelLoader.Forms
             // 
             ClearFiltersButton.AutoSize = false;
             ClearFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            ClearFiltersButton.Image = Resources.ClearFilters;
+            ClearFiltersButton.Image = Images.ClearFilters;
             // 1 pixel to the bottom margin to prevent the bottom from getting cut off for some reason
             ClearFiltersButton.Margin = new Padding(0, 0, 9, 1);
             ClearFiltersButton.Size = new Size(25, 25);

@@ -521,6 +521,13 @@ namespace AngelLoader.Forms
                 ? _greenCheckCircle_dark ??= Resources.green_check_21_dark
                 : _greenCheckCircle ??= Resources.CheckCircle;
 
+        private static Bitmap? _clearFilters;
+        private static Bitmap? _clearFiltersDark;
+        public static Bitmap ClearFilters =>
+            DarkModeEnabled
+                ? _clearFiltersDark ??= Resources.ClearFilters_Dark
+                : _clearFilters ??= Resources.ClearFilters;
+
         private static Bitmap? _trash_16;
         private static Bitmap? _trash_16_dark;
         public static Bitmap Trash_16 =>

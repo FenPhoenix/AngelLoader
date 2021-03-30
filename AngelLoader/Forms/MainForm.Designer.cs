@@ -927,7 +927,7 @@
             this.ClearFiltersButton.AutoSize = false;
             this.ClearFiltersButton.BackColor = System.Drawing.SystemColors.Control;
             this.ClearFiltersButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ClearFiltersButton.Image = global::AngelLoader.Properties.Resources.ClearFilters;
+            this.ClearFiltersButton.Image = Images.ClearFilters;
             this.ClearFiltersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ClearFiltersButton.Margin = new System.Windows.Forms.Padding(0, 0, 9, 1);
             this.ClearFiltersButton.Name = "ClearFiltersButton";

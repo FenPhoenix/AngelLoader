@@ -1472,6 +1472,7 @@ namespace AngelLoader.Forms
 
                 Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
                 RefreshFiltersButton.Image = Images.Refresh;
+                ClearFiltersButton.Image = Images.ClearFilters;
 
                 FilterByThief1Button.Image = Images.Thief1_21;
                 FilterByThief2Button.Image = Images.Thief2_21;
