@@ -26,7 +26,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 base.OnPaint(e);
 
-                Pen s1Pen = Images.GetSeparatorPenForCurrentVisualStyleMode();
+                Pen s1Pen = Images.Sep1Pen;
                 Pen s2Pen = Images.Sep2Pen;
                 int y = ClientSize.Height / 2;
                 g.DrawLine(s1Pen, 0, y, ClientSize.Width - 1, y);

@@ -49,7 +49,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ResetZoomButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             ResetZoomButton.Margin = new Padding(0);
             ResetZoomButton.Size = new Size(25, 25);
-            ResetZoomButton.Image = Images.GetZoomImage(ResetZoomButton.ContentRectangle, Zoom.Reset);
             ResetZoomButton.Click += owner.FMsListResetZoomButton_Click;
 
             ZoomOutButton = new ToolStripButtonCustom { Tag = LazyLoaded.True };
@@ -58,7 +57,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ZoomOutButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             ZoomOutButton.Margin = new Padding(0);
             ZoomOutButton.Size = new Size(25, 25);
-            ZoomOutButton.Image = Images.GetZoomImage(ZoomOutButton.ContentRectangle, Zoom.Out);
             ZoomOutButton.Click += owner.FMsListZoomOutButton_Click;
 
             ZoomInButton = new ToolStripButtonCustom { Tag = LazyLoaded.True };
@@ -67,8 +65,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ZoomInButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             ZoomInButton.Margin = new Padding(2, 0, 0, 0);
             ZoomInButton.Size = new Size(25, 25);
-            ZoomInButton.Image = Images.GetZoomImage(ZoomInButton.ContentRectangle, Zoom.In);
             ZoomInButton.Click += owner.FMsListZoomInButton_Click;
+
+            RegenerateButtonImages();
 
             _constructed = true;
 

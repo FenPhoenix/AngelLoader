@@ -4343,7 +4343,7 @@ namespace AngelLoader.Forms
         private void RefreshAreaToolStrip_Paint(object sender, PaintEventArgs e)
         {
             // This one is a special case, so draw it explicitly here
-            Pen s1Pen = Images.GetSeparatorPenForCurrentVisualStyleMode();
+            Pen s1Pen = Images.Sep1Pen;
             const int y1 = 5;
             const int y2 = 20;
 
