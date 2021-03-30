@@ -659,7 +659,7 @@ namespace AngelLoader.Forms
             // 
             FilterByReleaseDateButton.AutoSize = false;
             FilterByReleaseDateButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByReleaseDateButton.Image = Resources.FilterByReleaseDate;
+            FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
             FilterByReleaseDateButton.Margin = new Padding(6, 0, 0, 0);
             FilterByReleaseDateButton.Size = new Size(25, 25);
             FilterByReleaseDateButton.Click += FilterWindowOpenButtons_Click;
@@ -668,7 +668,7 @@ namespace AngelLoader.Forms
             // 
             FilterByLastPlayedButton.AutoSize = false;
             FilterByLastPlayedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByLastPlayedButton.Image = Resources.FilterByLastPlayed;
+            FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
             FilterByLastPlayedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByLastPlayedButton.Size = new Size(25, 25);
             FilterByLastPlayedButton.Click += FilterWindowOpenButtons_Click;

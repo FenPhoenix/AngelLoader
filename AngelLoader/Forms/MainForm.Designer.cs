@@ -761,7 +761,7 @@
             this.FilterByReleaseDateButton.AutoSize = false;
             this.FilterByReleaseDateButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByReleaseDateButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByReleaseDateButton.Image = global::AngelLoader.Properties.Resources.FilterByReleaseDate;
+            this.FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
             this.FilterByReleaseDateButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByReleaseDateButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByReleaseDateButton.Name = "FilterByReleaseDateButton";
@@ -774,7 +774,7 @@
             this.FilterByLastPlayedButton.AutoSize = false;
             this.FilterByLastPlayedButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByLastPlayedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByLastPlayedButton.Image = global::AngelLoader.Properties.Resources.FilterByLastPlayed;
+            this.FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
             this.FilterByLastPlayedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByLastPlayedButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByLastPlayedButton.Name = "FilterByLastPlayedButton";
