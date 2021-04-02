@@ -330,7 +330,22 @@ namespace AngelLoader.Forms
             {
                 // "Wrong style" image (different style from the MessageBox one) but better than nothing if the
                 // above fails
-                pictureBox.Image = SystemIcons.Warning.ToBitmap();
+                // ReSharper disable ConditionIsAlwaysTrueOrFalse
+                pictureBox.Image =
+                      icon == MessageBoxIcon.Error ||
+                      icon == MessageBoxIcon.Hand ||
+                      icon == MessageBoxIcon.Stop
+                    ? SystemIcons.Error.ToBitmap()
+                    : icon == MessageBoxIcon.Question
+                    ? SystemIcons.Question.ToBitmap()
+                    : icon == MessageBoxIcon.Exclamation ||
+                      icon == MessageBoxIcon.Warning
+                    ? SystemIcons.Warning.ToBitmap()
+                    : icon == MessageBoxIcon.Asterisk ||
+                      icon == MessageBoxIcon.Information
+                    ? SystemIcons.Information.ToBitmap()
+                    : null;
+                // ReSharper restore ConditionIsAlwaysTrueOrFalse
             }
             finally
             {
