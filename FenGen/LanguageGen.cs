@@ -254,10 +254,9 @@ namespace FenGen
                     }
                 }
 
-                //w.WL("else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')");
                 // Line is only start-trimmed, so don't check for last char being ']' because last char could be
                 // whitespace
-                w.WL("else if ((ltLength = lt.Length) > 0 && lt[0] == '[' )");
+                w.WL("else if ((ltLength = lt.Length) > 0 && lt[0] == '[')");
                 w.WL("{");
                 w.WL("break;");
                 w.WL("}");
