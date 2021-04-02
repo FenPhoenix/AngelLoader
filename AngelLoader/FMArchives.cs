@@ -190,11 +190,7 @@ namespace AngelLoader
 
                 if (newArchives.Count == 0 && !fm.Installed)
                 {
-                    // Disgusting hack that results in a better user experience than the "proper" way of reloading
-                    // the list from disk immediately
-                    fm.MarkedDeleted = true;
-                    OneOrMoreFMsAreMarkedDeleted = true;
-
+                    fm.MarkedUnavailable = true;
                     await Core.View.SortAndSetFilter(keepSelection: true);
                 }
             }

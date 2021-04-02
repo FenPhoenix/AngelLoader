@@ -402,6 +402,8 @@ namespace AngelLoader.DataClasses
 
         internal VisualTheme VisualTheme = VisualTheme.Classic;
 
+        internal bool ShowUnavailableFMs = true;
+
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed = false;

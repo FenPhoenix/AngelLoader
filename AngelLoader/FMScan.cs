@@ -111,9 +111,7 @@ namespace AngelLoader
                 {
                     FanMission fm = fmsToScan[i];
 
-                    // Through luck we're actually bug-free here even without this check, but we should do it
-                    // explicitly
-                    if (fm.MarkedDeleted) continue;
+                    if (fm.MarkedUnavailable) continue;
 
                     string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive, archivePaths));
                     if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())

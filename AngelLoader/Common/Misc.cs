@@ -232,14 +232,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Cheap hacks
-
-        // Stupid hack for perf and nice UX when deleting FMs (we filter out deleted ones until the next find from
-        // disk, when we remove them properly)
-        internal static bool OneOrMoreFMsAreMarkedDeleted;
-
-        #endregion
-
         #endregion
     }
 }

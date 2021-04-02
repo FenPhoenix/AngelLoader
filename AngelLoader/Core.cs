@@ -1019,14 +1019,14 @@ namespace AngelLoader
 
             #endregion
 
-            #region Marked deleted (special case)
+            #region Marked unavailable
 
-            if (OneOrMoreFMsAreMarkedDeleted)
+            if (!Config.ShowUnavailableFMs)
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
-                    if (fm.MarkedDeleted)
+                    if (fm.MarkedUnavailable)
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;
