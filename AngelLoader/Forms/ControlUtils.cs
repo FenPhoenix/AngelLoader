@@ -198,8 +198,6 @@ namespace AngelLoader.Forms
             {
                 Control control = item.Key;
 
-                if (excludePredicate?.Invoke(control) == true) continue;
-
                 // Separate if because a control could be IDarkable AND be a ToolStrip
                 if (control is ToolStrip ts)
                 {
@@ -211,6 +209,10 @@ namespace AngelLoader.Forms
                         }
                     }
                 }
+
+                // We might want to exclude a ToolStrip but not its subcomponents, so we put this check after the
+                // ToolStrip component check
+                if (excludePredicate?.Invoke(control) == true) continue;
 
                 if (control is IDarkable darkableControl)
                 {
