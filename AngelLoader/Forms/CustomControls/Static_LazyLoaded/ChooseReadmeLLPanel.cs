@@ -26,9 +26,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
                 if (!_constructed) return;
 
-                Panel!.BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
+                Panel!.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
                 ListBox!.DarkModeEnabled = _darkModeEnabled;
-                OKButtonFLP.BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control;
+                OKButtonFLP.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
                 OKButton!.DarkModeEnabled = _darkModeEnabled;
             }
         }
@@ -59,7 +59,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 Location = new Point(1, 134),
                 Size = new Size(320, 24),
                 TabIndex = 3,
-                BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control
+                BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
             };
             OKButtonFLP.Controls.Add(OKButton);
 
@@ -79,7 +79,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 TabIndex = 46,
                 Visible = false,
                 Size = new Size(324, 161),
-                BackColor = _darkModeEnabled ? DarkColors.Fen_ControlBackground : SystemColors.Control
+                BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
             };
             Panel.Controls.Add(ListBox);
             Panel.Controls.Add(OKButtonFLP);

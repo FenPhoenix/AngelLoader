@@ -198,6 +198,8 @@ namespace AngelLoader.Forms
             {
                 Control control = item.Key;
 
+                if (excludePredicate?.Invoke(control) == true) continue;
+
                 // Separate if because a control could be IDarkable AND be a ToolStrip
                 if (control is ToolStrip ts)
                 {
