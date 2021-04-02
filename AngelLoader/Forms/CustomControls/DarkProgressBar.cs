@@ -47,14 +47,23 @@ namespace AngelLoader.Forms.CustomControls
             {
                 value = value.Clamp(Minimum, Maximum);
 
-                if (value == Maximum)
+                if (_darkModeEnabled)
                 {
-                    base.Value = Maximum;
+                    // In dark mode we don't animate, so we don't have to fudge around the value to make it instant
+                    base.Value = value;
                 }
                 else
                 {
-                    base.Value = (value + 1).Clamp(Minimum, Maximum);
-                    base.Value = value;
+                    // ... but in classic mode, we do and we do
+                    if (value == Maximum)
+                    {
+                        base.Value = Maximum;
+                    }
+                    else
+                    {
+                        base.Value = (value + 1).Clamp(Minimum, Maximum);
+                        base.Value = value;
+                    }
                 }
             }
         }
