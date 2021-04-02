@@ -178,9 +178,6 @@
   <data name="AngelLoader" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\angelloader.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FindNewFMs_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\findnewfms_21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Shock2_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\shock2_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -276,5 +273,11 @@
   </data>
   <data name="FilterByTagsDark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\filterbytagsdark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="refresh_filters_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\refresh_filters_21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="refresh_filters_21_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\refresh_filters_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

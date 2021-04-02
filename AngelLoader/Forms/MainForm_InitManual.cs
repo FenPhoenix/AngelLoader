@@ -763,7 +763,7 @@ namespace AngelLoader.Forms
             // 
             RefreshFromDiskButton.AutoSize = false;
             RefreshFromDiskButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            RefreshFromDiskButton.Image = Resources.FindNewFMs_21;
+            RefreshFromDiskButton.Image = Images.Refresh;
             RefreshFromDiskButton.Margin = new Padding(0);
             RefreshFromDiskButton.Size = new Size(25, 25);
             RefreshFromDiskButton.Click += Filters_Changed;
@@ -773,7 +773,7 @@ namespace AngelLoader.Forms
             // 
             RefreshFiltersButton.AutoSize = false;
             RefreshFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            RefreshFiltersButton.Image = Images.Refresh;
+            RefreshFiltersButton.Image = Images.RefreshFilters;
             RefreshFiltersButton.Margin = new Padding(0);
             RefreshFiltersButton.Size = new Size(25, 25);
             RefreshFiltersButton.Click += Filters_Changed;

@@ -1474,7 +1474,8 @@ namespace AngelLoader.Forms
                 FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
 
                 Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
-                RefreshFiltersButton.Image = Images.Refresh;
+                RefreshFromDiskButton.Image = Images.Refresh;
+                RefreshFiltersButton.Image = Images.RefreshFilters;
                 ClearFiltersButton.Image = Images.ClearFilters;
 
                 FilterByThief1Button.Image = Images.Thief1_21;

@@ -647,6 +647,13 @@ namespace AngelLoader.Forms
                 ? _refresh_Dark ??= Resources.Refresh_DarkMode
                 : _refresh_Classic ??= Resources.Refresh;
 
+        private static Bitmap? _refreshFilters;
+        private static Bitmap? _refreshFiltersDark;
+        public static Bitmap RefreshFilters =>
+            DarkModeEnabled
+                ? _refreshFiltersDark ??= Resources.refresh_filters_21_dark
+                : _refreshFilters ??= Resources.refresh_filters_21;
+
         #region Rating example
 
         private static Bitmap? _ratingExample_NDL_Classic;

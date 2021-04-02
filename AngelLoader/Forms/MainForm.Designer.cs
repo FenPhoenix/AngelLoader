@@ -901,7 +901,7 @@
             this.RefreshFromDiskButton.AutoSize = false;
             this.RefreshFromDiskButton.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshFromDiskButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.RefreshFromDiskButton.Image = global::AngelLoader.Properties.Resources.FindNewFMs_21;
+            this.RefreshFromDiskButton.Image = Images.Refresh;
             this.RefreshFromDiskButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.RefreshFromDiskButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.RefreshFromDiskButton.Name = "RefreshFromDiskButton";
@@ -914,7 +914,7 @@
             this.RefreshFiltersButton.AutoSize = false;
             this.RefreshFiltersButton.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshFiltersButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.RefreshFiltersButton.Image = global::AngelLoader.Properties.Resources.Refresh;
+            this.RefreshFiltersButton.Image = Images.RefreshFilters;
             this.RefreshFiltersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.RefreshFiltersButton.Margin = new System.Windows.Forms.Padding(0);
             this.RefreshFiltersButton.Name = "RefreshFiltersButton";
