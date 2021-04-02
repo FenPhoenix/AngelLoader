@@ -787,7 +787,7 @@
             this.FilterByTagsButton.AutoSize = false;
             this.FilterByTagsButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByTagsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByTagsButton.Image = global::AngelLoader.Properties.Resources.FilterByTags;
+            this.FilterByTagsButton.Image = Images.FilterByTags;
             this.FilterByTagsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByTagsButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByTagsButton.Name = "FilterByTagsButton";

@@ -1467,6 +1467,7 @@ namespace AngelLoader.Forms
 
                 FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
                 FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
+                FilterByTagsButton.Image = Images.FilterByTags;
                 FilterByFinishedButton.Image = Images.FilterByFinished;
                 FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
                 FilterByRatingButton.Image = Images.FilterByRating;

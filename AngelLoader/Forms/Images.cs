@@ -518,15 +518,22 @@ namespace AngelLoader.Forms
         private static Bitmap? _filterByReleaseDateDark;
         public static Bitmap FilterByReleaseDate =>
             DarkModeEnabled
-                ? _filterByReleaseDateDark ??= Resources.FilterByReleaseDate
+                ? _filterByReleaseDateDark ??= Resources.FilterByReleaseDateDark
                 : _filterByReleaseDate ??= Resources.FilterByReleaseDate;
 
         private static Bitmap? _filterByLastPlayed;
         private static Bitmap? _filterByLastPlayedDark;
         public static Bitmap FilterByLastPlayed =>
             DarkModeEnabled
-                ? _filterByLastPlayedDark ??= Resources.FilterByLastPlayed
+                ? _filterByLastPlayedDark ??= Resources.FilterByLastPlayedDark
                 : _filterByLastPlayed ??= Resources.FilterByLastPlayed;
+
+        private static Bitmap? _filterByTags;
+        private static Bitmap? _filterByTagsDark;
+        public static Bitmap FilterByTags =>
+            DarkModeEnabled
+                ? _filterByTagsDark ??= Resources.FilterByTagsDark
+                : _filterByTags ??= Resources.FilterByTags;
 
         private static Bitmap? _greenCheckCircle;
         private static Bitmap? _greenCheckCircle_dark;

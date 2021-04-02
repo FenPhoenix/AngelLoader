@@ -677,7 +677,7 @@ namespace AngelLoader.Forms
             // 
             FilterByTagsButton.AutoSize = false;
             FilterByTagsButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByTagsButton.Image = Resources.FilterByTags;
+            FilterByTagsButton.Image = Images.FilterByTags;
             FilterByTagsButton.Margin = new Padding(6, 0, 0, 0);
             FilterByTagsButton.Size = new Size(25, 25);
             FilterByTagsButton.Click += FilterWindowOpenButtons_Click;
