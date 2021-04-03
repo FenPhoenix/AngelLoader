@@ -166,6 +166,25 @@ namespace AngelLoader.Forms
             SetTheme(Config.VisualTheme);
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+
+            // This doesn't take unless we put it all the way in Shown, annoyingly
+            if (AcceptButton == YesButton)
+            {
+                YesButton.Focus();
+            }
+            else if (AcceptButton == NoButton)
+            {
+                NoButton.Focus();
+            }
+            else if (AcceptButton == Cancel_Button)
+            {
+                Cancel_Button.Focus();
+            }
+        }
+
         private void SetTheme(VisualTheme theme)
         {
             if (theme == VisualTheme.Dark)

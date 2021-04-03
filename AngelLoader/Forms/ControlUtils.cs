@@ -366,7 +366,11 @@ namespace AngelLoader.Forms
             return ret;
         }
 
-        public static bool AskToContinue(string message, string title, bool noIcon = false)
+        public static bool AskToContinue(
+            string message,
+            string title,
+            bool noIcon = false,
+            DarkTaskDialog.Button defaultButton = DarkTaskDialog.Button.Yes)
         {
             if (Config.DarkMode)
             {
@@ -376,22 +380,36 @@ namespace AngelLoader.Forms
                     icon: noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning,
                     yesText: LText.Global.Yes,
                     noText: LText.Global.No,
-                    defaultButton: DarkTaskDialog.Button.No);
+                    defaultButton: defaultButton);
                 return d.ShowDialog() == DialogResult.Yes;
             }
             else
             {
+                var mbDefaultButton = defaultButton switch
+                {
+                    DarkTaskDialog.Button.Yes => MessageBoxDefaultButton.Button1,
+                    _ => MessageBoxDefaultButton.Button2
+                };
+
                 return MessageBox.Show(
                     message,
                     title,
                     MessageBoxButtons.YesNo,
-                    noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning) == DialogResult.Yes;
+                    noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning,
+                    mbDefaultButton) == DialogResult.Yes;
             }
         }
 
         public static (bool Cancel, bool Continue, bool DontAskAgain)
-        AskToContinueWithCancelCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
-                                             string yes, string no, string cancel, DarkTaskDialog.Button? defaultButton = null)
+        AskToContinueWithCancelCustomStrings(
+            string message,
+            string title,
+            MessageBoxIcon icon,
+            bool showDontAskAgain,
+            string yes,
+            string no,
+            string cancel,
+            DarkTaskDialog.Button defaultButton = DarkTaskDialog.Button.Yes)
         {
             using var d = new DarkTaskDialog(
                 title: title,
@@ -399,11 +417,11 @@ namespace AngelLoader.Forms
                 yesText: yes,
                 noText: no,
                 cancelText: cancel,
-                defaultButton: defaultButton ?? DarkTaskDialog.Button.Cancel,
+                defaultButton: defaultButton,
                 checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
                 icon: icon);
 
-            var result = d.ShowDialog();
+            DialogResult result = d.ShowDialog();
 
             bool canceled = result == DialogResult.Cancel;
             bool cont = result == DialogResult.Yes;
@@ -412,19 +430,25 @@ namespace AngelLoader.Forms
         }
 
         public static (bool Cancel, bool DontAskAgain)
-        AskToContinueYesNoCustomStrings(string message, string title, MessageBoxIcon icon, bool showDontAskAgain,
-                                        string? yes, string? no, DarkTaskDialog.Button? defaultButton = null)
+        AskToContinueYesNoCustomStrings(
+            string message,
+            string title,
+            MessageBoxIcon icon,
+            bool showDontAskAgain,
+            string? yes,
+            string? no,
+            DarkTaskDialog.Button defaultButton = DarkTaskDialog.Button.Yes)
         {
             using var d = new DarkTaskDialog(
                 title: title,
                 message: message,
                 yesText: yes,
                 noText: no,
-                defaultButton: defaultButton ?? DarkTaskDialog.Button.No,
+                defaultButton: defaultButton,
                 checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
                 icon: icon);
 
-            var result = d.ShowDialog();
+            DialogResult result = d.ShowDialog();
 
             bool cancel = result != DialogResult.Yes;
             bool dontAskAgain = d.IsVerificationChecked;
