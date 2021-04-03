@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -18,7 +19,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static ToolStripMenuItemCustom SS2MenuItem = null!;
 
         private static bool _darkModeEnabled;
-        public static bool DarkModeEnabled
+        [PublicAPI]
+        internal static bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set

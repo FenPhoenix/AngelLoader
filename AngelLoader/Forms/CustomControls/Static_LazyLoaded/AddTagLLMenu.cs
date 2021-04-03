@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -10,6 +11,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static DarkContextMenu Menu = null!;
 
         private static bool _darkModeEnabled;
+        [PublicAPI]
         public static bool DarkModeEnabled
         {
             get => _darkModeEnabled;

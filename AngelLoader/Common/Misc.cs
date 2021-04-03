@@ -61,7 +61,7 @@ namespace AngelLoader
         /// <summary>
         /// Set a control's tag to this to tell the darkable control dictionary filler to ignore it if True.
         /// </summary>
-        internal enum LazyLoaded { True, False };
+        internal enum LazyLoaded { True, False }
 
         // Non-consts for file size; these aren't perf-critical at all
         [SuppressMessage("ReSharper", "ConvertToConstant.Global")]

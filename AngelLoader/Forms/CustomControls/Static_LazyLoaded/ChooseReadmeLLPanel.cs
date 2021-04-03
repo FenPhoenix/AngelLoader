@@ -16,6 +16,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static DarkButton OKButton = null!;
 
         private static bool _darkModeEnabled;
+        [PublicAPI]
         internal static bool DarkModeEnabled
         {
             get => _darkModeEnabled;

@@ -371,7 +371,6 @@ namespace AngelLoader.Forms
 
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
         private static readonly Color _al_LightBlueDark = Color.FromArgb(54, 146, 204);
-        private static Color AL_LightBlue => DarkModeEnabled ? _al_LightBlueDark : _al_LightBlue;
 
         private static readonly SolidBrush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
         private static readonly SolidBrush _al_LightBlueBrushDark = new SolidBrush(_al_LightBlueDark);
@@ -401,10 +400,6 @@ namespace AngelLoader.Forms
         private static Brush BlackForegroundBrush => DarkModeEnabled ? DarkColors.Fen_DarkForegroundBrush : Brushes.Black;
 
         #region Arrows
-
-        // TODO: @DarkMode: Explicit color
-        private static readonly Brush _darkModeArrowButtonEnabledBrush = new SolidBrush(Color.FromArgb(150, 156, 160));
-        private static Brush ArrowButtonEnabledBrush => DarkModeEnabled ? _darkModeArrowButtonEnabledBrush : SystemBrushes.ControlText;
 
         // TODO: @DarkMode: Explicit color
         private static readonly Pen _darkModeArrowButtonEnabledPen = new Pen(Color.FromArgb(150, 156, 160));
@@ -457,18 +452,10 @@ namespace AngelLoader.Forms
                 : _thief1_16 ??= Resources.Thief1_16;
 
         private static Bitmap? _thief2_16;
-        private static Bitmap? _thief2_16_dark;
-        public static Bitmap Thief2_16 =>
-            DarkModeEnabled
-                ? _thief2_16 ??= Resources.Thief2_16
-                : _thief2_16 ??= Resources.Thief2_16;
+        public static Bitmap Thief2_16 => _thief2_16 ??= Resources.Thief2_16;
 
         private static Bitmap? _thief3_16;
-        private static Bitmap? _thief3_16_dark;
-        public static Bitmap Thief3_16 =>
-            DarkModeEnabled
-                ? _thief3_16 ??= Resources.Thief3_16
-                : _thief3_16 ??= Resources.Thief3_16;
+        public static Bitmap Thief3_16 => _thief3_16 ??= Resources.Thief3_16;
 
         private static Bitmap? _shock2_16;
         private static Bitmap? _shock2_16_dark;
@@ -491,18 +478,10 @@ namespace AngelLoader.Forms
                 : _thief1_21 ??= Resources.Thief1_21;
 
         private static Bitmap? _thief2_21;
-        private static Bitmap? _thief2_21_dark;
-        public static Bitmap Thief2_21 =>
-            DarkModeEnabled
-                ? _thief2_21 ??= Resources.Thief2_21
-                : _thief2_21 ??= Resources.Thief2_21;
+        public static Bitmap Thief2_21 => _thief2_21 ??= Resources.Thief2_21;
 
         private static Bitmap? _thief3_21;
-        private static Bitmap? _thief3_21_dark;
-        public static Bitmap Thief3_21 =>
-            DarkModeEnabled
-                ? _thief3_21 ??= Resources.Thief3_21
-                : _thief3_21 ??= Resources.Thief3_21;
+        public static Bitmap Thief3_21 => _thief3_21 ??= Resources.Thief3_21;
 
         private static Bitmap? _shock2_21;
         private static Bitmap? _shock2_21_dark;

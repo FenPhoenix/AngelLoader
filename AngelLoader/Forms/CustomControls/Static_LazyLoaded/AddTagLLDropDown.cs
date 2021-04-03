@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -13,6 +13,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static DarkListBox ListBox = null!;
 
         private static bool _darkModeEnabled;
+        [PublicAPI]
         internal static bool DarkModeEnabled
         {
             get => _darkModeEnabled;

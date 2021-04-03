@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 using static AngelLoader.Misc;
 
@@ -21,7 +22,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom PatchMenuItem = null!;
 
         private static bool _darkModeEnabled;
-        public static bool DarkModeEnabled
+        [PublicAPI]
+        internal static bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set

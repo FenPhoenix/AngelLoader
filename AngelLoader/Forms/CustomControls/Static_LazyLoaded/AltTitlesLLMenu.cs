@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -12,7 +13,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static DarkContextMenu Menu = null!;
 
         private static bool _darkModeEnabled;
-        public static bool DarkModeEnabled
+        [PublicAPI]
+        internal static bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set

@@ -162,7 +162,7 @@ namespace AngelLoader.Forms
             {
                 RTFColorStyle.Original => RTFColorStyle.Auto,
                 RTFColorStyle.Auto => RTFColorStyle.Monochrome,
-                _ => RTFColorStyle.Original,
+                _ => RTFColorStyle.Original
             };
 
             ReadmeRichTextBox.SetRTFColorStyle(cs);
@@ -2694,7 +2694,7 @@ namespace AngelLoader.Forms
                     e.Handled = true;
                     break;
                 case Keys.Enter:
-                    string catAndTag = box.SelectedIndex == -1 ? AddTagTextBox.Text : box.SelectedItem.ToString();
+                    string catAndTag = box.SelectedIndex == -1 ? AddTagTextBox.Text : box.SelectedItem;
                     AddTagOperation(FMsDGV.GetSelectedFM(), catAndTag);
                     break;
                 default:
@@ -2710,7 +2710,7 @@ namespace AngelLoader.Forms
 
             var tb = AddTagTextBox;
 
-            using (new DisableEvents(this)) tb.Text = lb.SelectedItem.ToString();
+            using (new DisableEvents(this)) tb.Text = lb.SelectedItem;
 
             if (tb.Text.Length > 0) tb.SelectionStart = tb.Text.Length;
         }
@@ -2748,7 +2748,7 @@ namespace AngelLoader.Forms
 
             if (AddTagLLDropDown.ListBox.SelectedIndex > -1)
             {
-                AddTagOperation(FMsDGV.GetSelectedFM(), AddTagLLDropDown.ListBox.SelectedItem.ToString());
+                AddTagOperation(FMsDGV.GetSelectedFM(), AddTagLLDropDown.ListBox.SelectedItem);
             }
         }
 

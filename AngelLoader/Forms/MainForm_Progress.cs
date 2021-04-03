@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -14,7 +15,7 @@ namespace AngelLoader.Forms
         private bool _progressBoxConstructed;
 
         private bool _progressBoxDarkModeEnabled;
-
+        [PublicAPI]
         private bool ProgressBoxDarkModeEnabled
         {
             get => _progressBoxDarkModeEnabled;

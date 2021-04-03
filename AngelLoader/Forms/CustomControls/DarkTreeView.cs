@@ -41,7 +41,6 @@ namespace AngelLoader.Forms.CustomControls
             DrawMode = TreeViewDrawMode.OwnerDrawText;
 
             HideSelection = false;
-
         }
 
         #region Event overrides

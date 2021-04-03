@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 using static AngelLoader.Misc;
 
@@ -27,6 +28,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom ShowRecentAtTopMenuItem = null!;
 
         private static bool _darkModeEnabled;
+        [PublicAPI]
         public static bool DarkModeEnabled
         {
             get => _darkModeEnabled;

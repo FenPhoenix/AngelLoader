@@ -36,19 +36,6 @@ namespace AngelLoader.Forms.CustomControls
             (byte)'l'
         };
 
-        private readonly byte[] _fonttbl =
-        {
-            (byte)'{',
-            (byte)'\\',
-            (byte)'f',
-            (byte)'o',
-            (byte)'n',
-            (byte)'t',
-            (byte)'t',
-            (byte)'b',
-            (byte)'l'
-        };
-
         private readonly byte[] _redFieldBytes =
         {
             (byte)'\\',
@@ -74,24 +61,6 @@ namespace AngelLoader.Forms.CustomControls
             (byte)'l',
             (byte)'u',
             (byte)'e'
-        };
-
-        private readonly byte[] cf0 =
-        {
-            (byte)'\\',
-            (byte)'c',
-            (byte)'f',
-            (byte)'0'
-        };
-
-        private readonly byte[] plain =
-        {
-            (byte)'\\',
-            (byte)'p',
-            (byte)'l',
-            (byte)'a',
-            (byte)'i',
-            (byte)'n'
         };
 
         private readonly byte[] _background =

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -69,6 +70,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         #region Private methods
 
         private static bool _darkModeEnabled;
+        [PublicAPI]
         public static bool DarkModeEnabled
         {
             get => _darkModeEnabled;

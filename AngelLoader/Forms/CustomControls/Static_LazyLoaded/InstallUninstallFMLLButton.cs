@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -16,6 +17,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static DarkButton Button = null!;
 
         private static bool _darkModeEnabled;
+        [PublicAPI]
         public static bool DarkModeEnabled
         {
             get => _darkModeEnabled;

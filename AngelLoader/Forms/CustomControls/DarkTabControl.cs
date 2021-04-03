@@ -50,10 +50,8 @@ namespace AngelLoader.Forms.CustomControls
                 if (Parent != null)
                 {
                     // Fill background behind the control (shows up behind tabs)
-                    using (var b = new SolidBrush(Parent.BackColor))
-                    {
-                        g.FillRectangle(b, ClientRectangle);
-                    }
+                    using var b = new SolidBrush(Parent.BackColor);
+                    g.FillRectangle(b, ClientRectangle);
                 }
 
                 if (TabPages.Count > 0)
@@ -163,9 +161,7 @@ namespace AngelLoader.Forms.CustomControls
                                 )
                                 : tabRect;
 
-                        Color textColor = SelectedTab == tabPage
-                            ? DarkColors.LightText
-                            : DarkColors.LightText;
+                        Color textColor = DarkColors.LightText;
 
                         TextRenderer.DrawText(g, tabPage.Text, Font, textRect, textColor, textFormat);
                     }

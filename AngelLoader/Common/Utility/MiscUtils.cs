@@ -244,19 +244,8 @@ namespace AngelLoader
             {
                 return Environment.OSVersion.Platform == PlatformID.Win32NT &&
                        Environment.OSVersion.Version >= new Version(6, 1);
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
-        internal static bool WinVersionIs8OrAbove()
-        {
-            try
-            {
-                return Environment.OSVersion.Platform == PlatformID.Win32NT &&
-                       Environment.OSVersion.Version >= new Version(6, 2);
+                // Win8 check: same but version is 6, 2
             }
             catch
             {

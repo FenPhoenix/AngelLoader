@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
