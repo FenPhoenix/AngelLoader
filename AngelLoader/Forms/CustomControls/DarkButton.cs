@@ -396,18 +396,21 @@ namespace AngelLoader.Forms.CustomControls
                 g.DrawRectangle(borderPen, borderRect);
             }
 
-            var textOffsetX = 0;
-            var textOffsetY = 0;
+            int textOffsetX = 0;
+            int textOffsetY = 0;
 
             if (Image != null)
             {
-                var stringSize = g.MeasureString(Text, Font, rect.Size);
+                //SizeF stringSize = g.MeasureString(Text, Font, rect.Size);
 
-                var x = (ClientSize.Width / 2) - (Image.Size.Width / 2);
-                var y = (ClientSize.Height / 2) - (Image.Size.Height / 2);
+                int x;
+                //int x = (ClientSize.Width / 2) - (Image.Size.Width / 2);
+                int y = (ClientSize.Height / 2) - (Image.Size.Height / 2);
 
                 switch (TextImageRelation)
                 {
+                    // @DarkMode(DarkButton): These are probably incorrect - fix them if we ever want to use them
+                    /*
                     case TextImageRelation.ImageAboveText:
                         textOffsetY = (Image.Size.Height / 2) + (ImagePadding / 2);
                         y -= (int)(stringSize.Height / 2) + (ImagePadding / 2);
@@ -416,12 +419,14 @@ namespace AngelLoader.Forms.CustomControls
                         textOffsetY = ((Image.Size.Height / 2) + (ImagePadding / 2)) * -1;
                         y += (int)(stringSize.Height / 2) + (ImagePadding / 2);
                         break;
-                    case TextImageRelation.ImageBeforeText:
-                        textOffsetX = Image.Size.Width + (ImagePadding * 2);
-                        x = ImagePadding;
-                        break;
                     case TextImageRelation.TextBeforeImage:
                         x += (int)stringSize.Width;
+                        break;
+                    */
+                    case TextImageRelation.ImageBeforeText:
+                    default:
+                        textOffsetX = Image.Size.Width + ImagePadding + 1;
+                        x = textOffsetX - (ImagePadding * 2);
                         break;
                 }
 

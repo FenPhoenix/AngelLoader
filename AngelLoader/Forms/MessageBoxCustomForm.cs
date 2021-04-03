@@ -11,8 +11,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class MessageBoxCustomForm : DarkForm
     {
-        // TODO: @DarkMode(MessageBoxFormCustom): Paint icon on OK button (or just fix DarkButton's image alignment)
-
         private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         private readonly bool _multiChoice;
