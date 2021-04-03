@@ -131,31 +131,29 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                SetUpTheme();
-            }
-        }
 
-        private void SetUpTheme()
-        {
-            // Everything needs to be just like this, or else there are cases where the appearance is wrong
+                // Everything needs to be just like this, or else there are cases where the appearance is wrong
 
-            if (_darkModeEnabled)
-            {
-                _originalFlatStyle ??= base.FlatStyle;
-                _originalBorderSize ??= FlatAppearance.BorderSize;
-                UseVisualStyleBackColor = !_darkModeEnabled;
-                SetButtonState(DarkControlState.Normal);
+                if (_darkModeEnabled)
+                {
+                    _originalFlatStyle ??= base.FlatStyle;
+                    _originalBorderSize ??= FlatAppearance.BorderSize;
+                    UseVisualStyleBackColor = false;
+                    SetButtonState(DarkControlState.Normal);
+
+                    Invalidate();
+                }
+                else
+                {
+                    // Need to set these explicitly because in some cases (not all) they don't get set back automatically
+                    ForeColor = SystemColors.ControlText;
+                    BackColor = SystemColors.Control;
+                    UseVisualStyleBackColor = true;
+                    if (_originalFlatStyle != null) base.FlatStyle = (FlatStyle)_originalFlatStyle;
+                    if (_originalBorderSize != null) FlatAppearance.BorderSize = (int)_originalBorderSize;
+                }
 
                 Invalidate();
-            }
-            else
-            {
-                // Need to set these explicitly because in some cases (not all) they don't get set back automatically
-                ForeColor = SystemColors.ControlText;
-                BackColor = SystemColors.Control;
-                UseVisualStyleBackColor = true;
-                if (_originalFlatStyle != null) base.FlatStyle = (FlatStyle)_originalFlatStyle;
-                if (_originalBorderSize != null) FlatAppearance.BorderSize = (int)_originalBorderSize;
             }
         }
 
@@ -360,12 +358,16 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (ButtonStyle == DarkButtonStyle.Normal)
                 {
-                    if (Focused && TabStop) borderPen = DarkColors.BlueHighlightPen;
+                    if ((Focused && TabStop) || _isDefault)
+                    {
+                        borderPen = DarkColors.BlueHighlightPen;
+                    }
 
                     switch (ButtonState)
                     {
                         case DarkControlState.Hover:
-                            fillColor = _isDefault ? DarkColors.BlueBackground : DarkModeHoverColor ?? DarkColors.LighterBackground;
+                            fillColor = _isDefault ? DarkColors.BlueBackground : DarkModeHoverColor ?? DarkColors.BlueBackground;
+                            borderPen = DarkColors.BlueHighlightPen;
                             break;
                         case DarkControlState.Pressed:
                             fillColor = _isDefault ? DarkColors.DarkBackground : DarkModePressedColor ?? DarkColors.DarkBackground;

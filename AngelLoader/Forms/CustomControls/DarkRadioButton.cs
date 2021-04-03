@@ -102,6 +102,8 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     UseVisualStyleBackColor = _origUseVisualStyleBackColor;
                 }
+
+                Invalidate();
             }
         }
 
@@ -232,7 +234,7 @@ namespace AngelLoader.Forms.CustomControls
 
             var textColor = DarkColors.LightText;
             var borderColorPen = DarkColors.LightTextPen;
-            var fillColorBrush = DarkColors.LightestBackgroundBrush;
+            var fillColorBrush = DarkColors.LightTextBrush;
 
             if (Enabled)
             {
