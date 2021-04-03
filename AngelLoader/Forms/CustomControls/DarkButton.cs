@@ -14,6 +14,8 @@ namespace AngelLoader.Forms.CustomControls
 
         private DarkButtonStyle _style = DarkButtonStyle.Normal;
 
+        private DarkControlState _buttonState = DarkControlState.Normal;
+
         private bool _isDefault;
         private bool _spacePressed;
 
@@ -100,11 +102,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Code Property Region
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [PublicAPI]
-        public DarkControlState ButtonState { get; private set; } = DarkControlState.Normal;
-
         [PublicAPI]
         public new FlatStyle FlatStyle
         {
@@ -180,9 +177,9 @@ namespace AngelLoader.Forms.CustomControls
 
         private void SetButtonState(DarkControlState buttonState)
         {
-            if (ButtonState != buttonState)
+            if (_buttonState != buttonState)
             {
-                ButtonState = buttonState;
+                _buttonState = buttonState;
                 InvalidateIfDark();
             }
         }
@@ -282,7 +279,7 @@ namespace AngelLoader.Forms.CustomControls
 
             _spacePressed = false;
 
-            SetButtonState(!ClientRectangle.Contains(Cursor.Position)
+            SetButtonState(!ClientRectangle.Contains(PointToClient(Cursor.Position))
                 ? DarkControlState.Normal
                 : DarkControlState.Hover);
         }
@@ -363,7 +360,7 @@ namespace AngelLoader.Forms.CustomControls
                         borderPen = DarkColors.BlueHighlightPen;
                     }
 
-                    switch (ButtonState)
+                    switch (_buttonState)
                     {
                         case DarkControlState.Hover:
                             fillColor = _isDefault ? DarkColors.BlueBackground : DarkModeHoverColor ?? DarkColors.BlueBackground;
@@ -376,7 +373,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 else if (ButtonStyle == DarkButtonStyle.Flat)
                 {
-                    switch (ButtonState)
+                    switch (_buttonState)
                     {
                         case DarkControlState.Normal:
                             fillColor = DarkModeBackColor ?? DarkColors.GreyBackground;

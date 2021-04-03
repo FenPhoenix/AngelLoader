@@ -118,7 +118,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public static readonly SolidBrush GreyBackgroundBrush = new SolidBrush(GreyBackground);
         public static readonly SolidBrush HeaderBackgroundBrush = new SolidBrush(HeaderBackground);
-        //public static readonly SolidBrush BlueBackgroundBrush = new SolidBrush(BlueBackground);
+        public static readonly SolidBrush BlueBackgroundBrush = new SolidBrush(BlueBackground);
         public static readonly SolidBrush DarkBlueBackgroundBrush = new SolidBrush(DarkBlueBackground);
         public static readonly SolidBrush DarkBackgroundBrush = new SolidBrush(DarkBackground);
         //public static readonly SolidBrush MediumBackgroundBrush = new SolidBrush(MediumBackground);

@@ -11,6 +11,8 @@ namespace AngelLoader.Forms.CustomControls
     {
         private const int _padding = 10;
 
+        private DarkControlState _buttonState = DarkControlState.Normal;
+
         // No TextAlign property, so leave constant
         private const TextFormatFlags _textFormat =
             TextFormatFlags.Default |
@@ -85,6 +87,15 @@ namespace AngelLoader.Forms.CustomControls
 
         }
 
+        private void SetButtonState(DarkControlState buttonState)
+        {
+            if (_buttonState != buttonState)
+            {
+                _buttonState = buttonState;
+                InvalidateIfDark();
+            }
+        }
+
         private void InvalidateIfDark()
         {
             if (_darkModeEnabled) Invalidate();
@@ -109,6 +120,64 @@ namespace AngelLoader.Forms.CustomControls
             InvalidateIfDark();
         }
 
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (!_darkModeEnabled) return;
+
+            SetButtonState((e.Button & MouseButtons.Left) == MouseButtons.Left &&
+                           ClientRectangle.Contains(e.Location) &&
+                           DroppedDown
+                ? DarkControlState.Pressed
+                : DarkControlState.Hover);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            if (!_darkModeEnabled) return;
+
+            if (e.Button != MouseButtons.Left) return;
+
+            if (!ClientRectangle.Contains(e.Location)) return;
+
+            SetButtonState(DarkControlState.Pressed);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            if (!_darkModeEnabled) return;
+
+            if (e.Button != MouseButtons.Left || DroppedDown) return;
+
+            SetButtonState(DarkControlState.Normal);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            base.OnMouseLeave(e);
+
+            if (!_darkModeEnabled) return;
+
+            SetButtonState(DarkControlState.Normal);
+        }
+
+        protected override void OnMouseCaptureChanged(EventArgs e)
+        {
+            base.OnMouseCaptureChanged(e);
+
+            if (!_darkModeEnabled) return;
+
+            if (!ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            {
+                SetButtonState(DarkControlState.Normal);
+            }
+        }
+
         protected override void OnGotFocus(EventArgs e)
         {
             base.OnGotFocus(e);
@@ -118,7 +187,23 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnLostFocus(EventArgs e)
         {
             base.OnLostFocus(e);
-            InvalidateIfDark();
+
+            if (!_darkModeEnabled) return;
+
+            SetButtonState(ClientRectangle.Contains(PointToClient(Cursor.Position))
+                ? DarkControlState.Hover
+                : DarkControlState.Normal);
+        }
+
+        protected override void OnDropDownClosed(EventArgs e)
+        {
+            base.OnDropDownClosed(e);
+
+            if (!_darkModeEnabled) return;
+
+            SetButtonState(ClientRectangle.Contains(PointToClient(Cursor.Position))
+                ? DarkControlState.Hover
+                : DarkControlState.Normal);
         }
 
         protected override void OnTextChanged(EventArgs e)
@@ -165,7 +250,24 @@ namespace AngelLoader.Forms.CustomControls
             var borderPen = DarkColors.GreySelectionPen;
             var fillColorBrush = DarkColors.LightBackgroundBrush;
 
-            if (Focused && TabStop) borderPen = DarkColors.BlueHighlightPen;
+            if (Enabled)
+            {
+                switch (_buttonState)
+                {
+                    case DarkControlState.Hover:
+                        fillColorBrush = DarkColors.BlueBackgroundBrush;
+                        borderPen = DarkColors.BlueHighlightPen;
+                        break;
+                    case DarkControlState.Pressed:
+                        fillColorBrush = DarkColors.DarkBackgroundBrush;
+                        break;
+                }
+            }
+
+            if (Focused && TabStop)
+            {
+                borderPen = DarkColors.BlueHighlightPen;
+            }
 
             g.FillRectangle(fillColorBrush, rect);
 
