@@ -6,6 +6,15 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
+    /*
+    @DarkMode(DarkButton): There was an _isDefault thing here where we'd draw differently if we were the default button, but:
+    It didn't work 100% like it was supposed to, in fact the original works weirdly and inconsistently too, but
+    ours broke in a worse way than original, so we just removed it completely. The original often doesn't draw
+    the default button any differently either (sometimes it does, often it doesn't), so we're not really any less
+    clear than the original. We still draw a selection around the focused button, which ends up being the default
+    button in dialogs, so we're as clear as the original there, which is the most important place to be clear.
+    */
+
     [ToolboxBitmap(typeof(Button))]
     [DefaultEvent("Click")]
     public class DarkButton : Button, IDarkable
@@ -16,7 +25,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private DarkControlState _buttonState = DarkControlState.Normal;
 
-        private bool _isDefault;
         private bool _spacePressed;
 
         private int _imagePadding = 5; // Consts.Padding / 2
@@ -149,8 +157,6 @@ namespace AngelLoader.Forms.CustomControls
                     if (_originalFlatStyle != null) base.FlatStyle = (FlatStyle)_originalFlatStyle;
                     if (_originalBorderSize != null) FlatAppearance.BorderSize = (int)_originalBorderSize;
                 }
-
-                Invalidate();
             }
         }
 
@@ -190,16 +196,6 @@ namespace AngelLoader.Forms.CustomControls
 
         // Need our own event because we can't fire base.OnPaint() or it overrides our own painting
         public event PaintEventHandler? PaintCustom;
-
-        protected override void OnCreateControl()
-        {
-            base.OnCreateControl();
-
-            if (!_darkModeEnabled) return;
-
-            Form? form = FindForm();
-            if (form != null && form.AcceptButton == this) _isDefault = true;
-        }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
@@ -313,18 +309,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public override void NotifyDefault(bool value)
-        {
-            base.NotifyDefault(value);
-
-            if (!_darkModeEnabled) return;
-
-            if (!DesignMode) return;
-
-            _isDefault = value;
-            InvalidateIfDark();
-        }
-
         #endregion
 
         #region Paint Region
@@ -355,7 +339,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (ButtonStyle == DarkButtonStyle.Normal)
                 {
-                    if ((Focused && TabStop) || _isDefault)
+                    if (Focused && TabStop)
                     {
                         borderPen = DarkColors.BlueHighlightPen;
                     }
@@ -363,11 +347,11 @@ namespace AngelLoader.Forms.CustomControls
                     switch (_buttonState)
                     {
                         case DarkControlState.Hover:
-                            fillColor = _isDefault ? DarkColors.BlueBackground : DarkModeHoverColor ?? DarkColors.BlueBackground;
+                            fillColor = DarkModeHoverColor ?? DarkColors.BlueBackground;
                             borderPen = DarkColors.BlueHighlightPen;
                             break;
                         case DarkControlState.Pressed:
-                            fillColor = _isDefault ? DarkColors.DarkBackground : DarkModePressedColor ?? DarkColors.DarkBackground;
+                            fillColor = DarkModePressedColor ?? DarkColors.DarkBackground;
                             break;
                     }
                 }
@@ -400,7 +384,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             else
             {
-                var fillBrush = _isDefault ? DarkColors.DarkBlueBackgroundBrush : DarkColors.LightBackgroundBrush;
+                var fillBrush = DarkColors.LightBackgroundBrush;
                 g.FillRectangle(fillBrush, rect);
             }
 

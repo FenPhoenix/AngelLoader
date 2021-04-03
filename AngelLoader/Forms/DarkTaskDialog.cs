@@ -104,6 +104,10 @@ namespace AngelLoader.Forms
 
             static void ThrowForDefaultButton(Button button) => throw new ArgumentException("Default button not visible: " + button);
 
+            NoButton.DialogResult = DialogResult.No;
+            YesButton.DialogResult = DialogResult.Yes;
+            Cancel_Button.DialogResult = DialogResult.Cancel;
+
             switch (defaultButton)
             {
                 case Button.Yes:
@@ -160,10 +164,6 @@ namespace AngelLoader.Forms
             DialogResult = DialogResult.Cancel;
 
             SetTheme(Config.VisualTheme);
-
-            if (yesButtonVisible) YesButton.Click += YesButton_Click;
-            if (noButtonVisible) NoButton.Click += NoButton_Click;
-            if (cancelButtonVisible) Cancel_Button.Click += CancelButton_Click;
         }
 
         private void SetTheme(VisualTheme theme)
@@ -179,27 +179,5 @@ namespace AngelLoader.Forms
                 VerificationCheckBox.BackColor = SystemColors.Control;
             }
         }
-
-        #region Button click event handlers
-
-        private void YesButton_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Yes;
-            Close();
-        }
-
-        private void NoButton_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.No;
-            Close();
-        }
-
-        private void CancelButton_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Cancel;
-            Close();
-        }
-
-        #endregion
     }
 }
