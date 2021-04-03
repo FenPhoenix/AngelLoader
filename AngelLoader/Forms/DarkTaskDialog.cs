@@ -53,6 +53,8 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
+            VerificationCheckBox.DarkModeBackColor = DarkColors.Fen_DarkBackground;
+
             #region Set fonts
 
             // Set these after InitializeComponent() in case that sets other fonts, but before anything else
@@ -189,9 +191,8 @@ namespace AngelLoader.Forms
         {
             if (theme == VisualTheme.Dark)
             {
-                ControlUtils.ChangeFormThemeMode(theme, this, _controlColors, x => x == BottomFLP || x == VerificationCheckBox);
+                ControlUtils.ChangeFormThemeMode(theme, this, _controlColors, x => x == BottomFLP);
                 BottomFLP.BackColor = DarkColors.Fen_DarkBackground;
-                VerificationCheckBox.DarkModeBackColor = DarkColors.Fen_DarkBackground;
             }
             else
             {
