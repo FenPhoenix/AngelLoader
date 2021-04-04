@@ -6,7 +6,6 @@ namespace AngelLoader.Forms.CustomControls
 {
     public class DarkContextMenu : ContextMenuStrip
     {
-
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]

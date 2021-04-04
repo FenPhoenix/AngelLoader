@@ -434,10 +434,6 @@ namespace AngelLoader.Forms
 
         #region Games
 
-        // TODO: @DarkMode(Game images):
-        // Maybe have different versions with different lightnesses for different backgrounds?
-        // Images could use some possibly extreme desaturation (not lightening)
-
         // @GENGAMES (Images): Begin
         // Putting these into an array doesn't really gain us anything and loses us robustness, so leave them.
         // We would have to say ResourceManager.GetObject(nameof(gameIndex) + "_16") etc. and that doesn't even
@@ -445,10 +441,10 @@ namespace AngelLoader.Forms
         // would fail silently, so really it's best to just leave these as hard-converts even though we really
         // want to get rid of individually-specified games.
         private static Bitmap? _thief1_16;
-        private static Bitmap? _thief1_16_dark;
+        private static Bitmap? _thief1_16_Dark;
         public static Bitmap Thief1_16 =>
             DarkModeEnabled
-                ? _thief1_16_dark ??= Resources.Thief1_16_dark
+                ? _thief1_16_Dark ??= Resources.Thief1_16_Dark
                 : _thief1_16 ??= Resources.Thief1_16;
 
         private static Bitmap? _thief2_16;
@@ -458,23 +454,23 @@ namespace AngelLoader.Forms
         public static Bitmap Thief3_16 => _thief3_16 ??= Resources.Thief3_16;
 
         private static Bitmap? _shock2_16;
-        private static Bitmap? _shock2_16_dark;
+        private static Bitmap? _shock2_16_Dark;
         public static Bitmap Shock2_16 =>
             DarkModeEnabled
-                ? _shock2_16_dark ??= Resources.Shock2_16_dark
+                ? _shock2_16_Dark ??= Resources.Shock2_16_Dark
                 : _shock2_16 ??= Resources.Shock2_16;
 
         private static Bitmap? _thief1_21;
-        private static Bitmap? _thief1_21_dark;
+        private static Bitmap? _thief1_21_Dark;
         public static Bitmap Thief1_21 =>
             DarkModeEnabled
-                ? _thief1_21_dark ??= Resources.Thief1_21_dark
+                ? _thief1_21_Dark ??= Resources.Thief1_21_Dark
                 : _thief1_21 ??= Resources.Thief1_21;
 
-        private static Bitmap? _thief1_21_dark_darkbg;
+        private static Bitmap? _thief1_21_dark_DarkBG;
         private static Bitmap Thief1_21_DGV =>
             DarkModeEnabled
-                ? _thief1_21_dark_darkbg ??= Resources.Thief1_21_dark_darkbg
+                ? _thief1_21_dark_DarkBG ??= Resources.Thief1_21_Dark_DarkBG
                 : _thief1_21 ??= Resources.Thief1_21;
 
         private static Bitmap? _thief2_21;
@@ -484,70 +480,70 @@ namespace AngelLoader.Forms
         public static Bitmap Thief3_21 => _thief3_21 ??= Resources.Thief3_21;
 
         private static Bitmap? _shock2_21;
-        private static Bitmap? _shock2_21_dark;
+        private static Bitmap? _shock2_21_Dark;
         public static Bitmap Shock2_21 =>
             DarkModeEnabled
-                ? _shock2_21_dark ??= Resources.Shock2_21_dark
+                ? _shock2_21_Dark ??= Resources.Shock2_21_Dark
                 : _shock2_21 ??= Resources.Shock2_21;
         // @GENGAMES (Images): End
 
         #endregion
 
         private static Bitmap? _filterByReleaseDate;
-        private static Bitmap? _filterByReleaseDateDark;
+        private static Bitmap? _filterByReleaseDate_Dark;
         public static Bitmap FilterByReleaseDate =>
             DarkModeEnabled
-                ? _filterByReleaseDateDark ??= Resources.FilterByReleaseDateDark
+                ? _filterByReleaseDate_Dark ??= Resources.FilterByReleaseDate_Dark
                 : _filterByReleaseDate ??= Resources.FilterByReleaseDate;
 
         private static Bitmap? _filterByLastPlayed;
-        private static Bitmap? _filterByLastPlayedDark;
+        private static Bitmap? _filterByLastPlayed_Dark;
         public static Bitmap FilterByLastPlayed =>
             DarkModeEnabled
-                ? _filterByLastPlayedDark ??= Resources.FilterByLastPlayedDark
+                ? _filterByLastPlayed_Dark ??= Resources.FilterByLastPlayed_Dark
                 : _filterByLastPlayed ??= Resources.FilterByLastPlayed;
 
         private static Bitmap? _filterByTags;
-        private static Bitmap? _filterByTagsDark;
+        private static Bitmap? _filterByTags_Dark;
         public static Bitmap FilterByTags =>
             DarkModeEnabled
-                ? _filterByTagsDark ??= Resources.FilterByTagsDark
+                ? _filterByTags_Dark ??= Resources.FilterByTags_Dark
                 : _filterByTags ??= Resources.FilterByTags;
 
         private static Bitmap? _greenCheckCircle;
-        private static Bitmap? _greenCheckCircle_dark;
+        private static Bitmap? _greenCheckCircle_Dark;
         public static Bitmap GreenCheckCircle =>
             DarkModeEnabled
-                ? _greenCheckCircle_dark ??= Resources.green_check_21_dark
-                : _greenCheckCircle ??= Resources.CheckCircle;
+                ? _greenCheckCircle_Dark ??= Resources.GreenCheckCircle_Dark
+                : _greenCheckCircle ??= Resources.GreenCheckCircle;
 
         private static Bitmap? _clearFilters;
-        private static Bitmap? _clearFiltersDark;
+        private static Bitmap? _clearFilters_Dark;
         public static Bitmap ClearFilters =>
             DarkModeEnabled
-                ? _clearFiltersDark ??= Resources.ClearFilters_Dark
+                ? _clearFilters_Dark ??= Resources.ClearFilters_Dark
                 : _clearFilters ??= Resources.ClearFilters;
 
         private static Bitmap? _trash_16;
-        private static Bitmap? _trash_16_dark;
+        private static Bitmap? _trash_16_Dark;
         public static Bitmap Trash_16 =>
             DarkModeEnabled
-                ? _trash_16_dark ??= Resources.trash_16_dark
+                ? _trash_16_Dark ??= Resources.Trash_16_Dark
                 : _trash_16 ??= Resources.Trash_16;
 
         private static Bitmap? _redQuestionMarkCircle;
-        private static Bitmap? _redQuestionMarkCircle_dark;
+        private static Bitmap? _redQuestionMarkCircle_Dark;
         public static Bitmap RedQuestionMarkCircle =>
             DarkModeEnabled
-                ? _redQuestionMarkCircle_dark ??= Resources.red_circle_question_mark_21_dark
-                : _redQuestionMarkCircle ??= Resources.QuestionMarkCircleRed;
+                ? _redQuestionMarkCircle_Dark ??= Resources.RedQuestionMarkCircle_Dark
+                : _redQuestionMarkCircle ??= Resources.RedQuestionMarkCircle;
 
         private static Bitmap? _redExclamationMarkCircle;
-        private static Bitmap? _redExclamationMarkCircle_dark;
+        private static Bitmap? _redExclamationMarkCircle_Dark;
         public static Bitmap RedExclamationMarkCircle =>
             DarkModeEnabled
-                ? _redExclamationMarkCircle_dark ??= Resources.red_circle_exclamation_mark_14_dark
-                : _redExclamationMarkCircle ??= Resources.ExclMarkCircleRed_14;
+                ? _redExclamationMarkCircle_Dark ??= Resources.RedExclamationMarkCircle_Dark
+                : _redExclamationMarkCircle ??= Resources.RedExclamationMarkCircle;
 
         public static Bitmap FilterByFinished => CreateFinishedOnBitmap(Difficulty.None, filterFinished: true);
         public static Bitmap FilterByUnfinished => CreateFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
@@ -558,10 +554,10 @@ namespace AngelLoader.Forms
         public static Bitmap FilterByRating => CreateStarImage(StarFullGPath, 24);
 
         private static Image? _showRecentAtTop;
-        private static Image? _showRecentAtTopDark;
+        private static Image? _showRecentAtTop_Dark;
         public static Image FilterShowRecentAtTop =>
             DarkModeEnabled
-                ? _showRecentAtTopDark ??= Resources.FilterShowRecentAtTop_Dark
+                ? _showRecentAtTop_Dark ??= Resources.FilterShowRecentAtTop_Dark
                 : _showRecentAtTop ??= Resources.FilterShowRecentAtTop;
 
         private static Icon? _AngelLoader;
@@ -619,42 +615,42 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private static Bitmap? _refresh_Classic;
+        private static Bitmap? _refresh;
         private static Bitmap? _refresh_Dark;
         public static Bitmap Refresh =>
             DarkModeEnabled
-                ? _refresh_Dark ??= Resources.Refresh_DarkMode
-                : _refresh_Classic ??= Resources.Refresh;
+                ? _refresh_Dark ??= Resources.Refresh_Dark
+                : _refresh ??= Resources.Refresh;
 
         private static Bitmap? _refreshFilters;
-        private static Bitmap? _refreshFiltersDark;
+        private static Bitmap? _refreshFilters_Dark;
         public static Bitmap RefreshFilters =>
             DarkModeEnabled
-                ? _refreshFiltersDark ??= Resources.refresh_filters_21_dark
-                : _refreshFilters ??= Resources.refresh_filters_21;
+                ? _refreshFilters_Dark ??= Resources.RefreshFilters_Dark
+                : _refreshFilters ??= Resources.RefreshFilters;
 
         #region Rating example
 
-        private static Bitmap? _ratingExample_NDL_Classic;
+        private static Bitmap? _ratingExample_NDL;
         private static Bitmap? _ratingExample_NDL_Dark;
         public static Bitmap RatingExample_NDL =>
             DarkModeEnabled
                 ? _ratingExample_NDL_Dark ??= Resources.RatingExample_NDL_Dark
-                : _ratingExample_NDL_Classic ??= Resources.RatingExample_NDL;
+                : _ratingExample_NDL ??= Resources.RatingExample_NDL;
 
-        private static Bitmap? _ratingExample_FMSel_Stars_Classic;
+        private static Bitmap? _ratingExample_FMSel_Stars;
         private static Bitmap? _ratingExample_FMSel_Stars_Dark;
         public static Bitmap RatingExample_FMSel_Stars =>
             DarkModeEnabled
                 ? _ratingExample_FMSel_Stars_Dark ??= CreateRatingExample_FMSel_Stars(darkMode: true)
-                : _ratingExample_FMSel_Stars_Classic ??= CreateRatingExample_FMSel_Stars(darkMode: false);
+                : _ratingExample_FMSel_Stars ??= CreateRatingExample_FMSel_Stars(darkMode: false);
 
-        private static Bitmap? _ratingExample_FMSel_Number_Classic;
+        private static Bitmap? _ratingExample_FMSel_Number;
         private static Bitmap? _ratingExample_FMSel_Number_Dark;
         public static Bitmap RatingExample_FMSel_Number =>
             DarkModeEnabled
                 ? _ratingExample_FMSel_Number_Dark ??= Resources.RatingExample_FMSel_Number_Dark
-                : _ratingExample_FMSel_Number_Classic ??= Resources.RatingExample_FMSel_Number;
+                : _ratingExample_FMSel_Number ??= Resources.RatingExample_FMSel_Number;
 
         #endregion
 
@@ -1055,7 +1051,6 @@ namespace AngelLoader.Forms
                 y ??= (button.Height - img.Height) / 2;
                 e.Graphics.DrawImage(img, x, (int)y);
             }
-
         }
 
         internal static void PaintPlusButton(Button button, PaintEventArgs e)

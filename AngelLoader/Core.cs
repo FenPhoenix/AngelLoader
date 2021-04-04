@@ -75,7 +75,6 @@ namespace AngelLoader
                     try
                     {
                         Ini.ReadConfigIni(Paths.ConfigIni, Config);
-
                     }
                     catch (Exception ex)
                     {

@@ -37,7 +37,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ZoomInButton.Image = Images.GetZoomImage(ZoomInButton.ContentRectangle, Zoom.In, regenerate: true);
             ZoomOutButton.Image = Images.GetZoomImage(ZoomOutButton.ContentRectangle, Zoom.Out, regenerate: true);
             ResetZoomButton.Image = Images.GetZoomImage(ResetZoomButton.ContentRectangle, Zoom.Reset, regenerate: true);
-
         }
 
         private static void Construct(MainForm owner)

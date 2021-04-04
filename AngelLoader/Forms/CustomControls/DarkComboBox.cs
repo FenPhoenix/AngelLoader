@@ -84,7 +84,6 @@ namespace AngelLoader.Forms.CustomControls
                 DrawMode = DrawMode.Normal;
                 base.FlatStyle = FlatStyle.Standard;
             }
-
         }
 
         private void SetButtonState(DarkControlState buttonState)

@@ -53,13 +53,13 @@ namespace AngelLoader
             b = b > 0.04045 ? (float)Math.Pow((b + 0.055f) / 1.055f, 2.4f) : b / 12.92f;
 
             // Convert linear sRGB -> Oklab
-            float l = CubicRoot(0.4122214708f * r + 0.5363325363f * g + 0.0514459929f * b);
-            float m = CubicRoot(0.2119034982f * r + 0.6806995451f * g + 0.1073969566f * b);
-            float s = CubicRoot(0.0883024619f * r + 0.2817188376f * g + 0.6299787005f * b);
+            float l = CubicRoot((0.4122214708f * r) + (0.5363325363f * g) + (0.0514459929f * b));
+            float m = CubicRoot((0.2119034982f * r) + (0.6806995451f * g) + (0.1073969566f * b));
+            float s = CubicRoot((0.0883024619f * r) + (0.2817188376f * g) + (0.6299787005f * b));
 
-            float l_ = 0.2104542553f * l + 0.7936177850f * m - 0.0040720468f * s;
-            float a_ = 1.9779984951f * l - 2.4285922050f * m + 0.4505937099f * s;
-            float b_ = 0.0259040371f * l + 0.7827717662f * m - 0.8086757660f * s;
+            float l_ = (0.2104542553f * l) + (0.7936177850f * m) - (0.0040720468f * s);
+            float a_ = (1.9779984951f * l) - (2.4285922050f * m) + (0.4505937099f * s);
+            float b_ = (0.0259040371f * l) + (0.7827717662f * m) - (0.8086757660f * s);
 
             return new Lab(l_, a_, b_);
         }
@@ -67,22 +67,22 @@ namespace AngelLoader
         private static Color OklabToColor(Lab lab)
         {
             // Convert Oklab -> linear sRGB
-            float l = lab.L + 0.3963377774f * lab.a + 0.2158037573f * lab.b;
-            float m = lab.L - 0.1055613458f * lab.a - 0.0638541728f * lab.b;
-            float s = lab.L - 0.0894841775f * lab.a - 1.2914855480f * lab.b;
+            float l = lab.L + (0.3963377774f * lab.a) + (0.2158037573f * lab.b);
+            float m = lab.L - (0.1055613458f * lab.a) - (0.0638541728f * lab.b);
+            float s = lab.L - (0.0894841775f * lab.a) - (1.2914855480f * lab.b);
 
             l = l * l * l;
             m = m * m * m;
             s = s * s * s;
 
-            double r = +4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s;
-            double g = -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s;
-            double b = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s;
+            double r = (+4.0767416621f * l) - (3.3077115913f * m) + (0.2309699292f * s);
+            double g = (-1.2684380046f * l) + (2.6097574011f * m) - (0.3413193965f * s);
+            double b = (-0.0041960863f * l) - (0.7034186147f * m) + (1.7076147010f * s);
 
             // Convert linear sRGB -> sRGB
-            r = r > 0.0031308 ? 1.055 * Math.Pow(r, 1 / 2.4) - 0.055 : 12.92 * r;
-            g = g > 0.0031308 ? 1.055 * Math.Pow(g, 1 / 2.4) - 0.055 : 12.92 * g;
-            b = b > 0.0031308 ? 1.055 * Math.Pow(b, 1 / 2.4) - 0.055 : 12.92 * b;
+            r = r > 0.0031308 ? (1.055 * Math.Pow(r, 1 / 2.4)) - 0.055 : 12.92 * r;
+            g = g > 0.0031308 ? (1.055 * Math.Pow(g, 1 / 2.4)) - 0.055 : 12.92 * g;
+            b = b > 0.0031308 ? (1.055 * Math.Pow(b, 1 / 2.4)) - 0.055 : 12.92 * b;
 
             // Convert 0-1.0 -> 0-255, and clamp (clamping seems to be a requirement, though not mentioned)
             int cr = (int)(r * 255f).Clamp(0f, 255f);

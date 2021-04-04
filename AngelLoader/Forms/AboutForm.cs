@@ -93,7 +93,7 @@ namespace AngelLoader.Forms
             {
                 ControlUtils.ChangeFormThemeMode(theme, this, _controlColors, x => x == BuildDateLabel);
                 BuildDateLabel.ForeColor = DarkColors.Fen_DarkForeground;
-                LogoTextPictureBox.Image = Resources.About_DarkMode;
+                LogoTextPictureBox.Image = Resources.About_Dark;
             }
             else
             {

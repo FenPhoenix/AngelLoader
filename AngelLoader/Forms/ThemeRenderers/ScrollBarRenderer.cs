@@ -13,8 +13,8 @@ namespace AngelLoader.Forms.ThemeRenderers
             IntPtr hdc,
             int iPartId,
             int iStateId,
-            in Native.RECT pRect,
-            in Native.RECT pClipRect)
+            ref Native.RECT pRect,
+            ref Native.RECT pClipRect)
         {
             using var g = Graphics.FromHdc(hdc);
 
@@ -69,7 +69,6 @@ namespace AngelLoader.Forms.ThemeRenderers
                     brush = DarkColors.DarkBackgroundBrush;
                     break;
             }
-
 
             g.FillRectangle(brush, rect);
 

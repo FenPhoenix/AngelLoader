@@ -182,7 +182,7 @@ namespace AngelLoader.WinAPI
             return Misc.Config.DarkMode &&
                    _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
                    renderer.Enabled &&
-                   renderer.TryDrawThemeBackground(hTheme, hdc, iPartId, iStateId, in pRect, in pClipRect)
+                   renderer.TryDrawThemeBackground(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect)
                 ? success
                 : DrawThemeBackgroundOriginal!(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect);
         }

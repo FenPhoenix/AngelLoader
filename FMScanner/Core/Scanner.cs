@@ -633,9 +633,9 @@ namespace FMScanner
                             fileNamesList.Add(entry.FileName);
                         }
                         else if (!entry.FileName.ContainsDirSep() &&
-                                 entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
+                                 (entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
                                  entry.FileName.EqualsI(FMFiles.FMIni) ||
-                                 entry.FileName.EqualsI(FMFiles.ModIni))
+                                 entry.FileName.EqualsI(FMFiles.ModIni)))
                         {
                             fileNamesList.Add(entry.FileName);
                         }

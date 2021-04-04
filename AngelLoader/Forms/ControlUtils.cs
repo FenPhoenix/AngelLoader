@@ -203,7 +203,7 @@ namespace AngelLoader.Forms
                 {
                     foreach (ToolStripItem tsItem in ts.Items)
                     {
-                        if (tsItem is IDarkable darkableTSItem && !excludePredicate?.Invoke(tsItem) == true)
+                        if (tsItem is IDarkable darkableTSItem && (excludePredicate == null || !excludePredicate(tsItem)))
                         {
                             darkableTSItem.DarkModeEnabled = darkMode;
                         }

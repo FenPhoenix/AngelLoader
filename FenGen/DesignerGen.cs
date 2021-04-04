@@ -207,9 +207,9 @@ namespace FenGen
                 curNode.ControlName = left.DescendantNodes().First(x => x is IdentifierNameSyntax).ToString();
                 curNode.PropName = left.Name.ToString();
 
-                if (left.DescendantNodes().FirstOrDefault(
+                if (left.DescendantNodes().Any(
                     n => (n is ThisExpressionSyntax && left.DescendantNodes().Count() == 2) ||
-                         (n is not ThisExpressionSyntax && left.DescendantNodes().Count() == 1)) != null)
+                         (n is not ThisExpressionSyntax && left.DescendantNodes().Count() == 1)))
                 {
                     CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                     props.IsFormProperty = true;
@@ -252,8 +252,7 @@ namespace FenGen
                     {
                         if (aes.Right is ObjectCreationExpressionSyntax oce &&
                             oce.Type.ToString() == "System.Drawing.Size" &&
-                            oce.ArgumentList != null &&
-                            oce.ArgumentList.Arguments.Count == 2 &&
+                            oce.ArgumentList?.Arguments.Count == 2 &&
                             int.TryParse(oce.ArgumentList.Arguments[0].ToString(), out int width) &&
                             int.TryParse(oce.ArgumentList.Arguments[1].ToString(), out int height))
                         {
@@ -275,7 +274,7 @@ namespace FenGen
                     {
                         if (aes.Right is ObjectCreationExpressionSyntax oce &&
                             oce.Type.ToString() == "System.Drawing.Point" &&
-                            oce.ArgumentList != null && oce.ArgumentList.Arguments.Count == 2 &&
+                            oce.ArgumentList?.Arguments.Count == 2 &&
                             int.TryParse(oce.ArgumentList.Arguments[0].ToString(), out int x) &&
                             int.TryParse(oce.ArgumentList.Arguments[1].ToString(), out int y))
                         {
@@ -311,8 +310,8 @@ namespace FenGen
                             .ToArray();
 
                         if (ors.Length == 2
-                            && ors.FirstOrDefault(x => x.ToString() == "System.Windows.Forms.AnchorStyles.Top") != null
-                            && ors.FirstOrDefault(x => x.ToString() == "System.Windows.Forms.AnchorStyles.Left") != null)
+                            && Array.Find(ors, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Top") != null
+                            && Array.Find(ors, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Left") != null)
                         {
                             CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                             props.HasDefaultAnchor = true;

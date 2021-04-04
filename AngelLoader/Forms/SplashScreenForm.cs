@@ -84,7 +84,7 @@ namespace AngelLoader.Forms
             // Must draw these after Show(), or they don't show up.
             // These will stay visible for the life of the form, due to our setup.
             _graphics.DrawImage(_logoBitmap, 152, 48);
-            _graphics.DrawImage(theme == VisualTheme.Dark ? Resources.About_DarkMode : Resources.About, 200, 48);
+            _graphics.DrawImage(theme == VisualTheme.Dark ? Resources.About_Dark : Resources.About, 200, 48);
         }
 
         public void SetMessage(string message)

@@ -142,7 +142,7 @@
   <data name="Thief3_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief3_21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="CheckCircle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="GreenCheckCircle" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\greencheckcircle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ClearFilters" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -157,7 +157,7 @@
   <data name="FilterByTags" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\filterbytags.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="QuestionMarkCircleRed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="RedQuestionMarkCircle" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\questionmarkcirclered.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -187,7 +187,7 @@
   <data name="FilterShowRecentAtTop" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\filtershowrecentattop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ExclMarkCircleRed_14" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="RedExclamationMarkCircle" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\exclmarkcirclered_14.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Trash_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -205,7 +205,7 @@
   <data name="DarkUI_Tick" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\darkui\tick.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="About_DarkMode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="About_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\about_darkmode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="RatingExample_FMSel_Number_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -214,49 +214,34 @@
   <data name="RatingExample_NDL_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ratingexample_ndl_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Refresh_DarkMode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Refresh_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\refresh_darkmode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Shock2_16_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Shock2_16_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\shock2_16_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Shock2_21_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Shock2_21_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\shock2_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Thief1_16_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Thief1_16_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief1_16_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Thief1_16_dark_darkbg" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\thief1_16_dark_darkbg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Thief1_21_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Thief1_21_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief1_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Thief1_21_dark_darkbg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Thief1_21_Dark_DarkBG" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief1_21_dark_darkbg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Thief2_16_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\thief2_16_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Thief2_21_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\thief2_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Thief3_16_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\thief3_16_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Thief3_21_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\thief3_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="green_check_21_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="GreenCheckCircle_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\green_check_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="red_circle_exclamation_mark_14_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="RedExclamationMarkCircle_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\red_circle_exclamation_mark_14_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="red_circle_question_mark_21_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="RedQuestionMarkCircle_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\red_circle_question_mark_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="trash_16_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Trash_16_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\trash_16_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="FilterShowRecentAtTop_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -265,19 +250,19 @@
   <data name="ClearFilters_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\clearfilters_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FilterByLastPlayedDark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="FilterByLastPlayed_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\filterbylastplayeddark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FilterByReleaseDateDark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="FilterByReleaseDate_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\filterbyreleasedatedark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FilterByTagsDark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="FilterByTags_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\filterbytagsdark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="refresh_filters_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="RefreshFilters" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\refresh_filters_21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="refresh_filters_21_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="RefreshFilters_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\refresh_filters_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
