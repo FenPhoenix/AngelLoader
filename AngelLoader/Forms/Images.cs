@@ -409,6 +409,8 @@ namespace AngelLoader.Forms
 
         private static SolidBrush PlayArrowBrush => DarkModeEnabled ? _playArrowBrush_Dark : _playArrowBrush;
         private static Pen PlayArrowPen => DarkModeEnabled ? _playArrowPen_Dark : _playArrowPen;
+        // Explicit pen for this because we need to set the width
+        private static readonly Pen PlayArrowDisabledPen = new Pen(SystemColors.ControlDark, 2.5f);
 
         #region Reset layout
 
@@ -1050,7 +1052,7 @@ namespace AngelLoader.Forms
         internal static void PaintPlayOriginalButton(Button button, PaintEventArgs e)
         {
             SetSmoothingMode(e, SmoothingMode.AntiAlias);
-            e.Graphics.DrawPolygon(button.Enabled ? PlayArrowPen : SystemPens.ControlDark, _playOriginalArrowPoints);
+            e.Graphics.DrawPolygon(button.Enabled ? PlayArrowPen : PlayArrowDisabledPen, _playOriginalArrowPoints);
         }
 
         internal static void PaintBitmapButton(
