@@ -243,16 +243,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Play_Original_24 {
-            get {
-                object obj = ResourceManager.GetObject("Play_Original_24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap RatingExample_FMSel_Number {
             get {
                 object obj = ResourceManager.GetObject("RatingExample_FMSel_Number", resourceCulture);

@@ -583,12 +583,6 @@ namespace AngelLoader.Forms
         private static Icon? _AngelLoader;
         public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
 
-        private static Image? _playOriginalGame;
-        public static Image PlayOriginalGame => _playOriginalGame ??= Resources.Play_Original_24;
-
-        private static Image? _playOriginalGame_Disabled;
-        public static Image PlayOriginalGame_Disabled => _playOriginalGame_Disabled ??= ToolStripRenderer.CreateDisabledImage(PlayOriginalGame);
-
         #region Install / uninstall
 
         private static Image? _install_24;
