@@ -191,18 +191,18 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < encodings.Length; i++)
                 {
                     EncodingInfo encInfo = encodings[i];
-                    var item = new ToolStripMenuItemCustom(encInfo.DisplayName);
+                    var item = new ToolStripMenuItemCustom(encInfo.DisplayName + " (" + encInfo.CodePage + ")");
                     items[i] = item;
                     item.Click += (sender_, _) =>
                     {
                         var tsmi = (ToolStripItem)sender_;
-                        ReadmeRichTextBox.ChangeEncoding(encodings[_encodingChangeTestMenu.Items.IndexOf(tsmi)]
-                            .GetEncoding());
+                        ReadmeRichTextBox.ChangeEncoding(encodings[_encodingChangeTestMenu.Items.IndexOf(tsmi)].GetEncoding());
                     };
                 }
 
                 _encodingChangeTestMenu.Items.AddRange(items);
             }
+            _encodingChangeTestMenu.DarkModeEnabled = Config.DarkMode;
 
             ShowMenu(_encodingChangeTestMenu, Test4Button, MenuPos.TopRight);
         }
