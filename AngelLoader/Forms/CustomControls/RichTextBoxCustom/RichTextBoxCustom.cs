@@ -256,8 +256,14 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         /// <param name="path"></param>
         /// <param name="fileType"></param>
-        /// <param name="encoding">This parameter only applies to plain text format files. If null, then the file's encoding will be autodetected; otherwise, the file will be loaded with this encoding.</param>
-        /// <returns>If the file is plain text format and no explicit encoding was passed in, the autodetected encoding of the file; otherwise, null.</returns>
+        /// <param name="encoding">
+        /// This parameter only applies to plain text format files. If null, then the file's encoding will be
+        /// autodetected; otherwise, the file will be loaded with this encoding.
+        /// </param>
+        /// <returns>
+        /// If the file is plain text format and no explicit encoding was passed in, the autodetected encoding
+        /// of the file; otherwise, null.
+        /// </returns>
         internal Encoding? LoadContent(string path, ReadmeType fileType, Encoding? encoding = null)
         {
             AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
