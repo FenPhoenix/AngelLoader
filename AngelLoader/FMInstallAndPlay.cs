@@ -385,12 +385,10 @@ namespace AngelLoader
             // Only T1 and T2 have/require missflag.str
             if (fm.Game != Game.Thief1 && fm.Game != Game.Thief2) return;
 
-            string instFMsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
-
-            string fmInstalledPath;
             try
             {
-                fmInstalledPath = Path.Combine(instFMsBasePath, fm.InstalledDir);
+                string instFMsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+                string fmInstalledPath = Path.Combine(instFMsBasePath, fm.InstalledDir);
 
                 if (!Directory.Exists(fmInstalledPath)) return;
 

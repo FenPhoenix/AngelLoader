@@ -358,7 +358,7 @@ namespace AngelLoader
                                     }
                                 }
 
-                            breakout:
+                                breakout:
 
                                 archive += ".zip";
 
@@ -533,7 +533,7 @@ namespace AngelLoader
                 }
             }
 
-        breakout:
+            breakout:
 
             if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace() && ss2Dir.IsWhiteSpace()) return true;
 

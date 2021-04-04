@@ -382,11 +382,11 @@ namespace AngelLoader
 
                 string TryGetOtherSelectorSpecifier(string line)
                 {
-                    string selectorFileName;
                     // try-catch cause of Path.Combine() maybe trying to combine invalid-for-path strings
                     // In .NET Core, we could use Path.Join() to avoid throwing
                     try
                     {
+                        string selectorFileName;
                         return line.StartsWithIPlusWhiteSpace(key_fm_selector) &&
                                (selectorFileName = line.Substring(key_fm_selector_len + 1)).EndsWithI(".dll") &&
                                !selectorFileName.PathEqualsI(stubPath) &&

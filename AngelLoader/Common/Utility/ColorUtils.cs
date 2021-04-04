@@ -95,8 +95,8 @@ namespace AngelLoader
         // Converts LCh (lightness, chroma, hue) to Lab
         private static LCh OklabToLCh(Lab lab)
         {
-            float C = (float)(Math.Sqrt((lab.a * lab.a) + (lab.b * lab.b)));
-            float h = (float)(Math.Atan2(lab.b, lab.a));
+            float C = (float)Math.Sqrt((lab.a * lab.a) + (lab.b * lab.b));
+            float h = (float)Math.Atan2(lab.b, lab.a);
 
             return new LCh(lab.L, C, h);
         }

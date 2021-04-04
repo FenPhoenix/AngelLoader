@@ -88,7 +88,7 @@ namespace AngelLoader
                                 p.StartInfo.CreateNoWindow = true;
                                 p.StartInfo.UseShellExecute = false;
 
-                                p.OutputDataReceived += (sender, e) =>
+                                p.OutputDataReceived += (_, e) =>
                                 {
                                     if (e.Data.IsEmpty()) return;
 

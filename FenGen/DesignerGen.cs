@@ -65,7 +65,7 @@ namespace FenGen
             var destNodes = new List<NodeCustom>();
 
             string formFileName = Path.GetFileName(designerFile);
-            string destFile = Path.Combine(Path.GetDirectoryName(designerFile)!, formFileName.Substring(0, (formFileName.Length - ".Designer.cs".Length)) + "_InitSlim.Generated.cs");
+            string destFile = Path.Combine(Path.GetDirectoryName(designerFile)!, formFileName.Substring(0, formFileName.Length - ".Designer.cs".Length) + "_InitSlim.Generated.cs");
 
             string code = File.ReadAllText(designerFile);
 

@@ -279,7 +279,7 @@ namespace AngelLoader.Forms
                         FilterBarFLP.HorizontalScroll.SmallChange = origSmallChange;
                     }
                 }
-                else if (CanFocus && CursorOverControl(FMsDGV) && (Native.LOWORD(m.WParam)) == Native.MK_CONTROL)
+                else if (CanFocus && CursorOverControl(FMsDGV) && Native.LOWORD(m.WParam) == Native.MK_CONTROL)
                 {
                     if (delta != 0) ZoomFMsDGV(delta > 0 ? ZoomFMsDGVType.ZoomIn : ZoomFMsDGVType.ZoomOut);
                 }

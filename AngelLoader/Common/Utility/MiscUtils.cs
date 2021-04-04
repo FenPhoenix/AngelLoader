@@ -44,7 +44,7 @@ namespace AngelLoader
 
         #endregion
 
-        internal static float CubicRoot(float x) => ((float)Math.Pow(x, 1f / 3f));
+        internal static float CubicRoot(float x) => (float)Math.Pow(x, 1f / 3f);
 
         #endregion
 
