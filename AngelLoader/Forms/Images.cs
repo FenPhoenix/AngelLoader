@@ -202,7 +202,19 @@ namespace AngelLoader.Forms
 
         #region Play arrow
 
-        private static readonly Point[] _playArrowPoints = { new Point(15, 5), new Point(29, 17), new Point(15, 29) };
+        private static readonly Point[] _playArrowPoints =
+        {
+            new Point(15, 5),
+            new Point(29, 17),
+            new Point(15, 29)
+        };
+
+        private static readonly PointF[] _playOriginalArrowPoints =
+        {
+            new PointF(17.5f, 7.5f),
+            new PointF(28.5f, 17),
+            new PointF(17.5f, 26.5f)
+        };
 
         #endregion
 
@@ -388,7 +400,15 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private static readonly SolidBrush _playArrowBrush = new SolidBrush(Color.FromArgb(45, 154, 47));
+        private static readonly Color _playArrowColor = Color.FromArgb(45, 154, 47);
+        private static readonly Color _playArrowColor_Dark = Color.FromArgb(91, 176, 93);
+        private static readonly SolidBrush _playArrowBrush = new SolidBrush(_playArrowColor);
+        private static readonly SolidBrush _playArrowBrush_Dark = new SolidBrush(_playArrowColor_Dark);
+        private static readonly Pen _playArrowPen = new Pen(_playArrowColor, 2.5f);
+        private static readonly Pen _playArrowPen_Dark = new Pen(_playArrowColor_Dark, 2.5f);
+
+        private static SolidBrush PlayArrowBrush => DarkModeEnabled ? _playArrowBrush_Dark : _playArrowBrush;
+        private static Pen PlayArrowPen => DarkModeEnabled ? _playArrowPen_Dark : _playArrowPen;
 
         #region Reset layout
 
@@ -1030,7 +1050,13 @@ namespace AngelLoader.Forms
         internal static void PaintPlayFMButton(Button button, PaintEventArgs e)
         {
             SetSmoothingMode(e, SmoothingMode.AntiAlias);
-            e.Graphics.FillPolygon(button.Enabled ? _playArrowBrush : SystemBrushes.ControlDark, _playArrowPoints);
+            e.Graphics.FillPolygon(button.Enabled ? PlayArrowBrush : SystemBrushes.ControlDark, _playArrowPoints);
+        }
+
+        internal static void PaintPlayOriginalButton(Button button, PaintEventArgs e)
+        {
+            SetSmoothingMode(e, SmoothingMode.AntiAlias);
+            e.Graphics.DrawPolygon(button.Enabled ? PlayArrowPen : SystemPens.ControlDark, _playOriginalArrowPoints);
         }
 
         internal static void PaintBitmapButton(

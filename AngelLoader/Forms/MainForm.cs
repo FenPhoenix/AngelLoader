@@ -4376,11 +4376,7 @@ namespace AngelLoader.Forms
 
         private void PlayFMButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayFMButton(PlayFMButton, e);
 
-        private void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => Images.PaintBitmapButton(
-            PlayOriginalGameButton,
-            e,
-            PlayOriginalGameButton.Enabled ? Images.PlayOriginalGame : Images.PlayOriginalGame_Disabled,
-            x: 10);
+        private void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayOriginalButton(PlayOriginalGameButton, e);
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void InstallUninstall_Play_Buttons_Paint(object sender, PaintEventArgs e)
