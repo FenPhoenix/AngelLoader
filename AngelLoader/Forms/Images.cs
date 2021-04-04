@@ -690,7 +690,7 @@ namespace AngelLoader.Forms
         {
             AssertR(FinishedOnIcons.Length == 16, "bitmaps.Length != 16");
 
-            Array.Clear(FinishedOnIcons, 0, FinishedOnIcons.Length);
+            FinishedOnIcons.DisposeAndClear(1, FinishedOnIcons.Length);
             FinishedOnIcons[0] = Blank;
 
             Bitmap? _finishedOnNormal_single = null;
@@ -752,7 +752,7 @@ namespace AngelLoader.Forms
 
         private static void LoadRatingImages()
         {
-            Array.Clear(StarIcons, 0, StarIcons.Length);
+            StarIcons.DisposeAndClear();
 
             bool[] bits = new bool[_numRatings];
 

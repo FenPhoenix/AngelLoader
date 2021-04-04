@@ -681,6 +681,16 @@ namespace AL_Common
 
         #endregion
 
+        public static void DisposeAndClear<T>(this T[] array) where T : IDisposable?
+        {
+            for (int i = 0; i < array.Length; i++) array[i]?.Dispose();
+        }
+
+        public static void DisposeAndClear<T>(this T[] array, int start, int end) where T : IDisposable?
+        {
+            for (int i = start; i < end; i++) array[i]?.Dispose();
+        }
+
         #endregion
 
         public static int FindIndexOfByteSequence(List<byte> input, byte[] pattern, int start = 0)
