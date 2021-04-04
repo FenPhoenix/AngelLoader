@@ -131,6 +131,14 @@ namespace AngelLoader
                     string val = lineT.Substring(15);
                     fm.SelectedReadme = val;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("ReadmeEncoding="))
+                {
+                    string val = lineT.Substring(15);
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        fm.ReadmeAndCodePageEntries.Add(val);
+                    }
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("SizeBytes="))
                 {
                     string val = lineT.Substring(10);
@@ -357,6 +365,11 @@ namespace AngelLoader
                 {
                     sb.Append("SelectedReadme=");
                     sb.AppendLine(fm.SelectedReadme);
+                }
+                foreach (string s in fm.ReadmeAndCodePageEntries)
+                {
+                    sb.Append("ReadmeEncoding=");
+                    sb.AppendLine(s);
                 }
                 if (fm.SizeBytes != 0)
                 {

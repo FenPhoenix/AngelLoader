@@ -196,7 +196,10 @@ namespace AngelLoader.Forms
                     item.Click += (sender_, _) =>
                     {
                         var tsmi = (ToolStripItem)sender_;
-                        ReadmeRichTextBox.ChangeEncoding(encodings[_encodingChangeTestMenu.Items.IndexOf(tsmi)].GetEncoding());
+                        var enc = encodings[_encodingChangeTestMenu.Items.IndexOf(tsmi)].GetEncoding();
+                        ReadmeRichTextBox.ChangeEncoding(enc);
+                        var fm = FMsDGV.GetSelectedFM();
+                        UpdateFMReadmeCodePages(fm, enc.CodePage);
                     };
                 }
 
@@ -4252,7 +4255,28 @@ namespace AngelLoader.Forms
                     SetReadmeVisible(true);
                     ViewHTMLReadmeLLButton.Hide();
 
-                    ReadmeRichTextBox.LoadContent(path, fileType);
+                    Encoding? encoding = null;
+                    if (fileType == ReadmeType.PlainText &&
+                        fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
+                    {
+                        try
+                        {
+                            encoding = Encoding.GetEncoding(codePage);
+                        }
+                        catch
+                        {
+                            encoding = null;
+                        }
+                    }
+
+                    Encoding? newEncoding = ReadmeRichTextBox.LoadContent(path, fileType, encoding);
+
+                    // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
+                    // every time until the user explicitly requests something different.
+                    if (newEncoding?.CodePage > 0)
+                    {
+                        UpdateFMReadmeCodePages(fm, newEncoding.CodePage);
+                    }
                 }
             }
             catch (Exception ex)
@@ -4262,6 +4286,16 @@ namespace AngelLoader.Forms
                 ViewHTMLReadmeLLButton.Hide();
                 SetReadmeVisible(true);
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
+            }
+        }
+
+        private static void UpdateFMReadmeCodePages(FanMission fm, int codePage)
+        {
+            fm.ReadmeCodePages[fm.SelectedReadme] = codePage;
+            fm.ReadmeAndCodePageEntries.Clear();
+            foreach (var item in fm.ReadmeCodePages)
+            {
+                fm.ReadmeAndCodePageEntries.Add(item.Key + "," + item.Value);
             }
         }
 

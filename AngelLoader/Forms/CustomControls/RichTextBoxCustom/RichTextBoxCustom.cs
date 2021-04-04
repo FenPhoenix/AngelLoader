@@ -256,9 +256,13 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         /// <param name="path"></param>
         /// <param name="fileType"></param>
-        internal void LoadContent(string path, ReadmeType fileType)
+        /// <param name="encoding">This parameter only applies to plain text format files. If null, then the file's encoding will be autodetected; otherwise, the file will be loaded with this encoding.</param>
+        /// <returns>If the file is plain text format and no explicit encoding was passed in, the autodetected encoding of the file; otherwise, null.</returns>
+        internal Encoding? LoadContent(string path, ReadmeType fileType, Encoding? encoding = null)
         {
             AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
+
+            Encoding? retEncoding = null;
 
             // Do it here because it doesn't work if we set it before we've shown or whatever, and CreateHandle()
             // doesn't make it work either due to it being set back to non-full-detect there or whatever other
@@ -309,12 +313,16 @@ namespace AngelLoader.Forms.CustomControls
                             // Load the file ourselves so we can do encoding detection. Otherwise it just loads
                             // with frigging whatever (default system encoding maybe?)
                             using var ms = new MemoryStream(_currentReadmeBytes);
-                            var fe = new FMScanner.SimpleHelpers.FileEncoding();
-                            Encoding enc = fe.DetectFileEncoding(ms, Encoding.Default) ?? Encoding.Default;
 
-                            ms.Position = 0;
+                            if (encoding == null)
+                            {
+                                var fe = new FMScanner.SimpleHelpers.FileEncoding();
+                                encoding = fe.DetectFileEncoding(ms, Encoding.Default) ?? Encoding.Default;
+                                retEncoding = encoding;
+                                ms.Position = 0;
+                            }
 
-                            ChangeEncodingInternal(ms, enc, suspendResume: false);
+                            ChangeEncodingInternal(ms, encoding, suspendResume: false);
                         }
 
                         // Quick and dirty .wri plaintext loader. Lucrative Opportunity is the only known FM with
@@ -373,6 +381,8 @@ namespace AngelLoader.Forms.CustomControls
             {
                 ResumeState();
             }
+
+            return retEncoding;
         }
 
         #endregion
