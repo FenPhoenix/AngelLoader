@@ -179,9 +179,32 @@ namespace AngelLoader.Forms
 
         }
 
+        private readonly DarkContextMenu _encodingChangeTestMenu = new DarkContextMenu();
+
         private void Test4Button_Click(object sender, EventArgs e)
         {
-            ReadmeRichTextBox.ChangeEncoding(Encoding.Default);
+            var encodings = Encoding.GetEncodings();
+            if (_encodingChangeTestMenu.Items.Count == 0)
+            {
+                var items = new ToolStripItem[encodings.Length];
+
+                for (int i = 0; i < encodings.Length; i++)
+                {
+                    EncodingInfo encInfo = encodings[i];
+                    var item = new ToolStripMenuItemCustom(encInfo.DisplayName);
+                    items[i] = item;
+                    item.Click += (sender_, _) =>
+                    {
+                        var tsmi = (ToolStripItem)sender_;
+                        ReadmeRichTextBox.ChangeEncoding(encodings[_encodingChangeTestMenu.Items.IndexOf(tsmi)]
+                            .GetEncoding());
+                    };
+                }
+
+                _encodingChangeTestMenu.Items.AddRange(items);
+            }
+
+            ShowMenu(_encodingChangeTestMenu, Test4Button, MenuPos.TopRight);
         }
 
 #endif
