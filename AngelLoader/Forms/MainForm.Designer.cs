@@ -1418,7 +1418,6 @@
             // EditFMLastPlayedCheckBox
             // 
             this.EditFMLastPlayedCheckBox.AutoSize = true;
-            this.EditFMLastPlayedCheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.EditFMLastPlayedCheckBox.Location = new System.Drawing.Point(8, 130);
             this.EditFMLastPlayedCheckBox.Name = "EditFMLastPlayedCheckBox";
             this.EditFMLastPlayedCheckBox.Size = new System.Drawing.Size(83, 17);
@@ -1430,7 +1429,6 @@
             // EditFMReleaseDateCheckBox
             // 
             this.EditFMReleaseDateCheckBox.AutoSize = true;
-            this.EditFMReleaseDateCheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.EditFMReleaseDateCheckBox.Location = new System.Drawing.Point(8, 88);
             this.EditFMReleaseDateCheckBox.Name = "EditFMReleaseDateCheckBox";
             this.EditFMReleaseDateCheckBox.Size = new System.Drawing.Size(92, 17);

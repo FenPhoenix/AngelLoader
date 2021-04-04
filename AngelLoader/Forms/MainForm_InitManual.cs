@@ -1173,7 +1173,6 @@ namespace AngelLoader.Forms
             // EditFMLastPlayedCheckBox
             // 
             EditFMLastPlayedCheckBox.AutoSize = true;
-            EditFMLastPlayedCheckBox.CheckAlign = ContentAlignment.MiddleRight;
             EditFMLastPlayedCheckBox.Location = new Point(8, 130);
             EditFMLastPlayedCheckBox.TabIndex = 23;
             EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
@@ -1182,7 +1181,6 @@ namespace AngelLoader.Forms
             // EditFMReleaseDateCheckBox
             // 
             EditFMReleaseDateCheckBox.AutoSize = true;
-            EditFMReleaseDateCheckBox.CheckAlign = ContentAlignment.MiddleRight;
             EditFMReleaseDateCheckBox.Location = new Point(8, 88);
             EditFMReleaseDateCheckBox.TabIndex = 20;
             EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;

@@ -132,7 +132,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        // TODO: @DarkMode(DarkListBox:ListView): Determine the actual item height (this is for the old DGV version)
+        // Tested, this height is correct for the current ListView version
         public int ItemHeight => Font.Height + 4;
 
         #endregion

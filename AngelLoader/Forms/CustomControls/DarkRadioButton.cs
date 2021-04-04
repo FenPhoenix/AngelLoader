@@ -190,7 +190,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_spacePressed) return;
 
-            if (!ClientRectangle.Contains(Cursor.Position))
+            if (!ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
                 SetControlState(DarkControlState.Normal);
             }
@@ -213,7 +213,7 @@ namespace AngelLoader.Forms.CustomControls
 
             _spacePressed = false;
 
-            SetControlState(!ClientRectangle.Contains(Cursor.Position)
+            SetControlState(!ClientRectangle.Contains(PointToClient(Cursor.Position))
                 ? DarkControlState.Normal
                 : DarkControlState.Hover);
         }

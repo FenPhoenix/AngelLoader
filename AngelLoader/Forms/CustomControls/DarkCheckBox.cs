@@ -7,8 +7,8 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    // TODO: @DarkMode(DarkCheckBox):
-    // -Add support for putting the checkbox on the right-hand side
+    // @DarkModeNote(DarkCheckBox):
+    // We could add support for putting the checkbox on the right-hand side if we feel like we need it
     public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         #region Field Region
@@ -255,7 +255,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_spacePressed) return;
 
-            if (!ClientRectangle.Contains(Cursor.Position))
+            if (!ClientRectangle.Contains(PointToClient(Cursor.Position)))
             {
                 SetControlState(DarkControlState.Normal);
             }
@@ -278,7 +278,7 @@ namespace AngelLoader.Forms.CustomControls
 
             _spacePressed = false;
 
-            SetControlState(ClientRectangle.Contains(Cursor.Position)
+            SetControlState(ClientRectangle.Contains(PointToClient(Cursor.Position))
                 ? DarkControlState.Hover
                 : DarkControlState.Normal);
         }
@@ -306,7 +306,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 _spacePressed = false;
 
-                SetControlState(ClientRectangle.Contains(Cursor.Position)
+                SetControlState(ClientRectangle.Contains(PointToClient(Cursor.Position))
                     ? DarkControlState.Hover
                     : DarkControlState.Normal);
             }

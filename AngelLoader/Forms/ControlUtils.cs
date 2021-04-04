@@ -136,7 +136,7 @@ namespace AngelLoader.Forms
 
             if (alsoCreateControlHandles && !control.IsHandleCreated)
             {
-                var dummy = control.Handle;
+                IntPtr dummy = control.Handle;
             }
 
             stackCounter++;

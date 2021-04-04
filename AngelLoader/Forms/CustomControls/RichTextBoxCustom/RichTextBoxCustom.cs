@@ -11,8 +11,6 @@ using static AngelLoader.Misc;
 //  as possible.
 // -Till then... IMPORTANT: Always use Encoding.UTF8.Get* because ASCII will break the char conversion for GLML!
 
-// TODO: BUG: .wri files are not displayed right. See if a simple binary header-and-footer strip can be done
-
 namespace AngelLoader.Forms.CustomControls
 {
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
@@ -236,10 +234,29 @@ namespace AngelLoader.Forms.CustomControls
 
                         _currentRTFBytes = Array.Empty<byte>();
 
-                        // Load the file ourselves so we can do encoding detection. Otherwise it just loads with
-                        // frigging whatever (default system encoding maybe?)
-                        using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                        // Quick and dirty .wri plaintext loader. Lucrative Opportunity is the only known FM with
+                        // a .wri readme. There will be some junk chars at the start and end, but the file as a
+                        // whole is now human-readable at least.
+                        if (path.ExtIsWri())
                         {
+                            byte[] bytes = File.ReadAllBytes(path);
+                            var sb = new StringBuilder(bytes.Length);
+                            for (int i = 0; i < bytes.Length; i++)
+                            {
+                                byte b = bytes[i];
+                                if (b == 9 || b == 10 || b == 13 ||
+                                   (b >= 32 && b <= 126))
+                                {
+                                    sb.Append((char)b);
+                                }
+                            }
+                            Text = sb.ToString();
+                        }
+                        else
+                        {
+                            // Load the file ourselves so we can do encoding detection. Otherwise it just loads with
+                            // frigging whatever (default system encoding maybe?)
+                            using var fs = File.OpenRead(path);
                             var fe = new FMScanner.SimpleHelpers.FileEncoding();
                             Encoding? enc = fe.DetectFileEncoding(fs, Encoding.Default);
 

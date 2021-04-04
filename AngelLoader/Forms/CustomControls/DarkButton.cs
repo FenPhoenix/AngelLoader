@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 namespace AngelLoader.Forms.CustomControls
 {
     /*
-    @DarkMode(DarkButton): There was an _isDefault thing here where we'd draw differently if we were the default button, but:
+    @DarkModeNote(DarkButton): There was an _isDefault thing here where we'd draw differently if we were the default button, but:
     It didn't work 100% like it was supposed to, in fact the original works weirdly and inconsistently too, but
     ours broke in a worse way than original, so we just removed it completely. The original often doesn't draw
     the default button any differently either (sometimes it does, often it doesn't), so we're not really any less
@@ -255,7 +255,10 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_spacePressed) return;
 
-            if (!ClientRectangle.Contains(Cursor.Position)) SetButtonState(DarkControlState.Normal);
+            if (!ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            {
+                SetButtonState(DarkControlState.Normal);
+            }
         }
 
         protected override void OnGotFocus(EventArgs e)
@@ -303,7 +306,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 _spacePressed = false;
 
-                SetButtonState(!ClientRectangle.Contains(Cursor.Position)
+                SetButtonState(!ClientRectangle.Contains(PointToClient(Cursor.Position))
                     ? DarkControlState.Normal
                     : DarkControlState.Hover);
             }
@@ -399,6 +402,8 @@ namespace AngelLoader.Forms.CustomControls
             int textOffsetX = 0;
             int textOffsetY = 0;
 
+            var padding = Padding;
+
             if (Image != null)
             {
                 //SizeF stringSize = g.MeasureString(Text, Font, rect.Size);
@@ -409,7 +414,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 switch (TextImageRelation)
                 {
-                    // @DarkMode(DarkButton): These are probably incorrect - fix them if we ever want to use them
+                    // @DarkModeNote(DarkButton): These are probably incorrect - fix them if we ever want to use them
                     /*
                     case TextImageRelation.ImageAboveText:
                         textOffsetY = (Image.Size.Height / 2) + (ImagePadding / 2);
@@ -431,23 +436,8 @@ namespace AngelLoader.Forms.CustomControls
                 }
 
                 g.DrawImageUnscaled(Image, x, y);
-            }
 
-            var padding = Padding;
-            /*
-            TODO: @DarkMode: Remove this hack entirely and just make all image buttons be manually painted
-            We can just draw a bitmap instead of a vector and be perfectly fine then.
-            Remember to cache all needed bitmaps so we don't pull from Resources every time.
-
-            Create a greyed-out version of any bitmap:
-            Bitmap c = new Bitmap("filename");
-            Image d = ToolStripRenderer.CreateDisabledImage(c);
-            */
-            if (Image != null)
-            {
-                //padding.Left = -42;
                 padding.Left -= Image.Width * 2;
-                //padding.Right = -32;
             }
 
             // 3 pixel offset on all sides because of fudging with the rectangle, this gets it back to accurate

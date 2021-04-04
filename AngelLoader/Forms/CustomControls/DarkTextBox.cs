@@ -7,6 +7,9 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
+    // TODO: @DarkMode(DarkTextBox): Make disabled color that's different from normal
+    // For example, when we click "Disable all mods" we get no visual feedback that the disabled mods textbox is
+    // now disabled
     public class DarkTextBox : TextBox, IDarkable
     {
         private bool _origValuesStored;
