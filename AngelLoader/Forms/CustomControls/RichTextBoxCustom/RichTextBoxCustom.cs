@@ -47,10 +47,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        public RichTextBoxCustom()
-        {
-            InitWorkarounds();
-        }
+        public RichTextBoxCustom() => InitWorkarounds();
 
         #region Private methods
 
@@ -139,6 +136,43 @@ namespace AngelLoader.Forms.CustomControls
                     this.ResumeDrawing();
                 }
             }
+        }
+
+        private static (bool Success, uint PlainTextStart, uint PlainTextEnd)
+        ReadWriFileHeader(byte[] bytes)
+        {
+            var fail = (false, (uint)0, (uint)bytes.Length);
+
+            const ushort WIDENT_VALUE = 48689;         // 0137061 octal
+            const ushort WIDENT_NO_OLE_VALUE = 48690;  // 0137062 octal
+            const ushort WTOOL_VALUE = 43776;          // 0125400 octal
+
+            using var ms = new MemoryStream(bytes);
+            using var br = new BinaryReader(ms, Encoding.ASCII, leaveOpen: true);
+            ushort wIdent = br.ReadUInt16();
+            if (wIdent != WIDENT_VALUE && wIdent != WIDENT_NO_OLE_VALUE)
+            {
+                return fail;
+            }
+
+            if (br.ReadUInt16() != 0) return fail;            // dty
+            if (br.ReadUInt16() != WTOOL_VALUE) return fail;  // wTool
+            if (br.ReadUInt16() != 0) return fail;            // Reserved 1
+            if (br.ReadUInt16() != 0) return fail;            // Reserved 2
+            if (br.ReadUInt16() != 0) return fail;            // Reserved 3
+            if (br.ReadUInt16() != 0) return fail;            // Reserved 4
+            uint fcMac = br.ReadUInt32();                     // fcMac
+            br.ReadUInt16();                                  // pnPara
+            br.ReadUInt16();                                  // pnFntb
+            br.ReadUInt16();                                  // pnSep
+            br.ReadUInt16();                                  // pnSetb
+            br.ReadUInt16();                                  // pnPgtb
+            br.ReadUInt16();                                  // pnFfntb
+            br.BaseStream.Position += 66;                     // szSsht (not used)
+            if (br.ReadUInt16() == 0) return fail;            // pnMac: 0 means Word file, not Write file
+
+            // Headers are always 128 bytes long I think?!
+            return (true, 128, fcMac);
         }
 
         #endregion
@@ -272,34 +306,13 @@ namespace AngelLoader.Forms.CustomControls
                     case ReadmeType.PlainText:
                         ContentIsPlainText = true;
 
-                        // Quick and dirty .wri plaintext loader. Lucrative Opportunity is the only known FM with
-                        // a .wri readme. There will be some junk chars at the start and end, but the file as a
-                        // whole is now human-readable at least.
-                        if (path.ExtIsWri())
-                        {
-                            _currentReadmeSupportsEncodingChange = false;
-                            _currentReadmeBytes = Array.Empty<byte>();
-
-                            byte[] bytes = File.ReadAllBytes(path);
-                            var sb = new StringBuilder(bytes.Length);
-                            for (int i = 0; i < bytes.Length; i++)
-                            {
-                                byte b = bytes[i];
-                                if (b == 9 || b == 10 || b == 13 ||
-                                   (b >= 32 && b <= 126))
-                                {
-                                    sb.Append((char)b);
-                                }
-                            }
-                            Text = sb.ToString();
-                        }
-                        else
+                        void LoadAsText()
                         {
                             _currentReadmeSupportsEncodingChange = true;
                             _currentReadmeBytes = File.ReadAllBytes(path);
 
-                            // Load the file ourselves so we can do encoding detection. Otherwise it just loads with
-                            // frigging whatever (default system encoding maybe?)
+                            // Load the file ourselves so we can do encoding detection. Otherwise it just loads
+                            // with frigging whatever (default system encoding maybe?)
                             using var ms = new MemoryStream(_currentReadmeBytes);
                             var fe = new FMScanner.SimpleHelpers.FileEncoding();
                             Encoding enc = fe.DetectFileEncoding(ms, Encoding.Default) ?? Encoding.Default;
@@ -309,6 +322,55 @@ namespace AngelLoader.Forms.CustomControls
                             ChangeEncodingInternal(ms, enc, suspendResume: false);
                         }
 
+                        // Quick and dirty .wri plaintext loader. Lucrative Opportunity is the only known FM with
+                        // a .wri readme. For that particular file, we can just cut off the start and end junk
+                        // chars and end up with a 100% clean plaintext readme. For other .wri files, there could
+                        // be junk chars in the middle too, and then we would have to parse the format properly.
+                        // But we only have the one file, so we don't bother.
+                        if (path.ExtIsWri())
+                        {
+                            _currentReadmeSupportsEncodingChange = false;
+                            _currentReadmeBytes = Array.Empty<byte>();
+
+                            byte[] bytes = File.ReadAllBytes(path);
+
+                            (bool success, uint plainTextStart, uint plainTextEnd) = ReadWriFileHeader(bytes);
+
+                            if (success)
+                            {
+                                // Lucrative Opportunity is Windows-1252 encoded, so just go ahead and assume that
+                                // encoding. It's probably a reasonable assumption for .wri files anyway.
+                                Encoding enc1252 = Encoding.GetEncoding(1252);
+                                byte[] tempByte = new byte[1];
+                                var sb = new StringBuilder(bytes.Length);
+                                for (uint i = plainTextStart; i < plainTextEnd; i++)
+                                {
+                                    byte b = bytes[i];
+                                    if (b == 9 || b == 10 || b == 13 || (b >= 32 && b != 127))
+                                    {
+                                        if (b <= 126)
+                                        {
+                                            sb.Append((char)b);
+                                        }
+                                        else
+                                        {
+                                            tempByte[0] = b;
+                                            sb.Append(enc1252.GetChars(tempByte));
+                                        }
+                                    }
+                                }
+
+                                Text = sb.ToString();
+                            }
+                            else
+                            {
+                                LoadAsText();
+                            }
+                        }
+                        else
+                        {
+                            LoadAsText();
+                        }
                         break;
                 }
             }
