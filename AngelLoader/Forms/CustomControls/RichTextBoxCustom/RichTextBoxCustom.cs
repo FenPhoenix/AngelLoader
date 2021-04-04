@@ -4,6 +4,8 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 // TODO: @DarkMode(RichTextBoxCustom):
@@ -38,7 +40,10 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        private byte[] _currentReadmeBytes = Array.Empty<byte>();
+
         private ReadmeType _currentReadmeType = ReadmeType.PlainText;
+        private bool _currentReadmeSupportsEncodingChange;
 
         #endregion
 
@@ -106,6 +111,36 @@ namespace AngelLoader.Forms.CustomControls
             this.ResumeDrawing();
         }
 
+        private void ChangeEncodingInternal(MemoryStream ms, Encoding encoding, bool suspendResume = true)
+        {
+            Native.SCROLLINFO? si = null;
+            try
+            {
+                if (suspendResume)
+                {
+                    si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
+                    SaveZoom();
+                    this.SuspendDrawing();
+                }
+
+                using var sr = new StreamReader(ms, encoding);
+                Text = sr.ReadToEnd();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(nameof(RichTextBoxCustom) + ": Couldn't set encoding", ex);
+            }
+            finally
+            {
+                if (suspendResume)
+                {
+                    RestoreZoom();
+                    ControlUtils.RepositionScroll(Handle, (Native.SCROLLINFO)si!, Native.SB_VERT);
+                    this.ResumeDrawing();
+                }
+            }
+        }
+
         #endregion
 
         #region Public methods
@@ -167,7 +202,8 @@ namespace AngelLoader.Forms.CustomControls
         {
             try
             {
-                _currentRTFBytes = Array.Empty<byte>();
+                _currentReadmeSupportsEncodingChange = false;
+                _currentReadmeBytes = Array.Empty<byte>();
 
                 SuspendState();
 
@@ -204,11 +240,13 @@ namespace AngelLoader.Forms.CustomControls
                 switch (fileType)
                 {
                     case ReadmeType.GLML:
+                        _currentReadmeSupportsEncodingChange = false;
+
                         string glml = File.ReadAllText(path);
 
                         // Capture the raw glml in this case, so we can run it through the GLML converter on
                         // dark mode refresh
-                        _currentRTFBytes = Encoding.UTF8.GetBytes(glml);
+                        _currentReadmeBytes = Encoding.UTF8.GetBytes(glml);
 
                         // This resets the font if false, so don't do it after the load or it messes up the RTF.
                         ContentIsPlainText = false;
@@ -217,11 +255,13 @@ namespace AngelLoader.Forms.CustomControls
 
                         break;
                     case ReadmeType.RichText:
-                        // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace is ~30x slower
-                        _currentRTFBytes = File.ReadAllBytes(path);
+                        _currentReadmeSupportsEncodingChange = false;
 
-                        ReplaceByteSequence(_currentRTFBytes, _shppict, _shppictBlanked);
-                        ReplaceByteSequence(_currentRTFBytes, _nonshppict, _nonshppictBlanked);
+                        // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace is ~30x slower
+                        _currentReadmeBytes = File.ReadAllBytes(path);
+
+                        ReplaceByteSequence(_currentReadmeBytes, _shppict, _shppictBlanked);
+                        ReplaceByteSequence(_currentReadmeBytes, _nonshppict, _nonshppictBlanked);
 
                         // Ditto the above
                         ContentIsPlainText = false;
@@ -232,13 +272,14 @@ namespace AngelLoader.Forms.CustomControls
                     case ReadmeType.PlainText:
                         ContentIsPlainText = true;
 
-                        _currentRTFBytes = Array.Empty<byte>();
-
                         // Quick and dirty .wri plaintext loader. Lucrative Opportunity is the only known FM with
                         // a .wri readme. There will be some junk chars at the start and end, but the file as a
                         // whole is now human-readable at least.
                         if (path.ExtIsWri())
                         {
+                            _currentReadmeSupportsEncodingChange = false;
+                            _currentReadmeBytes = Array.Empty<byte>();
+
                             byte[] bytes = File.ReadAllBytes(path);
                             var sb = new StringBuilder(bytes.Length);
                             for (int i = 0; i < bytes.Length; i++)
@@ -254,16 +295,18 @@ namespace AngelLoader.Forms.CustomControls
                         }
                         else
                         {
+                            _currentReadmeSupportsEncodingChange = true;
+                            _currentReadmeBytes = File.ReadAllBytes(path);
+
                             // Load the file ourselves so we can do encoding detection. Otherwise it just loads with
                             // frigging whatever (default system encoding maybe?)
-                            using var fs = File.OpenRead(path);
+                            using var ms = new MemoryStream(_currentReadmeBytes);
                             var fe = new FMScanner.SimpleHelpers.FileEncoding();
-                            Encoding? enc = fe.DetectFileEncoding(fs, Encoding.Default);
+                            Encoding enc = fe.DetectFileEncoding(ms, Encoding.Default) ?? Encoding.Default;
 
-                            fs.Position = 0;
+                            ms.Position = 0;
 
-                            using var sr = new StreamReader(fs, enc ?? Encoding.Default);
-                            Text = sr.ReadToEnd();
+                            ChangeEncodingInternal(ms, enc, suspendResume: false);
                         }
 
                         break;
@@ -276,6 +319,14 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         #endregion
+
+        [PublicAPI]
+        internal void ChangeEncoding(Encoding encoding)
+        {
+            if (!_currentReadmeSupportsEncodingChange) return;
+            using var ms = new MemoryStream(_currentReadmeBytes);
+            ChangeEncodingInternal(ms, encoding);
+        }
 
         #endregion
 

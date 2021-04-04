@@ -47,6 +47,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -180,7 +181,7 @@ namespace AngelLoader.Forms
 
         private void Test4Button_Click(object sender, EventArgs e)
         {
-
+            ReadmeRichTextBox.ChangeEncoding(Encoding.Default);
         }
 
 #endif

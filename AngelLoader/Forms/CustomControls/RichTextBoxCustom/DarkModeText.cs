@@ -18,8 +18,6 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields
 
-        private byte[] _currentRTFBytes = Array.Empty<byte>();
-
         #region RTF text coloring byte array nonsense
 
         private readonly byte[] _colortbl =
@@ -265,9 +263,9 @@ namespace AngelLoader.Forms.CustomControls
 
         private byte[] GetDarkModeRTFBytes()
         {
-            if (_rtfColorStyle == RTFColorStyle.Original) return _currentRTFBytes;
+            if (_rtfColorStyle == RTFColorStyle.Original) return _currentReadmeBytes;
 
-            var darkModeBytes = _currentRTFBytes.ToList();
+            var darkModeBytes = _currentReadmeBytes.ToList();
 
             // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts
             // where the background stays the old color but turns to our new color when portions of the readme
@@ -368,12 +366,12 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_currentReadmeType == ReadmeType.RichText)
                 {
-                    using var ms = new MemoryStream(_darkModeEnabled ? GetDarkModeRTFBytes() : _currentRTFBytes);
+                    using var ms = new MemoryStream(_darkModeEnabled ? GetDarkModeRTFBytes() : _currentReadmeBytes);
                     LoadFile(ms, RichTextBoxStreamType.RichText);
                 }
                 else if (_currentReadmeType == ReadmeType.GLML)
                 {
-                    Rtf = GLMLToRTF(Encoding.UTF8.GetString(_currentRTFBytes));
+                    Rtf = GLMLToRTF(Encoding.UTF8.GetString(_currentReadmeBytes));
                 }
             }
             catch (Exception ex)
