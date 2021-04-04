@@ -276,11 +276,7 @@ namespace AngelLoader.Forms.CustomControls
                     case ReadmeType.GLML:
                         _currentReadmeSupportsEncodingChange = false;
 
-                        string glml = File.ReadAllText(path);
-
-                        // Capture the raw glml in this case, so we can run it through the GLML converter on
-                        // dark mode refresh
-                        _currentReadmeBytes = Encoding.UTF8.GetBytes(glml);
+                        _currentReadmeBytes = File.ReadAllBytes(path);
 
                         // This resets the font if false, so don't do it after the load or it messes up the RTF.
                         ContentIsPlainText = false;
@@ -291,7 +287,6 @@ namespace AngelLoader.Forms.CustomControls
                     case ReadmeType.RichText:
                         _currentReadmeSupportsEncodingChange = false;
 
-                        // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace is ~30x slower
                         _currentReadmeBytes = File.ReadAllBytes(path);
 
                         ReplaceByteSequence(_currentReadmeBytes, _shppict, _shppictBlanked);
