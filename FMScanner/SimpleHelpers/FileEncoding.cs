@@ -53,6 +53,7 @@ namespace FMScanner.SimpleHelpers
         private string? _encodingName;
         // Stupid micro-optimization to reduce GC time
         private readonly byte[] _buffer = new byte[16 * 1024];
+        private bool _canBeASCII = true;
 
         /// <summary>
         /// Tries to detect the file encoding.
@@ -86,7 +87,7 @@ namespace FMScanner.SimpleHelpers
         /// <param name="rawData">The raw data.</param>
         /// <param name="start">The start.</param>
         /// <param name="count">The count.</param>
-        private static bool CheckForTextualData(byte[] rawData, int start, int count)
+        private bool CheckForTextualData(byte[] rawData, int start, int count)
         {
             if (rawData.Length < count || count < 4 || start + 1 >= count)
             {
@@ -106,6 +107,14 @@ namespace FMScanner.SimpleHelpers
             int controlSequences = 0;
             for (int i = start + 1; i < count; i++)
             {
+                // Fix(Fen): Any bytes >127 mean we can't be ASCII, period. But somewhere along the line, we're
+                // deciding we can detect "ASCII" anyway, even if we have bytes >127. So set a bool to force us
+                // to reject "ASCII" encoding if it's impossible.
+                if (rawData[i - 1] > 127 || rawData[i] > 127)
+                {
+                    _canBeASCII = false;
+                }
+
                 if (rawData[i - 1] == 0 && rawData[i] == 0)
                 {
                     if (++nullSequences > 1) break;
@@ -286,9 +295,19 @@ namespace FMScanner.SimpleHelpers
         {
             if (_encodingFrequency.Count == 0) return null;
             // ASCII should be the last option, since other encodings often has ASCII included...
-            return _encodingFrequency
+            string? ret = _encodingFrequency
                     .OrderByDescending(i => i.Value * (i.Key != "ASCII" ? 1 : 0))
                     .FirstOrDefault().Key;
+
+            if (!_canBeASCII && ret?.Equals("ASCII") == true)
+            {
+                // Somewhere along the line, someone is detecting "ASCII" without checking if all our bytes are
+                // <=127, so if we've detected "ASCII" but we have byte >127 anywhere, just use what we feel is
+                // the "most likely" codepage for 8-bit encodings, which we're just going to say is Windows-1252.
+                ret = "Windows-1252";
+            }
+
+            return ret;
         }
     }
 }
