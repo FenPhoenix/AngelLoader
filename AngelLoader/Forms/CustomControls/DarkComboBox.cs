@@ -340,8 +340,7 @@ namespace AngelLoader.Forms.CustomControls
             var fillColorBrush = DarkColors.LightBackgroundBrush;
 
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected ||
-                (e.State & DrawItemState.Focus) == DrawItemState.Focus ||
-                (e.State & DrawItemState.NoFocusRect) != DrawItemState.NoFocusRect)
+                (e.State & DrawItemState.Focus) == DrawItemState.Focus)
             {
                 fillColorBrush = DarkColors.BlueSelectionBrush;
             }
