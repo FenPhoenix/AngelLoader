@@ -176,7 +176,11 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-
+            foreach (FanMission fm in FMDataIniList)
+            {
+                fm.ReadmeAndCodePageEntries.Clear();
+                fm.ReadmeCodePages.Clear();
+            }
         }
 
         private readonly DarkContextMenu _encodingChangeTestMenu = new DarkContextMenu();
