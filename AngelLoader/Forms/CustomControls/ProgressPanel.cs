@@ -135,6 +135,7 @@ namespace AngelLoader.Forms.CustomControls
 
             BringToFront();
             Show();
+            ProgressCancelButton.Focus();
         }
 
         internal void HideThis()

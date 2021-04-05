@@ -17,20 +17,37 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
 
-                if (_darkModeEnabled)
-                {
-                    Native.SetWindowTheme(Handle, "", "");
-                    BackColor = DarkColors.Fen_ControlBackground;
-                    ForeColor = DarkColors.BlueHighlight;
-                }
-                else
-                {
-                    // I can't get SetWindowTheme() to work for resetting the theme back to normal, but recreating
-                    // the handle does the job.
-                    RecreateHandle();
-                }
+                RefreshDarkModeState();
+            }
+        }
 
-                Invalidate();
+        private void RefreshDarkModeState()
+        {
+            if (_darkModeEnabled)
+            {
+                Native.SetWindowTheme(Handle, "", "");
+                BackColor = DarkColors.Fen_ControlBackground;
+                ForeColor = DarkColors.BlueHighlight;
+            }
+            else
+            {
+                // I can't get SetWindowTheme() to work for resetting the theme back to normal, but recreating
+                // the handle does the job.
+                RecreateHandle();
+            }
+
+            Invalidate();
+        }
+
+        [PublicAPI]
+        public new ProgressBarStyle Style
+        {
+            get => base.Style;
+            set
+            {
+                base.Style = value;
+                // Changing style reverts us to classic mode, so reset us back to dark if necessary
+                if (_darkModeEnabled) RefreshDarkModeState();
             }
         }
 
