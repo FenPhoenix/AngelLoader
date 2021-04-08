@@ -62,6 +62,16 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
 
+                // Optimization for dark mode: We can avoid some reflection by having the custom header cells
+                // check their dark mode bools before painting.
+                foreach (DataGridViewColumn column in Columns)
+                {
+                    if (column.HeaderCell is DataGridViewColumnHeaderCellCustom cellCustom)
+                    {
+                        cellCustom.DarkModeEnabled = _darkModeEnabled;
+                    }
+                }
+
                 if (_darkModeEnabled)
                 {
                     BackgroundColor = DarkColors.Fen_DarkBackground;
@@ -208,6 +218,17 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             return columns.OrderBy(x => x.Id).ToList();
+        }
+
+        protected override void OnColumnAdded(DataGridViewColumnEventArgs e)
+        {
+            // Allows the highlight-removal hack to work. See the custom header cell class for details.
+            if (e.Column.HeaderCell is not DataGridViewColumnHeaderCellCustom)
+            {
+                e.Column.HeaderCell = new DataGridViewColumnHeaderCellCustom();
+            }
+
+            base.OnColumnAdded(e);
         }
 
         internal void SetColumnData(List<ColumnData> columnDataList)
@@ -410,89 +431,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnCellPainting(e);
 
-            if (!_darkModeEnabled)
-            {
-                return;
-
-                #region Blue highlight removal
-
-                /*
-                We can remove the blue highlight with this, but we have to use explicit colors because we don't
-                know where tf the DataGridView is getting its header colors (they're not defined anywhere in
-                the framework and even google searching comes up empty of anything useful).
-                So we're leaving it disabled for now...
-
-                Points of interest for future work:
-                DataGridViewColumnHeaderCell.PaintPrivate()
-                DataGridViewColumnHeaderCell.DataGridViewColumnHeaderCellRenderer (Visual style renderer is in there)
-                */
-
-                /*
-                if (e.RowIndex == -1 && e.ColumnIndex == CurrentCell.ColumnIndex)
-                {
-                    int displayIndex = Columns[e.ColumnIndex].DisplayIndex;
-
-                    bool mouseOver = e.CellBounds.Contains(PointToClient(Cursor.Position));
-
-                    // If we wanted to match classic mode, this is what we would use to start with
-
-                    //var selectionRect = new Rectangle(
-                    //    e.CellBounds.X + 2,
-                    //    e.CellBounds.Y + 2,
-                    //    e.CellBounds.Width - 2,
-                    //    e.CellBounds.Height - 3);
-
-                    // For now, we're just simplifying and not drawing all the fussy borders of the classic mode.
-                    // This way looks perfectly fine in dark mode and saves work.
-                    var selectionRect = new Rectangle(
-                            e.CellBounds.X,
-                            e.CellBounds.Y,
-                            e.CellBounds.Width,
-                            e.CellBounds.Height - 1);
-
-                    var bgRect = new Rectangle(
-                        e.CellBounds.X,
-                        e.CellBounds.Y,
-                        e.CellBounds.Width,
-                        e.CellBounds.Height);
-
-                    e.Graphics.FillRectangle(SystemBrushes.Window, bgRect);
-
-                    if (!mouseOver)
-                    {
-                        using var pen = new Pen(Color.FromArgb(229, 229, 229));
-                        e.Graphics.DrawLine(
-                            pen,
-                            e.CellBounds.X + e.CellBounds.Width - 1,
-                            0,
-                            e.CellBounds.X + e.CellBounds.Width - 1,
-                            e.CellBounds.Y + e.CellBounds.Height - 1);
-                    }
-                    e.Graphics.DrawLine(
-                        SystemPens.ControlDark,
-                        e.CellBounds.X,
-                        e.CellBounds.Y + e.CellBounds.Height - 1,
-                        e.CellBounds.X + e.CellBounds.Width - 1,
-                        e.CellBounds.Y + e.CellBounds.Height - 1);
-
-                    if (_mouseHere && mouseOver)
-                    {
-                        var b = _mouseDownOnHeader == e.ColumnIndex
-                            ? new SolidBrush(Color.FromArgb(188, 220, 244))
-                            : new SolidBrush(Color.FromArgb(217, 235, 249));
-                        e.Graphics.FillRectangle(b, selectionRect);
-                    }
-
-                    e.PaintContent(e.ClipBounds);
-                    e.Paint(e.ClipBounds, DataGridViewPaintParts.Border);
-
-                    e.Handled = true;
-                }
-                return;
-                */
-
-                #endregion
-            }
+            if (!_darkModeEnabled) return;
 
             // This is for having different colored grid lines in recent-highlighted rows.
             // That way, we can get a good, visible separator color for all cases by just having two.
@@ -569,12 +508,9 @@ namespace AngelLoader.Forms.CustomControls
             #region Draw column headers
 
             /*
-            TODO: @DarkMode(DGV headers):
+            @DarkModeNote(DGV headers):
             -Header painting appears to happen in DataGridViewColumnHeaderCell.PaintPrivate() - look here for
-             precise text bounds calculations etc.
-            -We're not painting the vestigial selected-column header color. We should see if we can owner-paint
-             the classic-mode one too, in a way that's indistinguishable from the original except that it has no
-             selected-column header blue color.
+            precise text bounds calculations etc.
             */
             if (e.RowIndex == -1)
             {

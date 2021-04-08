@@ -491,6 +491,14 @@ namespace AngelLoader.Forms
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
             {
+                // IMPORTANT: Set this explicitly, otherwise we can end up with the following situation:
+                // -We start up, rating column is set to text so this one hasn't been added yet, then we change
+                //  to image rating column. This gets added and has its header cell replaced with a custom one,
+                //  and does NOT have its text transferred over. It ends up with blank text.
+                //  NOTE! The text column avoids this issue solely because it gets added in the component init
+                //  method (therefore the OnColumnAdded() handler is run and it gets its header cell replaced
+                //  immediately). If we changed that, we would have to add this to the rating text column too!
+                HeaderCell = new DataGridViewColumnHeaderCellCustom(),
                 ImageLayout = DataGridViewImageCellLayout.Zoom,
                 ReadOnly = true,
                 Width = _ratingImageColumnWidth,
