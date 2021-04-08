@@ -383,6 +383,8 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        #region Paint
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -616,6 +618,8 @@ namespace AngelLoader.Forms.CustomControls
 
             #endregion
         }
+
+        #endregion
 
         // Cancel column resize operations if we lose focus. Otherwise, we end up still in drag mode with the
         // mouse up and another window in the foreground, which looks annoying to me, so yeah.
