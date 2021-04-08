@@ -220,17 +220,6 @@ namespace AngelLoader.Forms.CustomControls
             return columns.OrderBy(x => x.Id).ToList();
         }
 
-        protected override void OnColumnAdded(DataGridViewColumnEventArgs e)
-        {
-            // Allows the highlight-removal hack to work. See the custom header cell class for details.
-            if (e.Column.HeaderCell is not DataGridViewColumnHeaderCellCustom)
-            {
-                e.Column.HeaderCell = new DataGridViewColumnHeaderCellCustom();
-            }
-
-            base.OnColumnAdded(e);
-        }
-
         internal void SetColumnData(List<ColumnData> columnDataList)
         {
             if (columnDataList.Count == 0) return;
@@ -328,6 +317,17 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #region Event overrides
+
+        protected override void OnColumnAdded(DataGridViewColumnEventArgs e)
+        {
+            // Allows the highlight-removal hack to work. See the custom header cell class for details.
+            if (e.Column.HeaderCell is not DataGridViewColumnHeaderCellCustom)
+            {
+                e.Column.HeaderCell = new DataGridViewColumnHeaderCellCustom();
+            }
+
+            base.OnColumnAdded(e);
+        }
 
         #region Mouse
 
