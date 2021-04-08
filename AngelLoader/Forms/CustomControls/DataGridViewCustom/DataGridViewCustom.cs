@@ -489,9 +489,9 @@ namespace AngelLoader.Forms.CustomControls
                     bottomBorderPen,
                     e.CellBounds.X,
                     e.CellBounds.Y + (e.CellBounds.Height - 1),
-                            e.CellBounds.X + (e.CellBounds.Width - 2),
-                            e.CellBounds.Y + (e.CellBounds.Height - 1)
-                        );
+                    e.CellBounds.X + (e.CellBounds.Width - 2),
+                    e.CellBounds.Y + (e.CellBounds.Height - 1)
+                );
 
                 // Right
                 e.Graphics.DrawLine(
