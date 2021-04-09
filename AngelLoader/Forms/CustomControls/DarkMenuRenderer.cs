@@ -48,8 +48,12 @@ namespace AngelLoader.Forms.CustomControls
         {
             var g = e.Graphics;
 
-            var rect = new Rectangle(e.ImageRectangle.Left - 2, e.ImageRectangle.Top - 2,
-                                         e.ImageRectangle.Width + 4, e.ImageRectangle.Height + 4);
+            var rect = new Rectangle(
+                e.ImageRectangle.Left - 2,
+                e.ImageRectangle.Top - 2,
+                e.ImageRectangle.Width + 4,
+                e.ImageRectangle.Height + 4
+            );
 
             g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
 
@@ -58,7 +62,18 @@ namespace AngelLoader.Forms.CustomControls
 
             if (e.Item.ImageIndex == -1 && string.IsNullOrEmpty(e.Item.ImageKey) && e.Item.Image == null)
             {
-                g.DrawImageUnscaled(Resources.DarkUI_Tick, new Point(e.ImageRectangle.Left, e.ImageRectangle.Top));
+                // Match Win10 light mode checkmark shape exactly
+                int left = e.ImageRectangle.Left;
+                int top = e.ImageRectangle.Top;
+                int x, y;
+                for (x = left + 5, y = top + 7; x < left + 7; x++, y++)
+                {
+                    g.DrawLine(DarkColors.LightTextPen, x, y, x, y + 1);
+                }
+                for (; x < left + 12; x++, y--)
+                {
+                    g.DrawLine(DarkColors.LightTextPen, x, y, x, y + 1);
+                }
             }
         }
 
