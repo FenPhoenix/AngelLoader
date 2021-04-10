@@ -83,7 +83,6 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
