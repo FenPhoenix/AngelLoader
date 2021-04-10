@@ -50,6 +50,11 @@ namespace FMScanner.SimpleHelpers
         encoding correctly, and it's using a C version of the same detector (Mozilla Universal Charset Detector).
         Ude.NetStandard has a bug I guess(?) We should take a look at the code and see if we can fix it...
 
+        UPDATE: 
+        Actually Notepad++ is using some version of uchardet (by the looks of things, a really old version -
+        https://github.com/BYVoid/uchardet probably, judging by the readme and the "BYvoid" name in NPP source
+        /uchardet dir). So we should definitely switch to that, wrap or port as necessary.
+
         Links of interest:
         
         uchardet:
