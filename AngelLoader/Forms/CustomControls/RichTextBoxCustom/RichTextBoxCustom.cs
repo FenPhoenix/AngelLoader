@@ -108,8 +108,10 @@ namespace AngelLoader.Forms.CustomControls
             this.ResumeDrawing();
         }
 
-        private void ChangeEncodingInternal(MemoryStream ms, Encoding encoding, bool suspendResume = true)
+        private Encoding? ChangeEncodingInternal(MemoryStream ms, Encoding? encoding, bool suspendResume = true)
         {
+            Encoding? retEncoding = null;
+
             Native.SCROLLINFO? si = null;
             try
             {
@@ -120,12 +122,23 @@ namespace AngelLoader.Forms.CustomControls
                     this.SuspendDrawing();
                 }
 
+                if (encoding == null)
+                {
+                    var fe = new FMScanner.SimpleHelpers.FileEncoding();
+                    encoding = fe.DetectFileEncoding(ms, Encoding.Default) ?? Encoding.Default;
+                    retEncoding = encoding;
+                    ms.Position = 0;
+                }
+
                 using var sr = new StreamReader(ms, encoding);
                 Text = sr.ReadToEnd();
+
+                return retEncoding;
             }
             catch (Exception ex)
             {
                 Logger.Log(nameof(RichTextBoxCustom) + ": Couldn't set encoding", ex);
+                return retEncoding;
             }
             finally
             {
@@ -326,15 +339,7 @@ namespace AngelLoader.Forms.CustomControls
                             // with frigging whatever (default system encoding maybe?)
                             using var ms = new MemoryStream(_currentReadmeBytes);
 
-                            if (encoding == null)
-                            {
-                                var fe = new FMScanner.SimpleHelpers.FileEncoding();
-                                encoding = fe.DetectFileEncoding(ms, Encoding.Default) ?? Encoding.Default;
-                                retEncoding = encoding;
-                                ms.Position = 0;
-                            }
-
-                            ChangeEncodingInternal(ms, encoding, suspendResume: false);
+                            retEncoding = ChangeEncodingInternal(ms, encoding, suspendResume: false);
                         }
 
                         // Quick and dirty .wri plaintext loader. Lucrative Opportunity is the only known FM with
@@ -403,11 +408,11 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         [PublicAPI]
-        internal void ChangeEncoding(Encoding encoding)
+        internal Encoding? ChangeEncoding(Encoding? encoding)
         {
-            if (!_currentReadmeSupportsEncodingChange) return;
+            if (!_currentReadmeSupportsEncodingChange) return null;
             using var ms = new MemoryStream(_currentReadmeBytes);
-            ChangeEncodingInternal(ms, encoding);
+            return ChangeEncodingInternal(ms, encoding);
         }
 
         #endregion

@@ -183,35 +183,10 @@ namespace AngelLoader.Forms
             }
         }
 
-        private readonly DarkContextMenu _encodingChangeTestMenu = new DarkContextMenu();
-
         private void Test4Button_Click(object sender, EventArgs e)
         {
-            var encodings = Encoding.GetEncodings();
-            if (_encodingChangeTestMenu.Items.Count == 0)
-            {
-                var items = new ToolStripItem[encodings.Length];
-
-                for (int i = 0; i < encodings.Length; i++)
-                {
-                    EncodingInfo encInfo = encodings[i];
-                    var item = new ToolStripMenuItemCustom(encInfo.DisplayName + " (" + encInfo.CodePage + ")");
-                    items[i] = item;
-                    item.Click += (sender_, _) =>
-                    {
-                        var tsmi = (ToolStripItem)sender_;
-                        var enc = encodings[_encodingChangeTestMenu.Items.IndexOf(tsmi)].GetEncoding();
-                        ReadmeRichTextBox.ChangeEncoding(enc);
-                        var fm = FMsDGV.GetSelectedFM();
-                        UpdateFMReadmeCodePages(fm, enc.CodePage);
-                    };
-                }
-
-                _encodingChangeTestMenu.Items.AddRange(items);
-            }
-            _encodingChangeTestMenu.DarkModeEnabled = Config.DarkMode;
-
-            ShowMenu(_encodingChangeTestMenu, Test4Button, MenuPos.TopRight);
+            EncodingsLLMenu.Construct(this);
+            ShowMenu(EncodingsLLMenu.Menu, Test4Button, MenuPos.TopRight);
         }
 
 #endif
@@ -1381,6 +1356,8 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(ReadmeResetZoomButton, LText.Global.ResetZoom);
                 MainToolTip.SetToolTip(ReadmeFullScreenButton, LText.ReadmeArea.FullScreenToolTip);
 
+                EncodingsLLMenu.Localize();
+
                 ViewHTMLReadmeLLButton.Localize();
 
                 ChooseReadmeLLPanel.Localize();
@@ -1485,6 +1462,7 @@ namespace AngelLoader.Forms
                 ProgressBoxDarkModeEnabled = darkMode;
                 Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                 ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
+                EncodingsLLMenu.DarkModeEnabled = darkMode;
 
                 FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
                 FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
@@ -3626,6 +3604,38 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        internal void ReadmeEncodingMenuItems_Click(object sender, EventArgs e)
+        {
+            if (sender is not ToolStripMenuItemWithBackingField<int> menuItem) return;
+
+            if (menuItem.Field == -1)
+            {
+                Encoding? enc = ReadmeRichTextBox.ChangeEncoding(null);
+                if (enc != null)
+                {
+                    UpdateFMReadmeCodePages(FMsDGV.GetSelectedFM(), enc.CodePage);
+                    EncodingsLLMenu.SetEncodingMenuItemChecked(enc);
+                }
+            }
+            else
+            {
+                Encoding enc;
+                try
+                {
+                    enc = Encoding.GetEncoding(menuItem.Field);
+                }
+                catch
+                {
+                    return;
+                }
+
+                menuItem.Checked = true;
+
+                ReadmeRichTextBox.ChangeEncoding(enc);
+                UpdateFMReadmeCodePages(FMsDGV.GetSelectedFM(), enc.CodePage);
+            }
+        }
+
         // Allows the readme controls to hide when the mouse moves directly from the readme area onto another
         // window. General-case showing and hiding is still handled by PreFilterMessage() for reliability.
         // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
@@ -4283,11 +4293,18 @@ namespace AngelLoader.Forms
 
                     Encoding? newEncoding = ReadmeRichTextBox.LoadContent(path, fileType, encoding);
 
+                    Encoding? finalEncoding = newEncoding ?? encoding;
+
                     // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
                     // every time until the user explicitly requests something different.
                     if (newEncoding?.CodePage > 0)
                     {
                         UpdateFMReadmeCodePages(fm, newEncoding.CodePage);
+                    }
+
+                    if (finalEncoding != null)
+                    {
+                        EncodingsLLMenu.SetEncodingMenuItemChecked(finalEncoding);
                     }
                 }
             }

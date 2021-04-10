@@ -138,6 +138,14 @@ namespace AngelLoader.Forms.CustomControls
     }
 
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
+    public sealed class ToolStripMenuItemWithBackingField<T> : ToolStripMenuItemCustom
+    {
+        public readonly T Field;
+
+        public ToolStripMenuItemWithBackingField(T field) => Field = field;
+    }
+
+    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
     public sealed class ToolStripButtonCustom : ToolStripButton, IDarkable
     {
         private bool _darkModeEnabled;

@@ -199,6 +199,12 @@ namespace AngelLoader
             {
                 ScanAllFMsBox_Dict.Add(f.Name, f);
             }
+            var characterEncodingCategoriesFields = typeof(LText_Class.CharacterEncodingCategories_Class).GetFields(_bfLText);
+            var CharacterEncodingCategories_Dict = new Dictionary<string, FieldInfo>(characterEncodingCategoriesFields.Length);
+            foreach (var f in characterEncodingCategoriesFields)
+            {
+                CharacterEncodingCategories_Dict.Add(f.Name, f);
+            }
 
             #endregion
 
@@ -793,6 +799,28 @@ namespace AngelLoader
                             if (ScanAllFMsBox_Dict.TryGetValue(key, out FieldInfo value))
                             {
                                 value.SetValue(ret.ScanAllFMsBox, lt.Substring(eqIndex + 1));
+                            }
+                        }
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                else if (lineT == "[CharacterEncodingCategories]")
+                {
+                    while (i < linesLength - 1)
+                    {
+                        int ltLength;
+                        string lt = lines[i + 1].TrimStart();
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
+                        {
+                            string key = lt.Substring(0, eqIndex);
+                            if (CharacterEncodingCategories_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.CharacterEncodingCategories, lt.Substring(eqIndex + 1));
                             }
                         }
                         else if ((ltLength = lt.Length) > 0 && lt[0] == '[')

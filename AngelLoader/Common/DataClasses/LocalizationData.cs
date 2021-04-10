@@ -51,6 +51,7 @@ namespace AngelLoader.DataClasses
         internal readonly RatingFilterBox_Class RatingFilterBox = new RatingFilterBox_Class();
         internal readonly Importing_Class Importing = new Importing_Class();
         internal readonly ScanAllFMsBox_Class ScanAllFMsBox = new ScanAllFMsBox_Class();
+        internal readonly CharacterEncodingCategories_Class CharacterEncodingCategories = new CharacterEncodingCategories_Class();
 
         internal sealed class Meta_Class
         {
@@ -683,6 +684,29 @@ namespace AngelLoader.DataClasses
             internal readonly string Scan = "Scan";
             [FenGenBlankLine]
             internal readonly string NothingWasScanned = "No options were selected; no FMs have been scanned.";
+        }
+
+        internal sealed class CharacterEncodingCategories_Class
+        {
+            internal readonly string Arabic = "Arabic";
+            internal readonly string Baltic = "Baltic";
+            internal readonly string CentralEuropean = "Central European";
+            internal readonly string Chinese = "Chinese";
+            internal readonly string Cyrillic = "Cyrillic";
+            internal readonly string EasternEuropean = "Eastern European";
+            internal readonly string Greek = "Greek";
+            internal readonly string Hebrew = "Hebrew";
+            internal readonly string Japanese = "Japanese";
+            internal readonly string Korean = "Korean";
+            internal readonly string Latin = "Latin";
+            internal readonly string NorthernEuropean = "Northern European";
+            internal readonly string Taiwan = "Taiwan";
+            internal readonly string Thai = "Thai";
+            internal readonly string Turkish = "Turkish";
+            internal readonly string UnitedStates = "United States";
+            internal readonly string Vietnamese = "Vietnamese";
+            internal readonly string WesternEuropean = "Western European";
+            internal readonly string Other = "Other";
         }
     }
 }

@@ -674,8 +674,8 @@ namespace AngelLoader
                     continue;
                 }
 
-                // @DIRSEP: Forward slashes to match the format of SelectedReadme
-                fm.ReadmeCodePages[readme.ToForwardSlashes()] = result;
+                // @DIRSEP: Backslashes to match the format of SelectedReadme
+                fm.ReadmeCodePages[readme.ToBackSlashes()] = result;
             }
         }
     }
