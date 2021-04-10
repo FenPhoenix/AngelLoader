@@ -895,7 +895,13 @@ namespace AngelLoader.Forms
 #endif
         }
 
-        private void MainForm_Deactivate(object sender, EventArgs e) => CancelResizables();
+        private void MainForm_Deactivate(object sender, EventArgs e)
+        {
+#if false
+            SetReadmeControlZPosition(true);
+#endif
+            CancelResizables();
+        }
 
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
@@ -925,8 +931,26 @@ namespace AngelLoader.Forms
             TopSplitContainer.CancelResize();
         }
 
+#if false
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+            if ((ModifierKeys & Keys.Control) != Keys.Control)
+            {
+                SetReadmeControlZPosition(true);
+            }
+        }
+#endif
+
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+#if false
+            if ((ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                SetReadmeControlZPosition(false);
+            }
+#endif
+
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             if (e.Control && e.KeyCode == Keys.E)
             {
@@ -1489,11 +1513,7 @@ namespace AngelLoader.Forms
 
                 // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
                 // while running(?) meh, whatever
-                ReadmeZoomInButton.BringToFront();
-                ReadmeZoomOutButton.BringToFront();
-                ReadmeResetZoomButton.BringToFront();
-                ReadmeFullScreenButton.BringToFront();
-                ChooseReadmeComboBox.BringToFront();
+                SetReadmeControlZPosition(true);
             }
             finally
             {
@@ -1504,6 +1524,28 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Helpers & misc
+
+        // TODO: This is a crappy way to do it, make a proper "logical visibility" layer for these
+        private void SetReadmeControlZPosition(bool front)
+        {
+            if (front)
+            {
+                ReadmeZoomInButton.BringToFront();
+                ReadmeZoomOutButton.BringToFront();
+                ReadmeResetZoomButton.BringToFront();
+                ReadmeFullScreenButton.BringToFront();
+                ChooseReadmeComboBox.BringToFront();
+            }
+            else
+            {
+                ReadmeZoomInButton.SendToBack();
+                ReadmeZoomOutButton.SendToBack();
+                ReadmeResetZoomButton.SendToBack();
+                ReadmeFullScreenButton.SendToBack();
+                ChooseReadmeComboBox.SendToBack();
+                ChooseReadmeComboBox.DroppedDown = false;
+            }
+        }
 
         #region Invoke
 
