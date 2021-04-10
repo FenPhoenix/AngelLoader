@@ -361,7 +361,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     if (!plainText) SaveZoom();
                     this.SuspendDrawing();
-                    if (!plainText) ReadOnly = false;
+                    if (_currentReadmeType == ReadmeType.RichText) ReadOnly = false;
                 }
 
                 if (_currentReadmeType == ReadmeType.RichText)
@@ -384,7 +384,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     if (!plainText)
                     {
-                        ReadOnly = true;
+                        if (_currentReadmeType == ReadmeType.RichText) ReadOnly = true;
                         RestoreZoom();
                     }
 

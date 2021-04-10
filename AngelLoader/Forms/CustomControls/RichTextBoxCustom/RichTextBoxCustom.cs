@@ -71,10 +71,10 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     Clear();
                     ResetScrollInfo();
-                }
 
-                // We have to reload because links don't get recognized until we do
-                Text = savedText;
+                    // We have to reload because links don't get recognized until we do
+                    Text = savedText;
+                }
             }
             finally
             {
@@ -86,7 +86,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void SuspendState()
+        private void SuspendState(bool toggleReadOnly)
         {
             SaveZoom();
             this.SuspendDrawing();
@@ -94,16 +94,16 @@ namespace AngelLoader.Forms.CustomControls
             // On Windows 10 at least, RTF images don't display if we're ReadOnly. Sure why not. We need to be
             // ReadOnly though - it doesn't make sense to let the user edit a readme - so un-set us just long
             // enough to load in the content correctly, then set us back again.
-            ReadOnly = false;
+            if (toggleReadOnly) ReadOnly = false;
 
             // Blank the text to reset the scroll position to the top
             Clear();
             ResetScrollInfo();
         }
 
-        private void ResumeState()
+        private void ResumeState(bool toggleReadOnly)
         {
-            ReadOnly = true;
+            if (toggleReadOnly) ReadOnly = true;
             RestoreZoom();
             this.ResumeDrawing();
         }
@@ -239,7 +239,7 @@ namespace AngelLoader.Forms.CustomControls
                 _currentReadmeSupportsEncodingChange = false;
                 _currentReadmeBytes = Array.Empty<byte>();
 
-                SuspendState();
+                SuspendState(toggleReadOnly: false);
 
                 ContentIsPlainText = true;
                 if (!text.IsEmpty()) Text = text;
@@ -247,7 +247,7 @@ namespace AngelLoader.Forms.CustomControls
             finally
             {
                 SetReadmeTypeAndColorState(ReadmeType.PlainText);
-                ResumeState();
+                ResumeState(toggleReadOnly: false);
             }
         }
 
@@ -277,7 +277,7 @@ namespace AngelLoader.Forms.CustomControls
 
             try
             {
-                SuspendState();
+                SuspendState(toggleReadOnly: fileType == ReadmeType.RichText);
 
                 SetReadmeTypeAndColorState(fileType);
 
@@ -385,7 +385,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             finally
             {
-                ResumeState();
+                ResumeState(toggleReadOnly: fileType == ReadmeType.RichText);
             }
 
             return retEncoding;
