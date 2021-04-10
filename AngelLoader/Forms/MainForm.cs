@@ -1468,7 +1468,7 @@ namespace AngelLoader.Forms
                 Images.DarkModeEnabled = darkMode;
                 Images.ReloadImages();
 
-                ControlUtils.RecreateAllToolTipHandles();
+                if (!startup) ControlUtils.RecreateAllToolTipHandles();
 
                 MainLLMenu.DarkModeEnabled = darkMode;
                 FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
