@@ -324,12 +324,14 @@ namespace FMScanner.SimpleHelpers
                     .OrderByDescending(i => i.Value * (i.Key != "ASCII" ? 1 : 0))
                     .FirstOrDefault().Key;
 
-            if (!_canBeASCII && ret?.Equals("ASCII") == true)
+            if (ret?.Equals("ASCII") == true)
             {
                 // Somewhere along the line, someone is detecting "ASCII" without checking if all our bytes are
                 // <=127, so if we've detected "ASCII" but we have byte >127 anywhere, just use what we feel is
                 // the "most likely" codepage for 8-bit encodings, which we're just going to say is Windows-1252.
-                ret = "Windows-1252";
+                // Also, if we detected ASCII, just return UTF-8 because that's an exact superset but modern, so
+                // why not just get rid of any reference to ancient stuff if we can.
+                ret = !_canBeASCII ? "Windows-1252" : "UTF-8";
             }
 
             return ret;
