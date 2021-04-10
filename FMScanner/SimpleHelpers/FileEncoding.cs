@@ -43,6 +43,26 @@ namespace FMScanner.SimpleHelpers
 {
     public sealed class FileEncoding
     {
+        /*
+        TODO: BUG: @CharEncoding: "Knife to the Heart" RUS_readme.txt encoding detection failure
+        We flat-out fail to detect the encoding of this readme, which is Win-1251 (Cyrillic). This happens even
+        if we bypass this code and just ask the UDE detector directly. However, Notepad++ detects this file's
+        encoding correctly, and it's using a C version of the same detector (Mozilla Universal Charset Detector).
+        Ude.NetStandard has a bug I guess(?) We should take a look at the code and see if we can fix it...
+
+        Links of interest:
+        
+        uchardet:
+        https://www.freedesktop.org/wiki/Software/uchardet/
+        Claims to be based on the old Mozilla UDE, but updated to be more accurate and support more encodings.
+        -Maybe we can wrap this one or port it.
+
+        UTF.Unknown:
+        https://github.com/CharsetDetector/UTF-unknown
+        Claims to be "based on UDE and uchardet", but based on the release dates it has to be uchardet 0.06 or
+        something, rather than 0.07 (latest as of 2021-04-10).
+        */
+
         private const int DEFAULT_BUFFER_SIZE = 128 * 1024;
 
         private bool _started;
