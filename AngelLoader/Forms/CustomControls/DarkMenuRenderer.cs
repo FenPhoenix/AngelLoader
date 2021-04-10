@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Properties;
 
 namespace AngelLoader.Forms.CustomControls
 {

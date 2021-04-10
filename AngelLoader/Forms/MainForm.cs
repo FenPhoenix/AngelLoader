@@ -303,7 +303,7 @@ namespace AngelLoader.Forms
             }
             // Just handle the NC* messages and presto, we don't even need the mouse hook anymore!
             // NC = Non-Client, ie. the mouse was in a non-client area of the control
-            else if (m.Msg == Native.WM_MOUSEMOVE || m.Msg == Native.WM_NCMOUSEMOVE)
+            else if (m.Msg is Native.WM_MOUSEMOVE or Native.WM_NCMOUSEMOVE)
             {
                 if (!CanFocus) return PassMessageOn;
 
@@ -311,15 +311,16 @@ namespace AngelLoader.Forms
 
                 ShowReadmeControls(CursorOverReadmeArea());
             }
-            else if (m.Msg == Native.WM_LBUTTONDOWN || m.Msg == Native.WM_NCLBUTTONDOWN ||
-                     m.Msg == Native.WM_MBUTTONDOWN || m.Msg == Native.WM_NCMBUTTONDOWN ||
-                     m.Msg == Native.WM_RBUTTONDOWN || m.Msg == Native.WM_NCRBUTTONDOWN ||
-                     m.Msg == Native.WM_LBUTTONDBLCLK || m.Msg == Native.WM_NCLBUTTONDBLCLK ||
-                     m.Msg == Native.WM_MBUTTONDBLCLK || m.Msg == Native.WM_NCMBUTTONDBLCLK ||
-                     m.Msg == Native.WM_RBUTTONDBLCLK || m.Msg == Native.WM_NCRBUTTONDBLCLK ||
-                     m.Msg == Native.WM_LBUTTONUP || m.Msg == Native.WM_NCLBUTTONUP ||
-                     m.Msg == Native.WM_MBUTTONUP || m.Msg == Native.WM_NCMBUTTONUP ||
-                     m.Msg == Native.WM_RBUTTONUP || m.Msg == Native.WM_NCRBUTTONUP)
+            else if (m.Msg is
+                Native.WM_LBUTTONDOWN or Native.WM_NCLBUTTONDOWN or
+                Native.WM_MBUTTONDOWN or Native.WM_NCMBUTTONDOWN or
+                Native.WM_RBUTTONDOWN or Native.WM_NCRBUTTONDOWN or
+                Native.WM_LBUTTONDBLCLK or Native.WM_NCLBUTTONDBLCLK or
+                Native.WM_MBUTTONDBLCLK or Native.WM_NCMBUTTONDBLCLK or
+                Native.WM_RBUTTONDBLCLK or Native.WM_NCRBUTTONDBLCLK or
+                Native.WM_LBUTTONUP or Native.WM_NCLBUTTONUP or
+                Native.WM_MBUTTONUP or Native.WM_NCMBUTTONUP or
+                Native.WM_RBUTTONUP or Native.WM_NCRBUTTONUP)
             {
                 if (!CanFocus) return PassMessageOn;
 

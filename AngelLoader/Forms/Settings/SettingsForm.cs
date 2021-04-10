@@ -1546,7 +1546,7 @@ namespace AngelLoader.Forms
             ErrorLabel.Visible = shown;
         }
 
-        private static bool PathErrorIsSet(Control control) => control.Tag is PathError pathError && pathError == PathError.True;
+        private static bool PathErrorIsSet(Control control) => control.Tag is PathError.True;
 
         private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
         {
