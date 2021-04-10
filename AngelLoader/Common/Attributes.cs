@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using JetBrains.Annotations;
+// ReSharper disable UnusedParameter.Local
+#pragma warning disable IDE0060
+#pragma warning disable RCS1163 // Unused parameter.
+#pragma warning disable RCS1139 // Add summary element to documentation comment.
 
 namespace AngelLoader
 {
@@ -25,7 +28,7 @@ namespace AngelLoader
             /// Specifies whether empty values will be written to the ini.
             /// What constitutes "empty" will vary depending on type.
             /// </param>
-            internal FenGenFMDataSourceClassAttribute([UsedImplicitly] bool writeEmptyValues) { }
+            internal FenGenFMDataSourceClassAttribute(bool writeEmptyValues) { }
         }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenIniNameAttribute : Attribute
         {
-            internal FenGenIniNameAttribute([UsedImplicitly] string value) { }
+            internal FenGenIniNameAttribute(string value) { }
         }
 
         /// <summary>
@@ -54,7 +57,7 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenNumericEmptyAttribute : Attribute
         {
-            internal FenGenNumericEmptyAttribute([UsedImplicitly] long value) { }
+            internal FenGenNumericEmptyAttribute(long value) { }
         }
 
         /// <summary>
@@ -65,7 +68,7 @@ namespace AngelLoader
         internal sealed class FenGenListTypeAttribute : Attribute
         {
             /// <param name="value">Can be "MultipleLines" or "CommaSeparated".</param>
-            internal FenGenListTypeAttribute([UsedImplicitly] string value) { }
+            internal FenGenListTypeAttribute(string value) { }
         }
 
         /// <summary>
@@ -76,7 +79,7 @@ namespace AngelLoader
         internal sealed class FenGenListDistinctTypeAttribute : Attribute
         {
             /// <param name="value">Can be "None", "Exact", or "CaseInsensitive".</param>
-            internal FenGenListDistinctTypeAttribute([UsedImplicitly] string value) { }
+            internal FenGenListDistinctTypeAttribute(string value) { }
         }
 
         /// <summary>
@@ -95,7 +98,7 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenInsertAfterAttribute : Attribute
         {
-            internal FenGenInsertAfterAttribute([UsedImplicitly] string value) { }
+            internal FenGenInsertAfterAttribute(string value) { }
         }
 
         #endregion
@@ -126,7 +129,7 @@ namespace AngelLoader
         internal sealed class FenGenCommentAttribute : Attribute
         {
             /// <param name="comments">Each comment will be placed on a separate line.</param>
-            internal FenGenCommentAttribute([UsedImplicitly] params string[] comments) { }
+            internal FenGenCommentAttribute(params string[] comments) { }
         }
 
         /// <summary>
@@ -138,7 +141,7 @@ namespace AngelLoader
         internal sealed class FenGenBlankLineAttribute : Attribute
         {
             internal FenGenBlankLineAttribute() { }
-            internal FenGenBlankLineAttribute([UsedImplicitly] int numberOfBlankLines) { }
+            internal FenGenBlankLineAttribute(int numberOfBlankLines) { }
         }
 
         #endregion

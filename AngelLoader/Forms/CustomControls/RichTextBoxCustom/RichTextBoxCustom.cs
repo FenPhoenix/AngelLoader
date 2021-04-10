@@ -361,7 +361,7 @@ namespace AngelLoader.Forms.CustomControls
                                 for (uint i = plainTextStart; i < plainTextEnd; i++)
                                 {
                                     byte b = bytes[i];
-                                    if (b == 9 || b == 10 || b == 13 || (b >= 32 && b != 127))
+                                    if (b is 9 or 10 or 13 || (b >= 32 && b != 127))
                                     {
                                         if (b <= 126)
                                         {
