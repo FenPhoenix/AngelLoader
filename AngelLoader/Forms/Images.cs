@@ -420,6 +420,7 @@ namespace AngelLoader.Forms
         #endregion
 
         private static Brush BlackForegroundBrush => DarkModeEnabled ? DarkColors.Fen_DarkForegroundBrush : Brushes.Black;
+        private static Pen BlackForegroundPen => DarkModeEnabled ? DarkColors.Fen_DarkForegroundPen : Pens.Black;
 
         #region Arrows
 
@@ -581,6 +582,20 @@ namespace AngelLoader.Forms
             DarkModeEnabled
                 ? _showRecentAtTop_Dark ??= Resources.FilterShowRecentAtTop_Dark
                 : _showRecentAtTop ??= Resources.FilterShowRecentAtTop;
+
+        private static Image? _charEncLetter;
+        private static Image? _charEncLetter_Dark;
+        private static Image CharEncLetter =>
+            DarkModeEnabled
+                ? _charEncLetter_Dark ??= Resources.CharacterEncodingLetter_Dark
+                : _charEncLetter ??= Resources.CharacterEncodingLetter;
+
+        private static Image? _charEncLetter_Disabled;
+        private static Image? _charEncLetter_Disabled_Dark;
+        private static Image CharEncLetter_Disabled =>
+            DarkModeEnabled
+                ? _charEncLetter_Disabled_Dark ??= Resources.CharacterEncodingLetter_Dark_Disabled
+                : _charEncLetter_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.CharacterEncodingLetter);
 
         private static Icon? _AngelLoader;
         public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
@@ -1149,6 +1164,16 @@ namespace AngelLoader.Forms
             e.Graphics.FillPolygon(brush, _readmeFullScreenTopRight);
             e.Graphics.FillPolygon(brush, _readmeFullScreenBottomLeft);
             e.Graphics.FillPolygon(brush, _readmeFullScreenBottomRight);
+        }
+
+        internal static void PaintReadmeEncodingButton(Button button, PaintEventArgs e)
+        {
+            Pen pen = button.Enabled ? BlackForegroundPen : DarkModeEnabled ? DarkColors.GreySelectionPen : SystemPens.ControlDark;
+
+            e.Graphics.DrawRectangle(pen, 0, 0, 20, 20);
+            e.Graphics.DrawRectangle(pen, 1, 1, 18, 18);
+
+            e.Graphics.DrawImage(button.Enabled ? CharEncLetter : CharEncLetter_Disabled, 3, 3);
         }
 
         internal static void PaintResetLayoutButton(Button button, PaintEventArgs e)

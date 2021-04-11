@@ -4533,8 +4533,7 @@ namespace AngelLoader.Forms
 
         private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
 
-        // TODO: @CharEncoding: Make a button icon for this (we're just using the fullscreen icon for now, just for test purposes)
-        private void ReadmeEncodingButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
+        private void ReadmeEncodingButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeEncodingButton(ReadmeEncodingButton, e);
 
         private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 

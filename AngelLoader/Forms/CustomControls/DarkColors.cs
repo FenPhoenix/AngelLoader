@@ -67,7 +67,7 @@ namespace AngelLoader.Forms.CustomControls
         #region Pens
 
         public static readonly Pen Fen_DarkBackgroundPen = new Pen(Fen_DarkBackground);
-        //public static readonly Pen Fen_DarkForegroundPen = new Pen(Fen_DarkForeground);
+        public static readonly Pen Fen_DarkForegroundPen = new Pen(Fen_DarkForeground);
         public static readonly Pen Fen_ControlBackgroundPen = new Pen(Fen_ControlBackground);
         //public static readonly Pen Fen_DeselectedTabBackgroundPen = new Pen(Fen_DeselectedTabBackground);
         //public static readonly Pen Fen_HotTabBackgroundPen = new Pen(Fen_HotTabBackground);
