@@ -155,6 +155,7 @@ namespace AngelLoader.Forms
             PatchAddDMLButton = new DarkButton();
             PatchOpenFMFolderButton = new DarkButton();
             PatchFMNotInstalledLabel = new DarkLabel();
+            ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
             ReadmeZoomOutButton = new DarkButton();
@@ -318,6 +319,7 @@ namespace AngelLoader.Forms
             // MainSplitContainer.Panel2
             // 
             MainSplitContainer.Panel2.BackColor = SystemColors.Control;
+            MainSplitContainer.Panel2.Controls.Add(ReadmeEncodingButton);
             MainSplitContainer.Panel2.Controls.Add(ReadmeFullScreenButton);
             MainSplitContainer.Panel2.Controls.Add(ReadmeZoomInButton);
             MainSplitContainer.Panel2.Controls.Add(ReadmeZoomOutButton);
@@ -1413,6 +1415,20 @@ namespace AngelLoader.Forms
 
             // BackColor for these gets set when the readme box is shown or hidden (for classic mode)
 
+            // 
+            // ReadmeEncodingButton
+            // 
+            ReadmeEncodingButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ReadmeEncodingButton.FlatAppearance.BorderSize = 0;
+            ReadmeEncodingButton.FlatStyle = FlatStyle.Flat;
+            ReadmeEncodingButton.Location = new Point(1502, 8);
+            ReadmeEncodingButton.Size = new Size(21, 21);
+            ReadmeEncodingButton.TabIndex = 56;
+            ReadmeEncodingButton.UseVisualStyleBackColor = false;
+            ReadmeEncodingButton.Visible = false;
+            ReadmeEncodingButton.PaintCustom += ReadmeEncodingButton_Paint;
+            ReadmeEncodingButton.Click += ReadmeEncodingButton_Click;
+            ReadmeEncodingButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ReadmeFullScreenButton
             // 

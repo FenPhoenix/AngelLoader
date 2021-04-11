@@ -152,6 +152,7 @@
             this.PatchAddDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchFMNotInstalledLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeZoomOutButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -219,16 +220,16 @@
             this.BottomRightButtonsFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BottomRightButtonsFLP.Controls.Add(this.SettingsButton);
             this.BottomRightButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomRightButtonsFLP.Location = new System.Drawing.Point(1443, 0);
+            this.BottomRightButtonsFLP.Location = new System.Drawing.Point(1563, 0);
             this.BottomRightButtonsFLP.Name = "BottomRightButtonsFLP";
-            this.BottomRightButtonsFLP.Size = new System.Drawing.Size(226, 42);
+            this.BottomRightButtonsFLP.Size = new System.Drawing.Size(106, 42);
             this.BottomRightButtonsFLP.TabIndex = 37;
             // 
             // SettingsButton
             // 
             this.SettingsButton.AutoSize = true;
             this.SettingsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SettingsButton.Location = new System.Drawing.Point(123, 3);
+            this.SettingsButton.Location = new System.Drawing.Point(3, 3);
             this.SettingsButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.SettingsButton.Name = "SettingsButton";
             this.SettingsButton.Padding = new System.Windows.Forms.Padding(30, 0, 6, 0);
@@ -248,7 +249,7 @@
             this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftButtonsFLP.Name = "BottomLeftButtonsFLP";
-            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(522, 42);
+            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(384, 42);
             this.BottomLeftButtonsFLP.TabIndex = 36;
             this.BottomLeftButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftButtonsFLP_Paint);
             // 
@@ -276,7 +277,7 @@
             this.PlayOriginalGameButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
             this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
-            this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);
+            this.PlayOriginalGameButton.Size = new System.Drawing.Size(150, 36);
             this.PlayOriginalGameButton.TabIndex = 57;
             this.PlayOriginalGameButton.Text = "Play original game...";
             this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
@@ -287,7 +288,7 @@
             // 
             this.WebSearchButton.AutoSize = true;
             this.WebSearchButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.WebSearchButton.Location = new System.Drawing.Point(403, 3);
+            this.WebSearchButton.Location = new System.Drawing.Point(265, 3);
             this.WebSearchButton.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
             this.WebSearchButton.MinimumSize = new System.Drawing.Size(116, 36);
             this.WebSearchButton.Name = "WebSearchButton";
@@ -326,6 +327,7 @@
             // MainSplitContainer.Panel2
             // 
             this.MainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeEncodingButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeFullScreenButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeZoomInButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeZoomOutButton);
@@ -1724,6 +1726,23 @@
             this.PatchFMNotInstalledLabel.TabIndex = 45;
             this.PatchFMNotInstalledLabel.Text = "FM must be installed in order to use this section.";
             // 
+            // ReadmeEncodingButton
+            // 
+            this.ReadmeEncodingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ReadmeEncodingButton.BackColor = System.Drawing.SystemColors.Window;
+            this.ReadmeEncodingButton.FlatAppearance.BorderSize = 0;
+            this.ReadmeEncodingButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ReadmeEncodingButton.Location = new System.Drawing.Point(1502, 8);
+            this.ReadmeEncodingButton.Name = "ReadmeEncodingButton";
+            this.ReadmeEncodingButton.Size = new System.Drawing.Size(21, 21);
+            this.ReadmeEncodingButton.TabIndex = 56;
+            this.MainToolTip.SetToolTip(this.ReadmeEncodingButton, "Character encoding");
+            this.ReadmeEncodingButton.UseVisualStyleBackColor = false;
+            this.ReadmeEncodingButton.Visible = false;
+            this.ReadmeEncodingButton.Click += new System.EventHandler(this.ReadmeEncodingButton_Click);
+            this.ReadmeEncodingButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ReadmeEncodingButton_Paint);
+            this.ReadmeEncodingButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
+            // 
             // ReadmeFullScreenButton
             // 
             this.ReadmeFullScreenButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -2036,5 +2055,6 @@
         internal AngelLoader.Forms.CustomControls.DarkLabel EditFMLanguageLabel;
         internal AngelLoader.Forms.CustomControls.DarkButton MainMenuButton;
         internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
+        internal CustomControls.DarkButton ReadmeEncodingButton;
     }
 }

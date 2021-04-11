@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -12,6 +13,9 @@ namespace AngelLoader.Forms.CustomControls
         public bool AlwaysDrawNodesFocused { get; set; }
 
         private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;

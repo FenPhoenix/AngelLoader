@@ -467,6 +467,7 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string ViewHTMLReadme = "View HTML Readme";
             internal readonly string FullScreenToolTip = "Fullscreen";
+            internal readonly string CharacterEncoding = "Character encoding";
             [FenGenBlankLine]
             internal readonly string NoReadmeFound = "No readme found.";
             internal readonly string UnableToLoadReadme = "Unable to load this readme.";

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -11,6 +13,9 @@ namespace AngelLoader.Forms.CustomControls
         private bool _mouseOverButton;
 
         private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;

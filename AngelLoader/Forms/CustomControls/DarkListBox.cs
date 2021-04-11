@@ -1,8 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.WinAPI;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -13,6 +15,9 @@ namespace AngelLoader.Forms.CustomControls
         private int _updatingItems;
 
         private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;

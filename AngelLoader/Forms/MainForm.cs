@@ -185,8 +185,7 @@ namespace AngelLoader.Forms
 
         private void Test4Button_Click(object sender, EventArgs e)
         {
-            EncodingsLLMenu.Construct(this);
-            ShowMenu(EncodingsLLMenu.Menu, Test4Button, MenuPos.TopRight);
+
         }
 
 #endif
@@ -463,6 +462,7 @@ namespace AngelLoader.Forms
             ReadmeZoomInButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
             ReadmeZoomOutButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
             ReadmeResetZoomButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
+            ReadmeEncodingButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
 
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
@@ -1380,6 +1380,7 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(ReadmeZoomOutButton, LText.Global.ZoomOut);
                 MainToolTip.SetToolTip(ReadmeResetZoomButton, LText.Global.ResetZoom);
                 MainToolTip.SetToolTip(ReadmeFullScreenButton, LText.ReadmeArea.FullScreenToolTip);
+                MainToolTip.SetToolTip(ReadmeEncodingButton, LText.ReadmeArea.CharacterEncoding);
 
                 EncodingsLLMenu.Localize();
 
@@ -1536,6 +1537,7 @@ namespace AngelLoader.Forms
                 ReadmeResetZoomButton.BringToFront();
                 ReadmeFullScreenButton.BringToFront();
                 ChooseReadmeComboBox.BringToFront();
+                ReadmeEncodingButton.BringToFront();
             }
             else
             {
@@ -1545,6 +1547,7 @@ namespace AngelLoader.Forms
                 ReadmeFullScreenButton.SendToBack();
                 ChooseReadmeComboBox.SendToBack();
                 ChooseReadmeComboBox.DroppedDown = false;
+                ReadmeEncodingButton.SendToBack();
             }
         }
 
@@ -3691,6 +3694,12 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText);
 
+        private void ReadmeEncodingButton_Click(object sender, EventArgs e)
+        {
+            EncodingsLLMenu.Construct(this);
+            ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
+        }
+
         private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
 
         private void ReadmeZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomOut();
@@ -3723,6 +3732,7 @@ namespace AngelLoader.Forms
             ReadmeZoomOutButton.BackColor = backColor;
             ReadmeResetZoomButton.BackColor = backColor;
             ReadmeFullScreenButton.BackColor = backColor;
+            ReadmeEncodingButton.BackColor = backColor;
         }
 
         private void ShowReadmeControls(bool enabled)
@@ -3732,6 +3742,7 @@ namespace AngelLoader.Forms
             ReadmeResetZoomButton.Visible = enabled;
             ReadmeFullScreenButton.Visible = enabled;
             ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
+            ReadmeEncodingButton.Visible = enabled;
         }
 
         internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
@@ -4521,6 +4532,9 @@ namespace AngelLoader.Forms
         private void WebSearchButton_Paint(object sender, PaintEventArgs e) => Images.PaintWebSearchButton(WebSearchButton, e);
 
         private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
+
+        // TODO: @CharEncoding: Make a button icon for this (we're just using the fullscreen icon for now, just for test purposes)
+        private void ReadmeEncodingButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
 
         private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 
