@@ -4191,6 +4191,7 @@ namespace AngelLoader.Forms
                     ChooseReadmeComboBox.Hide();
                     ViewHTMLReadmeLLButton.Hide();
                     SetReadmeVisible(true);
+                    ReadmeEncodingButton.Enabled = false;
 
                     return;
                 }
@@ -4323,6 +4324,7 @@ namespace AngelLoader.Forms
                 {
                     ViewHTMLReadmeLLButton.Show(this);
                     SetReadmeVisible(false);
+                    ReadmeEncodingButton.Enabled = false;
                     // In case the cursor is over the scroll bar area
                     if (CursorOverReadmeArea()) ShowReadmeControls(true);
                 }
@@ -4331,8 +4333,12 @@ namespace AngelLoader.Forms
                     SetReadmeVisible(true);
                     ViewHTMLReadmeLLButton.Hide();
 
+                    bool isRealPlainText = fileType == ReadmeType.PlainText && !path.ExtIsWri();
+
+                    ReadmeEncodingButton.Enabled = isRealPlainText;
+
                     Encoding? encoding = null;
-                    if (fileType == ReadmeType.PlainText &&
+                    if (isRealPlainText &&
                         fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
                     {
                         try
@@ -4351,12 +4357,12 @@ namespace AngelLoader.Forms
 
                     // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
                     // every time until the user explicitly requests something different.
-                    if (newEncoding?.CodePage > 0)
+                    if (isRealPlainText && newEncoding?.CodePage > 0)
                     {
                         UpdateFMReadmeCodePages(fm, newEncoding.CodePage);
                     }
 
-                    if (finalEncoding != null)
+                    if (isRealPlainText && finalEncoding != null)
                     {
                         EncodingsLLMenu.SetEncodingMenuItemChecked(finalEncoding);
                     }
@@ -4368,6 +4374,7 @@ namespace AngelLoader.Forms
 
                 ViewHTMLReadmeLLButton.Hide();
                 SetReadmeVisible(true);
+                ReadmeEncodingButton.Enabled = false;
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
             }
         }
