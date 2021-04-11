@@ -266,30 +266,30 @@ namespace AngelLoader.Forms
         };
         private static readonly Point[] _readmeFullScreenTopRight =
         {
-            new Point(13, 0),
-            new Point(20, 0),
-            new Point(20, 7),
-            new Point(17, 7),
-            new Point(17, 3),
-            new Point(13, 3)
+            new Point(14, 0),
+            new Point(21, 0),
+            new Point(21, 7),
+            new Point(18, 7),
+            new Point(18, 3),
+            new Point(14, 3)
         };
         private static readonly Point[] _readmeFullScreenBottomLeft =
         {
-            new Point(0, 13),
-            new Point(3, 13),
-            new Point(3, 17),
-            new Point(7, 17),
-            new Point(7, 20),
-            new Point(0, 20)
+            new Point(0, 14),
+            new Point(3, 14),
+            new Point(3, 18),
+            new Point(7, 18),
+            new Point(7, 21),
+            new Point(0, 21)
         };
         private static readonly Point[] _readmeFullScreenBottomRight =
         {
-            new Point(17, 13),
-            new Point(20, 13),
-            new Point(20, 20),
-            new Point(13, 20),
-            new Point(13, 17),
-            new Point(17, 17)
+            new Point(18, 14),
+            new Point(21, 14),
+            new Point(21, 21),
+            new Point(14, 21),
+            new Point(14, 18),
+            new Point(18, 18)
         };
 
         #endregion
