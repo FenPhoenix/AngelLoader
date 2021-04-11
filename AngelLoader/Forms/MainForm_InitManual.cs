@@ -1410,11 +1410,35 @@ namespace AngelLoader.Forms
             PatchFMNotInstalledLabel.AutoSize = true;
             // This thing gets centered later so no location is specified here
             PatchFMNotInstalledLabel.TabIndex = 45;
+            // 
+            // ReadmeRichTextBox
+            // 
+            ReadmeRichTextBox.BackColor = SystemColors.Window;
+            ReadmeRichTextBox.BorderStyle = BorderStyle.None;
+            ReadmeRichTextBox.ReadOnly = true;
+            ReadmeRichTextBox.Dock = DockStyle.Fill;
+            ReadmeRichTextBox.TabIndex = 0;
+            ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
+            ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
 
             #region Readme control buttons
 
             // BackColor for these gets set when the readme box is shown or hidden (for classic mode)
 
+            // 
+            // ChooseReadmeComboBox
+            // 
+            ChooseReadmeComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ChooseReadmeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            ChooseReadmeComboBox.FormattingEnabled = true;
+            ChooseReadmeComboBox.Location = new Point(1321, 8);
+            ChooseReadmeComboBox.FireMouseLeaveOnLeaveWindow = true;
+            ChooseReadmeComboBox.Size = new Size(170, 21);
+            ChooseReadmeComboBox.TabIndex = 1;
+            ChooseReadmeComboBox.Visible = false;
+            ChooseReadmeComboBox.SelectedIndexChanged += ChooseReadmeComboBox_SelectedIndexChanged;
+            ChooseReadmeComboBox.DropDownClosed += ChooseReadmeComboBox_DropDownClosed;
+            ChooseReadmeComboBox.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ReadmeEncodingButton
             // 
@@ -1423,26 +1447,12 @@ namespace AngelLoader.Forms
             ReadmeEncodingButton.FlatStyle = FlatStyle.Flat;
             ReadmeEncodingButton.Location = new Point(1502, 8);
             ReadmeEncodingButton.Size = new Size(21, 21);
-            ReadmeEncodingButton.TabIndex = 56;
+            ReadmeEncodingButton.TabIndex = 2;
             ReadmeEncodingButton.UseVisualStyleBackColor = false;
             ReadmeEncodingButton.Visible = false;
             ReadmeEncodingButton.PaintCustom += ReadmeEncodingButton_Paint;
             ReadmeEncodingButton.Click += ReadmeEncodingButton_Click;
             ReadmeEncodingButton.MouseLeave += ReadmeArea_MouseLeave;
-            // 
-            // ReadmeFullScreenButton
-            // 
-            ReadmeFullScreenButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
-            ReadmeFullScreenButton.FlatStyle = FlatStyle.Flat;
-            ReadmeFullScreenButton.Location = new Point(1616, 8);
-            ReadmeFullScreenButton.Size = new Size(21, 21);
-            ReadmeFullScreenButton.TabIndex = 55;
-            ReadmeFullScreenButton.UseVisualStyleBackColor = false;
-            ReadmeFullScreenButton.Visible = false;
-            ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
-            ReadmeFullScreenButton.PaintCustom += ReadmeFullScreenButton_Paint;
-            ReadmeFullScreenButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ReadmeZoomInButton
             // 
@@ -1451,7 +1461,7 @@ namespace AngelLoader.Forms
             ReadmeZoomInButton.FlatStyle = FlatStyle.Flat;
             ReadmeZoomInButton.Location = new Point(1534, 8);
             ReadmeZoomInButton.Size = new Size(21, 21);
-            ReadmeZoomInButton.TabIndex = 52;
+            ReadmeZoomInButton.TabIndex = 3;
             ReadmeZoomInButton.UseVisualStyleBackColor = false;
             ReadmeZoomInButton.Visible = false;
             ReadmeZoomInButton.Click += ReadmeZoomInButton_Click;
@@ -1466,7 +1476,7 @@ namespace AngelLoader.Forms
             ReadmeZoomOutButton.FlatStyle = FlatStyle.Flat;
             ReadmeZoomOutButton.Location = new Point(1559, 8);
             ReadmeZoomOutButton.Size = new Size(21, 21);
-            ReadmeZoomOutButton.TabIndex = 53;
+            ReadmeZoomOutButton.TabIndex = 4;
             ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             ReadmeZoomOutButton.Visible = false;
             ReadmeZoomOutButton.Click += ReadmeZoomOutButton_Click;
@@ -1480,38 +1490,27 @@ namespace AngelLoader.Forms
             ReadmeResetZoomButton.FlatStyle = FlatStyle.Flat;
             ReadmeResetZoomButton.Location = new Point(1584, 8);
             ReadmeResetZoomButton.Size = new Size(21, 21);
-            ReadmeResetZoomButton.TabIndex = 54;
+            ReadmeResetZoomButton.TabIndex = 5;
             ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             ReadmeResetZoomButton.Visible = false;
             ReadmeResetZoomButton.Click += ReadmeResetZoomButton_Click;
             ReadmeResetZoomButton.PaintCustom += ZoomResetButtons_Paint;
             ReadmeResetZoomButton.MouseLeave += ReadmeArea_MouseLeave;
-
+            // 
+            // ReadmeFullScreenButton
+            // 
+            ReadmeFullScreenButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
+            ReadmeFullScreenButton.FlatStyle = FlatStyle.Flat;
+            ReadmeFullScreenButton.Location = new Point(1616, 8);
+            ReadmeFullScreenButton.Size = new Size(21, 21);
+            ReadmeFullScreenButton.TabIndex = 6;
+            ReadmeFullScreenButton.UseVisualStyleBackColor = false;
+            ReadmeFullScreenButton.Visible = false;
+            ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
+            ReadmeFullScreenButton.PaintCustom += ReadmeFullScreenButton_Paint;
+            ReadmeFullScreenButton.MouseLeave += ReadmeArea_MouseLeave;
             #endregion
-            // 
-            // ChooseReadmeComboBox
-            // 
-            ChooseReadmeComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ChooseReadmeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            ChooseReadmeComboBox.FormattingEnabled = true;
-            ChooseReadmeComboBox.Location = new Point(1350, 8);
-            ChooseReadmeComboBox.FireMouseLeaveOnLeaveWindow = true;
-            ChooseReadmeComboBox.Size = new Size(170, 21);
-            ChooseReadmeComboBox.TabIndex = 51;
-            ChooseReadmeComboBox.Visible = false;
-            ChooseReadmeComboBox.SelectedIndexChanged += ChooseReadmeComboBox_SelectedIndexChanged;
-            ChooseReadmeComboBox.DropDownClosed += ChooseReadmeComboBox_DropDownClosed;
-            ChooseReadmeComboBox.MouseLeave += ReadmeArea_MouseLeave;
-            // 
-            // ReadmeRichTextBox
-            // 
-            ReadmeRichTextBox.BackColor = SystemColors.Window;
-            ReadmeRichTextBox.BorderStyle = BorderStyle.None;
-            ReadmeRichTextBox.ReadOnly = true;
-            ReadmeRichTextBox.Dock = DockStyle.Fill;
-            ReadmeRichTextBox.TabIndex = 0;
-            ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
-            ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // MainMenuButton
             // 

@@ -1735,7 +1735,7 @@
             this.ReadmeEncodingButton.Location = new System.Drawing.Point(1502, 8);
             this.ReadmeEncodingButton.Name = "ReadmeEncodingButton";
             this.ReadmeEncodingButton.Size = new System.Drawing.Size(21, 21);
-            this.ReadmeEncodingButton.TabIndex = 56;
+            this.ReadmeEncodingButton.TabIndex = 2;
             this.MainToolTip.SetToolTip(this.ReadmeEncodingButton, "Character encoding");
             this.ReadmeEncodingButton.UseVisualStyleBackColor = false;
             this.ReadmeEncodingButton.Visible = false;
@@ -1752,7 +1752,7 @@
             this.ReadmeFullScreenButton.Location = new System.Drawing.Point(1616, 8);
             this.ReadmeFullScreenButton.Name = "ReadmeFullScreenButton";
             this.ReadmeFullScreenButton.Size = new System.Drawing.Size(21, 21);
-            this.ReadmeFullScreenButton.TabIndex = 55;
+            this.ReadmeFullScreenButton.TabIndex = 6;
             this.MainToolTip.SetToolTip(this.ReadmeFullScreenButton, "Fullscreen");
             this.ReadmeFullScreenButton.UseVisualStyleBackColor = false;
             this.ReadmeFullScreenButton.Visible = false;
@@ -1770,7 +1770,7 @@
             this.ReadmeZoomInButton.Location = new System.Drawing.Point(1534, 8);
             this.ReadmeZoomInButton.Name = "ReadmeZoomInButton";
             this.ReadmeZoomInButton.Size = new System.Drawing.Size(21, 21);
-            this.ReadmeZoomInButton.TabIndex = 52;
+            this.ReadmeZoomInButton.TabIndex = 3;
             this.MainToolTip.SetToolTip(this.ReadmeZoomInButton, "Zoom in");
             this.ReadmeZoomInButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomInButton.Visible = false;
@@ -1788,7 +1788,7 @@
             this.ReadmeZoomOutButton.Location = new System.Drawing.Point(1559, 8);
             this.ReadmeZoomOutButton.Name = "ReadmeZoomOutButton";
             this.ReadmeZoomOutButton.Size = new System.Drawing.Size(21, 21);
-            this.ReadmeZoomOutButton.TabIndex = 53;
+            this.ReadmeZoomOutButton.TabIndex = 4;
             this.MainToolTip.SetToolTip(this.ReadmeZoomOutButton, "Zoom out");
             this.ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomOutButton.Visible = false;
@@ -1806,7 +1806,7 @@
             this.ReadmeResetZoomButton.Location = new System.Drawing.Point(1584, 8);
             this.ReadmeResetZoomButton.Name = "ReadmeResetZoomButton";
             this.ReadmeResetZoomButton.Size = new System.Drawing.Size(21, 21);
-            this.ReadmeResetZoomButton.TabIndex = 54;
+            this.ReadmeResetZoomButton.TabIndex = 5;
             this.MainToolTip.SetToolTip(this.ReadmeResetZoomButton, "Reset zoom");
             this.ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             this.ReadmeResetZoomButton.Visible = false;
@@ -1819,11 +1819,11 @@
             this.ChooseReadmeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ChooseReadmeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ChooseReadmeComboBox.FormattingEnabled = true;
-            this.ChooseReadmeComboBox.Location = new System.Drawing.Point(1350, 8);
+            this.ChooseReadmeComboBox.Location = new System.Drawing.Point(1321, 8);
             this.ChooseReadmeComboBox.FireMouseLeaveOnLeaveWindow = true;
             this.ChooseReadmeComboBox.Name = "ChooseReadmeComboBox";
             this.ChooseReadmeComboBox.Size = new System.Drawing.Size(170, 21);
-            this.ChooseReadmeComboBox.TabIndex = 51;
+            this.ChooseReadmeComboBox.TabIndex = 1;
             this.ChooseReadmeComboBox.Visible = false;
             this.ChooseReadmeComboBox.SelectedIndexChanged += new System.EventHandler(this.ChooseReadmeComboBox_SelectedIndexChanged);
             this.ChooseReadmeComboBox.DropDownClosed += new System.EventHandler(this.ChooseReadmeComboBox_DropDownClosed);
