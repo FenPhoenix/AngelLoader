@@ -846,7 +846,7 @@ namespace AngelLoader.Forms
                 foreach (var tb in ErrorableTextBoxes)
                 {
                     tb.BackColor = _selfTheme == VisualTheme.Dark
-                        ? DarkColors.LightBackground
+                        ? tb.DarkModeBackColor
                         : SystemColors.Window;
                     tb.Tag = PathError.False;
                 }
@@ -1526,7 +1526,7 @@ namespace AngelLoader.Forms
                 _selfTheme == VisualTheme.Dark
                     ? shown
                         ? DarkColors.Fen_RedHighlight
-                        : DarkColors.LightBackground
+                        : textBox.DarkModeBackColor
                     : shown
                         ? Color.MistyRose
                         : SystemColors.Window;

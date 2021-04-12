@@ -20,7 +20,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, ClientRectangle);
                 int y = ClientSize.Height / 2;
-                g.DrawLine(DarkColors.LightBorderPen, 0, y, ClientSize.Width, y);
+                g.DrawLine(DarkColors.LighterBorderPen, 0, y, ClientSize.Width, y);
             }
             else
             {

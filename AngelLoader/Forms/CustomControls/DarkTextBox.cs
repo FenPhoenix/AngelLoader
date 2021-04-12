@@ -16,8 +16,10 @@ namespace AngelLoader.Forms.CustomControls
         private Padding? _origPadding;
         private BorderStyle? _origBorderStyle;
 
-        private Color DarkModeBackColor => Enabled ? DarkColors.Fen_DarkBackground : DarkColors.Fen_ControlBackground;
-        private Color DarkModeForeColor => Enabled ? DarkColors.LightText : DarkColors.DisabledText;
+        [PublicAPI]
+        public Color DarkModeBackColor => Enabled ? DarkColors.Fen_DarkBackground : DarkColors.Fen_ControlBackground;
+        [PublicAPI]
+        public Color DarkModeForeColor => Enabled ? DarkColors.LightText : DarkColors.DisabledText;
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -66,6 +68,9 @@ namespace AngelLoader.Forms.CustomControls
                     ForeColor = DarkModeForeColor;
                     Padding = new Padding(2, 2, 2, 2);
                     BorderStyle = BorderStyle.FixedSingle;
+
+                    // Needed for selection backcolor to always be correct
+                    Native.SetWindowTheme(Handle, "", "");
                 }
                 else
                 {
@@ -76,6 +81,9 @@ namespace AngelLoader.Forms.CustomControls
                         Padding = (Padding)_origPadding!;
                         BorderStyle = (BorderStyle)_origBorderStyle!;
                     }
+
+                    // Reset theme0
+                    RecreateHandle();
                 }
 
                 if (vertScrollBarNeedsRepositioning && si_v != null)
@@ -89,6 +97,8 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        public DarkTextBox() => base.DoubleBuffered = true;
+
         protected override void OnEnabledChanged(EventArgs e)
         {
             base.OnEnabledChanged(e);
@@ -97,6 +107,29 @@ namespace AngelLoader.Forms.CustomControls
 
             BackColor = DarkModeBackColor;
             ForeColor = DarkModeForeColor;
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (!_darkModeEnabled)
+            {
+                base.WndProc(ref m);
+                return;
+            }
+
+            // We still need this for selected text fore/back color. We can't find the exhaustive set of messages
+            // that will make us ALWAYS have the proper selection back color, so just do it for all messages. Meh!
+            NativeHooks.SysColorOverride = NativeHooks.Override.Full;
+            base.WndProc(ref m);
+            NativeHooks.SysColorOverride = NativeHooks.Override.None;
+
+            if (m.Msg == Native.WM_PAINT)
+            {
+                using var dc = new Native.DeviceContext(Handle);
+                using Graphics g = Graphics.FromHdc(dc.DC);
+
+                g.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
+            }
         }
     }
 }

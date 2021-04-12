@@ -67,7 +67,7 @@ namespace AngelLoader.Forms.CustomControls
                 // @DarkModeNote(NumericUpDown): Fore/back colors don't take when we set them, but they end up correct anyway(?!)
                 // My only guess is it's taking the parent's fore/back colors?
                 base.ForeColor = DarkColors.LightText;
-                base.BackColor = DarkColors.Fen_ControlBackground;
+                base.BackColor = DarkColors.Fen_DarkBackground;
             }
             else
             {

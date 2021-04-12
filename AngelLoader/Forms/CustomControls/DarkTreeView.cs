@@ -26,7 +26,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_darkModeEnabled)
                 {
-                    BackColor = DarkColors.Fen_ControlBackground;
+                    BackColor = DarkColors.Fen_DarkBackground;
                 }
                 else
                 {
@@ -55,11 +55,11 @@ namespace AngelLoader.Forms.CustomControls
 
             bool darkMode = _darkModeEnabled;
 
-            Brush bgBrush_Normal = darkMode ? DarkColors.Fen_ControlBackgroundBrush : SystemBrushes.Window;
+            Brush bgBrush_Normal = darkMode ? DarkColors.Fen_DarkBackgroundBrush : SystemBrushes.Window;
             Brush bgBrush_Highlighted_Focused = darkMode ? DarkColors.BlueSelectionBrush : SystemBrushes.Highlight;
             Brush bgBrush_Highlighted_NotFocused = darkMode ? DarkColors.GreySelectionBrush : SystemBrushes.ControlLight;
 
-            Color textColor_Normal = darkMode ? DarkColors.LightText : SystemColors.ControlText;
+            Color textColor_Normal = darkMode ? DarkColors.Fen_DarkForeground : SystemColors.ControlText;
             Color textColor_Highlighted_Focused = darkMode ? DarkColors.LightText : SystemColors.HighlightText;
             Color textColor_Highlighted_NotFocused = darkMode ? DarkColors.LightText : SystemColors.ControlText;
 
@@ -106,7 +106,7 @@ namespace AngelLoader.Forms.CustomControls
 
             using var dc = new Native.DeviceContext(hWnd);
             using Graphics g = Graphics.FromHdc(dc.DC);
-            g.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
+            g.DrawRectangle(DarkColors.Fen_DarkBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
             g.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
         }
 

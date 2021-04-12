@@ -50,6 +50,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Color LighterBackground = Color.FromArgb(95, 101, 102);
         //public static readonly Color LightestBackground = Color.FromArgb(178, 178, 178);
         public static readonly Color LightBorder = Color.FromArgb(81, 81, 81);
+        public static readonly Color LighterBorder = Color.FromArgb(100, 100, 100);
         //public static readonly Color DarkBorder = Color.FromArgb(51, 51, 51);
         public static readonly Color LightText = Color.FromArgb(220, 220, 220);
         public static readonly Color DisabledText = Color.FromArgb(153, 153, 153);
@@ -88,6 +89,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Pen LighterBackgroundPen = new Pen(LighterBackground);
         //public static readonly Pen LightestBackgroundPen = new Pen(LightestBackground);
         public static readonly Pen LightBorderPen = new Pen(LightBorder);
+        public static readonly Pen LighterBorderPen = new Pen(LighterBorder);
         //public static readonly Pen DarkBorderPen = new Pen(DarkBorder);
         public static readonly Pen LightTextPen = new Pen(LightText);
         public static readonly Pen DisabledTextPen = new Pen(DisabledText);
@@ -126,6 +128,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly SolidBrush LighterBackgroundBrush = new SolidBrush(LighterBackground);
         //public static readonly SolidBrush LightestBackgroundBrush = new SolidBrush(LightestBackground);
         public static readonly SolidBrush LightBorderBrush = new SolidBrush(LightBorder);
+        public static readonly SolidBrush LighterBorderBrush = new SolidBrush(LighterBorder);
         //public static readonly SolidBrush DarkBorderBrush = new SolidBrush(DarkBorder);
         public static readonly SolidBrush LightTextBrush = new SolidBrush(LightText);
         public static readonly SolidBrush DisabledTextBrush = new SolidBrush(DisabledText);

@@ -72,7 +72,7 @@ namespace AngelLoader.Forms.CustomControls
                 (int)stringSize.Height / 2,
                 rect.Width - 1,
                 rect.Height - ((int)stringSize.Height / 2) - 1);
-            g.DrawRectangle(DarkColors.LightBorderPen, borderRect);
+            g.DrawRectangle(DarkColors.LighterBorderPen, borderRect);
 
             var textRect = new Rectangle(
                 rect.Left + _padding,
