@@ -63,13 +63,6 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void Add(T item)
-            {
-                if (_size == _itemsArrayLength) EnsureCapacity(_size + 1);
-                ItemsArray[_size++] = item;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal void AddFast(T item) => ItemsArray[_size++] = item;
 
             /*
@@ -105,16 +98,6 @@ namespace AngelLoader.Forms.CustomControls
                         _itemsArrayLength = 0;
                     }
                 }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void EnsureCapacity(int min)
-            {
-                if (_itemsArrayLength >= min) return;
-                int num = _itemsArrayLength == 0 ? 4 : _itemsArrayLength * 2;
-                if ((uint)num > 2146435071U) num = 2146435071;
-                if (num < min) num = min;
-                Capacity = num;
             }
         }
 
@@ -688,18 +671,6 @@ namespace AngelLoader.Forms.CustomControls
             /// </summary>
             UnmatchedBrace,
             /// <summary>
-            /// Invalid hexadecimal character found while parsing \'hh character(s).
-            /// </summary>
-            InvalidHex,
-            /// <summary>
-            /// A \uN keyword's parameter was out of range.
-            /// </summary>
-            InvalidUnicode,
-            /// <summary>
-            /// A symbol table entry was malformed. Possibly one of its enum values was out of range.
-            /// </summary>
-            InvalidSymbolTableEntry,
-            /// <summary>
             /// Unexpected end of file reached while reading RTF.
             /// </summary>
             EndOfFile,
@@ -832,6 +803,7 @@ namespace AngelLoader.Forms.CustomControls
             _currentScope.Reset();
 
             #endregion
+
             _scopeStack.ClearFast();
 
             _colorTableSB.Clear();
@@ -891,14 +863,11 @@ namespace AngelLoader.Forms.CustomControls
                         // These DON'T count as Unicode barriers, so don't parse the Unicode here!
                         break;
                     default:
-                        switch (_currentScope.RtfInternalState)
+                        if (_currentScope.RtfInternalState == RtfInternalState.Normal &&
+                            _currentScope.RtfDestinationState == RtfDestinationState.Normal &&
+                            --_unicodeCharsLeftToSkip <= 0)
                         {
-                            case RtfInternalState.Normal:
-                                if (_currentScope.RtfDestinationState == RtfDestinationState.Normal)
-                                {
-                                    if ((ec = ParseChar(ch)) != Error.OK) return ec;
-                                }
-                                break;
+                            _unicodeCharsLeftToSkip = 0;
                         }
                         break;
                 }
@@ -1024,9 +993,12 @@ namespace AngelLoader.Forms.CustomControls
                         ? ChangeProperty((Property)symbol.Index, param)
                         : Error.OK;
                 case KeywordType.Character:
-                    return _currentScope.RtfDestinationState == RtfDestinationState.Normal
-                        ? ParseChar((char)symbol.Index)
-                        : Error.OK;
+                    if (_currentScope.RtfDestinationState == RtfDestinationState.Normal &&
+                        --_unicodeCharsLeftToSkip <= 0)
+                    {
+                        _unicodeCharsLeftToSkip = 0;
+                    }
+                    return Error.OK;
                 case KeywordType.Destination:
                     return _currentScope.RtfDestinationState == RtfDestinationState.Normal
                         ? ChangeDestination((DestinationType)symbol.Index)
@@ -1070,7 +1042,6 @@ namespace AngelLoader.Forms.CustomControls
                     _exiting = true;
                     return ParseAndBuildColorTable();
                 default:
-                    //return Error.InvalidSymbolTableEntry;
                     return Error.OK;
             }
 
@@ -1102,13 +1073,6 @@ namespace AngelLoader.Forms.CustomControls
                     //return Error.InvalidSymbolTableEntry;
                     return Error.OK;
             }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Error ParseChar(char ch)
-        {
-            if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
-            return Error.OK;
         }
 
         #endregion
@@ -1146,9 +1110,21 @@ namespace AngelLoader.Forms.CustomControls
             string ct = _colorTableSB.ToString();
             List<string> entries = ct.Split(';').ToList();
 
+            if (entries.Count == 0) return ClearReturnFields(Error.OK);
+
             // Remove the last blank entry so we don't count it as the auto/default one by hitting a blank entry
             // in the loop below
-            if (entries[entries.Count - 1].IsWhiteSpace()) entries.RemoveAt(entries.Count - 1);
+            if (entries[entries.Count - 1].IsWhiteSpace())
+            {
+                if (entries.Count > 1)
+                {
+                    entries.RemoveAt(entries.Count - 1);
+                }
+                else if (entries.Count == 0)
+                {
+                    return ClearReturnFields(Error.OK);
+                }
+            }
 
             for (int i = 0; i < entries.Count; i++)
             {
@@ -1169,15 +1145,15 @@ namespace AngelLoader.Forms.CustomControls
                     var greenMatch = Regex.Match(entry, @"\\green(?<Value>[0123456789]{1,3})");
                     var blueMatch = Regex.Match(entry, @"\\blue(?<Value>[0123456789]{1,3})");
 
-                    if (!redMatch.Success || !blueMatch.Success || !greenMatch.Success ||
-                        !byte.TryParse(redMatch.Groups["Value"].Value, out byte red) ||
-                        !byte.TryParse(greenMatch.Groups["Value"].Value, out byte green) ||
-                        !byte.TryParse(blueMatch.Groups["Value"].Value, out byte blue))
+                    if (redMatch.Success &&
+                        blueMatch.Success &&
+                        greenMatch.Success &&
+                        byte.TryParse(redMatch.Groups["Value"].Value, out byte red) &&
+                        byte.TryParse(greenMatch.Groups["Value"].Value, out byte green) &&
+                        byte.TryParse(blueMatch.Groups["Value"].Value, out byte blue))
                     {
-                        continue;
+                        _colorTable.Add(Color.FromArgb(red, green, blue));
                     }
-
-                    _colorTable.Add(Color.FromArgb(red, green, blue));
                 }
             }
 
