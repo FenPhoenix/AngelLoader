@@ -167,9 +167,8 @@ namespace AngelLoader
         }
 
         // Very awkward procedure that accesses global state in the name of only doing one iteration
-        // TODO: Test perf when 1000+ FMs each have a bunch of tags
-        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, CatAndTagsList existingFMTags,
-                                                      bool addToGlobalList = true)
+        // @BigO(AddTagsToFMAndGlobalList)
+        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, CatAndTagsList existingFMTags, bool addToGlobalList = true)
         {
             if (tagsToAdd.IsEmpty()) return;
 

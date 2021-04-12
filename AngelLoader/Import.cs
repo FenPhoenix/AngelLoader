@@ -468,7 +468,7 @@ namespace AngelLoader
                     // IMPORTANT (ImportDarkLoaderInternal):
                     // This MUST be invoked back to the UI thread because this method will be called from inside
                     // an await Task.Run()!
-                    // TODO: ImportDarkLoaderInternal: Invoke: We don't really need this here; we already close later
+                    // We don't really need this here; we already close later
                     // This just lets us close before putting up a possible error dialog, but other than that is
                     // unnecessary.
                     Core.View.InvokeSync(new Action(Core.View.HideProgressBox));

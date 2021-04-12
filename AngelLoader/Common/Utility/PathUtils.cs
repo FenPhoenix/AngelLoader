@@ -64,7 +64,7 @@ namespace AngelLoader
         }
 
         #region Baked-in extension checks
-        // TODO: Just passthroughs now because EndsWithI turned out to be faster(?!)
+        // Just passthroughs now because EndsWithI turned out to be faster(?!)
 
         internal static bool ExtIsTxt(this string value) => value.EndsWithI(".txt");
 

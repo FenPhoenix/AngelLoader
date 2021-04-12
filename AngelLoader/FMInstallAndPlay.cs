@@ -202,7 +202,7 @@ namespace AngelLoader
             // Just in case, and for consistency
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            // TODO: We don't need to do this here, right?
+            // We don't need to do this here, right?
             SetUsAsSelector(game, gamePath);
 
             // Since we don't use the stub currently, set this here

@@ -1113,7 +1113,6 @@ namespace AngelLoader
 
         #region Readme
 
-        // TODO: Make this actually exception-safe (FMIsReallyInstalled doesn't throw, but Path.Combine() might)
         private static string GetReadmeFileFullPath(FanMission fm) =>
             FMIsReallyInstalled(fm)
                 ? Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir, fm.SelectedReadme)

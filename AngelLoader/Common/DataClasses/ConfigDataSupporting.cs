@@ -229,8 +229,8 @@ namespace AngelLoader.DataClasses
 
         private void ClearReleaseDate()
         {
-            _releaseDateFrom = null;
-            _releaseDateTo = null;
+            ReleaseDateFrom = null;
+            ReleaseDateTo = null;
         }
 
         private void ClearLastPlayed()
@@ -294,20 +294,8 @@ namespace AngelLoader.DataClasses
 
         #region Release date
 
-        // TODO(ReleaseDateFrom/To): Why am I setting these clamped to min/max? Surely they can't be beyond those anyway?!
-
-        private DateTime? _releaseDateFrom;
-        internal DateTime? ReleaseDateFrom
-        {
-            get => _releaseDateFrom;
-            set => _releaseDateFrom = value?.Clamp(DateTime.MinValue, DateTime.MaxValue);
-        }
-        private DateTime? _releaseDateTo;
-        internal DateTime? ReleaseDateTo
-        {
-            get => _releaseDateTo;
-            set => _releaseDateTo = value?.Clamp(DateTime.MinValue, DateTime.MaxValue);
-        }
+        internal DateTime? ReleaseDateFrom;
+        internal DateTime? ReleaseDateTo;
 
         #endregion
 

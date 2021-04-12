@@ -222,9 +222,6 @@ namespace AngelLoader
                             break;
                         }
 
-                        // TODO: @Robustness: Easy to forget to add stuff here, and I don't think we need this really
-                        // as long as we're only in the Loader section, it doesn't really give a speedup I don't
-                        // think
                         if (ignoreSavesKeyFound &&
                             fmInstPathFound &&
                             externSelectorFound &&

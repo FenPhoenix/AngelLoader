@@ -349,7 +349,7 @@ namespace AngelLoader
                 {
                     FanMission fm = FMDataIniList[i];
 
-                    // PERF_TODO: Idea for making this not be n-squared:
+                    // @BiGO: Idea for making this not be n-squared:
                     // Create four different dictionaries (iterate the list four times), each with the key of one
                     // of the things we're checking here (so one will have keys that are archive.RemoveExtension(),
                     // one will have keys of archive.ToInstDirNameFMSel(false), etc. Then do max 4 lookups until

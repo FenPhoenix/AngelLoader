@@ -269,8 +269,6 @@ namespace AngelLoader
             SevenZipExtractor? sevenZipArchive = null;
             try
             {
-                // TODO: A custom IndexOf() similar to StartsWithOrEndsWithIFast() would probably shave even more time off.
-
                 bool fmIsZip = archivePath.ExtIsZip();
 
                 if (fmIsZip)

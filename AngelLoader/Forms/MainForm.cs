@@ -4544,9 +4544,6 @@ namespace AngelLoader.Forms
 
         private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 
-        // Keep this one static because it calls out to the internal ButtonPainter rather than external Core, so
-        // it's fine even if we modularize the view
-        // TODO: MainForm static event handler that calls out to the static control painter: Is this really fine?
         private
 #if !DEBUG
         static

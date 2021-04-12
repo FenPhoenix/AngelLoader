@@ -37,7 +37,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             var container = owner.BottomLeftButtonsFLP;
 
-            // TODO: This Visible = false must be being ignored?
+            // This Visible = false must be being ignored?
             // Otherwise, it's impossible that this would work, because we construct but only explicitly call
             // Show() in OpenSettings()...
             // 2020-12-30: No, it's because we call Localize() and that calls Show().
