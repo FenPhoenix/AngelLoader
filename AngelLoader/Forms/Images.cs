@@ -835,7 +835,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        // TODO: The code in here is horrible, this especially. See if anything reasonable can be done.
         private static Bitmap CreateFinishedOnBitmap(Difficulty difficulty, bool filterFinished = false, bool filterUnfinished = false)
         {
             int width, height;

@@ -57,7 +57,6 @@ namespace AngelLoader.Forms.CustomControls
             // These are raw hex bytes straight out of the original png files. Too bad they're pngs and thus we
             // can't easily modify their colors on the fly without writing a png creator, but I don't think RTF
             // supports transparency on anything uncompressed.
-            // TODO: Try a bitmap with alpha channel on the million-to-one chance that works
             const string horizontalLine_LightMode =
                 horizontalLine_Header +
                 @"89504E470D0A1A0A0000000D4948445200000002000000130806000000BA3CDC1A00000020494441" +
@@ -400,7 +399,7 @@ namespace AngelLoader.Forms.CustomControls
         // and to the best of my knowledge), and we don't want to waste space on stuff we probably won't even need.
         // Entities are copied direct from the HTML 5.2 spec.
         // We don't support ones that map to multiple chars. We're already being ridiculous enough here.
-        // SIZE_TODO: We gain about 10K in file size from having this. Not too terribly bad considering.
+        // We gain about 10K in file size from having this. Not too terribly bad considering.
         private static readonly byte[] _htmlEntitiesDeflatedBytes =
         {
             125, 93, 91, 119, 219, 56, 175, 253, 67, 124, 176, 110, 150, 244, 144, 135, 182, 73, 155, 206, 180,

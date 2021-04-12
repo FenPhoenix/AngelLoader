@@ -10,7 +10,6 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses
 {
-    // TODO: @FenGen: Get rid of WinForms type and other unsavory type stuff in here
     internal sealed class ConfigData
     {
         internal ConfigData()

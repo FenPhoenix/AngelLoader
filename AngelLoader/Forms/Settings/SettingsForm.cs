@@ -166,7 +166,7 @@ namespace AngelLoader.Forms
                 PathsPage.SS2UseSteamCheckBox
             };
 
-            // TODO: @GENGAMES (Settings): We've traded one form of jank for another
+            // @GENGAMES (Settings): We've traded one form of jank for another
             // In our quest to be fast and lean, we're using arrays instead of lists here. That means we have to
             // do this hideous SupportedGameCount + n thing instead of just being able to say AddRange(games)
             // then Add(whatever else) afterwards.
