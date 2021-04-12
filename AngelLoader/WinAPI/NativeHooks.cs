@@ -225,7 +225,6 @@ namespace AngelLoader.WinAPI
                         // Darker background, more desaturated foreground color
                         COLOR_WINDOW => ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground),
                         COLOR_WINDOWTEXT => ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground),
-
                         COLOR_HIGHLIGHT => ColorTranslator.ToWin32(DarkColors.BlueSelection),
                         COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
                         _ => GetSysColorOriginal!(nIndex)
@@ -260,7 +259,6 @@ namespace AngelLoader.WinAPI
                         // Darker background, more desaturated foreground color
                         COLOR_WINDOW => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground)),
                         COLOR_WINDOWTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground)),
-
                         COLOR_HIGHLIGHT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection)),
                         COLOR_HIGHLIGHT_TEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText)),
                         _ => GetSysColorBrushOriginal!(nIndex)

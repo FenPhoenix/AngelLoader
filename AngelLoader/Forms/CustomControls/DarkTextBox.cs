@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -7,9 +8,6 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    // TODO: @DarkMode(DarkTextBox): Make disabled color that's different from normal
-    // For example, when we click "Disable all mods" we get no visual feedback that the disabled mods textbox is
-    // now disabled
     public class DarkTextBox : TextBox, IDarkable
     {
         private bool _origValuesStored;
@@ -17,6 +15,9 @@ namespace AngelLoader.Forms.CustomControls
         private Color? _origBackColor;
         private Padding? _origPadding;
         private BorderStyle? _origBorderStyle;
+
+        private Color DarkModeBackColor => Enabled ? DarkColors.Fen_DarkBackground : DarkColors.Fen_ControlBackground;
+        private Color DarkModeForeColor => Enabled ? DarkColors.LightText : DarkColors.DisabledText;
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -61,8 +62,8 @@ namespace AngelLoader.Forms.CustomControls
                         _origValuesStored = true;
                     }
 
-                    BackColor = DarkColors.LightBackground;
-                    ForeColor = DarkColors.LightText;
+                    BackColor = DarkModeBackColor;
+                    ForeColor = DarkModeForeColor;
                     Padding = new Padding(2, 2, 2, 2);
                     BorderStyle = BorderStyle.FixedSingle;
                 }
@@ -88,25 +89,14 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        protected override void WndProc(ref Message m)
+        protected override void OnEnabledChanged(EventArgs e)
         {
-            if (!_darkModeEnabled)
-            {
-                base.WndProc(ref m);
-                return;
-            }
+            base.OnEnabledChanged(e);
 
-            switch (m.Msg)
-            {
-                case Native.WM_PAINT:
-                    NativeHooks.SysColorOverride = NativeHooks.Override.Full;
-                    base.WndProc(ref m);
-                    NativeHooks.SysColorOverride = NativeHooks.Override.None;
-                    break;
-                default:
-                    base.WndProc(ref m);
-                    break;
-            }
+            if (!_darkModeEnabled) return;
+
+            BackColor = DarkModeBackColor;
+            ForeColor = DarkModeForeColor;
         }
     }
 }
