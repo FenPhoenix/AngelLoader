@@ -398,26 +398,26 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            AutodetectMenuItem!.Text = LText.Global.Autodetect;
-            ArabicMenu!.Text = LText.CharacterEncodingCategories.Arabic;
-            BalticMenu!.Text = LText.CharacterEncodingCategories.Baltic;
-            CentralEuropeanMenu!.Text = LText.CharacterEncodingCategories.CentralEuropean;
-            ChineseMenu!.Text = LText.CharacterEncodingCategories.Chinese;
-            CyrillicMenu!.Text = LText.CharacterEncodingCategories.Cyrillic;
-            EasternEuropeanMenu!.Text = LText.CharacterEncodingCategories.EasternEuropean;
-            GreekMenu!.Text = LText.CharacterEncodingCategories.Greek;
-            HebrewMenu!.Text = LText.CharacterEncodingCategories.Hebrew;
-            JapaneseMenu!.Text = LText.CharacterEncodingCategories.Japanese;
-            KoreanMenu!.Text = LText.CharacterEncodingCategories.Korean;
-            LatinMenu!.Text = LText.CharacterEncodingCategories.Latin;
-            NorthernEuropeanMenu!.Text = LText.CharacterEncodingCategories.NorthernEuropean;
-            TaiwanMenu!.Text = LText.CharacterEncodingCategories.Taiwan;
-            ThaiMenu!.Text = LText.CharacterEncodingCategories.Thai;
-            TurkishMenu!.Text = LText.CharacterEncodingCategories.Turkish;
-            UnitedStatesMenu!.Text = LText.CharacterEncodingCategories.UnitedStates;
-            VietnameseMenu!.Text = LText.CharacterEncodingCategories.Vietnamese;
-            WesternEuropeanMenu!.Text = LText.CharacterEncodingCategories.WesternEuropean;
-            OtherMenu!.Text = LText.CharacterEncodingCategories.Other;
+            AutodetectMenuItem!.Text = LText.CharacterEncoding.AutodetectNow;
+            ArabicMenu!.Text = LText.CharacterEncoding.Category_Arabic;
+            BalticMenu!.Text = LText.CharacterEncoding.Category_Baltic;
+            CentralEuropeanMenu!.Text = LText.CharacterEncoding.Category_CentralEuropean;
+            ChineseMenu!.Text = LText.CharacterEncoding.Category_Chinese;
+            CyrillicMenu!.Text = LText.CharacterEncoding.Category_Cyrillic;
+            EasternEuropeanMenu!.Text = LText.CharacterEncoding.Category_EasternEuropean;
+            GreekMenu!.Text = LText.CharacterEncoding.Category_Greek;
+            HebrewMenu!.Text = LText.CharacterEncoding.Category_Hebrew;
+            JapaneseMenu!.Text = LText.CharacterEncoding.Category_Japanese;
+            KoreanMenu!.Text = LText.CharacterEncoding.Category_Korean;
+            LatinMenu!.Text = LText.CharacterEncoding.Category_Latin;
+            NorthernEuropeanMenu!.Text = LText.CharacterEncoding.Category_NorthernEuropean;
+            TaiwanMenu!.Text = LText.CharacterEncoding.Category_Taiwan;
+            ThaiMenu!.Text = LText.CharacterEncoding.Category_Thai;
+            TurkishMenu!.Text = LText.CharacterEncoding.Category_Turkish;
+            UnitedStatesMenu!.Text = LText.CharacterEncoding.Category_UnitedStates;
+            VietnameseMenu!.Text = LText.CharacterEncoding.Category_Vietnamese;
+            WesternEuropeanMenu!.Text = LText.CharacterEncoding.Category_WesternEuropean;
+            OtherMenu!.Text = LText.CharacterEncoding.Category_Other;
         }
 
         #endregion

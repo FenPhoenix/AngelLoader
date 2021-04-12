@@ -51,7 +51,7 @@ namespace AngelLoader.DataClasses
         internal readonly RatingFilterBox_Class RatingFilterBox = new RatingFilterBox_Class();
         internal readonly Importing_Class Importing = new Importing_Class();
         internal readonly ScanAllFMsBox_Class ScanAllFMsBox = new ScanAllFMsBox_Class();
-        internal readonly CharacterEncodingCategories_Class CharacterEncodingCategories = new CharacterEncodingCategories_Class();
+        internal readonly CharacterEncoding_Class CharacterEncoding = new CharacterEncoding_Class();
 
         internal sealed class Meta_Class
         {
@@ -687,27 +687,28 @@ namespace AngelLoader.DataClasses
             internal readonly string NothingWasScanned = "No options were selected; no FMs have been scanned.";
         }
 
-        internal sealed class CharacterEncodingCategories_Class
+        internal sealed class CharacterEncoding_Class
         {
-            internal readonly string Arabic = "Arabic";
-            internal readonly string Baltic = "Baltic";
-            internal readonly string CentralEuropean = "Central European";
-            internal readonly string Chinese = "Chinese";
-            internal readonly string Cyrillic = "Cyrillic";
-            internal readonly string EasternEuropean = "Eastern European";
-            internal readonly string Greek = "Greek";
-            internal readonly string Hebrew = "Hebrew";
-            internal readonly string Japanese = "Japanese";
-            internal readonly string Korean = "Korean";
-            internal readonly string Latin = "Latin";
-            internal readonly string NorthernEuropean = "Northern European";
-            internal readonly string Taiwan = "Taiwan";
-            internal readonly string Thai = "Thai";
-            internal readonly string Turkish = "Turkish";
-            internal readonly string UnitedStates = "United States";
-            internal readonly string Vietnamese = "Vietnamese";
-            internal readonly string WesternEuropean = "Western European";
-            internal readonly string Other = "Other";
+            internal readonly string AutodetectNow = "Autodetect now";
+            internal readonly string Category_Arabic = "Arabic";
+            internal readonly string Category_Baltic = "Baltic";
+            internal readonly string Category_CentralEuropean = "Central European";
+            internal readonly string Category_Chinese = "Chinese";
+            internal readonly string Category_Cyrillic = "Cyrillic";
+            internal readonly string Category_EasternEuropean = "Eastern European";
+            internal readonly string Category_Greek = "Greek";
+            internal readonly string Category_Hebrew = "Hebrew";
+            internal readonly string Category_Japanese = "Japanese";
+            internal readonly string Category_Korean = "Korean";
+            internal readonly string Category_Latin = "Latin";
+            internal readonly string Category_NorthernEuropean = "Northern European";
+            internal readonly string Category_Taiwan = "Taiwan";
+            internal readonly string Category_Thai = "Thai";
+            internal readonly string Category_Turkish = "Turkish";
+            internal readonly string Category_UnitedStates = "United States";
+            internal readonly string Category_Vietnamese = "Vietnamese";
+            internal readonly string Category_WesternEuropean = "Western European";
+            internal readonly string Category_Other = "Other";
         }
     }
 }
