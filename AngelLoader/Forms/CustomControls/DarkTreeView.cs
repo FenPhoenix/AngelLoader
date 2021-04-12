@@ -104,10 +104,9 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (!_darkModeEnabled || BorderStyle == BorderStyle.None) return;
 
-            using var dc = new Native.DeviceContext(hWnd);
-            using Graphics g = Graphics.FromHdc(dc.DC);
-            g.DrawRectangle(DarkColors.Fen_DarkBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
-            g.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
+            using var gc = new Native.GraphicsContext(hWnd);
+            gc.G.DrawRectangle(DarkColors.Fen_DarkBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
+            gc.G.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
         }
 
         protected override void WndProc(ref Message m)

@@ -37,8 +37,7 @@ namespace AngelLoader.Forms
 
         #region Disposables
 
-        private readonly Native.DeviceContext _deviceContext;
-        private readonly Graphics _graphics;
+        private readonly Native.GraphicsContext _graphicsContext;
 
         private readonly Font _messageFont = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
         private readonly Bitmap _logoBitmap = new Icon(Images.AngelLoader, 48, 48).ToBitmap();
@@ -57,8 +56,7 @@ namespace AngelLoader.Forms
 
             Text = "AngelLoader " + Application.ProductVersion;
 
-            _deviceContext = new Native.DeviceContext(Handle);
-            _graphics = Graphics.FromHdc(_deviceContext.DC);
+            _graphicsContext = new Native.GraphicsContext(Handle);
         }
 
         public void Show(VisualTheme theme)
@@ -83,8 +81,8 @@ namespace AngelLoader.Forms
 
             // Must draw these after Show(), or they don't show up.
             // These will stay visible for the life of the form, due to our setup.
-            _graphics.DrawImage(_logoBitmap, 152, 48);
-            _graphics.DrawImage(theme == VisualTheme.Dark ? Resources.About_Dark : Resources.About, 200, 48);
+            _graphicsContext.G.DrawImage(_logoBitmap, 152, 48);
+            _graphicsContext.G.DrawImage(theme == VisualTheme.Dark ? Resources.About_Dark : Resources.About, 200, 48);
         }
 
         public void SetMessage(string message)
@@ -93,7 +91,7 @@ namespace AngelLoader.Forms
                 ? DarkColors.Fen_ControlBackgroundBrush
                 : SystemBrushes.Control;
 
-            _graphics.FillRectangle(bgColorBrush, _messageRect);
+            _graphicsContext.G.FillRectangle(bgColorBrush, _messageRect);
 
             const TextFormatFlags _messageTextFormatFlags =
                 TextFormatFlags.HorizontalCenter |
@@ -102,7 +100,7 @@ namespace AngelLoader.Forms
                 TextFormatFlags.NoClipping |
                 TextFormatFlags.WordBreak;
 
-            TextRenderer.DrawText(_graphics, message, _messageFont, _messageRect, ForeColor, BackColor, _messageTextFormatFlags);
+            TextRenderer.DrawText(_graphicsContext.G, message, _messageFont, _messageRect, ForeColor, BackColor, _messageTextFormatFlags);
         }
 
         public void ProgrammaticClose()
@@ -135,8 +133,7 @@ namespace AngelLoader.Forms
                 components?.Dispose();
                 _messageFont.Dispose();
                 _logoBitmap.Dispose();
-                _graphics.Dispose();
-                _deviceContext.Dispose();
+                _graphicsContext.Dispose();
             }
             base.Dispose(disposing);
         }

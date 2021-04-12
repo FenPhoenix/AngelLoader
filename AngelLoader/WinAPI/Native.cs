@@ -57,17 +57,24 @@ namespace AngelLoader.WinAPI
         [DllImport("user32.dll")]
         private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
-        public sealed class DeviceContext : IDisposable
+        public sealed class GraphicsContext : IDisposable
         {
-            public IntPtr DC;
             private readonly IntPtr _hWnd;
-            public DeviceContext(IntPtr hWnd)
+            private readonly IntPtr _dc;
+            public readonly Graphics G;
+
+            public GraphicsContext(IntPtr hWnd)
             {
                 _hWnd = hWnd;
-                DC = GetWindowDC(_hWnd);
+                _dc = GetWindowDC(_hWnd);
+                G = Graphics.FromHwnd(_hWnd);
             }
 
-            public void Dispose() => ReleaseDC(_hWnd, DC);
+            public void Dispose()
+            {
+                G.Dispose();
+                ReleaseDC(_hWnd, _dc);
+            }
         }
 
         #region Window

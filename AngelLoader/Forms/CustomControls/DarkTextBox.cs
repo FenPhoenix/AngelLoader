@@ -70,7 +70,10 @@ namespace AngelLoader.Forms.CustomControls
                     BorderStyle = BorderStyle.FixedSingle;
 
                     // Needed for selection backcolor to always be correct
-                    Native.SetWindowTheme(Handle, "", "");
+                    // Multiline textboxes can't do this because it disables theming on their scrollbars.
+                    // Fortunately, multiline textboxes inexplicably don't need this to have their selection
+                    // backcolor work 100%. So hooray, we win by sheer luck or whatever. Moving on.
+                    if (!Multiline) Native.SetWindowTheme(Handle, "", "");
                 }
                 else
                 {
@@ -82,8 +85,8 @@ namespace AngelLoader.Forms.CustomControls
                         BorderStyle = (BorderStyle)_origBorderStyle!;
                     }
 
-                    // Reset theme0
-                    RecreateHandle();
+                    // Reset theme
+                    if (!Multiline) RecreateHandle();
                 }
 
                 if (vertScrollBarNeedsRepositioning && si_v != null)
@@ -125,10 +128,8 @@ namespace AngelLoader.Forms.CustomControls
 
             if (m.Msg == Native.WM_PAINT)
             {
-                using var dc = new Native.DeviceContext(Handle);
-                using Graphics g = Graphics.FromHdc(dc.DC);
-
-                g.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
+                using var gc = new Native.GraphicsContext(Handle);
+                gc.G.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
             }
         }
     }

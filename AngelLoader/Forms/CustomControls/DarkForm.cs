@@ -29,10 +29,9 @@ namespace AngelLoader.Forms.CustomControls
                  || m.Msg == Native.WM_ERASEBKGND
                 ))
             {
-                using var dc = new Native.DeviceContext(Handle);
-                using Graphics g = Graphics.FromHdc(dc.DC);
+                using var gc = new Native.GraphicsContext(Handle);
 
-                g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, new Rectangle(0, 0, Width, Height));
+                gc.G.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, new Rectangle(0, 0, Width, Height));
 
                 if (m.Msg != Native.WM_PAINT)
                 {

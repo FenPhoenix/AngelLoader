@@ -84,15 +84,12 @@ namespace AngelLoader.Forms.CustomControls
 
         private void DrawButton(Graphics? g = null)
         {
-            Native.DeviceContext? dc = null;
-
-            bool disposeGraphics = false;
+            Native.GraphicsContext? gc = null;
 
             if (g == null)
             {
-                dc = new Native.DeviceContext(Handle);
-                g = Graphics.FromHdc(dc.DC);
-                disposeGraphics = true;
+                gc = new Native.GraphicsContext(Handle);
+                g = gc.G;
             }
 
             try
@@ -112,20 +109,18 @@ namespace AngelLoader.Forms.CustomControls
             }
             finally
             {
-                if (disposeGraphics) g.Dispose();
-                dc?.Dispose();
+                gc?.Dispose();
             }
         }
 
         private void PaintCustom()
         {
-            using Native.DeviceContext dc = new Native.DeviceContext(Handle);
-            using Graphics g = Graphics.FromHdc(dc.DC);
+            using var gc = new Native.GraphicsContext(Handle);
 
-            g.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
-            g.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, 1, 1, Width - 3, Height - 3);
+            gc.G.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
+            gc.G.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, 1, 1, Width - 3, Height - 3);
 
-            DrawButton(g);
+            DrawButton(gc.G);
         }
 
         protected override void WndProc(ref Message m)
