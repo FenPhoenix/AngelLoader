@@ -455,6 +455,9 @@ namespace AngelLoader.Forms
 
         #region Image properties
 
+        private static Icon? _AngelLoader;
+        public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
+
         #region Games
 
         // @GENGAMES (Images): Begin
@@ -512,6 +515,8 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Filter bar
+
         private static Bitmap? _filterByReleaseDate;
         private static Bitmap? _filterByReleaseDate_Dark;
         public static Bitmap FilterByReleaseDate =>
@@ -533,46 +538,8 @@ namespace AngelLoader.Forms
                 ? _filterByTags_Dark ??= Resources.FilterByTags_Dark
                 : _filterByTags ??= Resources.FilterByTags;
 
-        private static Bitmap? _greenCheckCircle;
-        private static Bitmap? _greenCheckCircle_Dark;
-        public static Bitmap GreenCheckCircle =>
-            DarkModeEnabled
-                ? _greenCheckCircle_Dark ??= Resources.GreenCheckCircle_Dark
-                : _greenCheckCircle ??= Resources.GreenCheckCircle;
-
-        private static Bitmap? _clearFilters;
-        private static Bitmap? _clearFilters_Dark;
-        public static Bitmap ClearFilters =>
-            DarkModeEnabled
-                ? _clearFilters_Dark ??= Resources.ClearFilters_Dark
-                : _clearFilters ??= Resources.ClearFilters;
-
-        private static Bitmap? _trash_16;
-        private static Bitmap? _trash_16_Dark;
-        public static Bitmap Trash_16 =>
-            DarkModeEnabled
-                ? _trash_16_Dark ??= Resources.Trash_16_Dark
-                : _trash_16 ??= Resources.Trash_16;
-
-        private static Bitmap? _redQuestionMarkCircle;
-        private static Bitmap? _redQuestionMarkCircle_Dark;
-        public static Bitmap RedQuestionMarkCircle =>
-            DarkModeEnabled
-                ? _redQuestionMarkCircle_Dark ??= Resources.RedQuestionMarkCircle_Dark
-                : _redQuestionMarkCircle ??= Resources.RedQuestionMarkCircle;
-
-        private static Bitmap? _redExclamationMarkCircle;
-        private static Bitmap? _redExclamationMarkCircle_Dark;
-        public static Bitmap RedExclamationMarkCircle =>
-            DarkModeEnabled
-                ? _redExclamationMarkCircle_Dark ??= Resources.RedExclamationMarkCircle_Dark
-                : _redExclamationMarkCircle ??= Resources.RedExclamationMarkCircle;
-
         public static Bitmap FilterByFinished => CreateFinishedOnBitmap(Difficulty.None, filterFinished: true);
         public static Bitmap FilterByUnfinished => CreateFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
-
-        private static Bitmap? _finishedOnUnknown;
-        public static Bitmap FinishedOnUnknown => _finishedOnUnknown ??= CreateFinishedOnBitmap(Difficulty.None);
 
         public static Bitmap FilterByRating => CreateStarImage(StarFullGPath, 24);
 
@@ -582,6 +549,28 @@ namespace AngelLoader.Forms
             DarkModeEnabled
                 ? _showRecentAtTop_Dark ??= Resources.FilterShowRecentAtTop_Dark
                 : _showRecentAtTop ??= Resources.FilterShowRecentAtTop;
+
+        #endregion
+
+        #region Filter bar right side
+
+        private static Bitmap? _refreshFilters;
+        private static Bitmap? _refreshFilters_Dark;
+        public static Bitmap RefreshFilters =>
+            DarkModeEnabled
+                ? _refreshFilters_Dark ??= Resources.RefreshFilters_Dark
+                : _refreshFilters ??= Resources.RefreshFilters;
+
+        private static Bitmap? _clearFilters;
+        private static Bitmap? _clearFilters_Dark;
+        public static Bitmap ClearFilters =>
+            DarkModeEnabled
+                ? _clearFilters_Dark ??= Resources.ClearFilters_Dark
+                : _clearFilters ??= Resources.ClearFilters;
+
+        #endregion
+
+        #region Character encoding
 
         private static Image? _charEncLetter;
         private static Image? _charEncLetter_Dark;
@@ -597,8 +586,7 @@ namespace AngelLoader.Forms
                 ? _charEncLetter_Disabled_Dark ??= Resources.CharacterEncodingLetter_Dark_Disabled
                 : _charEncLetter_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.CharacterEncodingLetter);
 
-        private static Icon? _AngelLoader;
-        public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
+        #endregion
 
         #region Install / uninstall
 
@@ -616,11 +604,15 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Settings
+
         private static Image? _settings;
         public static Image Settings => _settings ??= Resources.Settings_24;
 
         private static Image? _settings_Disabled;
         public static Image Settings_Disabled => _settings_Disabled ??= ToolStripRenderer.CreateDisabledImage(Settings);
+
+        #endregion
 
         #region Zoom
 
@@ -646,20 +638,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private static Bitmap? _refresh;
-        private static Bitmap? _refresh_Dark;
-        public static Bitmap Refresh =>
-            DarkModeEnabled
-                ? _refresh_Dark ??= Resources.Refresh_Dark
-                : _refresh ??= Resources.Refresh;
-
-        private static Bitmap? _refreshFilters;
-        private static Bitmap? _refreshFilters_Dark;
-        public static Bitmap RefreshFilters =>
-            DarkModeEnabled
-                ? _refreshFilters_Dark ??= Resources.RefreshFilters_Dark
-                : _refreshFilters ??= Resources.RefreshFilters;
-
         #region Rating example
 
         private static Bitmap? _ratingExample_NDL;
@@ -682,6 +660,52 @@ namespace AngelLoader.Forms
             DarkModeEnabled
                 ? _ratingExample_FMSel_Number_Dark ??= Resources.RatingExample_FMSel_Number_Dark
                 : _ratingExample_FMSel_Number ??= Resources.RatingExample_FMSel_Number;
+
+        #endregion
+
+        #region FMs list only
+
+        private static Bitmap? _greenCheckCircle;
+        private static Bitmap? _greenCheckCircle_Dark;
+        public static Bitmap GreenCheckCircle =>
+            DarkModeEnabled
+                ? _greenCheckCircle_Dark ??= Resources.GreenCheckCircle_Dark
+                : _greenCheckCircle ??= Resources.GreenCheckCircle;
+
+        private static Bitmap? _redQuestionMarkCircle;
+        private static Bitmap? _redQuestionMarkCircle_Dark;
+        public static Bitmap RedQuestionMarkCircle =>
+            DarkModeEnabled
+                ? _redQuestionMarkCircle_Dark ??= Resources.RedQuestionMarkCircle_Dark
+                : _redQuestionMarkCircle ??= Resources.RedQuestionMarkCircle;
+
+        private static Bitmap? _finishedOnUnknown;
+        public static Bitmap FinishedOnUnknown => _finishedOnUnknown ??= CreateFinishedOnBitmap(Difficulty.None);
+
+        #endregion
+
+        #region Misc
+
+        private static Bitmap? _trash_16;
+        private static Bitmap? _trash_16_Dark;
+        public static Bitmap Trash_16 =>
+            DarkModeEnabled
+                ? _trash_16_Dark ??= Resources.Trash_16_Dark
+                : _trash_16 ??= Resources.Trash_16;
+
+        private static Bitmap? _redExclamationMarkCircle;
+        private static Bitmap? _redExclamationMarkCircle_Dark;
+        public static Bitmap RedExclamationMarkCircle =>
+            DarkModeEnabled
+                ? _redExclamationMarkCircle_Dark ??= Resources.RedExclamationMarkCircle_Dark
+                : _redExclamationMarkCircle ??= Resources.RedExclamationMarkCircle;
+
+        private static Bitmap? _refresh;
+        private static Bitmap? _refresh_Dark;
+        public static Bitmap Refresh =>
+            DarkModeEnabled
+                ? _refresh_Dark ??= Resources.Refresh_Dark
+                : _refresh ??= Resources.Refresh;
 
         #endregion
 
