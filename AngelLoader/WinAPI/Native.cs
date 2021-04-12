@@ -67,7 +67,7 @@ namespace AngelLoader.WinAPI
             {
                 _hWnd = hWnd;
                 _dc = GetWindowDC(_hWnd);
-                G = Graphics.FromHwnd(_hWnd);
+                G = Graphics.FromHdc(_dc);
             }
 
             public void Dispose()
