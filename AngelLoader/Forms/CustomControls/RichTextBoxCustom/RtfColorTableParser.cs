@@ -11,9 +11,11 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    // TODO: @DarkMode: We can probably remove this and just use a search
-    // If we just search for "{\colortbl" we're extraordinarily unlikely to have it be intended as plain text.
-    // Then we can get rid of this slow (in a relative sense) parser.
+    // @DarkModeNote(RtfColorTableParser):
+    // We use a full parser here because rather than simply replacing all byte sequences with another, here we
+    // need to parse and return the first and ONLY the first {\colortbl} group. In theory that could be in a
+    // comment or invalidly in the middle of another group or something. I mean it won't, let's be honest, but
+    // the color table is important enough to take the perf hit and the code duplication.
 
     public sealed class RtfColorTableParser
     {
