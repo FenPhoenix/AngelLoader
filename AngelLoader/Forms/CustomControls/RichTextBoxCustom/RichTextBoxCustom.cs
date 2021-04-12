@@ -294,9 +294,12 @@ namespace AngelLoader.Forms.CustomControls
             // reason. It's fine, this works, fixed, moving on.
             SetFullUrlsDetect();
 
+            // Do it for GLML files too, as they can have images (horizontal lines)!
+            bool toggleReadOnly = fileType is ReadmeType.RichText or ReadmeType.GLML;
+
             try
             {
-                SuspendState(toggleReadOnly: fileType == ReadmeType.RichText);
+                SuspendState(toggleReadOnly);
 
                 SetReadmeTypeAndColorState(fileType);
 
@@ -399,7 +402,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             finally
             {
-                ResumeState(toggleReadOnly: fileType == ReadmeType.RichText);
+                ResumeState(toggleReadOnly);
             }
 
             return retEncoding;

@@ -354,6 +354,8 @@ namespace AngelLoader.Forms.CustomControls
 
             bool plainText = _currentReadmeType == ReadmeType.PlainText;
 
+            bool toggleReadOnly = _currentReadmeType is ReadmeType.RichText or ReadmeType.GLML;
+
             Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
             try
             {
@@ -361,7 +363,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     if (!plainText) SaveZoom();
                     this.SuspendDrawing();
-                    if (_currentReadmeType == ReadmeType.RichText) ReadOnly = false;
+                    if (toggleReadOnly) ReadOnly = false;
                 }
 
                 if (_currentReadmeType == ReadmeType.RichText)
@@ -384,7 +386,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     if (!plainText)
                     {
-                        if (_currentReadmeType == ReadmeType.RichText) ReadOnly = true;
+                        if (toggleReadOnly) ReadOnly = true;
                         RestoreZoom();
                     }
 
