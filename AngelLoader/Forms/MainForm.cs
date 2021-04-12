@@ -977,7 +977,7 @@ namespace AngelLoader.Forms
             // Let user use Home+End keys to navigate a filter textbox if it's focused, even if the mouse is over
             // the FMs list
             if ((FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused) &&
-                (e.KeyCode == Keys.Home || e.KeyCode == Keys.End))
+                (e.KeyCode is Keys.Home or Keys.End))
             {
                 return;
             }
@@ -1025,7 +1025,7 @@ namespace AngelLoader.Forms
                 }
             }
             // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
-            else if (e.KeyCode == Keys.PageUp || e.KeyCode == Keys.Up)
+            else if (e.KeyCode is Keys.PageUp or Keys.Up)
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
@@ -1040,7 +1040,7 @@ namespace AngelLoader.Forms
                     }
                 }
             }
-            else if (e.KeyCode == Keys.PageDown || e.KeyCode == Keys.Down)
+            else if (e.KeyCode is Keys.PageDown or Keys.Down)
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
@@ -1087,7 +1087,7 @@ namespace AngelLoader.Forms
                         textBox.SelectAll();
                     }
                 }
-                else if (e.KeyCode == Keys.Add || e.KeyCode == Keys.Oemplus)
+                else if (e.KeyCode is Keys.Add or Keys.Oemplus)
                 {
                     if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
                     {
@@ -1098,7 +1098,7 @@ namespace AngelLoader.Forms
                         ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
                     }
                 }
-                else if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.OemMinus)
+                else if (e.KeyCode is Keys.Subtract or Keys.OemMinus)
                 {
                     if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
                     {
@@ -1109,7 +1109,7 @@ namespace AngelLoader.Forms
                         ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
                     }
                 }
-                else if (e.KeyCode == Keys.D0 || e.KeyCode == Keys.NumPad0)
+                else if (e.KeyCode is Keys.D0 or Keys.NumPad0)
                 {
                     if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
                     {
@@ -1565,19 +1565,21 @@ namespace AngelLoader.Forms
         private static void ShowMenu(ContextMenuStrip menu, Control control, MenuPos pos,
                                      int xOffset = 0, int yOffset = 0, bool unstickMenu = false)
         {
-            int x = pos == MenuPos.LeftUp || pos == MenuPos.LeftDown || pos == MenuPos.TopRight || pos == MenuPos.BottomRight
+            int x = pos is MenuPos.LeftUp or MenuPos.LeftDown or MenuPos.TopRight or MenuPos.BottomRight
                 ? 0
                 : control.Width;
 
-            int y = pos == MenuPos.LeftDown || pos == MenuPos.TopLeft || pos == MenuPos.TopRight || pos == MenuPos.RightDown
+            int y = pos is MenuPos.LeftDown or MenuPos.TopLeft or MenuPos.TopRight or MenuPos.RightDown
                 ? 0
                 : control.Height;
 
-            var direction =
-                pos == MenuPos.LeftUp || pos == MenuPos.TopLeft ? ToolStripDropDownDirection.AboveLeft :
-                pos == MenuPos.RightUp || pos == MenuPos.TopRight ? ToolStripDropDownDirection.AboveRight :
-                pos == MenuPos.LeftDown || pos == MenuPos.BottomLeft ? ToolStripDropDownDirection.BelowLeft :
-                ToolStripDropDownDirection.BelowRight;
+            var direction = pos switch
+            {
+                MenuPos.LeftUp or MenuPos.TopLeft => ToolStripDropDownDirection.AboveLeft,
+                MenuPos.RightUp or MenuPos.TopRight => ToolStripDropDownDirection.AboveRight,
+                MenuPos.LeftDown or MenuPos.BottomLeft => ToolStripDropDownDirection.BelowLeft,
+                _ => ToolStripDropDownDirection.BelowRight
+            };
 
             if (unstickMenu)
             {
@@ -2564,7 +2566,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.GetSelectedFM().ReleaseDate.DateTime = EditFMReleaseDateCheckBox.Checked
                 ? EditFMReleaseDateDateTimePicker.Value
-                : (DateTime?)null;
+                : null;
 
             RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
@@ -2585,7 +2587,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.GetSelectedFM().LastPlayed.DateTime = EditFMLastPlayedCheckBox.Checked
                 ? EditFMLastPlayedDateTimePicker.Value
-                : (DateTime?)null;
+                : null;
 
             RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
@@ -3257,7 +3259,7 @@ namespace AngelLoader.Forms
                 ? ""
                 : size < ByteSize.MB
                 ? Math.Round(size / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
-                : size >= ByteSize.MB && size < ByteSize.GB
+                : size is >= ByteSize.MB and < ByteSize.GB
                 ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
                 : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
 
@@ -3387,7 +3389,7 @@ namespace AngelLoader.Forms
 
             #region Right-click menu
 
-            if (ht.Type == DataGridViewHitTestType.ColumnHeader || ht.Type == DataGridViewHitTestType.None)
+            if (ht.Type is DataGridViewHitTestType.ColumnHeader or DataGridViewHitTestType.None)
             {
                 FMsDGV.SetContextMenuToColumnHeader();
             }

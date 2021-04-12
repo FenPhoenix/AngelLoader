@@ -224,26 +224,21 @@ namespace AngelLoader
                 // We're not x64 currently, but this check lets us be compatible for an easy switch if we decide
                 // to do so in the future.
                 object? regKey = Registry.GetValue(
-                    !Environment.Is64BitProcess
+                    keyName: !Environment.Is64BitProcess
                         // If we're x86 Win/x86 app OR x64 Win/x86 app, then this is the right path. On x86 Win,
                         // this is the actual registry path, and on x64 Win/x86 app, this will redirect to the
                         // actual path (which is the same except "Wow6432Node\" is inserted after "Software\")
                         ? @"HKEY_LOCAL_MACHINE\Software\Ion Storm\Thief - Deadly Shadows"
                         // If we're x64 Win/x64 app, then \Software WON'T redirect to Software\Wow6432Node, so we
                         // have to do it ourselves.
-                        : @"HKEY_LOCAL_MACHINE\Software\Wow6432Node\Ion Storm\Thief - Deadly Shadows", "SaveGamePath", -1);
+                        : @"HKEY_LOCAL_MACHINE\Software\Wow6432Node\Ion Storm\Thief - Deadly Shadows",
+                    valueName: "SaveGamePath",
+                    defaultValue: -1);
 
                 // Must check for null, because a null return means "path not found", while a default value return
                 // means "key name not found". Jank.
-                if (regKey == null || (regKey is int regKeyDefault && regKeyDefault == -1) || !(regKey is string))
+                if (regKey is not (null or -1) && regKey is string regKeyStr)
                 {
-                    Log("Couldn't find the registry key that points to Thief: Deadly Shadows options directory (SaveGamePath key)");
-                    return "";
-                }
-                else
-                {
-                    // @NULL_TODO: Test with like !(regKey is string regKeyStr) up there
-                    string regKeyStr = regKey.ToString()!;
                     string soIni = "";
                     try
                     {
@@ -267,6 +262,11 @@ namespace AngelLoader
                     }
 
                     return soIni;
+                }
+                else
+                {
+                    Log("Couldn't find the registry key that points to Thief: Deadly Shadows options directory (SaveGamePath key)");
+                    return "";
                 }
             }
             catch (SecurityException ex)

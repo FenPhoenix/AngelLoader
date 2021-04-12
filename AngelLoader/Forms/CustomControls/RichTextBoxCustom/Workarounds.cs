@@ -244,13 +244,14 @@ namespace AngelLoader.Forms.CustomControls
 
         private bool TranslateDispatchCallback(ref Message msg)
         {
-            bool isMouseDown = msg.Msg == Native.WM_LBUTTONDOWN ||
-                               msg.Msg == Native.WM_MBUTTONDOWN ||
-                               msg.Msg == Native.WM_RBUTTONDOWN ||
-                               msg.Msg == Native.WM_XBUTTONDOWN ||
-                               msg.Msg == Native.WM_MOUSEWHEEL ||
-                               msg.Msg == Native.WM_MOUSEHWHEEL ||
-                               msg.Msg == Native.WM_KEYDOWN;
+            bool isMouseDown = msg.Msg
+                is Native.WM_LBUTTONDOWN
+                or Native.WM_MBUTTONDOWN
+                or Native.WM_RBUTTONDOWN
+                or Native.WM_XBUTTONDOWN
+                or Native.WM_MOUSEWHEEL
+                or Native.WM_MOUSEHWHEEL
+                or Native.WM_KEYDOWN;
 
             if (isMouseDown || (_endOnMouseUp && (msg.Msg == Native.WM_MBUTTONUP)))
             {

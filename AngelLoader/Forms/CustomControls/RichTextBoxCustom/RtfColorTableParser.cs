@@ -422,7 +422,7 @@ namespace AngelLoader.Forms.CustomControls
             internal bool TryGetValue(ListFast<char> str, [NotNullWhen(true)] out Symbol? result)
             {
                 int len = str.Count;
-                if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
+                if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
                 {
                     uint key = Hash(str, len);
 
@@ -917,7 +917,7 @@ namespace AngelLoader.Forms.CustomControls
 
             _keyword.ClearFast();
 
-            if (!IsAsciiAlpha(ch))
+            if (!ch.IsAsciiAlpha())
             {
                 /* From the spec:
                  "A control symbol consists of a backslash followed by a single, non-alphabetical character.
@@ -932,7 +932,7 @@ namespace AngelLoader.Forms.CustomControls
 
             int i;
             bool eof = false;
-            for (i = 0; i < _keywordMaxLen && IsAsciiAlpha(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
+            for (i = 0; i < _keywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !_rtfStream.GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
                 _keyword.AddFast(ch);
@@ -945,12 +945,12 @@ namespace AngelLoader.Forms.CustomControls
                 if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
             }
 
-            if (IsAsciiDigit(ch))
+            if (ch.IsAsciiNumeric())
             {
                 hasParam = true;
 
                 // Parse param in real-time to avoid doing a second loop over
-                for (i = 0; i < _paramMaxLen && IsAsciiDigit(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
+                for (i = 0; i < _paramMaxLen && ch.IsAsciiNumeric(); i++, eof = !_rtfStream.GetNextChar(out ch))
                 {
                     if (eof) return Error.EndOfFile;
                     param += ch - '0';
@@ -1211,19 +1211,6 @@ namespace AngelLoader.Forms.CustomControls
 
             return Error.OK;
         }
-
-        #endregion
-
-        #region Helpers
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiAlpha(char ch) => IsAsciiUpper(ch) || IsAsciiLower(ch);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiUpper(char ch) => ch >= 'A' && ch <= 'Z';
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiLower(char ch) => ch >= 'a' && ch <= 'z';
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiDigit(char ch) => ch >= '0' && ch <= '9';
 
         #endregion
     }

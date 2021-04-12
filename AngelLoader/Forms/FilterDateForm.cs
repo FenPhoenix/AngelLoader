@@ -103,8 +103,8 @@ namespace AngelLoader.Forms
 
         private void OKButton_Click(object sender, EventArgs e)
         {
-            DateFrom = FromDateTimePicker.Visible ? FromDateTimePicker.Value : (DateTime?)null;
-            DateTo = ToDateTimePicker.Visible ? ToDateTimePicker.Value : (DateTime?)null;
+            DateFrom = FromDateTimePicker.Visible ? FromDateTimePicker.Value : null;
+            DateTo = ToDateTimePicker.Visible ? ToDateTimePicker.Value : null;
         }
     }
 }

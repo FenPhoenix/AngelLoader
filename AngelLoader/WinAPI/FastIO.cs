@@ -220,7 +220,7 @@ namespace AngelLoader.WinAPI
             if (findHandle.IsInvalid)
             {
                 int err = Marshal.GetLastWin32Error();
-                if (err == ERROR_FILE_NOT_FOUND || err == ERROR_NO_MORE_FILES) return ret;
+                if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return ret;
 
                 // Since the framework isn't here to save us, we should blanket-catch and throw on every
                 // possible error other than file-not-found (as that's an intended scenario, obviously).
@@ -344,7 +344,7 @@ namespace AngelLoader.WinAPI
             if (findHandle.IsInvalid)
             {
                 int err = Marshal.GetLastWin32Error();
-                if (err == ERROR_FILE_NOT_FOUND || err == ERROR_NO_MORE_FILES) return false;
+                if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return false;
                 ThrowException("*", err, path);
             }
             do

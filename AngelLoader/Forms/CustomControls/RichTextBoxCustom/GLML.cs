@@ -325,7 +325,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 else
                 {
-                    if (c == '\\' || c == '{' || c == '}') sb.Append('\\');
+                    if (c is '\\' or '{' or '}') sb.Append('\\');
                     sb.Append(c);
                 }
             }

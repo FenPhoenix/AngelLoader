@@ -496,7 +496,7 @@ namespace FMScanner
             internal bool TryGetValue(ListFast<char> str, [NotNullWhen(true)] out Symbol? result)
             {
                 int len = str.Count;
-                if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
+                if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
                 {
                     uint key = Hash(str, len);
 
@@ -1938,7 +1938,7 @@ namespace FMScanner
 
             _keyword.ClearFast();
 
-            if (!IsAsciiAlpha(ch))
+            if (!ch.IsAsciiAlpha())
             {
                 /* From the spec:
                  "A control symbol consists of a backslash followed by a single, non-alphabetical character.
@@ -1953,7 +1953,7 @@ namespace FMScanner
 
             int i;
             bool eof = false;
-            for (i = 0; i < _keywordMaxLen && IsAsciiAlpha(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
+            for (i = 0; i < _keywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !_rtfStream.GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
                 _keyword.AddFast(ch);
@@ -1966,12 +1966,12 @@ namespace FMScanner
                 if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
             }
 
-            if (IsAsciiDigit(ch))
+            if (ch.IsAsciiNumeric())
             {
                 hasParam = true;
 
                 // Parse param in real-time to avoid doing a second loop over
-                for (i = 0; i < _paramMaxLen && IsAsciiDigit(ch); i++, eof = !_rtfStream.GetNextChar(out ch))
+                for (i = 0; i < _paramMaxLen && ch.IsAsciiNumeric(); i++, eof = !_rtfStream.GetNextChar(out ch))
                 {
                     if (eof) return Error.EndOfFile;
                     param += ch - '0';
@@ -2245,15 +2245,15 @@ namespace FMScanner
 
             b = (byte)(b << 4);
 
-            if (IsAsciiDigit(ch))
+            if (ch.IsAsciiNumeric())
             {
                 b += (byte)(ch - '0');
             }
-            else if (ch >= 'a' && ch <= 'f')
+            else if (ch is >= 'a' and <= 'f')
             {
                 b += (byte)(ch - 'a' + 10);
             }
-            else if (ch >= 'A' && ch <= 'F')
+            else if (ch is >= 'A' and <= 'F')
             {
                 b += (byte)(ch - 'A' + 10);
             }
@@ -2430,7 +2430,7 @@ namespace FMScanner
                 // This won't throw because str is not null and index is within it
                 UnicodeCategory uc = char.GetUnicodeCategory(finalString, i);
 
-                if (uc == UnicodeCategory.Surrogate || uc == UnicodeCategory.OtherNotAssigned)
+                if (uc is UnicodeCategory.Surrogate or UnicodeCategory.OtherNotAssigned)
                 {
                     // Don't even instantiate our StringBuilder unless there's a problem
                     sb ??= new StringBuilder(finalString);
@@ -2511,7 +2511,7 @@ namespace FMScanner
             #region Handle if the param is hex
 
             if (ch == '0' &&
-                _rtfStream.GetNextChar(out char pch) && (pch == 'x' || pch == 'X'))
+                _rtfStream.GetNextChar(out char pch) && (pch is 'x' or 'X'))
             {
                 _rtfStream.GetNextChar(out ch);
                 if (ch == '-')
@@ -2530,7 +2530,7 @@ namespace FMScanner
             bool alphaCharsFound = false;
             bool alphaFound;
             for (i = 0;
-                i < _fldinstSymbolNumberMaxLen && ((alphaFound = IsAsciiAlpha(ch)) || IsAsciiDigit(ch));
+                i < _fldinstSymbolNumberMaxLen && ((alphaFound = ch.IsAsciiAlpha()) || ch.IsAsciiNumeric());
                 i++, eof = !_rtfStream.GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
@@ -2718,7 +2718,7 @@ namespace FMScanner
                     if (ch != ' ') return RewindAndSkipGroup(ch);
 
                     int numDigitCount = 0;
-                    while (_rtfStream.GetNextChar(out ch) && IsAsciiDigit(ch))
+                    while (_rtfStream.GetNextChar(out ch) && ch.IsAsciiNumeric())
                     {
                         if (numDigitCount > _fldinstSymbolNumberMaxLen) goto breakout;
                         numDigitCount++;
@@ -2844,7 +2844,7 @@ namespace FMScanner
         #region Field instruction methods
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsSeparatorChar(char ch) => ch == '\\' || ch == '{' || ch == '}';
+        private static bool IsSeparatorChar(char ch) => ch is '\\' or '{' or '}';
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetCharFromCodePage(int codePage, int codePoint)
@@ -2880,15 +2880,6 @@ namespace FMScanner
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string CreateStringFromChars(ListFast<char> chars) => new string(chars.ItemsArray, 0, chars.Count);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiAlpha(char ch) => IsAsciiUpper(ch) || IsAsciiLower(ch);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiUpper(char ch) => ch >= 'A' && ch <= 'Z';
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiLower(char ch) => ch >= 'a' && ch <= 'z';
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAsciiDigit(char ch) => ch >= '0' && ch <= '9';
 
         /// <summary>
         /// If <paramref name="codePage"/> is in the cached list, returns the Encoding associated with it;
@@ -2974,7 +2965,7 @@ namespace FMScanner
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out string finalChar)
         {
-            if (codePoint >= 0x20 && codePoint <= 0xFF)
+            if (codePoint is >= 0x20 and <= 0xFF)
             {
                 finalChar = ConvertFromUtf32(_fontTable[codePoint - 0x20]) ?? _unicodeUnknown_String;
             }
@@ -3006,7 +2997,7 @@ namespace FMScanner
             if (codePoint < 0)
             {
                 codePoint += 65536;
-                if (codePoint < 0 || codePoint > ushort.MaxValue) return Error.InvalidUnicode;
+                if (codePoint is < 0 or > ushort.MaxValue) return Error.InvalidUnicode;
             }
 
             /*
@@ -3027,7 +3018,7 @@ namespace FMScanner
             (despite the spec saying that \uN must be signed int16). So we need to fall through to this section
             even if we did the above, because by adding 65536 we might now be in the 0xF020-0xF0FF range.
             */
-            if (handleSymbolCharRange && codePoint >= 0xF020 && codePoint <= 0xF0FF)
+            if (handleSymbolCharRange && (codePoint is >= 0xF020 and <= 0xF0FF))
             {
                 codePoint -= 0xF000;
 
@@ -3065,7 +3056,7 @@ namespace FMScanner
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string? ConvertFromUtf32(int utf32)
         {
-            if (utf32 < 0 || utf32 > 1114111 || (utf32 >= 55296 && utf32 <= 57343))
+            if (utf32 is < 0 or > 1114111 or (>= 55296 and <= 57343))
             {
                 return null;
             }

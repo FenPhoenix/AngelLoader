@@ -1110,7 +1110,7 @@ namespace AngelLoader.Forms
                 page == PathsPage ? _inPathsVScrollPos :
                 page == AppearancePage ? _inAppearanceVScrollPos :
                 page == OtherPage ? _inOtherVScrollPos :
-                (int?)null;
+                null;
 
             AssertR(pos != null, nameof(pos) + " is null: settings page is not being handled in " + nameof(SetPageScrollPos));
 

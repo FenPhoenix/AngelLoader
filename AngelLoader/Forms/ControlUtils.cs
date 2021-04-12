@@ -129,7 +129,7 @@ namespace AngelLoader.Forms
         {
             const int maxStackCount = 100;
 
-            if (control.Tag is not LazyLoaded tag || tag != LazyLoaded.True)
+            if (control.Tag is not LazyLoaded.True)
             {
                 controlColors.Add(new KeyValuePair<Control, (Color ForeColor, Color BackColor)>(control, (control.ForeColor, control.BackColor)));
             }
@@ -304,17 +304,17 @@ namespace AngelLoader.Forms
             {
                 // ReSharper disable ConditionIsAlwaysTrueOrFalse
                 Native.SHSTOCKICONID sysIcon =
-                    icon == MessageBoxIcon.Error ||
-                    icon == MessageBoxIcon.Hand ||
-                    icon == MessageBoxIcon.Stop
+                    icon is MessageBoxIcon.Error or
+                            MessageBoxIcon.Hand or
+                            MessageBoxIcon.Stop
                   ? Native.SHSTOCKICONID.SIID_ERROR
                   : icon == MessageBoxIcon.Question
                   ? Native.SHSTOCKICONID.SIID_HELP
-                  : icon == MessageBoxIcon.Exclamation ||
-                    icon == MessageBoxIcon.Warning
+                  : icon is MessageBoxIcon.Exclamation or
+                            MessageBoxIcon.Warning
                   ? Native.SHSTOCKICONID.SIID_WARNING
-                  : icon == MessageBoxIcon.Asterisk ||
-                    icon == MessageBoxIcon.Information
+                  : icon is MessageBoxIcon.Asterisk or
+                            MessageBoxIcon.Information
                   ? Native.SHSTOCKICONID.SIID_INFO
                   : throw new ArgumentOutOfRangeException();
                 // ReSharper restore ConditionIsAlwaysTrueOrFalse
@@ -331,20 +331,22 @@ namespace AngelLoader.Forms
                 // "Wrong style" image (different style from the MessageBox one) but better than nothing if the
                 // above fails
                 // ReSharper disable ConditionIsAlwaysTrueOrFalse
-                pictureBox.Image =
-                      icon == MessageBoxIcon.Error ||
-                      icon == MessageBoxIcon.Hand ||
-                      icon == MessageBoxIcon.Stop
-                    ? SystemIcons.Error.ToBitmap()
-                    : icon == MessageBoxIcon.Question
-                    ? SystemIcons.Question.ToBitmap()
-                    : icon == MessageBoxIcon.Exclamation ||
-                      icon == MessageBoxIcon.Warning
-                    ? SystemIcons.Warning.ToBitmap()
-                    : icon == MessageBoxIcon.Asterisk ||
-                      icon == MessageBoxIcon.Information
-                    ? SystemIcons.Information.ToBitmap()
-                    : null;
+                pictureBox.Image = icon switch
+                {
+                    MessageBoxIcon.Error or
+                    MessageBoxIcon.Hand or
+                    MessageBoxIcon.Stop
+                        => SystemIcons.Error.ToBitmap(),
+                    MessageBoxIcon.Question
+                        => SystemIcons.Question.ToBitmap(),
+                    MessageBoxIcon.Exclamation or
+                    MessageBoxIcon.Warning
+                        => SystemIcons.Warning.ToBitmap(),
+                    MessageBoxIcon.Asterisk or
+                    MessageBoxIcon.Information
+                        => SystemIcons.Information.ToBitmap(),
+                    _ => null
+                };
                 // ReSharper restore ConditionIsAlwaysTrueOrFalse
             }
             finally

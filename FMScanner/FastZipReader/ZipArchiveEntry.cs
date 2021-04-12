@@ -298,7 +298,7 @@ namespace FMScanner.FastZipReader
             for (int i = length; --i >= 0;)
             {
                 char ch = path[i];
-                if (ch == '\\' || ch == '/' || ch == ':')
+                if (ch is '\\' or '/' or ':')
                 {
                     return path.Substring(i + 1);
                 }

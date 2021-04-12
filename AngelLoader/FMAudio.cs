@@ -145,7 +145,7 @@ namespace AngelLoader
                                     if (bits == -1) continue;
 
                                     if (bits == 0) bits = GetBitDepthSlow(f);
-                                    if (bits >= 1 && bits <= 16) continue;
+                                    if (bits is >= 1 and <= 16) continue;
 
                                     string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
 

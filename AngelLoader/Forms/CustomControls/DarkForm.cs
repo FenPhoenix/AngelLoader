@@ -22,11 +22,12 @@ namespace AngelLoader.Forms.CustomControls
             if (_loading &&
                 Misc.Config.DarkMode &&
                 IsHandleCreated &&
-                (m.Msg == Native.WM_PAINT
-                 || m.Msg == Native.WM_SIZE
-                 || m.Msg == Native.WM_MOVE
-                 || m.Msg == Native.WM_WINDOWPOSCHANGED
-                 || m.Msg == Native.WM_ERASEBKGND
+                (m.Msg
+                    is Native.WM_PAINT
+                    or Native.WM_SIZE
+                    or Native.WM_MOVE
+                    or Native.WM_WINDOWPOSCHANGED
+                    or Native.WM_ERASEBKGND
                 ))
             {
                 using var gc = new Native.GraphicsContext(Handle);

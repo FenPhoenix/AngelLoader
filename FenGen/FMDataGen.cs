@@ -368,12 +368,13 @@ namespace FenGen
             w.WLs(_readFMDataIniTopLines);
 
             static string GetFloatArgsRead(string fieldType) =>
-                fieldType == "float" ||
-                fieldType == "float?" ||
-                fieldType == "double" ||
-                fieldType == "double?" ||
-                fieldType == "decimal" ||
-                fieldType == "decimal?"
+                fieldType
+                    is "float"
+                    or "float?"
+                    or "double"
+                    or "double?"
+                    or "decimal"
+                    or "decimal?"
                     ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                     : "";
 
@@ -407,7 +408,7 @@ namespace FenGen
                         : "";
 
                     string objListSet = "";
-                    if (ldt == ListDistinctType.Exact || ldt == ListDistinctType.CaseInsensitive)
+                    if (ldt is ListDistinctType.Exact or ListDistinctType.CaseInsensitive)
                     {
                         objListSet = "if (!" + objDotField + ".Contains(" + varToAdd + ignoreCaseString + ")) ";
                     }
@@ -576,12 +577,13 @@ namespace FenGen
             const string unixDateString = "UnixDateString";
 
             static string GetFloatArgsWrite(string fieldType) =>
-                fieldType == "float" ||
-                fieldType == "float?" ||
-                fieldType == "double" ||
-                fieldType == "double?" ||
-                fieldType == "decimal" ||
-                fieldType == "decimal?"
+                fieldType
+                    is "float"
+                    or "float?"
+                    or "double"
+                    or "double?"
+                    or "decimal"
+                    or "decimal?"
                     ? "NumberFormatInfo.InvariantInfo"
                     : "";
 

@@ -40,11 +40,11 @@ namespace AL_Common
 
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAsciiUpper(this char c) => c >= 'A' && c <= 'Z';
+        public static bool IsAsciiUpper(this char c) => c is >= 'A' and <= 'Z';
 
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAsciiLower(this char c) => c >= 'a' && c <= 'z';
+        public static bool IsAsciiLower(this char c) => c is >= 'a' and <= 'z';
 
         [PublicAPI]
         public static bool EqualsIAscii(this char char1, char char2) =>
@@ -58,7 +58,7 @@ namespace AL_Common
 
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAsciiNumeric(this char c) => c >= '0' && c <= '9';
+        public static bool IsAsciiNumeric(this char c) => c is >= '0' and <= '9';
 
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -206,7 +206,7 @@ namespace AL_Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsDirSep(this char character) => character == '/' || character == '\\';
+        public static bool IsDirSep(this char character) => character is '/' or '\\';
 
         #region Disabled until needed
 

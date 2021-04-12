@@ -20,7 +20,7 @@ namespace AngelLoader.Forms.ThemeRenderers
             ref Native.RECT pClipRect)
         {
             using var g = Graphics.FromHdc(hdc);
-            if (iPartId == Native.TTP_STANDARD || iPartId == Native.TTP_STANDARDTITLE)
+            if (iPartId is Native.TTP_STANDARD or Native.TTP_STANDARDTITLE)
             {
                 var rect = Rectangle.FromLTRB(pRect.left, pRect.top, pRect.right, pRect.bottom);
 

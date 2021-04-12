@@ -3871,7 +3871,7 @@ namespace FMScanner
                 DateTimeStyles.None,
                 out DateTime result);
 
-            dateTime = success ? (DateTime?)result : null;
+            dateTime = success ? result : null;
             return success;
         }
 

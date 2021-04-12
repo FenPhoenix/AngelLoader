@@ -107,12 +107,13 @@ namespace AngelLoader.Forms.CustomControls
 
             ProgressPercentLabel.Text = "";
 
-            if (progressTask == ProgressTask.UninstallFM ||
-                progressTask == ProgressTask.ConvertFiles ||
-                progressTask == ProgressTask.ImportFromDarkLoader ||
-                progressTask == ProgressTask.ImportFromNDL ||
-                progressTask == ProgressTask.ImportFromFMSel ||
-                progressTask == ProgressTask.DeleteFMArchive)
+            if (progressTask
+                is ProgressTask.UninstallFM
+                or ProgressTask.ConvertFiles
+                or ProgressTask.ImportFromDarkLoader
+                or ProgressTask.ImportFromNDL
+                or ProgressTask.ImportFromFMSel
+                or ProgressTask.DeleteFMArchive)
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
                 if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);

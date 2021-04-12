@@ -131,7 +131,7 @@ namespace AngelLoader
             int count = archiveName.LastIndexOf('.');
             if (truncate)
             {
-                if (count == -1 || count > 30) count = Math.Min(archiveName.Length, 30);
+                if (count is -1 or > 30) count = Math.Min(archiveName.Length, 30);
             }
             else
             {

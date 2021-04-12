@@ -191,9 +191,9 @@ namespace AngelLoader
 
         #region Game type checks
 
-        internal static bool GameIsDark(Game game) => game == Game.Thief1 || game == Game.Thief2 || game == Game.SS2;
-        internal static bool GameIsDark(GameIndex game) => game == GameIndex.Thief1 || game == GameIndex.Thief2 || game == GameIndex.SS2;
-        internal static bool GameIsKnownAndSupported(Game game) => game != Game.Null && game != Game.Unsupported;
+        internal static bool GameIsDark(Game game) => game is Game.Thief1 or Game.Thief2 or Game.SS2;
+        internal static bool GameIsDark(GameIndex game) => game is GameIndex.Thief1 or GameIndex.Thief2 or GameIndex.SS2;
+        internal static bool GameIsKnownAndSupported(Game game) => game is not Game.Null and not Game.Unsupported;
 
         #endregion
     }

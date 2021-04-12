@@ -404,7 +404,7 @@ namespace AngelLoader
                                         try
                                         {
                                             var date = new DateTime(1899, 12, 30).AddDays(result);
-                                            fm.ReleaseDate.DateTime = date.Year > 1998 ? date : (DateTime?)null;
+                                            fm.ReleaseDate.DateTime = date.Year > 1998 ? date : null;
                                         }
                                         catch (ArgumentOutOfRangeException)
                                         {
@@ -417,7 +417,7 @@ namespace AngelLoader
                                         try
                                         {
                                             var date = new DateTime(1899, 12, 30).AddDays(result);
-                                            fm.LastPlayed.DateTime = date.Year > 1998 ? date : (DateTime?)null;
+                                            fm.LastPlayed.DateTime = date.Year > 1998 ? date : null;
                                         }
                                         catch (ArgumentOutOfRangeException)
                                         {
@@ -882,8 +882,7 @@ namespace AngelLoader
                             mainFM.Comment = importedFM.Comment;
                         }
 
-                        if (importType == ImportType.NewDarkLoader ||
-                            importType == ImportType.FMSel)
+                        if (importType is ImportType.NewDarkLoader or ImportType.FMSel)
                         {
                             if (fields.Rating)
                             {
@@ -903,7 +902,7 @@ namespace AngelLoader
                                 mainFM.SelectedReadme = importedFM.SelectedReadme;
                             }
                         }
-                        if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
+                        if (importType is ImportType.NewDarkLoader or ImportType.DarkLoader)
                         {
                             if (fields.Size && mainFM.SizeBytes == 0)
                             {
@@ -955,8 +954,7 @@ namespace AngelLoader
                         newFM.Comment = importedFM.Comment;
                     }
 
-                    if (importType == ImportType.NewDarkLoader ||
-                        importType == ImportType.FMSel)
+                    if (importType is ImportType.NewDarkLoader or ImportType.FMSel)
                     {
                         if (fields.Rating)
                         {
@@ -976,7 +974,7 @@ namespace AngelLoader
                             newFM.SelectedReadme = importedFM.SelectedReadme;
                         }
                     }
-                    if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
+                    if (importType is ImportType.NewDarkLoader or ImportType.DarkLoader)
                     {
                         if (fields.Size)
                         {
