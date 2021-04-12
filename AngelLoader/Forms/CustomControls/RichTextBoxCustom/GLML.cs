@@ -88,10 +88,6 @@ namespace AngelLoader.Forms.CustomControls
 
             sb.Append(rtfHeader);
 
-            // Have to explicitly say this, otherwise text defaults to black even though our "auto color" should
-            // be 240 white, until we give another explicit "\cf0" word, which we do after [GLWARNING] tags.
-            if (_darkModeEnabled) sb.Append(@"\cf0");
-
             #region Parse and copy
 
             // Note about Unicode: The RTF spec seems to imply that \uN words' parameters are int16s, but in fact
