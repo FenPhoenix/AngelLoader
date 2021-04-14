@@ -442,7 +442,7 @@ namespace AngelLoader.Forms.CustomControls
 
             // 3 pixel offset on all sides because of fudging with the rectangle, this gets it back to accurate
             // for the text.
-            // TODO: @DarkMode(DarkButton/TextRect):
+            // @DarkModeNote(DarkButton/TextRect):
             // But actually we only know it's accurate for left-alignment, test if it is for all other alignments
             // as well...
             var textRect = new Rectangle(

@@ -76,15 +76,12 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     BackgroundColor = DarkColors.Fen_DarkBackground;
                     RowsDefaultCellStyle.ForeColor = DarkColors.Fen_DarkForeground;
-                    // TODO: @DarkMode: Explicit color
-                    GridColor = Color.FromArgb(64, 64, 64);
                     RowsDefaultCellStyle.BackColor = DarkColors.Fen_DarkBackground;
                 }
                 else
                 {
                     BackgroundColor = SystemColors.ControlDark;
                     RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
-                    GridColor = SystemColors.ControlDark;
                     RowsDefaultCellStyle.BackColor = SystemColors.Window;
                 }
             }

@@ -424,9 +424,7 @@ namespace AngelLoader.Forms
 
         #region Arrows
 
-        // TODO: @DarkMode: Explicit color
-        private static readonly Pen _darkModeArrowButtonEnabledPen = new Pen(Color.FromArgb(150, 156, 160));
-        private static Pen ArrowButtonEnabledPen => DarkModeEnabled ? _darkModeArrowButtonEnabledPen : SystemPens.ControlText;
+        private static Pen ArrowButtonEnabledPen => DarkModeEnabled ? DarkColors.ArrowEnabledPen : SystemPens.ControlText;
 
         #endregion
 
@@ -917,8 +915,7 @@ namespace AngelLoader.Forms
 
                 var borderRect = new Rectangle(0, 0, 78, 22);
 
-                // TODO: @DarkMode: Explicit color
-                using var pen = new Pen(darkMode ? Color.FromArgb(64, 64, 64) : Color.FromArgb(160, 160, 160));
+                Pen pen = darkMode ? DarkColors.Fen_DGVCellBordersPen : SystemPens.ControlDark;
                 g.DrawRectangle(pen, borderRect);
 
                 g.SmoothingMode = SmoothingMode.AntiAlias;

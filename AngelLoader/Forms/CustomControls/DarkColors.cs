@@ -4,8 +4,6 @@ namespace AngelLoader.Forms.CustomControls
 {
     public static class DarkColors
     {
-        // TODO: @DarkMode(Colors): Make sure all dark mode colors are explicit, and not using premade ones that could change!
-
         #region Fen
 
         // Scroll arrows:
@@ -22,7 +20,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public static readonly Color Fen_RedHighlight = Color.FromArgb(64, 24, 24);
 
-        public static readonly Color Fen_DGVCellBorders = Color.FromArgb(64, 64, 72);
+        public static readonly Color Fen_DGVCellBorders = Color.FromArgb(64, 64, 64);
 
         public static readonly Color Fen_DGVColumnHeaderHighlight = Color.FromArgb(77, 90, 114);
         public static readonly Color Fen_DGVColumnHeaderPressed = Color.FromArgb(82, 103, 142);
@@ -35,6 +33,8 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Color Fen_Hyperlink = Color.FromArgb(121, 180, 240);
         //public static readonly Color Fen_Hyperlink_VS = Color.FromArgb(86, 156, 214); // Visual Studio's hyperlink dark color
         public static readonly Color Fen_HyperlinkPressed = Color.FromArgb(243, 110, 110);
+
+        public static readonly Color ArrowEnabled = Color.FromArgb(150, 156, 160);
 
         #endregion
 
@@ -101,6 +101,7 @@ namespace AngelLoader.Forms.CustomControls
         //public static readonly Pen DarkBlueBorderPen = new Pen(DarkBlueBorder);
         //public static readonly Pen LightBlueBorderPen = new Pen(LightBlueBorder);
         public static readonly Pen ActiveControlPen = new Pen(ActiveControl);
+        public static readonly Pen ArrowEnabledPen = new Pen(ArrowEnabled);
 
         #endregion
 
@@ -140,6 +141,7 @@ namespace AngelLoader.Forms.CustomControls
         //public static readonly SolidBrush DarkBlueBorderBrush = new SolidBrush(DarkBlueBorder);
         //public static readonly SolidBrush LightBlueBorderBrush = new SolidBrush(LightBlueBorder);
         public static readonly SolidBrush ActiveControlBrush = new SolidBrush(ActiveControl);
+        //public static readonly SolidBrush ArrowEnabledBrush = new SolidBrush(ArrowEnabled);
 
         #endregion
     }
