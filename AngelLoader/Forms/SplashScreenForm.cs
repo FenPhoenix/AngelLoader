@@ -24,15 +24,13 @@ namespace AngelLoader.Forms
         about it.
         */
 
-        // TODO: @DarkMode(SplashScreen): Maybe draw a border and make the classic-mode one Window (white) instead of Control
-
         #region Private fields
 
         private VisualTheme _theme;
         private bool _themeSet;
         private bool _closingAllowed;
 
-        private readonly Rectangle _messageRect = new Rectangle(0, 120, 648, 64);
+        private readonly Rectangle _messageRect = new Rectangle(1, 120, 646, 63);
 
         #region Disposables
 
@@ -64,21 +62,16 @@ namespace AngelLoader.Forms
 
         public void Show(VisualTheme theme)
         {
-            if (Visible) return;
+            if (Visible || _themeSet) return;
+            
+            _theme = theme;
 
-            if (!_themeSet)
+            // Ultra slim, because a splash screen should come up as quick as possible
+            if (theme == VisualTheme.Dark)
             {
-                _theme = theme;
-
-                // Ultra slim, because a splash screen should come up as quick as possible
-                if (theme == VisualTheme.Dark)
-                {
-                    // Again, manual copies of colors so we don't statically initialize the whole of DarkColors.
-                    BackColor = Color.FromArgb(48, 48, 48); // Fen_ControlBackground
-                    ForeColor = Color.FromArgb(220, 220, 220); // LightText
-                }
-
-                _themeSet = true;
+                // Again, manual copies of colors so we don't statically initialize the whole of DarkColors.
+                BackColor = Color.FromArgb(48, 48, 48); // Fen_ControlBackground
+                ForeColor = Color.FromArgb(220, 220, 220); // LightText
             }
 
             base.Show();
@@ -87,6 +80,13 @@ namespace AngelLoader.Forms
             // These will stay visible for the life of the form, due to our setup.
             _graphicsContext.G.DrawImage(_logoBitmap, 152, 48);
             _graphicsContext.G.DrawImage(theme == VisualTheme.Dark ? Resources.About_Dark : Resources.About, 200, 48);
+            using var pen = new Pen(
+                theme == VisualTheme.Dark
+                    ? Color.FromArgb(81, 81, 81) // LightBorder
+                    : SystemColors.ControlDark);
+            _graphicsContext.G.DrawRectangle(pen, 0, 0, 647, 183);
+
+            _themeSet = true;
         }
 
         public void SetMessage(string message)
