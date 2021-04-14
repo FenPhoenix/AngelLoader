@@ -2863,12 +2863,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            AddTagLLMenu.Menu.Items.AddRange(addTagMenuItems.ToArray());
-
-            // TODO: @DarkMode: Make this less dumb
-            // Like maybe override add methods of DarkContextMenu to just always re-setup the theme afterward
-            // Special case because we add items dynamically
-            AddTagLLMenu.Menu.RefreshDarkModeState();
+            AddTagLLMenu.AddRange(addTagMenuItems.ToArray());
 
             ShowMenu(AddTagLLMenu.Menu, AddTagFromListButton, MenuPos.LeftDown);
         }
@@ -4410,12 +4405,8 @@ namespace AngelLoader.Forms
                     item.Click += EditFMAltTitlesMenuItems_Click;
                     altTitlesMenuItems.Add(item);
                 }
-                AltTitlesLLMenu.AddRange(altTitlesMenuItems);
 
-                // TODO: @DarkMode: Make this less dumb
-                // Like maybe override add methods of DarkContextMenu to just always re-setup the theme afterward
-                // Special case because we add items dynamically
-                AltTitlesLLMenu.Menu.RefreshDarkModeState();
+                AltTitlesLLMenu.AddRange(altTitlesMenuItems.ToArray());
 
                 EditFMAltTitlesArrowButton.Enabled = true;
             }

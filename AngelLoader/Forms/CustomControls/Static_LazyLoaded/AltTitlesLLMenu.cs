@@ -36,18 +36,11 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Constructed = true;
         }
 
-        internal static void AddRange(List<ToolStripItem> items)
+        internal static void AddRange(ToolStripItem[] items)
         {
             if (!Constructed) return;
 
-            ToolStripItem[] itemsArray = items.ToArray();
-
-            for (int i = 0; i < itemsArray.Length; i++)
-            {
-                itemsArray[i].Tag = LazyLoaded.True;
-            }
-
-            Menu.Items.AddRange(itemsArray);
+            Menu.AddRange(items);
         }
 
         internal static void ClearItems()

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -33,6 +34,13 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Menu.Closed += form.AddTagMenu_Closed;
 
             _constructed = true;
+        }
+
+        internal static void AddRange(ToolStripItem[] items)
+        {
+            if (!_constructed) return;
+
+            Menu.AddRange(items);
         }
     }
 }

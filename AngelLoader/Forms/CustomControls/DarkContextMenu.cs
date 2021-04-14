@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -33,7 +34,32 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        public void RefreshDarkModeState()
+        public void AddRange(ToolStripItem[] toolStripItems)
+        {
+            for (int i = 0; i < toolStripItems.Length; i++)
+            {
+                toolStripItems[i].Tag = LazyLoaded.True;
+            }
+
+            Items.AddRange(toolStripItems);
+            RefreshDarkModeState();
+        }
+        
+        /*
+        // Disabled until needed
+        public void AddRange(ToolStripItemCollection toolStripItems)
+        {
+            for (int i = 0; i < toolStripItems.Count; i++)
+            {
+                toolStripItems[i].Tag = LazyLoaded.True;
+            }
+
+            Items.AddRange(toolStripItems);
+            RefreshDarkModeState();
+        }
+        */
+        
+        private void RefreshDarkModeState()
         {
             void SetMenuTheme(ToolStripDropDown menu)
             {
