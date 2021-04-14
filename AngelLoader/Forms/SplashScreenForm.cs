@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 
@@ -46,6 +45,10 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        // Separate copy in here, so we don't cause an instantiation cascade for all the fields in DarkColors.
+        // Special case to be AS FAST as possible.
+        private readonly SolidBrush _fen_ControlBackgroundBrush = new SolidBrush(Color.FromArgb(48, 48, 48));
+
         public SplashScreenForm()
         {
 #if DEBUG
@@ -70,8 +73,9 @@ namespace AngelLoader.Forms
                 // Ultra slim, because a splash screen should come up as quick as possible
                 if (theme == VisualTheme.Dark)
                 {
-                    BackColor = DarkColors.Fen_ControlBackground;
-                    ForeColor = DarkColors.LightText;
+                    // Again, manual copies of colors so we don't statically initialize the whole of DarkColors.
+                    BackColor = Color.FromArgb(48, 48, 48); // Fen_ControlBackground
+                    ForeColor = Color.FromArgb(220, 220, 220); // LightText
                 }
 
                 _themeSet = true;
@@ -88,7 +92,7 @@ namespace AngelLoader.Forms
         public void SetMessage(string message)
         {
             Brush bgColorBrush = _theme == VisualTheme.Dark
-                ? DarkColors.Fen_ControlBackgroundBrush
+                ? _fen_ControlBackgroundBrush
                 : SystemBrushes.Control;
 
             _graphicsContext.G.FillRectangle(bgColorBrush, _messageRect);
@@ -134,6 +138,7 @@ namespace AngelLoader.Forms
                 _messageFont.Dispose();
                 _logoBitmap.Dispose();
                 _graphicsContext.Dispose();
+                _fen_ControlBackgroundBrush.Dispose();
             }
             base.Dispose(disposing);
         }
