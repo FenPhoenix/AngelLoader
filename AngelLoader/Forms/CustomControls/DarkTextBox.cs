@@ -129,7 +129,8 @@ namespace AngelLoader.Forms.CustomControls
             if (m.Msg == Native.WM_PAINT)
             {
                 using var gc = new Native.GraphicsContext(Handle);
-                gc.G.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
+                // ClientSize to draw correctly for multiline textboxes with scroll bar(s)
+                gc.G.DrawRectangle(DarkColors.LightBorderPen, 0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
             }
         }
     }
