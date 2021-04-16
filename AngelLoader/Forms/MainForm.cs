@@ -6,8 +6,7 @@
  -Install / uninstall
  -Green CheckCircle
  -Settings (can we do gradients and curved paths?)
- -Import
- -Calendars (can we get detailed enough? The play arrow icon cutting the lines at a diagonal might be an obstacle)
+ -Calendars (these are "pixel art" now, so we can definitely draw them!)
  -Anything else not listed in "definitely won't draw" is at least a possibility
 
  Images we definitely won't draw (iow that really need to be rasters):

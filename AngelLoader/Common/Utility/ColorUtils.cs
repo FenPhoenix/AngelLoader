@@ -125,6 +125,7 @@ namespace AngelLoader
             #region Invert and global lightness boost
 
             float newL = lab.L < 0.5f
+                // TODO: @DarkMode(InvertLightness): Shouldn't these boost values be the same as each other?
                 ? ((1.0f - lab.L) + 0.10f).Clamp(0.0f, 1.0f)
                 : (lab.L + 0.025f).Clamp(0.5f, 1.0f);
             //if (newL >= 0.5f && newL <= 0.7f)
