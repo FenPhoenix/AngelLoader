@@ -60,8 +60,8 @@ namespace AngelLoader.Forms.CustomControls
             Brush bgBrush_Highlighted_NotFocused = darkMode ? DarkColors.GreySelectionBrush : SystemBrushes.ControlLight;
 
             Color textColor_Normal = darkMode ? DarkColors.Fen_DarkForeground : SystemColors.ControlText;
-            Color textColor_Highlighted_Focused = darkMode ? DarkColors.LightText : SystemColors.HighlightText;
-            Color textColor_Highlighted_NotFocused = darkMode ? DarkColors.LightText : SystemColors.ControlText;
+            Color textColor_Highlighted_Focused = darkMode ? DarkColors.Fen_HighlightText : SystemColors.HighlightText;
+            Color textColor_Highlighted_NotFocused = darkMode ? DarkColors.Fen_HighlightText : SystemColors.ControlText;
 
             Brush backColorBrush;
             Color textColor;
