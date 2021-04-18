@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.WinAPI;
-//using static AngelLoader.WinAPI.Native;
 
 namespace AngelLoader.Forms.CustomControls
 {
