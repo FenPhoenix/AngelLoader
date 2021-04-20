@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
+using AngelLoader.Forms;
 using AngelLoader.WinAPI;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -18,6 +20,26 @@ namespace AngelLoader
         [STAThread]
         private static void Main()
         {
+#if DEBUG || Release_Testing
+            string[] args = Environment.GetCommandLineArgs();
+
+            if (args.Length > 1 && args[1].StartsWith("-rtf_test_"))
+            {
+                bool dark = args[1] switch
+                {
+                    "-rtf_test_light" => false,
+                    "-rtf_test_dark" => true,
+                    _ => false
+                };
+
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new RTF_Dark_Test_AppContext(dark));
+
+                return;
+            }
+#endif
+
             // Make this a single-instance application
             using var mutex = new Mutex(true, AppGuid, out bool firstInstance);
 
@@ -90,4 +112,18 @@ namespace AngelLoader
     {
         internal AppContext(Task configTask) => Core.Init(configTask);
     }
+
+#if DEBUG || Release_Testing
+    internal sealed class RTF_Dark_Test_AppContext : ApplicationContext
+    {
+        internal RTF_Dark_Test_AppContext(bool dark)
+        {
+            Config.VisualTheme = dark ? VisualTheme.Dark : VisualTheme.Classic;
+
+            using var f = new RTF_Visual_Test_Form(dark);
+            f.ShowDialog();
+            Environment.Exit(1);
+        }
+    }
+#endif
 }
