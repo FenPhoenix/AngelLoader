@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -18,12 +19,19 @@ namespace AngelLoader.Forms
 
         private bool _broadcastEnabled = true;
 
+        private const string SaveBaseDir = @"C:\AL_RTF_Color_Accuracy";
+        private const string FMsCacheDir = @"C:\AngelLoader\Data\FMsCache";
+        private readonly string ConfigDir = Path.Combine(SaveBaseDir, "Config");
+        private readonly string ConfigFile;
+
         public RTF_Visual_Test_Form()
         {
             InitializeComponent();
 
+            ConfigFile = Path.Combine(ConfigDir, "Config.ini");
+
             var rtfFiles = Directory
-                .GetFiles(@"C:\AngelLoader\Data\FMsCache", "*", SearchOption.AllDirectories)
+                .GetFiles(FMsCacheDir, "*", SearchOption.AllDirectories)
                 .Where(x => x.EndsWithI(".rtf") || x.EndsWithI(".txt")).ToList();
 
             for (int i = 0; i < rtfFiles.Count; i++)
@@ -60,7 +68,22 @@ namespace AngelLoader.Forms
                 RTFBox.SetRTFColorStyle(RTFColorStyle.Auto, startup: true);
             }
 
-            if (RTFFileComboBox.Items.Count > 0) RTFFileComboBox.SelectedIndex = 0;
+            if (RTFFileComboBox.Items.Count > 0)
+            {
+                if (File.Exists(ConfigFile))
+                {
+                    using var sr = new StreamReader(ConfigFile);
+                    string? indexStr = sr.ReadLine();
+                    if (indexStr != null && int.TryParse(indexStr, out int index))
+                    {
+                        RTFFileComboBox.SelectedIndex = index;
+                    }
+                }
+                else
+                {
+                    RTFFileComboBox.SelectedIndex = 0;
+                }
+            }
         }
 
         private void SetVisualTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
@@ -68,6 +91,10 @@ namespace AngelLoader.Forms
         private void RTFFileComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             RTFBox.LoadContent(RTFFileComboBox.SelectedItem.ToString(), ReadmeType.RichText);
+
+            string notesFile = GetCurrentNotesFile();
+            NotesTextBox.Text = File.Exists(notesFile) ? File.ReadAllText(notesFile) : "";
+
             if (_broadcastEnabled)
             {
                 Native.PostMessage((IntPtr)Native.HWND_BROADCAST, Native.WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
@@ -107,6 +134,32 @@ namespace AngelLoader.Forms
                 var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
                 Native.PostMessage((IntPtr)Native.HWND_BROADCAST, Native.WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
             }
+        }
+
+        private string GetCurrentNotesFile() =>
+            Path.Combine(SaveBaseDir, RTFFileComboBox
+                .SelectedItem.ToString()
+                .Substring(FMsCacheDir.Length + 1)
+                .ToForwardSlashes()
+                .Replace("/", "___") + ".txt");
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            Directory.CreateDirectory(SaveBaseDir);
+            if (NotesTextBox.Text.IsWhiteSpace())
+            {
+                File.Delete(GetCurrentNotesFile());
+            }
+            else
+            {
+                File.WriteAllText(GetCurrentNotesFile(), NotesTextBox.Text);
+            }
+        }
+
+        private void RTF_Visual_Test_Form_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Directory.CreateDirectory(ConfigDir);
+            File.WriteAllText(ConfigFile, RTFFileComboBox.SelectedIndex.ToString());
         }
     }
 }
