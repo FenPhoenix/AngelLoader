@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
@@ -15,11 +12,13 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public partial class RTF_Visual_Test_Form : Form
+    public sealed partial class RTF_Visual_Test_Form : Form
     {
         private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
-        public RTF_Visual_Test_Form(bool dark)
+        private bool _broadcastEnabled = true;
+
+        public RTF_Visual_Test_Form()
         {
             InitializeComponent();
 
@@ -69,6 +68,45 @@ namespace AngelLoader.Forms
         private void RTFFileComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             RTFBox.LoadContent(RTFFileComboBox.SelectedItem.ToString(), ReadmeType.RichText);
+            if (_broadcastEnabled)
+            {
+                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, Native.WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
+            }
+        }
+
+        private static int AppNum() => Config.VisualTheme == VisualTheme.Classic ? 0 : 1;
+
+        protected override void WndProc(ref Message m)
+        {
+            static int MsgAppNum(ref Message m) => m.WParam.ToInt32();
+
+            if (m.Msg == Native.WM_CHANGECOMBOBOXSELECTEDINDEX && MsgAppNum(ref m) != AppNum())
+            {
+                _broadcastEnabled = false;
+                RTFFileComboBox.SelectedIndex = m.LParam.ToInt32();
+                _broadcastEnabled = true;
+            }
+            else if (m.Msg == Native.WM_CHANGERICHTEXTBOXSCROLLINFO && MsgAppNum(ref m) != AppNum())
+            {
+                _broadcastEnabled = false;
+                var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
+                si.nPos = m.LParam.ToInt32();
+                ControlUtils.RepositionScroll(RTFBox.Handle, si, Native.SB_VERT);
+                _broadcastEnabled = true;
+            }
+            else
+            {
+                base.WndProc(ref m);
+            }
+        }
+
+        private void RTFBox_VScroll(object sender, EventArgs e)
+        {
+            if (_broadcastEnabled)
+            {
+                var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
+                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, Native.WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
+            }
         }
     }
 }

@@ -263,6 +263,11 @@ namespace AngelLoader.WinAPI
         // Second-instance telling first instance to show itself junk
         public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Misc.AppGuid);
 
+#if DEBUG || Release_Testing
+        public static readonly int WM_CHANGECOMBOBOXSELECTEDINDEX = RegisterWindowMessage(nameof(WM_CHANGECOMBOBOXSELECTEDINDEX) + "|" + Misc.AppGuid);
+        public static readonly int WM_CHANGERICHTEXTBOXSCROLLINFO = RegisterWindowMessage(nameof(WM_CHANGERICHTEXTBOXSCROLLINFO) + "|" + Misc.AppGuid);
+#endif
+
         [DllImport("user32", CharSet = CharSet.Unicode)]
         private static extern int RegisterWindowMessage(string message);
 

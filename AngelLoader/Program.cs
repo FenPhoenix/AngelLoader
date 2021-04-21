@@ -120,7 +120,7 @@ namespace AngelLoader
         {
             Config.VisualTheme = dark ? VisualTheme.Dark : VisualTheme.Classic;
 
-            using var f = new RTF_Visual_Test_Form(dark);
+            using var f = new RTF_Visual_Test_Form();
             f.ShowDialog();
             Environment.Exit(1);
         }

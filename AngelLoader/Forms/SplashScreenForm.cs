@@ -63,7 +63,7 @@ namespace AngelLoader.Forms
         public void Show(VisualTheme theme)
         {
             if (Visible || _themeSet) return;
-            
+
             _theme = theme;
 
             // Ultra slim, because a splash screen should come up as quick as possible

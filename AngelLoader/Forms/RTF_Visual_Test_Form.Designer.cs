@@ -1,7 +1,7 @@
 ﻿
 namespace AngelLoader.Forms
 {
-    partial class RTF_Visual_Test_Form
+    sealed partial class RTF_Visual_Test_Form
     {
         /// <summary>
         /// Required designer variable.
@@ -35,10 +35,12 @@ namespace AngelLoader.Forms
             // 
             // RTFFileComboBox
             // 
+            this.RTFFileComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.RTFFileComboBox.FormattingEnabled = true;
             this.RTFFileComboBox.Location = new System.Drawing.Point(8, 40);
             this.RTFFileComboBox.Name = "RTFFileComboBox";
-            this.RTFFileComboBox.Size = new System.Drawing.Size(336, 21);
+            this.RTFFileComboBox.Size = new System.Drawing.Size(968, 21);
             this.RTFFileComboBox.TabIndex = 1;
             this.RTFFileComboBox.SelectedIndexChanged += new System.EventHandler(this.RTFFileComboBox_SelectedIndexChanged);
             // 
@@ -54,6 +56,7 @@ namespace AngelLoader.Forms
             this.RTFBox.Size = new System.Drawing.Size(984, 536);
             this.RTFBox.TabIndex = 0;
             this.RTFBox.Text = "";
+            this.RTFBox.VScroll += new System.EventHandler(this.RTFBox_VScroll);
             // 
             // RTF_Visual_Test_Form
             // 
