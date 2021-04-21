@@ -84,7 +84,7 @@ namespace AngelLoader
             g = g > 0.0031308 ? (1.055 * Math.Pow(g, 1 / 2.4)) - 0.055 : 12.92 * g;
             b = b > 0.0031308 ? (1.055 * Math.Pow(b, 1 / 2.4)) - 0.055 : 12.92 * b;
 
-            // Convert 0-1.0 -> 0-255, and clamp (clamping seems to be a requirement, though not mentioned)
+            // Convert 0-1.0 -> 0-255, and clamp (clamping should be sufficient for our use case)
             int cr = (int)(r * 255f).Clamp(0f, 255f);
             int cg = (int)(g * 255f).Clamp(0f, 255f);
             int cb = (int)(b * 255f).Clamp(0f, 255f);
@@ -114,8 +114,6 @@ namespace AngelLoader
 
         internal static Color InvertLightness(Color color)
         {
-            #region Oklab lightness invert + slight boost
-
             // We unfortunately still need janky tuning of lightness and desaturation for good visibility, but
             // Oklab does give us a beautiful perceptual lightness scale (dark blue goes to light blue!) unlike
             // HSL, so awesome!
@@ -125,14 +123,8 @@ namespace AngelLoader
             #region Invert and global lightness boost
 
             float newL = lab.L < 0.5f
-                // TODO: @DarkMode(InvertLightness): Shouldn't these boost values be the same as each other?
                 ? ((1.0f - lab.L) + 0.10f).Clamp(0.0f, 1.0f)
                 : (lab.L + 0.025f).Clamp(0.5f, 1.0f);
-            //if (newL >= 0.5f && newL <= 0.7f)
-            //{
-            //    //newL = (float)(1.0f - (lab.L - 0.5)).Clamp(0.7f, 1.0f);
-            //    newL = (lab.L + 0.25f).Clamp(0.5f, 0.7f);
-            //}
 
             lab = new Lab(newL, lab.a, lab.b);
 
@@ -169,8 +161,6 @@ namespace AngelLoader
 
             // Slight global desaturation
             lab = LChToOklab(new LCh(lch.L, (lch.C - (redDesaturated ? 0.015f : 0.04f)).Clamp(0, 1.0f), lch.h));
-
-            #endregion
 
             // Almost done...
             Color retColor = OklabToColor(lab);
