@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms.CustomControls
@@ -37,9 +38,16 @@ namespace AngelLoader.Forms.CustomControls
             switch ((uint)m.Msg)
             {
                 case Native.WM_PAINT:
-                    NativeHooks.SysColorOverride = NativeHooks.Override.RichText;
-                    base.WndProc(ref m);
-                    NativeHooks.SysColorOverride = NativeHooks.Override.None;
+                    if (_rtfColorStyle == RTFColorStyle.Original)
+                    {
+                        base.WndProc(ref m);
+                    }
+                    else
+                    {
+                        NativeHooks.SysColorOverride = NativeHooks.Override.RichText;
+                        base.WndProc(ref m);
+                        NativeHooks.SysColorOverride = NativeHooks.Override.None;
+                    }
                     break;
                 case Native.WM_MOUSEWHEEL:
                     // Intercept the mousewheel call and direct it to use the fixed scrolling
