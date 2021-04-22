@@ -33,6 +33,7 @@
  TODO: @DarkMode: Make sure all controls' disabled colors are working!
  TODO: @DarkMode: Test all parts of the app with high DPI!
  TODO: @DarkMode: Test on Win7 to make sure the dark theme still looks as it should.
+ TODO: @DarkMode: Make "Show unsupported" & "Show unavailable" global/non-filter-clearable options
 
  @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */
@@ -752,6 +753,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            FilterShowUnavailableButton.Checked = Config.ShowUnavailableFMs;
             FilterShowRecentAtTopButton.Checked = Config.ShowRecentAtTop;
 
             // EnsureValidity() guarantees selected tab will not be invisible
@@ -1231,6 +1233,7 @@ namespace AngelLoader.Forms
                 }
 
                 FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowUnsupported;
+                FilterShowUnavailableButton.ToolTipText = LText.FilterBar.ShowUnavailable;
                 FilterShowRecentAtTopButton.ToolTipText = LText.FilterBar.ShowRecentAtTop;
 
                 FilterControlsShowHideButton.ToolTipText = LText.FilterBar.ShowHideMenuToolTip;
@@ -1495,6 +1498,7 @@ namespace AngelLoader.Forms
                 FilterByFinishedButton.Image = Images.FilterByFinished;
                 FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
                 FilterByRatingButton.Image = Images.FilterByRating;
+                FilterShowUnavailableButton.Image = Images.ShowUnavailable;
                 FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
 
                 Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
@@ -2142,7 +2146,14 @@ namespace AngelLoader.Forms
                     return;
                 }
 
-                if (sender == ClearFiltersButton) ClearUIAndCurrentInternalFilter();
+                if (sender == ClearFiltersButton)
+                {
+                    ClearUIAndCurrentInternalFilter();
+                }
+                else if (sender == FilterShowUnavailableButton)
+                {
+                    Config.ShowUnavailableFMs = FilterShowUnavailableButton.Checked;
+                }
 
                 // Don't keep selection for title/author, cause you want to end up on the FM you typed as soon as
                 // possible

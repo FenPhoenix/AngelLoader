@@ -81,6 +81,7 @@
             this.FilterByUnfinishedButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.FilterByRatingButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.FilterShowUnsupportedButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
+            this.FilterShowUnavailableButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.FilterShowRecentAtTopButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.FilterControlsShowHideButton = new AngelLoader.Forms.CustomControls.ToolStripArrowButton();
             this.RefreshAreaToolStrip = new AngelLoader.Forms.CustomControls.ToolStripCustom();
@@ -748,6 +749,7 @@
             this.FilterByUnfinishedButton,
             this.FilterByRatingButton,
             this.FilterShowUnsupportedButton,
+            this.FilterShowUnavailableButton,
             this.FilterShowRecentAtTopButton,
             this.FilterControlsShowHideButton});
             this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
@@ -851,6 +853,19 @@
             this.FilterShowUnsupportedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterShowUnsupportedButton.ToolTipText = "Show FMs marked as \"unsupported game or non-FM archive\"";
             this.FilterShowUnsupportedButton.Click += new System.EventHandler(this.Filters_Changed);
+            // 
+            // FilterShowUnavailableButton
+            // 
+            this.FilterShowUnavailableButton.AutoSize = false;
+            this.FilterShowUnavailableButton.CheckOnClick = true;
+            this.FilterShowUnavailableButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterShowUnavailableButton.Image = Images.ShowUnavailable;
+            this.FilterShowUnavailableButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterShowUnavailableButton.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
+            this.FilterShowUnavailableButton.Name = "FilterShowUnavailableButton";
+            this.FilterShowUnavailableButton.Size = new System.Drawing.Size(25, 25);
+            this.FilterShowUnavailableButton.ToolTipText = "Show unavailable FMs";
+            this.FilterShowUnavailableButton.Click += new System.EventHandler(this.Filters_Changed);
             // 
             // FilterShowRecentAtTopButton
             // 
@@ -2056,5 +2071,6 @@
         internal AngelLoader.Forms.CustomControls.DarkButton MainMenuButton;
         internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
         internal CustomControls.DarkButton ReadmeEncodingButton;
+        internal CustomControls.ToolStripButtonCustom FilterShowUnavailableButton;
     }
 }

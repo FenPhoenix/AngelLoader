@@ -84,6 +84,7 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton = new ToolStripButtonCustom();
             FilterByRatingButton = new ToolStripButtonCustom();
             FilterShowUnsupportedButton = new ToolStripButtonCustom();
+            FilterShowUnavailableButton = new ToolStripButtonCustom();
             FilterShowRecentAtTopButton = new ToolStripButtonCustom();
             FilterControlsShowHideButton = new ToolStripArrowButton();
             RefreshAreaToolStrip = new ToolStripCustom();
@@ -650,6 +651,7 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton,
             FilterByRatingButton,
             FilterShowUnsupportedButton,
+            FilterShowUnavailableButton,
             FilterShowRecentAtTopButton,
             FilterControlsShowHideButton});
             FilterIconButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
@@ -721,6 +723,16 @@ namespace AngelLoader.Forms
             FilterShowUnsupportedButton.Margin = new Padding(6, 0, 0, 0);
             FilterShowUnsupportedButton.Size = new Size(25, 25);
             FilterShowUnsupportedButton.Click += Filters_Changed;
+            // 
+            // FilterShowUnavailableButton
+            // 
+            FilterShowUnavailableButton.AutoSize = false;
+            FilterShowUnavailableButton.CheckOnClick = true;
+            FilterShowUnavailableButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            FilterShowUnavailableButton.Image = Images.ShowUnavailable;
+            FilterShowUnavailableButton.Margin = new Padding(0);
+            FilterShowUnavailableButton.Size = new Size(25, 25);
+            FilterShowUnavailableButton.Click += Filters_Changed;
             // 
             // FilterShowRecentAtTopButton
             // 

@@ -694,6 +694,10 @@ namespace AngelLoader
                 {
                     config.ShowRecentAtTop = val.EqualsTrue();
                 }
+                else if (lineTS.StartsWithFast_NoNullChecks("ShowUnavailableFMs="))
+                {
+                    config.ShowUnavailableFMs = val.EqualsTrue();
+                }
                 else if (lineTS.StartsWithFast_NoNullChecks("FMsListFontSizeInPoints="))
                 {
                     if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
@@ -870,6 +874,7 @@ namespace AngelLoader
             sb.Append("SortedColumn=").Append(config.SortedColumn).AppendLine();
             sb.Append("SortDirection=").Append(config.SortDirection).AppendLine();
             sb.Append("ShowRecentAtTop=").Append(config.ShowRecentAtTop).AppendLine();
+            sb.Append("ShowUnavailableFMs=").Append(config.ShowUnavailableFMs).AppendLine();
             sb.Append("FMsListFontSizeInPoints=").AppendLine(config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 
             foreach (ColumnData col in config.Columns)
