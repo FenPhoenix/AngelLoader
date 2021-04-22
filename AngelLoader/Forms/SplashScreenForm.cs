@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Properties;
@@ -43,6 +44,9 @@ namespace AngelLoader.Forms
         // SetMessage() (thread safety for FM finder)
         private Color _foreColorCached;
         private Color _backColorCached;
+
+        // More of the above
+        internal bool VisibleCached;
 
         #endregion
 
@@ -113,6 +117,12 @@ namespace AngelLoader.Forms
                 TextFormatFlags.WordBreak;
 
             TextRenderer.DrawText(_graphicsContext.G, message, _messageFont, _messageRect, _foreColorCached, _backColorCached, _messageTextFormatFlags);
+        }
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            VisibleCached = Visible;
+            base.OnVisibleChanged(e);
         }
 
         public void ProgrammaticClose()
