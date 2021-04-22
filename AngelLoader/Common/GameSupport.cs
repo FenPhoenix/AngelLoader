@@ -81,8 +81,6 @@ namespace AngelLoader
         /// Converts a Game to a GameIndex. *Narrowing conversion, so make sure the game has been checked for convertibility first!
         /// </summary>
         /// <param name="game"></param>
-        /// <returns></returns>
-        /// <exception cref="IndexOutOfRangeException"></exception>
         internal static GameIndex GameToGameIndex(Game game)
         {
             AssertR(game != Game.Null && game != Game.Unsupported, nameof(game) + " was out of range: " + game);
