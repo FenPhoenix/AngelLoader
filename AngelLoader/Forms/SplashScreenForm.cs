@@ -39,6 +39,11 @@ namespace AngelLoader.Forms
         private readonly Font _messageFont = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
         private readonly Bitmap _logoBitmap = new Icon(Images.AngelLoader, 48, 48).ToBitmap();
 
+        // Paranoid to make absolutely sure we're not accessing any cross-thread-disallowed Control properties in
+        // SetMessage() (thread safety for FM finder)
+        private Color _foreColorCached;
+        private Color _backColorCached;
+
         #endregion
 
         #endregion
@@ -74,6 +79,9 @@ namespace AngelLoader.Forms
                 ForeColor = Color.FromArgb(220, 220, 220); // LightText
             }
 
+            _foreColorCached = ForeColor;
+            _backColorCached = BackColor;
+
             base.Show();
 
             // Must draw these after Show(), or they don't show up.
@@ -104,7 +112,7 @@ namespace AngelLoader.Forms
                 TextFormatFlags.NoClipping |
                 TextFormatFlags.WordBreak;
 
-            TextRenderer.DrawText(_graphicsContext.G, message, _messageFont, _messageRect, ForeColor, BackColor, _messageTextFormatFlags);
+            TextRenderer.DrawText(_graphicsContext.G, message, _messageFont, _messageRect, _foreColorCached, _backColorCached, _messageTextFormatFlags);
         }
 
         public void ProgrammaticClose()

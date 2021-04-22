@@ -15,12 +15,21 @@ namespace AngelLoader
 {
     internal static class FindFMs
     {
+        /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
+        internal static List<int> Find_Startup(SplashScreen splashScreen, string doneMessage)
+        {
+            var ret = FindInternal(startup: true);
+            splashScreen.SetMessage(doneMessage);
+            return ret;
+        }
+
+        /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
+        internal static List<int> Find() => FindInternal(startup: false);
+
         // MT: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
         // @CAN_RUN_BEFORE_VIEW_INIT
-        /// <param name="startup"></param>
-        /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-        internal static List<int> Find(bool startup = false)
+        private static List<int> FindInternal(bool startup)
         {
             if (!startup)
             {
