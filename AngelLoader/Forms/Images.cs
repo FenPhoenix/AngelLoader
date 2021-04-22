@@ -547,9 +547,16 @@ namespace AngelLoader.Forms
 
         public static Bitmap FilterByRating => CreateStarImage(StarFullGPath, 24);
 
-        private static Image? _showRecentAtTop;
-        private static Image? _showRecentAtTop_Dark;
-        public static Image FilterShowRecentAtTop =>
+        private static Bitmap? _showUnavailable;
+        private static Bitmap? _showUnavailable_Dark;
+        public static Bitmap ShowUnavailable =>
+            DarkModeEnabled
+                ? _showUnavailable_Dark ??= Resources.Show_Unavailable_Dark
+                : _showUnavailable ??= Resources.Show_Unavailable;
+
+        private static Bitmap? _showRecentAtTop;
+        private static Bitmap? _showRecentAtTop_Dark;
+        public static Bitmap FilterShowRecentAtTop =>
             DarkModeEnabled
                 ? _showRecentAtTop_Dark ??= Resources.FilterShowRecentAtTop_Dark
                 : _showRecentAtTop ??= Resources.FilterShowRecentAtTop;
