@@ -167,7 +167,7 @@ namespace AngelLoader.Forms
             Controls.Add(AuthorCheckBox);
             Controls.Add(TitleCheckBox);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Icon = Images.AngelLoader;
+            Icon = AL_Icon.AngelLoader;
             KeyPreview = true;
             MaximizeBox = false;
             MinimizeBox = false;

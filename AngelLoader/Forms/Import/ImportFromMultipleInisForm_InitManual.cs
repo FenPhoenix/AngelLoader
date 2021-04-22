@@ -162,7 +162,7 @@ namespace AngelLoader.Forms
             Controls.Add(ImportControls);
             Controls.Add(OKCancelFlowLayoutPanel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Icon = Images.AngelLoader;
+            Icon = AL_Icon.AngelLoader;
             MaximizeBox = false;
             MinimizeBox = false;
             ShowInTaskbar = false;

@@ -1532,7 +1532,7 @@ namespace AngelLoader.Forms
             AutoScaleMode = AutoScaleMode.Dpi;
             Controls.Add(EverythingPanel);
             DoubleBuffered = true;
-            Icon = Images.AngelLoader;
+            Icon = AL_Icon.AngelLoader;
             KeyPreview = true;
             MinimumSize = new Size(894, 260);
             Deactivate += MainForm_Deactivate;

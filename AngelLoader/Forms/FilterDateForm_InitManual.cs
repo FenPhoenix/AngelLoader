@@ -129,7 +129,7 @@ namespace AngelLoader.Forms
             Controls.Add(Cancel_Button);
             Controls.Add(OKButton);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
-            Icon = Images.AngelLoader;
+            Icon = AL_Icon.AngelLoader;
             MaximizeBox = false;
             MinimizeBox = false;
             ShowInTaskbar = false;

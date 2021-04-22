@@ -277,7 +277,7 @@ namespace AngelLoader.Forms
             Controls.Add(AndTreeView);
             Controls.Add(OriginTreeView);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
-            Icon = Images.AngelLoader;
+            Icon = AL_Icon.AngelLoader;
             MaximizeBox = false;
             MaximumSize = new Size(1056, 32767);
             MinimizeBox = false;

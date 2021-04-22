@@ -175,7 +175,7 @@ namespace AngelLoader.Forms
             Controls.Add(MainSplitContainer);
             Controls.Add(BottomFlowLayoutPanel);
             DoubleBuffered = true;
-            Icon = Images.AngelLoader;
+            Icon = AL_Icon.AngelLoader;
             KeyPreview = true;
             MaximizeBox = false;
             MinimizeBox = false;

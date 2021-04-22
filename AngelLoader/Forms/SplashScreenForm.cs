@@ -38,7 +38,7 @@ namespace AngelLoader.Forms
         private readonly Native.GraphicsContext _graphicsContext;
 
         private readonly Font _messageFont = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-        private readonly Bitmap _logoBitmap = new Icon(Images.AngelLoader, 48, 48).ToBitmap();
+        private readonly Bitmap _logoBitmap = new Icon(AL_Icon.AngelLoader, 48, 48).ToBitmap();
 
         // Paranoid to make absolutely sure we're not accessing any cross-thread-disallowed Control properties in
         // SetMessage() (thread safety for FM finder)

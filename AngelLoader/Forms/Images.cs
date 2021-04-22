@@ -18,6 +18,15 @@ namespace AngelLoader.Forms
     // we want to cache it in a Bitmap object. Images that are loaded only once are not present here, as they would
     // derive no performance benefit.
     // NOTE: This class and everything accessible inside it needs to be public for the designers to recognize it.
+
+    // Performance hack for splash screen, so we don't cause a static ctor cascade, and we still only load the
+    // icon once.
+    public static class AL_Icon
+    {
+        private static Icon? _AngelLoader;
+        public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
+    }
+
     public static class Images
     {
         public static bool DarkModeEnabled;
@@ -452,9 +461,6 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Image properties
-
-        private static Icon? _AngelLoader;
-        public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
 
         #region Games
 
