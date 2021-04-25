@@ -164,7 +164,23 @@ namespace AngelLoader.WinAPI
         internal static void ReloadTheme()
         {
             if (!Native.IsThemeActive()) return;
-            foreach (ThemeRenderer renderer in _themeRenderers.Values) renderer.Reload();
+
+            // We have to re-add the HTheme keys because they may/will(?) have changed
+
+            var tempRenderers = new List<ThemeRenderer>(_themeRenderers.Count);
+
+            foreach (ThemeRenderer renderer in _themeRenderers.Values)
+            {
+                tempRenderers.Add(renderer);
+            }
+
+            _themeRenderers.Clear();
+
+            foreach (ThemeRenderer renderer in tempRenderers)
+            {
+                renderer.Reload();
+                _themeRenderers[renderer.HTheme] = renderer;
+            }
         }
 
         #region Hooked method overrides
