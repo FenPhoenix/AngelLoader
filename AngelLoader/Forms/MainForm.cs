@@ -1962,8 +1962,6 @@ namespace AngelLoader.Forms
                     FilterByRatingButton.Checked = false;
                     Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
 
-                    FilterShowUnsupportedButton.Checked = false;
-
                     // NOTE: Here is the line where the internal filter is cleared. It does in fact happen!
                     FMsDGV.Filter.ClearAll(oneList);
                 }
