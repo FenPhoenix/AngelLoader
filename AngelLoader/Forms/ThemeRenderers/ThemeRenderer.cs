@@ -9,11 +9,10 @@ namespace AngelLoader.Forms.ThemeRenderers
     internal abstract class ThemeRenderer : IDisposable
     {
         internal IntPtr HTheme { get; private set; }
-        private protected virtual string CLSID => throw new NullReferenceException("No CLSID!");
+        private protected abstract string CLSID { get; }
+        internal abstract bool Enabled { get; }
 
         internal ThemeRenderer() => Reload();
-
-        internal virtual bool Enabled => true;
 
         internal void Reload()
         {

@@ -102,6 +102,10 @@ namespace AngelLoader.Forms.CustomControls
 
         private void DrawBorder(IntPtr hWnd)
         {
+            // This draws a buggy extra border an item-height high at the bottom if we collapse an item.
+            // Everything seems to look fine without this, so disabling for now.
+            return;
+
             if (!_darkModeEnabled || BorderStyle == BorderStyle.None) return;
 
             using var gc = new Native.GraphicsContext(hWnd);

@@ -97,8 +97,10 @@ namespace AngelLoader.WinAPI
 
             var sbr = new ScrollBarRenderer();
             var ttr = new ToolTipRenderer();
+            var tvr = new TreeViewRenderer();
             _themeRenderers[sbr.HTheme] = sbr;
             _themeRenderers[ttr.HTheme] = ttr;
+            _themeRenderers[tvr.HTheme] = tvr;
 
             try
             {
@@ -195,8 +197,7 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            return Misc.Config.DarkMode &&
-                   _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
+            return _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
                    renderer.Enabled &&
                    renderer.TryDrawThemeBackground(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect)
                 ? success
@@ -212,8 +213,7 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            return Misc.Config.DarkMode &&
-                   _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
+            return _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
                    renderer.Enabled &&
                    renderer.TryGetThemeColor(hTheme, iPartId, iStateId, iPropId, out pColor)
                 ? success
