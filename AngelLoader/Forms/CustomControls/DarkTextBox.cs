@@ -17,7 +17,7 @@ namespace AngelLoader.Forms.CustomControls
         private BorderStyle? _origBorderStyle;
 
         [PublicAPI]
-        public Color DarkModeBackColor => Enabled ? DarkColors.Fen_DarkBackground : DarkColors.Fen_ControlBackground;
+        public Color DarkModeBackColor => Enabled ? DarkColors.LightBackground : DarkColors.Fen_ControlBackground;
         [PublicAPI]
         public Color DarkModeForeColor => Enabled ? DarkColors.LightText : DarkColors.DisabledText;
 
@@ -122,9 +122,13 @@ namespace AngelLoader.Forms.CustomControls
 
             // We still need this for selected text fore/back color. We can't find the exhaustive set of messages
             // that will make us ALWAYS have the proper selection back color, so just do it for all messages. Meh!
-            NativeHooks.SysColorOverride = NativeHooks.Override.Full;
-            base.WndProc(ref m);
-            NativeHooks.SysColorOverride = NativeHooks.Override.None;
+            // (except WM_ENABLE, because if we react to that then we get random wrong colors for various textboxes)
+            if (m.Msg != Native.WM_ENABLE)
+            {
+                NativeHooks.SysColorOverride = NativeHooks.Override.Full;
+                base.WndProc(ref m);
+                NativeHooks.SysColorOverride = NativeHooks.Override.None;
+            }
 
             if (m.Msg == Native.WM_PAINT)
             {

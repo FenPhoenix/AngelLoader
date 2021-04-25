@@ -26,7 +26,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_darkModeEnabled)
                 {
-                    BackColor = DarkColors.Fen_DarkBackground;
+                    BackColor = DarkColors.LightBackground;
                 }
                 else
                 {
@@ -55,11 +55,11 @@ namespace AngelLoader.Forms.CustomControls
 
             bool darkMode = _darkModeEnabled;
 
-            Brush bgBrush_Normal = darkMode ? DarkColors.Fen_DarkBackgroundBrush : SystemBrushes.Window;
+            Brush bgBrush_Normal = darkMode ? DarkColors.LightBackgroundBrush : SystemBrushes.Window;
             Brush bgBrush_Highlighted_Focused = darkMode ? DarkColors.BlueSelectionBrush : SystemBrushes.Highlight;
             Brush bgBrush_Highlighted_NotFocused = darkMode ? DarkColors.GreySelectionBrush : SystemBrushes.ControlLight;
 
-            Color textColor_Normal = darkMode ? DarkColors.Fen_DarkForeground : SystemColors.ControlText;
+            Color textColor_Normal = darkMode ? DarkColors.LightText : SystemColors.ControlText;
             Color textColor_Highlighted_Focused = darkMode ? DarkColors.Fen_HighlightText : SystemColors.HighlightText;
             Color textColor_Highlighted_NotFocused = darkMode ? DarkColors.Fen_HighlightText : SystemColors.ControlText;
 
@@ -105,7 +105,7 @@ namespace AngelLoader.Forms.CustomControls
             if (!_darkModeEnabled || BorderStyle == BorderStyle.None) return;
 
             using var gc = new Native.GraphicsContext(hWnd);
-            gc.G.DrawRectangle(DarkColors.Fen_DarkBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
+            gc.G.DrawRectangle(DarkColors.LighterBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
             gc.G.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
         }
 

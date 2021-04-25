@@ -26,7 +26,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
 
-                BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Window;
+                BackColor = _darkModeEnabled ? DarkColors.LightBackground : SystemColors.Window;
 
                 Invalidate();
             }
@@ -192,7 +192,7 @@ namespace AngelLoader.Forms.CustomControls
                     : _darkModeEnabled
                         ? !Enabled
                             ? DarkColors.Fen_ControlBackgroundBrush
-                            : DarkColors.Fen_DarkBackgroundBrush
+                            : DarkColors.LightBackgroundBrush
                         : !Enabled
                             ? SystemBrushes.Control
                             : SystemBrushes.Window;
@@ -220,7 +220,7 @@ namespace AngelLoader.Forms.CustomControls
                             : DarkColors.Fen_ControlBackground
                         : itemSelected
                             ? DarkColors.BlueSelection
-                            : DarkColors.Fen_DarkBackground
+                            : DarkColors.LightBackground
                     : !Enabled
                         ? itemSelected
                             ? SystemColors.ControlLight
