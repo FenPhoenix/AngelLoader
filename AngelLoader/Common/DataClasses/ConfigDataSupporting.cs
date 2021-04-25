@@ -48,6 +48,7 @@ namespace AngelLoader.DataClasses
         FinishedState,
         Rating,
         ShowUnsupported,
+        ShowUnavailable,
         ShowRecentAtTop
     }
 
@@ -179,7 +180,6 @@ namespace AngelLoader.DataClasses
             ClearReleaseDate();
             ClearLastPlayed();
             ClearFinished();
-            ClearShowUnsupported();
         }
 
         internal void ClearHideableFilter(HideableFilterControls filter)
@@ -206,9 +206,6 @@ namespace AngelLoader.DataClasses
                     break;
                 case HideableFilterControls.Rating:
                     ClearRating();
-                    break;
-                case HideableFilterControls.ShowUnsupported:
-                    ClearShowUnsupported();
                     break;
             }
         }
@@ -240,8 +237,6 @@ namespace AngelLoader.DataClasses
         }
 
         private void ClearFinished() => Finished = FinishedState.Null;
-
-        private void ClearShowUnsupported() => ShowUnsupported = false;
 
         internal string Title = "";
         internal string Author = "";
@@ -318,15 +313,12 @@ namespace AngelLoader.DataClasses
 
         internal FinishedState Finished = FinishedState.Null;
 
-        internal bool ShowUnsupported;
-
         internal void DeepCopyTo(Filter dest)
         {
             dest.ClearAll();
             dest.Title = Title;
             dest.Author = Author;
             dest.SetRatingFromAndTo(RatingFrom, RatingTo);
-            dest.ShowUnsupported = ShowUnsupported;
 
             // DateTime is a struct (value type), so we can just assign and it copies. Phew.
             dest.SetDateFromAndTo(lastPlayed: false, ReleaseDateFrom, ReleaseDateTo);

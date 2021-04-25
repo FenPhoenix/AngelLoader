@@ -162,10 +162,6 @@ namespace AngelLoader
                 {
                     if (int.TryParse(val, out int result)) config.Filter.RatingTo = result;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("FilterShowJunk="))
-                {
-                    config.Filter.ShowUnsupported = val.EqualsTrue();
-                }
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterTagsAnd="))
                 {
                     ReadTags(config.Filter.Tags.AndTags, val);
@@ -221,10 +217,6 @@ namespace AngelLoader
                     {
                         config.GameTabsState.GetFilter(_gameIndex).RatingTo = result;
                     }
-                }
-                else if (IsGamePrefixedLine(lineTS, "FilterShowJunk=", out _gameIndex))
-                {
-                    config.GameTabsState.GetFilter(_gameIndex).ShowUnsupported = val.EqualsTrue();
                 }
                 else if (IsGamePrefixedLine(lineTS, "FilterTagsAnd=", out _gameIndex))
                 {
@@ -694,6 +686,10 @@ namespace AngelLoader
                 {
                     config.ShowRecentAtTop = val.EqualsTrue();
                 }
+                else if (lineTS.StartsWithFast_NoNullChecks("ShowUnsupported="))
+                {
+                    config.ShowUnsupported = val.EqualsTrue();
+                }
                 else if (lineTS.StartsWithFast_NoNullChecks("ShowUnavailableFMs="))
                 {
                     config.ShowUnavailableFMs = val.EqualsTrue();
@@ -860,8 +856,6 @@ namespace AngelLoader
                 sb.Append(p).Append("FilterRatingFrom=").Append(filter.RatingFrom).AppendLine();
                 sb.Append(p).Append("FilterRatingTo=").Append(filter.RatingTo).AppendLine();
 
-                sb.Append(p).Append("FilterShowJunk=").Append(filter.ShowUnsupported).AppendLine();
-
                 sb.Append(p).Append("FilterTagsAnd=").AppendLine(TagsToString(filter.Tags.AndTags));
                 sb.Append(p).Append("FilterTagsOr=").AppendLine(TagsToString(filter.Tags.OrTags));
                 sb.Append(p).Append("FilterTagsNot=").AppendLine(TagsToString(filter.Tags.NotTags));
@@ -874,6 +868,7 @@ namespace AngelLoader
             sb.Append("SortedColumn=").Append(config.SortedColumn).AppendLine();
             sb.Append("SortDirection=").Append(config.SortDirection).AppendLine();
             sb.Append("ShowRecentAtTop=").Append(config.ShowRecentAtTop).AppendLine();
+            sb.Append("ShowUnsupported=").Append(config.ShowUnsupported).AppendLine();
             sb.Append("ShowUnavailableFMs=").Append(config.ShowUnavailableFMs).AppendLine();
             sb.Append("FMsListFontSizeInPoints=").AppendLine(config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 

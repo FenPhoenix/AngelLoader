@@ -633,6 +633,7 @@ namespace AngelLoader.Forms
                 new Component[] { FilterByFinishedButton, FilterByUnfinishedButton },
                 new Component[] { FilterByRatingButton },
                 new Component[] { FilterShowUnsupportedButton },
+                new Component[] { FilterShowUnavailableButton },
                 new Component[] { FilterShowRecentAtTopButton }
             };
 
@@ -752,6 +753,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            FilterShowUnsupportedButton.Checked = Config.ShowUnsupported;
             FilterShowUnavailableButton.Checked = Config.ShowUnavailableFMs;
             FilterShowRecentAtTopButton.Checked = Config.ShowRecentAtTop;
 
@@ -1897,6 +1899,7 @@ namespace AngelLoader.Forms
         public bool GetFinishedFilter() => FilterByFinishedButton.Checked;
         public bool GetUnfinishedFilter() => FilterByUnfinishedButton.Checked;
         public bool GetShowUnsupportedFilter() => FilterShowUnsupportedButton.Checked;
+        public bool GetShowUnavailableFMsFilter() => FilterShowUnavailableButton.Checked;
         public bool GetShowRecentAtTop() => FilterShowRecentAtTopButton.Checked;
 
         public List<int> GetFilterShownIndexList() => FMsDGV.FilterShownIndexList;
@@ -1980,7 +1983,6 @@ namespace AngelLoader.Forms
                 {
                     FilterTitleTextBox.Text = filter.Title;
                     FilterAuthorTextBox.Text = filter.Author;
-                    FilterShowUnsupportedButton.Checked = filter.ShowUnsupported;
 
                     FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
 
@@ -2148,6 +2150,10 @@ namespace AngelLoader.Forms
                 if (sender == ClearFiltersButton)
                 {
                     ClearUIAndCurrentInternalFilter();
+                }
+                else if (sender == FilterShowUnsupportedButton)
+                {
+                    Config.ShowUnsupported = FilterShowUnsupportedButton.Checked;
                 }
                 else if (sender == FilterShowUnavailableButton)
                 {

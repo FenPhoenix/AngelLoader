@@ -339,6 +339,7 @@ namespace AngelLoader.DataClasses
             internal readonly string ShowHideMenu_FinishedState = "Finished state";
             internal readonly string ShowHideMenu_Rating = "Rating";
             internal readonly string ShowHideMenu_ShowUnsupported = "Show unsupported";
+            internal readonly string ShowHideMenu_ShowUnavailable = "Show unavailable";
             internal readonly string ShowHideMenu_ShowRecentAtTop = "Show recent at top";
         }
 

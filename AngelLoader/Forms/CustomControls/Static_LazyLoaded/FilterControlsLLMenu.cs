@@ -25,6 +25,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom FinishedStateMenuItem = null!;
         private static ToolStripMenuItemCustom RatingMenuItem = null!;
         private static ToolStripMenuItemCustom ShowUnsupportedMenuItem = null!;
+        private static ToolStripMenuItemCustom ShowUnavailableFMsMenuItem = null!;
         private static ToolStripMenuItemCustom ShowRecentAtTopMenuItem = null!;
 
         private static bool _darkModeEnabled;
@@ -59,6 +60,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 FinishedStateMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
                 RatingMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
                 ShowUnsupportedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
+                ShowUnavailableFMsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
                 ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True }
             });
 
@@ -88,6 +90,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             FinishedStateMenuItem.Text = LText.FilterBar.ShowHideMenu_FinishedState;
             RatingMenuItem.Text = LText.FilterBar.ShowHideMenu_Rating;
             ShowUnsupportedMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowUnsupported;
+            ShowUnavailableFMsMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowUnavailable;
             ShowRecentAtTopMenuItem.Text = LText.FilterBar.ShowHideMenu_ShowRecentAtTop;
         }
 

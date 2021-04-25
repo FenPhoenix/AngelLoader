@@ -401,6 +401,7 @@ namespace AngelLoader.DataClasses
 
         internal VisualTheme VisualTheme = VisualTheme.Classic;
 
+        internal bool ShowUnsupported = false;
         internal bool ShowUnavailableFMs = false;
 
 #if !ReleaseBeta && !ReleasePublic

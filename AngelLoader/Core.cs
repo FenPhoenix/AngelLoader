@@ -686,8 +686,6 @@ namespace AngelLoader
             if (View.GetFinishedFilter()) viewFilter.Finished |= FinishedState.Finished;
             if (View.GetUnfinishedFilter()) viewFilter.Finished |= FinishedState.Unfinished;
 
-            viewFilter.ShowUnsupported = View.GetShowUnsupportedFilter();
-
             #endregion
 
             var filterShownIndexList = View.GetFilterShownIndexList();
@@ -747,7 +745,7 @@ namespace AngelLoader
 
             #region Show unsupported
 
-            if (!viewFilter.ShowUnsupported)
+            if (!View.GetShowUnsupportedFilter())
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
@@ -1029,7 +1027,7 @@ namespace AngelLoader
 
             #region Marked unavailable
 
-            if (!Config.ShowUnavailableFMs)
+            if (!View.GetShowUnavailableFMsFilter())
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {

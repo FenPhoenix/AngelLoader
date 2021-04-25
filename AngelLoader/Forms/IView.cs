@@ -73,6 +73,8 @@ namespace AngelLoader.Forms
 
         bool GetShowUnsupportedFilter();
 
+        bool GetShowUnavailableFMsFilter();
+
         List<int> GetFilterShownIndexList();
 
         bool GetShowRecentAtTop();
