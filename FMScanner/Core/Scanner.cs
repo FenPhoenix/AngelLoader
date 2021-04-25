@@ -1,5 +1,6 @@
 ﻿// Enable this (and the one in FMData.cs) to get all features (we use it for testing)
 //#define FMScanner_FullCode
+//#define Enable7zReadmeCacheCode
 
 // NULL_TODO (Scanner - Main)
 // -Lists are nullable because we want to avoid allocating new Lists all over the place.
@@ -682,72 +683,19 @@ namespace FMScanner
 
                 #endregion
 
-                #region Cache readmes if requested
-
-                string cachePath = fm.CachePath;
-
-                if (!cachePath.IsEmpty())
+#if Enable7zReadmeCacheCode
+                if (!fm.CachePath.IsEmpty())
                 {
-                    void CacheReadmes()
-                    {
-                        Directory.CreateDirectory(cachePath);
-
-                        var readmes = new List<(string Source, string Dest)>();
-
-                        foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
-                        {
-                            if (f.IsValidReadme())
-                            {
-                                // If any HTML files found, give up - we don't have the facility to do a recursive
-                                // linked-file scan here at the moment
-                                if (f.ExtIsHtml()) return;
-
-                                readmes.Add((f, Path.Combine(cachePath, Path.GetFileName(f))));
-                            }
-                        }
-
-                        for (int i = 0; i < 2; i++)
-                        {
-                            string readmeDir = i == 0 ? FMDirs.T3FMExtras1S : FMDirs.T3FMExtras2S;
-                            string readmePathFull = Path.Combine(_fmWorkingPath, readmeDir);
-
-                            if (Directory.Exists(readmePathFull))
-                            {
-                                Directory.CreateDirectory(Path.Combine(cachePath, readmeDir));
-
-                                foreach (string f in Directory.GetFiles(readmePathFull, "*", SearchOption.TopDirectoryOnly))
-                                {
-                                    if (f.IsValidReadme())
-                                    {
-                                        // Ditto the above
-                                        if (f.ExtIsHtml()) return;
-
-                                        readmes.Add((f, Path.Combine(cachePath, readmeDir, Path.GetFileName(f))));
-                                    }
-                                }
-                            }
-                        }
-
-                        if (readmes.Count > 0)
-                        {
-                            foreach (var (source, dest) in readmes)
-                            {
-                                File.Copy(source, dest, overwrite: true);
-                            }
-                        }
-                    }
-
                     try
                     {
-                        CacheReadmes();
+                        CacheReadmes(fm);
                     }
                     catch
                     {
                         // ignore for now
                     }
                 }
-
-                #endregion
+#endif
             }
 
             #endregion
@@ -1214,6 +1162,59 @@ namespace FMScanner
 
             return fmData;
         }
+
+#if Enable7zReadmeCacheCode
+        private void CacheReadmes(FMToScan fm)
+        {
+            string cachePath = fm.CachePath;
+
+            Directory.CreateDirectory(cachePath);
+
+            var readmes = new List<(string Source, string Dest)>();
+
+            foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
+            {
+                if (f.IsValidReadme())
+                {
+                    // If any HTML files found, give up - we don't have the facility to do a recursive
+                    // linked-file scan here at the moment
+                    if (f.ExtIsHtml()) return;
+
+                    readmes.Add((f, Path.Combine(cachePath, Path.GetFileName(f))));
+                }
+            }
+
+            for (int i = 0; i < 2; i++)
+            {
+                string readmeDir = i == 0 ? FMDirs.T3FMExtras1S : FMDirs.T3FMExtras2S;
+                string readmePathFull = Path.Combine(_fmWorkingPath, readmeDir);
+
+                if (Directory.Exists(readmePathFull))
+                {
+                    Directory.CreateDirectory(Path.Combine(cachePath, readmeDir));
+
+                    foreach (string f in Directory.GetFiles(readmePathFull, "*", SearchOption.TopDirectoryOnly))
+                    {
+                        if (f.IsValidReadme())
+                        {
+                            // Ditto the above
+                            if (f.ExtIsHtml()) return;
+
+                            readmes.Add((f, Path.Combine(cachePath, readmeDir, Path.GetFileName(f))));
+                        }
+                    }
+                }
+            }
+
+            if (readmes.Count > 0)
+            {
+                foreach (var (source, dest) in readmes)
+                {
+                    File.Copy(source, dest, overwrite: true);
+                }
+            }
+        }
+#endif
 
         // TODO: Do some bullshit where we compare the readme date vs. the date in the readme
         // So we can do some guesswork on whether the readme dates are near enough to correct or not
