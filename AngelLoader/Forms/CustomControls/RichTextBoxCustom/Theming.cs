@@ -296,10 +296,8 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Issues/quirks/etc.
 
-            // TODO: @vNext: @DarkMode(RTF): Go through all RTF readmes and compare them light and dark to ensure they all look fine.
-
             /*
-            TODO: @vNext: @DarkMode(RTF/DarkTextMode) issues/quirks/etc:
+            @DarkModeNote(RTF/DarkTextMode) issues/quirks/etc:
             -Image-as-first-item issue with the \cf0 inserts
              If we put a \cf0 before a transparent image, it makes the background of it white.
              See 2006-09-18_WC_WhatLiesBelow_v1
@@ -308,14 +306,14 @@ namespace AngelLoader.Forms.CustomControls
             *Note: We don't put \cf0 inserts anymore, but the above still applies with having the default color
              be bright which is what we have now.
 
-            -Maybe don't invert if we're already light...?
-             See: LostSouls14
-             But note LostSouls14 is now fixed with the upper clamp
-
             -Beginning of Era Karath-Din:
              It has dark text on a not-quite-white background, which inverts to light text on an also bright
              background, due to us preventing downward lightness inversion. Probably too much trouble to fix,
              and worst case the user can always just select the text and it'll be visible, but note it...
+
+            -missionx_v113patch.rtf (CoSaS2_MissionX_v113)
+             This one has some text in boxes that's black-on-white. At least it's readable though, so not a show-
+             stopper.
             */
 
             #endregion
