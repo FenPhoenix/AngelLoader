@@ -107,9 +107,19 @@ namespace AngelLoader.DataClasses
 
         internal sealed class SplashScreen_Class
         {
-            // TODO: @vNext: @SplashScreen: Make these as clear and specific as you can, and add notes for translators if necessary
-            internal readonly string CheckingPaths = "Checking paths...";
-            internal readonly string ReadingGameConfigurations = "Reading game configurations...";
+            [FenGenComment(
+                "Certain settings (settable in the Settings window) are required to be valid, and if they're invalid,",
+                "the Settings window will be shown on startup so the user can fix them."
+                )]
+            internal readonly string CheckingRequiredSettingsFields = "Checking required settings fields...";
+            [FenGenComment(
+                "This means it's reading data from each specified game's config file(s).",
+                "For example, this might include cam_mod.ini for Thief 1 and Thief 2, SneakyOptions.ini for Thief: Deadly Shadows, etc."
+                )]
+            internal readonly string ReadingGameConfigData = "Reading game config data...";
+            [FenGenComment(
+                "It's searching all FM directories to see if any new ones have been added since the last run, and if so, adding them to the database."
+                )]
             internal readonly string SearchingForNewFMs = "Searching for new FMs...";
             internal readonly string LoadingMainApp = "Loading main app...";
         }

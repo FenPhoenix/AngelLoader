@@ -148,7 +148,7 @@ namespace AngelLoader
 
                 ReadLanguages(splashScreen);
 
-                splashScreen.SetMessage(LText.SplashScreen.CheckingPaths);
+                splashScreen.SetMessage(LText.SplashScreen.CheckingRequiredSettingsFields);
 
                 openSettings = !Directory.Exists(Config.FMsBackupPath);
             }
@@ -158,7 +158,7 @@ namespace AngelLoader
                 ReadLanguages(splashScreen);
             }
 
-            splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigurations);
+            splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigData);
 
             #region Set game data
 
