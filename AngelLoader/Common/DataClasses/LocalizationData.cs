@@ -107,7 +107,7 @@ namespace AngelLoader.DataClasses
 
         internal sealed class SplashScreen_Class
         {
-            // TODO: @SplashScreen: Make these as clear and specific as you can, and add notes for translators if necessary
+            // TODO: @vNext: @SplashScreen: Make these as clear and specific as you can, and add notes for translators if necessary
             internal readonly string CheckingPaths = "Checking paths...";
             internal readonly string ReadingGameConfigurations = "Reading game configurations...";
             internal readonly string SearchingForNewFMs = "Searching for new FMs...";

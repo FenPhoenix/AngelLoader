@@ -7,7 +7,7 @@ namespace AngelLoader.Forms
     [PublicAPI]
     public partial class AppearancePage : UserControl, Interfaces.ISettingsPage
     {
-        // TODO: @DarkMode(Settings pages): Make sure to set the tab order when you're done!
+        // TODO: @vNext: @DarkMode(Settings pages): Make sure to set the tab order when you're done!
         public bool IsVisible { get => Visible; set => Visible = value; }
 
         public AppearancePage()

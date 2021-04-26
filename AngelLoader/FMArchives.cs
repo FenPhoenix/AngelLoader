@@ -132,7 +132,7 @@ namespace AngelLoader
                 finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
             }
 
-            // TODO: This is a first pass at the "uninstall first?" for FM deletion - it needs quite a bit more work
+            // TODO: @vNext: This is a first pass at the "uninstall first?" for FM deletion - it needs quite a bit more work
             if (fm.Installed)
             {
                 using var f = new MessageBoxCustomForm(

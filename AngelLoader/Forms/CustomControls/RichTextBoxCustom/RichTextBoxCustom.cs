@@ -8,7 +8,7 @@ using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
-// TODO: @DarkMode(RichTextBoxCustom - Backing byte array excessive conversions):
+// TODO: @vNext: @DarkMode(RichTextBoxCustom - Backing byte array excessive conversions):
 // -There's are lot of byte[]/string/StringBuilder conversions in here now, see if we can remove as many of them
 //  as possible.
 // -Till then... IMPORTANT: Always use Encoding.UTF8.Get* because ASCII will break the char conversion for GLML!

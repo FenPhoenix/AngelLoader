@@ -39,9 +39,10 @@ namespace AngelLoader.Forms.CustomControls
         {
             BorderStyle = BorderStyle.FixedSingle;
 
-            // @DarkModeNote(DarkTreeView): Our +/- buttons are not drawn dark, but they look okay for now.
-            // Apparently we have to switch to OwnerDrawAll in order to draw them. We can do that in the future
-            // if we feel like polishing it up.
+            // @DarkModeNote(DarkTreeView - close/expand buttons note)
+            // We currently draw the close/expand buttons in a theme renderer, which is quick and easy. If we
+            // wanted to draw them here, we would have to use OwnerDrawAll mode, and then we would have to draw
+            // everything - close/expand buttons, dotted lines, text, icons if there are any, etc.
             DrawMode = TreeViewDrawMode.OwnerDrawText;
 
             HideSelection = false;

@@ -594,11 +594,14 @@ namespace AngelLoader.Forms
 
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            // TODO: @DarkMode(SettingsForm): We have a perf problem with AppearancePage on first show.
+            // TODO: @vNext: @DarkMode(SettingsForm): We have a perf problem with AppearancePage on first show.
             // Caching one copy of SettingsForm works to make it fast on all subsequent shows. But if we wanted
             // to do that, we'd have to pull apart the initialization into the part that has to happen on every
             // show and the part that should happen only once ever.
             // Think of some crazy ninja way to make it fast even the first time?
+            // UPDATE 2021-04-25:
+            // Change out the left buttons for a TreeView that can have subcategories. That way, we can divide up
+            // the settings into small enough pages that no page has an unreasonable loading delay.
             foreach (var button in PageRadioButtons)
             {
                 if (button.Checked)

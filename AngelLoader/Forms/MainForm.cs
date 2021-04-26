@@ -30,10 +30,9 @@
   we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
  IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
- TODO: @DarkMode: Make sure all controls' disabled colors are working!
- TODO: @DarkMode: Test on Win7 to make sure the dark theme still looks as it should.
- TODO: @DarkMode: Make "Show unsupported" & "Show unavailable" global/non-filter-clearable options
-
+ TODO: @vNext: @DarkMode: Make sure all controls' disabled colors are working!
+ TODO: @vNext: @DarkMode: Test on Win7 to make sure the dark theme still looks as it should.
+ 
  @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */
 
@@ -1466,7 +1465,7 @@ namespace AngelLoader.Forms
 
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible, theme);
 
-                // TODO: @DarkMode: Some images are set by default and get double-loaded here if we're themed.
+                // TODO: @vNext: @DarkMode: Some images are set by default and get double-loaded here if we're themed.
                 // We should change to always calling this method, but selectively deciding what to run and what
                 // not to based on whether we're themed on startup, rather than the all-or-nothing we have now.
 

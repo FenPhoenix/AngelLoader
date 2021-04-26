@@ -296,10 +296,10 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Issues/quirks/etc.
 
-            // TODO: @DarkMode(RTF): Go through all RTF readmes and compare them light and dark to ensure they all look fine.
+            // TODO: @vNext: @DarkMode(RTF): Go through all RTF readmes and compare them light and dark to ensure they all look fine.
 
             /*
-            TODO: @DarkMode(RTF/DarkTextMode) issues/quirks/etc:
+            TODO: @vNext: @DarkMode(RTF/DarkTextMode) issues/quirks/etc:
             -Image-as-first-item issue with the \cf0 inserts
              If we put a \cf0 before a transparent image, it makes the background of it white.
              See 2006-09-18_WC_WhatLiesBelow_v1
