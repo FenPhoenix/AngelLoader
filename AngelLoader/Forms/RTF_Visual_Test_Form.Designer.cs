@@ -1,4 +1,4 @@
-﻿
+﻿#if DEBUG || Release_Testing
 namespace AngelLoader.Forms
 {
     sealed partial class RTF_Visual_Test_Form
@@ -37,7 +37,7 @@ namespace AngelLoader.Forms
             // 
             // NotesTextBox
             // 
-            this.NotesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.NotesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.NotesTextBox.Location = new System.Drawing.Point(8, 32);
             this.NotesTextBox.Multiline = true;
@@ -58,8 +58,8 @@ namespace AngelLoader.Forms
             // 
             // RTFBox
             // 
-            this.RTFBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.RTFBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RTFBox.BackColor = System.Drawing.SystemColors.Window;
             this.RTFBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -73,7 +73,7 @@ namespace AngelLoader.Forms
             // 
             // RTFFileComboBox
             // 
-            this.RTFFileComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.RTFFileComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RTFFileComboBox.FormattingEnabled = true;
             this.RTFFileComboBox.Location = new System.Drawing.Point(8, 8);
@@ -107,3 +107,4 @@ namespace AngelLoader.Forms
         private CustomControls.DarkTextBox NotesTextBox;
     }
 }
+#endif
