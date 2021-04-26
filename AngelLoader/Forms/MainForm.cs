@@ -791,17 +791,8 @@ namespace AngelLoader.Forms
 
             ChangeGameOrganization(startup: true);
 
-            // PERF: If we're in the classic theme, we don't need to do anything
             // Do this here to prevent double-loading of RTF/GLML readmes
-            if (Config.DarkMode)
-            {
-                SetTheme(Config.VisualTheme, startup: true, alsoCreateControlHandles: true);
-            }
-            else
-            {
-                ControlUtils.CreateAllControlsHandles(this);
-                Images.ReloadImages();
-            }
+            SetTheme(Config.VisualTheme, startup: true, alsoCreateControlHandles: true);
 
 #if !ReleaseBeta && !ReleasePublic
             UpdateGameScreenShotModes();
@@ -1452,22 +1443,26 @@ namespace AngelLoader.Forms
             {
                 if (!startup) EverythingPanel.SuspendDrawing();
 
-                ControlUtils.ChangeFormThemeMode(
-                    theme,
-                    this,
-                    _controlColors,
-                    x => x.EqualsIfNotNull(ProgressBox)
-                         || (_progressBoxConstructed && x is Control xControl && ProgressBox!.Controls.Contains(xControl))
-                         || x is SplitterPanel,
-                    alsoCreateControlHandles: alsoCreateControlHandles,
-                    capacity: 150
-                );
+                if (startup && !darkMode)
+                {
+                    ControlUtils.CreateAllControlsHandles(this);
+                }
+                else
+                {
+                    ControlUtils.ChangeFormThemeMode(
+                        theme,
+                        this,
+                        _controlColors,
+                        x => x.EqualsIfNotNull(ProgressBox)
+                             || (_progressBoxConstructed && x is Control xControl &&
+                                 ProgressBox!.Controls.Contains(xControl))
+                             || x is SplitterPanel,
+                        alsoCreateControlHandles: alsoCreateControlHandles,
+                        capacity: 150
+                    );
+                }
 
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible, theme);
-
-                // TODO: @vNext: @DarkMode: Some images are set by default and get double-loaded here if we're themed.
-                // We should change to always calling this method, but selectively deciding what to run and what
-                // not to based on whether we're themed on startup, rather than the all-or-nothing we have now.
 
                 // Set these first so other controls get the right data when they reference them
                 Images.DarkModeEnabled = darkMode;
@@ -1475,22 +1470,26 @@ namespace AngelLoader.Forms
 
                 if (!startup) ControlUtils.RecreateAllToolTipHandles();
 
-                MainLLMenu.DarkModeEnabled = darkMode;
-                FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
-                FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
-                TopRightLLMenu.DarkModeEnabled = darkMode;
-                AddTagLLMenu.DarkModeEnabled = darkMode;
-                AddTagLLDropDown.DarkModeEnabled = darkMode;
-                AltTitlesLLMenu.DarkModeEnabled = darkMode;
-                FilterControlsLLMenu.DarkModeEnabled = darkMode;
-                PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
-                InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
-                ExitLLButton.DarkModeEnabled = darkMode;
-                ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
-                ProgressBoxDarkModeEnabled = darkMode;
-                Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
-                ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
-                EncodingsLLMenu.DarkModeEnabled = darkMode;
+                if (!startup || darkMode)
+                {
+                    MainLLMenu.DarkModeEnabled = darkMode;
+                    FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
+                    FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
+                    TopRightLLMenu.DarkModeEnabled = darkMode;
+                    AddTagLLMenu.DarkModeEnabled = darkMode;
+                    AddTagLLDropDown.DarkModeEnabled = darkMode;
+                    AltTitlesLLMenu.DarkModeEnabled = darkMode;
+                    FilterControlsLLMenu.DarkModeEnabled = darkMode;
+                    PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
+                    InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
+                    ExitLLButton.DarkModeEnabled = darkMode;
+                    ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
+                    ProgressBoxDarkModeEnabled = darkMode;
+                    Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
+                    ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
+                    EncodingsLLMenu.DarkModeEnabled = darkMode;
+                    Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
+                }
 
                 FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
                 FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
@@ -1498,10 +1497,8 @@ namespace AngelLoader.Forms
                 FilterByFinishedButton.Image = Images.FilterByFinished;
                 FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
                 FilterByRatingButton.Image = Images.FilterByRating;
-                FilterShowUnavailableButton.Image = Images.ShowUnavailable;
                 FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
 
-                Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
                 RefreshFromDiskButton.Image = Images.Refresh;
                 RefreshFiltersButton.Image = Images.RefreshFilters;
                 ClearFiltersButton.Image = Images.ClearFilters;
@@ -1511,13 +1508,15 @@ namespace AngelLoader.Forms
                 FilterByThief3Button.Image = Images.Thief3_21;
                 FilterBySS2Button.Image = Images.Shock2_21;
 
-                GameTabsImageList.Images[0] = Images.Thief1_16;
-                GameTabsImageList.Images[1] = Images.Thief2_16;
-                GameTabsImageList.Images[2] = Images.Thief3_16;
-                GameTabsImageList.Images[3] = Images.Shock2_16;
+                GameTabsImageList.Images.Clear();
+                GameTabsImageList.Images.Add(Images.Thief1_16);
+                GameTabsImageList.Images.Add(Images.Thief2_16);
+                GameTabsImageList.Images.Add(Images.Thief3_16);
+                GameTabsImageList.Images.Add(Images.Shock2_16);
 
                 // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
-                // while running(?) meh, whatever
+                // while running(?) meh, whatever.
+                // UPDATE: Just always set these. Why not. We don't want any other problems with them in the future.
                 SetReadmeControlZPosition(true);
             }
             finally

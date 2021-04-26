@@ -211,13 +211,6 @@ namespace AngelLoader.Forms
             // 
             // GameTabsImageList
             // 
-            // PERF: WinForms does this by default:
-            // GameTabsImageList.ImageStream = ((ImageListStreamer)(resources.GetObject("GameTabsImageList.ImageStream")));
-            // But it's way faster to do this (saves ~8ms):
-            GameTabsImageList.Images.Add(Images.Thief1_16);
-            GameTabsImageList.Images.Add(Images.Thief2_16);
-            GameTabsImageList.Images.Add(Images.Thief3_16);
-            GameTabsImageList.Images.Add(Images.Shock2_16);
             GameTabsImageList.ColorDepth = ColorDepth.Depth32Bit;
             // 
             // BottomPanel
@@ -570,7 +563,6 @@ namespace AngelLoader.Forms
             FilterByThief1Button.AutoSize = false;
             FilterByThief1Button.CheckOnClick = true;
             FilterByThief1Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByThief1Button.Image = Images.Thief1_21;
             FilterByThief1Button.Margin = new Padding(1, 0, 0, 0);
             FilterByThief1Button.Size = new Size(25, 25);
             FilterByThief1Button.Click += Filters_Changed;
@@ -580,7 +572,6 @@ namespace AngelLoader.Forms
             FilterByThief2Button.AutoSize = false;
             FilterByThief2Button.CheckOnClick = true;
             FilterByThief2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByThief2Button.Image = Images.Thief2_21;
             FilterByThief2Button.Margin = new Padding(0);
             FilterByThief2Button.Size = new Size(25, 25);
             FilterByThief2Button.Click += Filters_Changed;
@@ -590,7 +581,6 @@ namespace AngelLoader.Forms
             FilterByThief3Button.AutoSize = false;
             FilterByThief3Button.CheckOnClick = true;
             FilterByThief3Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByThief3Button.Image = Images.Thief3_21;
             FilterByThief3Button.Margin = new Padding(0);
             FilterByThief3Button.Size = new Size(25, 25);
             FilterByThief3Button.Click += Filters_Changed;
@@ -604,7 +594,6 @@ namespace AngelLoader.Forms
             FilterBySS2Button.AutoSize = false;
             FilterBySS2Button.CheckOnClick = true;
             FilterBySS2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterBySS2Button.Image = Images.Shock2_21;
             // Extra 2 padding on the right: Fix slight visual glitch on the right side
             FilterBySS2Button.Margin = new Padding(0, 0, 2, 0);
             FilterBySS2Button.Size = new Size(25, 25);
@@ -662,7 +651,6 @@ namespace AngelLoader.Forms
             // 
             FilterByReleaseDateButton.AutoSize = false;
             FilterByReleaseDateButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
             FilterByReleaseDateButton.Margin = new Padding(6, 0, 0, 0);
             FilterByReleaseDateButton.Size = new Size(25, 25);
             FilterByReleaseDateButton.Click += FilterWindowOpenButtons_Click;
@@ -671,7 +659,6 @@ namespace AngelLoader.Forms
             // 
             FilterByLastPlayedButton.AutoSize = false;
             FilterByLastPlayedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
             FilterByLastPlayedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByLastPlayedButton.Size = new Size(25, 25);
             FilterByLastPlayedButton.Click += FilterWindowOpenButtons_Click;
@@ -680,7 +667,6 @@ namespace AngelLoader.Forms
             // 
             FilterByTagsButton.AutoSize = false;
             FilterByTagsButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByTagsButton.Image = Images.FilterByTags;
             FilterByTagsButton.Margin = new Padding(6, 0, 0, 0);
             FilterByTagsButton.Size = new Size(25, 25);
             FilterByTagsButton.Click += FilterWindowOpenButtons_Click;
@@ -690,7 +676,6 @@ namespace AngelLoader.Forms
             FilterByFinishedButton.AutoSize = false;
             FilterByFinishedButton.CheckOnClick = true;
             FilterByFinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByFinishedButton.Image = Images.FilterByFinished;
             FilterByFinishedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByFinishedButton.Size = new Size(25, 25);
             FilterByFinishedButton.Click += Filters_Changed;
@@ -700,7 +685,6 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton.AutoSize = false;
             FilterByUnfinishedButton.CheckOnClick = true;
             FilterByUnfinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
             FilterByUnfinishedButton.Margin = new Padding(0);
             FilterByUnfinishedButton.Size = new Size(25, 25);
             FilterByUnfinishedButton.Click += Filters_Changed;
@@ -709,7 +693,6 @@ namespace AngelLoader.Forms
             // 
             FilterByRatingButton.AutoSize = false;
             FilterByRatingButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByRatingButton.Image = Images.FilterByRating;
             FilterByRatingButton.Margin = new Padding(6, 0, 0, 0);
             FilterByRatingButton.Size = new Size(25, 25);
             FilterByRatingButton.Click += FilterWindowOpenButtons_Click;
@@ -729,7 +712,7 @@ namespace AngelLoader.Forms
             FilterShowUnavailableButton.AutoSize = false;
             FilterShowUnavailableButton.CheckOnClick = true;
             FilterShowUnavailableButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterShowUnavailableButton.Image = Images.ShowUnavailable;
+            FilterShowUnavailableButton.Image = Resources.Show_Unavailable;
             FilterShowUnavailableButton.Margin = new Padding(0);
             FilterShowUnavailableButton.Size = new Size(25, 25);
             FilterShowUnavailableButton.Click += Filters_Changed;
@@ -739,7 +722,6 @@ namespace AngelLoader.Forms
             FilterShowRecentAtTopButton.AutoSize = false;
             FilterShowRecentAtTopButton.CheckOnClick = true;
             FilterShowRecentAtTopButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
             FilterShowRecentAtTopButton.Margin = new Padding(6, 0, 2, 0);
             FilterShowRecentAtTopButton.Size = new Size(25, 25);
             FilterShowRecentAtTopButton.Click += Filters_Changed;
@@ -776,7 +758,6 @@ namespace AngelLoader.Forms
             // 
             RefreshFromDiskButton.AutoSize = false;
             RefreshFromDiskButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            RefreshFromDiskButton.Image = Images.Refresh;
             RefreshFromDiskButton.Margin = new Padding(0);
             RefreshFromDiskButton.Size = new Size(25, 25);
             RefreshFromDiskButton.Click += Filters_Changed;
@@ -786,7 +767,6 @@ namespace AngelLoader.Forms
             // 
             RefreshFiltersButton.AutoSize = false;
             RefreshFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            RefreshFiltersButton.Image = Images.RefreshFilters;
             RefreshFiltersButton.Margin = new Padding(0);
             RefreshFiltersButton.Size = new Size(25, 25);
             RefreshFiltersButton.Click += Filters_Changed;
@@ -795,7 +775,6 @@ namespace AngelLoader.Forms
             // 
             ClearFiltersButton.AutoSize = false;
             ClearFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            ClearFiltersButton.Image = Images.ClearFilters;
             // 1 pixel to the bottom margin to prevent the bottom from getting cut off for some reason
             ClearFiltersButton.Margin = new Padding(0, 0, 9, 1);
             ClearFiltersButton.Size = new Size(25, 25);
