@@ -118,7 +118,7 @@ namespace AngelLoader
             // Oklab does give us a beautiful perceptual lightness scale (dark blue goes to light blue!) unlike
             // HSL, so awesome!
 
-            var lab = ColorToOklab(color);
+            Lab lab = ColorToOklab(color);
 
             #region Invert and global lightness boost
 
@@ -130,7 +130,7 @@ namespace AngelLoader
 
             #endregion
 
-            var lch = OklabToLCh(lab);
+            LCh lch = OklabToLCh(lab);
 
             #region Tweaks for specific hue ranges
 
@@ -162,7 +162,6 @@ namespace AngelLoader
             // Slight global desaturation
             lab = LChToOklab(new LCh(lch.L, (lch.C - (redDesaturated ? 0.015f : 0.04f)).Clamp(0, 1.0f), lch.h));
 
-            // Almost done...
             Color retColor = OklabToColor(lab);
 
             // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be 254 or
