@@ -197,6 +197,7 @@ namespace FMScanner.SimpleHelpers
             _ude.Reset();
             _singleUde.Reset();
             _encodingName = null;
+            _canBeASCII = true;
         }
 
         /// <summary>
