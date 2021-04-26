@@ -104,6 +104,8 @@ namespace AngelLoader
         /// <returns></returns>
         internal static async Task Delete(FanMission fm)
         {
+            if (fm.MarkedUnavailable) return;
+
             var archives = FindAllMatches(fm.Archive);
             if (archives.Count == 0)
             {
@@ -132,21 +134,24 @@ namespace AngelLoader
                 finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
             }
 
-            // TODO: @vNext: This is a first pass at the "uninstall first?" for FM deletion - it needs quite a bit more work
             if (fm.Installed)
             {
-                using var f = new MessageBoxCustomForm(
-                    messageTop: "This FM is installed. Uninstall it first?",
-                    messageBottom: "",
+                (bool cancel, bool cont, _) = ControlUtils.AskToContinueWithCancelCustomStrings(
+                    message: LText.FMDeletion.AskToUninstallFMFirst,
                     title: LText.AlertMessages.DeleteFMArchive,
                     icon: MessageBoxIcon.Warning,
-                    okText: LText.AlertMessages.Uninstall,
-                    cancelText: "Leave installed",
-                    okIsDangerous: true);
+                    showDontAskAgain: false,
+                    yes: LText.AlertMessages.Uninstall,
+                    no: LText.AlertMessages.LeaveInstalled,
+                    cancel: LText.Global.Cancel
+                );
 
-                if (f.ShowDialog() == DialogResult.OK)
+                if (cancel) return;
+
+                if (cont)
                 {
-                    await FMInstallAndPlay.InstallOrUninstall(fm);
+                    bool canceled = !await FMInstallAndPlay.UninstallFM(fm);
+                    if (canceled) return;
                 }
             }
 

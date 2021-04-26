@@ -859,7 +859,7 @@
             this.FilterShowUnavailableButton.AutoSize = false;
             this.FilterShowUnavailableButton.CheckOnClick = true;
             this.FilterShowUnavailableButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterShowUnavailableButton.Image = Images.ShowUnavailable;
+            this.FilterShowUnavailableButton.Image = global::AngelLoader.Properties.Resources.Show_Unavailable;
             this.FilterShowUnavailableButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterShowUnavailableButton.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
             this.FilterShowUnavailableButton.Name = "FilterShowUnavailableButton";

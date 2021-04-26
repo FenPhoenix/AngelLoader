@@ -731,9 +731,9 @@ namespace AngelLoader
 
         #region Uninstall
 
-        private static async Task UninstallFM(FanMission fm)
+        internal static async Task<bool> UninstallFM(FanMission fm)
         {
-            if (!fm.Installed || !GameIsKnownAndSupported(fm.Game)) return;
+            if (!fm.Installed || !GameIsKnownAndSupported(fm.Game)) return false;
 
             if (Config.ConfirmUninstall)
             {
@@ -745,7 +745,7 @@ namespace AngelLoader
                         yes: LText.AlertMessages.Uninstall,
                         no: LText.Global.Cancel);
 
-                if (cancel) return;
+                if (cancel) return false;
 
                 Config.ConfirmUninstall = !dontAskAgain;
             }
@@ -757,7 +757,7 @@ namespace AngelLoader
                 ControlUtils.ShowAlert(
                     gameName + ":\r\n" + LText.AlertMessages.Uninstall_GameIsRunning,
                     LText.AlertMessages.Alert);
-                return;
+                return false;
             }
 
             Core.View.ShowProgressBox(ProgressTask.UninstallFM);
@@ -776,10 +776,12 @@ namespace AngelLoader
                         fm.Installed = false;
                         Core.View.RefreshSelectedFM();
                     }
-                    return;
+                    return true;
                 }
 
                 string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive));
+
+                bool markFMAsUnavailable = false;
 
                 if (fmArchivePath!.IsEmpty())
                 {
@@ -791,7 +793,8 @@ namespace AngelLoader
                         yes: LText.AlertMessages.Uninstall,
                         no: LText.Global.Cancel);
 
-                    if (cancel) return;
+                    if (cancel) return false;
+                    markFMAsUnavailable = true;
                 }
 
                 // If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
@@ -828,7 +831,7 @@ namespace AngelLoader
                             no: LText.AlertMessages.DontBackUp,
                             cancel: LText.Global.Cancel);
 
-                    if (cancel) return;
+                    if (cancel) return false;
 
                     Config.BackupAlwaysAsk = !dontAskAgain;
                     doBackup = cont;
@@ -850,6 +853,7 @@ namespace AngelLoader
                 }
 
                 fm.Installed = false;
+                if (markFMAsUnavailable) fm.MarkedUnavailable = true;
 
                 // NewDarkLoader still truncates its Thief 3 install names, but the "official" way is not to
                 // do it for Thief 3. If the user already has FMs that were installed with NewDarkLoader, we
@@ -862,7 +866,17 @@ namespace AngelLoader
                 }
 
                 Ini.WriteFullFMDataIni();
-                Core.View.RefreshSelectedFM();
+
+                // If the FM is gone, refresh the list to remove it. Otherwise, don't refresh the list because
+                // then the FM might move in the list if we're sorting by installed state.
+                if (fm.MarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
+                {
+                    await Core.View.SortAndSetFilter(keepSelection: true);
+                }
+                else
+                {
+                    Core.View.RefreshSelectedFM();
+                }
             }
             catch (Exception ex)
             {
@@ -873,6 +887,8 @@ namespace AngelLoader
             {
                 Core.View.HideProgressBox();
             }
+
+            return true;
         }
 
         private static bool DeleteFMInstalledDirectory(string path)
