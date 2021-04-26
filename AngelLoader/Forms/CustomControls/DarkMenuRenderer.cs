@@ -92,7 +92,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
         {
-            Color foreColor = e.Item.Enabled ? e.TextColor : DarkColors.DisabledText;
+            Color foreColor = e.Item.Enabled ? e.Item.Selected ? DarkColors.Fen_HighlightText : e.TextColor : DarkColors.DisabledText;
             TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, foreColor, e.TextFormat);
         }
 
@@ -104,27 +104,26 @@ namespace AngelLoader.Forms.CustomControls
 
             if (e.Item.Enabled)
             {
-                Color? bgColor = e.Item.Selected ? DarkColors.GreyHighlight : null;
-
                 // Normal item
                 var rect = new Rectangle(2, 0, e.Item.Width - 3, e.Item.Height);
 
-                if (bgColor == null)
+                if (!e.Item.Selected)
                 {
                     using var b = new SolidBrush(e.Item.BackColor);
                     g.FillRectangle(b, rect);
                 }
                 else
                 {
-                    g.FillRectangle(DarkColors.GreyHighlightBrush, rect);
+                    g.FillRectangle(DarkColors.Fen_DGVColumnHeaderPressedBrush, rect);
                 }
 
+                // @DarkModeNote: What is this anyway? "Header item on open menu"? This never gets hit as far as I can tell...
                 // Header item on open menu
                 if (e.Item is ToolStripMenuItem tsMenuItem &&
                    tsMenuItem.DropDown.Visible &&
                    !tsMenuItem.IsOnDropDown)
                 {
-                    g.FillRectangle(DarkColors.GreySelectionBrush, rect);
+                    g.FillRectangle(DarkColors.Fen_DGVColumnHeaderPressedBrush, rect);
                 }
             }
         }
