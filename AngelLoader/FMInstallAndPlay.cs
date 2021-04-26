@@ -46,7 +46,7 @@ namespace AngelLoader
             if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
             {
                 (bool cancel, bool dontAskAgain) = ControlUtils.AskToContinueYesNoCustomStrings(
-                    message: LText.AlertMessages.Play_ConfirmMessage,
+                    message: fm.Installed ? LText.AlertMessages.Play_ConfirmMessage : LText.AlertMessages.Play_InstallAndPlayConfirmMessage,
                     title: LText.AlertMessages.Confirm,
                     icon: MessageBoxIcon.None,
                     showDontAskAgain: true,

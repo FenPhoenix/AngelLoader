@@ -176,6 +176,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Play_AnyGameIsRunning = "One or more supported games are already running. Please exit them first.";
             internal readonly string Play_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.";
             internal readonly string Play_ConfirmMessage = "Play FM?";
+            internal readonly string Play_InstallAndPlayConfirmMessage = "Install and play FM?";
             [FenGenBlankLine]
             internal readonly string DromEd_ExecutableNotFound = "DromEd.exe was not found in the game directory. Unable to open FM.";
             internal readonly string ShockEd_ExecutableNotFound = "ShockEd.exe was not found in the game directory. Unable to open FM.";
