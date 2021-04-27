@@ -14,6 +14,9 @@ namespace AngelLoader.Forms.CustomControls
             base.OnShown(e);
             _loading = false;
             Refresh();
+            // Explicitly refresh non-client area - otherwise on Win7 the non-client area doesn't refresh and we
+            // end up with blacked-out title bar and borders etc.
+            Native.SendMessage(Handle, Native.WM_NCPAINT, IntPtr.Zero, IntPtr.Zero);
         }
 
         protected override void WndProc(ref Message m)
@@ -30,12 +33,10 @@ namespace AngelLoader.Forms.CustomControls
                     or Native.WM_ERASEBKGND
                 ))
             {
-                // On Windows 7 (at least in a VM with Aero Glass disabled), our non-client area (title bar etc.)
-                // remains blacked-out even after refresh here, which severely breaks windows visually. So use
-                // client area only.
-                using var gc = new Native.GraphicsContext(Handle, clientOnly: true);
-
-                gc.G.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, new Rectangle(0, 0, Width, Height));
+                using (var gc = new Native.GraphicsContext(Handle))
+                {
+                    gc.G.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, new Rectangle(0, 0, Width, Height));
+                }
 
                 if (m.Msg != Native.WM_PAINT)
                 {

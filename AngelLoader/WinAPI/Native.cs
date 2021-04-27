@@ -52,9 +52,6 @@ namespace AngelLoader.WinAPI
         internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         [DllImport("user32.dll")]
-        private static extern IntPtr GetDC(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
         private static extern IntPtr GetWindowDC(IntPtr hWnd);
 
         [DllImport("user32.dll")]
@@ -66,10 +63,10 @@ namespace AngelLoader.WinAPI
             private readonly IntPtr _dc;
             public readonly Graphics G;
 
-            public GraphicsContext(IntPtr hWnd, bool clientOnly = false)
+            public GraphicsContext(IntPtr hWnd)
             {
                 _hWnd = hWnd;
-                _dc = clientOnly ? GetDC(_hWnd) : GetWindowDC(_hWnd);
+                _dc = GetWindowDC(_hWnd);
                 G = Graphics.FromHdc(_dc);
             }
 
