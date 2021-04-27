@@ -102,6 +102,8 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            if (startup) NativeHooks.InstallHooks();
+
             // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
             // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
             // even if we DID want to do more reflection crap!)
