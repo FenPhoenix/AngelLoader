@@ -30,7 +30,7 @@
   we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
  IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
- TODO: @vNext: @DarkMode: Test on Win7 to make sure the dark theme still looks as it should.
+ TODO: @vNext: @DarkMode: Test RichTextBox/actual FMs in the list on Win7.
  
  @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */
