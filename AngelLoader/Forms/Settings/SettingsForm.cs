@@ -53,7 +53,7 @@ namespace AngelLoader.Forms
 
         private VisualTheme _selfTheme;
 
-        private readonly TreeNode[] PageRadioButtons;
+        private readonly RadioButtonCustom[] PageRadioButtons;
         private readonly ISettingsPage[] Pages;
         private readonly int?[] _pageVScrollValues;
 
@@ -68,10 +68,6 @@ namespace AngelLoader.Forms
         // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
         private readonly DateTime _exampleDate = new DateTime(DateTime.Now.Year, 8, 4);
-
-        private readonly TreeNode PathsNode;
-        private readonly TreeNode AppearanceNode;
-        private readonly TreeNode OtherNode;
 
         private readonly ComboBoxWithBackingItems LangComboBox;
         private readonly GroupBox LangGroupBox;
@@ -105,15 +101,6 @@ namespace AngelLoader.Forms
 #else
             InitComponentManual();
 #endif
-
-            PagesTreeView.BorderStyle = BorderStyle.None;
-            PagesTreeView.AlwaysDrawNodesFocused = true;
-            PagesTreeView.DarkModeBackColor = DarkColors.Fen_DarkBackground;
-            PagesTreeView.DarkModeBackColorBrush = DarkColors.Fen_DarkBackgroundBrush;
-
-            PathsNode = new TreeNode();
-            AppearanceNode = new TreeNode();
-            OtherNode = new TreeNode();
 
             // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
             // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
@@ -212,7 +199,7 @@ namespace AngelLoader.Forms
 
             // @GENGAMES (Settings): End
 
-            PageRadioButtons = new[] { PathsNode, AppearanceNode, OtherNode };
+            PageRadioButtons = new[] { PathsRadioButton, AppearanceRadioButton, OtherRadioButton };
 
             // These are nullable because null values get put INTO them later. So not a mistake to fill them with
             // non-nullable ints right off the bat.
@@ -263,26 +250,23 @@ namespace AngelLoader.Forms
                     // _Load is too late for some of this stuff, so might as well put everything here
                     StartPosition = FormStartPosition.CenterScreen;
                     ShowInTaskbar = true;
-                    PagesTreeView.Nodes.Add(PathsNode);
-                    PagesTreeView.SelectedNode = PathsNode;
+                    PathsRadioButton.Checked = true;
+                    AppearanceRadioButton.Hide();
+                    OtherRadioButton.Hide();
                 }
                 else
                 {
-                    PagesTreeView.Nodes.Add(PathsNode);
-                    PagesTreeView.Nodes.Add(AppearanceNode);
-                    PagesTreeView.Nodes.Add(OtherNode);
-
                     switch (config.SettingsTab)
                     {
                         case SettingsTab.Appearance:
-                            PagesTreeView.SelectedNode = AppearanceNode;
+                            AppearanceRadioButton.Checked = true;
                             break;
                         case SettingsTab.Other:
-                            PagesTreeView.SelectedNode = OtherNode;
+                            OtherRadioButton.Checked = true;
                             break;
                         case SettingsTab.Paths:
                         default:
-                            PagesTreeView.SelectedNode = PathsNode;
+                            PathsRadioButton.Checked = true;
                             break;
                     }
                 }
@@ -669,7 +653,7 @@ namespace AngelLoader.Forms
 
                 #region Paths tab
 
-                PathsNode.Text = _startup
+                PathsRadioButton.Text = _startup
                     ? LText.SettingsWindow.InitialSettings_TabText
                     : LText.SettingsWindow.Paths_TabText;
 
@@ -716,7 +700,7 @@ namespace AngelLoader.Forms
                 {
                     #region FM Display tab
 
-                    AppearanceNode.Text = LText.SettingsWindow.Appearance_TabText;
+                    AppearanceRadioButton.Text = LText.SettingsWindow.Appearance_TabText;
 
                     AppearancePage.VisualThemeGroupBox.Text = LText.SettingsWindow.Appearance_Theme;
                     AppearancePage.ClassicThemeRadioButton.Text = LText.SettingsWindow.Appearance_Theme_Classic;
@@ -749,7 +733,7 @@ namespace AngelLoader.Forms
 
                     #region Other tab
 
-                    OtherNode.Text = LText.SettingsWindow.Other_TabText;
+                    OtherRadioButton.Text = LText.SettingsWindow.Other_TabText;
 
                     OtherPage.FMFileConversionGroupBox.Text = LText.SettingsWindow.Other_FMFileConversion;
                     OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
@@ -831,7 +815,7 @@ namespace AngelLoader.Forms
             if (error)
             {
                 // Currently, all errors happen on the Paths page, so go to that page automatically.
-                PagesTreeView.SelectedNode = PathsNode;
+                PathsRadioButton.Checked = true;
 
                 // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
                 // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen
@@ -883,8 +867,8 @@ namespace AngelLoader.Forms
 
             // Special case: these are meta, so they should always be set even if the user clicked Cancel
             OutConfig.SettingsTab =
-                AppearanceNode.IsSelected ? SettingsTab.Appearance :
-                OtherNode.IsSelected ? SettingsTab.Other :
+                AppearanceRadioButton.Checked ? SettingsTab.Appearance :
+                OtherRadioButton.Checked ? SettingsTab.Other :
                 SettingsTab.Paths;
             OutConfig.SettingsWindowSize = Size;
             OutConfig.SettingsWindowSplitterDistance = MainSplitContainer.SplitterDistance;
@@ -1091,13 +1075,33 @@ namespace AngelLoader.Forms
 
         #region Page selection handler
 
-        private void PagesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        // This is to handle keyboard "clicks"
+        private
+#if !DEBUG
+        static
+#endif
+        void PageRadioButtons_Click(object sender, EventArgs e) => ((RadioButtonCustom)sender).Checked = true;
+
+        // This is for mouse use, to give a snappier experience, we change on MouseDown
+        private
+#if !DEBUG
+        static
+#endif
+        void SectionButtons_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left) ((RadioButtonCustom)sender).Checked = true;
+        }
+
+        private void PathsRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
 
-            if (!e.Node.IsSelected) return;
+            var s = (RadioButtonCustom)sender;
+            if (!s.Checked) return;
 
-            ShowPage(Array.IndexOf(PageRadioButtons, e.Node));
+            using (new DisableEvents(this)) foreach (var b in PageRadioButtons) if (s != b) b.Checked = false;
+
+            ShowPage(Array.IndexOf(PageRadioButtons, s));
         }
 
         private void SetPageScrollPos(ISettingsPage page)

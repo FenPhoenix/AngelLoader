@@ -43,6 +43,7 @@ namespace AngelLoader.Forms
             // 
             OriginTreeView.AlwaysDrawNodesFocused = true;
             OriginTreeView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            OriginTreeView.DrawMode = TreeViewDrawMode.OwnerDrawText;
             OriginTreeView.HideSelection = false;
             OriginTreeView.Location = new Point(8, 32);
             OriginTreeView.Size = new Size(224, 624);
