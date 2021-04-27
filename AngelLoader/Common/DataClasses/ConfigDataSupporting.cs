@@ -357,13 +357,7 @@ namespace AngelLoader.DataClasses
 
     #endregion
 
-    internal enum SettingsTab
-    {
-        Paths,
-        Appearance,
-        FMsList,
-        Other
-    }
+    internal enum SettingsTab { Paths, Appearance, Other }
 
     // TODO: This name is confusing, it sounds like it refers to an entire FanMission object or something
     // Naming this is brutally difficult. If we call it SelectedFM, it sounds like it's encapsulating an entire

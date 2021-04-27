@@ -103,8 +103,8 @@
             // 
             // MainSplitContainer
             // 
-            this.MainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.MainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MainSplitContainer.BackColor = System.Drawing.SystemColors.ControlDark;
             this.MainSplitContainer.Location = new System.Drawing.Point(0, 0);
@@ -127,7 +127,6 @@
             // 
             this.PagesTreeView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.PagesTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagesTreeView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PagesTreeView.HideSelection = false;
             this.PagesTreeView.Location = new System.Drawing.Point(0, 0);
             this.PagesTreeView.Name = "PagesTreeView";

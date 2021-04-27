@@ -45,7 +45,6 @@ namespace AngelLoader.Forms
 
         private readonly int _inPathsVScrollPos;
         private readonly int _inAppearanceVScrollPos;
-        private readonly int _inFMsListVScrollPos;
         private readonly int _inOtherVScrollPos;
 
         private readonly VisualTheme _inTheme;
@@ -72,7 +71,6 @@ namespace AngelLoader.Forms
 
         private readonly TreeNode PathsNode;
         private readonly TreeNode AppearanceNode;
-        private readonly TreeNode FMsListNode;
         private readonly TreeNode OtherNode;
 
         private readonly ComboBoxWithBackingItems LangComboBox;
@@ -80,7 +78,6 @@ namespace AngelLoader.Forms
 
         private readonly PathsPage PathsPage;
         private readonly AppearancePage AppearancePage;
-        private readonly FMsListPage FMsListPage;
         private readonly OtherPage OtherPage;
 
         private enum PathError { True, False }
@@ -116,7 +113,6 @@ namespace AngelLoader.Forms
 
             PathsNode = new TreeNode();
             AppearanceNode = new TreeNode();
-            FMsListNode = new TreeNode();
             OtherNode = new TreeNode();
 
             // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
@@ -142,7 +138,6 @@ namespace AngelLoader.Forms
 
             _inPathsVScrollPos = config.SettingsPathsVScrollPos;
             _inAppearanceVScrollPos = config.SettingsAppearanceVScrollPos;
-            _inFMsListVScrollPos = config.SettingsAppearanceVScrollPos;
             _inOtherVScrollPos = config.SettingsOtherVScrollPos;
 
             _inTheme = config.VisualTheme;
@@ -153,7 +148,6 @@ namespace AngelLoader.Forms
 
             PathsPage = new PathsPage { Visible = false };
             AppearancePage = new AppearancePage { Visible = false };
-            FMsListPage = new FMsListPage { Visible = false };
             OtherPage = new OtherPage { Visible = false };
 
             LangGroupBox = AppearancePage.LanguageGroupBox;
@@ -218,7 +212,7 @@ namespace AngelLoader.Forms
 
             // @GENGAMES (Settings): End
 
-            PageRadioButtons = new[] { PathsNode, AppearanceNode, FMsListNode, OtherNode };
+            PageRadioButtons = new[] { PathsNode, AppearanceNode, OtherNode };
 
             // These are nullable because null values get put INTO them later. So not a mistake to fill them with
             // non-nullable ints right off the bat.
@@ -226,7 +220,6 @@ namespace AngelLoader.Forms
             {
                 _inPathsVScrollPos,
                 _inAppearanceVScrollPos,
-                _inFMsListVScrollPos,
                 _inOtherVScrollPos
             };
 
@@ -249,14 +242,12 @@ namespace AngelLoader.Forms
             }
             else
             {
-                Pages = new ISettingsPage[] { PathsPage, AppearancePage, FMsListPage, OtherPage };
+                Pages = new ISettingsPage[] { PathsPage, AppearancePage, OtherPage };
 
                 PagePanel.Controls.Add(AppearancePage);
-                PagePanel.Controls.Add(FMsListPage);
                 PagePanel.Controls.Add(OtherPage);
 
                 AppearancePage.Dock = DockStyle.Fill;
-                FMsListPage.Dock = DockStyle.Fill;
                 OtherPage.Dock = DockStyle.Fill;
             }
 
@@ -279,16 +270,12 @@ namespace AngelLoader.Forms
                 {
                     PagesTreeView.Nodes.Add(PathsNode);
                     PagesTreeView.Nodes.Add(AppearanceNode);
-                    AppearanceNode.Nodes.Add(FMsListNode);
                     PagesTreeView.Nodes.Add(OtherNode);
 
                     switch (config.SettingsTab)
                     {
                         case SettingsTab.Appearance:
                             PagesTreeView.SelectedNode = AppearanceNode;
-                            break;
-                        case SettingsTab.FMsList:
-                            PagesTreeView.SelectedNode = FMsListNode;
                             break;
                         case SettingsTab.Other:
                             PagesTreeView.SelectedNode = OtherNode;
@@ -299,8 +286,6 @@ namespace AngelLoader.Forms
                             break;
                     }
                 }
-
-                PagesTreeView.ExpandAll();
             }
 
             #endregion
@@ -378,32 +363,32 @@ namespace AngelLoader.Forms
                 switch (config.GameOrganization)
                 {
                     case GameOrganization.ByTab:
-                        FMsListPage.OrganizeGamesByTabRadioButton.Checked = true;
-                        FMsListPage.UseShortGameTabNamesCheckBox.Enabled = true;
+                        AppearancePage.OrganizeGamesByTabRadioButton.Checked = true;
+                        AppearancePage.UseShortGameTabNamesCheckBox.Enabled = true;
                         break;
                     case GameOrganization.OneList:
                     default:
-                        FMsListPage.OrganizeGamesInOneListRadioButton.Checked = true;
-                        FMsListPage.UseShortGameTabNamesCheckBox.Enabled = false;
+                        AppearancePage.OrganizeGamesInOneListRadioButton.Checked = true;
+                        AppearancePage.UseShortGameTabNamesCheckBox.Enabled = false;
                         break;
                 }
 
-                FMsListPage.UseShortGameTabNamesCheckBox.Checked = config.UseShortGameTabNames;
+                AppearancePage.UseShortGameTabNamesCheckBox.Checked = config.UseShortGameTabNames;
 
                 #endregion
 
                 #region Articles
 
-                FMsListPage.EnableIgnoreArticlesCheckBox.Checked = config.EnableArticles;
+                AppearancePage.EnableIgnoreArticlesCheckBox.Checked = config.EnableArticles;
 
                 for (int i = 0; i < config.Articles.Count; i++)
                 {
                     string article = config.Articles[i];
-                    if (i > 0) FMsListPage.ArticlesTextBox.Text += ", ";
-                    FMsListPage.ArticlesTextBox.Text += article;
+                    if (i > 0) AppearancePage.ArticlesTextBox.Text += ", ";
+                    AppearancePage.ArticlesTextBox.Text += article;
                 }
 
-                FMsListPage.MoveArticlesToEndCheckBox.Checked = config.MoveArticlesToEnd;
+                AppearancePage.MoveArticlesToEndCheckBox.Checked = config.MoveArticlesToEnd;
 
                 SetArticlesEnabledState();
 
@@ -412,10 +397,10 @@ namespace AngelLoader.Forms
                 #region Date format
 
                 object[] dateFormatList = ValidDateFormatList.Cast<object>().ToArray();
-                FMsListPage.Date1ComboBox.Items.AddRange(dateFormatList);
-                FMsListPage.Date2ComboBox.Items.AddRange(dateFormatList);
-                FMsListPage.Date3ComboBox.Items.AddRange(dateFormatList);
-                FMsListPage.Date4ComboBox.Items.AddRange(dateFormatList);
+                AppearancePage.Date1ComboBox.Items.AddRange(dateFormatList);
+                AppearancePage.Date2ComboBox.Items.AddRange(dateFormatList);
+                AppearancePage.Date3ComboBox.Items.AddRange(dateFormatList);
+                AppearancePage.Date4ComboBox.Items.AddRange(dateFormatList);
 
                 string d1 = config.DateCustomFormat1;
                 string s1 = config.DateCustomSeparator1;
@@ -425,32 +410,32 @@ namespace AngelLoader.Forms
                 string s3 = config.DateCustomSeparator3;
                 string d4 = config.DateCustomFormat4;
 
-                FMsListPage.Date1ComboBox.SelectedItem = FMsListPage.Date1ComboBox.Items.Contains(d1) ? d1 : Defaults.DateCustomFormat1;
-                FMsListPage.DateSeparator1TextBox.Text = s1;
-                FMsListPage.Date2ComboBox.SelectedItem = FMsListPage.Date2ComboBox.Items.Contains(d2) ? d2 : Defaults.DateCustomFormat2;
-                FMsListPage.DateSeparator2TextBox.Text = s2;
-                FMsListPage.Date3ComboBox.SelectedItem = FMsListPage.Date3ComboBox.Items.Contains(d3) ? d3 : Defaults.DateCustomFormat3;
-                FMsListPage.DateSeparator3TextBox.Text = s3;
-                FMsListPage.Date4ComboBox.SelectedItem = FMsListPage.Date4ComboBox.Items.Contains(d4) ? d4 : Defaults.DateCustomFormat4;
+                AppearancePage.Date1ComboBox.SelectedItem = AppearancePage.Date1ComboBox.Items.Contains(d1) ? d1 : Defaults.DateCustomFormat1;
+                AppearancePage.DateSeparator1TextBox.Text = s1;
+                AppearancePage.Date2ComboBox.SelectedItem = AppearancePage.Date2ComboBox.Items.Contains(d2) ? d2 : Defaults.DateCustomFormat2;
+                AppearancePage.DateSeparator2TextBox.Text = s2;
+                AppearancePage.Date3ComboBox.SelectedItem = AppearancePage.Date3ComboBox.Items.Contains(d3) ? d3 : Defaults.DateCustomFormat3;
+                AppearancePage.DateSeparator3TextBox.Text = s3;
+                AppearancePage.Date4ComboBox.SelectedItem = AppearancePage.Date4ComboBox.Items.Contains(d4) ? d4 : Defaults.DateCustomFormat4;
 
                 // This comes last so that all the custom data is in place for the preview date to use
                 switch (config.DateFormat)
                 {
                     case DateFormat.CurrentCultureLong:
-                        FMsListPage.DateCurrentCultureLongRadioButton.Checked = true;
-                        FMsListPage.DateCustomFormatPanel.Enabled = false;
-                        FMsListPage.PreviewDateLabel.Text = _exampleDate.ToLongDateString();
+                        AppearancePage.DateCurrentCultureLongRadioButton.Checked = true;
+                        AppearancePage.DateCustomFormatPanel.Enabled = false;
+                        AppearancePage.PreviewDateLabel.Text = _exampleDate.ToLongDateString();
                         break;
                     case DateFormat.Custom:
-                        FMsListPage.DateCustomRadioButton.Checked = true;
-                        FMsListPage.DateCustomFormatPanel.Enabled = true;
+                        AppearancePage.DateCustomRadioButton.Checked = true;
+                        AppearancePage.DateCustomFormatPanel.Enabled = true;
                         UpdateCustomExampleDate();
                         break;
                     case DateFormat.CurrentCultureShort:
                     default:
-                        FMsListPage.DateCurrentCultureShortRadioButton.Checked = true;
-                        FMsListPage.DateCustomFormatPanel.Enabled = false;
-                        FMsListPage.PreviewDateLabel.Text = _exampleDate.ToShortDateString();
+                        AppearancePage.DateCurrentCultureShortRadioButton.Checked = true;
+                        AppearancePage.DateCustomFormatPanel.Enabled = false;
+                        AppearancePage.PreviewDateLabel.Text = _exampleDate.ToShortDateString();
                         break;
                 }
 
@@ -458,8 +443,8 @@ namespace AngelLoader.Forms
 
                 #region Recent FMs
 
-                FMsListPage.RecentFMsNumericUpDown.Maximum = Defaults.MaxDaysRecent;
-                FMsListPage.RecentFMsNumericUpDown.Value = config.DaysRecent;
+                AppearancePage.RecentFMsNumericUpDown.Maximum = Defaults.MaxDaysRecent;
+                AppearancePage.RecentFMsNumericUpDown.Value = config.DaysRecent;
 
                 #endregion
 
@@ -468,19 +453,19 @@ namespace AngelLoader.Forms
                 switch (config.RatingDisplayStyle)
                 {
                     case RatingDisplayStyle.NewDarkLoader:
-                        FMsListPage.RatingNDLDisplayStyleRadioButton.Checked = true;
+                        AppearancePage.RatingNDLDisplayStyleRadioButton.Checked = true;
                         break;
                     case RatingDisplayStyle.FMSel:
                     default:
-                        FMsListPage.RatingFMSelDisplayStyleRadioButton.Checked = true;
+                        AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked = true;
                         break;
                 }
 
-                FMsListPage.RatingUseStarsCheckBox.Checked = config.RatingUseStars;
+                AppearancePage.RatingUseStarsCheckBox.Checked = config.RatingUseStars;
 
                 SetRatingImage();
 
-                FMsListPage.RatingUseStarsCheckBox.Enabled = FMsListPage.RatingFMSelDisplayStyleRadioButton.Checked;
+                AppearancePage.RatingUseStarsCheckBox.Enabled = AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked;
 
                 #endregion
 
@@ -563,28 +548,28 @@ namespace AngelLoader.Forms
                 AppearancePage.ClassicThemeRadioButton.CheckedChanged += VisualThemeRadioButtons_CheckedChanged;
                 AppearancePage.DarkThemeRadioButton.CheckedChanged += VisualThemeRadioButtons_CheckedChanged;
 
-                FMsListPage.OrganizeGamesByTabRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
-                FMsListPage.OrganizeGamesInOneListRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
+                AppearancePage.OrganizeGamesByTabRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
+                AppearancePage.OrganizeGamesInOneListRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
 
-                FMsListPage.EnableIgnoreArticlesCheckBox.CheckedChanged += ArticlesCheckBox_CheckedChanged;
-                FMsListPage.ArticlesTextBox.Leave += ArticlesTextBox_Leave;
+                AppearancePage.EnableIgnoreArticlesCheckBox.CheckedChanged += ArticlesCheckBox_CheckedChanged;
+                AppearancePage.ArticlesTextBox.Leave += ArticlesTextBox_Leave;
 
-                FMsListPage.RatingNDLDisplayStyleRadioButton.CheckedChanged += RatingOutOfTenRadioButton_CheckedChanged;
-                FMsListPage.RatingFMSelDisplayStyleRadioButton.CheckedChanged += RatingOutOfFiveRadioButton_CheckedChanged;
-                FMsListPage.RatingUseStarsCheckBox.CheckedChanged += RatingUseStarsCheckBox_CheckedChanged;
+                AppearancePage.RatingNDLDisplayStyleRadioButton.CheckedChanged += RatingOutOfTenRadioButton_CheckedChanged;
+                AppearancePage.RatingFMSelDisplayStyleRadioButton.CheckedChanged += RatingOutOfFiveRadioButton_CheckedChanged;
+                AppearancePage.RatingUseStarsCheckBox.CheckedChanged += RatingUseStarsCheckBox_CheckedChanged;
 
-                FMsListPage.DateCurrentCultureShortRadioButton.CheckedChanged += DateShortAndLongRadioButtons_CheckedChanged;
-                FMsListPage.DateCurrentCultureLongRadioButton.CheckedChanged += DateShortAndLongRadioButtons_CheckedChanged;
-                FMsListPage.DateCustomRadioButton.CheckedChanged += DateCustomRadioButton_CheckedChanged;
+                AppearancePage.DateCurrentCultureShortRadioButton.CheckedChanged += DateShortAndLongRadioButtons_CheckedChanged;
+                AppearancePage.DateCurrentCultureLongRadioButton.CheckedChanged += DateShortAndLongRadioButtons_CheckedChanged;
+                AppearancePage.DateCustomRadioButton.CheckedChanged += DateCustomRadioButton_CheckedChanged;
 
-                FMsListPage.Date1ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
-                FMsListPage.Date2ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
-                FMsListPage.Date3ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
-                FMsListPage.Date4ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
+                AppearancePage.Date1ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
+                AppearancePage.Date2ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
+                AppearancePage.Date3ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
+                AppearancePage.Date4ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
 
-                FMsListPage.DateSeparator1TextBox.TextChanged += DateCustomValue_Changed;
-                FMsListPage.DateSeparator2TextBox.TextChanged += DateCustomValue_Changed;
-                FMsListPage.DateSeparator3TextBox.TextChanged += DateCustomValue_Changed;
+                AppearancePage.DateSeparator1TextBox.TextChanged += DateCustomValue_Changed;
+                AppearancePage.DateSeparator2TextBox.TextChanged += DateCustomValue_Changed;
+                AppearancePage.DateSeparator3TextBox.TextChanged += DateCustomValue_Changed;
 
                 OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
             }
@@ -732,33 +717,33 @@ namespace AngelLoader.Forms
                     #region FM Display tab
 
                     AppearanceNode.Text = LText.SettingsWindow.Appearance_TabText;
-                    FMsListNode.Text = LText.SettingsWindow.Appearance_FMsList;
 
                     AppearancePage.VisualThemeGroupBox.Text = LText.SettingsWindow.Appearance_Theme;
                     AppearancePage.ClassicThemeRadioButton.Text = LText.SettingsWindow.Appearance_Theme_Classic;
                     AppearancePage.DarkThemeRadioButton.Text = LText.SettingsWindow.Appearance_Theme_Dark;
 
-                    FMsListPage.GameOrganizationGroupBox.Text = LText.SettingsWindow.Appearance_GameOrganization;
-                    FMsListPage.OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.Appearance_GameOrganizationByTab;
-                    FMsListPage.UseShortGameTabNamesCheckBox.Text = LText.SettingsWindow.Appearance_UseShortGameTabNames;
-                    FMsListPage.OrganizeGamesInOneListRadioButton.Text = LText.SettingsWindow.Appearance_GameOrganizationOneList;
+                    AppearancePage.FMsListGroupBox.Text = LText.SettingsWindow.Appearance_FMsList;
+                    AppearancePage.GameOrganizationLabel.Text = LText.SettingsWindow.Appearance_GameOrganization;
+                    AppearancePage.OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.Appearance_GameOrganizationByTab;
+                    AppearancePage.UseShortGameTabNamesCheckBox.Text = LText.SettingsWindow.Appearance_UseShortGameTabNames;
+                    AppearancePage.OrganizeGamesInOneListRadioButton.Text = LText.SettingsWindow.Appearance_GameOrganizationOneList;
 
-                    FMsListPage.SortingGroupBox.Text = LText.SettingsWindow.Appearance_Sorting;
-                    FMsListPage.EnableIgnoreArticlesCheckBox.Text = LText.SettingsWindow.Appearance_IgnoreArticles;
-                    FMsListPage.MoveArticlesToEndCheckBox.Text = LText.SettingsWindow.Appearance_MoveArticlesToEnd;
+                    AppearancePage.SortingLabel.Text = LText.SettingsWindow.Appearance_Sorting;
+                    AppearancePage.EnableIgnoreArticlesCheckBox.Text = LText.SettingsWindow.Appearance_IgnoreArticles;
+                    AppearancePage.MoveArticlesToEndCheckBox.Text = LText.SettingsWindow.Appearance_MoveArticlesToEnd;
 
-                    FMsListPage.RatingDisplayStyleGroupBox.Text = LText.SettingsWindow.Appearance_RatingDisplayStyle;
-                    FMsListPage.RatingNDLDisplayStyleRadioButton.Text = LText.SettingsWindow.Appearance_RatingDisplayStyleNDL;
-                    FMsListPage.RatingFMSelDisplayStyleRadioButton.Text = LText.SettingsWindow.Appearance_RatingDisplayStyleFMSel;
-                    FMsListPage.RatingUseStarsCheckBox.Text = LText.SettingsWindow.Appearance_RatingDisplayStyleUseStars;
+                    AppearancePage.RatingDisplayStyleLabel.Text = LText.SettingsWindow.Appearance_RatingDisplayStyle;
+                    AppearancePage.RatingNDLDisplayStyleRadioButton.Text = LText.SettingsWindow.Appearance_RatingDisplayStyleNDL;
+                    AppearancePage.RatingFMSelDisplayStyleRadioButton.Text = LText.SettingsWindow.Appearance_RatingDisplayStyleFMSel;
+                    AppearancePage.RatingUseStarsCheckBox.Text = LText.SettingsWindow.Appearance_RatingDisplayStyleUseStars;
 
-                    FMsListPage.DateFormatGroupBox.Text = LText.SettingsWindow.Appearance_DateFormat;
-                    FMsListPage.DateCurrentCultureShortRadioButton.Text = LText.SettingsWindow.Appearance_CurrentCultureShort;
-                    FMsListPage.DateCurrentCultureLongRadioButton.Text = LText.SettingsWindow.Appearance_CurrentCultureLong;
-                    FMsListPage.DateCustomRadioButton.Text = LText.SettingsWindow.Appearance_Custom;
+                    AppearancePage.DateFormatLabel.Text = LText.SettingsWindow.Appearance_DateFormat;
+                    AppearancePage.DateCurrentCultureShortRadioButton.Text = LText.SettingsWindow.Appearance_CurrentCultureShort;
+                    AppearancePage.DateCurrentCultureLongRadioButton.Text = LText.SettingsWindow.Appearance_CurrentCultureLong;
+                    AppearancePage.DateCustomRadioButton.Text = LText.SettingsWindow.Appearance_Custom;
 
-                    FMsListPage.RecentFMsGroupBox.Text = LText.SettingsWindow.Appearance_RecentFMs;
-                    FMsListPage.RecentFMsLabel.Text = LText.SettingsWindow.Appearance_RecentFMs_MaxDays;
+                    AppearancePage.RecentFMsHeaderLabel.Text = LText.SettingsWindow.Appearance_RecentFMs;
+                    AppearancePage.RecentFMsLabel.Text = LText.SettingsWindow.Appearance_RecentFMs_MaxDays;
 
                     #endregion
 
@@ -899,7 +884,6 @@ namespace AngelLoader.Forms
             // Special case: these are meta, so they should always be set even if the user clicked Cancel
             OutConfig.SettingsTab =
                 AppearanceNode.IsSelected ? SettingsTab.Appearance :
-                FMsListNode.IsSelected ? SettingsTab.FMsList :
                 OtherNode.IsSelected ? SettingsTab.Other :
                 SettingsTab.Paths;
             OutConfig.SettingsWindowSize = Size;
@@ -989,19 +973,19 @@ namespace AngelLoader.Forms
 
                 #region Game organization
 
-                OutConfig.GameOrganization = FMsListPage.OrganizeGamesByTabRadioButton.Checked
+                OutConfig.GameOrganization = AppearancePage.OrganizeGamesByTabRadioButton.Checked
                         ? GameOrganization.ByTab
                         : GameOrganization.OneList;
 
-                OutConfig.UseShortGameTabNames = FMsListPage.UseShortGameTabNamesCheckBox.Checked;
+                OutConfig.UseShortGameTabNames = AppearancePage.UseShortGameTabNamesCheckBox.Checked;
 
                 #endregion
 
                 #region Articles
 
-                OutConfig.EnableArticles = FMsListPage.EnableIgnoreArticlesCheckBox.Checked;
+                OutConfig.EnableArticles = AppearancePage.EnableIgnoreArticlesCheckBox.Checked;
 
-                var retArticles = FMsListPage.ArticlesTextBox.Text
+                var retArticles = AppearancePage.ArticlesTextBox.Text
                     .Replace(", ", ",")
                     .Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
                     .Distinct(StringComparer.InvariantCultureIgnoreCase)
@@ -1019,24 +1003,24 @@ namespace AngelLoader.Forms
 
                 OutConfig.Articles.ClearAndAdd(retArticles);
 
-                OutConfig.MoveArticlesToEnd = FMsListPage.MoveArticlesToEndCheckBox.Checked;
+                OutConfig.MoveArticlesToEnd = AppearancePage.MoveArticlesToEndCheckBox.Checked;
 
                 #endregion
 
                 #region Rating display style
 
-                OutConfig.RatingDisplayStyle = FMsListPage.RatingNDLDisplayStyleRadioButton.Checked
+                OutConfig.RatingDisplayStyle = AppearancePage.RatingNDLDisplayStyleRadioButton.Checked
                     ? RatingDisplayStyle.NewDarkLoader
                     : RatingDisplayStyle.FMSel;
-                OutConfig.RatingUseStars = FMsListPage.RatingUseStarsCheckBox.Checked;
+                OutConfig.RatingUseStars = AppearancePage.RatingUseStarsCheckBox.Checked;
 
                 #endregion
 
                 #region Date format
 
                 OutConfig.DateFormat =
-                    FMsListPage.DateCurrentCultureShortRadioButton.Checked ? DateFormat.CurrentCultureShort :
-                    FMsListPage.DateCurrentCultureLongRadioButton.Checked ? DateFormat.CurrentCultureLong :
+                    AppearancePage.DateCurrentCultureShortRadioButton.Checked ? DateFormat.CurrentCultureShort :
+                    AppearancePage.DateCurrentCultureLongRadioButton.Checked ? DateFormat.CurrentCultureLong :
                     DateFormat.Custom;
 
                 bool customDateSuccess = FormatAndTestDate(out string customDateString, out _);
@@ -1050,17 +1034,17 @@ namespace AngelLoader.Forms
                     OutConfig.DateCustomFormatString = GetFormattedCustomDateString();
                 }
 
-                OutConfig.DateCustomFormat1 = FMsListPage.Date1ComboBox.SelectedItem.ToString();
-                OutConfig.DateCustomSeparator1 = FMsListPage.DateSeparator1TextBox.Text;
-                OutConfig.DateCustomFormat2 = FMsListPage.Date2ComboBox.SelectedItem.ToString();
-                OutConfig.DateCustomSeparator2 = FMsListPage.DateSeparator2TextBox.Text;
-                OutConfig.DateCustomFormat3 = FMsListPage.Date3ComboBox.SelectedItem.ToString();
-                OutConfig.DateCustomSeparator3 = FMsListPage.DateSeparator3TextBox.Text;
-                OutConfig.DateCustomFormat4 = FMsListPage.Date4ComboBox.SelectedItem.ToString();
+                OutConfig.DateCustomFormat1 = AppearancePage.Date1ComboBox.SelectedItem.ToString();
+                OutConfig.DateCustomSeparator1 = AppearancePage.DateSeparator1TextBox.Text;
+                OutConfig.DateCustomFormat2 = AppearancePage.Date2ComboBox.SelectedItem.ToString();
+                OutConfig.DateCustomSeparator2 = AppearancePage.DateSeparator2TextBox.Text;
+                OutConfig.DateCustomFormat3 = AppearancePage.Date3ComboBox.SelectedItem.ToString();
+                OutConfig.DateCustomSeparator3 = AppearancePage.DateSeparator3TextBox.Text;
+                OutConfig.DateCustomFormat4 = AppearancePage.Date4ComboBox.SelectedItem.ToString();
 
                 #endregion
 
-                OutConfig.DaysRecent = (uint)FMsListPage.RecentFMsNumericUpDown.Value;
+                OutConfig.DaysRecent = (uint)AppearancePage.RecentFMsNumericUpDown.Value;
 
                 #endregion
 
@@ -1121,7 +1105,6 @@ namespace AngelLoader.Forms
             int? pos =
                 page == PathsPage ? _inPathsVScrollPos :
                 page == AppearancePage ? _inAppearanceVScrollPos :
-                page == FMsListPage ? _inFMsListVScrollPos :
                 page == OtherPage ? _inOtherVScrollPos :
                 null;
 
@@ -1336,7 +1319,7 @@ namespace AngelLoader.Forms
 
         private void GameOrganizationRadioButtons_CheckedChanged(object sender, EventArgs e)
         {
-            FMsListPage.UseShortGameTabNamesCheckBox.Enabled = FMsListPage.OrganizeGamesByTabRadioButton.Checked;
+            AppearancePage.UseShortGameTabNamesCheckBox.Enabled = AppearancePage.OrganizeGamesByTabRadioButton.Checked;
         }
 
         #region Articles
@@ -1345,21 +1328,21 @@ namespace AngelLoader.Forms
 
         private void SetArticlesEnabledState()
         {
-            FMsListPage.ArticlesTextBox.Enabled = FMsListPage.EnableIgnoreArticlesCheckBox.Checked;
-            FMsListPage.MoveArticlesToEndCheckBox.Enabled = FMsListPage.EnableIgnoreArticlesCheckBox.Checked;
+            AppearancePage.ArticlesTextBox.Enabled = AppearancePage.EnableIgnoreArticlesCheckBox.Checked;
+            AppearancePage.MoveArticlesToEndCheckBox.Enabled = AppearancePage.EnableIgnoreArticlesCheckBox.Checked;
         }
 
         private void ArticlesTextBox_Leave(object sender, EventArgs e) => FormatArticles();
 
         private void FormatArticles()
         {
-            string articles = FMsListPage.ArticlesTextBox.Text;
+            string articles = AppearancePage.ArticlesTextBox.Text;
 
             // Copied wholesale from Autovid, ridiculous looking, but works
 
             if (articles.IsWhiteSpace())
             {
-                FMsListPage.ArticlesTextBox.Text = "";
+                AppearancePage.ArticlesTextBox.Text = "";
                 return;
             }
 
@@ -1379,7 +1362,7 @@ namespace AngelLoader.Forms
 
             articles = string.Join(", ", articlesArray);
 
-            FMsListPage.ArticlesTextBox.Text = articles;
+            AppearancePage.ArticlesTextBox.Text = articles;
         }
 
         #endregion
@@ -1388,25 +1371,25 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                FMsListPage.Date1ComboBox.SelectedItem = Defaults.DateCustomFormat1;
-                FMsListPage.DateSeparator1TextBox.Text = Defaults.DateCustomSeparator1;
-                FMsListPage.Date2ComboBox.SelectedItem = Defaults.DateCustomFormat2;
-                FMsListPage.DateSeparator2TextBox.Text = Defaults.DateCustomSeparator2;
-                FMsListPage.Date3ComboBox.SelectedItem = Defaults.DateCustomFormat3;
-                FMsListPage.DateSeparator3TextBox.Text = Defaults.DateCustomSeparator3;
-                FMsListPage.Date4ComboBox.SelectedItem = Defaults.DateCustomFormat4;
+                AppearancePage.Date1ComboBox.SelectedItem = Defaults.DateCustomFormat1;
+                AppearancePage.DateSeparator1TextBox.Text = Defaults.DateCustomSeparator1;
+                AppearancePage.Date2ComboBox.SelectedItem = Defaults.DateCustomFormat2;
+                AppearancePage.DateSeparator2TextBox.Text = Defaults.DateCustomSeparator2;
+                AppearancePage.Date3ComboBox.SelectedItem = Defaults.DateCustomFormat3;
+                AppearancePage.DateSeparator3TextBox.Text = Defaults.DateCustomSeparator3;
+                AppearancePage.Date4ComboBox.SelectedItem = Defaults.DateCustomFormat4;
             }
             UpdateCustomExampleDate();
         }
 
         private string GetFormattedCustomDateString() =>
-            FMsListPage.Date1ComboBox.SelectedItem +
-            FMsListPage.DateSeparator1TextBox.Text.EscapeAllChars() +
-            FMsListPage.Date2ComboBox.SelectedItem +
-            FMsListPage.DateSeparator2TextBox.Text.EscapeAllChars() +
-            FMsListPage.Date3ComboBox.SelectedItem +
-            FMsListPage.DateSeparator3TextBox.Text.EscapeAllChars() +
-            FMsListPage.Date4ComboBox.SelectedItem;
+            AppearancePage.Date1ComboBox.SelectedItem +
+            AppearancePage.DateSeparator1TextBox.Text.EscapeAllChars() +
+            AppearancePage.Date2ComboBox.SelectedItem +
+            AppearancePage.DateSeparator2TextBox.Text.EscapeAllChars() +
+            AppearancePage.Date3ComboBox.SelectedItem +
+            AppearancePage.DateSeparator3TextBox.Text.EscapeAllChars() +
+            AppearancePage.Date4ComboBox.SelectedItem;
 
         private bool FormatAndTestDate(out string formatString, out string exampleDateString)
         {
@@ -1441,7 +1424,7 @@ namespace AngelLoader.Forms
             bool success = FormatAndTestDate(out _, out string formattedExampleDate);
             if (success)
             {
-                FMsListPage.PreviewDateLabel.Text = formattedExampleDate;
+                AppearancePage.PreviewDateLabel.Text = formattedExampleDate;
             }
             else
             {
@@ -1451,8 +1434,8 @@ namespace AngelLoader.Forms
 
         private void DateShortAndLongRadioButtons_CheckedChanged(object sender, EventArgs e)
         {
-            FMsListPage.DateCustomFormatPanel.Enabled = false;
-            FMsListPage.PreviewDateLabel.Text = sender == FMsListPage.DateCurrentCultureShortRadioButton
+            AppearancePage.DateCustomFormatPanel.Enabled = false;
+            AppearancePage.PreviewDateLabel.Text = sender == AppearancePage.DateCurrentCultureShortRadioButton
                 ? _exampleDate.ToShortDateString()
                 : _exampleDate.ToLongDateString();
         }
@@ -1460,13 +1443,13 @@ namespace AngelLoader.Forms
         private void DateCustomRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             var s = (RadioButton)sender;
-            FMsListPage.DateCustomFormatPanel.Enabled = s.Checked;
+            AppearancePage.DateCustomFormatPanel.Enabled = s.Checked;
             if (s.Checked) UpdateCustomExampleDate();
         }
 
         private void DateCustomValue_Changed(object sender, EventArgs e)
         {
-            if (FMsListPage.DateCustomFormatPanel.Enabled) UpdateCustomExampleDate();
+            if (AppearancePage.DateCustomFormatPanel.Enabled) UpdateCustomExampleDate();
         }
 
         #endregion
@@ -1476,9 +1459,9 @@ namespace AngelLoader.Forms
         private void RatingOutOfTenRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            if (FMsListPage.RatingNDLDisplayStyleRadioButton.Checked)
+            if (AppearancePage.RatingNDLDisplayStyleRadioButton.Checked)
             {
-                FMsListPage.RatingUseStarsCheckBox.Enabled = false;
+                AppearancePage.RatingUseStarsCheckBox.Enabled = false;
                 SetRatingImage();
             }
         }
@@ -1486,9 +1469,9 @@ namespace AngelLoader.Forms
         private void RatingOutOfFiveRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            if (FMsListPage.RatingFMSelDisplayStyleRadioButton.Checked)
+            if (AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked)
             {
-                FMsListPage.RatingUseStarsCheckBox.Enabled = true;
+                AppearancePage.RatingUseStarsCheckBox.Enabled = true;
                 SetRatingImage();
             }
         }
@@ -1501,9 +1484,9 @@ namespace AngelLoader.Forms
 
         private void SetRatingImage()
         {
-            FMsListPage.RatingExamplePictureBox.Image = FMsListPage.RatingNDLDisplayStyleRadioButton.Checked
+            AppearancePage.RatingExamplePictureBox.Image = AppearancePage.RatingNDLDisplayStyleRadioButton.Checked
                 ? Images.RatingExample_NDL
-                : FMsListPage.RatingFMSelDisplayStyleRadioButton.Checked && FMsListPage.RatingUseStarsCheckBox.Checked
+                : AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked && AppearancePage.RatingUseStarsCheckBox.Checked
                 ? Images.RatingExample_FMSel_Stars
                 : Images.RatingExample_FMSel_Number;
         }

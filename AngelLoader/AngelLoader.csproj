@@ -97,9 +97,6 @@
     <Compile Update="Forms\CustomControls\DarkRadioButton.cs" />
     <Compile Update="Forms\CustomControls\DarkTabControl.cs" />
     <Compile Update="Forms\CustomControls\DarkTextBox.cs" />
-    <Compile Update="Forms\Settings\FMsListPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
