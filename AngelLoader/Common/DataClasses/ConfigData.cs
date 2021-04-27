@@ -339,6 +339,7 @@ namespace AngelLoader.DataClasses
         internal int SettingsWindowSplitterDistance = Defaults.SettingsWindowSplitterDistance;
         internal int SettingsPathsVScrollPos = 0;
         internal int SettingsAppearanceVScrollPos = 0;
+        internal int SettingsFMsListVScrollPos = 0;
         internal int SettingsOtherVScrollPos = 0;
 
         #endregion

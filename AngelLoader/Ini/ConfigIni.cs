@@ -337,6 +337,13 @@ namespace AngelLoader
                         config.SettingsAppearanceVScrollPos = result;
                     }
                 }
+                else if (lineTS.StartsWithFast_NoNullChecks("SettingsFMsListVScrollPos="))
+                {
+                    if (int.TryParse(val, out int result))
+                    {
+                        config.SettingsFMsListVScrollPos = result;
+                    }
+                }
                 else if (lineTS.StartsWithFast_NoNullChecks("SettingsOtherVScrollPos="))
                 {
                     if (int.TryParse(val, out int result))
@@ -745,6 +752,7 @@ namespace AngelLoader
 
             sb.Append("SettingsPathsVScrollPos=").Append(config.SettingsPathsVScrollPos).AppendLine();
             sb.Append("SettingsAppearanceVScrollPos=").Append(config.SettingsAppearanceVScrollPos).AppendLine();
+            sb.Append("SettingsFMsListVScrollPos=").Append(config.SettingsFMsListVScrollPos).AppendLine();
             sb.Append("SettingsOtherVScrollPos=").Append(config.SettingsOtherVScrollPos).AppendLine();
 
             #endregion

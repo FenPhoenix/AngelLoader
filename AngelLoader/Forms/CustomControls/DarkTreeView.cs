@@ -53,6 +53,8 @@ namespace AngelLoader.Forms.CustomControls
 
         public DarkTreeView()
         {
+            DoubleBuffered = true;
+
             BorderStyle = BorderStyle.FixedSingle;
 
             // @DarkModeNote(DarkTreeView - close/expand buttons note)
