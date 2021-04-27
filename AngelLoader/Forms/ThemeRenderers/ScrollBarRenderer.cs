@@ -11,7 +11,8 @@ namespace AngelLoader.Forms.ThemeRenderers
 
         internal override bool Enabled => Misc.Config.DarkMode;
 
-        internal override bool TryDrawThemeBackground(IntPtr hTheme,
+        internal override bool TryDrawThemeBackground(
+            IntPtr hTheme,
             IntPtr hdc,
             int iPartId,
             int iStateId,
@@ -166,6 +167,8 @@ namespace AngelLoader.Forms.ThemeRenderers
             int iPropId,
             out int pColor)
         {
+            // This is for scrollbar vert/horz corners on Win10 (and maybe Win8? Haven't tested it).
+            // This is the ONLY way that works on those versions.
             if (iPartId == Native.SBP_CORNER && iPropId == Native.TMT_FILLCOLOR)
             {
                 pColor = ColorTranslator.ToWin32(DarkColors.DarkBackground);

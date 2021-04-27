@@ -245,7 +245,13 @@ namespace AngelLoader.WinAPI
                         COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
                         _ => GetSysColorOriginal!(nIndex)
                     },
-                    _ => GetSysColorOriginal!(nIndex)
+                    // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
+                    // This is the ONLY way that works on those versions.
+                    // (note: it's really just GetSysColorBrush() that it calls, we technically don't need to do
+                    // this here in GetSysColor(), but let's do it for robustness because who knows what could change.)
+                    _ => nIndex == COLOR_3DFACE
+                        ? ColorTranslator.ToWin32(DarkColors.DarkBackground)
+                        : GetSysColorOriginal!(nIndex)
                 };
             }
             else
@@ -279,7 +285,11 @@ namespace AngelLoader.WinAPI
                         COLOR_HIGHLIGHT_TEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText)),
                         _ => GetSysColorBrushOriginal!(nIndex)
                     },
-                    _ => GetSysColorBrushOriginal!(nIndex)
+                    // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
+                    // This is the ONLY way that works on those versions.
+                    _ => nIndex == COLOR_3DFACE
+                        ? Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground))
+                        : GetSysColorBrushOriginal!(nIndex)
                 };
             }
             else
