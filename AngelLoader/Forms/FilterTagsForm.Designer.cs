@@ -64,7 +64,6 @@
             this.OriginTreeView.AlwaysDrawNodesFocused = true;
             this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.OriginTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.OriginTreeView.HideSelection = false;
             this.OriginTreeView.Location = new System.Drawing.Point(8, 32);
             this.OriginTreeView.Name = "OriginTreeView";

@@ -24,9 +24,7 @@
             this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
-            this.OtherRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
-            this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
-            this.PathsRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
+            this.PagesTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.BottomFlowLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
@@ -54,10 +52,10 @@
             this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(610, 8);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -70,10 +68,10 @@
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.AutoSize = true;
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(529, 8);
             this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -115,9 +113,7 @@
             // MainSplitContainer.Panel1
             // 
             this.MainSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.MainSplitContainer.Panel1.Controls.Add(this.OtherRadioButton);
-            this.MainSplitContainer.Panel1.Controls.Add(this.AppearanceRadioButton);
-            this.MainSplitContainer.Panel1.Controls.Add(this.PathsRadioButton);
+            this.MainSplitContainer.Panel1.Controls.Add(this.PagesTreeView);
             // 
             // MainSplitContainer.Panel2
             // 
@@ -127,65 +123,16 @@
             this.MainSplitContainer.SplitterDistance = 155;
             this.MainSplitContainer.TabIndex = 5;
             // 
-            // OtherRadioButton
+            // PagesTreeView
             // 
-            this.OtherRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.OtherRadioButton.BackColor = System.Drawing.SystemColors.Control;
-            this.OtherRadioButton.Checked = false;
-            this.OtherRadioButton.FlatAppearance.BorderSize = 0;
-            this.OtherRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
-            this.OtherRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
-            this.OtherRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.OtherRadioButton.Location = new System.Drawing.Point(8, 56);
-            this.OtherRadioButton.Name = "OtherRadioButton";
-            this.OtherRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.OtherRadioButton.TabIndex = 2;
-            this.OtherRadioButton.Text = "Other";
-            this.OtherRadioButton.UseVisualStyleBackColor = true;
-            this.OtherRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
-            this.OtherRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.OtherRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SectionButtons_MouseDown);
-            // 
-            // AppearanceRadioButton
-            // 
-            this.AppearanceRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.AppearanceRadioButton.BackColor = System.Drawing.SystemColors.Control;
-            this.AppearanceRadioButton.Checked = false;
-            this.AppearanceRadioButton.FlatAppearance.BorderSize = 0;
-            this.AppearanceRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
-            this.AppearanceRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
-            this.AppearanceRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.AppearanceRadioButton.Location = new System.Drawing.Point(8, 32);
-            this.AppearanceRadioButton.Name = "AppearanceRadioButton";
-            this.AppearanceRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.AppearanceRadioButton.TabIndex = 1;
-            this.AppearanceRadioButton.Text = "FM Display";
-            this.AppearanceRadioButton.UseVisualStyleBackColor = true;
-            this.AppearanceRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
-            this.AppearanceRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.AppearanceRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SectionButtons_MouseDown);
-            // 
-            // PathsRadioButton
-            // 
-            this.PathsRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PathsRadioButton.BackColor = System.Drawing.SystemColors.Control;
-            this.PathsRadioButton.Checked = false;
-            this.PathsRadioButton.FlatAppearance.BorderSize = 0;
-            this.PathsRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
-            this.PathsRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
-            this.PathsRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.PathsRadioButton.Location = new System.Drawing.Point(8, 8);
-            this.PathsRadioButton.Name = "PathsRadioButton";
-            this.PathsRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.PathsRadioButton.TabIndex = 0;
-            this.PathsRadioButton.Text = "Paths";
-            this.PathsRadioButton.UseVisualStyleBackColor = true;
-            this.PathsRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
-            this.PathsRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.PathsRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SectionButtons_MouseDown);
+            this.PagesTreeView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PagesTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PagesTreeView.HideSelection = false;
+            this.PagesTreeView.Location = new System.Drawing.Point(0, 0);
+            this.PagesTreeView.Name = "PagesTreeView";
+            this.PagesTreeView.Size = new System.Drawing.Size(155, 613);
+            this.PagesTreeView.TabIndex = 0;
+            this.PagesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PagesTreeView_AfterSelect);
             // 
             // PagePanel
             // 
@@ -238,9 +185,7 @@
         private System.Windows.Forms.ToolTip MainToolTip;
         private AngelLoader.Forms.CustomControls.DarkLabel ErrorLabel;
         private AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom OtherRadioButton;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom AppearanceRadioButton;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom PathsRadioButton;
         private System.Windows.Forms.PictureBox ErrorIconPictureBox;
+        private CustomControls.DarkTreeView PagesTreeView;
     }
 }

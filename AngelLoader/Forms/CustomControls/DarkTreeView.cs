@@ -10,7 +10,23 @@ namespace AngelLoader.Forms.CustomControls
     internal sealed class DarkTreeView : TreeView, IDarkable
     {
         [DefaultValue(false)]
+        [PublicAPI]
         public bool AlwaysDrawNodesFocused { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Color DarkModeBackColor { get; set; } = DarkColors.LightBackground;
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public SolidBrush DarkModeBackColorBrush { get; set; } = DarkColors.LightBackgroundBrush;
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new TreeViewDrawMode DrawMode => base.DrawMode;
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -26,7 +42,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_darkModeEnabled)
                 {
-                    BackColor = DarkColors.LightBackground;
+                    BackColor = DarkModeBackColor;
                 }
                 else
                 {
@@ -43,7 +59,7 @@ namespace AngelLoader.Forms.CustomControls
             // We currently draw the close/expand buttons in a theme renderer, which is quick and easy. If we
             // wanted to draw them here, we would have to use OwnerDrawAll mode, and then we would have to draw
             // everything - close/expand buttons, dotted lines, text, icons if there are any, etc.
-            DrawMode = TreeViewDrawMode.OwnerDrawText;
+            base.DrawMode = TreeViewDrawMode.OwnerDrawText;
 
             HideSelection = false;
         }
@@ -56,7 +72,7 @@ namespace AngelLoader.Forms.CustomControls
 
             bool darkMode = _darkModeEnabled;
 
-            Brush bgBrush_Normal = darkMode ? DarkColors.LightBackgroundBrush : SystemBrushes.Window;
+            Brush bgBrush_Normal = darkMode ? DarkModeBackColorBrush : SystemBrushes.Window;
             Brush bgBrush_Highlighted_Focused = darkMode ? DarkColors.BlueSelectionBrush : SystemBrushes.Highlight;
             Brush bgBrush_Highlighted_NotFocused = darkMode ? DarkColors.GreySelectionBrush : SystemBrushes.ControlLight;
 
