@@ -84,7 +84,7 @@
             this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Size = new System.Drawing.Size(496, 1065);
-            this.PagePanel.TabIndex = 8;
+            this.PagePanel.TabIndex = 0;
             // 
             // FMsListGroupBox
             // 
@@ -114,7 +114,7 @@
             this.FMsListGroupBox.Location = new System.Drawing.Point(8, 172);
             this.FMsListGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.FMsListGroupBox.Size = new System.Drawing.Size(480, 688);
-            this.FMsListGroupBox.TabIndex = 16;
+            this.FMsListGroupBox.TabIndex = 2;
             this.FMsListGroupBox.TabStop = false;
             // 
             // darkHorizontalDivider4
@@ -123,7 +123,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.darkHorizontalDivider4.Location = new System.Drawing.Point(8, 584);
             this.darkHorizontalDivider4.Size = new System.Drawing.Size(464, 16);
-            this.darkHorizontalDivider4.TabIndex = 32;
+            this.darkHorizontalDivider4.TabIndex = 12;
             // 
             // darkHorizontalDivider3
             // 
@@ -131,7 +131,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.darkHorizontalDivider3.Location = new System.Drawing.Point(8, 408);
             this.darkHorizontalDivider3.Size = new System.Drawing.Size(464, 16);
-            this.darkHorizontalDivider3.TabIndex = 32;
+            this.darkHorizontalDivider3.TabIndex = 9;
             // 
             // darkHorizontalDivider2
             // 
@@ -139,7 +139,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.darkHorizontalDivider2.Location = new System.Drawing.Point(8, 264);
             this.darkHorizontalDivider2.Size = new System.Drawing.Size(464, 16);
-            this.darkHorizontalDivider2.TabIndex = 32;
+            this.darkHorizontalDivider2.TabIndex = 6;
             // 
             // darkHorizontalDivider1
             // 
@@ -147,7 +147,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.darkHorizontalDivider1.Location = new System.Drawing.Point(8, 136);
             this.darkHorizontalDivider1.Size = new System.Drawing.Size(464, 16);
-            this.darkHorizontalDivider1.TabIndex = 32;
+            this.darkHorizontalDivider1.TabIndex = 1;
             // 
             // DateFormatRBPanel
             // 
@@ -158,14 +158,14 @@
             this.DateFormatRBPanel.Controls.Add(this.DateCustomRadioButton);
             this.DateFormatRBPanel.Location = new System.Drawing.Point(16, 480);
             this.DateFormatRBPanel.Size = new System.Drawing.Size(448, 72);
-            this.DateFormatRBPanel.TabIndex = 31;
+            this.DateFormatRBPanel.TabIndex = 14;
             // 
             // DateCurrentCultureShortRadioButton
             // 
             this.DateCurrentCultureShortRadioButton.AutoSize = true;
             this.DateCurrentCultureShortRadioButton.Location = new System.Drawing.Point(0, 3);
             this.DateCurrentCultureShortRadioButton.Size = new System.Drawing.Size(119, 17);
-            this.DateCurrentCultureShortRadioButton.TabIndex = 22;
+            this.DateCurrentCultureShortRadioButton.TabIndex = 0;
             this.DateCurrentCultureShortRadioButton.UseVisualStyleBackColor = true;
             // 
             // DateCurrentCultureLongRadioButton
@@ -173,7 +173,7 @@
             this.DateCurrentCultureLongRadioButton.AutoSize = true;
             this.DateCurrentCultureLongRadioButton.Location = new System.Drawing.Point(0, 27);
             this.DateCurrentCultureLongRadioButton.Size = new System.Drawing.Size(116, 17);
-            this.DateCurrentCultureLongRadioButton.TabIndex = 23;
+            this.DateCurrentCultureLongRadioButton.TabIndex = 1;
             this.DateCurrentCultureLongRadioButton.UseVisualStyleBackColor = true;
             // 
             // DateCustomRadioButton
@@ -181,7 +181,7 @@
             this.DateCustomRadioButton.AutoSize = true;
             this.DateCustomRadioButton.Location = new System.Drawing.Point(0, 51);
             this.DateCustomRadioButton.Size = new System.Drawing.Size(63, 17);
-            this.DateCustomRadioButton.TabIndex = 24;
+            this.DateCustomRadioButton.TabIndex = 2;
             this.DateCustomRadioButton.UseVisualStyleBackColor = true;
             // 
             // RatingDisplayStyleRBPanel
@@ -192,13 +192,13 @@
             this.RatingDisplayStyleRBPanel.Controls.Add(this.RatingFMSelDisplayStyleRadioButton);
             this.RatingDisplayStyleRBPanel.Location = new System.Drawing.Point(16, 312);
             this.RatingDisplayStyleRBPanel.Size = new System.Drawing.Size(456, 48);
-            this.RatingDisplayStyleRBPanel.TabIndex = 30;
+            this.RatingDisplayStyleRBPanel.TabIndex = 9;
             // 
             // RatingNDLDisplayStyleRadioButton
             // 
             this.RatingNDLDisplayStyleRadioButton.AutoSize = true;
             this.RatingNDLDisplayStyleRadioButton.Size = new System.Drawing.Size(219, 17);
-            this.RatingNDLDisplayStyleRadioButton.TabIndex = 7;
+            this.RatingNDLDisplayStyleRadioButton.TabIndex = 0;
             this.RatingNDLDisplayStyleRadioButton.UseVisualStyleBackColor = true;
             // 
             // RatingFMSelDisplayStyleRadioButton
@@ -207,7 +207,7 @@
             this.RatingFMSelDisplayStyleRadioButton.Checked = true;
             this.RatingFMSelDisplayStyleRadioButton.Location = new System.Drawing.Point(0, 24);
             this.RatingFMSelDisplayStyleRadioButton.Size = new System.Drawing.Size(174, 17);
-            this.RatingFMSelDisplayStyleRadioButton.TabIndex = 9;
+            this.RatingFMSelDisplayStyleRadioButton.TabIndex = 1;
             this.RatingFMSelDisplayStyleRadioButton.TabStop = true;
             this.RatingFMSelDisplayStyleRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -220,7 +220,7 @@
             this.GameOrganizationRBPanel.Controls.Add(this.UseShortGameTabNamesCheckBox);
             this.GameOrganizationRBPanel.Location = new System.Drawing.Point(16, 40);
             this.GameOrganizationRBPanel.Size = new System.Drawing.Size(456, 96);
-            this.GameOrganizationRBPanel.TabIndex = 29;
+            this.GameOrganizationRBPanel.TabIndex = 1;
             // 
             // OrganizeGamesByTabRadioButton
             // 
@@ -258,7 +258,7 @@
             0,
             0});
             this.RecentFMsNumericUpDown.Size = new System.Drawing.Size(56, 20);
-            this.RecentFMsNumericUpDown.TabIndex = 28;
+            this.RecentFMsNumericUpDown.TabIndex = 55;
             this.RecentFMsNumericUpDown.Value = new decimal(new int[] {
             15,
             0,
@@ -271,7 +271,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RecentFMsLabel.Location = new System.Drawing.Point(16, 624);
             this.RecentFMsLabel.Size = new System.Drawing.Size(456, 32);
-            this.RecentFMsLabel.TabIndex = 27;
+            this.RecentFMsLabel.TabIndex = 14;
             this.RecentFMsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // PreviewDateFlowLayoutPanel
@@ -282,7 +282,7 @@
             this.PreviewDateFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.PreviewDateFlowLayoutPanel.Location = new System.Drawing.Point(16, 456);
             this.PreviewDateFlowLayoutPanel.Size = new System.Drawing.Size(456, 16);
-            this.PreviewDateFlowLayoutPanel.TabIndex = 26;
+            this.PreviewDateFlowLayoutPanel.TabIndex = 11;
             // 
             // PreviewDateLabel
             // 
@@ -356,7 +356,7 @@
             this.RatingUseStarsCheckBox.Checked = true;
             this.RatingUseStarsCheckBox.Location = new System.Drawing.Point(32, 360);
             this.RatingUseStarsCheckBox.Size = new System.Drawing.Size(70, 17);
-            this.RatingUseStarsCheckBox.TabIndex = 10;
+            this.RatingUseStarsCheckBox.TabIndex = 9;
             this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
             // 
             // RatingExamplePictureBox
@@ -372,35 +372,35 @@
             this.RecentFMsHeaderLabel.AutoSize = true;
             this.RecentFMsHeaderLabel.Location = new System.Drawing.Point(8, 608);
             this.RecentFMsHeaderLabel.Size = new System.Drawing.Size(68, 13);
-            this.RecentFMsHeaderLabel.TabIndex = 6;
+            this.RecentFMsHeaderLabel.TabIndex = 13;
             // 
             // DateFormatLabel
             // 
             this.DateFormatLabel.AutoSize = true;
             this.DateFormatLabel.Location = new System.Drawing.Point(8, 432);
             this.DateFormatLabel.Size = new System.Drawing.Size(65, 13);
-            this.DateFormatLabel.TabIndex = 6;
+            this.DateFormatLabel.TabIndex = 10;
             // 
             // RatingDisplayStyleLabel
             // 
             this.RatingDisplayStyleLabel.AutoSize = true;
             this.RatingDisplayStyleLabel.Location = new System.Drawing.Point(8, 288);
             this.RatingDisplayStyleLabel.Size = new System.Drawing.Size(100, 13);
-            this.RatingDisplayStyleLabel.TabIndex = 6;
+            this.RatingDisplayStyleLabel.TabIndex = 7;
             // 
             // GameOrganizationLabel
             // 
             this.GameOrganizationLabel.AutoSize = true;
             this.GameOrganizationLabel.Location = new System.Drawing.Point(8, 24);
             this.GameOrganizationLabel.Size = new System.Drawing.Size(98, 13);
-            this.GameOrganizationLabel.TabIndex = 6;
+            this.GameOrganizationLabel.TabIndex = 0;
             // 
             // SortingLabel
             // 
             this.SortingLabel.AutoSize = true;
             this.SortingLabel.Location = new System.Drawing.Point(8, 160);
             this.SortingLabel.Size = new System.Drawing.Size(43, 13);
-            this.SortingLabel.TabIndex = 6;
+            this.SortingLabel.TabIndex = 2;
             // 
             // MoveArticlesToEndCheckBox
             // 
@@ -438,7 +438,7 @@
             this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 991);
             this.ReadmeGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.ReadmeGroupBox.Size = new System.Drawing.Size(480, 56);
-            this.ReadmeGroupBox.TabIndex = 15;
+            this.ReadmeGroupBox.TabIndex = 4;
             this.ReadmeGroupBox.TabStop = false;
             // 
             // ReadmeFixedWidthFontCheckBox
@@ -461,7 +461,7 @@
             this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 872);
             this.ShowOrHideUIElementsGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(480, 107);
-            this.ShowOrHideUIElementsGroupBox.TabIndex = 14;
+            this.ShowOrHideUIElementsGroupBox.TabIndex = 3;
             this.ShowOrHideUIElementsGroupBox.TabStop = false;
             // 
             // HideExitButtonCheckBox
@@ -471,7 +471,7 @@
             this.HideExitButtonCheckBox.Checked = true;
             this.HideExitButtonCheckBox.Location = new System.Drawing.Point(16, 72);
             this.HideExitButtonCheckBox.Size = new System.Drawing.Size(456, 32);
-            this.HideExitButtonCheckBox.TabIndex = 3;
+            this.HideExitButtonCheckBox.TabIndex = 2;
             this.HideExitButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideFMListZoomButtonsCheckBox
@@ -480,7 +480,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 44);
             this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(456, 32);
-            this.HideFMListZoomButtonsCheckBox.TabIndex = 2;
+            this.HideFMListZoomButtonsCheckBox.TabIndex = 1;
             this.HideFMListZoomButtonsCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideUninstallButtonCheckBox
@@ -489,7 +489,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 16);
             this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(456, 32);
-            this.HideUninstallButtonCheckBox.TabIndex = 1;
+            this.HideUninstallButtonCheckBox.TabIndex = 0;
             this.HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // VisualThemeGroupBox
@@ -501,7 +501,7 @@
             this.VisualThemeGroupBox.Location = new System.Drawing.Point(8, 80);
             this.VisualThemeGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.VisualThemeGroupBox.Size = new System.Drawing.Size(480, 80);
-            this.VisualThemeGroupBox.TabIndex = 11;
+            this.VisualThemeGroupBox.TabIndex = 1;
             this.VisualThemeGroupBox.TabStop = false;
             // 
             // DarkThemeRadioButton
@@ -509,7 +509,7 @@
             this.DarkThemeRadioButton.AutoSize = true;
             this.DarkThemeRadioButton.Location = new System.Drawing.Point(16, 48);
             this.DarkThemeRadioButton.Size = new System.Drawing.Size(48, 17);
-            this.DarkThemeRadioButton.TabIndex = 0;
+            this.DarkThemeRadioButton.TabIndex = 1;
             this.DarkThemeRadioButton.UseVisualStyleBackColor = true;
             // 
             // ClassicThemeRadioButton
@@ -530,7 +530,7 @@
             this.LanguageGroupBox.Location = new System.Drawing.Point(8, 8);
             this.LanguageGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.LanguageGroupBox.Size = new System.Drawing.Size(480, 60);
-            this.LanguageGroupBox.TabIndex = 10;
+            this.LanguageGroupBox.TabIndex = 0;
             this.LanguageGroupBox.TabStop = false;
             // 
             // LanguageComboBox
@@ -544,7 +544,7 @@
             // 
             this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-            this.DummyAutoScrollPanel.TabIndex = 8;
+            this.DummyAutoScrollPanel.TabIndex = 3;
             // 
             // AppearancePage
             // 

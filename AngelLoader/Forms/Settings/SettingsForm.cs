@@ -1,9 +1,9 @@
 ﻿// TODO: @IO_SAFETY: @Robustness: Check paths and exes for conflicts, duplicates, disallowed locations, etc.
 
-// TODO: @vNext: @DarkMode(SettingsForm): Switch left buttons to a TreeView, and subdivide Appearance page into smaller ones.
+// TODO: @DarkMode(SettingsForm): Switch left buttons to a TreeView, and subdivide Appearance page into smaller ones.
 // Change out the left buttons for a TreeView that can have subcategories. That way, we can divide up the settings
 // into small enough pages that no page has an unreasonable loading delay.
-// TODO: @vNext: @DarkMode(Settings pages): Make sure to set the tab order when you're done!
+// UPDATE 2021-04-27: We have severe flickering issues with the TreeView. Reverting to old style for now.
 
 using System;
 using System.Collections;

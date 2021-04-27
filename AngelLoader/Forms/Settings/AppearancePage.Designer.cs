@@ -110,7 +110,7 @@ namespace AngelLoader.Forms
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
             this.PagePanel.Size = new System.Drawing.Size(496, 1065);
-            this.PagePanel.TabIndex = 8;
+            this.PagePanel.TabIndex = 0;
             // 
             // FMsListGroupBox
             // 
@@ -141,7 +141,7 @@ namespace AngelLoader.Forms
             this.FMsListGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.FMsListGroupBox.Name = "FMsListGroupBox";
             this.FMsListGroupBox.Size = new System.Drawing.Size(480, 688);
-            this.FMsListGroupBox.TabIndex = 16;
+            this.FMsListGroupBox.TabIndex = 2;
             this.FMsListGroupBox.TabStop = false;
             this.FMsListGroupBox.Text = "FMs list";
             // 
@@ -152,7 +152,7 @@ namespace AngelLoader.Forms
             this.darkHorizontalDivider4.Location = new System.Drawing.Point(8, 584);
             this.darkHorizontalDivider4.Name = "darkHorizontalDivider4";
             this.darkHorizontalDivider4.Size = new System.Drawing.Size(464, 16);
-            this.darkHorizontalDivider4.TabIndex = 32;
+            this.darkHorizontalDivider4.TabIndex = 12;
             // 
             // darkHorizontalDivider3
             // 
@@ -161,7 +161,7 @@ namespace AngelLoader.Forms
             this.darkHorizontalDivider3.Location = new System.Drawing.Point(8, 408);
             this.darkHorizontalDivider3.Name = "darkHorizontalDivider3";
             this.darkHorizontalDivider3.Size = new System.Drawing.Size(464, 16);
-            this.darkHorizontalDivider3.TabIndex = 32;
+            this.darkHorizontalDivider3.TabIndex = 9;
             // 
             // darkHorizontalDivider2
             // 
@@ -170,7 +170,7 @@ namespace AngelLoader.Forms
             this.darkHorizontalDivider2.Location = new System.Drawing.Point(8, 264);
             this.darkHorizontalDivider2.Name = "darkHorizontalDivider2";
             this.darkHorizontalDivider2.Size = new System.Drawing.Size(464, 16);
-            this.darkHorizontalDivider2.TabIndex = 32;
+            this.darkHorizontalDivider2.TabIndex = 6;
             // 
             // darkHorizontalDivider1
             // 
@@ -179,7 +179,7 @@ namespace AngelLoader.Forms
             this.darkHorizontalDivider1.Location = new System.Drawing.Point(8, 136);
             this.darkHorizontalDivider1.Name = "darkHorizontalDivider1";
             this.darkHorizontalDivider1.Size = new System.Drawing.Size(464, 16);
-            this.darkHorizontalDivider1.TabIndex = 32;
+            this.darkHorizontalDivider1.TabIndex = 1;
             // 
             // DateFormatRBPanel
             // 
@@ -191,7 +191,7 @@ namespace AngelLoader.Forms
             this.DateFormatRBPanel.Location = new System.Drawing.Point(16, 480);
             this.DateFormatRBPanel.Name = "DateFormatRBPanel";
             this.DateFormatRBPanel.Size = new System.Drawing.Size(448, 72);
-            this.DateFormatRBPanel.TabIndex = 31;
+            this.DateFormatRBPanel.TabIndex = 14;
             // 
             // DateCurrentCultureShortRadioButton
             // 
@@ -199,7 +199,7 @@ namespace AngelLoader.Forms
             this.DateCurrentCultureShortRadioButton.Location = new System.Drawing.Point(0, 3);
             this.DateCurrentCultureShortRadioButton.Name = "DateCurrentCultureShortRadioButton";
             this.DateCurrentCultureShortRadioButton.Size = new System.Drawing.Size(119, 17);
-            this.DateCurrentCultureShortRadioButton.TabIndex = 22;
+            this.DateCurrentCultureShortRadioButton.TabIndex = 0;
             this.DateCurrentCultureShortRadioButton.Text = "System locale, short";
             this.DateCurrentCultureShortRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -209,7 +209,7 @@ namespace AngelLoader.Forms
             this.DateCurrentCultureLongRadioButton.Location = new System.Drawing.Point(0, 27);
             this.DateCurrentCultureLongRadioButton.Name = "DateCurrentCultureLongRadioButton";
             this.DateCurrentCultureLongRadioButton.Size = new System.Drawing.Size(116, 17);
-            this.DateCurrentCultureLongRadioButton.TabIndex = 23;
+            this.DateCurrentCultureLongRadioButton.TabIndex = 1;
             this.DateCurrentCultureLongRadioButton.Text = "System locale, long";
             this.DateCurrentCultureLongRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -219,7 +219,7 @@ namespace AngelLoader.Forms
             this.DateCustomRadioButton.Location = new System.Drawing.Point(0, 51);
             this.DateCustomRadioButton.Name = "DateCustomRadioButton";
             this.DateCustomRadioButton.Size = new System.Drawing.Size(63, 17);
-            this.DateCustomRadioButton.TabIndex = 24;
+            this.DateCustomRadioButton.TabIndex = 2;
             this.DateCustomRadioButton.Text = "Custom:";
             this.DateCustomRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -232,7 +232,7 @@ namespace AngelLoader.Forms
             this.RatingDisplayStyleRBPanel.Location = new System.Drawing.Point(16, 312);
             this.RatingDisplayStyleRBPanel.Name = "RatingDisplayStyleRBPanel";
             this.RatingDisplayStyleRBPanel.Size = new System.Drawing.Size(456, 48);
-            this.RatingDisplayStyleRBPanel.TabIndex = 30;
+            this.RatingDisplayStyleRBPanel.TabIndex = 9;
             // 
             // RatingNDLDisplayStyleRadioButton
             // 
@@ -240,7 +240,7 @@ namespace AngelLoader.Forms
             this.RatingNDLDisplayStyleRadioButton.Location = new System.Drawing.Point(0, 0);
             this.RatingNDLDisplayStyleRadioButton.Name = "RatingNDLDisplayStyleRadioButton";
             this.RatingNDLDisplayStyleRadioButton.Size = new System.Drawing.Size(219, 17);
-            this.RatingNDLDisplayStyleRadioButton.TabIndex = 7;
+            this.RatingNDLDisplayStyleRadioButton.TabIndex = 0;
             this.RatingNDLDisplayStyleRadioButton.Text = "NewDarkLoader (0-10 in increments of 1)";
             this.RatingNDLDisplayStyleRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -251,7 +251,7 @@ namespace AngelLoader.Forms
             this.RatingFMSelDisplayStyleRadioButton.Location = new System.Drawing.Point(0, 24);
             this.RatingFMSelDisplayStyleRadioButton.Name = "RatingFMSelDisplayStyleRadioButton";
             this.RatingFMSelDisplayStyleRadioButton.Size = new System.Drawing.Size(174, 17);
-            this.RatingFMSelDisplayStyleRadioButton.TabIndex = 9;
+            this.RatingFMSelDisplayStyleRadioButton.TabIndex = 1;
             this.RatingFMSelDisplayStyleRadioButton.TabStop = true;
             this.RatingFMSelDisplayStyleRadioButton.Text = "FMSel (0-5 in increments of 0.5)";
             this.RatingFMSelDisplayStyleRadioButton.UseVisualStyleBackColor = true;
@@ -266,7 +266,7 @@ namespace AngelLoader.Forms
             this.GameOrganizationRBPanel.Location = new System.Drawing.Point(16, 40);
             this.GameOrganizationRBPanel.Name = "GameOrganizationRBPanel";
             this.GameOrganizationRBPanel.Size = new System.Drawing.Size(456, 96);
-            this.GameOrganizationRBPanel.TabIndex = 29;
+            this.GameOrganizationRBPanel.TabIndex = 1;
             // 
             // OrganizeGamesByTabRadioButton
             // 
@@ -312,7 +312,7 @@ namespace AngelLoader.Forms
             0});
             this.RecentFMsNumericUpDown.Name = "RecentFMsNumericUpDown";
             this.RecentFMsNumericUpDown.Size = new System.Drawing.Size(56, 20);
-            this.RecentFMsNumericUpDown.TabIndex = 28;
+            this.RecentFMsNumericUpDown.TabIndex = 55;
             this.RecentFMsNumericUpDown.Value = new decimal(new int[] {
             15,
             0,
@@ -326,7 +326,7 @@ namespace AngelLoader.Forms
             this.RecentFMsLabel.Location = new System.Drawing.Point(16, 624);
             this.RecentFMsLabel.Name = "RecentFMsLabel";
             this.RecentFMsLabel.Size = new System.Drawing.Size(456, 32);
-            this.RecentFMsLabel.TabIndex = 27;
+            this.RecentFMsLabel.TabIndex = 14;
             this.RecentFMsLabel.Text = "Maximum number of days to consider an FM \"recent\":";
             this.RecentFMsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -339,7 +339,7 @@ namespace AngelLoader.Forms
             this.PreviewDateFlowLayoutPanel.Location = new System.Drawing.Point(16, 456);
             this.PreviewDateFlowLayoutPanel.Name = "PreviewDateFlowLayoutPanel";
             this.PreviewDateFlowLayoutPanel.Size = new System.Drawing.Size(456, 16);
-            this.PreviewDateFlowLayoutPanel.TabIndex = 26;
+            this.PreviewDateFlowLayoutPanel.TabIndex = 11;
             // 
             // PreviewDateLabel
             // 
@@ -426,7 +426,7 @@ namespace AngelLoader.Forms
             this.RatingUseStarsCheckBox.Location = new System.Drawing.Point(32, 360);
             this.RatingUseStarsCheckBox.Name = "RatingUseStarsCheckBox";
             this.RatingUseStarsCheckBox.Size = new System.Drawing.Size(70, 17);
-            this.RatingUseStarsCheckBox.TabIndex = 10;
+            this.RatingUseStarsCheckBox.TabIndex = 9;
             this.RatingUseStarsCheckBox.Text = "Use stars";
             this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -445,7 +445,7 @@ namespace AngelLoader.Forms
             this.RecentFMsHeaderLabel.Location = new System.Drawing.Point(8, 608);
             this.RecentFMsHeaderLabel.Name = "RecentFMsHeaderLabel";
             this.RecentFMsHeaderLabel.Size = new System.Drawing.Size(68, 13);
-            this.RecentFMsHeaderLabel.TabIndex = 6;
+            this.RecentFMsHeaderLabel.TabIndex = 13;
             this.RecentFMsHeaderLabel.Text = "Recent FMs:";
             // 
             // DateFormatLabel
@@ -454,7 +454,7 @@ namespace AngelLoader.Forms
             this.DateFormatLabel.Location = new System.Drawing.Point(8, 432);
             this.DateFormatLabel.Name = "DateFormatLabel";
             this.DateFormatLabel.Size = new System.Drawing.Size(65, 13);
-            this.DateFormatLabel.TabIndex = 6;
+            this.DateFormatLabel.TabIndex = 10;
             this.DateFormatLabel.Text = "Date format:";
             // 
             // RatingDisplayStyleLabel
@@ -463,7 +463,7 @@ namespace AngelLoader.Forms
             this.RatingDisplayStyleLabel.Location = new System.Drawing.Point(8, 288);
             this.RatingDisplayStyleLabel.Name = "RatingDisplayStyleLabel";
             this.RatingDisplayStyleLabel.Size = new System.Drawing.Size(100, 13);
-            this.RatingDisplayStyleLabel.TabIndex = 6;
+            this.RatingDisplayStyleLabel.TabIndex = 7;
             this.RatingDisplayStyleLabel.Text = "Rating display style:";
             // 
             // GameOrganizationLabel
@@ -472,7 +472,7 @@ namespace AngelLoader.Forms
             this.GameOrganizationLabel.Location = new System.Drawing.Point(8, 24);
             this.GameOrganizationLabel.Name = "GameOrganizationLabel";
             this.GameOrganizationLabel.Size = new System.Drawing.Size(98, 13);
-            this.GameOrganizationLabel.TabIndex = 6;
+            this.GameOrganizationLabel.TabIndex = 0;
             this.GameOrganizationLabel.Text = "Game organization:";
             // 
             // SortingLabel
@@ -481,7 +481,7 @@ namespace AngelLoader.Forms
             this.SortingLabel.Location = new System.Drawing.Point(8, 160);
             this.SortingLabel.Name = "SortingLabel";
             this.SortingLabel.Size = new System.Drawing.Size(43, 13);
-            this.SortingLabel.TabIndex = 6;
+            this.SortingLabel.TabIndex = 2;
             this.SortingLabel.Text = "Sorting:";
             // 
             // MoveArticlesToEndCheckBox
@@ -528,7 +528,7 @@ namespace AngelLoader.Forms
             this.ReadmeGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.ReadmeGroupBox.Name = "ReadmeGroupBox";
             this.ReadmeGroupBox.Size = new System.Drawing.Size(480, 56);
-            this.ReadmeGroupBox.TabIndex = 15;
+            this.ReadmeGroupBox.TabIndex = 4;
             this.ReadmeGroupBox.TabStop = false;
             this.ReadmeGroupBox.Text = "Readme box";
             // 
@@ -556,7 +556,7 @@ namespace AngelLoader.Forms
             this.ShowOrHideUIElementsGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.ShowOrHideUIElementsGroupBox.Name = "ShowOrHideUIElementsGroupBox";
             this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(480, 107);
-            this.ShowOrHideUIElementsGroupBox.TabIndex = 14;
+            this.ShowOrHideUIElementsGroupBox.TabIndex = 3;
             this.ShowOrHideUIElementsGroupBox.TabStop = false;
             this.ShowOrHideUIElementsGroupBox.Text = "Show or hide interface elements";
             // 
@@ -569,7 +569,7 @@ namespace AngelLoader.Forms
             this.HideExitButtonCheckBox.Location = new System.Drawing.Point(16, 72);
             this.HideExitButtonCheckBox.Name = "HideExitButtonCheckBox";
             this.HideExitButtonCheckBox.Size = new System.Drawing.Size(456, 32);
-            this.HideExitButtonCheckBox.TabIndex = 3;
+            this.HideExitButtonCheckBox.TabIndex = 2;
             this.HideExitButtonCheckBox.Text = "Hide exit button";
             this.HideExitButtonCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -580,7 +580,7 @@ namespace AngelLoader.Forms
             this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 44);
             this.HideFMListZoomButtonsCheckBox.Name = "HideFMListZoomButtonsCheckBox";
             this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(456, 32);
-            this.HideFMListZoomButtonsCheckBox.TabIndex = 2;
+            this.HideFMListZoomButtonsCheckBox.TabIndex = 1;
             this.HideFMListZoomButtonsCheckBox.Text = "Hide FM list zoom buttons";
             this.HideFMListZoomButtonsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -591,7 +591,7 @@ namespace AngelLoader.Forms
             this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 16);
             this.HideUninstallButtonCheckBox.Name = "HideUninstallButtonCheckBox";
             this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(456, 32);
-            this.HideUninstallButtonCheckBox.TabIndex = 1;
+            this.HideUninstallButtonCheckBox.TabIndex = 0;
             this.HideUninstallButtonCheckBox.Text = "Hide \"Install / Uninstall FM\" button (like FMSel)";
             this.HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -605,7 +605,7 @@ namespace AngelLoader.Forms
             this.VisualThemeGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.VisualThemeGroupBox.Name = "VisualThemeGroupBox";
             this.VisualThemeGroupBox.Size = new System.Drawing.Size(480, 80);
-            this.VisualThemeGroupBox.TabIndex = 11;
+            this.VisualThemeGroupBox.TabIndex = 1;
             this.VisualThemeGroupBox.TabStop = false;
             this.VisualThemeGroupBox.Text = "Theme";
             // 
@@ -615,7 +615,7 @@ namespace AngelLoader.Forms
             this.DarkThemeRadioButton.Location = new System.Drawing.Point(16, 48);
             this.DarkThemeRadioButton.Name = "DarkThemeRadioButton";
             this.DarkThemeRadioButton.Size = new System.Drawing.Size(48, 17);
-            this.DarkThemeRadioButton.TabIndex = 0;
+            this.DarkThemeRadioButton.TabIndex = 1;
             this.DarkThemeRadioButton.Text = "Dark";
             this.DarkThemeRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -640,7 +640,7 @@ namespace AngelLoader.Forms
             this.LanguageGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.LanguageGroupBox.Name = "LanguageGroupBox";
             this.LanguageGroupBox.Size = new System.Drawing.Size(480, 60);
-            this.LanguageGroupBox.TabIndex = 10;
+            this.LanguageGroupBox.TabIndex = 0;
             this.LanguageGroupBox.TabStop = false;
             this.LanguageGroupBox.Text = "Language";
             // 
@@ -657,7 +657,7 @@ namespace AngelLoader.Forms
             this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
             this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-            this.DummyAutoScrollPanel.TabIndex = 8;
+            this.DummyAutoScrollPanel.TabIndex = 3;
             // 
             // AppearancePage
             // 
