@@ -30,7 +30,10 @@ namespace AngelLoader.Forms.CustomControls
                     or Native.WM_ERASEBKGND
                 ))
             {
-                using var gc = new Native.GraphicsContext(Handle);
+                // On Windows 7 (at least in a VM with Aero Glass disabled), our non-client area (title bar etc.)
+                // remains blacked-out even after refresh here, which severely breaks windows visually. So use
+                // client area only.
+                using var gc = new Native.GraphicsContext(Handle, clientOnly: true);
 
                 gc.G.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, new Rectangle(0, 0, Width, Height));
 
