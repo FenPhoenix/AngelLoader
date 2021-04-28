@@ -38,15 +38,15 @@ namespace AngelLoader.Forms.CustomControls
             switch ((uint)m.Msg)
             {
                 case Native.WM_PAINT:
-                    if (_rtfColorStyle == RTFColorStyle.Original)
-                    {
-                        base.WndProc(ref m);
-                    }
-                    else
+                    if (_darkModeEnabled)
                     {
                         NativeHooks.SysColorOverride = NativeHooks.Override.RichText;
                         base.WndProc(ref m);
                         NativeHooks.SysColorOverride = NativeHooks.Override.None;
+                    }
+                    else
+                    {
+                        base.WndProc(ref m);
                     }
                     break;
                 case Native.WM_MOUSEWHEEL:

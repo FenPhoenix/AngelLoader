@@ -65,7 +65,6 @@ namespace AngelLoader.Forms
             {
                 NativeHooks.InstallHooks();
                 SetVisualTheme(VisualTheme.Dark);
-                RTFBox.SetRTFColorStyle(RTFColorStyle.Auto, startup: true);
             }
 
             if (RTFFileComboBox.Items.Count > 0)

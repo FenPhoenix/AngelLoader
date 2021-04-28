@@ -348,7 +348,6 @@ namespace AngelLoader.DataClasses
         private float _readmeZoomFactor = 1;
         internal float ReadmeZoomFactor { get => _readmeZoomFactor; set => _readmeZoomFactor = value.ClampToRichTextBoxZoomMinMax(); }
         internal bool ReadmeUseFixedWidthFont = true;
-        internal RTFColorStyle RTFThemedColorStyle = RTFColorStyle.Auto;
 
         #endregion
 

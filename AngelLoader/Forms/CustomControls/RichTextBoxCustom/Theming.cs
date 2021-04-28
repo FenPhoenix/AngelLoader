@@ -116,28 +116,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private RTFColorStyle _rtfColorStyle;
-
-        internal RTFColorStyle GetRTFColorStyle() => _rtfColorStyle;
-
-        /// <summary>
-        /// Set startup to true to suppress refreshing the dark mode state, cause we'll already do that later
-        /// when we set the theme.
-        /// </summary>
-        /// <param name="style"></param>
-        /// <param name="startup"></param>
-        internal void SetRTFColorStyle(RTFColorStyle style, bool startup = false)
-        {
-            if (style == _rtfColorStyle) return;
-
-            _rtfColorStyle = style;
-
-            if (!startup && _darkModeEnabled && _currentReadmeType == ReadmeType.RichText)
-            {
-                RefreshDarkModeState();
-            }
-        }
-
         #region Methods
 
         // Cheap, cheesy, effective
@@ -228,13 +206,7 @@ namespace AngelLoader.Forms.CustomControls
                     colorEntriesBytesList.Add((byte)';');
                     continue;
                 }
-                else if (_rtfColorStyle == RTFColorStyle.Monochrome)
-                {
-                    invertedColor = ColorIsTheSameAsBackground(currentColor)
-                        ? DarkColors.Fen_DarkBackground
-                        : DarkColors.Fen_DarkForeground;
-                }
-                else // auto-color
+                else
                 {
                     // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
                     // white and that's a bit too bright.
@@ -263,8 +235,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private byte[] GetDarkModeRTFBytes()
         {
-            if (_rtfColorStyle == RTFColorStyle.Original) return _currentReadmeBytes;
-
             var darkModeBytes = _currentReadmeBytes.ToList();
 
             // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts

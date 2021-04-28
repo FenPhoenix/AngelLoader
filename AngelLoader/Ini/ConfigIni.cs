@@ -709,14 +709,6 @@ namespace AngelLoader
                         config.VisualTheme = (VisualTheme)field.GetValue(null);
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("RTFThemedColorStyle="))
-                {
-                    var field = typeof(RTFColorStyle).GetField(val, _bFlagsEnum);
-                    if (field != null)
-                    {
-                        config.RTFThemedColorStyle = (RTFColorStyle)field.GetValue(null);
-                    }
-                }
             }
 
             // Vital, don't remove!
@@ -819,7 +811,6 @@ namespace AngelLoader
             sb.Append("ConfirmPlayOnDCOrEnter=").Append(config.ConfirmPlayOnDCOrEnter).AppendLine();
 
             sb.Append("VisualTheme=").Append(config.VisualTheme).AppendLine();
-            sb.Append("RTFThemedColorStyle=").Append(config.RTFThemedColorStyle).AppendLine();
 
             #endregion
 
