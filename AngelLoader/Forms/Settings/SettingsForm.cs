@@ -276,8 +276,8 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            Width = Math.Min(config.SettingsWindowSize.Width, Screen.PrimaryScreen.WorkingArea.Width);
-            Height = Math.Min(config.SettingsWindowSize.Height, Screen.PrimaryScreen.WorkingArea.Height);
+            Width = Math.Min(config.SettingsWindowSize.Width, Screen.FromControl(this).WorkingArea.Width);
+            Height = Math.Min(config.SettingsWindowSize.Height, Screen.FromControl(this).WorkingArea.Height);
             MainSplitContainer.SplitterDistance = config.SettingsWindowSplitterDistance;
 
             #region Set page UI state
