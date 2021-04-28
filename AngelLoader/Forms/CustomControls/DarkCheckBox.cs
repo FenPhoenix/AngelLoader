@@ -327,34 +327,43 @@ namespace AngelLoader.Forms.CustomControls
             var g = e.Graphics;
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
-            var textColorPen = DarkColors.LightTextPen;
-            var borderPen = DarkColors.LightTextPen;
-            var fillBrush = DarkColors.LightTextBrush;
+            Pen textColorPen = DarkColors.LightTextPen;
+            Pen borderPen = DarkColors.LightTextPen;
+            Pen fillColorPen = DarkColors.LightTextPen;
+            SolidBrush fillColorBrush = DarkColors.LightTextBrush;
 
             if (Enabled)
             {
                 if (AutoCheck && Focused)
                 {
                     borderPen = DarkColors.BlueHighlightPen;
-                    fillBrush = DarkColors.BlueHighlightBrush;
+
+                    fillColorPen = DarkColors.BlueHighlightPen;
+                    fillColorBrush = DarkColors.BlueHighlightBrush;
                 }
 
                 if (_controlState == DarkControlState.Hover)
                 {
                     borderPen = DarkColors.BlueHighlightPen;
-                    fillBrush = DarkColors.BlueSelectionBrush;
+
+                    fillColorPen = DarkColors.BlueSelectionPen;
+                    fillColorBrush = DarkColors.BlueSelectionBrush;
                 }
                 else if (_controlState == DarkControlState.Pressed)
                 {
                     borderPen = DarkColors.GreyHighlightPen;
-                    fillBrush = DarkColors.GreySelectionBrush;
+
+                    fillColorPen = DarkColors.GreySelectionPen;
+                    fillColorBrush = DarkColors.GreySelectionBrush;
                 }
             }
             else
             {
                 textColorPen = DarkColors.DisabledTextPen;
                 borderPen = DarkColors.GreyHighlightPen;
-                fillBrush = DarkColors.GreySelectionBrush;
+
+                fillColorPen = DarkColors.GreySelectionPen;
+                fillColorBrush = DarkColors.GreySelectionBrush;
             }
 
             Color? parentBackColor = Parent?.BackColor;
@@ -373,20 +382,19 @@ namespace AngelLoader.Forms.CustomControls
 
             if (CheckState == CheckState.Checked)
             {
-                using var p = new Pen(fillBrush, 1.6f);
                 SmoothingMode oldSmoothingMode = g.SmoothingMode;
 
                 g.SmoothingMode = SmoothingMode.HighQuality;
 
                 // First half of checkmark
-                g.DrawLine(p,
+                g.DrawLine(fillColorPen,
                     outlineBoxRect.Left + 1.5f,
                     outlineBoxRect.Top + 6,
                     outlineBoxRect.Left + 4.5f,
                     outlineBoxRect.Top + 9);
 
                 // Second half of checkmark
-                g.DrawLine(p,
+                g.DrawLine(fillColorPen,
                     outlineBoxRect.Left + 4.5f,
                     outlineBoxRect.Top + 9,
                     outlineBoxRect.Left + 10.5f,
@@ -397,7 +405,7 @@ namespace AngelLoader.Forms.CustomControls
             else if (CheckState == CheckState.Indeterminate)
             {
                 var boxRect = new Rectangle(3, ((rect.Height / 2) - ((_checkBoxSize - 4) / 2)) + 1, _checkBoxSize - 5, _checkBoxSize - 5);
-                g.FillRectangle(fillBrush, boxRect);
+                g.FillRectangle(fillColorBrush, boxRect);
             }
 
             TextFormatFlags textFormatFlags =

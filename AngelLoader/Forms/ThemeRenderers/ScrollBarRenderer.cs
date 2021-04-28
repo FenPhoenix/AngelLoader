@@ -81,37 +81,35 @@ namespace AngelLoader.Forms.ThemeRenderers
 
             if (iPartId == Native.SBP_ARROWBTN)
             {
-                Color foreColor;
+                Pen pen;
                 switch (iStateId)
                 {
                     case Native.ABS_UPPRESSED:
                     case Native.ABS_DOWNPRESSED:
                     case Native.ABS_LEFTPRESSED:
                     case Native.ABS_RIGHTPRESSED:
-                        foreColor = DarkColors.ActiveControl;
+                        pen = DarkColors.ActiveControlPen;
                         break;
                     case Native.ABS_UPDISABLED:
                     case Native.ABS_DOWNDISABLED:
                     case Native.ABS_LEFTDISABLED:
                     case Native.ABS_RIGHTDISABLED:
-                        foreColor = DarkColors.GreySelection;
+                        pen = DarkColors.GreySelectionPen;
                         break;
                     case Native.ABS_UPHOT:
                     case Native.ABS_DOWNHOT:
                     case Native.ABS_LEFTHOT:
                     case Native.ABS_RIGHTHOT:
-                        foreColor = DarkColors.GreyHighlight;
+                        pen = DarkColors.GreyHighlightPen;
                         break;
                     case Native.ABS_UPNORMAL:
                     case Native.ABS_DOWNNORMAL:
                     case Native.ABS_LEFTNORMAL:
                     case Native.ABS_RIGHTNORMAL:
                     default:
-                        foreColor = DarkColors.GreySelection;
+                        pen = DarkColors.GreySelectionPen;
                         break;
                 }
-
-                using var pen = new Pen(foreColor);
 
                 Misc.Direction direction;
                 switch (iStateId)

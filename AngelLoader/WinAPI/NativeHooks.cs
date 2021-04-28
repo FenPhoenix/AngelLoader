@@ -268,27 +268,27 @@ namespace AngelLoader.WinAPI
                 {
                     Override.Full => nIndex switch
                     {
-                        COLOR_WINDOW => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground)),
-                        COLOR_WINDOWTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText)),
-                        COLOR_HIGHLIGHT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection)),
-                        COLOR_HIGHLIGHT_TEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText)),
-                        COLOR_3DFACE => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground)),
-                        COLOR_GRAYTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText)),
+                        COLOR_WINDOW => DarkColors.SysColorBrush_LightBackground,
+                        COLOR_WINDOWTEXT => DarkColors.SysColorBrush_LightText,
+                        COLOR_HIGHLIGHT => DarkColors.SysColorBrush_BlueSelection,
+                        COLOR_HIGHLIGHT_TEXT => DarkColors.SysColorBrush_Fen_HighlightText,
+                        COLOR_3DFACE => DarkColors.SysColorBrush_Fen_ControlBackground,
+                        COLOR_GRAYTEXT => DarkColors.SysColorBrush_DisabledText,
                         _ => GetSysColorBrushOriginal!(nIndex)
                     },
                     Override.RichText => nIndex switch
                     {
                         // Darker background, more desaturated foreground color
-                        COLOR_WINDOW => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground)),
-                        COLOR_WINDOWTEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground)),
-                        COLOR_HIGHLIGHT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection)),
-                        COLOR_HIGHLIGHT_TEXT => Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText)),
+                        COLOR_WINDOW => DarkColors.SysColorBrush_Fen_DarkBackground,
+                        COLOR_WINDOWTEXT => DarkColors.SysColorBrush_Fen_DarkForeground,
+                        COLOR_HIGHLIGHT => DarkColors.SysColorBrush_BlueSelection,
+                        COLOR_HIGHLIGHT_TEXT => DarkColors.SysColorBrush_Fen_HighlightText,
                         _ => GetSysColorBrushOriginal!(nIndex)
                     },
                     // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
                     // This is the ONLY way that works on those versions.
                     _ => nIndex == COLOR_3DFACE
-                        ? Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground))
+                        ? DarkColors.SysColorBrush_DarkBackground
                         : GetSysColorBrushOriginal!(nIndex)
                 };
             }

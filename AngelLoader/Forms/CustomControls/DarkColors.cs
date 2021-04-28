@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -31,7 +33,6 @@ namespace AngelLoader.Forms.CustomControls
 
         public static readonly Color Fen_ThumbScrollBarHover = Color.FromArgb(110, 110, 110);
         public static readonly Color Fen_Hyperlink = Color.FromArgb(121, 180, 240);
-        //public static readonly Color Fen_Hyperlink_VS = Color.FromArgb(86, 156, 214); // Visual Studio's hyperlink dark color
         public static readonly Color Fen_HyperlinkPressed = Color.FromArgb(243, 110, 110);
 
         public static readonly Color ArrowEnabled = Color.FromArgb(150, 156, 160);
@@ -94,7 +95,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Pen LightTextPen = new Pen(LightText);
         public static readonly Pen DisabledTextPen = new Pen(DisabledText);
         public static readonly Pen BlueHighlightPen = new Pen(BlueHighlight);
-        //public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
+        public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
         public static readonly Pen GreyHighlightPen = new Pen(GreyHighlight);
         public static readonly Pen GreySelectionPen = new Pen(GreySelection);
         //public static readonly Pen DarkGreySelectionPen = new Pen(DarkGreySelection);
@@ -144,5 +145,58 @@ namespace AngelLoader.Forms.CustomControls
         //public static readonly SolidBrush ArrowEnabledBrush = new SolidBrush(ArrowEnabled);
 
         #endregion
+
+        public static IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
+        public static IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
+        public static IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
+        public static IntPtr SysColorBrush_Fen_HighlightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText));
+        public static IntPtr SysColorBrush_Fen_ControlBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground));
+        public static IntPtr SysColorBrush_DisabledText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText));
+        public static IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
+        public static IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
+        public static IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
+
+        /*
+        public static Dictionary<Color, (SolidBrush Brush, Pen Pen)> ColorsDict = new()
+        {
+            { Fen_DarkBackground, ((Fen_DarkBackgroundBrush), (Fen_DarkBackgroundPen)) },
+            { Fen_DarkForeground, ((Fen_DarkForegroundBrush), (Fen_DarkForegroundPen)) },
+            { Fen_ControlBackground, ((Fen_ControlBackgroundBrush), (Fen_ControlBackgroundPen)) },
+            { Fen_DeselectedTabBackground, ((Fen_DeselectedTabBackgroundBrush), (Fen_DeselectedTabBackgroundPen)) },
+            { Fen_HotTabBackground, ((Fen_HotTabBackgroundBrush), (Fen_HotTabBackgroundPen)) },
+            { Fen_RedHighlight, ((Fen_RedHighlightBrush), (Fen_RedHighlightPen)) },
+            { Fen_DGVCellBorders, ((Fen_DGVCellBordersBrush), (Fen_DGVCellBordersPen)) },
+            { Fen_DGVColumnHeaderHighlight, ((Fen_DGVColumnHeaderHighlightBrush), (Fen_DGVColumnHeaderHighlightPen)) },
+            { Fen_DGVColumnHeaderPressed, ((Fen_DGVColumnHeaderPressedBrush), (Fen_DGVColumnHeaderPressedPen)) },
+            { Fen_HighlightText, ((Fen_HighlightTextBrush), (Fen_HighlightTextPen)) },
+            { Fen_ThumbScrollBarHover, ((Fen_ThumbScrollBarHoverBrush), (Fen_ThumbScrollBarHoverPen)) },
+            { Fen_Hyperlink, ((Fen_HyperlinkBrush), (Fen_HyperlinkPen)) },
+            { Fen_HyperlinkPressed, ((Fen_HyperlinkPressedBrush), (Fen_HyperlinkPressedPen)) },
+            { ArrowEnabled, ((ArrowEnabledBrush), (ArrowEnabledPen)) },
+
+            { GreyBackground, ((GreyBackgroundBrush), (GreyBackgroundPen)) },
+            { HeaderBackground, ((HeaderBackgroundBrush), (HeaderBackgroundPen)) },
+            { BlueBackground, ((BlueBackgroundBrush), (BlueBackgroundPen)) },
+            { DarkBlueBackground, ((DarkBlueBackgroundBrush), (DarkBlueBackgroundPen)) },
+            { DarkBackground, ((DarkBackgroundBrush), (DarkBackgroundPen)) },
+            { MediumBackground, ((MediumBackgroundBrush), (MediumBackgroundPen)) },
+            { LightBackground, ((LightBackgroundBrush), (LightBackgroundPen)) },
+            { LighterBackground, ((LighterBackgroundBrush), (LighterBackgroundPen)) },
+            //{ LightestBackground, ((LightestBackgroundBrush), (LightestBackground)) },
+            { LightBorder, ((LightBorderBrush), (LightBorderPen)) },
+            { LighterBorder, ((LighterBorderBrush), (LighterBorderPen)) },
+            //{ DarkBorder, ((DarkBorderBrush), (DarkBorderPen)) },
+            { LightText, ((LightTextBrush), (LightTextPen)) },
+            { DisabledText, ((DisabledTextBrush), (DisabledTextPen)) },
+            { BlueHighlight, ((BlueHighlightBrush), (BlueHighlightPen)) },
+            { BlueSelection, ((BlueSelectionBrush), (BlueSelectionPen)) },
+            { GreyHighlight, ((GreyHighlightBrush), (GreyHighlightPen)) },
+            { GreySelection, ((GreySelectionBrush), (GreySelectionPen)) },
+            { DarkGreySelection, ((DarkGreySelectionBrush), (DarkGreySelectionPen)) },
+            //{ DarkBlueBorder, ((DarkBlueBorder), (DarkBlueBorderPen)) },
+            //{ LightBlueBorder, ((LightBlueBorder), (LightBlueBorderPen)) },
+            { ActiveControl, ((ActiveControlBrush), (ActiveControlPen)) }
+        };
+        */
     }
 }
