@@ -32,6 +32,7 @@ namespace AngelLoader.Forms
             OKFlowLayoutPanel = new FlowLayoutPanel();
             BuildDateLabel = new DarkLabel();
             DarkUILinkLabel = new DarkLinkLabel();
+            EasyHookLinkLabel = new DarkLinkLabel();
             ((System.ComponentModel.ISupportInitialize)(LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(LogoTextPictureBox)).BeginInit();
             OKFlowLayoutPanel.SuspendLayout();
@@ -188,11 +189,20 @@ namespace AngelLoader.Forms
             // DarkUILinkLabel
             // 
             DarkUILinkLabel.AutoSize = true;
-            DarkUILinkLabel.Location = new global::System.Drawing.Point(232, 388);
+            DarkUILinkLabel.Location = new Point(232, 388);
             DarkUILinkLabel.TabIndex = 14;
             DarkUILinkLabel.TabStop = true;
             DarkUILinkLabel.Text = "DarkUI";
             DarkUILinkLabel.LinkClicked += LinkLabels_LinkClicked;
+            // 
+            // EasyHookLinkLabel
+            // 
+            EasyHookLinkLabel.AutoSize = true;
+            EasyHookLinkLabel.Location = new Point(232, 400);
+            EasyHookLinkLabel.TabIndex = 15;
+            EasyHookLinkLabel.TabStop = true;
+            EasyHookLinkLabel.Text = "EasyHook";
+            EasyHookLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
             // AboutForm
             // 
@@ -213,6 +223,7 @@ namespace AngelLoader.Forms
             Controls.Add(FFmpegDotNetLinkLabel);
             Controls.Add(FFmpegLinkLabel);
             Controls.Add(SevenZipSharpLinkLabel);
+            Controls.Add(EasyHookLinkLabel);
             Controls.Add(DarkUILinkLabel);
             Controls.Add(SevenZipLinkLabel);
             Controls.Add(LicenseTextBox);

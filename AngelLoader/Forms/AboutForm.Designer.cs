@@ -47,6 +47,7 @@
             this.OKFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.BuildDateLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.DarkUILinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.EasyHookLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LogoTextPictureBox)).BeginInit();
             this.OKFlowLayoutPanel.SuspendLayout();
@@ -247,6 +248,17 @@
             this.DarkUILinkLabel.Text = "DarkUI";
             this.DarkUILinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
             // 
+            // EasyHookLinkLabel
+            // 
+            this.EasyHookLinkLabel.AutoSize = true;
+            this.EasyHookLinkLabel.Location = new System.Drawing.Point(232, 400);
+            this.EasyHookLinkLabel.Name = "EasyHookLinkLabel";
+            this.EasyHookLinkLabel.Size = new System.Drawing.Size(56, 13);
+            this.EasyHookLinkLabel.TabIndex = 15;
+            this.EasyHookLinkLabel.TabStop = true;
+            this.EasyHookLinkLabel.Text = "EasyHook";
+            this.EasyHookLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
+            // 
             // AboutForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -266,6 +278,7 @@
             this.Controls.Add(this.FFmpegDotNetLinkLabel);
             this.Controls.Add(this.FFmpegLinkLabel);
             this.Controls.Add(this.SevenZipSharpLinkLabel);
+            this.Controls.Add(this.EasyHookLinkLabel);
             this.Controls.Add(this.DarkUILinkLabel);
             this.Controls.Add(this.SevenZipLinkLabel);
             this.Controls.Add(this.LicenseTextBox);
@@ -307,5 +320,6 @@
         private System.Windows.Forms.FlowLayoutPanel OKFlowLayoutPanel;
         private AngelLoader.Forms.CustomControls.DarkLabel BuildDateLabel;
         private AngelLoader.Forms.CustomControls.DarkLinkLabel DarkUILinkLabel;
+        private CustomControls.DarkLinkLabel EasyHookLinkLabel;
     }
 }

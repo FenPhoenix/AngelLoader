@@ -152,6 +152,10 @@ namespace AngelLoader.Forms
             {
                 link = "https://github.com/RobinPerris/DarkUI";
             }
+            else if (sender == EasyHookLinkLabel)
+            {
+                link = "https://github.com/EasyHook/EasyHook";
+            }
 
             try
             {
