@@ -1237,7 +1237,7 @@ namespace AngelLoader.Forms
             {
                 d.InitialDirectory = SanitizePathForDialog(tb.Text);
                 d.MultiSelect = false;
-                if (d.ShowDialog() == DialogResult.OK) tb.Text = d.DirectoryName;
+                if (d.ShowDialogDark() == DialogResult.OK) tb.Text = d.DirectoryName;
             }
 
             ShowPathError(tb, !Directory.Exists(tb.Text));
@@ -1251,7 +1251,7 @@ namespace AngelLoader.Forms
                 InitialDirectory = initialPath,
                 Filter = LText.BrowseDialogs.ExeFiles + "|*.exe"
             };
-            return (dialog.ShowDialog(), dialog.FileName);
+            return (dialog.ShowDialogDark(), dialog.FileName);
         }
 
         private void SteamExeTextBox_TextChanged(object sender, EventArgs e)

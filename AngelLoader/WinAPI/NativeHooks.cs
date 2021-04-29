@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using AngelLoader.Forms;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.ThemeRenderers;
 using EasyHook;
+using ScrollBarRenderer = AngelLoader.Forms.ThemeRenderers.ScrollBarRenderer;
 
 namespace AngelLoader.WinAPI
 {
@@ -185,6 +188,28 @@ namespace AngelLoader.WinAPI
             }
         }
 
+        private static bool _disableTheming;
+        internal sealed class DialogScope : IDisposable
+        {
+            internal DialogScope()
+            {
+                _disableTheming = true;
+                ControlUtils.RecreateAllToolTipHandles();
+            }
+
+            public void Dispose()
+            {
+                ControlUtils.RecreateAllToolTipHandles();
+                _disableTheming = false;
+                var handles = Native.GetProcessWindowHandles();
+                foreach (IntPtr handle in handles)
+                {
+                    Control? control = Control.FromHandle(handle);
+                    if (control is Form form) form.Refresh();
+                }
+            }
+        }
+
         #region Hooked method overrides
 
         private static int DrawThemeBackgroundHook(
@@ -197,7 +222,8 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            return _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
+            return !_disableTheming &&
+                   _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
                    renderer.Enabled &&
                    renderer.TryDrawThemeBackground(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect)
                 ? success
@@ -213,7 +239,8 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            return _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
+            return !_disableTheming &&
+                   _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
                    renderer.Enabled &&
                    renderer.TryGetThemeColor(hTheme, iPartId, iStateId, iPropId, out pColor)
                 ? success
@@ -222,7 +249,7 @@ namespace AngelLoader.WinAPI
 
         private static int GetSysColor(int nIndex)
         {
-            if (Misc.Config.DarkMode)
+            if (!_disableTheming && Misc.Config.DarkMode)
             {
                 return SysColorOverride switch
                 {
@@ -262,7 +289,7 @@ namespace AngelLoader.WinAPI
 
         private static IntPtr GetSysColorBrush(int nIndex)
         {
-            if (Misc.Config.DarkMode)
+            if (!_disableTheming && Misc.Config.DarkMode)
             {
                 return SysColorOverride switch
                 {

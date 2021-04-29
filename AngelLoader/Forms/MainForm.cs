@@ -2924,7 +2924,7 @@ namespace AngelLoader.Forms
             {
                 d.Multiselect = true;
                 d.Filter = LText.BrowseDialogs.DMLFiles + "|*.dml";
-                if (d.ShowDialog() != DialogResult.OK || d.FileNames.Length == 0) return;
+                if (d.ShowDialogDark() != DialogResult.OK || d.FileNames.Length == 0) return;
                 dmlFiles.AddRange(d.FileNames);
             }
             PatchDMLsListBox.BeginUpdate();

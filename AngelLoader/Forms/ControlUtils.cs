@@ -477,6 +477,20 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        /// <summary>
+        /// Shows a dialog with hooked theming disabled, to prevent themed elements being drawn in the unthemed
+        /// dialog (half-dark tooltips, dark scrollbars, etc.)
+        /// </summary>
+        /// <param name="dialog"></param>
+        /// <returns></returns>
+        internal static DialogResult ShowDialogDark(this CommonDialog dialog)
+        {
+            using (new NativeHooks.DialogScope())
+            {
+                return dialog.ShowDialog();
+            }
+        }
+
         #region ToolTips
 
         // Make ABSOLUTELY SURE we're able to do every single reflection thing we need to do to make this work.
