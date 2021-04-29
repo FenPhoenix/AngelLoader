@@ -17,9 +17,9 @@ namespace AngelLoader.Forms.CustomControls
         private BorderStyle? _origBorderStyle;
 
         [PublicAPI]
-        public Color DarkModeBackColor => Enabled ? DarkColors.LightBackground : DarkColors.Fen_ControlBackground;
+        public Color DarkModeBackColor => Enabled ? ReadOnly ? DarkColors.Fen_ControlBackground : DarkColors.LightBackground : DarkColors.Fen_ControlBackground;
         [PublicAPI]
-        public Color DarkModeForeColor => Enabled ? DarkColors.LightText : DarkColors.DisabledText;
+        public Color DarkModeForeColor => Enabled ? ReadOnly ? DarkColors.DisabledText : DarkColors.LightText : DarkColors.DisabledText;
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -105,6 +105,16 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnEnabledChanged(EventArgs e)
         {
             base.OnEnabledChanged(e);
+
+            if (!_darkModeEnabled) return;
+
+            BackColor = DarkModeBackColor;
+            ForeColor = DarkModeForeColor;
+        }
+
+        protected override void OnReadOnlyChanged(EventArgs e)
+        {
+            base.OnReadOnlyChanged(e);
 
             if (!_darkModeEnabled) return;
 
