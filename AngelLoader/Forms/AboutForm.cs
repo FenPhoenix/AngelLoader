@@ -111,51 +111,23 @@ namespace AngelLoader.Forms
 
         private void LinkLabels_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            string link = "";
-            if (sender == GitHubLinkLabel)
-            {
-                link = "https://github.com/FenPhoenix/AngelLoader";
-            }
-            else if (sender == SevenZipLinkLabel)
-            {
-                link = "https://www.7-zip.org/";
-            }
-            else if (sender == SevenZipSharpLinkLabel)
-            {
-                link = "https://github.com/squid-box/SevenZipSharp";
-            }
-            else if (sender == FFmpegLinkLabel)
-            {
-                link = "https://ffmpeg.org/";
-            }
-            else if (sender == FFmpegDotNetLinkLabel)
-            {
-                link = "https://github.com/cmxl/FFmpeg.NET";
-            }
-            else if (sender == SimpleHelpersDotNetLinkLabel)
-            {
-                link = "https://github.com/khalidsalomao/SimpleHelpers.Net/";
-            }
-            else if (sender == UdeNetStandardLinkLabel)
-            {
-                link = "https://github.com/yinyue200/ude";
-            }
-            else if (sender == OokiiDialogsLinkLabel)
-            {
-                link = "https://github.com/augustoproiete/ookii-dialogs-winforms";
-            }
-            else if (sender == NetCore3SysIOCompLinkLabel)
-            {
-                link = "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression";
-            }
-            else if (sender == DarkUILinkLabel)
-            {
-                link = "https://github.com/RobinPerris/DarkUI";
-            }
-            else if (sender == EasyHookLinkLabel)
-            {
-                link = "https://github.com/EasyHook/EasyHook";
-            }
+            string link =
+                sender == GitHubLinkLabel ? "https://github.com/FenPhoenix/AngelLoader" :
+                sender == SevenZipLinkLabel ? "https://www.7-zip.org/" :
+                sender == SevenZipSharpLinkLabel ? "https://github.com/squid-box/SevenZipSharp" :
+                sender == FFmpegLinkLabel ? "https://ffmpeg.org/" :
+                sender == FFmpegDotNetLinkLabel ? "https://github.com/cmxl/FFmpeg.NET" :
+                sender == SimpleHelpersDotNetLinkLabel ? "https://github.com/khalidsalomao/SimpleHelpers.Net/" :
+                sender == UdeNetStandardLinkLabel ? "https://github.com/yinyue200/ude" :
+                sender == OokiiDialogsLinkLabel ? "https://github.com/augustoproiete/ookii-dialogs-winforms" :
+                sender == NetCore3SysIOCompLinkLabel ? "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression" :
+                sender == DarkUILinkLabel ? "https://github.com/RobinPerris/DarkUI" :
+                sender == EasyHookLinkLabel ? "https://github.com/EasyHook/EasyHook" :
+                "";
+
+            AssertR(!link.IsEmpty(), nameof(link) + " is blank");
+
+            if (link.IsEmpty()) return;
 
             try
             {
