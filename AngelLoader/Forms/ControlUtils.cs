@@ -485,7 +485,7 @@ namespace AngelLoader.Forms
         /// <returns></returns>
         internal static DialogResult ShowDialogDark(this CommonDialog dialog)
         {
-            using (new NativeHooks.DialogScope())
+            using (Config.DarkMode ? new NativeHooks.DialogScope() : null)
             {
                 return dialog.ShowDialog();
             }

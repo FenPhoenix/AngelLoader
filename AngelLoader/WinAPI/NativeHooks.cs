@@ -81,6 +81,8 @@ namespace AngelLoader.WinAPI
 
         private static bool _hooksInstalled;
 
+        private static bool _disableHookedTheming;
+
         internal enum Override
         {
             None,
@@ -188,19 +190,27 @@ namespace AngelLoader.WinAPI
             }
         }
 
-        private static bool _disableTheming;
+        /*
+        Hooked themes leak into unthemed dialogs (open file, browse folder etc.), and we can't tell them not to,
+        because we can only exclude by thread, and we already know how impossible/focus-fucked threaded dialogs
+        are, so we're not even going to go there. The best we can do is to turn off hooked theming _while_ a dialog
+        is up. Normally this looks fine, but if our app gets minimized (or Show-Desktop'd) and restored, then the
+        hooked themes will be disabled throughout the app (ie. we'll get unthemed scroll bars). This is a fairly
+        unlikely scenario though, and even if it happens we refresh the whole app on dialog close anyway so at
+        least it's temporary.
+        */
         internal sealed class DialogScope : IDisposable
         {
             internal DialogScope()
             {
-                _disableTheming = true;
+                _disableHookedTheming = true;
                 ControlUtils.RecreateAllToolTipHandles();
             }
 
             public void Dispose()
             {
                 ControlUtils.RecreateAllToolTipHandles();
-                _disableTheming = false;
+                _disableHookedTheming = false;
                 var handles = Native.GetProcessWindowHandles();
                 foreach (IntPtr handle in handles)
                 {
@@ -222,7 +232,7 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            return !_disableTheming &&
+            return !_disableHookedTheming &&
                    _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
                    renderer.Enabled &&
                    renderer.TryDrawThemeBackground(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect)
@@ -239,7 +249,7 @@ namespace AngelLoader.WinAPI
         {
             const int success = 0;
 
-            return !_disableTheming &&
+            return !_disableHookedTheming &&
                    _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
                    renderer.Enabled &&
                    renderer.TryGetThemeColor(hTheme, iPartId, iStateId, iPropId, out pColor)
@@ -249,7 +259,7 @@ namespace AngelLoader.WinAPI
 
         private static int GetSysColor(int nIndex)
         {
-            if (!_disableTheming && Misc.Config.DarkMode)
+            if (!_disableHookedTheming && Misc.Config.DarkMode)
             {
                 return SysColorOverride switch
                 {
@@ -289,7 +299,7 @@ namespace AngelLoader.WinAPI
 
         private static IntPtr GetSysColorBrush(int nIndex)
         {
-            if (!_disableTheming && Misc.Config.DarkMode)
+            if (!_disableHookedTheming && Misc.Config.DarkMode)
             {
                 return SysColorOverride switch
                 {
