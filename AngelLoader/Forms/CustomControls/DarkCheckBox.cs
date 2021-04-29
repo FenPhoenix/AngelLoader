@@ -329,41 +329,32 @@ namespace AngelLoader.Forms.CustomControls
 
             Pen textColorPen = DarkColors.LightTextPen;
             Pen borderPen = DarkColors.LightTextPen;
-            Pen fillColorPen = DarkColors.LightTextPen;
-            SolidBrush fillColorBrush = DarkColors.LightTextBrush;
+            SolidBrush fillBrush = DarkColors.LightTextBrush;
 
             if (Enabled)
             {
                 if (AutoCheck && Focused)
                 {
                     borderPen = DarkColors.BlueHighlightPen;
-
-                    fillColorPen = DarkColors.BlueHighlightPen;
-                    fillColorBrush = DarkColors.BlueHighlightBrush;
+                    fillBrush = DarkColors.BlueHighlightBrush;
                 }
 
                 if (_controlState == DarkControlState.Hover)
                 {
                     borderPen = DarkColors.BlueHighlightPen;
-
-                    fillColorPen = DarkColors.BlueSelectionPen;
-                    fillColorBrush = DarkColors.BlueSelectionBrush;
+                    fillBrush = DarkColors.BlueSelectionBrush;
                 }
                 else if (_controlState == DarkControlState.Pressed)
                 {
                     borderPen = DarkColors.GreyHighlightPen;
-
-                    fillColorPen = DarkColors.GreySelectionPen;
-                    fillColorBrush = DarkColors.GreySelectionBrush;
+                    fillBrush = DarkColors.GreySelectionBrush;
                 }
             }
             else
             {
                 textColorPen = DarkColors.DisabledTextPen;
                 borderPen = DarkColors.GreyHighlightPen;
-
-                fillColorPen = DarkColors.GreySelectionPen;
-                fillColorBrush = DarkColors.GreySelectionBrush;
+                fillBrush = DarkColors.GreySelectionBrush;
             }
 
             Color? parentBackColor = Parent?.BackColor;
@@ -382,19 +373,21 @@ namespace AngelLoader.Forms.CustomControls
 
             if (CheckState == CheckState.Checked)
             {
+                // IMPORTANT! Stop removing this thing, IT NEEDS TO BE SEPARATE BECAUSE IT'S GOT A DIFFERENT WIDTH!
+                using var checkMarkPen = new Pen(fillBrush, 1.6f);
                 SmoothingMode oldSmoothingMode = g.SmoothingMode;
 
                 g.SmoothingMode = SmoothingMode.HighQuality;
 
                 // First half of checkmark
-                g.DrawLine(fillColorPen,
+                g.DrawLine(checkMarkPen,
                     outlineBoxRect.Left + 1.5f,
                     outlineBoxRect.Top + 6,
                     outlineBoxRect.Left + 4.5f,
                     outlineBoxRect.Top + 9);
 
                 // Second half of checkmark
-                g.DrawLine(fillColorPen,
+                g.DrawLine(checkMarkPen,
                     outlineBoxRect.Left + 4.5f,
                     outlineBoxRect.Top + 9,
                     outlineBoxRect.Left + 10.5f,
@@ -405,7 +398,7 @@ namespace AngelLoader.Forms.CustomControls
             else if (CheckState == CheckState.Indeterminate)
             {
                 var boxRect = new Rectangle(3, ((rect.Height / 2) - ((_checkBoxSize - 4) / 2)) + 1, _checkBoxSize - 5, _checkBoxSize - 5);
-                g.FillRectangle(fillColorBrush, boxRect);
+                g.FillRectangle(fillBrush, boxRect);
             }
 
             TextFormatFlags textFormatFlags =
