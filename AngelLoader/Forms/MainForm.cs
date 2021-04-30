@@ -634,7 +634,12 @@ namespace AngelLoader.Forms
         // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
         public void InitThreadable()
         {
+#if RELEASE_BETA
+            const string betaVer = "1";
+            Text = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
+#else
             Text = "AngelLoader " + Application.ProductVersion;
+#endif
 
             FMsDGV.InjectOwner(this);
 
