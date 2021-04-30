@@ -29,6 +29,13 @@ namespace AngelLoader.Forms.CustomControls
                 BackColor = _darkModeEnabled ? DarkColors.LightBackground : SystemColors.Window;
 
                 Invalidate();
+
+                // Hack to fix the background color not changing with modes if we're disabled
+                if (!Enabled)
+                {
+                    Native.PostMessage(Handle, Native.WM_ENABLE, (IntPtr)1, IntPtr.Zero);
+                    Native.PostMessage(Handle, Native.WM_ENABLE, (IntPtr)0, IntPtr.Zero);
+                }
             }
         }
 
