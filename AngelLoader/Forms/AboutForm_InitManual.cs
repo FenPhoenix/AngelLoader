@@ -199,7 +199,7 @@ namespace AngelLoader.Forms
             // EasyHookLinkLabel
             // 
             EasyHookLinkLabel.AutoSize = true;
-            EasyHookLinkLabel.Location = new Point(232, 400);
+            EasyHookLinkLabel.Location = new Point(232, 404);
             EasyHookLinkLabel.TabIndex = 15;
             EasyHookLinkLabel.TabStop = true;
             EasyHookLinkLabel.Text = "EasyHook";

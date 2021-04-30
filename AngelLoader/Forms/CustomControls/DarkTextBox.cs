@@ -33,7 +33,7 @@ namespace AngelLoader.Forms.CustomControls
                 : DarkColors.DisabledText;
 
         [PublicAPI]
-        public bool DarkModeReadOnlyColorsAreDefault;
+        public bool DarkModeReadOnlyColorsAreDefault { get; set; }
 
         private bool _darkModeEnabled;
         [PublicAPI]

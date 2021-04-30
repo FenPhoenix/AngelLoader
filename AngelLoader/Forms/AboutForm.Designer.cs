@@ -252,7 +252,7 @@
             // EasyHookLinkLabel
             // 
             this.EasyHookLinkLabel.AutoSize = true;
-            this.EasyHookLinkLabel.Location = new System.Drawing.Point(232, 400);
+            this.EasyHookLinkLabel.Location = new System.Drawing.Point(232, 404);
             this.EasyHookLinkLabel.Name = "EasyHookLinkLabel";
             this.EasyHookLinkLabel.Size = new System.Drawing.Size(56, 13);
             this.EasyHookLinkLabel.TabIndex = 15;
