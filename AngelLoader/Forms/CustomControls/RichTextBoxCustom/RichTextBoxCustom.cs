@@ -145,7 +145,11 @@ namespace AngelLoader.Forms.CustomControls
                 if (suspendResume)
                 {
                     RestoreZoom();
-                    ControlUtils.RepositionScroll(Handle, (Native.SCROLLINFO)si!, Native.SB_VERT);
+                    // Copy only the nPos value, otherwise we get a glitched-length scrollbar if our encoding
+                    // change changes the height of the text.
+                    Native.SCROLLINFO newSi = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
+                    newSi.nPos = ((Native.SCROLLINFO)si!).nPos;
+                    ControlUtils.RepositionScroll(Handle, newSi, Native.SB_VERT);
                     this.ResumeDrawing();
                 }
             }
