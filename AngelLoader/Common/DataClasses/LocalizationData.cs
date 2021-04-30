@@ -337,8 +337,8 @@ namespace AngelLoader.DataClasses
             internal readonly string ShowUnavailable = "Show unavailable FMs";
             internal readonly string ShowRecentAtTop = "Show recently added FMs at the top of the list";
             [FenGenBlankLine]
-            internal readonly string RefreshFromDiskButtonToolTip = "Refresh from disk";
-            internal readonly string RefreshFilteredListButtonToolTip = "Refresh filtered list";
+            internal readonly string RefreshFMsListButtonToolTip = "Refresh FMs list";
+            internal readonly string RefreshFiltersButtonToolTip = "Refresh filters";
             internal readonly string ClearFiltersButtonToolTip = "Clear filters";
             internal readonly string ResetLayoutButtonToolTip = "Reset layout";
 

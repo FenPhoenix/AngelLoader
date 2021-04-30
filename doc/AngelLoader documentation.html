@@ -7,7 +7,7 @@
 
 <style>
 .content {
-    max-width: 960px;
+    max-width: 1000px;
     margin: auto;
 }
 code {
@@ -58,6 +58,10 @@ div.headerElements:before {
   <li>
     <a href="#main_window">Main window</a>
     <ul>
+      <li><a href="#main_menu">Main menu</a></li>
+      <li><a href="#filter_bar">Filter bar</a></li>
+      <li><a href="#readme_area">Readme area</a></li>
+      <li><a href="#bottom_bar">Bottom bar</a></li>
       <li><a href="#mission_list">Mission list</a></li>
       <li><a href="#column_header_context_menu">Column header context menu</a></li>
       <li><a href="#fm_context_menu">FM context menu</a></li>
@@ -68,7 +72,7 @@ div.headerElements:before {
     <a href="#settings_window">Settings window</a>
     <ul>
       <li><a href="#settings_paths_section">Paths</a></li>
-      <li><a href="#settings_fm_display_section">FM Display</a></li>
+      <li><a href="#settings_appearance_section">Appearance</a></li>
       <li><a href="#settings_other_section">Other</a></li>
     </ul>
   </li>
@@ -142,9 +146,23 @@ Here you can see which version of each game you have installed. If a game has no
 
 <p/>
 
+<h4>Import</h4>
+Clicking this button will bring up a list of other loaders you can import data from. Supported loaders are <b>DarkLoader</b>, <b>NewDarkLoader</b>, and <b>FMSel</b>. If you have a large collection of FM data from one of these loaders (comments, ratings, finished statuses, etc.) then you can import that data into AngelLoader, replacing any current data (so be careful).
+
+<h4><a name="scan_all_fms" />Scan all FMs</h4>
+This allows you to scan all the FMs in the list. Clicking it will bring up a window where you can choose what to scan for.
+
+<p><img src="images/ScanAllFMs_window.png" /></p>
+
+Only the fields you select will be scanned for and overwritten; non-selected fields will not be touched. The exception to overwriting is tags: tags will only ever be kept the same or added to, not overwritten.
+
+<h4>Settings</h4>
+
+Opens the <a href="#settings_window">Settings window</a>.
+
 <hr>
 
-<h4>Filter bar</h4>
+<h3><a name="filter_bar" />Filter bar</h3>
 <p><img src="images/filter_bar.png" /></p>
 Here you can choose to filter your FM list by game, title, author, release date, last played date, tags, finished status, and rating. If you've chosen to organize your games by tab, then these tabs will take the place of the game filter buttons.
 <p>Clicking the drop-down arrow (<img src="images/drop_down_arrow.png"/>) at the right side of the filter bar will allow you to hide individual filters to minimize clutter. When a filter is hidden, it will be automatically switched off.</p>
@@ -152,18 +170,21 @@ Here you can choose to filter your FM list by game, title, author, release date,
 <h4><img src="images/Show_Unsupported.png" style="vertical-align:bottom" /> <a name="show_unsupported" />Show FMs marked as "unsupported game or non-FM archive"</h4>
 This allows archives marked as Unknown (<img src="images/red_circle_question_mark_21.png" />) (archives that were rejected as not being FMs) to be displayed in the list. If support for new games is added in the future, you can use this to show previously unsupported FMs so you can re-scan them individually if you wish.
 
+<h4><img src="images/Show_Unavailable.png" style="vertical-align:bottom" /> <a name="show_unsupported" /> Show unavailable FMs</h4>
+This allows you to see FMs that are in the database, but cannot be found on disk.
+
 <h4><img src="images/FilterShowRecentAtTop.png" style="vertical-align:bottom" /> <a name="show_recent_at_top" />Show recently added FMs at the top of the list</h4>
 This will cause recently added FMs to be highlighted and displayed at the top of the list. This makes it easier to find FMs that you've just downloaded, for example. The number of days to consider an FM "recent" can be changed in the <a href="#settings_days_recent">Settings window</a>. The default is 15 days.
 
-<h4><img src="images/RefreshFromDisk.png" style="vertical-align:bottom" /> Refresh from disk button</h4>
+<h4><img src="images/Refresh.png" style="vertical-align:bottom" /> Refresh FMs list</h4>
 Reloads the list of FMs from disk. This will always occur on startup, but this button is useful if you've added new FMs since starting AngelLoader.
 <br>The list can also be refreshed from disk by pressing <code>Shift-F5</code> when the <a href="#mission_list">mission list</a> is focused.
 
-<h4><img src="images/Refresh.png" style="vertical-align:bottom" /> Refresh list button</h4>
+<h4><img src="images/RefreshFilters.png" style="vertical-align:bottom" /> Refresh filters</h4>
 When you edit a mission's data, the list of missions is not refreshed. This is to prevent a mission that no longer fits the filter criteria from being filtered out of the list in the middle of being edited. If you've edited an FM and want to re-filter the list, click this button.
 <br>The list can also be refreshed by pressing <code>F5</code> when the <a href="#mission_list">mission list</a> is focused.
 
-<h4><img src="images/ClearFilters.png" style="vertical-align:bottom" /> Clear filters button</h4>
+<h4><img src="images/ClearFilters.png" style="vertical-align:bottom" /> Clear filters</h4>
 Clears all filters.
 
 <h4><img src="images/ResetLayout.png" style="vertical-align:bottom" /> Reset layout button</h4>
@@ -172,41 +193,62 @@ Resets the main window to its default proportions.
 <h4>Draggable splitters</h4>
 You can drag these horizontally or vertically to resize the sections of the window. If you drag at the corner between the two splitters, you can resize all three main sections at once.
 
-<h4><a name="readme_area" />Readme area</h4>
+<hr>
+
+<h3><a name="readme_area" />Readme area</h3>
 Here is where the selected FM's readme is displayed. If there are multiple readmes, AngelLoader will attempt to detect one that doesn't contain spoilers (lootlists, walkthroughs, etc.).
 If it finds one, it will choose that readme automatically. If a non-spoiler readme is unable to be detected with certainty, you will be given a choice of which readme to view.
 In this case, this list of readmes will be the only thing displayed in the readme section. Once you've selected a readme, you will thereafter
 have the option to select another from a drop-down list that appears in the upper-right corner (see <a href="#readme_controls">Readme controls</a>).
 
 <h4><a name="readme_controls" />Readme controls</h4>
-In the upper-right corner of the readme area, there is a set of controls for choosing a readme; zooming in, zooming out, and resetting zoom; and toggling fullscreen. When you click the fullscreen button, the readme area enlarges to take up the entire window. Click the button again to restore it to normal size. These controls appear when the mouse cursor is over the readme area, and disappear when it moves away.
+
+<p><img src="images/ReadmeControls.png"/></p>
+
+<h4>Readme selection dropdown</h4>
+
+If the selected FM contains multiple readme files, this will allow you to choose one to view. If the FM contains only one readme or no readmes, the readme selection dropdown will be hidden.
+
+<h4><img src="images/CharacterEncoding.png" style="vertical-align:bottom" /> Character encoding</h4>
+If the readme's text is not being displayed correctly (for example, if there are '?' characters where accented characters should be, or if the text is generally garbled), choosing a different character encoding may fix the issue. Although AngelLoader attempts to detect the correct character encoding on its own, it occasionally guesses wrong, so a manual selection option is provided. Character encoding selections are saved per-readme.
+<p/>
+Character encoding selection is only available for plain-text readmes. Other formats specify their character encoding information themselves, so neither detection nor selection is needed in that case. If a readme does not support character encoding selection, the icon will be grayed out.
+
+<h4><img src="images/ZoomIn.png" style="vertical-align:bottom" /> Zoom in</h4>
+Makes the readme text larger.
+
+<h4><img src="images/ZoomOut.png" style="vertical-align:bottom" /> Zoom out</h4>
+Makes the readme text smaller.
+
+<h4><img src="images/ZoomReset.png" style="vertical-align:bottom" /> Reset zoom</h4>
+Resets the readme text size to the default.
+<p/>
 In addition to clicking the zoom buttons, the readme can also be zoomed by pressing <code>Ctrl+-</code>, <code>Ctrl++</code>, and <code>Ctrl-0</code>, or by holding <code>Ctrl</code> and scrolling the mouse wheel while the cursor is over the readme area.
 
-<h4><img src="images/PlayFM.png" style="vertical-align:bottom" /> Play FM button</h4>
+<h4><img src="images/FullScreen.png" style="vertical-align:bottom" /> Fullscreen</h4>
+When you click the fullscreen button, the readme area enlarges to take up the entire window. Click the button again to restore it to normal size.
+
+<hr>
+
+<h3><a name="bottom_bar" />Bottom bar</h3>
+
+<p><img src="images/BottomBar.png"/></p>
+
+<h4><img src="images/PlayFM.png" style="vertical-align:bottom" /> Play FM</h4>
 Click this button to play the currently selected FM. If the FM is not installed, it will be installed automatically first.
 
-<h4><img src="images/PlayOriginalGame.png" style="vertical-align:bottom" /> Play original game button</h4>
+<h4><img src="images/PlayOriginalGame.png" style="vertical-align:bottom" /> Play original game</h4>
 Click this button to bring up a list of supported games. Only games that you've <a href="#paths_to_game_exes">provided a path to</a> will be enabled; others will be grayed out. Clicking on one of these games will let you play it without loading an FM.<br>
 If you have NewDark 1.27 or later and have installed the multiplayer option (meaning Thief2MP.exe exists in your Thief 2 directory), then there will be an additional option in the list to play Thief 2 in multiplayer mode.
 
-<h4><img src="images/Install.png" style="vertical-align:bottom" /> / <img src="images/Uninstall.png" style="vertical-align:bottom" /> Install / Uninstall FM button</h4>
+<h4><img src="images/Install.png" style="vertical-align:bottom" /> / <img src="images/Uninstall.png" style="vertical-align:bottom" /> Install / Uninstall FM</h4>
 If the currently selected FM is not installed, this button will install it; otherwise, it will uninstall it.
 
-<h4><img src="images/BlueMagnifier.png" style="vertical-align:bottom" /> <a name="scan_all_fms_button" />Scan all FMs button</h4>
-This allows you to scan all the FMs in the list. Clicking it will bring up a window where you can choose what to scan for.
-
-<p><img src="images/ScanAllFMs_window.png" /></p>
-
-Only the fields you select will be scanned for and overwritten; non-selected fields will not be touched. The exception to overwriting is tags: tags will only ever be kept the same or added to, not overwritten.
-
-<h4><img src="images/WebSearch.png" style="vertical-align:bottom" /> Web search button</h4>
+<h4><img src="images/WebSearch.png" style="vertical-align:bottom" /> Web search</h4>
 Click this button to search the web for the selected mission. You can set the search URL in the <a href="#settings_web_search">Settings window</a>.
 
-<h4><img src="images/Import.png" style="vertical-align:bottom"/> Import from button</h4>
-Clicking this button will bring up a list of other loaders you can import data from. Supported loaders are <b>DarkLoader</b>, <b>NewDarkLoader</b>, and <b>FMSel</b>. If you have a large collection of FM data from one of these loaders (comments, ratings, finished statuses, etc.) then you can import that data into AngelLoader, replacing any current data (so be careful).
-
-<h4><img src="images/Settings.png" style="vertical-align:bottom" /> Settings button</h4>
-Brings up the <a href="#settings_window">Settings window</a>.
+<h4><img src="images/Settings.png" style="vertical-align:bottom" /> Settings</h4>
+Opens the <a href="#settings_window">Settings window</a>.
 <p/>
 <hr>
 
@@ -308,6 +350,9 @@ This will allow you to delete an FM's archive from disk. You can also press the 
 This item will only appear if DromEd.exe (or ShockEd.exe for System Shock 2) was found in the game directory. Clicking it will open the currently selected FM in DromEd or ShockEd, installing it first if necessary.<br>
 <b>This option does not apply to Thief: Deadly Shadows.</b>
 
+<h4>Open FM folder</h4>
+Opens the FM's installed folder.
+
 <h4>Scan FM</h4>
 This will scan the selected FM. If you only want to scan for certain fields, see the <a href="#edit_fm_tab">Edit FM tab</a>.
 
@@ -405,9 +450,15 @@ If you want to manually modify the FM's installed folder, you can open it here.<
 
 The settings here are the same as the <a href="#initial_setup">Initial Setup window</a>, except that Language has been moved to the <a href="#settings_other_section">Other section</a>. See <a href="#initial_setup">Initial Setup</a> for an explanation of these settings.
 
-<h3><a name="settings_fm_display_section" />FM Display section</h3>
+<h3><a name="settings_appearance_section" />Appearance section</h3>
 
-<p><img src="images/setup_fm_display_tab.png" /></p>
+<p><img src="images/setup_appearance_tab.png" /></p>
+
+<h4>Language</h4>
+If other languages are available, you can choose them here. Changes will take effect immediately.
+
+<h4>Theme</h4>
+Here you can choose either the classic Windows theme or dark mode. Changes will take effect immediately.
 
 <h4>Game organization</h4>
 Here you can choose to either organize games into their own tabs, or to display your FMs as one list and allow filtering by game. When game tabs are enabled, each game will have its own selected FM and set of filters that will be retained between tab switches. Organizing games by tab can make things cleaner, but if you want to filter without regard to game (say, to find all missions by a single author who has released missions for multiple games), then having one list with game filters will work better.
@@ -428,12 +479,21 @@ Here you can choose how to display dates: either in the short or long form of yo
 <h4><a name="settings_days_recent" />Recent FMs</h4>
 When choosing to <a href="#show_recent_at_top">show recently added FMs at the top of the list</a>, only FMs added within the selected number of days will be included.
 
+<h4>Hide "Install / Uninstall FM" button</h4>
+For extra-strength misclick prevention, enable this. You will still be able to install and uninstall FMs from the <a href="#fm_context_menu">FM context menu</a>.
+
+<h4>Hide FM list zoom buttons</h4>
+Since you can zoom the FMs list with the keyboard or Ctrl+mousewheel, you can hide these buttons to free up room.
+
+<h4>Hide exit button</h4>
+Allows you to show or hide an Exit button in the bottom-right corner of the main window, similar to FMSel.
+
+<h4>Use a fixed-width font when displaying plain text</h4>
+Some readmes may look better when displayed in a fixed-width font. This option only applies to plain text readme files; other file types will use their own fonts. This behavior matches DarkLoader.
+
 <h3><a name="settings_other_section" />Other section</h3>
 
 <p><img src="images/setup_other_tab.png" /></p>
-
-<h4>Language</h4>
-If other languages are available, you can choose them here. Changes will take effect immediately.
 
 <h4><a name="settings_audio_conversion" />Convert .wavs to 16 bit on install</h4>
 Depending on your setup, .wav files that are higher than 16 bit may cause audio problems when played by Dark Engine games, such as intermittent or constant static noise. Converting all .wav files to 16 bit will solve this issue, and does not result in a perceptible loss of fidelity. Therefore, this option is turned on by default.<br>
@@ -463,18 +523,6 @@ Here you can edit the URL that will be used when searching for FMs on the web. T
 When you double-click on an FM in the list or press Enter when the list is focused,
 the selected FM will be played. Check this box to enable asking for confirmation in that case,
 to prevent accidental playing from a stray click or key press.
-
-<h4>Hide "Install / Uninstall FM" button</h4>
-For extra-strength misclick prevention, enable this. You will still be able to install and uninstall FMs from the <a href="#fm_context_menu">FM context menu</a>.
-
-<h4>Hide FM list zoom buttons</h4>
-Since you can zoom the FMs list with the keyboard or Ctrl+mousewheel, you can hide these buttons to free up room.
-
-<h4>Hide exit button</h4>
-Allows you to show or hide an Exit button in the bottom-right corner of the main window, similar to FMSel.
-
-<h4>Use a fixed-width font when displaying plain text</h4>
-Some readmes may look better when displayed in a fixed-width font. This option only applies to plain text readme files; other file types will use their own fonts. This behavior matches DarkLoader.
 
 <hr>
 

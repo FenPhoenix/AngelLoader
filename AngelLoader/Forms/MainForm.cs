@@ -1220,8 +1220,8 @@ namespace AngelLoader.Forms
 
                 #region Clear/refresh/reset area
 
-                RefreshFromDiskButton.ToolTipText = LText.FilterBar.RefreshFromDiskButtonToolTip;
-                RefreshFiltersButton.ToolTipText = LText.FilterBar.RefreshFilteredListButtonToolTip;
+                RefreshFromDiskButton.ToolTipText = LText.FilterBar.RefreshFMsListButtonToolTip;
+                RefreshFiltersButton.ToolTipText = LText.FilterBar.RefreshFiltersButtonToolTip;
                 ClearFiltersButton.ToolTipText = LText.FilterBar.ClearFiltersButtonToolTip;
                 MainToolTip.SetToolTip(ResetLayoutButton, LText.FilterBar.ResetLayoutButtonToolTip);
 
@@ -1723,7 +1723,7 @@ namespace AngelLoader.Forms
         private void MainMenuButton_Click(object sender, EventArgs e)
         {
             MainLLMenu.Construct(this, components);
-            ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: -2, yOffset: 2);
+            ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: 0, yOffset: 2);
         }
 
         private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
