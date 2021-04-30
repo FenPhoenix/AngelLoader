@@ -95,7 +95,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Pen LightTextPen = new Pen(LightText);
         public static readonly Pen DisabledTextPen = new Pen(DisabledText);
         public static readonly Pen BlueHighlightPen = new Pen(BlueHighlight);
-        public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
+        //public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
         public static readonly Pen GreyHighlightPen = new Pen(GreyHighlight);
         public static readonly Pen GreySelectionPen = new Pen(GreySelection);
         //public static readonly Pen DarkGreySelectionPen = new Pen(DarkGreySelection);
@@ -123,14 +123,14 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly SolidBrush GreyBackgroundBrush = new SolidBrush(GreyBackground);
         public static readonly SolidBrush HeaderBackgroundBrush = new SolidBrush(HeaderBackground);
         public static readonly SolidBrush BlueBackgroundBrush = new SolidBrush(BlueBackground);
-        public static readonly SolidBrush DarkBlueBackgroundBrush = new SolidBrush(DarkBlueBackground);
+        //public static readonly SolidBrush DarkBlueBackgroundBrush = new SolidBrush(DarkBlueBackground);
         public static readonly SolidBrush DarkBackgroundBrush = new SolidBrush(DarkBackground);
         //public static readonly SolidBrush MediumBackgroundBrush = new SolidBrush(MediumBackground);
         public static readonly SolidBrush LightBackgroundBrush = new SolidBrush(LightBackground);
         public static readonly SolidBrush LighterBackgroundBrush = new SolidBrush(LighterBackground);
         //public static readonly SolidBrush LightestBackgroundBrush = new SolidBrush(LightestBackground);
         public static readonly SolidBrush LightBorderBrush = new SolidBrush(LightBorder);
-        public static readonly SolidBrush LighterBorderBrush = new SolidBrush(LighterBorder);
+        //public static readonly SolidBrush LighterBorderBrush = new SolidBrush(LighterBorder);
         //public static readonly SolidBrush DarkBorderBrush = new SolidBrush(DarkBorder);
         public static readonly SolidBrush LightTextBrush = new SolidBrush(LightText);
         public static readonly SolidBrush DisabledTextBrush = new SolidBrush(DisabledText);
@@ -146,15 +146,15 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        public static IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
-        public static IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
-        public static IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
-        public static IntPtr SysColorBrush_Fen_HighlightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText));
-        public static IntPtr SysColorBrush_Fen_ControlBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground));
-        public static IntPtr SysColorBrush_DisabledText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText));
-        public static IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
-        public static IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
-        public static IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
+        public static IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(LightBackground));
+        public static IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(LightText));
+        public static IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(BlueSelection));
+        public static IntPtr SysColorBrush_Fen_HighlightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_HighlightText));
+        public static IntPtr SysColorBrush_Fen_ControlBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_ControlBackground));
+        public static IntPtr SysColorBrush_DisabledText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DisabledText));
+        public static IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_DarkBackground));
+        public static IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_DarkForeground));
+        public static IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkBackground));
 
         /*
         public static Dictionary<Color, (SolidBrush Brush, Pen Pen)> ColorsDict = new()

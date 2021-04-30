@@ -2,6 +2,7 @@
 
 using System;
 using AL_Common;
+using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -38,6 +39,7 @@ namespace AngelLoader.DataClasses
 
     #endregion
 
+    [PublicAPI]
     public enum HideableFilterControls
     {
         Title,

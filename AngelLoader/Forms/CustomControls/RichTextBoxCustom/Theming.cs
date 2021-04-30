@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 using static AL_Common.CommonUtils;
@@ -146,37 +145,6 @@ namespace AngelLoader.Forms.CustomControls
             for (int i = 0; i < numStr.Length; i++) ret[i] = (byte)numStr[i];
 
             return ret;
-        }
-
-        /// <summary>
-        /// Returns the index directly after the last closing curly brace in the given rtf group.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="groupControlWord">Must start with '{', for example "{\fonttbl"</param>
-        /// <returns></returns>
-        private static int FindEndOfGroup(List<byte> input, byte[] groupControlWord)
-        {
-            int index = FindIndexOfByteSequence(input, groupControlWord);
-            if (index == -1) return -1;
-
-            int braceLevel = 1;
-
-            for (int i = index + 1; i < input.Count; i++)
-            {
-                byte b = input[i];
-                if (b == (byte)'{')
-                {
-                    braceLevel++;
-                }
-                else if (b == (byte)'}')
-                {
-                    braceLevel--;
-                }
-
-                if (braceLevel < 1) return i + 1;
-            }
-
-            return -1;
         }
 
         private List<byte> CreateColorTableRTFBytes(List<Color> colorTable)

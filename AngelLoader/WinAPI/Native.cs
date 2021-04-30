@@ -556,18 +556,18 @@ namespace AngelLoader.WinAPI
         internal const int TMT_TEXTCOLOR = 3803;
 
         internal const int
-            TVP_TREEITEM = 1,
+            //TVP_TREEITEM = 1,
             TVP_GLYPH = 2,
-            TVP_BRANCH = 3,
+            //TVP_BRANCH = 3,
             TVP_HOTGLYPH = 4;
 
         internal const int
-            GLPS_CLOSED = 1,
-            GLPS_OPENED = 2;
+            GLPS_CLOSED = 1;
+        //GLPS_OPENED = 2;
 
         internal const int
-            HGLPS_CLOSED = 1,
-            HGLPS_OPENED = 2;
+            HGLPS_CLOSED = 1;
+        //HGLPS_OPENED = 2;
 
         [DllImport("uxtheme.dll", ExactSpelling = true)]
         internal static extern bool IsThemeActive();

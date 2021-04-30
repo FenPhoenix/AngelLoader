@@ -24,14 +24,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
 
-                if (_darkModeEnabled)
-                {
-                    BackColor = DarkColors.LightBackground;
-                }
-                else
-                {
-                    BackColor = SystemColors.Window;
-                }
+                BackColor = _darkModeEnabled ? DarkColors.LightBackground : SystemColors.Window;
             }
         }
 

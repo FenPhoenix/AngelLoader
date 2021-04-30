@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using JetBrains.Annotations;
+
 // ReSharper disable UnusedParameter.Local
 #pragma warning disable IDE0060
 #pragma warning disable RCS1163 // Unused parameter.
@@ -7,6 +9,7 @@ using System.Diagnostics;
 
 namespace AngelLoader
 {
+    [PublicAPI]
     internal static class Attributes
     {
         // IMPORTANT (Attributes):
