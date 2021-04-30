@@ -127,7 +127,7 @@ namespace AngelLoader.Forms.CustomControls
 
             // Hack to prevent the top-right tabs textboxes from having disabled text color when we collapse,
             // switch dark->light->dark, then un-collapse
-            base.RecreateHandle();
+            RecreateHandle();
         }
 
         protected override void OnReadOnlyChanged(EventArgs e)
