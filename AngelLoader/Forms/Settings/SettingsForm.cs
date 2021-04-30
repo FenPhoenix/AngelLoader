@@ -1570,7 +1570,7 @@ namespace AngelLoader.Forms
                 string section =
                     _startup ? HelpSections.InitialSettings :
                     PathsPage.IsVisible ? HelpSections.PathsSettings :
-                    AppearancePage.IsVisible ? HelpSections.FMDisplaySettings :
+                    AppearancePage.IsVisible ? HelpSections.AppearanceSettings :
                     OtherPage.IsVisible ? HelpSections.OtherSettings :
                     "";
 

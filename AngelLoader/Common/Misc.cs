@@ -69,8 +69,7 @@ namespace AngelLoader
         {
             internal static readonly string InitialSettings = "#initial_setup";
             internal static readonly string PathsSettings = "#settings_paths_section";
-            // TODO: @vNext: @DarkMode: Switch to #appearance_section (and update help file)
-            internal static readonly string FMDisplaySettings = "#settings_fm_display_section";
+            internal static readonly string AppearanceSettings = "#settings_appearance_section";
             internal static readonly string OtherSettings = "#settings_other_section";
 
             //internal static readonly string FMBackupPath = "#fm_backup_path";
