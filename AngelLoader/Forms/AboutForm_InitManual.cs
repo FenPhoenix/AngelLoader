@@ -66,6 +66,7 @@ namespace AngelLoader.Forms
             // LicenseTextBox
             // 
             LicenseTextBox.BackColor = SystemColors.Window;
+            LicenseTextBox.DarkModeReadOnlyColorsAreDefault = true;
             LicenseTextBox.Location = new Point(32, 108);
             LicenseTextBox.Multiline = true;
             LicenseTextBox.ReadOnly = true;

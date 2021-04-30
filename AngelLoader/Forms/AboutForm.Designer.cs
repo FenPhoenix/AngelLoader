@@ -87,6 +87,7 @@
             // LicenseTextBox
             // 
             this.LicenseTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.LicenseTextBox.DarkModeReadOnlyColorsAreDefault = true;
             this.LicenseTextBox.Location = new System.Drawing.Point(32, 108);
             this.LicenseTextBox.Multiline = true;
             this.LicenseTextBox.Name = "LicenseTextBox";

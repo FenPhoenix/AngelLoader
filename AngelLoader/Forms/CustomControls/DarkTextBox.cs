@@ -17,9 +17,23 @@ namespace AngelLoader.Forms.CustomControls
         private BorderStyle? _origBorderStyle;
 
         [PublicAPI]
-        public Color DarkModeBackColor => Enabled ? ReadOnly ? DarkColors.Fen_ControlBackground : DarkColors.LightBackground : DarkColors.Fen_ControlBackground;
+        public Color DarkModeBackColor =>
+            Enabled
+                ? ReadOnly && !DarkModeReadOnlyColorsAreDefault
+                    ? DarkColors.Fen_ControlBackground
+                    : DarkColors.LightBackground
+                : DarkColors.Fen_ControlBackground;
+
         [PublicAPI]
-        public Color DarkModeForeColor => Enabled ? ReadOnly ? DarkColors.DisabledText : DarkColors.LightText : DarkColors.DisabledText;
+        public Color DarkModeForeColor =>
+            Enabled
+                ? ReadOnly && !DarkModeReadOnlyColorsAreDefault
+                    ? DarkColors.DisabledText
+                    : DarkColors.LightText
+                : DarkColors.DisabledText;
+
+        [PublicAPI]
+        public bool DarkModeReadOnlyColorsAreDefault;
 
         private bool _darkModeEnabled;
         [PublicAPI]
