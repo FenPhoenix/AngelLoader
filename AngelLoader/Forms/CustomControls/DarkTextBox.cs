@@ -124,10 +124,6 @@ namespace AngelLoader.Forms.CustomControls
 
             BackColor = DarkModeBackColor;
             ForeColor = DarkModeForeColor;
-
-            // Hack to prevent the top-right tabs textboxes from having disabled text color when we collapse,
-            // switch dark->light->dark, then un-collapse
-            RecreateHandle();
         }
 
         protected override void OnReadOnlyChanged(EventArgs e)
@@ -150,8 +146,9 @@ namespace AngelLoader.Forms.CustomControls
 
             // We still need this for selected text fore/back color. We can't find the exhaustive set of messages
             // that will make us ALWAYS have the proper selection back color, so just do it for all messages. Meh!
-            // (except WM_ENABLE, because if we react to that then we get random wrong colors for various textboxes)
-            if (m.Msg != Native.WM_ENABLE)
+            // (except WM_ENABLE == false, because if we react to that then we get random wrong colors for various
+            // textboxes when we're disabled)
+            if (m.Msg != Native.WM_ENABLE || m.WParam.ToInt32() == 1)
             {
                 NativeHooks.SysColorOverride = NativeHooks.Override.Full;
                 base.WndProc(ref m);
