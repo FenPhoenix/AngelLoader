@@ -635,6 +635,7 @@ namespace AngelLoader.Forms
         public void InitThreadable()
         {
 #if RELEASE_BETA
+            //
             const string betaVer = "1";
             Text = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
 #else
