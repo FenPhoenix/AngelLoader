@@ -16,7 +16,7 @@ namespace AngelLoader
     internal static class FindFMs
     {
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-        internal static List<int> Find_Startup(SplashScreen splashScreen, string doneMessage)
+        internal static List<int> Find_Startup(SplashScreen splashScreen)
         {
             var ret = FindInternal(startup: true);
             splashScreen.SetCheckAtStoredMessageWidth();
