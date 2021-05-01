@@ -28,11 +28,12 @@ namespace AngelLoader.Forms.CustomControls
         public Color DarkModeForeColor =>
             Enabled
                 ? ReadOnly && !DarkModeReadOnlyColorsAreDefault
-                    ? DarkColors.DisabledText
+                    ? DarkColors.LightText
                     : DarkColors.LightText
                 : DarkColors.DisabledText;
 
         [PublicAPI]
+        [DefaultValue(false)]
         public bool DarkModeReadOnlyColorsAreDefault { get; set; }
 
         private bool _darkModeEnabled;
@@ -88,6 +89,8 @@ namespace AngelLoader.Forms.CustomControls
                     // Fortunately, multiline textboxes inexplicably don't need this to have their selection
                     // backcolor work 100%. So hooray, we win by sheer luck or whatever. Moving on.
                     if (!Multiline) Native.SetWindowTheme(Handle, "", "");
+
+                    FixBackColors();
                 }
                 else
                 {
@@ -136,6 +139,25 @@ namespace AngelLoader.Forms.CustomControls
             ForeColor = DarkModeForeColor;
         }
 
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+
+            if (!_darkModeEnabled) return;
+
+            FixBackColors();
+        }
+
+        private void FixBackColors()
+        {
+            if (!Enabled)
+            {
+                // Flip enabled off and on again to fix disabled text color
+                Native.SendMessage(Handle, Native.WM_ENABLE, (IntPtr)1, IntPtr.Zero);
+                Native.SendMessage(Handle, Native.WM_ENABLE, (IntPtr)0, IntPtr.Zero);
+            }
+        }
+
         protected override void WndProc(ref Message m)
         {
             if (!_darkModeEnabled)
@@ -148,7 +170,7 @@ namespace AngelLoader.Forms.CustomControls
             // that will make us ALWAYS have the proper selection back color, so just do it for all messages. Meh!
             // (except WM_ENABLE == false, because if we react to that then we get random wrong colors for various
             // textboxes when we're disabled)
-            if (m.Msg != Native.WM_ENABLE || m.WParam.ToInt32() == 1)
+            if (m.Msg != Native.WM_ENABLE || m.WParam.ToInt32() != 0)
             {
                 NativeHooks.SysColorOverride = NativeHooks.Override.Full;
                 base.WndProc(ref m);

@@ -56,7 +56,6 @@ namespace AngelLoader.Forms
             // T1VersionTextBox
             // 
             this.T1VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.T1VersionTextBox.DarkModeReadOnlyColorsAreDefault = true;
             this.T1VersionTextBox.Location = new System.Drawing.Point(205, 8);
             this.T1VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
             this.T1VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
@@ -77,7 +76,6 @@ namespace AngelLoader.Forms
             // T2VersionTextBox
             // 
             this.T2VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.T2VersionTextBox.DarkModeReadOnlyColorsAreDefault = true;
             this.T2VersionTextBox.Location = new System.Drawing.Point(205, 32);
             this.T2VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
             this.T2VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
@@ -98,7 +96,6 @@ namespace AngelLoader.Forms
             // T3VersionTextBox
             // 
             this.T3VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.T3VersionTextBox.DarkModeReadOnlyColorsAreDefault = true;
             this.T3VersionTextBox.Location = new System.Drawing.Point(205, 56);
             this.T3VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
             this.T3VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
@@ -119,7 +116,6 @@ namespace AngelLoader.Forms
             // SS2VersionTextBox
             // 
             this.SS2VersionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SS2VersionTextBox.DarkModeReadOnlyColorsAreDefault = true;
             this.SS2VersionTextBox.Location = new System.Drawing.Point(205, 80);
             this.SS2VersionTextBox.MaximumSize = new System.Drawing.Size(224, 32767);
             this.SS2VersionTextBox.MinimumSize = new System.Drawing.Size(80, 4);
