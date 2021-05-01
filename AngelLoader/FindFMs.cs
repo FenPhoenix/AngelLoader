@@ -19,7 +19,7 @@ namespace AngelLoader
         internal static List<int> Find_Startup(SplashScreen splashScreen, string doneMessage)
         {
             var ret = FindInternal(startup: true);
-            splashScreen.SetMessage(doneMessage);
+            splashScreen.SetCheckAtStoredMessageWidth();
             return ret;
         }
 

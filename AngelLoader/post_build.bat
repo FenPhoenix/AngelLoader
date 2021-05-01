@@ -36,6 +36,7 @@ rem exe.config is for .NET Framework
 "%system%xcopy" "%TargetDir%AngelLoader.exe.config" "%destDir%" /y
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z32" "%destDir%\7z32\" /y /i
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z64" "%destDir%\7z64\" /y /i
+"%system%xcopy" "%SolutionDir%bin_dependencies\*.ttf" "%destDir%" /y /i
 
 "%system%xcopy" "%TargetDir%*.dll" "%destDir%" /y
 

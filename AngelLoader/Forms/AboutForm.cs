@@ -123,6 +123,7 @@ namespace AngelLoader.Forms
                 sender == NetCore3SysIOCompLinkLabel ? "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression" :
                 sender == DarkUILinkLabel ? "https://github.com/RobinPerris/DarkUI" :
                 sender == EasyHookLinkLabel ? "https://github.com/EasyHook/EasyHook" :
+                sender == OpenSansLinkLabel ? "https://fonts.google.com/specimen/Open+Sans" :
                 "";
 
             AssertR(!link.IsEmpty(), nameof(link) + " is blank");

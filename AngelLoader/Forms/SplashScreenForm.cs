@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
+using System.IO;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Properties;
@@ -33,28 +36,30 @@ namespace AngelLoader.Forms
 
         private readonly Rectangle _messageRect = new Rectangle(1, 120, 646, 63);
 
-        #region Disposables
-
-        private readonly Native.GraphicsContext _graphicsContext;
-
-        private readonly Font _messageFont = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-        private readonly Bitmap _logoBitmap = new Icon(AL_Icon.AngelLoader, 48, 48).ToBitmap();
-
         // Paranoid to make absolutely sure we're not accessing any cross-thread-disallowed Control properties in
         // SetMessage() (thread safety for FM finder)
         private Color _foreColorCached;
         private Color _backColorCached;
 
-        // More of the above
-        internal bool VisibleCached;
+        private int _checkMessageWidth;
 
-        #endregion
+        #region Disposables
 
-        #endregion
+        private readonly Native.GraphicsContext _graphicsContext;
+
+        private readonly Font _messageFont;
+        private readonly Bitmap _logoBitmap = new Icon(AL_Icon.AngelLoader, 48, 48).ToBitmap();
 
         // Separate copy in here, so we don't cause an instantiation cascade for all the fields in DarkColors.
         // Special case to be AS FAST as possible.
         private readonly SolidBrush _fen_ControlBackgroundBrush = new SolidBrush(Color.FromArgb(48, 48, 48));
+
+        #endregion
+
+        #endregion
+
+        // Perf
+        internal bool VisibleCached;
 
         public SplashScreenForm()
         {
@@ -63,6 +68,20 @@ namespace AngelLoader.Forms
 #else
             InitializeComponentSlim();
 #endif
+
+            // For some reason getting a built-in font is godawful slow (270+ ms), so we literally just fricking
+            // bundle Open Sans and use that. It takes like 6ms. Sheesh.
+            try
+            {
+                using var Collection = new PrivateFontCollection();
+                Collection.AddFontFile(Path.Combine(Paths.Startup, "OpenSans-Regular.ttf"));
+                _messageFont = new Font(Collection.Families[0], 12.0f, FontStyle.Regular);
+            }
+            catch
+            {
+                // Godawful slow as stated, but if we don't find our font, then we have to fall back to something.
+                _messageFont = new Font(FontFamily.GenericSansSerif, 12.0f, FontStyle.Regular);
+            }
 
             Text = "AngelLoader " + Application.ProductVersion;
 
@@ -117,6 +136,47 @@ namespace AngelLoader.Forms
                 TextFormatFlags.WordBreak;
 
             TextRenderer.DrawText(_graphicsContext.G, message, _messageFont, _messageRect, _foreColorCached, _backColorCached, _messageTextFormatFlags);
+        }
+
+        public void SetCheckMessageWidth(string message)
+        {
+            const TextFormatFlags _messageTextFormatFlags =
+                TextFormatFlags.HorizontalCenter |
+                TextFormatFlags.Top |
+                TextFormatFlags.NoPrefix |
+                TextFormatFlags.NoClipping;
+
+            _checkMessageWidth = TextRenderer.MeasureText(message, _messageFont, Size.Empty, _messageTextFormatFlags).Width;
+        }
+
+        public void SetCheckAtStoredMessageWidth()
+        {
+            if (_checkMessageWidth > Width) return;
+            int checkPos = (Width / 2) + (_checkMessageWidth / 2);
+
+            using var checkMarkPen = new Pen(_foreColorCached, 1.6f);
+
+            SmoothingMode oldSmoothingMode = _graphicsContext.G.SmoothingMode;
+
+            _graphicsContext.G.SmoothingMode = SmoothingMode.HighQuality;
+
+            var outlineBoxRect = new Rectangle(checkPos, _messageRect.Y + 4, 12, 12);
+
+            // First half of checkmark
+            _graphicsContext.G.DrawLine(checkMarkPen,
+                outlineBoxRect.Left + 1.5f,
+                outlineBoxRect.Top + 6,
+                outlineBoxRect.Left + 4.5f,
+                outlineBoxRect.Top + 9);
+
+            // Second half of checkmark
+            _graphicsContext.G.DrawLine(checkMarkPen,
+                outlineBoxRect.Left + 4.5f,
+                outlineBoxRect.Top + 9,
+                outlineBoxRect.Left + 10.5f,
+                outlineBoxRect.Top + 3);
+
+            _graphicsContext.G.SmoothingMode = oldSmoothingMode;
         }
 
         protected override void OnVisibleChanged(EventArgs e)

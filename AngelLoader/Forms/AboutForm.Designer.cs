@@ -48,6 +48,7 @@
             this.BuildDateLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.DarkUILinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
             this.EasyHookLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+            this.OpenSansLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LogoTextPictureBox)).BeginInit();
             this.OKFlowLayoutPanel.SuspendLayout();
@@ -135,7 +136,7 @@
             // FFmpegLinkLabel
             // 
             this.FFmpegLinkLabel.AutoSize = true;
-            this.FFmpegLinkLabel.Location = new System.Drawing.Point(32, 421);
+            this.FFmpegLinkLabel.Location = new System.Drawing.Point(32, 420);
             this.FFmpegLinkLabel.Name = "FFmpegLinkLabel";
             this.FFmpegLinkLabel.Size = new System.Drawing.Size(39, 13);
             this.FFmpegLinkLabel.TabIndex = 8;
@@ -146,7 +147,7 @@
             // FFmpegDotNetLinkLabel
             // 
             this.FFmpegDotNetLinkLabel.AutoSize = true;
-            this.FFmpegDotNetLinkLabel.Location = new System.Drawing.Point(32, 437);
+            this.FFmpegDotNetLinkLabel.Location = new System.Drawing.Point(32, 436);
             this.FFmpegDotNetLinkLabel.Name = "FFmpegDotNetLinkLabel";
             this.FFmpegDotNetLinkLabel.Size = new System.Drawing.Size(70, 13);
             this.FFmpegDotNetLinkLabel.TabIndex = 9;
@@ -157,7 +158,7 @@
             // SimpleHelpersDotNetLinkLabel
             // 
             this.SimpleHelpersDotNetLinkLabel.AutoSize = true;
-            this.SimpleHelpersDotNetLinkLabel.Location = new System.Drawing.Point(32, 453);
+            this.SimpleHelpersDotNetLinkLabel.Location = new System.Drawing.Point(32, 452);
             this.SimpleHelpersDotNetLinkLabel.Name = "SimpleHelpersDotNetLinkLabel";
             this.SimpleHelpersDotNetLinkLabel.Size = new System.Drawing.Size(94, 13);
             this.SimpleHelpersDotNetLinkLabel.TabIndex = 10;
@@ -260,6 +261,17 @@
             this.EasyHookLinkLabel.Text = "EasyHook";
             this.EasyHookLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
             // 
+            // OpenSansLinkLabel
+            // 
+            this.OpenSansLinkLabel.AutoSize = true;
+            this.OpenSansLinkLabel.Location = new System.Drawing.Point(232, 420);
+            this.OpenSansLinkLabel.Name = "OpenSansLinkLabel";
+            this.OpenSansLinkLabel.Size = new System.Drawing.Size(60, 13);
+            this.OpenSansLinkLabel.TabIndex = 15;
+            this.OpenSansLinkLabel.TabStop = true;
+            this.OpenSansLinkLabel.Text = "Open Sans";
+            this.OpenSansLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
+            // 
             // AboutForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -279,6 +291,7 @@
             this.Controls.Add(this.FFmpegDotNetLinkLabel);
             this.Controls.Add(this.FFmpegLinkLabel);
             this.Controls.Add(this.SevenZipSharpLinkLabel);
+            this.Controls.Add(this.OpenSansLinkLabel);
             this.Controls.Add(this.EasyHookLinkLabel);
             this.Controls.Add(this.DarkUILinkLabel);
             this.Controls.Add(this.SevenZipLinkLabel);
@@ -322,5 +335,6 @@
         private AngelLoader.Forms.CustomControls.DarkLabel BuildDateLabel;
         private AngelLoader.Forms.CustomControls.DarkLinkLabel DarkUILinkLabel;
         private CustomControls.DarkLinkLabel EasyHookLinkLabel;
+        private CustomControls.DarkLinkLabel OpenSansLinkLabel;
     }
 }

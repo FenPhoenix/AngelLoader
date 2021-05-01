@@ -179,6 +179,8 @@ namespace AngelLoader
             {
                 splashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
                                         LText.SplashScreen.LoadingMainApp);
+                // Set beforehand to avoid the cross-thread font access problem
+                splashScreen.SetCheckMessageWidth(LText.SplashScreen.SearchingForNewFMs);
                 // IMPORTANT: Begin no-splash-screen-call zone
                 // The FM finder will update the splash screen from another thread (accessing only the graphics
                 // context, so no cross-thread Control access exceptions), so any calls in here are potential

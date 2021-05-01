@@ -33,6 +33,7 @@ namespace AngelLoader.Forms
             BuildDateLabel = new DarkLabel();
             DarkUILinkLabel = new DarkLinkLabel();
             EasyHookLinkLabel = new DarkLinkLabel();
+            OpenSansLinkLabel = new DarkLinkLabel();
             ((System.ComponentModel.ISupportInitialize)(LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(LogoTextPictureBox)).BeginInit();
             OKFlowLayoutPanel.SuspendLayout();
@@ -105,7 +106,7 @@ namespace AngelLoader.Forms
             // FFmpegLinkLabel
             // 
             FFmpegLinkLabel.AutoSize = true;
-            FFmpegLinkLabel.Location = new Point(32, 421);
+            FFmpegLinkLabel.Location = new Point(32, 420);
             FFmpegLinkLabel.TabIndex = 8;
             FFmpegLinkLabel.TabStop = true;
             FFmpegLinkLabel.Text = "ffmpeg";
@@ -114,7 +115,7 @@ namespace AngelLoader.Forms
             // FFmpegDotNetLinkLabel
             // 
             FFmpegDotNetLinkLabel.AutoSize = true;
-            FFmpegDotNetLinkLabel.Location = new Point(32, 437);
+            FFmpegDotNetLinkLabel.Location = new Point(32, 436);
             FFmpegDotNetLinkLabel.TabIndex = 9;
             FFmpegDotNetLinkLabel.TabStop = true;
             FFmpegDotNetLinkLabel.Text = "FFmpeg.NET";
@@ -123,7 +124,7 @@ namespace AngelLoader.Forms
             // SimpleHelpersDotNetLinkLabel
             // 
             SimpleHelpersDotNetLinkLabel.AutoSize = true;
-            SimpleHelpersDotNetLinkLabel.Location = new Point(32, 453);
+            SimpleHelpersDotNetLinkLabel.Location = new Point(32, 452);
             SimpleHelpersDotNetLinkLabel.TabIndex = 10;
             SimpleHelpersDotNetLinkLabel.TabStop = true;
             SimpleHelpersDotNetLinkLabel.Text = "SimpleHelpers.Net";
@@ -205,6 +206,15 @@ namespace AngelLoader.Forms
             EasyHookLinkLabel.Text = "EasyHook";
             EasyHookLinkLabel.LinkClicked += LinkLabels_LinkClicked;
             // 
+            // OpenSansLinkLabel
+            // 
+            OpenSansLinkLabel.AutoSize = true;
+            OpenSansLinkLabel.Location = new Point(232, 420);
+            OpenSansLinkLabel.TabIndex = 15;
+            OpenSansLinkLabel.TabStop = true;
+            OpenSansLinkLabel.Text = "Open Sans";
+            OpenSansLinkLabel.LinkClicked += LinkLabels_LinkClicked;
+            // 
             // AboutForm
             // 
             AutoScaleDimensions = new SizeF(6F, 13F);
@@ -224,6 +234,7 @@ namespace AngelLoader.Forms
             Controls.Add(FFmpegDotNetLinkLabel);
             Controls.Add(FFmpegLinkLabel);
             Controls.Add(SevenZipSharpLinkLabel);
+            Controls.Add(OpenSansLinkLabel);
             Controls.Add(EasyHookLinkLabel);
             Controls.Add(DarkUILinkLabel);
             Controls.Add(SevenZipLinkLabel);
