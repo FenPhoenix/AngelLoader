@@ -31,7 +31,6 @@ namespace AngelLoader.Forms
         #region Private fields
 
         private VisualTheme _theme;
-        private bool _themeSet;
         private bool _closingAllowed;
 
         private readonly Rectangle _messageRect = new Rectangle(1, 120, 646, 63);
@@ -90,8 +89,6 @@ namespace AngelLoader.Forms
 
         public void Show(VisualTheme theme)
         {
-            if (Visible || _themeSet) return;
-
             _theme = theme;
 
             // Ultra slim, because a splash screen should come up as quick as possible
@@ -116,8 +113,6 @@ namespace AngelLoader.Forms
                     ? Color.FromArgb(81, 81, 81) // LightBorder
                     : SystemColors.ControlDark);
             _graphicsContext.G.DrawRectangle(pen, 0, 0, 647, 183);
-
-            _themeSet = true;
         }
 
         public void SetMessage(string message)
