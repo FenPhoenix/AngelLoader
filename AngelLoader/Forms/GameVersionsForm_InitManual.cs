@@ -31,6 +31,7 @@ namespace AngelLoader.Forms
             // T1VersionTextBox
             // 
             T1VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            T1VersionTextBox.DarkModeReadOnlyColorsAreDefault = true;
             T1VersionTextBox.Location = new Point(205, 8);
             T1VersionTextBox.MaximumSize = new Size(224, 32767);
             T1VersionTextBox.MinimumSize = new Size(80, 4);
@@ -47,6 +48,7 @@ namespace AngelLoader.Forms
             // T2VersionTextBox
             // 
             T2VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            T2VersionTextBox.DarkModeReadOnlyColorsAreDefault = true;
             T2VersionTextBox.Location = new Point(205, 32);
             T2VersionTextBox.MaximumSize = new Size(224, 32767);
             T2VersionTextBox.MinimumSize = new Size(80, 4);
@@ -63,6 +65,7 @@ namespace AngelLoader.Forms
             // T3VersionTextBox
             // 
             T3VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            T3VersionTextBox.DarkModeReadOnlyColorsAreDefault = true;
             T3VersionTextBox.Location = new Point(205, 56);
             T3VersionTextBox.MaximumSize = new Size(224, 32767);
             T3VersionTextBox.MinimumSize = new Size(80, 4);
@@ -79,6 +82,7 @@ namespace AngelLoader.Forms
             // SS2VersionTextBox
             // 
             SS2VersionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            SS2VersionTextBox.DarkModeReadOnlyColorsAreDefault = true;
             SS2VersionTextBox.Location = new Point(205, 80);
             SS2VersionTextBox.MaximumSize = new Size(224, 32767);
             SS2VersionTextBox.MinimumSize = new Size(80, 4);
