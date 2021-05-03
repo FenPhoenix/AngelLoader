@@ -636,7 +636,7 @@ namespace AngelLoader.Forms
         {
 #if RELEASE_BETA
             //
-            const string betaVer = "3";
+            const string betaVer = "4";
             Text = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
 #else
             Text = "AngelLoader " + Application.ProductVersion;
