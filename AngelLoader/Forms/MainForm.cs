@@ -428,6 +428,13 @@ namespace AngelLoader.Forms
         // method(s) below
         public MainForm()
         {
+            /*
+            Font loading speed:
+            We can't try to be clever and set the form's font to a loaded-from-disk one in order to make it never
+            load the built-in default one (super slow if you have a ton of fonts installed like I do), because
+            the Font property setter checks the default font anyway, meaning it loads the damn thing anyway so
+            it's pointless.
+            */
 #if DEBUG
             // The debug path - the standard designer-generated method with tons of bloat and redundant value
             // setting, immediate initialization, etc.
@@ -635,7 +642,6 @@ namespace AngelLoader.Forms
         public void InitThreadable()
         {
 #if RELEASE_BETA
-            //
             const string betaVer = "4";
             Text = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
 #else
