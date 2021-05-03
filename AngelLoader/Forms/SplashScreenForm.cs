@@ -46,6 +46,7 @@ namespace AngelLoader.Forms
 
         private readonly Native.GraphicsContext _graphicsContext;
 
+        private readonly PrivateFontCollection? _collection;
         private readonly Font _messageFont;
         private readonly Bitmap _logoBitmap = new Icon(AL_Icon.AngelLoader, 48, 48).ToBitmap();
 
@@ -72,9 +73,9 @@ namespace AngelLoader.Forms
             // bundle Open Sans and use that. It takes like 6ms. Sheesh.
             try
             {
-                using var Collection = new PrivateFontCollection();
-                Collection.AddFontFile(Path.Combine(Paths.Startup, "OpenSans-Regular.ttf"));
-                _messageFont = new Font(Collection.Families[0], 12.0f, FontStyle.Regular);
+                _collection = new PrivateFontCollection();
+                _collection.AddFontFile(Path.Combine(Paths.Startup, "OpenSans-Regular.ttf"));
+                _messageFont = new Font(_collection.Families[0], 12.0f, FontStyle.Regular);
             }
             catch
             {
@@ -209,6 +210,7 @@ namespace AngelLoader.Forms
             {
                 components?.Dispose();
                 _messageFont.Dispose();
+                _collection?.Dispose();
                 _logoBitmap.Dispose();
                 _graphicsContext.Dispose();
                 _fen_ControlBackgroundBrush.Dispose();
