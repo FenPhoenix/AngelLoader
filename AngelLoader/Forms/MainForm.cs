@@ -30,6 +30,9 @@
   we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
  IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
+ TODO: @vNext: Make dates/rating filter popups' OK & Cancel buttons be wider or allow them to resize wider
+ Right now it looks a little tight and translations might be squeezed potentially?
+
  @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */
 
