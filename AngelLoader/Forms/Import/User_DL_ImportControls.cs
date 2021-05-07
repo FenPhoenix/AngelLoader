@@ -13,7 +13,7 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitComponentManual();
+            InitializeComponentSlim();
 #endif
             DarkLoaderIniTextBox.Text = AutodetectDarkLoaderIni();
         }
