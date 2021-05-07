@@ -27,6 +27,7 @@ namespace FenGen
             internal Point? Location;
             internal bool HasName;
             internal bool HasText;
+            internal bool ExplicitAppIcon;
         }
 
         private sealed class NodeCustom
@@ -321,6 +322,19 @@ namespace FenGen
                         }
                         break;
                     }
+                    case "Icon":
+                    {
+                        if (aes.Right is MemberAccessExpressionSyntax maes)
+                        {
+                            string val = maes.ToString();
+                            if (val.TrimEnd(';').EndsWith(".Resources.AngelLoader"))
+                            {
+                                CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+                                props.ExplicitAppIcon = true;
+                            }
+                        }
+                        break;
+                    }
                     case "Location":
                     {
                         if (aes.Right is ObjectCreationExpressionSyntax oce &&
@@ -451,6 +465,10 @@ namespace FenGen
                 )
                 {
                     destNode.IgnoreExceptForComments = true;
+                }
+                else if (destNode.PropName == "Icon" && props.ExplicitAppIcon && props.IsFormProperty)
+                {
+                    destNode.OverrideLine = "            this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;";
                 }
                 else if (destNode.PropName == "Location" &&
                          (

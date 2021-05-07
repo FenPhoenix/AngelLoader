@@ -51,8 +51,6 @@ namespace AngelLoader.Forms
             AssertR(!AnyLinkLabelHasNoText(this), "At least one link label has no text");
 #endif
 
-            Icon = AL_Icon.AngelLoader;
-
             // Just grab the largest frame (sub-icon) from the AL icon resource we have already, that way we don't
             // add any extra size to our executable.
             LogoPictureBox.Image = new Icon(AL_Icon.AngelLoader, 48, 48).ToBitmap();

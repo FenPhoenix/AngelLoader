@@ -119,7 +119,7 @@
             this.Controls.Add(this.T1VersionTextBox);
             this.Controls.Add(this.T1VersionLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
+            this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

@@ -237,6 +237,7 @@
             this.Controls.Add(this.GitHubLinkLabel);
             this.Controls.Add(this.LogoPictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.ShowInTaskbar = false;

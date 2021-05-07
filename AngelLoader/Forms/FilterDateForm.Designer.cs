@@ -170,7 +170,6 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.Cancel_Button);
             this.Controls.Add(this.OKButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FilterDateForm";
