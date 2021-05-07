@@ -751,6 +751,9 @@ namespace FMScanner
         }
 
         // Scopes on the stack need not be mutable, and making them structs is faster/smaller/better cache locality/less GC/whatever
+        // TODO(RtfToTextConverter Scope vs. CurrentScope):
+        // This used to be a struct. I don't remember changing it to a class but I guess it is now...?
+        // Since it's a class just like CurrentScope, shouldn't we just combine them again?
         private sealed class Scope
         {
             internal RtfDestinationState RtfDestinationState;
