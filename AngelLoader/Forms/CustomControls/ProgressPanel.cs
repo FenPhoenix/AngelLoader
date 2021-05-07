@@ -68,7 +68,7 @@ namespace AngelLoader.Forms.CustomControls
 #if DEBUG
             InitializeComponent();
 #else
-            InitComponentManual();
+            InitializeComponentSlim();
 #endif
         }
 

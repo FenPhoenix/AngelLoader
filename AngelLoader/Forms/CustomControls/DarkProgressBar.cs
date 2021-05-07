@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.WinAPI;
 using JetBrains.Annotations;
@@ -8,7 +9,9 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class DarkProgressBar : ProgressBar, IDarkable
     {
         private bool _darkModeEnabled;
-
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
