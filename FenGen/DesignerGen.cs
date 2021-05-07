@@ -17,7 +17,7 @@ namespace FenGen
         private sealed class CProps
         {
             internal bool IsFormProperty;
-            internal bool HasDefaultAnchor;
+            internal bool? HasDefaultAnchor;
             internal bool? AutoSize;
             internal bool? Checked;
             internal CheckState? CheckState;
@@ -309,12 +309,16 @@ namespace FenGen
                                 x.ToString().StartsWith("System.Windows.Forms.AnchorStyles."))
                             .ToArray();
 
+                        CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                         if (ors.Length == 2
                             && Array.Find(ors, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Top") != null
                             && Array.Find(ors, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Left") != null)
                         {
-                            CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                             props.HasDefaultAnchor = true;
+                        }
+                        else
+                        {
+                            props.HasDefaultAnchor = false;
                         }
                         break;
                     }
@@ -380,7 +384,7 @@ namespace FenGen
                         i--;
                     }
                 }
-                else if (destNode.PropName == "Anchor" && props.HasDefaultAnchor)
+                else if (destNode.PropName == "Anchor" && props.HasDefaultAnchor == true)
                 {
                     destNodes.RemoveAt(i);
                     i--;
@@ -393,12 +397,17 @@ namespace FenGen
                     i--;
                 }
                 else if (destNode.PropName == "Size" &&
-                         ((props.Size != null && props.MinimumSize != null && props.Size == props.MinimumSize)
-                         // Some controls (eg. CheckBox) need an explicit size even with AutoSize set, otherwise
-                         // their location is wrong(?!)
-                         //(props.Size != null && props.AutoSize == true) ||
-                         //props.AutoSize == true)
-                         ))
+                         // If anchor is anything other than top-left, we need to keep the size, for reasons I'm
+                         // unable to think how to explain well at the moment but you can figure it out, it's like
+                         // when we go to position it, it needs to know its size so it can properly position itself
+                         // relative to its anchor... you know.
+                         props.HasDefaultAnchor != false &&
+                         (
+                             (props.Size != null && props.MinimumSize != null && props.Size == props.MinimumSize) ||
+                             (props.Size != null && props.AutoSize == true) ||
+                             props.AutoSize == true
+                         )
+                )
                 {
                     destNodes.RemoveAt(i);
                     i--;

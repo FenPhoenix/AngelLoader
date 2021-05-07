@@ -87,7 +87,6 @@
             // 
             this.MessageLabel.AutoSize = true;
             this.MessageLabel.Location = new System.Drawing.Point(52, 15);
-            this.MessageLabel.Size = new System.Drawing.Size(55, 13);
             this.MessageLabel.TabIndex = 0;
             // 
             // DarkTaskDialog
