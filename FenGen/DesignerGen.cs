@@ -356,18 +356,15 @@ namespace FenGen
                     case "Name":
                     case "Text":
                     {
-                        if (aes.Right is LiteralExpressionSyntax)
+                        CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+                        switch (curNode.PropName)
                         {
-                            CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
-                            switch (curNode.PropName)
-                            {
-                                case "Name":
-                                    props.HasName = true;
-                                    break;
-                                case "Text":
-                                    props.HasText = true;
-                                    break;
-                            }
+                            case "Name":
+                                props.HasName = true;
+                                break;
+                            case "Text":
+                                props.HasText = true;
+                                break;
                         }
                         break;
                     }
