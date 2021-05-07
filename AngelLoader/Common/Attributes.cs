@@ -168,5 +168,9 @@ namespace AngelLoader
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field)]
         internal sealed class FenGenDoNotRemoveTextAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field)]
+        internal sealed class FenGenForceRemoveSizeAttribute : Attribute { }
     }
 }

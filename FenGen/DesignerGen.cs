@@ -173,9 +173,14 @@ namespace FenGen
 
                     if (typeShort != "IContainer") controlTypes[name] = typeShort;
 
+                    // We should allow multiple attributes...
                     if (HasAttribute(fds, GenAttributes.FenGenDoNotRemoveTextAttribute))
                     {
                         controlAttributes[name] = GenAttributes.FenGenDoNotRemoveTextAttribute;
+                    }
+                    else if (HasAttribute(fds, GenAttributes.FenGenForceRemoveSizeAttribute))
+                    {
+                        controlAttributes[name] = GenAttributes.FenGenForceRemoveSizeAttribute;
                     }
                 }
             }
@@ -481,15 +486,20 @@ namespace FenGen
                     destNode.IgnoreExceptForComments = true;
                 }
                 else if (destNode.PropName == "Size" &&
-                         // If anchor is anything other than top-left, we need to keep the size, for reasons I'm
-                         // unable to think how to explain well at the moment but you can figure it out, it's like
-                         // when we go to position it, it needs to know its size so it can properly position itself
-                         // relative to its anchor... you know.
-                         (props.HasDefaultAnchor != false) &&
                          (
-                             (props.Size != null && props.MinimumSize != null && props.Size == props.MinimumSize) ||
-                             (props.Size != null && props.AutoSize == true) ||
-                             props.AutoSize == true
+                             (controlAttributes.TryGetValue(destNode.ControlName, out attr) &&
+                              attr == GenAttributes.FenGenForceRemoveSizeAttribute) ||
+                             // If anchor is anything other than top-left, we need to keep the size, for reasons I'm
+                             // unable to think how to explain well at the moment but you can figure it out, it's like
+                             // when we go to position it, it needs to know its size so it can properly position itself
+                             // relative to its anchor... you know.
+                             ((props.HasDefaultAnchor != false) &&
+                             (
+                                 (props.Size != null && props.MinimumSize != null &&
+                                  props.Size == props.MinimumSize) ||
+                                 (props.Size != null && props.AutoSize == true) ||
+                                 props.AutoSize == true
+                             ))
                          )
                 )
                 {
