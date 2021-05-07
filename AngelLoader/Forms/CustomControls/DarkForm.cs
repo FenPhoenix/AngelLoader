@@ -12,6 +12,9 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
+
+            if (!Misc.Config.DarkMode) return;
+
             _loading = false;
             Refresh();
             // Explicitly refresh non-client area - otherwise on Win7 the non-client area doesn't refresh and we
