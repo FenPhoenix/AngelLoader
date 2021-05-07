@@ -104,7 +104,7 @@
             this.MinimizeBox = false;
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = " ";
             ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).EndInit();
             this.BottomFLP.ResumeLayout(false);
