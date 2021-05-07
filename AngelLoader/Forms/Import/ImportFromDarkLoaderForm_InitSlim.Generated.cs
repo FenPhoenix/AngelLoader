@@ -1,35 +1,11 @@
-﻿#define FenGen_GenSlimDesignerFromThis
-
-namespace AngelLoader.Forms
+﻿namespace AngelLoader.Forms
 {
     sealed partial class ImportFromDarkLoaderForm
     {
         /// <summary>
-        /// Required designer variable.
+        /// Custom generated component initializer with cruft removed.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        #region Windows Form Designer generated code
-
-#if DEBUG
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        private void InitializeComponentSlim()
         {
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -52,13 +28,9 @@ namespace AngelLoader.Forms
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(382, 8);
             this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
-            this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 1;
-            this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
             // Cancel_Button
@@ -67,13 +39,9 @@ namespace AngelLoader.Forms
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(463, 8);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
-            this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 0;
-            this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
             // OKCancelFlowLayoutPanel
@@ -83,7 +51,6 @@ namespace AngelLoader.Forms
             this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
             this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(0, 245);
-            this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
             this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(547, 40);
             this.OKCancelFlowLayoutPanel.TabIndex = 9;
             // 
@@ -91,84 +58,56 @@ namespace AngelLoader.Forms
             // 
             this.ImportFinishedOnCheckBox.AutoSize = true;
             this.ImportFinishedOnCheckBox.Checked = true;
-            this.ImportFinishedOnCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ImportFinishedOnCheckBox.Location = new System.Drawing.Point(32, 200);
-            this.ImportFinishedOnCheckBox.Name = "ImportFinishedOnCheckBox";
-            this.ImportFinishedOnCheckBox.Size = new System.Drawing.Size(80, 17);
             this.ImportFinishedOnCheckBox.TabIndex = 20;
-            this.ImportFinishedOnCheckBox.Text = "Finished on";
             this.ImportFinishedOnCheckBox.UseVisualStyleBackColor = true;
             // 
             // ImportLastPlayedCheckBox
             // 
             this.ImportLastPlayedCheckBox.AutoSize = true;
             this.ImportLastPlayedCheckBox.Checked = true;
-            this.ImportLastPlayedCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ImportLastPlayedCheckBox.Location = new System.Drawing.Point(32, 184);
-            this.ImportLastPlayedCheckBox.Name = "ImportLastPlayedCheckBox";
-            this.ImportLastPlayedCheckBox.Size = new System.Drawing.Size(80, 17);
             this.ImportLastPlayedCheckBox.TabIndex = 21;
-            this.ImportLastPlayedCheckBox.Text = "Last played";
             this.ImportLastPlayedCheckBox.UseVisualStyleBackColor = true;
             // 
             // ImportReleaseDateCheckBox
             // 
             this.ImportReleaseDateCheckBox.AutoSize = true;
             this.ImportReleaseDateCheckBox.Checked = true;
-            this.ImportReleaseDateCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ImportReleaseDateCheckBox.Location = new System.Drawing.Point(32, 168);
-            this.ImportReleaseDateCheckBox.Name = "ImportReleaseDateCheckBox";
-            this.ImportReleaseDateCheckBox.Size = new System.Drawing.Size(89, 17);
             this.ImportReleaseDateCheckBox.TabIndex = 22;
-            this.ImportReleaseDateCheckBox.Text = "Release date";
             this.ImportReleaseDateCheckBox.UseVisualStyleBackColor = true;
             // 
             // ImportCommentCheckBox
             // 
             this.ImportCommentCheckBox.AutoSize = true;
             this.ImportCommentCheckBox.Checked = true;
-            this.ImportCommentCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ImportCommentCheckBox.Location = new System.Drawing.Point(32, 152);
-            this.ImportCommentCheckBox.Name = "ImportCommentCheckBox";
-            this.ImportCommentCheckBox.Size = new System.Drawing.Size(70, 17);
             this.ImportCommentCheckBox.TabIndex = 23;
-            this.ImportCommentCheckBox.Text = "Comment";
             this.ImportCommentCheckBox.UseVisualStyleBackColor = true;
             // 
             // ImportSizeCheckBox
             // 
             this.ImportSizeCheckBox.AutoSize = true;
             this.ImportSizeCheckBox.Checked = true;
-            this.ImportSizeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ImportSizeCheckBox.Location = new System.Drawing.Point(32, 136);
-            this.ImportSizeCheckBox.Name = "ImportSizeCheckBox";
-            this.ImportSizeCheckBox.Size = new System.Drawing.Size(46, 17);
             this.ImportSizeCheckBox.TabIndex = 24;
-            this.ImportSizeCheckBox.Text = "Size";
             this.ImportSizeCheckBox.UseVisualStyleBackColor = true;
             // 
             // ImportTitleCheckBox
             // 
             this.ImportTitleCheckBox.AutoSize = true;
             this.ImportTitleCheckBox.Checked = true;
-            this.ImportTitleCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ImportTitleCheckBox.Location = new System.Drawing.Point(32, 120);
-            this.ImportTitleCheckBox.Name = "ImportTitleCheckBox";
-            this.ImportTitleCheckBox.Size = new System.Drawing.Size(46, 17);
             this.ImportTitleCheckBox.TabIndex = 25;
-            this.ImportTitleCheckBox.Text = "Title";
             this.ImportTitleCheckBox.UseVisualStyleBackColor = true;
             // 
             // ImportFMDataCheckBox
             // 
             this.ImportFMDataCheckBox.AutoSize = true;
             this.ImportFMDataCheckBox.Checked = true;
-            this.ImportFMDataCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ImportFMDataCheckBox.Location = new System.Drawing.Point(16, 96);
-            this.ImportFMDataCheckBox.Name = "ImportFMDataCheckBox";
-            this.ImportFMDataCheckBox.Size = new System.Drawing.Size(97, 17);
             this.ImportFMDataCheckBox.TabIndex = 18;
-            this.ImportFMDataCheckBox.Text = "Import FM data";
             this.ImportFMDataCheckBox.UseVisualStyleBackColor = true;
             this.ImportFMDataCheckBox.CheckedChanged += new System.EventHandler(this.ImportFMDataCheckBox_CheckedChanged);
             // 
@@ -176,18 +115,13 @@ namespace AngelLoader.Forms
             // 
             this.ImportSavesCheckBox.AutoSize = true;
             this.ImportSavesCheckBox.Checked = true;
-            this.ImportSavesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ImportSavesCheckBox.Location = new System.Drawing.Point(16, 224);
-            this.ImportSavesCheckBox.Name = "ImportSavesCheckBox";
-            this.ImportSavesCheckBox.Size = new System.Drawing.Size(86, 17);
             this.ImportSavesCheckBox.TabIndex = 19;
-            this.ImportSavesCheckBox.Text = "Import saves";
             this.ImportSavesCheckBox.UseVisualStyleBackColor = true;
             // 
             // ImportControls
             // 
             this.ImportControls.Location = new System.Drawing.Point(8, 8);
-            this.ImportControls.Name = "ImportControls";
             this.ImportControls.Size = new System.Drawing.Size(545, 88);
             this.ImportControls.TabIndex = 10;
             // 
@@ -209,36 +143,19 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.ImportControls);
             this.Controls.Add(this.OKCancelFlowLayoutPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
+            this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ImportFromDarkLoaderForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Import from DarkLoader";
+            // Hack to prevent slow first render on some forms if Text is blank
+            this.Text = " ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromDarkLoaderForm_FormClosing);
             this.Load += new System.EventHandler(this.ImportFromDarkLoaderForm_Load);
             this.OKCancelFlowLayoutPanel.ResumeLayout(false);
             this.OKCancelFlowLayoutPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
-#endif
-
-        #endregion
-
-        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
-        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
-        private System.Windows.Forms.FlowLayoutPanel OKCancelFlowLayoutPanel;
-        private User_DL_ImportControls ImportControls;
-        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportFinishedOnCheckBox;
-        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportLastPlayedCheckBox;
-        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportReleaseDateCheckBox;
-        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportCommentCheckBox;
-        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportSizeCheckBox;
-        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportTitleCheckBox;
-        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportFMDataCheckBox;
-        private AngelLoader.Forms.CustomControls.DarkCheckBox ImportSavesCheckBox;
     }
 }
