@@ -106,6 +106,12 @@ namespace FenGen
         [PublicAPI]
         internal static bool GetAttributeName(string name, string match)
         {
+            int index;
+            while ((index = match.IndexOf('.')) > -1)
+            {
+                match = match.Substring(index + 1);
+            }
+
             // We have to handle this quirk where you can leave off the "Attribute" suffix - Roslyn won't handle
             // it for us
             const string attr = "Attribute";

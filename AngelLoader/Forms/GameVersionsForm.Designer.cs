@@ -1,7 +1,5 @@
 ﻿#define FenGen_GenSlimDesignerFromThis
 
-using AngelLoader.Properties;
-
 namespace AngelLoader.Forms
 {
     public sealed partial class GameVersionsForm

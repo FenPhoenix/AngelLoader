@@ -64,6 +64,7 @@ namespace FenGen
         private static void GenerateDesignerFile(string designerFile)
         {
             var controlTypes = new Dictionary<string, string>();
+            var controlAttributes = new Dictionary<string, string>();
             var controlsInFlowLayoutPanels = new HashSet<string>();
             var controlProperties = new Dictionary<string, CProps>();
             var destNodes = new List<NodeCustom>();
@@ -170,6 +171,11 @@ namespace FenGen
                     string typeShort = lastIndexOfDot > -1 ? type.Substring(lastIndexOfDot + 1) : type;
 
                     if (typeShort != "IContainer") controlTypes[name] = typeShort;
+
+                    if (HasAttribute(fds, GenAttributes.FenGenDoNotRemoveTextAttribute))
+                    {
+                        controlAttributes[name] = GenAttributes.FenGenDoNotRemoveTextAttribute;
+                    }
                 }
             }
 
@@ -423,7 +429,9 @@ namespace FenGen
                 {
                     destNode.IgnoreExceptForComments = true;
                 }
-                else if (destNode.PropName == "Text" && props.HasText)
+                else if (destNode.PropName == "Text" && props.HasText &&
+                         (!controlAttributes.TryGetValue(destNode.ControlName, out string attr) ||
+                         attr != GenAttributes.FenGenDoNotRemoveTextAttribute))
                 {
                     if (props.IsFormProperty)
                     {

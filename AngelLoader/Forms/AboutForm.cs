@@ -22,7 +22,33 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitComponentManual();
+            InitializeComponentSlim();
+#endif
+
+#if !ReleasePublic && !NoAsserts
+            static bool AnyLinkLabelHasNoText(Control control, int stackCounter = 0)
+            {
+                try
+                {
+                    stackCounter++;
+                    if (stackCounter > 100) return false;
+
+                    if (control is LinkLabel && control.Text.IsEmpty()) return true;
+
+                    for (int i = 0; i < control.Controls.Count; i++)
+                    {
+                        if (AnyLinkLabelHasNoText(control.Controls[i], stackCounter)) return true;
+                    }
+
+                    return false;
+                }
+                finally
+                {
+                    stackCounter--;
+                }
+            }
+
+            AssertR(!AnyLinkLabelHasNoText(this), "At least one link label has no text");
 #endif
 
             Icon = AL_Icon.AngelLoader;

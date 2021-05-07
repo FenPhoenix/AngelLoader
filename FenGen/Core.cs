@@ -84,6 +84,8 @@ namespace FenGen
         internal const string FenGenExcludeResx = nameof(FenGenExcludeResx);
 
         internal const string FenGenBuildDateDestClass = nameof(FenGenBuildDateDestClass);
+
+        internal const string FenGenDoNotRemoveTextAttribute = nameof(FenGenDoNotRemoveTextAttribute);
     }
 
     internal static class Core
