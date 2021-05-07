@@ -58,9 +58,9 @@ namespace FenGen
         /*
         TODO(FenGen/DesignerGen):
         -Somehow deal with icons/images wanting to load from Resources but we want them from Images etc.
+         (we now do this for AngelLoader app icon only as a hack, but we should generalize it)
         -Have some way to manually specify things, like specify lines not to overwrite because they're manually
          set up.
-        -If a control is being added to a FlowLayoutPanel, remove Location.
         */
         private static void GenerateDesignerFile(string designerFile)
         {
@@ -162,6 +162,8 @@ namespace FenGen
                 return;
             }
 
+            #region Store control names, types, and attributes from field declarations
+
             foreach (SyntaxNode node in formClass.ChildNodes())
             {
                 if (node is FieldDeclarationSyntax fds)
@@ -184,6 +186,8 @@ namespace FenGen
                     }
                 }
             }
+
+            #endregion
 
             #region Find start line index of property-set section
 
@@ -229,10 +233,12 @@ namespace FenGen
                     continue;
                 }
 
-                var aes = (AssignmentExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(x => x is AssignmentExpressionSyntax);
+                #region Determine if a control is being added to a FlowLayoutPanel
+
+                // If it is, we can remove an additional couple of layout properties (because it will be auto-
+                // laid-out inside the FlowLayoutPanel).
 
                 var ies = (InvocationExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(x => x is InvocationExpressionSyntax);
-
                 if (ies != null)
                 {
                     foreach (SyntaxNode mesN in ies.DescendantNodes())
@@ -259,6 +265,9 @@ namespace FenGen
                     }
                 }
 
+                #endregion
+
+                var aes = (AssignmentExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(x => x is AssignmentExpressionSyntax);
                 if (aes?.Left is not MemberAccessExpressionSyntax left) continue;
 
                 curNode.ControlName = left.DescendantNodes().First(x => x is IdentifierNameSyntax).ToString();
