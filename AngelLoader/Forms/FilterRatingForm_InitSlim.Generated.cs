@@ -1,34 +1,11 @@
-﻿#define FenGen_GenSlimDesignerFromThis
-
-namespace AngelLoader.Forms
+﻿namespace AngelLoader.Forms
 {
     sealed partial class FilterRatingForm
     {
         /// <summary>
-        /// Required designer variable.
+        /// Custom generated component initializer with cruft removed.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-        #region Windows Form Designer generated code
-
-#if DEBUG
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        private void InitializeComponentSlim()
         {
             this.FromLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ToLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -43,26 +20,19 @@ namespace AngelLoader.Forms
             // 
             this.FromLabel.AutoSize = true;
             this.FromLabel.Location = new System.Drawing.Point(8, 8);
-            this.FromLabel.Name = "FromLabel";
-            this.FromLabel.Size = new System.Drawing.Size(33, 13);
             this.FromLabel.TabIndex = 1;
-            this.FromLabel.Text = "From:";
             // 
             // ToLabel
             // 
             this.ToLabel.AutoSize = true;
             this.ToLabel.Location = new System.Drawing.Point(8, 48);
-            this.ToLabel.Name = "ToLabel";
-            this.ToLabel.Size = new System.Drawing.Size(23, 13);
             this.ToLabel.TabIndex = 3;
-            this.ToLabel.Text = "To:";
             // 
             // FromComboBox
             // 
             this.FromComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.FromComboBox.FormattingEnabled = true;
             this.FromComboBox.Location = new System.Drawing.Point(8, 24);
-            this.FromComboBox.Name = "FromComboBox";
             this.FromComboBox.Size = new System.Drawing.Size(152, 21);
             this.FromComboBox.TabIndex = 2;
             this.FromComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBoxes_SelectedIndexChanged);
@@ -72,7 +42,6 @@ namespace AngelLoader.Forms
             this.ToComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ToComboBox.FormattingEnabled = true;
             this.ToComboBox.Location = new System.Drawing.Point(8, 64);
-            this.ToComboBox.Name = "ToComboBox";
             this.ToComboBox.Size = new System.Drawing.Size(152, 21);
             this.ToComboBox.TabIndex = 4;
             this.ToComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBoxes_SelectedIndexChanged);
@@ -81,11 +50,9 @@ namespace AngelLoader.Forms
             // 
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(7, 128);
-            this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 6;
-            this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
             // 
@@ -93,21 +60,17 @@ namespace AngelLoader.Forms
             // 
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(86, 128);
-            this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 0;
-            this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
             // ResetButton
             // 
             this.ResetButton.Location = new System.Drawing.Point(7, 88);
-            this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(154, 22);
             this.ResetButton.TabIndex = 5;
-            this.ResetButton.Text = "Reset";
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
             // 
@@ -129,23 +92,11 @@ namespace AngelLoader.Forms
             this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FilterRatingForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Set rating filter";
+            this.Text = " ";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
-#endif
-
-        #endregion
-        private AngelLoader.Forms.CustomControls.DarkLabel FromLabel;
-        private AngelLoader.Forms.CustomControls.DarkLabel ToLabel;
-        private AngelLoader.Forms.CustomControls.DarkComboBox FromComboBox;
-        private AngelLoader.Forms.CustomControls.DarkComboBox ToComboBox;
-        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
-        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
-        private AngelLoader.Forms.CustomControls.DarkButton ResetButton;
     }
 }
