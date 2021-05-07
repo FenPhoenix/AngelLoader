@@ -1,4 +1,4 @@
-﻿#define FenGen_GenSlimDesignerFromThis
+﻿#define FenGen_DesignerSource
 
 namespace AngelLoader.Forms
 {
@@ -9,7 +9,7 @@ namespace AngelLoader.Forms
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>

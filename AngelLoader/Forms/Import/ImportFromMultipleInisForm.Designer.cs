@@ -1,4 +1,4 @@
-﻿#define FenGen_GenSlimDesignerFromThis
+﻿#define FenGen_DesignerSource
 
 namespace AngelLoader.Forms
 {

@@ -142,7 +142,7 @@ namespace FenGen
             internal const string GameSupport = "FenGen_GameSupport";
             internal const string FMDataSource = "FenGen_FMDataSource";
             internal const string FMDataDest = "FenGen_FMDataDest";
-            internal const string GenSlimDesignerFromThis = "FenGen_GenSlimDesignerFromThis";
+            internal const string DesignerSource = "FenGen_DesignerSource";
             internal const string BuildDate = "FenGen_BuildDateDest";
         }
 
@@ -351,7 +351,7 @@ namespace FenGen
                     if (lts.StartsWithPlusWhiteSpace("#define"))
                     {
                         string tag = lts.Substring(7).Trim();
-                        if (tag == GenFileTags.GenSlimDesignerFromThis)
+                        if (tag == GenFileTags.DesignerSource)
                         {
                             if (f.EndsWithI(".Designer.cs"))
                             {
@@ -359,7 +359,7 @@ namespace FenGen
                             }
                             else
                             {
-                                ThrowErrorAndTerminate(GenFileTags.GenSlimDesignerFromThis +
+                                ThrowErrorAndTerminate(GenFileTags.DesignerSource +
                                                        " found in a file not ending in .Designer.cs.");
                             }
                             continue;
