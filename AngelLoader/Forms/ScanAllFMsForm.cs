@@ -23,7 +23,7 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitComponentManual();
+            InitializeComponentSlim();
 #endif
 
             _checkBoxes = new[]
