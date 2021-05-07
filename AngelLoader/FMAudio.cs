@@ -15,7 +15,7 @@ namespace AngelLoader
 {
     internal static class FMAudio
     {
-        #region API methods
+        #region Public methods
 
         // PERF_TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
 

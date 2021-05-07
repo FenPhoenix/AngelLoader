@@ -20,7 +20,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private enum ColumnProperties { Visible, DisplayIndex, Width }
 
-        #region Column header context menu fields
+        #region Menu item fields
 
         private static ContextMenuStripCustom? Menu;
 
@@ -105,7 +105,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        #region API methods
+        #region Public methods
 
         internal static ContextMenuStrip? GetContextMenu() => Menu;
 

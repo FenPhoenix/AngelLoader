@@ -36,9 +36,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #endregion
 
-        #region FM context menu fields
-
         private static MainForm _owner = null!;
+
+        #region Menu item fields
 
         internal static DarkContextMenu? FMContextMenu;
 
@@ -67,8 +67,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #endregion
 
-        #region Private methods
-
         private static bool _darkModeEnabled;
         [PublicAPI]
         public static bool DarkModeEnabled
@@ -86,6 +84,95 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 DeleteFMMenuItem!.Image = Images.Trash_16;
             }
         }
+
+        #region Private methods
+
+        private static void UncheckFinishedOnMenuItemsExceptUnknown()
+        {
+            if (_constructed)
+            {
+                FinishedOnNormalMenuItem!.Checked = false;
+                FinishedOnHardMenuItem!.Checked = false;
+                FinishedOnExpertMenuItem!.Checked = false;
+                FinishedOnExtremeMenuItem!.Checked = false;
+            }
+            else
+            {
+                _finishedOnNormalChecked = false;
+                _finishedOnHardChecked = false;
+                _finishedOnExpertChecked = false;
+                _finishedOnExtremeChecked = false;
+            }
+        }
+
+        private static void SetFinishedOnUnknownMenuItemChecked(bool value)
+        {
+            if (_constructed)
+            {
+                FinishedOnUnknownMenuItem!.Checked = value;
+            }
+            else
+            {
+                _finishedOnUnknownChecked = value;
+            }
+
+            if (value) UncheckFinishedOnMenuItemsExceptUnknown();
+        }
+
+        private static void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
+        {
+            if (value && !_constructed) _finishedOnUnknownChecked = false;
+
+            switch (difficulty)
+            {
+                case Difficulty.Normal:
+                    if (_constructed)
+                    {
+                        FinishedOnNormalMenuItem!.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnNormalChecked = value;
+                    }
+                    break;
+                case Difficulty.Hard:
+                    if (_constructed)
+                    {
+                        FinishedOnHardMenuItem!.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnHardChecked = value;
+                    }
+                    break;
+                case Difficulty.Expert:
+                    if (_constructed)
+                    {
+                        FinishedOnExpertMenuItem!.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnExpertChecked = value;
+                    }
+                    break;
+                case Difficulty.Extreme:
+                    if (_constructed)
+                    {
+                        FinishedOnExtremeMenuItem!.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnExtremeChecked = value;
+                    }
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region Public methods
+
+        internal static bool Visible => _constructed && FMContextMenu?.Visible == true;
 
         internal static void Construct(MainForm owner)
         {
@@ -220,24 +307,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Localize();
         }
 
-        private static void UncheckFinishedOnMenuItemsExceptUnknown()
-        {
-            if (_constructed)
-            {
-                FinishedOnNormalMenuItem!.Checked = false;
-                FinishedOnHardMenuItem!.Checked = false;
-                FinishedOnExpertMenuItem!.Checked = false;
-                FinishedOnExtremeMenuItem!.Checked = false;
-            }
-            else
-            {
-                _finishedOnNormalChecked = false;
-                _finishedOnHardChecked = false;
-                _finishedOnExpertChecked = false;
-                _finishedOnExtremeChecked = false;
-            }
-        }
-
         internal static void Localize()
         {
             if (!_constructed) return;
@@ -296,75 +365,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             WebSearchMenuItem!.Text = LText.FMsList.FMMenu_WebSearch;
         }
-
-        private static void SetFinishedOnUnknownMenuItemChecked(bool value)
-        {
-            if (_constructed)
-            {
-                FinishedOnUnknownMenuItem!.Checked = value;
-            }
-            else
-            {
-                _finishedOnUnknownChecked = value;
-            }
-
-            if (value) UncheckFinishedOnMenuItemsExceptUnknown();
-        }
-
-        private static void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
-        {
-            if (value && !_constructed) _finishedOnUnknownChecked = false;
-
-            switch (difficulty)
-            {
-                case Difficulty.Normal:
-                    if (_constructed)
-                    {
-                        FinishedOnNormalMenuItem!.Checked = value;
-                    }
-                    else
-                    {
-                        _finishedOnNormalChecked = value;
-                    }
-                    break;
-                case Difficulty.Hard:
-                    if (_constructed)
-                    {
-                        FinishedOnHardMenuItem!.Checked = value;
-                    }
-                    else
-                    {
-                        _finishedOnHardChecked = value;
-                    }
-                    break;
-                case Difficulty.Expert:
-                    if (_constructed)
-                    {
-                        FinishedOnExpertMenuItem!.Checked = value;
-                    }
-                    else
-                    {
-                        _finishedOnExpertChecked = value;
-                    }
-                    break;
-                case Difficulty.Extreme:
-                    if (_constructed)
-                    {
-                        FinishedOnExtremeMenuItem!.Checked = value;
-                    }
-                    else
-                    {
-                        _finishedOnExtremeChecked = value;
-                    }
-                    break;
-            }
-        }
-
-        #endregion
-
-        #region API methods
-
-        internal static bool Visible => _constructed && FMContextMenu?.Visible == true;
 
         internal static void UpdateRatingList(bool fmSelStyle)
         {

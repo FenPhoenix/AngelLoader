@@ -25,7 +25,25 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        #region API methods
+        private (int Index, BackingTab BackingTab)
+        FindBackingTab(TabPage tabPage, bool indexVisibleOnly = false)
+        {
+            for (int i = 0, vi = 0; i < _backingTabList.Count; i++)
+            {
+                BackingTab backingTab = _backingTabList[i];
+                if (indexVisibleOnly && backingTab.Visible) vi++;
+                if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
+            }
+
+#if DEBUG
+            if (DesignMode) return (-1, null)!;
+#endif
+
+            // We should never get here! (unless we're in infernal-forsaken design mode...!)
+            throw new InvalidOperationException("Can't find backing tab?!");
+        }
+
+        #region Public methods
 
         /// <summary>
         /// Removes all tabs and adds a set of new ones.
@@ -82,24 +100,6 @@ namespace AngelLoader.Forms.CustomControls
         public int GetTabDisplayIndex(TabPage tabPage) => FindBackingTab(tabPage).Index;
 
         #endregion
-
-        private (int Index, BackingTab BackingTab)
-        FindBackingTab(TabPage tabPage, bool indexVisibleOnly = false)
-        {
-            for (int i = 0, vi = 0; i < _backingTabList.Count; i++)
-            {
-                BackingTab backingTab = _backingTabList[i];
-                if (indexVisibleOnly && backingTab.Visible) vi++;
-                if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
-            }
-
-#if DEBUG
-            if (DesignMode) return (-1, null)!;
-#endif
-
-            // We should never get here! (unless we're in infernal-forsaken design mode...!)
-            throw new InvalidOperationException("Can't find backing tab?!");
-        }
 
         #region Tab reordering
 

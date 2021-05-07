@@ -31,7 +31,7 @@ namespace AngelLoader
             internal bool Size;
         }
 
-        #region API methods
+        #region Public methods
 
         internal static async Task ImportFrom(ImportType importType)
         {
