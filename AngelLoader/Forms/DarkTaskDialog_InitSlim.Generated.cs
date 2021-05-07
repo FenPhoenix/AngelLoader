@@ -54,7 +54,6 @@
             // 
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Cancel_Button.Location = new System.Drawing.Point(446, 9);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(76, 23);
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
@@ -65,7 +64,6 @@
             // 
             this.NoButton.AutoSize = true;
             this.NoButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.NoButton.Location = new System.Drawing.Point(364, 9);
             this.NoButton.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.NoButton.MinimumSize = new System.Drawing.Size(76, 23);
             this.NoButton.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
@@ -76,7 +74,6 @@
             // 
             this.YesButton.AutoSize = true;
             this.YesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.YesButton.Location = new System.Drawing.Point(282, 9);
             this.YesButton.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.YesButton.MinimumSize = new System.Drawing.Size(76, 23);
             this.YesButton.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);

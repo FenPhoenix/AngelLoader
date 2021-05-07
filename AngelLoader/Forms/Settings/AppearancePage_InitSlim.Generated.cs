@@ -280,9 +280,7 @@
             // 
             // PreviewDateLabel
             // 
-            this.PreviewDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.PreviewDateLabel.AutoSize = true;
-            this.PreviewDateLabel.Location = new System.Drawing.Point(378, 0);
             this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
             this.PreviewDateLabel.TabIndex = 0;
             // 

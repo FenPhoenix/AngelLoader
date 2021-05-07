@@ -31,10 +31,12 @@ namespace FenGen
 
         private sealed class NodeCustom
         {
+            internal bool IgnoreExceptForComments;
             internal string ControlName = "";
             internal string PropName = "";
             internal string OverrideLine = "";
             internal readonly SyntaxNode Node;
+            internal readonly List<string> Comments = new List<string>();
 
             internal NodeCustom(SyntaxNode node) => Node = node;
         }
@@ -61,6 +63,8 @@ namespace FenGen
         */
         private static void GenerateDesignerFile(string designerFile)
         {
+            var controlTypes = new Dictionary<string, string>();
+            var controlsInFlowLayoutPanels = new HashSet<string>();
             var controlProperties = new Dictionary<string, CProps>();
             var destNodes = new List<NodeCustom>();
 
@@ -156,6 +160,19 @@ namespace FenGen
                 return;
             }
 
+            foreach (SyntaxNode node in formClass.ChildNodes())
+            {
+                if (node is FieldDeclarationSyntax fds)
+                {
+                    string name = fds.Declaration.Variables.First().Identifier.ToString();
+                    string type = fds.Declaration.Type.ToString();
+                    int lastIndexOfDot = type.LastIndexOf('.');
+                    string typeShort = lastIndexOfDot > -1 ? type.Substring(lastIndexOfDot + 1) : type;
+
+                    if (typeShort != "IContainer") controlTypes[name] = typeShort;
+                }
+            }
+
             #region Find start line index of property-set section
 
             bool pastConstructorSection = false;
@@ -201,6 +218,34 @@ namespace FenGen
                 }
 
                 var aes = (AssignmentExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(x => x is AssignmentExpressionSyntax);
+
+                var ies = (InvocationExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(x => x is InvocationExpressionSyntax);
+
+                if (ies != null)
+                {
+                    foreach (SyntaxNode mesN in ies.DescendantNodes())
+                    {
+                        if (mesN is MemberAccessExpressionSyntax mes && mes.Name.ToString() == "Add")
+                        {
+                            string nodeStr = mesN.ToString().Trim();
+                            if (nodeStr.StartsWith("this.")) nodeStr = nodeStr.Substring(5);
+
+                            string nodeControlName = nodeStr.Substring(0, nodeStr.IndexOf('.'));
+
+                            if (nodeStr == nodeControlName + ".Controls.Add" &&
+                                controlTypes.TryGetValue(nodeControlName, out string nodeType) &&
+                                nodeType == "FlowLayoutPanel" &&
+                                ies.ArgumentList.Arguments.Count == 1)
+                            {
+                                var arg = ies.ArgumentList.Arguments[0];
+                                string argStr = arg.ToString().Trim();
+                                if (argStr.StartsWith("this.")) argStr = argStr.Substring(5);
+                                controlsInFlowLayoutPanels.Add(argStr);
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 if (aes?.Left is not MemberAccessExpressionSyntax left) continue;
 
@@ -366,10 +411,17 @@ namespace FenGen
                     continue;
                 }
 
+                foreach (SyntaxTrivia t in destNode.Node.DescendantTrivia())
+                {
+                    if (t.Kind() == SyntaxKind.SingleLineCommentTrivia)
+                    {
+                        destNode.Comments.Add(t.ToString());
+                    }
+                }
+
                 if (destNode.PropName == "Name" && props.HasName)
                 {
-                    destNodes.RemoveAt(i);
-                    i--;
+                    destNode.IgnoreExceptForComments = true;
                 }
                 else if (destNode.PropName == "Text" && props.HasText)
                 {
@@ -380,28 +432,34 @@ namespace FenGen
                     }
                     else
                     {
-                        destNodes.RemoveAt(i);
-                        i--;
+                        destNode.IgnoreExceptForComments = true;
                     }
                 }
-                else if (destNode.PropName == "Anchor" && props.HasDefaultAnchor == true)
+                else if (destNode.PropName == "Anchor" &&
+                         (
+                             props.HasDefaultAnchor == true ||
+                             controlsInFlowLayoutPanels.Contains(destNode.ControlName)
+                         )
+                )
                 {
-                    destNodes.RemoveAt(i);
-                    i--;
+                    destNode.IgnoreExceptForComments = true;
                 }
                 else if (destNode.PropName == "Location" &&
-                         ((props.Location?.X == 0 && props.Location?.Y == 0) ||
-                          props.DockIsFill))
+                         (
+                             (props.Location?.X == 0 && props.Location?.Y == 0) ||
+                             props.DockIsFill ||
+                             controlsInFlowLayoutPanels.Contains(destNode.ControlName)
+                         )
+                )
                 {
-                    destNodes.RemoveAt(i);
-                    i--;
+                    destNode.IgnoreExceptForComments = true;
                 }
                 else if (destNode.PropName == "Size" &&
                          // If anchor is anything other than top-left, we need to keep the size, for reasons I'm
                          // unable to think how to explain well at the moment but you can figure it out, it's like
                          // when we go to position it, it needs to know its size so it can properly position itself
                          // relative to its anchor... you know.
-                         props.HasDefaultAnchor != false &&
+                         (props.HasDefaultAnchor != false) &&
                          (
                              (props.Size != null && props.MinimumSize != null && props.Size == props.MinimumSize) ||
                              (props.Size != null && props.AutoSize == true) ||
@@ -409,15 +467,13 @@ namespace FenGen
                          )
                 )
                 {
-                    destNodes.RemoveAt(i);
-                    i--;
+                    destNode.IgnoreExceptForComments = true;
                 }
                 else if (destNode.PropName == "CheckState" &&
                          ((props.Checked == true && props.CheckState == CheckState.Checked) ||
                           (props.Checked == false && props.CheckState == CheckState.Unchecked)))
                 {
-                    destNodes.RemoveAt(i);
-                    i--;
+                    destNode.IgnoreExceptForComments = true;
                 }
             }
 
@@ -443,9 +499,19 @@ namespace FenGen
             finalDestLines.Add("        {");
             foreach (NodeCustom node in destNodes)
             {
-                finalDestLines.Add(!node.OverrideLine.IsEmpty()
-                    ? node.OverrideLine
-                    : node.Node.ToFullString().TrimEnd('\r', '\n'));
+                if (node.IgnoreExceptForComments)
+                {
+                    foreach (string line in node.Comments)
+                    {
+                        finalDestLines.Add("            " + line);
+                    }
+                }
+                else
+                {
+                    finalDestLines.Add(!node.OverrideLine.IsEmpty()
+                        ? node.OverrideLine
+                        : node.Node.ToFullString().TrimEnd('\r', '\n'));
+                }
             }
             finalDestLines.Add("        }");
             finalDestLines.Add("    }");

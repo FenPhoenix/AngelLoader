@@ -78,6 +78,7 @@ namespace AngelLoader.Forms
             // OKButton
             // 
             OKButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            OKButton.AutoSize = true;
             OKButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             OKButton.DialogResult = DialogResult.Cancel;
             OKButton.Margin = new Padding(3, 8, 9, 3);
@@ -250,6 +251,7 @@ namespace AngelLoader.Forms
             ((System.ComponentModel.ISupportInitialize)(LogoPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(LogoTextPictureBox)).EndInit();
             OKFlowLayoutPanel.ResumeLayout(false);
+            OKFlowLayoutPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
