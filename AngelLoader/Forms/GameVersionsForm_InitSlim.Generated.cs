@@ -125,6 +125,7 @@
             this.MinimizeBox = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameVersionsForm_KeyDown);
             this.OKFlowLayoutPanel.ResumeLayout(false);

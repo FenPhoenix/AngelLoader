@@ -1,22 +1,11 @@
-﻿#define FenGen_GenSlimDesignerFromThis
-
-namespace AngelLoader.Forms
+﻿namespace AngelLoader.Forms
 {
     partial class SettingsForm
     {
         /// <summary>
-        /// Required designer variable.
+        /// Custom generated component initializer with cruft removed.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        #region Windows Form Designer generated code
-
-#if DEBUG
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        private void InitializeComponentSlim()
         {
             this.components = new System.ComponentModel.Container();
             this.BottomFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
@@ -47,7 +36,6 @@ namespace AngelLoader.Forms
             this.BottomFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.BottomFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.BottomFlowLayoutPanel.Location = new System.Drawing.Point(0, 616);
-            this.BottomFlowLayoutPanel.Name = "BottomFlowLayoutPanel";
             this.BottomFlowLayoutPanel.Size = new System.Drawing.Size(694, 40);
             this.BottomFlowLayoutPanel.TabIndex = 4;
             // 
@@ -57,13 +45,9 @@ namespace AngelLoader.Forms
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(610, 8);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
-            this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 0;
-            this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
             // OKButton
@@ -72,32 +56,22 @@ namespace AngelLoader.Forms
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(529, 8);
             this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
-            this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 1;
-            this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
             // ErrorLabel
             // 
             this.ErrorLabel.AutoSize = true;
             this.ErrorLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ErrorLabel.Location = new System.Drawing.Point(462, 12);
             this.ErrorLabel.Margin = new System.Windows.Forms.Padding(3, 12, 3, 0);
-            this.ErrorLabel.Name = "ErrorLabel";
-            this.ErrorLabel.Size = new System.Drawing.Size(61, 13);
             this.ErrorLabel.TabIndex = 4;
-            this.ErrorLabel.Text = "[ErrorLabel]";
             this.ErrorLabel.Visible = false;
             // 
             // ErrorIconPictureBox
             // 
-            this.ErrorIconPictureBox.Location = new System.Drawing.Point(445, 12);
             this.ErrorIconPictureBox.Margin = new System.Windows.Forms.Padding(0, 12, 0, 0);
-            this.ErrorIconPictureBox.Name = "ErrorIconPictureBox";
             this.ErrorIconPictureBox.Size = new System.Drawing.Size(14, 14);
             this.ErrorIconPictureBox.TabIndex = 5;
             this.ErrorIconPictureBox.TabStop = false;
@@ -109,8 +83,6 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MainSplitContainer.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.MainSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.MainSplitContainer.Name = "MainSplitContainer";
             // 
             // MainSplitContainer.Panel1
             // 
@@ -138,10 +110,8 @@ namespace AngelLoader.Forms
             this.OtherRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
             this.OtherRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.OtherRadioButton.Location = new System.Drawing.Point(8, 56);
-            this.OtherRadioButton.Name = "OtherRadioButton";
             this.OtherRadioButton.Size = new System.Drawing.Size(136, 23);
             this.OtherRadioButton.TabIndex = 2;
-            this.OtherRadioButton.Text = "Other";
             this.OtherRadioButton.UseVisualStyleBackColor = true;
             this.OtherRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
             this.OtherRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
@@ -158,10 +128,8 @@ namespace AngelLoader.Forms
             this.AppearanceRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
             this.AppearanceRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.AppearanceRadioButton.Location = new System.Drawing.Point(8, 32);
-            this.AppearanceRadioButton.Name = "AppearanceRadioButton";
             this.AppearanceRadioButton.Size = new System.Drawing.Size(136, 23);
             this.AppearanceRadioButton.TabIndex = 1;
-            this.AppearanceRadioButton.Text = "FM Display";
             this.AppearanceRadioButton.UseVisualStyleBackColor = true;
             this.AppearanceRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
             this.AppearanceRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
@@ -178,10 +146,8 @@ namespace AngelLoader.Forms
             this.PathsRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
             this.PathsRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.PathsRadioButton.Location = new System.Drawing.Point(8, 8);
-            this.PathsRadioButton.Name = "PathsRadioButton";
             this.PathsRadioButton.Size = new System.Drawing.Size(136, 23);
             this.PathsRadioButton.TabIndex = 0;
-            this.PathsRadioButton.Text = "Paths";
             this.PathsRadioButton.UseVisualStyleBackColor = true;
             this.PathsRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
             this.PathsRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
@@ -190,8 +156,6 @@ namespace AngelLoader.Forms
             // PagePanel
             // 
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagePanel.Location = new System.Drawing.Point(0, 0);
-            this.PagePanel.Name = "PagePanel";
             this.PagePanel.Size = new System.Drawing.Size(535, 613);
             this.PagePanel.TabIndex = 2;
             // 
@@ -204,15 +168,15 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.MainSplitContainer);
             this.Controls.Add(this.BottomFlowLayoutPanel);
             this.DoubleBuffered = true;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
+            this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(540, 320);
-            this.Name = "SettingsForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "SettingsForm";
+            // Hack to prevent slow first render on some forms if Text is blank
+            this.Text = " ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.Shown += new System.EventHandler(this.SettingsForm_Shown);
@@ -225,22 +189,6 @@ namespace AngelLoader.Forms
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).EndInit();
             this.MainSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
-#endif
-
-        #endregion
-
-        private System.Windows.Forms.Panel PagePanel;
-        private System.Windows.Forms.FlowLayoutPanel BottomFlowLayoutPanel;
-        private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
-        private AngelLoader.Forms.CustomControls.DarkButton OKButton;
-        private System.Windows.Forms.ToolTip MainToolTip;
-        private AngelLoader.Forms.CustomControls.DarkLabel ErrorLabel;
-        private AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom OtherRadioButton;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom AppearanceRadioButton;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom PathsRadioButton;
-        private System.Windows.Forms.PictureBox ErrorIconPictureBox;
     }
 }

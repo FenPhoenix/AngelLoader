@@ -455,7 +455,12 @@ namespace FenGen
                     if (props.IsFormProperty)
                     {
                         // Hack to avoid knowing the black art of how to construct code with Roslyn...
-                        destNode.OverrideLine = "            this.Text = \" \";";
+                        // Copied from SettingsForm old manual init:
+                        // Un-obvious hack: If we DON'T set Text to something, anything, here, then first render (if paths tab
+                        // is the startup tab) is really slow. We just set a one-char blank space to prevent that(?!) Probably
+                        // something to do with this activating some kind of render routine beforehand... I guess... who knows...
+                        destNode.OverrideLine = "            // Hack to prevent slow first render on some forms if Text is blank\r\n" +
+                                                "            this.Text = \" \";";
                     }
                     else
                     {

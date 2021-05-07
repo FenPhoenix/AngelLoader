@@ -102,6 +102,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";
             ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).EndInit();
             this.BottomFLP.ResumeLayout(false);

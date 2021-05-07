@@ -99,7 +99,7 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitComponentManual();
+            InitializeComponentSlim();
 #endif
 
             if (startup) NativeHooks.InstallHooks();
@@ -1078,18 +1078,10 @@ namespace AngelLoader.Forms
         #region Page selection handler
 
         // This is to handle keyboard "clicks"
-        private
-#if !DEBUG
-        static
-#endif
-        void PageRadioButtons_Click(object sender, EventArgs e) => ((RadioButtonCustom)sender).Checked = true;
+        private void PageRadioButtons_Click(object sender, EventArgs e) => ((RadioButtonCustom)sender).Checked = true;
 
         // This is for mouse use, to give a snappier experience, we change on MouseDown
-        private
-#if !DEBUG
-        static
-#endif
-        void SectionButtons_MouseDown(object sender, MouseEventArgs e)
+        private void SectionButtons_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left) ((RadioButtonCustom)sender).Checked = true;
         }

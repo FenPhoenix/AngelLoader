@@ -93,6 +93,7 @@
             this.MinimizeBox = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";
             this.ResumeLayout(false);
             this.PerformLayout();
