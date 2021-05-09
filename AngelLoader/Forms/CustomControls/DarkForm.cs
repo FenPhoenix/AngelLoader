@@ -13,9 +13,10 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnShown(e);
 
+            _loading = false;
+
             if (!Misc.Config.DarkMode) return;
 
-            _loading = false;
             Refresh();
             // Explicitly refresh non-client area - otherwise on Win7 the non-client area doesn't refresh and we
             // end up with blacked-out title bar and borders etc.
