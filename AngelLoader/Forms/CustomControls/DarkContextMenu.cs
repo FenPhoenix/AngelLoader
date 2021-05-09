@@ -44,7 +44,7 @@ namespace AngelLoader.Forms.CustomControls
             Items.AddRange(toolStripItems);
             RefreshDarkModeState();
         }
-        
+
         /*
         // Disabled until needed
         public void AddRange(ToolStripItemCollection toolStripItems)
@@ -58,7 +58,7 @@ namespace AngelLoader.Forms.CustomControls
             RefreshDarkModeState();
         }
         */
-        
+
         private void RefreshDarkModeState()
         {
             void SetMenuTheme(ToolStripDropDown menu)

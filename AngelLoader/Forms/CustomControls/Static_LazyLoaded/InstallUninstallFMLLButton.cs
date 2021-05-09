@@ -9,10 +9,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         internal static bool Constructed { get; private set; }
 
-        private static bool _sayInstall;
         private static bool _enabled;
 
-        internal static bool SayInstallState => _sayInstall;
+        internal static bool SayInstallState { get; private set; }
 
         internal static DarkButton Button = null!;
 
@@ -58,7 +57,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Button.PaintCustom += owner.InstallUninstall_Play_Buttons_Paint;
 
             Button.Enabled = _enabled;
-            SetSayInstallState(_sayInstall);
+            SetSayInstallState(SayInstallState);
 
             Constructed = true;
         }
@@ -85,7 +84,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             // Special case autosize text-set: can't be GrowAndShrink
             Button.SetTextAutoSize(longestString);
 
-            if (!startup) Button.Text = _sayInstall ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
+            if (!startup) Button.Text = SayInstallState ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
 
             if (Button.Visible && Config.HideUninstallButton) Button.Hide();
 
@@ -97,7 +96,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static void SetSayInstall(bool value)
         {
             if (Constructed) SetSayInstallState(value);
-            _sayInstall = value;
+            SayInstallState = value;
         }
 
         internal static void SetEnabled(bool value)
