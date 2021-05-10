@@ -19,6 +19,26 @@ Thanks for checking it out!
 
 ## List of localization-related changes by version
 
+### v1.5.0:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.4.8_1.5.0.html)
+
+#### [AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.4.8_1.5.0.html)
+
+New or updated images that contain language-specific text:
+
+`edit_fm-tab.png`  
+`filter_bar.png`  
+`fm_right_click_menu.png`  
+`fms_list_960.png`  
+`initial_setup.png`  
+`main_menu.png`  
+`main_window_full_960.png`  
+`setup_other_tab.png`  
+`setup_paths_tab.png`  
+`BottomBar.png`  
+`setup_appearance_tab.png`  
+
 ### v1.4.8:
 
 #### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.4.5_1.4.8.html)
