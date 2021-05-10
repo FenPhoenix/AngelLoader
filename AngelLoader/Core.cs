@@ -158,7 +158,7 @@ namespace AngelLoader
                 ReadLanguages(splashScreen);
             }
 
-            splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigData);
+            splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigFiles);
 
             #region Set game data
 

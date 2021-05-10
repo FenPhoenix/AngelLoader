@@ -116,9 +116,10 @@ namespace AngelLoader.DataClasses
                 "This means it's reading data from each specified game's config file(s).",
                 "For example, this might include cam_mod.ini for Thief 1 and Thief 2, SneakyOptions.ini for Thief: Deadly Shadows, etc."
                 )]
-            internal readonly string ReadingGameConfigData = "Reading game config data...";
+            internal readonly string ReadingGameConfigFiles = "Reading game config files...";
             [FenGenComment(
-                "It's searching all FM directories to see if any new ones have been added since the last run, and if so, adding them to the database."
+                "It's searching all FM archive directories and FM installed directories to see if any new FMs have been added",
+                "since the last run, and if so, adding them to the database."
                 )]
             internal readonly string SearchingForNewFMs = "Searching for new FMs...";
             internal readonly string LoadingMainApp = "Loading main app...";
