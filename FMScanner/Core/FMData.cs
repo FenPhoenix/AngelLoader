@@ -188,6 +188,14 @@ namespace FMScanner
     // Fields with types that don't have a simple "unknown" state are nullable to represent "not scanned" or "unknown".
     // Numeric types, bools, DateTime etc.
 
+    public sealed class ScannedFMDataAndError
+    {
+        public ScannedFMData? ScannedFMData;
+        public Exception? Exception;
+        public Fen7z.Fen7z.Result? Fen7zResult;
+        public string ErrorInfo = "";
+    }
+
     [PublicAPI]
     // These properties are kept in this exact order because the test diff writeout depends on it
     public sealed class ScannedFMData

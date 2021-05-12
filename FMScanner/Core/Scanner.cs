@@ -327,7 +327,7 @@ namespace FMScanner
 
         #region Scan synchronous
 
-        public ScannedFMData?
+        public ScannedFMDataAndError
         Scan(string mission, string tempPath, bool forceFullIfNew)
         {
             return ScanMany(
@@ -335,7 +335,7 @@ namespace FMScanner
                 tempPath, _scanOptions, null, CancellationToken.None)[0];
         }
 
-        public ScannedFMData?
+        public ScannedFMDataAndError
         Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew)
         {
             return ScanMany(
@@ -347,7 +347,7 @@ namespace FMScanner
         // (test frontend use only)
 #if DEBUG || ScanSynchronous
         [PublicAPI]
-        public List<ScannedFMData?>
+        public List<ScannedFMDataAndError>
         Scan(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
              IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
@@ -360,21 +360,21 @@ namespace FMScanner
         #region Scan asynchronous
 
         [PublicAPI]
-        public Task<List<ScannedFMData?>>
+        public Task<List<ScannedFMDataAndError>>
         ScanAsync(List<FMToScan> missions, string tempPath)
         {
             return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, null, CancellationToken.None));
         }
 
         [PublicAPI]
-        public Task<List<ScannedFMData?>>
+        public Task<List<ScannedFMDataAndError>>
         ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
         {
             return Task.Run(() => ScanMany(missions, tempPath, scanOptions, null, CancellationToken.None));
         }
 
         [PublicAPI]
-        public Task<List<ScannedFMData?>>
+        public Task<List<ScannedFMDataAndError>>
         ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
                   CancellationToken cancellationToken)
         {
@@ -382,7 +382,7 @@ namespace FMScanner
         }
 
         [PublicAPI]
-        public Task<List<ScannedFMData?>>
+        public Task<List<ScannedFMDataAndError>>
         ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
                   IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
@@ -391,7 +391,7 @@ namespace FMScanner
 
         #endregion
 
-        private List<ScannedFMData?>
+        private List<ScannedFMDataAndError>
         ScanMany(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
                  IProgress<ProgressReport>? progress, CancellationToken cancellationToken)
         {
@@ -423,7 +423,7 @@ namespace FMScanner
 
             _tempPath = tempPath;
 
-            var scannedFMDataList = new List<ScannedFMData?>();
+            var scannedFMDataList = new List<ScannedFMDataAndError>();
 
             // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
             // fields as much as possible for performance.
@@ -465,7 +465,7 @@ namespace FMScanner
                         catch (Exception ex)
                         {
                             Log(LogFile, missions[i].Path + ": Path.Combine error, paths are probably invalid", ex);
-                            scannedFMDataList.Add(null);
+                            scannedFMDataList.Add(new ScannedFMDataAndError());
                             nullAlreadyAdded = true;
                         }
                     }
@@ -500,7 +500,7 @@ namespace FMScanner
                 // If there was an error then we already added null to the list. DON'T add any extra items!
                 if (!nullAlreadyAdded)
                 {
-                    ScannedFMData? scannedFM = null;
+                    var scannedFMAndError = new ScannedFMDataAndError();
                     ScanOptions? _tempScanOptions = null;
                     try
                     {
@@ -512,12 +512,14 @@ namespace FMScanner
 
                         try
                         {
-                            scannedFM = ScanCurrentFM(rtfConverter, missions[i]);
+                            scannedFMAndError = ScanCurrentFM(rtfConverter, missions[i]);
                         }
                         catch (Exception ex)
                         {
                             // TODO: Uh... we're swallowing all exceptions (at least we're logging them now, but still)
                             Log(LogFile, missions[i].Path + ": Exception in FM scan", ex);
+                            scannedFMAndError.Exception = ex;
+                            scannedFMAndError.ErrorInfo = missions[i].Path + ": Exception in FM scan";
                             // Okay, we don't want to throw because that would stop the whole scan, but we want
                             // to continue scanning any further FMs that may be in the list. So just log.
                         }
@@ -526,7 +528,7 @@ namespace FMScanner
                             if (missions[i].Path.ExtIs7z()) DeleteFMWorkingPath();
                         }
 
-                        scannedFMDataList.Add(scannedFM);
+                        scannedFMDataList.Add(scannedFMAndError);
                     }
                     finally
                     {
@@ -550,7 +552,8 @@ namespace FMScanner
             return scannedFMDataList;
         }
 
-        private ScannedFMData? ScanCurrentFM(RtfToTextConverter rtfConverter, FMToScan fm)
+        private ScannedFMDataAndError
+        ScanCurrentFM(RtfToTextConverter rtfConverter, FMToScan fm)
         {
 #if DEBUG
             _overallTimer.Restart();
@@ -570,13 +573,25 @@ namespace FMScanner
 
 #endif
 
-            static ScannedFMData UnsupportedZip(string archivePath) => new ScannedFMData
+            static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
             {
-                ArchiveName = Path.GetFileName(archivePath),
-                Game = Game.Unsupported
+                ScannedFMData = new ScannedFMData
+                {
+                    ArchiveName = Path.GetFileName(archivePath),
+                    Game = Game.Unsupported
+                },
+                Fen7zResult = fen7zResult,
+                Exception = ex,
+                ErrorInfo = errorInfo
             };
 
-            static ScannedFMData? UnsupportedDir() => null;
+            static ScannedFMDataAndError UnsupportedDir(Fen7z.Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+            {
+                ScannedFMData = null,
+                Fen7zResult = fen7zResult,
+                Exception = ex,
+                ErrorInfo = errorInfo
+            };
 
             ulong? sevenZipSize = null;
 
@@ -665,20 +680,28 @@ namespace FMScanner
                     if (result.ErrorOccurred)
                     {
                         Log(LogFile,
-                            _fmPathField + ": " + nameof(ScanCurrentFM) +
-                            "(): fm is 7z, error in 7z.exe extraction:\r\n"
-                            + result.ErrorText + "\r\n"
-                            + (result.Exception?.ToString() ?? "") + "\r\n"
-                            + "ExitCode: " + result.ExitCode + "\r\n"
-                            + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
+                            _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z\r\n" +
+                            "7z.exe path: " + _sevenZipExePath + "\r\n" +
+                            result.ToString());
 
-                        return UnsupportedZip(_archivePath);
+                        return UnsupportedZip(
+                            archivePath: _archivePath,
+                            fen7zResult: result,
+                            ex: null,
+                            errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
+                                       _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z\r\n");
                     }
                 }
                 catch (Exception ex)
                 {
                     Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction", ex);
-                    return UnsupportedZip(_archivePath);
+                    return UnsupportedZip(
+                        archivePath: _archivePath,
+                        fen7zResult: null,
+                        ex: ex,
+                        errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
+                                   _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction"
+                    );
                 }
 
                 #endregion
@@ -719,7 +742,7 @@ namespace FMScanner
                             Log(LogFile,
                                 _fmPathField + ": " + nameof(ScanCurrentFM) +
                                 "(): fm is zip, no files in archive. Returning 'Unsupported' game type.");
-                            return UnsupportedZip(_archivePath);
+                            return UnsupportedZip(_archivePath, null, null, "");
                         }
                     }
                     catch (Exception ex)
@@ -729,7 +752,7 @@ namespace FMScanner
                             _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is zip, exception in " +
                             nameof(ZipArchiveFast) +
                             " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                        return UnsupportedZip(_archivePath);
+                        return UnsupportedZip(_archivePath, null, ex, "");
                     }
                 }
                 else
@@ -737,7 +760,7 @@ namespace FMScanner
                     Log(LogFile,
                         _fmPathField + ": " + nameof(ScanCurrentFM) + "(): " + nameof(_fmIsZip) +
                         " == true, but extension was not .zip. Returning 'Unsupported' game type.");
-                    return UnsupportedZip(_archivePath);
+                    return UnsupportedZip(_archivePath, null, null, "");
                 }
             }
             else
@@ -747,7 +770,7 @@ namespace FMScanner
                     Log(LogFile,
                         _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is dir, but " + nameof(_fmWorkingPath) +
                         " (" + _fmWorkingPath + ") doesn't exist. Returning 'Unsupported' game type.");
-                    return UnsupportedDir();
+                    return UnsupportedDir(null, null, "");
                 }
                 Debug.WriteLine("----------" + _fmWorkingPath);
             }
@@ -838,7 +861,7 @@ namespace FMScanner
                     _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is " + ext + ", " +
                     nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.");
 
-                return _fmIsZip || _fmIsSevenZip ? UnsupportedZip(_archivePath) : UnsupportedDir();
+                return _fmIsZip || _fmIsSevenZip ? UnsupportedZip(_archivePath, null, null, "") : UnsupportedDir(null, null, "");
             }
 
             #endregion
@@ -887,7 +910,10 @@ namespace FMScanner
                     if (_scanOptions.ScanGameType)
                     {
                         fmData.Game = game;
-                        if (fmData.Game == Game.Unsupported) return fmData;
+                        if (fmData.Game == Game.Unsupported)
+                        {
+                            return new ScannedFMDataAndError { ScannedFMData = fmData };
+                        }
                     }
                 }
 
@@ -1160,7 +1186,7 @@ namespace FMScanner
             Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
 #endif
 
-            return fmData;
+            return new ScannedFMDataAndError { ScannedFMData = fmData };
         }
 
 #if Enable7zReadmeCacheCode

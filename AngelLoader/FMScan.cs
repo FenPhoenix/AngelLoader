@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
@@ -146,7 +147,7 @@ namespace AngelLoader
 
                 #region Run scanner
 
-                List<FMScanner.ScannedFMData?> fmDataList;
+                List<FMScanner.ScannedFMDataAndError>? fmDataList = null;
                 try
                 {
                     var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
@@ -164,6 +165,50 @@ namespace AngelLoader
                 {
                     return false;
                 }
+                finally
+                {
+                    if (fmDataList != null)
+                    {
+                        bool errors = false;
+
+                        for (int i = 0; i < fmsToScanFiltered.Count; i++)
+                        {
+                            FMScanner.ScannedFMDataAndError item = fmDataList[i];
+                            if (item.Fen7zResult != null ||
+                                item.Exception != null ||
+                                !item.ErrorInfo.IsEmpty())
+                            {
+                                errors = true;
+                                break;
+                            }
+                        }
+
+                        if (errors)
+                        {
+                            // @Localization(Scan errors)
+                            (bool cancel, _) =
+                            ControlUtils.AskToContinueYesNoCustomStrings(
+                                message: "One or more errors occurred while scanning. View the error log?",
+                                title: LText.AlertMessages.Alert,
+                                icon: MessageBoxIcon.Warning,
+                                showDontAskAgain: false,
+                                yes: "View error log",
+                                no: "Continue");
+
+                            if (!cancel)
+                            {
+                                try
+                                {
+                                    ProcessStart_UseShellExecute(Paths.ScannerLogFile);
+                                }
+                                catch
+                                {
+                                    ControlUtils.ShowAlert("Unable to open log file", LText.AlertMessages.Error);
+                                }
+                            }
+                        }
+                    }
+                }
 
                 #endregion
 
@@ -171,7 +216,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < fmsToScanFiltered.Count; i++)
                 {
-                    FMScanner.ScannedFMData? scannedFM = fmDataList[i];
+                    FMScanner.ScannedFMData? scannedFM = fmDataList[i].ScannedFMData;
 
                     #region Checks
 

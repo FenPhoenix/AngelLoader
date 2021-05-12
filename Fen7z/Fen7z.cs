@@ -57,6 +57,13 @@ namespace Fen7z
             public SevenZipExitCode ExitCode = SevenZipExitCode.NoError;
             public int? ExitCodeInt;
             public bool Canceled;
+
+            public override string ToString() =>
+                "error in 7z.exe extraction:\r\n"
+                + ErrorText + "\r\n"
+                + (Exception?.ToString() ?? "") + "\r\n"
+                + "ExitCode: " + ExitCode + "\r\n"
+                + "ExitCodeInt: " + (ExitCodeInt?.ToString() ?? "");
         }
 
         /// <summary>
