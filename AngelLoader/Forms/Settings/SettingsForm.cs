@@ -1284,7 +1284,7 @@ namespace AngelLoader.Forms
                 }
             }
             d.MultiSelect = true;
-            if (d.ShowDialog() == DialogResult.OK)
+            if (d.ShowDialogDark() == DialogResult.OK)
             {
                 PathsPage.FMArchivePathsListBox.BeginUpdate();
                 foreach (string dir in d.DirectoryNames)
