@@ -55,7 +55,7 @@ namespace AngelLoader
 
                 using (var f = new ImportFromDarkLoaderForm())
                 {
-                    if (f.ShowDialog() != DialogResult.OK) return;
+                    if (f.ShowDialogDark() != DialogResult.OK) return;
                     iniFile = f.DarkLoaderIniFile;
                     importFMData = f.ImportFMData;
                     importTitle = f.ImportTitle;
@@ -100,7 +100,7 @@ namespace AngelLoader
 
                 using (var f = new ImportFromMultipleInisForm(importType))
                 {
-                    if (f.ShowDialog() != DialogResult.OK) return;
+                    if (f.ShowDialogDark() != DialogResult.OK) return;
                     foreach (string file in f.IniFiles) iniFiles.Add(file);
                     importTitle = f.ImportTitle;
                     importReleaseDate = f.ImportReleaseDate;

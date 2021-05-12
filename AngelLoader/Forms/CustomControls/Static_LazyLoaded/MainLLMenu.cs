@@ -145,7 +145,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new GameVersionsForm();
-            f.ShowDialog();
+            f.ShowDialogDark();
         }
 
         private static async void ImportMenuItems_Click(object sender, EventArgs e)
@@ -164,7 +164,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new GlobalFMStatsForm();
-            f.ShowDialog();
+            f.ShowDialogDark();
         }
 #endif
 
@@ -173,7 +173,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static void AboutMenuItemClick(object sender, EventArgs e)
         {
             using var f = new AboutForm();
-            f.ShowDialog();
+            f.ShowDialogDark();
         }
     }
 }

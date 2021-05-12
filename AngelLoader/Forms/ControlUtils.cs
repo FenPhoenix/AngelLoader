@@ -383,7 +383,7 @@ namespace AngelLoader.Forms
                     yesText: LText.Global.Yes,
                     noText: LText.Global.No,
                     defaultButton: defaultButton);
-                return d.ShowDialog() == DialogResult.Yes;
+                return d.ShowDialogDark() == DialogResult.Yes;
             }
             else
             {
@@ -423,7 +423,7 @@ namespace AngelLoader.Forms
                 checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
                 icon: icon);
 
-            DialogResult result = d.ShowDialog();
+            DialogResult result = d.ShowDialogDark();
 
             bool canceled = result == DialogResult.Cancel;
             bool cont = result == DialogResult.Yes;
@@ -450,7 +450,7 @@ namespace AngelLoader.Forms
                 checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
                 icon: icon);
 
-            DialogResult result = d.ShowDialog();
+            DialogResult result = d.ShowDialogDark();
 
             bool cancel = result != DialogResult.Yes;
             bool dontAskAgain = d.IsVerificationChecked;
@@ -467,7 +467,7 @@ namespace AngelLoader.Forms
                     icon: icon,
                     yesText: LText.Global.OK,
                     defaultButton: DarkTaskDialog.Button.Yes);
-                d.ShowDialog();
+                d.ShowDialogDark();
             }
             else
             {
@@ -490,6 +490,14 @@ namespace AngelLoader.Forms
                 return dialog.ShowDialog();
             }
         }
+
+        /// <summary>
+        /// Just redirects to ShowDialog(), but it's so I can make every call ShowDialogDark() so if I find any
+        /// ShowDialog() call I'll know it could be a bug (if it's calling a built-in dialog).
+        /// </summary>
+        /// <param name="dialog"></param>
+        /// <returns></returns>
+        internal static DialogResult ShowDialogDark(this Form dialog) => dialog.ShowDialog();
 
         #region ToolTips
 

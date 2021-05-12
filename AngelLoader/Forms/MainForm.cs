@@ -1751,7 +1751,7 @@ namespace AngelLoader.Forms
             bool noneSelected;
             using (var f = new ScanAllFMsForm())
             {
-                if (f.ShowDialog() != DialogResult.OK) return;
+                if (f.ShowDialogDark() != DialogResult.OK) return;
                 noneSelected = f.NoneSelected;
                 if (!noneSelected) scanOptions = f.ScanOptions;
             }
@@ -2042,7 +2042,7 @@ namespace AngelLoader.Forms
                         FilterIconButtonsToolStrip.Location.X + button.Bounds.X,
                         FilterIconButtonsToolStrip.Location.Y + button.Bounds.Y + button.Height));
 
-                    if (f.ShowDialog() != DialogResult.OK) return;
+                    if (f.ShowDialogDark() != DialogResult.OK) return;
 
                     FMsDGV.Filter.SetDateFromAndTo(lastPlayed, f.DateFrom, f.DateTo);
 
@@ -2054,7 +2054,7 @@ namespace AngelLoader.Forms
             else if (sender == FilterByTagsButton)
             {
                 using var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags);
-                if (tf.ShowDialog() != DialogResult.OK) return;
+                if (tf.ShowDialogDark() != DialogResult.OK) return;
 
                 tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
                 FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
@@ -2072,7 +2072,7 @@ namespace AngelLoader.Forms
                             FilterByRatingButton.Bounds.Y +
                             FilterByRatingButton.Height));
 
-                    if (f.ShowDialog() != DialogResult.OK) return;
+                    if (f.ShowDialogDark() != DialogResult.OK) return;
                     FMsDGV.Filter.SetRatingFromAndTo(f.RatingFrom, f.RatingTo);
                     FilterByRatingButton.Checked =
                         !(FMsDGV.Filter.RatingFrom == -1 && FMsDGV.Filter.RatingTo == 10);

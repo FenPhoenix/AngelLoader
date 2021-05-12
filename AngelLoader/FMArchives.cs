@@ -129,7 +129,7 @@ namespace AngelLoader
                 okIsDangerous: true,
                 choiceStrings: singleArchive ? null : archives.ToArray()))
             {
-                if (f.ShowDialog() != DialogResult.OK) return;
+                if (f.ShowDialogDark() != DialogResult.OK) return;
 
                 finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
             }

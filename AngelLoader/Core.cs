@@ -223,7 +223,7 @@ namespace AngelLoader
             ConfigData outConfig;
             using (var sf = new SettingsForm(View, Config, startup, cleanStart))
             {
-                result = sf.ShowDialog();
+                result = sf.ShowDialogDark();
                 outConfig = sf.OutConfig;
             }
 
