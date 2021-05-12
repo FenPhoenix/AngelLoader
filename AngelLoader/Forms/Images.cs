@@ -409,6 +409,8 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Play arrow
+
         private static readonly Color _playArrowColor = Color.FromArgb(45, 154, 47);
         private static readonly Color _playArrowColor_Dark = Color.FromArgb(91, 176, 93);
         private static readonly SolidBrush _playArrowBrush = new SolidBrush(_playArrowColor);
@@ -420,6 +422,8 @@ namespace AngelLoader.Forms
         private static Pen PlayArrowPen => DarkModeEnabled ? _playArrowPen_Dark : _playArrowPen;
         // Explicit pen for this because we need to set the width
         private static readonly Pen PlayArrowDisabledPen = new Pen(SystemColors.ControlDark, 2.5f);
+
+        #endregion
 
         #region Reset layout
 
