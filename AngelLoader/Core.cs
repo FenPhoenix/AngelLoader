@@ -1306,7 +1306,7 @@ namespace AngelLoader
                 }
             }
 
-            if (safeReadme!.IsEmpty())
+            if (safeReadme.IsEmpty())
             {
                 int numSafe = 0;
                 int safeIndex = -1;

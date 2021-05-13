@@ -516,7 +516,6 @@ namespace FMScanner
                         }
                         catch (Exception ex)
                         {
-                            // TODO: Uh... we're swallowing all exceptions (at least we're logging them now, but still)
                             Log(LogFile, missions[i].Path + ": Exception in FM scan", ex);
                             scannedFMAndError.Exception = ex;
                             scannedFMAndError.ErrorInfo = missions[i].Path + ": Exception in FM scan";
@@ -3644,6 +3643,8 @@ namespace FMScanner
                 }
             }
 
+            #endregion
+
             #region SS2 slow-detect fallback
 
             // Paranoid fallback. In case MAPPARAM ends up at a different byte location in a future version of
@@ -3680,8 +3681,6 @@ namespace FMScanner
                     ret.Game = Game.SS2;
                 }
             }
-
-            #endregion
 
             #endregion
 
