@@ -1575,7 +1575,7 @@ namespace AngelLoader.Forms
             if (_ownerForm == null) return;
             try
             {
-                _ownerForm!.Localize();
+                _ownerForm.Localize();
             }
             catch (Exception ex)
             {

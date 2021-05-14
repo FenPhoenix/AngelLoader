@@ -1258,7 +1258,7 @@ namespace AngelLoader.Forms
                 AuthorColumn.HeaderText = LText.FMsList.AuthorColumn;
                 SizeColumn.HeaderText = LText.FMsList.SizeColumn;
                 RatingTextColumn.HeaderText = LText.FMsList.RatingColumn;
-                RatingImageColumn!.HeaderText = LText.FMsList.RatingColumn;
+                RatingImageColumn.HeaderText = LText.FMsList.RatingColumn;
                 FinishedColumn.HeaderText = LText.FMsList.FinishedColumn;
                 ReleaseDateColumn.HeaderText = LText.FMsList.ReleaseDateColumn;
                 LastPlayedColumn.HeaderText = LText.FMsList.LastPlayedColumn;
@@ -3328,7 +3328,7 @@ namespace AngelLoader.Forms
                     {
                         if (Config.RatingUseStars)
                         {
-                            e.Value = fm.Rating == -1 ? Images.Blank : Images.StarIcons![fm.Rating];
+                            e.Value = fm.Rating == -1 ? Images.Blank : Images.StarIcons[fm.Rating];
                         }
                         else
                         {
@@ -3338,7 +3338,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Finished:
-                    e.Value = fm.FinishedOnUnknown ? Images.FinishedOnUnknown : Images.FinishedOnIcons![fm.FinishedOn];
+                    e.Value = fm.FinishedOnUnknown ? Images.FinishedOnUnknown : Images.FinishedOnIcons[fm.FinishedOn];
                     break;
 
                 case Column.ReleaseDate:
@@ -3524,13 +3524,13 @@ namespace AngelLoader.Forms
 
             var newRatingColumn =
                 Config.RatingDisplayStyle == RatingDisplayStyle.FMSel && Config.RatingUseStars
-                    ? (DataGridViewColumn)RatingImageColumn!
+                    ? (DataGridViewColumn)RatingImageColumn
                     : RatingTextColumn;
 
             if (!startup)
             {
                 var oldRatingColumn = FMsDGV.Columns[(int)Column.Rating];
-                newRatingColumn!.Width = newRatingColumn == RatingTextColumn
+                newRatingColumn.Width = newRatingColumn == RatingTextColumn
                     ? oldRatingColumn.Width
                     // To set the ratio back to exact on zoom reset
                     : FMsDGV.RowTemplate.Height == 22

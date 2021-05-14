@@ -27,10 +27,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
                 if (!_constructed) return;
 
-                Panel!.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
-                ListBox!.DarkModeEnabled = _darkModeEnabled;
+                Panel.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
+                ListBox.DarkModeEnabled = _darkModeEnabled;
                 OKButtonFLP.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
-                OKButton!.DarkModeEnabled = _darkModeEnabled;
+                OKButton.DarkModeEnabled = _darkModeEnabled;
             }
         }
 

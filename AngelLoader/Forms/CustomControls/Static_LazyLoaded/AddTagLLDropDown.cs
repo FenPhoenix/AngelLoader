@@ -24,7 +24,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
                 if (!Constructed) return;
 
-                ListBox!.DarkModeEnabled = _darkModeEnabled;
+                ListBox.DarkModeEnabled = _darkModeEnabled;
             }
         }
 

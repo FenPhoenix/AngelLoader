@@ -640,7 +640,7 @@ namespace AngelLoader.Forms
                         // of type ToolTip, and that there is a ToolTip field in the class. If getting the ToolTip
                         // field's value succeeds, then we know this field is guaranteed to be initialized by the
                         // time the ToolTipNativeWindow class is constructed.
-                        _toolTipNativeWindowControlField!.GetValue(tsNativeWindow);
+                        _toolTipNativeWindowControlField.GetValue(tsNativeWindow);
 
                         _toolTipsReflectable = true;
                     }

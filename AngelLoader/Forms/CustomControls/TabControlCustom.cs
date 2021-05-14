@@ -36,7 +36,7 @@ namespace AngelLoader.Forms.CustomControls
             }
 
 #if DEBUG
-            if (DesignMode) return (-1, null)!;
+            if (DesignMode) return (-1, null!);
 #endif
 
             // We should never get here! (unless we're in infernal-forsaken design mode...!)
@@ -153,7 +153,7 @@ namespace AngelLoader.Forms.CustomControls
             TabPages[newTabIndex] = _dragTab;
 
             _backingTabList[bDragTabIndex].TabPage = newTab;
-            _backingTabList[bNewTabIndex].TabPage = _dragTab!;
+            _backingTabList[bNewTabIndex].TabPage = _dragTab;
 
             SelectedTab = _dragTab;
         }

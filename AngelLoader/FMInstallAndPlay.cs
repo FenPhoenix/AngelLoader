@@ -783,7 +783,7 @@ namespace AngelLoader
 
                 bool markFMAsUnavailable = false;
 
-                if (fmArchivePath!.IsEmpty())
+                if (fmArchivePath.IsEmpty())
                 {
                     (bool cancel, _) = ControlUtils.AskToContinueYesNoCustomStrings(
                         message: LText.AlertMessages.Uninstall_ArchiveNotFound,

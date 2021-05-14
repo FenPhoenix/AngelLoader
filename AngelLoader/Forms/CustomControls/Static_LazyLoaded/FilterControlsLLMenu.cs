@@ -39,7 +39,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 _darkModeEnabled = value;
                 if (!_constructed) return;
 
-                Menu!.DarkModeEnabled = _darkModeEnabled;
+                Menu.DarkModeEnabled = _darkModeEnabled;
             }
         }
 
@@ -98,7 +98,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed)
             {
-                for (int i = 0; i < Menu!.Items.Count; i++)
+                for (int i = 0; i < Menu.Items.Count; i++)
                 {
                     ((ToolStripMenuItemCustom)Menu.Items[i]).Checked = states[i];
                 }
@@ -115,7 +115,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             if (_constructed)
             {
-                for (int i = 0; i < Menu!.Items.Count; i++)
+                for (int i = 0; i < Menu.Items.Count; i++)
                 {
                     ret[i] = ((ToolStripMenuItemCustom)Menu.Items[i]).Checked;
                 }
