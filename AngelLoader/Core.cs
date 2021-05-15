@@ -1519,6 +1519,16 @@ namespace AngelLoader
             return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
         }
 
+        internal static void UpdateFMReadmeCodePages(FanMission fm, int codePage)
+        {
+            fm.ReadmeCodePages[fm.SelectedReadme] = codePage;
+            fm.ReadmeAndCodePageEntries.Clear();
+            foreach (var item in fm.ReadmeCodePages)
+            {
+                fm.ReadmeAndCodePageEntries.Add(item.Key + "," + item.Value);
+            }
+        }
+
         #region Shutdown
 
         internal static void UpdateConfig(

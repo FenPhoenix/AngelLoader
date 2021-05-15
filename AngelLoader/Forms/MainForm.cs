@@ -212,6 +212,13 @@ namespace AngelLoader.Forms
             const bool BlockMessage = true;
             const bool PassMessageOn = false;
 
+            static bool TryGetHWndFromMousePos(Message msg, out IntPtr result)
+            {
+                Point pos = new Point(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
+                result = Native.WindowFromPoint(pos);
+                return result != IntPtr.Zero && Control.FromHandle(result) != null;
+            }
+
             // Note: CanFocus will be false if there are modal windows open
 
             // This allows controls to be scrolled with the mousewheel when the mouse is over them, without
@@ -1723,13 +1730,6 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-
-        private static bool TryGetHWndFromMousePos(Message msg, out IntPtr result)
-        {
-            Point pos = new Point(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
-            result = Native.WindowFromPoint(pos);
-            return result != IntPtr.Zero && Control.FromHandle(result) != null;
-        }
 
         #endregion
 
@@ -3668,7 +3668,7 @@ namespace AngelLoader.Forms
                 Encoding? enc = ReadmeRichTextBox.ChangeEncoding(null);
                 if (enc != null)
                 {
-                    UpdateFMReadmeCodePages(FMsDGV.GetSelectedFM(), enc.CodePage);
+                    Core.UpdateFMReadmeCodePages(FMsDGV.GetSelectedFM(), enc.CodePage);
                     EncodingsLLMenu.SetEncodingMenuItemChecked(enc);
                 }
             }
@@ -3687,7 +3687,7 @@ namespace AngelLoader.Forms
                 menuItem.Checked = true;
 
                 ReadmeRichTextBox.ChangeEncoding(enc);
-                UpdateFMReadmeCodePages(FMsDGV.GetSelectedFM(), enc.CodePage);
+                Core.UpdateFMReadmeCodePages(FMsDGV.GetSelectedFM(), enc.CodePage);
             }
         }
 
@@ -4368,7 +4368,7 @@ namespace AngelLoader.Forms
                     // every time until the user explicitly requests something different.
                     if (isRealPlainText && newEncoding?.CodePage > 0)
                     {
-                        UpdateFMReadmeCodePages(fm, newEncoding.CodePage);
+                        Core.UpdateFMReadmeCodePages(fm, newEncoding.CodePage);
                     }
 
                     if (isRealPlainText && finalEncoding != null)
@@ -4385,16 +4385,6 @@ namespace AngelLoader.Forms
                 SetReadmeVisible(true);
                 ReadmeEncodingButton.Enabled = false;
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
-            }
-        }
-
-        private static void UpdateFMReadmeCodePages(FanMission fm, int codePage)
-        {
-            fm.ReadmeCodePages[fm.SelectedReadme] = codePage;
-            fm.ReadmeAndCodePageEntries.Clear();
-            foreach (var item in fm.ReadmeCodePages)
-            {
-                fm.ReadmeAndCodePageEntries.Add(item.Key + "," + item.Value);
             }
         }
 
