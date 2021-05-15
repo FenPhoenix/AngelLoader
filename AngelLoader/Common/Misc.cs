@@ -87,7 +87,7 @@ namespace AngelLoader
 
             internal static readonly string ReadmeArea = "#readme_area";
 
-            internal static readonly string ScanAllFMs = "#scan_all_fms_button";
+            internal static readonly string ScanAllFMs = "#scan_all_fms";
 
             internal static readonly string MainMenu = "#main_menu";
 
