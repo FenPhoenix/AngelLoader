@@ -1094,9 +1094,6 @@ namespace AngelLoader.Forms.CustomControls
 
             _colorTableStartIndex = _rtfStream.CurrentPos;
 
-            var numSB = new StringBuilder(5);
-            var rgbNameSB = new StringBuilder(5);
-
             while (true)
             {
                 if (!_rtfStream.GetNextChar(out char ch)) return ClearReturnFields(Error.EndOfFile);
@@ -1112,28 +1109,20 @@ namespace AngelLoader.Forms.CustomControls
             string ct = _colorTableSB.ToString();
             List<string> entries = ct.Split(';').ToList();
 
-            if (entries.Count == 0) return ClearReturnFields(Error.OK);
-
+            if (entries.Count == 0)
+            {
+                return ClearReturnFields(Error.OK);
+            }
             // Remove the last blank entry so we don't count it as the auto/default one by hitting a blank entry
             // in the loop below
-            if (entries[entries.Count - 1].IsWhiteSpace())
+            else if (entries.Count > 1 && entries[entries.Count - 1].IsWhiteSpace())
             {
-                if (entries.Count > 1)
-                {
-                    entries.RemoveAt(entries.Count - 1);
-                }
-                else if (entries.Count == 0)
-                {
-                    return ClearReturnFields(Error.OK);
-                }
+                entries.RemoveAt(entries.Count - 1);
             }
 
             for (int i = 0; i < entries.Count; i++)
             {
                 string entry = entries[i].Trim();
-
-                rgbNameSB.Clear();
-                numSB.Clear();
 
                 if (entry.IsEmpty())
                 {
@@ -1143,9 +1132,9 @@ namespace AngelLoader.Forms.CustomControls
                 else
                 {
                     // Horrible but functional just to get it going
-                    var redMatch = Regex.Match(entry, @"\\red(?<Value>[0123456789]{1,3})");
-                    var greenMatch = Regex.Match(entry, @"\\green(?<Value>[0123456789]{1,3})");
-                    var blueMatch = Regex.Match(entry, @"\\blue(?<Value>[0123456789]{1,3})");
+                    Match redMatch = Regex.Match(entry, @"\\red(?<Value>[0123456789]{1,3})");
+                    Match greenMatch = Regex.Match(entry, @"\\green(?<Value>[0123456789]{1,3})");
+                    Match blueMatch = Regex.Match(entry, @"\\blue(?<Value>[0123456789]{1,3})");
 
                     if (redMatch.Success &&
                         blueMatch.Success &&
