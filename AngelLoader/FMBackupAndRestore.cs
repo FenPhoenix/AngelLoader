@@ -278,8 +278,7 @@ namespace AngelLoader
                 string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
-                using (var archive = new ZipArchive(new FileStream(fileToUse.Name, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read, leaveOpen: false, Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage)))
+                using (var archive = GetZipArchiveCharEnc(fileToUse.Name))
                 {
                     int filesCount = archive.Entries.Count;
                     if (fileToUse.DarkLoader)
@@ -490,8 +489,7 @@ namespace AngelLoader
             bool fmIsZip = fmArchivePath.ExtIsZip();
             if (fmIsZip)
             {
-                using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read, leaveOpen: false, Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
+                using var archive = GetZipArchiveCharEnc(fmArchivePath);
 
                 for (int i = 0; i < archive.Entries.Count; i++)
                 {

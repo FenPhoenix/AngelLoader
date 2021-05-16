@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using AL_Common;
@@ -251,6 +252,22 @@ namespace AngelLoader
             {
                 return false;
             }
+        }
+
+        internal static ZipArchive GetZipArchiveCharEnc(string fileName)
+        {
+            // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
+            Encoding enc;
+            try
+            {
+                enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+            }
+            catch
+            {
+                enc = Encoding.UTF8;
+            }
+
+            return new ZipArchive(File.OpenRead(fileName), ZipArchiveMode.Read, leaveOpen: false, enc);
         }
     }
 }

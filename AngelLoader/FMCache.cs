@@ -215,9 +215,7 @@ namespace AngelLoader
         {
             var htmlRefFiles = new List<NameAndIndex>();
 
-            using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                ZipArchiveMode.Read, leaveOpen: false,
-                Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
+            using var archive = GetZipArchiveCharEnc(fmArchivePath);
 
             foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
             {
@@ -302,9 +300,7 @@ namespace AngelLoader
         {
             try
             {
-                using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read, leaveOpen: false,
-                    Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
+                using var archive = GetZipArchiveCharEnc(fmArchivePath);
 
                 for (int i = 0; i < archive.Entries.Count; i++)
                 {
