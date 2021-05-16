@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
@@ -42,6 +43,10 @@ namespace AngelLoader.Forms.CustomControls
             // We should never get here! (unless we're in infernal-forsaken design mode...!)
             throw new InvalidOperationException("Can't find backing tab?!");
         }
+
+        [PublicAPI]
+        [DefaultValue(false)]
+        public bool AllowReordering { get; set; }
 
         #region Public methods
 
@@ -105,12 +110,24 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
+            if (!AllowReordering)
+            {
+                base.OnMouseDown(e);
+                return;
+            }
+
             if (e.Button == MouseButtons.Left) (_, _dragTab) = GetTabAtPoint(e.Location);
             base.OnMouseDown(e);
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            if (!AllowReordering)
+            {
+                base.OnMouseUp(e);
+                return;
+            }
+
             // Fix: Ensure we don't start dragging a tab again after we've released the button.
             _dragTab = null;
             base.OnMouseUp(e);
@@ -118,6 +135,12 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
+            if (!AllowReordering)
+            {
+                base.OnMouseMove(e);
+                return;
+            }
+
             // Run the base event handler if we're not actually dragging a tab
             if (e.Button != MouseButtons.Left || _dragTab == null || TabCount <= 1)
             {

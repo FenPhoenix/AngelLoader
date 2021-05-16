@@ -92,11 +92,11 @@ namespace AngelLoader.Forms
             RefreshFiltersButton = new ToolStripButtonCustom();
             ClearFiltersButton = new ToolStripButtonCustom();
             ResetLayoutButton = new DarkButton();
-            GamesTabControl = new DarkTabControl();
-            Thief1TabPage = new TabPage();
-            Thief2TabPage = new TabPage();
-            Thief3TabPage = new TabPage();
-            SS2TabPage = new TabPage();
+            GamesTabControl = new TabControlCustom();
+            Thief1TabPage = new TabPageCustom();
+            Thief2TabPage = new TabPageCustom();
+            Thief3TabPage = new TabPageCustom();
+            SS2TabPage = new TabPageCustom();
             TopRightMenuButton = new DarkButton();
             TopRightCollapseButton = new ArrowButton();
             TopRightTabControl = new TabControlCustom();
@@ -854,6 +854,7 @@ namespace AngelLoader.Forms
             // TopRightTabControl
             // 
             TopRightTabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            TopRightTabControl.AllowReordering = true;
 
             // We need to always add the tab pages to the Controls collection on init, because otherwise in dark
             // mode the tabs have wrong sizes until you set it again after the UI is already shown(?!)

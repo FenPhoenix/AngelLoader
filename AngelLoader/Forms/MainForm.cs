@@ -674,11 +674,14 @@ namespace AngelLoader.Forms
                 sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].DisplayIndex, _topRightTabsInOrder[i]);
             }
 
-            var tabs = new List<TabPage>(sortedTabPages.Count);
-            foreach (var item in sortedTabPages) tabs.Add(item.Value);
+            var topRightTabs = new List<TabPage>(sortedTabPages.Count);
+            foreach (var item in sortedTabPages) topRightTabs.Add(item.Value);
 
             // This removes any existing tabs so it works even though we always add all tabs in component init now
-            TopRightTabControl.SetTabsFull(tabs);
+            TopRightTabControl.SetTabsFull(topRightTabs);
+            var gameTabs = new List<TabPage>(SupportedGameCount);
+            foreach (TabPage item in _gameTabsInOrder) gameTabs.Add(item);
+            GamesTabControl.SetTabsFull(gameTabs);
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
@@ -1787,16 +1790,53 @@ namespace AngelLoader.Forms
 
                 using (new DisableEvents(this))
                 {
-                    GamesTabControl.SelectedIndex = (int)Config.GameTab;
+                    GamesTabControl.SelectedTab = _gameTabsInOrder[(int)Config.GameTab];
                 }
             }
 
-            // Do these even if we're not in startup, because we may have changed the game organization mode
-            for (int i = 0; i < SupportedGameCount; i++)
+            try
             {
-                var game = GameIndexToGame((GameIndex)i);
-                _filterByGameButtonsInOrder[i].Checked = Config.Filter.Games.HasFlagFast(game);
+                if (!startup && Config.HideGameFilterElementsIfGameNotSpecified)
+                {
+                    FilterBarFLP.SuspendDrawing();
+                    GamesTabControl.SuspendDrawing();
+                }
+
+                // Do these even if we're not in startup, because we may have changed the game organization mode
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    Game game = GameIndexToGame(gameIndex);
+                    ToolStripButtonCustom button = _filterByGameButtonsInOrder[i];
+                    bool gameSpecified = !Config.GetGameExe(gameIndex).IsEmpty();
+
+                    if (Config.HideGameFilterElementsIfGameNotSpecified)
+                    {
+                        button.Checked = gameSpecified && Config.Filter.Games.HasFlagFast(game);
+                        button.Visible = gameSpecified;
+                        GamesTabControl.ShowTab(_gameTabsInOrder[i], gameSpecified);
+                        if (!gameSpecified)
+                        {
+                            Config.Filter.Games &= ~game;
+                            FMsDGV.Filter.Games &= ~game;
+                        }
+                    }
+                    else
+                    {
+                        button.Checked = Config.Filter.Games.HasFlagFast(game);
+                    }
+                }
             }
+            finally
+            {
+                if (!startup && Config.HideGameFilterElementsIfGameNotSpecified)
+                {
+                    GamesTabControl.ResumeDrawing();
+                    FilterBarFLP.ResumeDrawing();
+                }
+            }
+
+            AutosizeGameTabsWidth();
 
             if (!startup) ChangeFilterControlsForGameType();
         }
@@ -1812,9 +1852,7 @@ namespace AngelLoader.Forms
                     : GetLocalizedGameName((GameIndex)i);
             }
 
-            // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
-            var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
-            GamesTabControl.Width = lastGameTabsRect.X + lastGameTabsRect.Width + 5;
+            AutosizeGameTabsWidth();
 
             if (refreshFilterBarPositionIfNeeded && Config.GameOrganization == GameOrganization.ByTab)
             {
@@ -1822,31 +1860,50 @@ namespace AngelLoader.Forms
             }
         }
 
-        private (SelectedFM GameSelFM, Filter GameFilter)
+        private void AutosizeGameTabsWidth()
+        {
+            // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
+            if (GamesTabControl.TabCount == 0)
+            {
+                GamesTabControl.Width = 0;
+            }
+            else
+            {
+                var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
+                GamesTabControl.Width = lastGameTabsRect.X + lastGameTabsRect.Width + 5;
+            }
+        }
+
+        private (SelectedFM GameSelFM, Filter GameFilter, GameIndex GameIndex)
         GetGameSelFMAndFilter(TabPage tabPage)
         {
             // NULL_TODO: Null so I can assert
             SelectedFM? gameSelFM = null;
             Filter? gameFilter = null;
+            GameIndex? gameIndex = null;
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 if (_gameTabsInOrder[i] == tabPage)
                 {
                     gameSelFM = FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
                     gameFilter = FMsDGV.GameTabsState.GetFilter((GameIndex)i);
+                    gameIndex = (GameIndex)i;
                     break;
                 }
             }
 
             AssertR(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");
             AssertR(gameFilter != null, "gameFilter is null: Selected tab is not being handled");
+            AssertR(gameIndex != null, "gameIndex is null: Selected tab is not being handled");
 
-            return (gameSelFM!, gameFilter!);
+            return (gameSelFM!, gameFilter!, (GameIndex)gameIndex!);
         }
 
-        private void SaveCurrentTabSelectedFM(TabPage tabPage)
+        private void SaveCurrentTabSelectedFM(TabPage? tabPage)
         {
-            var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(tabPage);
+            if (tabPage == null) return;
+
+            var (gameSelFM, gameFilter, _) = GetGameSelFMAndFilter(tabPage);
             SelectedFM selFM = FMsDGV.GetSelectedFMPosInfo();
             selFM.DeepCopyTo(gameSelFM);
             FMsDGV.Filter.DeepCopyTo(gameFilter);
@@ -1862,7 +1919,15 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
 
-            var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(GamesTabControl.SelectedTab);
+            if (GamesTabControl.SelectedTab == null)
+            {
+                Config.GameTab = Thief1;
+                return;
+            }
+
+            var (gameSelFM, gameFilter, gameIndex) = GetGameSelFMAndFilter(GamesTabControl.SelectedTab);
+
+            Config.GameTab = gameIndex;
 
             for (int i = 0; i < SupportedGameCount; i++)
             {

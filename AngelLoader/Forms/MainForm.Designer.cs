@@ -89,11 +89,11 @@
             this.RefreshFiltersButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.ClearFiltersButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.ResetLayoutButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.GamesTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
-            this.Thief1TabPage = new System.Windows.Forms.TabPage();
-            this.Thief2TabPage = new System.Windows.Forms.TabPage();
-            this.Thief3TabPage = new System.Windows.Forms.TabPage();
-            this.SS2TabPage = new System.Windows.Forms.TabPage();
+            this.GamesTabControl = new AngelLoader.Forms.CustomControls.TabControlCustom();
+            this.Thief1TabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
+            this.Thief2TabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
+            this.Thief3TabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
+            this.SS2TabPage = new AngelLoader.Forms.CustomControls.TabPageCustom();
             this.TopRightMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.TopRightCollapseButton = new AngelLoader.Forms.CustomControls.ArrowButton();
             this.TopRightTabControl = new AngelLoader.Forms.CustomControls.TabControlCustom();
@@ -972,6 +972,7 @@
             this.GamesTabControl.Controls.Add(this.Thief2TabPage);
             this.GamesTabControl.Controls.Add(this.Thief3TabPage);
             this.GamesTabControl.Controls.Add(this.SS2TabPage);
+            this.GamesTabControl.AllowReordering = false;
             this.GamesTabControl.ImageList = this.GameTabsImageList;
             this.GamesTabControl.Location = new System.Drawing.Point(28, 5);
             this.GamesTabControl.Name = "GamesTabControl";
@@ -1058,6 +1059,7 @@
             this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.TopRightTabControl.AllowReordering = true;
             this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
             this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
             this.TopRightTabControl.Controls.Add(this.CommentTabPage);
@@ -1958,9 +1960,9 @@
         internal AngelLoader.Forms.CustomControls.DarkLabel FilterTitleLabel;
         internal AngelLoader.Forms.CustomControls.TextBoxCustom FilterTitleTextBox;
         internal AngelLoader.Forms.CustomControls.DarkButton PlayOriginalGameButton;
-        internal AngelLoader.Forms.CustomControls.DarkTabControl GamesTabControl;
-        internal System.Windows.Forms.TabPage Thief1TabPage;
-        internal System.Windows.Forms.TabPage Thief2TabPage;
+        internal AngelLoader.Forms.CustomControls.TabControlCustom GamesTabControl;
+        internal AngelLoader.Forms.CustomControls.TabPageCustom Thief1TabPage;
+        internal AngelLoader.Forms.CustomControls.TabPageCustom Thief2TabPage;
         internal System.Windows.Forms.ImageList GameTabsImageList;
         internal AngelLoader.Forms.CustomControls.TabControlCustom TopRightTabControl;
         internal AngelLoader.Forms.CustomControls.TabPageCustom StatisticsTabPage;
@@ -2021,7 +2023,7 @@
         internal AngelLoader.Forms.CustomControls.ToolStripCustom RefreshAreaToolStrip;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom ClearFiltersButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByThief3Button;
-        internal System.Windows.Forms.TabPage Thief3TabPage;
+        internal AngelLoader.Forms.CustomControls.TabPageCustom Thief3TabPage;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFiltersButton;
         internal System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFLP;
         internal System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFLP;
@@ -2062,7 +2064,7 @@
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
         internal AngelLoader.Forms.CustomControls.DarkButton TopRightMenuButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterBySS2Button;
-        internal System.Windows.Forms.TabPage SS2TabPage;
+        internal AngelLoader.Forms.CustomControls.TabPageCustom SS2TabPage;
         internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
         internal AngelLoader.Forms.CustomControls.ComboBoxWithBackingItems EditFMLanguageComboBox;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;

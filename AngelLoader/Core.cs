@@ -439,6 +439,9 @@ namespace AngelLoader
                 Config.GameTab = Thief1;
                 View.ClearUIAndCurrentInternalFilter();
                 if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
+            }
+            if (gamePathsChanged || gameOrganizationChanged)
+            {
                 View.ChangeGameOrganization();
             }
             if (useShortGameTabNamesChanged)
