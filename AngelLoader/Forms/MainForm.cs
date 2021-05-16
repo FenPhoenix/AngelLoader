@@ -1802,7 +1802,6 @@ namespace AngelLoader.Forms
                     GamesTabControl.SuspendDrawing();
                 }
 
-                // Do these even if we're not in startup, because we may have changed the game organization mode
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     GameIndex gameIndex = (GameIndex)i;
