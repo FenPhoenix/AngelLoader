@@ -403,7 +403,7 @@ namespace AngelLoader.DataClasses
         internal bool ShowUnsupported = false;
         internal bool ShowUnavailableFMs = false;
 
-        internal bool HideGameFilterElementsIfGameNotSpecified = true;
+        internal bool HideGameFilterElementsIfGameNotSpecified = false;
 
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
