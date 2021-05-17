@@ -45,6 +45,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
+                        // @BetterErrors(GetFMArchivePaths() where IncludeSubfolders == true)
                         Log(nameof(GetFMArchivePaths) + " : subfolders=true, Exception in GetDirectories", ex);
                     }
                 }

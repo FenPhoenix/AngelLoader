@@ -891,22 +891,15 @@ namespace AngelLoader.Forms
                 {
                     if (!LangComboBox.SelectedBackingItem().EqualsI(_inLanguage))
                     {
-                        try
-                        {
-                            // It's actually totally fine that this one is a reference.
-                            LText = _inLText;
-                            LocalizeOwnerForm();
-                        }
-                        catch (Exception ex)
-                        {
-                            Log("Exception in language reading", ex);
-                        }
+                        // It's actually totally fine that this one is a reference.
+                        LText = _inLText;
+                        _ownerForm?.Localize();
                     }
 
                     if (_inTheme != _selfTheme)
                     {
                         Config.VisualTheme = _inTheme;
-                        ThemeOwnerForm(_inTheme);
+                        _ownerForm?.SetTheme(_inTheme);
                     }
                 }
 
@@ -1312,7 +1305,7 @@ namespace AngelLoader.Forms
                 : VisualTheme.Classic;
 
             SetTheme(theme, startup: false);
-            ThemeOwnerForm(theme);
+            _ownerForm?.SetTheme(theme);
         }
 
         private void GameOrganizationRadioButtons_CheckedChanged(object sender, EventArgs e)
@@ -1500,16 +1493,20 @@ namespace AngelLoader.Forms
         private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
+
+            // @BetterErrors(Settings lang combobox select)
+            // If we fail, we should fall back to internal default English set, and switch the combobox to English
             try
             {
                 LText = Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, LangComboBox.SelectedBackingItem() + ".ini"));
-                Localize();
-                if (!_startup) LocalizeOwnerForm();
             }
             catch (Exception ex)
             {
                 Log("Exception in language reading", ex);
             }
+
+            Localize();
+            if (!_startup) _ownerForm?.Localize();
         }
 
         #endregion
@@ -1569,21 +1566,6 @@ namespace AngelLoader.Forms
                 if (!section.IsEmpty()) Core.OpenHelpFile(section);
             }
         }
-
-        private void LocalizeOwnerForm()
-        {
-            if (_ownerForm == null) return;
-            try
-            {
-                _ownerForm.Localize();
-            }
-            catch (Exception ex)
-            {
-                Log(nameof(_ownerForm) + " was null or some other exotic exception occurred - not supposed to happen", ex);
-            }
-        }
-
-        private void ThemeOwnerForm(VisualTheme theme) => _ownerForm?.SetTheme(theme);
 
         /// <summary>
         /// Clean up any resources being used.

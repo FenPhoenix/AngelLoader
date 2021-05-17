@@ -60,6 +60,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
+                    // @BetterErrors(GetInfoFromCamModIni()/CreateAndReturnFMsPath())
                     Log("Exception creating FM installed base dir", ex);
                 }
 
@@ -290,6 +291,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
+                    // @BetterErrors(ResetGameConfigTempChanges())
                     Log("Exception trying to unset temp config values\r\n" +
                         "GameIndex: " + gameIndex + "\r\n" +
                         "GameExe: " + gameExe,
