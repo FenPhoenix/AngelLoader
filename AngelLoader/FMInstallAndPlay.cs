@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -20,6 +19,12 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
+    // @BetterErrors(FMInstallAndPlay):
+    // -We should have an error for if there's not enough disk space
+    // -Can we know that for sure? We need to know if there's also enough space for the backup restore, and the
+    //  audio file conversions, and then if we uninstall we also need to know if there's enough space for the
+    //  backup archive...
+
     internal static class FMInstallAndPlay
     {
         private static CancellationTokenSource _extractCts = new CancellationTokenSource();

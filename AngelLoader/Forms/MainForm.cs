@@ -165,11 +165,7 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-            foreach (FanMission fm in FMDataIniList)
-            {
-                fm.ReadmeAndCodePageEntries.Clear();
-                fm.ReadmeCodePages.Clear();
-            }
+            ControlUtils.ShowErrorDialog("This is a test of the error dialog!");
         }
 
         private void Test4Button_Click(object sender, EventArgs e)

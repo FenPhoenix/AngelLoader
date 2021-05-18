@@ -457,6 +457,16 @@ namespace AngelLoader.Forms
             return (cancel, dontAskAgain);
         }
 
+        public static void ShowErrorDialog(
+            string message,
+            string? logFile = null)
+        {
+            logFile ??= Paths.LogFile;
+
+            using var d = new DarkErrorDialog(message, logFile);
+            d.ShowDialogDark();
+        }
+
         public static void ShowAlert(string message, string title, MessageBoxIcon icon = MessageBoxIcon.Warning)
         {
             if (Config.DarkMode)

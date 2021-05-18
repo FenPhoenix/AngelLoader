@@ -47,10 +47,9 @@ namespace Fen7z
         {
             public bool ErrorOccurred =>
                 !Canceled &&
-                (/*!ErrorText.IsWhiteSpace()
-                ||*/ Exception != null
-                || (ExitCode != SevenZipExitCode.NoError && ExitCode != SevenZipExitCode.UserStopped)
-                || (ExitCodeInt != null && ExitCodeInt != 0 && ExitCodeInt != 255));
+                (Exception != null
+                 || (ExitCode != SevenZipExitCode.NoError && ExitCode != SevenZipExitCode.UserStopped)
+                 || (ExitCodeInt != null && ExitCodeInt != 0 && ExitCodeInt != 255));
 
             public string ErrorText = "";
             public Exception? Exception;
@@ -59,11 +58,16 @@ namespace Fen7z
             public bool Canceled;
 
             public override string ToString() =>
-                "error in 7z.exe extraction:\r\n"
-                + ErrorText + "\r\n"
-                + (Exception?.ToString() ?? "") + "\r\n"
-                + "ExitCode: " + ExitCode + "\r\n"
-                + "ExitCodeInt: " + (ExitCodeInt?.ToString() ?? "");
+                ErrorOccurred
+                    ? "Error in 7z.exe extraction:\r\n"
+                      + ErrorText + "\r\n"
+                      + (Exception?.ToString() ?? "") + "\r\n"
+                      + "ExitCode: " + ExitCode + "\r\n"
+                      + "ExitCodeInt: " + (ExitCodeInt?.ToString() ?? "")
+                    : "No error.\r\n"
+                      + "Canceled: " + Canceled + "\r\n"
+                      + "ExitCode: " + ExitCode + "\r\n"
+                      + "ExitCodeInt: " + (ExitCodeInt?.ToString() ?? "");
         }
 
         /// <summary>

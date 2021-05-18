@@ -4,13 +4,19 @@ using System.IO;
 using System.Linq;
 using AL_Common;
 using AngelLoader.Forms;
-using static AL_Common.CommonUtils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
+    // @BetterErrors(GameConfigFiles):
+    // Go through this whole thing and check what we want to do for each error. Some of these should maybe remain
+    // silent because they have fallbacks, like if we can't set ourselves as the loader then the user will get a
+    // dialog about it if they try to start the game executable by itself, and maybe we don't want to bother the
+    // user for that? Then again, it's an unexpected situation that shouldn't happen often if at all, so maybe we
+    // should alert the user.
+
     internal static class GameConfigFiles
     {
         #region Constants
@@ -878,7 +884,13 @@ namespace AngelLoader
 
         private static string RemoveLeadingSemicolons(string line)
         {
-            do { line = line.TrimStart(CA_Semicolon).Trim(); } while (line.Length > 0 && line[0] == ';');
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+                if (c == ';' || char.IsWhiteSpace(c)) continue;
+                return line.Substring(i);
+            }
+
             return line;
         }
 

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
@@ -16,6 +14,10 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
+    // @BetterErrors(FMCache)
+    // We should probably rethrow after logging so we can put up one dialog if any exceptions and then they can
+    // view the log
+
     internal static class FMCache
     {
         #region Private fields
@@ -408,11 +410,7 @@ namespace AngelLoader
                 if (result.ErrorOccurred)
                 {
                     Log("Readme caching (7z): " + fmCachePath + ":\r\n"
-                        + "Error in 7z.exe extraction:\r\n"
-                        + result.ErrorText + "\r\n"
-                        + (result.Exception?.ToString() ?? "") + "\r\n"
-                        + "ExitCode: " + result.ExitCode + "\r\n"
-                        + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
+                        + result.ToString());
                 }
             }
             catch (Exception ex)

@@ -158,12 +158,12 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private System.Windows.Forms.PictureBox IconPictureBox;
-        private CustomControls.DarkLabel MessageLabel;
-        private System.Windows.Forms.FlowLayoutPanel BottomFLP;
-        private CustomControls.DarkButton Cancel_Button;
-        private CustomControls.DarkButton NoButton;
-        private CustomControls.DarkButton YesButton;
-        private CustomControls.DarkCheckBox VerificationCheckBox;
+        private protected System.Windows.Forms.PictureBox IconPictureBox;
+        private protected CustomControls.DarkLabel MessageLabel;
+        private protected System.Windows.Forms.FlowLayoutPanel BottomFLP;
+        private protected CustomControls.DarkButton Cancel_Button;
+        private protected CustomControls.DarkButton NoButton;
+        private protected CustomControls.DarkButton YesButton;
+        private protected CustomControls.DarkCheckBox VerificationCheckBox;
     }
 }

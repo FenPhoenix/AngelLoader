@@ -223,6 +223,8 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Help_HelpFileNotFound = "Help file not found.";
             internal readonly string Help_UnableToOpenHelpFile = "Unable to open help file.";
+            [FenGenBlankLine]
+            internal readonly string Error_ViewLog = "View log";
         }
 
         // Working, subject to change

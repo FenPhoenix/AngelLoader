@@ -185,27 +185,11 @@ namespace AngelLoader
 
                         if (errors)
                         {
-                            // @Localization(Scan errors)
-                            (bool cancel, _) =
-                            ControlUtils.AskToContinueYesNoCustomStrings(
-                                message: "One or more errors occurred while scanning. View the error log?",
-                                title: LText.AlertMessages.Alert,
-                                icon: MessageBoxIcon.Warning,
-                                showDontAskAgain: false,
-                                yes: "View error log",
-                                no: "Continue");
-
-                            if (!cancel)
-                            {
-                                try
-                                {
-                                    ProcessStart_UseShellExecute(Paths.ScannerLogFile);
-                                }
-                                catch
-                                {
-                                    ControlUtils.ShowAlert("Unable to open log file", LText.AlertMessages.Error);
-                                }
-                            }
+                            // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
+                            // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
+                            ControlUtils.ShowErrorDialog(
+                                message: ErrorText.ScanErrors,
+                                logFile: Paths.ScannerLogFile);
                         }
                     }
                 }

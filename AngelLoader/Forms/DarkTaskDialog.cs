@@ -9,7 +9,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class DarkTaskDialog : DarkForm
+    public partial class DarkTaskDialog : DarkForm
     {
         #region Private fields
 
@@ -82,7 +82,7 @@ namespace AngelLoader.Forms
 
             #region Set control state
 
-            Text = title;
+            base.Text = title;
             MessageLabel.Text = message;
 
             if (yesText != null) YesButton.Text = yesText;
