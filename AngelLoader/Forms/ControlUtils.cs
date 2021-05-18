@@ -457,9 +457,7 @@ namespace AngelLoader.Forms
             return (cancel, dontAskAgain);
         }
 
-        public static void ShowErrorDialog(
-            string message,
-            string? logFile = null)
+        public static void ShowErrorDialog(string message, string? logFile = null)
         {
             logFile ??= Paths.LogFile;
 
@@ -485,8 +483,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        #endregion
-
         /// <summary>
         /// Shows a dialog with hooked theming disabled, to prevent themed elements being drawn in the unthemed
         /// dialog (half-dark tooltips, dark scrollbars, etc.)
@@ -508,6 +504,8 @@ namespace AngelLoader.Forms
         /// <param name="dialog"></param>
         /// <returns></returns>
         internal static DialogResult ShowDialogDark(this Form dialog) => dialog.ShowDialog();
+
+        #endregion
 
         #region ToolTips
 

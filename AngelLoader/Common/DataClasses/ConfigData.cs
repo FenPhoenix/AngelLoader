@@ -72,7 +72,7 @@ namespace AngelLoader.DataClasses
         #region Paths
 
         internal readonly List<string> FMArchivePaths = new List<string>();
-        internal bool FMArchivePathsIncludeSubfolders = false;
+        internal bool FMArchivePathsIncludeSubfolders;
 
         // TODO: Backup path is currently required. Notes on potentially making it optional:
         // -We would need to add a guard check before attempting to either back up or restore an FM. We'd put up
@@ -217,9 +217,9 @@ namespace AngelLoader.DataClasses
         // @GENGAMES (ConfigData - Miscellaneous game-specific stuff): Begin
 
         // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)
-        internal bool T2MPDetected = false;
+        internal bool T2MPDetected;
 
-        internal bool T3UseCentralSaves = false;
+        internal bool T3UseCentralSaves;
 
         // @GENGAMES (ConfigData - Miscellaneous game-specific stuff): End
 
@@ -326,7 +326,7 @@ namespace AngelLoader.DataClasses
         private float _topSplitterPercent = Defaults.TopSplitterPercent;
         internal float TopSplitterPercent { get => _topSplitterPercent; set => _topSplitterPercent = value.ClampZeroToOne(); }
 
-        internal bool TopRightPanelCollapsed = false;
+        internal bool TopRightPanelCollapsed;
 
         internal readonly TopRightTabsData TopRightTabsData = new TopRightTabsData();
 
@@ -361,7 +361,7 @@ namespace AngelLoader.DataClasses
         #region Audio conversion
 
         internal bool ConvertWAVsTo16BitOnInstall = true;
-        internal bool ConvertOGGsToWAVsOnInstall = false;
+        internal bool ConvertOGGsToWAVsOnInstall;
 
         #endregion
 
@@ -380,19 +380,19 @@ namespace AngelLoader.DataClasses
 
         #region Show/hide UI elements
 
-        internal bool HideUninstallButton = false;
-        internal bool HideFMListZoomButtons = false;
+        internal bool HideUninstallButton;
+        internal bool HideFMListZoomButtons;
         internal bool HideExitButton = true;
 
         #endregion
 
-        internal bool UseShortGameTabNames = false;
+        internal bool UseShortGameTabNames;
 
         #region Recent FMs
 
         private uint _daysRecent = Defaults.DaysRecent;
         internal uint DaysRecent { get => _daysRecent; set => _daysRecent = value.Clamp((uint)0, Defaults.MaxDaysRecent); }
-        internal bool ShowRecentAtTop = false;
+        internal bool ShowRecentAtTop;
 
         #endregion
 
@@ -400,14 +400,14 @@ namespace AngelLoader.DataClasses
 
         internal VisualTheme VisualTheme = VisualTheme.Classic;
 
-        internal bool ShowUnsupported = false;
-        internal bool ShowUnavailableFMs = false;
+        internal bool ShowUnsupported;
+        internal bool ShowUnavailableFMs;
 
-        internal bool HideGameFilterElementsIfGameNotSpecified = false;
+        internal bool HideGameFilterElementsIfGameNotSpecified;
 
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
-        internal bool ForceWindowed = false;
+        internal bool ForceWindowed;
         //internal bool CheckForUpdatesOnStartup = true;
 #endif
     }
