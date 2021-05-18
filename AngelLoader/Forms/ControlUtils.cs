@@ -648,9 +648,12 @@ namespace AngelLoader.Forms
 
                         // At this point, we know we have only one instance constructor, that it takes one param
                         // of type ToolTip, and that there is a ToolTip field in the class. If getting the ToolTip
-                        // field's value succeeds, then we know this field is guaranteed to be initialized by the
-                        // time the ToolTipNativeWindow class is constructed.
-                        _toolTipNativeWindowControlField.GetValue(tsNativeWindow);
+                        // field's value succeeds and its value is not null, then we know this field is guaranteed
+                        // to be initialized by the time the ToolTipNativeWindow class is constructed.
+                        if (_toolTipNativeWindowControlField.GetValue(tsNativeWindow) == null)
+                        {
+                            return SetFalse();
+                        }
 
                         _toolTipsReflectable = true;
                     }
