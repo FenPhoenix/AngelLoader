@@ -3,73 +3,12 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
-using AL_Common;
-using JetBrains.Annotations;
-using Microsoft.Win32.SafeHandles;
-using static AL_Common.CommonUtils;
+using static AL_Common.FastIO_Native;
 
 namespace FMScanner
 {
     internal static class FastIO
     {
-        // So we don't have to remember to call FindClose()
-        [UsedImplicitly]
-        internal class SafeSearchHandle : SafeHandleZeroOrMinusOneIsInvalid
-        {
-            internal SafeSearchHandle() : base(true) { }
-            protected override bool ReleaseHandle() => FindClose(handle);
-
-            [DllImport("kernel32.dll", SetLastError = true)]
-            private static extern bool FindClose(IntPtr hFindFile);
-        }
-
-        private enum FINDEX_INFO_LEVELS
-        {
-            //FindExInfoStandard = 0,
-            FindExInfoBasic = 1
-        }
-
-        private enum FINDEX_SEARCH_OPS
-        {
-            FindExSearchNameMatch = 0,
-            /*
-            FindExSearchLimitToDirectories = 1,
-            FindExSearchLimitToDevices = 2
-            */
-        }
-
-        [SuppressMessage("ReSharper", "InconsistentNaming")]
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        private struct WIN32_FIND_DATAW
-        {
-            internal uint dwFileAttributes;
-            internal System.Runtime.InteropServices.ComTypes.FILETIME ftCreationTime;
-            internal System.Runtime.InteropServices.ComTypes.FILETIME ftLastAccessTime;
-            internal System.Runtime.InteropServices.ComTypes.FILETIME ftLastWriteTime;
-            internal uint nFileSizeHigh;
-            internal uint nFileSizeLow;
-            internal uint dwReserved0;
-            internal uint dwReserved1;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-            internal string cFileName;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
-            internal string cAlternateFileName;
-        }
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern SafeSearchHandle FindFirstFileExW(
-            string lpFileName,
-            FINDEX_INFO_LEVELS fInfoLevelId,
-            out WIN32_FIND_DATAW lpFindFileData,
-            FINDEX_SEARCH_OPS fSearchOp,
-            IntPtr lpSearchFilter,
-            int dwAdditionalFlags);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool FindNextFileW(SafeSearchHandle hFindFile, out WIN32_FIND_DATAW lpFindFileData);
-
         private enum FastIOSearchOption
         {
             TopDirectoryOnly,
@@ -109,30 +48,7 @@ namespace FMScanner
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         private static bool FirstFileExists(FastIOSearchOption searchOption, string path, params string[] searchPatterns)
         {
-            // Vital, path must not have a trailing separator
-            // We also normalize manually to all backslashes because we use \\?\ which skips normalization
-            path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
-
-            bool pathContainsInvalidChars = false;
-            char[] invalidChars = Path.GetInvalidPathChars();
-
-            // Dumb loop to avoid LINQ.
-            for (int i = 0; i < invalidChars.Length; i++)
-            {
-                if (path.Contains(invalidChars[i]))
-                {
-                    pathContainsInvalidChars = true;
-                    break;
-                }
-            }
-
-            if (path.IsWhiteSpace() || pathContainsInvalidChars)
-            {
-                throw new ArgumentException("The path '" + path + "' is invalid in some, or other, regard.");
-            }
-
-            const int FILE_ATTRIBUTE_DIRECTORY = 0x10;
-            const int ERROR_FILE_NOT_FOUND = 0x2;
+            path = NormalizeAndCheckPath(path, pathIsKnownValid: false);
 
             // Other relevant errors (though we don't use them specifically at the moment)
             //const int ERROR_PATH_NOT_FOUND = 0x3;

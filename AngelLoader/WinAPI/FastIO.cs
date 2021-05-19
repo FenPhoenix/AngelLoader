@@ -1,100 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
-using Microsoft.Win32.SafeHandles;
 using static AL_Common.CommonUtils;
+using static AL_Common.FastIO_Native;
 
 namespace AngelLoader.WinAPI
 {
     internal static class FastIO
     {
-        #region Fields
-
-        private const int FILE_ATTRIBUTE_DIRECTORY = 0x10;
-        private const int FIND_FIRST_EX_LARGE_FETCH = 0x2;
-        private const int ERROR_FILE_NOT_FOUND = 0x2;
-        private const int FILE_ATTRIBUTE_REPARSE_POINT = 0x400;
-        // The docs specify this as something FindNextFile* can return, but say nothing about it regarding
-        // FindFirstFile*. But the .NET Framework reference source checks for this along with ERROR_FILE_NOT_FOUND
-        // so I guess I will too, though it seems never to have been a problem before(?)
-        private const int ERROR_NO_MORE_FILES = 0x12;
-
-        private enum FileType
-        {
-            Files,
-            Directories
-        }
-
-        #endregion
-
-        #region Classes / structs / enums
-
-        // So we don't have to remember to call FindClose()
-        [UsedImplicitly]
-        internal class SafeSearchHandle : SafeHandleZeroOrMinusOneIsInvalid
-        {
-            internal SafeSearchHandle() : base(true) { }
-            protected override bool ReleaseHandle() => FindClose(handle);
-
-            [DllImport("kernel32.dll", SetLastError = true)]
-            private static extern bool FindClose(IntPtr hFindFile);
-        }
-
-        private enum FINDEX_INFO_LEVELS
-        {
-            //FindExInfoStandard = 0,
-            FindExInfoBasic = 1
-        }
-
-        private enum FINDEX_SEARCH_OPS
-        {
-            FindExSearchNameMatch = 0,
-            //FindExSearchLimitToDirectories = 1,
-            //FindExSearchLimitToDevices = 2
-        }
-
-        [SuppressMessage("ReSharper", "InconsistentNaming")]
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        private struct WIN32_FIND_DATAW
-        {
-            internal uint dwFileAttributes;
-            internal FILE_TIME ftCreationTime;
-            internal FILE_TIME ftLastAccessTime;
-            internal FILE_TIME ftLastWriteTime;
-            internal uint nFileSizeHigh;
-            internal uint nFileSizeLow;
-            internal uint dwReserved0;
-            internal uint dwReserved1;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-            internal string cFileName;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
-            internal string cAlternateFileName;
-        }
-
-        #endregion
-
-        #region P/Invoke definitions
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern SafeSearchHandle FindFirstFileExW(
-            string lpFileName,
-            FINDEX_INFO_LEVELS fInfoLevelId,
-            out WIN32_FIND_DATAW lpFindFileData,
-            FINDEX_SEARCH_OPS fSearchOp,
-            IntPtr lpSearchFilter,
-            int dwAdditionalFlags);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool FindNextFileW(SafeSearchHandle hFindFile, out WIN32_FIND_DATAW lpFindFileData);
-
-        #endregion
-
         // This is meant to be industrial-strength, so just call the params nullable and check them.
         // No screwing around.
         private static void ThrowException(string? searchPattern, int err, string? path)
@@ -110,96 +25,97 @@ namespace AngelLoader.WinAPI
                 "search pattern: " + searchPattern + "\r\n");
         }
 
-        internal static List<string> GetDirsTopOnly(string path, string searchPattern,
-            bool initListCapacityLarge = false, bool ignoreReparsePoints = false, bool pathIsKnownValid = false,
+        internal static List<string> GetDirsTopOnly(
+            string path,
+            string searchPattern,
+            bool initListCapacityLarge = false,
+            bool ignoreReparsePoints = false,
+            bool pathIsKnownValid = false,
             bool returnFullPaths = true)
         {
-            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Directories,
-                ignoreReparsePoints, pathIsKnownValid, returnFullPaths, returnDateTimes: false, out _);
+            return GetFilesTopOnlyInternal(
+                path,
+                searchPattern,
+                initListCapacityLarge,
+                FileType.Directories,
+                ignoreReparsePoints,
+                pathIsKnownValid,
+                returnFullPaths,
+                returnDateTimes: false,
+                out _);
         }
 
-        internal static List<string> GetFilesTopOnly(string path, string searchPattern,
-            bool initListCapacityLarge = false, bool pathIsKnownValid = false, bool returnFullPaths = true)
+        internal static List<string> GetFilesTopOnly(
+            string path,
+            string searchPattern,
+            bool initListCapacityLarge = false,
+            bool pathIsKnownValid = false,
+            bool returnFullPaths = true)
         {
-            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Files,
-                ignoreReparsePoints: false, pathIsKnownValid, returnFullPaths, returnDateTimes: false, out _);
+            return GetFilesTopOnlyInternal(
+                path,
+                searchPattern,
+                initListCapacityLarge,
+                FileType.Files,
+                ignoreReparsePoints: false,
+                pathIsKnownValid,
+                returnFullPaths,
+                returnDateTimes: false,
+                out _);
         }
 
-        internal static List<string> GetDirsTopOnly_FMs(string path, string searchPattern,
+        internal static List<string> GetDirsTopOnly_FMs(
+            string path,
+            string searchPattern,
             out List<DateTime> dateTimes)
         {
-            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge: true, FileType.Directories,
-                ignoreReparsePoints: false, pathIsKnownValid: false, returnFullPaths: false, returnDateTimes: true,
+            return GetFilesTopOnlyInternal(
+                path,
+                searchPattern,
+                initListCapacityLarge: true,
+                FileType.Directories,
+                ignoreReparsePoints: false,
+                pathIsKnownValid: false,
+                returnFullPaths: false,
+                returnDateTimes: true,
                 out dateTimes);
         }
 
-        internal static List<string> GetFilesTopOnly_FMs(string path, string searchPattern,
+        internal static List<string> GetFilesTopOnly_FMs(
+            string path,
+            string searchPattern,
             out List<DateTime> dateTimes)
         {
-            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge: true, FileType.Files,
-                ignoreReparsePoints: false, pathIsKnownValid: false, returnFullPaths: false, returnDateTimes: true,
+            return GetFilesTopOnlyInternal(
+                path,
+                searchPattern,
+                initListCapacityLarge: true,
+                FileType.Files,
+                ignoreReparsePoints: false,
+                pathIsKnownValid: false,
+                returnFullPaths: false,
+                returnDateTimes: true,
                 out dateTimes);
         }
-
-        // Reimplementing this internal struct for output parity with DirectoryInfo.Get*
-        // Screw it, not touching this one at all and just shutting up all warnings.
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
-        [SuppressMessage("ReSharper", "UnusedMember.Global")]
-        [SuppressMessage("ReSharper", "RedundantCast")]
-#pragma warning disable IDE0003, IDE0004
-        internal struct FILE_TIME
-        {
-            internal uint ftTimeLow;
-            internal uint ftTimeHigh;
-
-            public FILE_TIME(long fileTime)
-            {
-                this.ftTimeLow = (uint)fileTime;
-                this.ftTimeHigh = (uint)(fileTime >> 32);
-            }
-
-            public long ToTicks()
-            {
-                return ((long)this.ftTimeHigh << 32) + (long)this.ftTimeLow;
-            }
-        }
-#pragma warning restore IDE0004, IDE0003
 
         // ~2.4x faster than GetFiles() - huge boost to cold startup time
-        private static List<string> GetFilesTopOnlyInternal(string path, string searchPattern,
-            bool initListCapacityLarge, FileType fileType, bool ignoreReparsePoints, bool pathIsKnownValid,
-            bool returnFullPaths, bool returnDateTimes, out List<DateTime> dateTimes)
+        private static List<string> GetFilesTopOnlyInternal(
+            string path,
+            string searchPattern,
+            bool initListCapacityLarge,
+            FileType fileType,
+            bool ignoreReparsePoints,
+            bool pathIsKnownValid,
+            bool returnFullPaths,
+            bool returnDateTimes,
+            out List<DateTime> dateTimes)
         {
             if (string.IsNullOrEmpty(searchPattern))
             {
                 throw new ArgumentException(nameof(searchPattern) + " was null or empty", nameof(searchPattern));
             }
 
-            // Vital, path must not have a trailing separator
-            // We also normalize it manually because we use \?\\ which skips normalization
-            path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
-
-            if (!pathIsKnownValid)
-            {
-                bool pathContainsInvalidChars = false;
-                char[] invalidChars = Path.GetInvalidPathChars();
-
-                // Dumb loop to avoid LINQ.
-                for (int i = 0; i < invalidChars.Length; i++)
-                {
-                    if (path.Contains(invalidChars[i]))
-                    {
-                        pathContainsInvalidChars = true;
-                        break;
-                    }
-                }
-
-                if (string.IsNullOrWhiteSpace(path) || pathContainsInvalidChars)
-                {
-                    throw new ArgumentException("The path '" + path + "' is empty, consists only of whitespace, or contains invalid characters.");
-                }
-            }
+            path = NormalizeAndCheckPath(path, pathIsKnownValid);
 
             // PERF: We can't know how many files we're going to find, so make the initial list capacity large
             // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
@@ -330,12 +246,13 @@ namespace AngelLoader.WinAPI
         /// <param name="retList"></param>
         /// <param name="earlyOutOnEnglish"></param>
         /// <returns><see langword="true"/> if English was found and we quit the search early</returns>
-        internal static bool SearchDirForLanguages(string path, List<string> searchList, List<string> retList,
+        internal static bool SearchDirForLanguages(
+            string path,
+            List<string> searchList,
+            List<string> retList,
             bool earlyOutOnEnglish)
         {
-            // Vital, path must not have a trailing separator
-            // We also normalize it manually because we use \?\\ which skips normalization
-            path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
+            path = NormalizeAndCheckPath(path, pathIsKnownValid: true);
 
             using var findHandle = FindFirstFileExW(@"\\?\" + path + "\\*",
                 FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATAW findData,
