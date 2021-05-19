@@ -15,7 +15,7 @@ namespace AngelLoader.Forms
             base(
                 message: message,
                 title: LText.AlertMessages.Error,
-                icon: MessageBoxIcon.Warning,
+                icon: MessageBoxIcon.Error,
                 yesText: LText.AlertMessages.Error_ViewLog,
                 noText: LText.Global.OK,
                 defaultButton: Button.Yes)

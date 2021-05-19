@@ -8,5 +8,6 @@ namespace AngelLoader.DataClasses
     {
         internal static readonly string UnableToOpenLogFile = "Unable to open log file.";
         internal static readonly string ScanErrors = "One or more errors occurred while scanning.";
+        internal static readonly string UnableToStartExecutable = "Unable to start executable.";
     }
 }

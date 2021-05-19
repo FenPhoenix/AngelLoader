@@ -307,9 +307,12 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                // @BetterErrors(FMInstallAndPlay/StartExe()):
+                // Use more specific messages depending on the exception
                 Log("Exception starting " + exe + "\r\n" +
                     "workingPath: " + workingPath + "\r\n" +
                     "args: " + args, ex);
+                ControlUtils.ShowErrorDialog(exe + "\r\n\r\n" + ErrorText.UnableToStartExecutable);
             }
         }
 
@@ -451,6 +454,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                // @BetterErrors(GenerateMissFlagFile())
                 Log("Exception trying to write missflag.str file", ex);
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
