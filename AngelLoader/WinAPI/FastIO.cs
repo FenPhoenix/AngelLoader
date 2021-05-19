@@ -60,8 +60,8 @@ namespace AngelLoader.WinAPI
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
         [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct WIN32_FIND_DATA
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct WIN32_FIND_DATAW
         {
             internal uint dwFileAttributes;
             internal FILE_TIME ftCreationTime;
@@ -82,16 +82,16 @@ namespace AngelLoader.WinAPI
         #region P/Invoke definitions
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern SafeSearchHandle FindFirstFileEx(
+        private static extern SafeSearchHandle FindFirstFileExW(
             string lpFileName,
             FINDEX_INFO_LEVELS fInfoLevelId,
-            out WIN32_FIND_DATA lpFindFileData,
+            out WIN32_FIND_DATAW lpFindFileData,
             FINDEX_SEARCH_OPS fSearchOp,
             IntPtr lpSearchFilter,
             int dwAdditionalFlags);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool FindNextFileW(SafeSearchHandle hFindFile, out WIN32_FIND_DATA lpFindFileData);
+        private static extern bool FindNextFileW(SafeSearchHandle hFindFile, out WIN32_FIND_DATAW lpFindFileData);
 
         #endregion
 
@@ -213,8 +213,8 @@ namespace AngelLoader.WinAPI
             //const int ERROR_REM_NOT_LIST = 0x33;
             //const int ERROR_BAD_NETPATH = 0x35;
 
-            using var findHandle = FindFirstFileEx(@"\\?\" + path + "\\" + searchPattern,
-                FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATA findData,
+            using var findHandle = FindFirstFileExW(@"\\?\" + path + "\\" + searchPattern,
+                FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATAW findData,
                 FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
 
             if (findHandle.IsInvalid)
@@ -337,8 +337,8 @@ namespace AngelLoader.WinAPI
             // We also normalize it manually because we use \?\\ which skips normalization
             path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
 
-            using var findHandle = FindFirstFileEx(@"\\?\" + path + "\\*",
-                FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATA findData,
+            using var findHandle = FindFirstFileExW(@"\\?\" + path + "\\*",
+                FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATAW findData,
                 FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
 
             if (findHandle.IsInvalid)

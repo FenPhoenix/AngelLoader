@@ -112,7 +112,7 @@ namespace AngelLoader.WinAPI.Dialogs
     internal static class NativeMethods
     {
         [PublicAPI]
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 4)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 4)]
         internal struct COMDLG_FILTERSPEC
         {
             [MarshalAs(UnmanagedType.LPWStr)]

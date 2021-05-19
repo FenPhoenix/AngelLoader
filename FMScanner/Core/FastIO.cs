@@ -59,7 +59,7 @@ namespace FMScanner
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern SafeSearchHandle FindFirstFileEx(
+        private static extern SafeSearchHandle FindFirstFileExW(
             string lpFileName,
             FINDEX_INFO_LEVELS fInfoLevelId,
             out WIN32_FIND_DATAW lpFindFileData,
@@ -147,7 +147,7 @@ namespace FMScanner
 
             foreach (string p in searchPatterns)
             {
-                using SafeSearchHandle findHandle = FindFirstFileEx(
+                using SafeSearchHandle findHandle = FindFirstFileExW(
                     pathC + p,
                     FINDEX_INFO_LEVELS.FindExInfoBasic,
                     out findData,
@@ -177,7 +177,7 @@ namespace FMScanner
                 if (searchOption == FastIOSearchOption.TopDirectoryOnly) return false;
             }
 
-            using (SafeSearchHandle findHandle = FindFirstFileEx(
+            using (SafeSearchHandle findHandle = FindFirstFileExW(
                 pathC + "*",
                 FINDEX_INFO_LEVELS.FindExInfoBasic,
                 out findData,
