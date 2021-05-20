@@ -569,7 +569,7 @@ namespace AngelLoader.Forms
 
             // -------- New games go here!
             // @GENGAMES (tabs and filter buttons): Begin
-            _gameTabsInOrder = new[]
+            _gameTabsInOrder = new TabPage[]
             {
                 Thief1TabPage,
                 Thief2TabPage,
