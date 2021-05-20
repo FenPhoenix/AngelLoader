@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AL_Common.CommonUtils;
+using static AL_Common.Utils;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
-using static AL_Common.CommonUtils;
+using static AL_Common.Utils;
 using static AL_Common.FastIO_Native;
 
 namespace AngelLoader.WinAPI

@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
 using JetBrains.Annotations;
-using static AL_Common.CommonUtils;
+using static AL_Common.Utils;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls

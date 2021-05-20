@@ -4,7 +4,7 @@ using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
-using static AL_Common.CommonUtils;
+using static AL_Common.Utils;
 using static AngelLoader.Misc;
 
 namespace AngelLoader

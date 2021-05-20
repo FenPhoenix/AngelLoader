@@ -28,7 +28,7 @@ using FMScanner.SimpleHelpers;
 using JetBrains.Annotations;
 using SevenZip;
 using static System.StringComparison;
-using static AL_Common.CommonUtils;
+using static AL_Common.Utils;
 using static FMScanner.Logger;
 
 namespace FMScanner
@@ -180,27 +180,6 @@ namespace FMScanner
                     return (DateTime)_lastModifiedDate!;
                 }
                 set => _lastModifiedDate = value;
-            }
-        }
-
-        /// <summary>
-        /// Stores a filename/index pair for quick lookups into a zip file.
-        /// </summary>
-        private sealed class NameAndIndex
-        {
-            internal readonly string Name;
-            internal readonly int Index;
-
-            internal NameAndIndex(string name, int index)
-            {
-                Name = name;
-                Index = index;
-            }
-
-            internal NameAndIndex(string name)
-            {
-                Name = name;
-                Index = -1;
             }
         }
 

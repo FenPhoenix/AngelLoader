@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
 using SevenZip;
-using static AL_Common.CommonUtils;
+using static AL_Common.Utils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -41,12 +41,6 @@ namespace AngelLoader
             ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv", ".flv", ".log",
             ".str", ".nut", ".db", ".obj"
         };
-
-        private sealed class NameAndIndex
-        {
-            internal string Name = "";
-            internal int Index = -1;
-        }
 
         #endregion
 
@@ -240,7 +234,7 @@ namespace AngelLoader
                     // who knows what else, and we don't want to write parsers for every format under the sun.
                     if (html.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != i))
                     {
-                        htmlRefFiles.Add(new NameAndIndex { Index = i, Name = e.FullName });
+                        htmlRefFiles.Add(new NameAndIndex(e.FullName, i));
                     }
                 }
             }
@@ -278,7 +272,7 @@ namespace AngelLoader
 
                         if (content.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != ei))
                         {
-                            htmlRefFiles.Add(new NameAndIndex { Index = ei, Name = e.FullName });
+                            htmlRefFiles.Add(new NameAndIndex(e.FullName, ei));
                         }
                     }
                 }

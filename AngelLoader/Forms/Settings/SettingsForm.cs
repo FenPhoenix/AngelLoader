@@ -19,7 +19,7 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Dialogs;
-using static AL_Common.CommonUtils;
+using static AL_Common.Utils;
 using static AngelLoader.Forms.Interfaces;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;

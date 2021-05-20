@@ -8,8 +8,29 @@ using static System.StringComparison;
 namespace AL_Common
 {
     [PublicAPI]
-    public static class CommonUtils
+    public static class Utils
     {
+        /// <summary>
+        /// Stores a filename/index pair for quick lookups into a zip file.
+        /// </summary>
+        public sealed class NameAndIndex
+        {
+            public readonly string Name;
+            public readonly int Index;
+
+            public NameAndIndex(string name, int index)
+            {
+                Name = name;
+                Index = index;
+            }
+
+            public NameAndIndex(string name)
+            {
+                Name = name;
+                Index = -1;
+            }
+        }
+
         #region Preset char arrays
 
         public static readonly byte[] RTFHeaderBytes =

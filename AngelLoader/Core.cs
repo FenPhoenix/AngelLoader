@@ -24,7 +24,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using AngelLoader.WinAPI;
-using static AL_Common.CommonUtils;
+using static AL_Common.Utils;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;

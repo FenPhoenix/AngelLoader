@@ -121,7 +121,7 @@ namespace AL_Common
         {
             // Vital, path must not have a trailing separator
             // We also normalize it manually because we use \?\\ which skips normalization
-            path = path.Replace('/', '\\').TrimEnd(CommonUtils.CA_Backslash);
+            path = path.Replace('/', '\\').TrimEnd(Utils.CA_Backslash);
 
             if (!pathIsKnownValid)
             {
