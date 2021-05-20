@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -56,6 +55,8 @@ namespace AngelLoader
             RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         #endregion
+
+        #region Public methods
 
         internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
         {
@@ -458,7 +459,9 @@ namespace AngelLoader
             });
         }
 
-        #region Helpers / private
+        #endregion
+
+        #region Private methods
 
         private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName)
         {
