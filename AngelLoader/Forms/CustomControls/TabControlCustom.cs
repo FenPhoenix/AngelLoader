@@ -110,7 +110,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if (!AllowReordering)
+            if (DesignMode || !AllowReordering)
             {
                 base.OnMouseDown(e);
                 return;
@@ -122,7 +122,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
-            if (!AllowReordering)
+            if (DesignMode || !AllowReordering)
             {
                 base.OnMouseUp(e);
                 return;
@@ -135,7 +135,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (!AllowReordering)
+            if (DesignMode || !AllowReordering)
             {
                 base.OnMouseMove(e);
                 return;
