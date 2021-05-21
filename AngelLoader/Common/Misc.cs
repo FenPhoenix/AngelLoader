@@ -20,14 +20,6 @@ namespace AngelLoader
 
         #region Enums and enum-like
 
-        // Class instead of enum so we don't have to keep casting its fields
-        internal static class ByteSize
-        {
-            internal const int KB = 1024;
-            internal const int MB = KB * 1024;
-            internal const int GB = MB * 1024;
-        }
-
         public enum Zoom { In, Out, Reset }
 
         // Public for param accessibility reasons or whatever

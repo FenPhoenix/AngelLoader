@@ -1,7 +1,6 @@
 ﻿#define FenGen_TypeSource
 
 using System;
-using AL_Common;
 using JetBrains.Annotations;
 using static AL_Common.Utils;
 using static AngelLoader.GameSupport;

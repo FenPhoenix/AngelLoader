@@ -10,6 +10,18 @@ namespace AL_Common
     [PublicAPI]
     public static class Utils
     {
+        // TODO: Put these somewhere else more appropriate
+
+        #region Non-utils
+
+        // Class instead of enum so we don't have to keep casting its fields
+        public static class ByteSize
+        {
+            public const int KB = 1024;
+            public const int MB = KB * 1024;
+            public const int GB = MB * 1024;
+        }
+
         /// <summary>
         /// Stores a filename/index pair for quick lookups into a zip file.
         /// </summary>
@@ -54,6 +66,10 @@ namespace AL_Common
         public static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
 
         #endregion
+
+        #endregion
+
+        // ---
 
         #region String
 

@@ -6,7 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using AL_Common;
+using static AL_Common.Utils;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -80,7 +80,7 @@ namespace AngelLoader.Forms.CustomControls
             // PERF_TODO: RichTextBoxCustom: GLMLToRTF()
             // We could also get fancy and try to calculate a final size estimate based on the original file size,
             // the fixed size cost of the rtf header plus however many horizontal lines there are etc.
-            var sb = new StringBuilder(Misc.ByteSize.KB * 16);
+            var sb = new StringBuilder(ByteSize.KB * 16);
 
             // 16 chars is the default starting capacity. The longest known tag name is "FMSTRUCTURE" at 11 chars,
             // so that's more than enough. We're passing 16 explicitly just in case it ever changes under the hood.

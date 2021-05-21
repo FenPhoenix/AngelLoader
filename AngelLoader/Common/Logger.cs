@@ -4,9 +4,8 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
-using AL_Common;
 using JetBrains.Annotations;
-using static AngelLoader.Misc;
+using static AL_Common.Utils;
 
 namespace AngelLoader
 {

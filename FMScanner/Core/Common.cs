@@ -1,21 +1,11 @@
 ﻿//#define FMScanner_FullCode
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using System.Text.RegularExpressions;
 using AL_Common;
-using JetBrains.Annotations;
 
 namespace FMScanner
 {
-    [PublicAPI]
-    internal static class ByteSize
-    {
-        internal const int KB = 1024;
-        internal const int MB = KB * 1024;
-        internal const int GB = MB * 1024;
-    }
-
     /*
      2020-07-31: This stuff is now part of the non-static Scanner class so it can be garbage-collected, rather
      than being static and sticking around forever. This stuff will only be instantiated once per scan (whether
