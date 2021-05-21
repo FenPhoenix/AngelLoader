@@ -28,15 +28,25 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new BorderStyle BorderStyle { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new TreeViewDrawMode DrawMode { get; set; }
+
         public DarkTreeView()
         {
-            BorderStyle = BorderStyle.FixedSingle;
+            base.BorderStyle = BorderStyle.FixedSingle;
 
             // @DarkModeNote(DarkTreeView - close/expand buttons note)
             // We currently draw the close/expand buttons in a theme renderer, which is quick and easy. If we
             // wanted to draw them here, we would have to use OwnerDrawAll mode, and then we would have to draw
             // everything - close/expand buttons, dotted lines, text, icons if there are any, etc.
-            DrawMode = TreeViewDrawMode.OwnerDrawText;
+            base.DrawMode = TreeViewDrawMode.OwnerDrawText;
 
             HideSelection = false;
         }
@@ -100,7 +110,7 @@ namespace AngelLoader.Forms.CustomControls
             // Everything seems to look fine without this, so disabling for now.
             return;
 
-            if (!_darkModeEnabled || BorderStyle == BorderStyle.None) return;
+            if (!_darkModeEnabled || base.BorderStyle == BorderStyle.None) return;
 
             using var gc = new Native.GraphicsContext(hWnd);
             gc.G.DrawRectangle(DarkColors.LighterBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));

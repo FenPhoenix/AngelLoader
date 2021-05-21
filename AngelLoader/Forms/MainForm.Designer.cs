@@ -1,5 +1,17 @@
 ﻿namespace AngelLoader.Forms
 {
+    /*
+    // 
+    // GameTabsImageList
+    // 
+    this.GameTabsImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("GameTabsImageList.ImageStream")));
+    this.GameTabsImageList.TransparentColor = System.Drawing.Color.Transparent;
+    // IMPORTANT: WinForms does the above by default, but that results in images being 8-bit-looking, even
+    // though the ImageStream is set to 32-bit and so are all the images within. But we need to keep it
+    // there for the designer to work at all, so just remember to test in non-debug mode so you can see
+    // the images properly.
+    */
+
     sealed partial class MainForm
     {
         /// <summary>
@@ -195,10 +207,6 @@
             // 
             this.GameTabsImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("GameTabsImageList.ImageStream")));
             this.GameTabsImageList.TransparentColor = System.Drawing.Color.Transparent;
-            // IMPORTANT: WinForms does the above by default, but that results in images being 8-bit-looking, even
-            // though the ImageStream is set to 32-bit and so are all the images within. But we need to keep it
-            // there for the designer to work at all, so just remember to test in non-debug mode so you can see
-            // the images properly.
             this.GameTabsImageList.Images.SetKeyName(0, "Thief1_16.png");
             this.GameTabsImageList.Images.SetKeyName(1, "Thief2_16.png");
             this.GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
@@ -238,8 +246,8 @@
             this.SettingsButton.TabIndex = 62;
             this.SettingsButton.Text = "Settings...";
             this.SettingsButton.UseVisualStyleBackColor = true;
-            this.SettingsButton.Click += new System.EventHandler(this.Settings_Click);
             this.SettingsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.SettingsButton_Paint);
+            this.SettingsButton.Click += new System.EventHandler(this.Settings_Click);
             // 
             // BottomLeftButtonsFLP
             // 
@@ -266,8 +274,8 @@
             this.PlayFMButton.TabIndex = 56;
             this.PlayFMButton.Text = "Play FM";
             this.PlayFMButton.UseVisualStyleBackColor = true;
-            this.PlayFMButton.Click += new System.EventHandler(this.InstallUninstall_Play_Buttons_Click);
             this.PlayFMButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayFMButton_Paint);
+            this.PlayFMButton.Click += new System.EventHandler(this.InstallUninstall_Play_Buttons_Click);
             // 
             // PlayOriginalGameButton
             // 
@@ -282,8 +290,8 @@
             this.PlayOriginalGameButton.TabIndex = 57;
             this.PlayOriginalGameButton.Text = "Play original game...";
             this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
-            this.PlayOriginalGameButton.Click += new System.EventHandler(this.PlayOriginalGameButton_Click);
             this.PlayOriginalGameButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGameButton_Paint);
+            this.PlayOriginalGameButton.Click += new System.EventHandler(this.PlayOriginalGameButton_Click);
             // 
             // WebSearchButton
             // 
@@ -298,8 +306,8 @@
             this.WebSearchButton.TabIndex = 60;
             this.WebSearchButton.Text = "Web search";
             this.WebSearchButton.UseVisualStyleBackColor = true;
-            this.WebSearchButton.Click += new System.EventHandler(this.WebSearchButton_Click);
             this.WebSearchButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.WebSearchButton_Paint);
+            this.WebSearchButton.Click += new System.EventHandler(this.WebSearchButton_Click);
             // 
             // EverythingPanel
             // 
@@ -335,10 +343,10 @@
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeResetZoomButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmeComboBox);
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeRichTextBox);
-            this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
-            this.MainSplitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.MainSplitContainer_Panel2_Paint);
-            this.MainSplitContainer.Panel2MinSize = 38;
             this.MainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(1, 1, 2, 2);
+            this.MainSplitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.MainSplitContainer_Panel2_Paint);
+            this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
+            this.MainSplitContainer.Panel2MinSize = 38;
             this.MainSplitContainer.Size = new System.Drawing.Size(1671, 672);
             this.MainSplitContainer.SplitterDistance = 309;
             this.MainSplitContainer.TabIndex = 0;
@@ -428,6 +436,7 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -458,7 +467,6 @@
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
@@ -861,7 +869,7 @@
             this.FilterShowUnavailableButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.FilterShowUnavailableButton.Image = global::AngelLoader.Properties.Resources.Show_Unavailable;
             this.FilterShowUnavailableButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterShowUnavailableButton.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
+            this.FilterShowUnavailableButton.Margin = new System.Windows.Forms.Padding(0);
             this.FilterShowUnavailableButton.Name = "FilterShowUnavailableButton";
             this.FilterShowUnavailableButton.Size = new System.Drawing.Size(25, 25);
             this.FilterShowUnavailableButton.ToolTipText = "Show unavailable FMs";
@@ -963,8 +971,8 @@
             this.ResetLayoutButton.TabIndex = 13;
             this.MainToolTip.SetToolTip(this.ResetLayoutButton, "Reset layout");
             this.ResetLayoutButton.UseVisualStyleBackColor = true;
-            this.ResetLayoutButton.Click += new System.EventHandler(this.ResetLayoutButton_Click);
             this.ResetLayoutButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ResetLayoutButton_Paint);
+            this.ResetLayoutButton.Click += new System.EventHandler(this.ResetLayoutButton_Click);
             // 
             // GamesTabControl
             // 
@@ -972,7 +980,6 @@
             this.GamesTabControl.Controls.Add(this.Thief2TabPage);
             this.GamesTabControl.Controls.Add(this.Thief3TabPage);
             this.GamesTabControl.Controls.Add(this.SS2TabPage);
-            this.GamesTabControl.AllowReordering = false;
             this.GamesTabControl.ImageList = this.GameTabsImageList;
             this.GamesTabControl.Location = new System.Drawing.Point(28, 5);
             this.GamesTabControl.Name = "GamesTabControl";
@@ -1036,8 +1043,8 @@
             this.TopRightMenuButton.Size = new System.Drawing.Size(18, 20);
             this.TopRightMenuButton.TabIndex = 13;
             this.TopRightMenuButton.UseVisualStyleBackColor = true;
-            this.TopRightMenuButton.Click += new System.EventHandler(this.TopRightMenuButton_Click);
             this.TopRightMenuButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.TopRightMenuButton_Paint);
+            this.TopRightMenuButton.Click += new System.EventHandler(this.TopRightMenuButton_Click);
             // 
             // TopRightCollapseButton
             // 
@@ -1056,10 +1063,10 @@
             // 
             // TopRightTabControl
             // 
+            this.TopRightTabControl.AllowReordering = true;
             this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TopRightTabControl.AllowReordering = true;
             this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
             this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
             this.TopRightTabControl.Controls.Add(this.CommentTabPage);
@@ -1096,8 +1103,8 @@
             this.StatsScanCustomResourcesButton.TabIndex = 12;
             this.StatsScanCustomResourcesButton.Text = "Rescan custom resources";
             this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
-            this.StatsScanCustomResourcesButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             this.StatsScanCustomResourcesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.StatsScanCustomResourcesButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             // 
             // StatsCheckBoxesPanel
             // 
@@ -1270,6 +1277,16 @@
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
             // 
+            // EditFMScanLanguagesButton
+            // 
+            this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 261);
+            this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
+            this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
+            this.EditFMScanLanguagesButton.TabIndex = 33;
+            this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
+            this.EditFMScanLanguagesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.EditFMScanLanguagesButton.Click += new System.EventHandler(this.EditFMScanLanguagesButton_Click);
+            // 
             // EditFMLanguageLabel
             // 
             this.EditFMLanguageLabel.AutoSize = true;
@@ -1281,23 +1298,12 @@
             // 
             // EditFMLanguageComboBox
             // 
-            this.EditFMLanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EditFMLanguageComboBox.FormattingEnabled = true;
             this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 262);
             this.EditFMLanguageComboBox.Name = "EditFMLanguageComboBox";
             this.EditFMLanguageComboBox.Size = new System.Drawing.Size(128, 21);
             this.EditFMLanguageComboBox.TabIndex = 32;
             this.EditFMLanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMLanguageComboBox_SelectedIndexChanged);
-            // 
-            // EditFMScanLanguagesButton
-            // 
-            this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 261);
-            this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
-            this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
-            this.EditFMScanLanguagesButton.TabIndex = 33;
-            this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
-            this.EditFMScanLanguagesButton.Click += new System.EventHandler(this.EditFMScanLanguagesButton_Click);
-            this.EditFMScanLanguagesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // EditFMScanForReadmesButton
             // 
@@ -1311,8 +1317,8 @@
             this.EditFMScanForReadmesButton.TabIndex = 34;
             this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
             this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
-            this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             this.EditFMScanForReadmesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             // 
             // EditFMScanReleaseDateButton
             // 
@@ -1321,8 +1327,8 @@
             this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanReleaseDateButton.TabIndex = 22;
             this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
-            this.EditFMScanReleaseDateButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             this.EditFMScanReleaseDateButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.EditFMScanReleaseDateButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             // 
             // EditFMScanAuthorButton
             // 
@@ -1332,8 +1338,8 @@
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 19;
             this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
-            this.EditFMScanAuthorButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             this.EditFMScanAuthorButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.EditFMScanAuthorButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             // 
             // EditFMScanTitleButton
             // 
@@ -1343,8 +1349,8 @@
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 16;
             this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
-            this.EditFMScanTitleButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             this.EditFMScanTitleButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            this.EditFMScanTitleButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
             // 
             // EditFMAltTitlesArrowButton
             // 
@@ -1384,7 +1390,6 @@
             // 
             // EditFMRatingComboBox
             // 
-            this.EditFMRatingComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EditFMRatingComboBox.FormattingEnabled = true;
             this.EditFMRatingComboBox.Items.AddRange(new object[] {
             "Unrated",
@@ -1696,7 +1701,6 @@
             this.PatchDMLsListBox.Location = new System.Drawing.Point(8, 24);
             this.PatchDMLsListBox.MultiSelect = false;
             this.PatchDMLsListBox.Name = "PatchDMLsListBox";
-            this.PatchDMLsListBox.Scrollable = true;
             this.PatchDMLsListBox.Size = new System.Drawing.Size(160, 69);
             this.PatchDMLsListBox.TabIndex = 41;
             // 
@@ -1707,8 +1711,8 @@
             this.PatchRemoveDMLButton.Size = new System.Drawing.Size(23, 23);
             this.PatchRemoveDMLButton.TabIndex = 42;
             this.PatchRemoveDMLButton.UseVisualStyleBackColor = true;
-            this.PatchRemoveDMLButton.Click += new System.EventHandler(this.PatchRemoveDMLButton_Click);
             this.PatchRemoveDMLButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PatchRemoveDMLButton_Paint);
+            this.PatchRemoveDMLButton.Click += new System.EventHandler(this.PatchRemoveDMLButton_Click);
             // 
             // PatchAddDMLButton
             // 
@@ -1717,8 +1721,8 @@
             this.PatchAddDMLButton.Size = new System.Drawing.Size(23, 23);
             this.PatchAddDMLButton.TabIndex = 43;
             this.PatchAddDMLButton.UseVisualStyleBackColor = true;
-            this.PatchAddDMLButton.Click += new System.EventHandler(this.PatchAddDMLButton_Click);
             this.PatchAddDMLButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PatchAddDMLButton_Paint);
+            this.PatchAddDMLButton.Click += new System.EventHandler(this.PatchAddDMLButton_Click);
             // 
             // PatchOpenFMFolderButton
             // 
@@ -1756,8 +1760,8 @@
             this.MainToolTip.SetToolTip(this.ReadmeEncodingButton, "Character encoding");
             this.ReadmeEncodingButton.UseVisualStyleBackColor = false;
             this.ReadmeEncodingButton.Visible = false;
-            this.ReadmeEncodingButton.Click += new System.EventHandler(this.ReadmeEncodingButton_Click);
             this.ReadmeEncodingButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ReadmeEncodingButton_Paint);
+            this.ReadmeEncodingButton.Click += new System.EventHandler(this.ReadmeEncodingButton_Click);
             this.ReadmeEncodingButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeFullScreenButton
@@ -1773,8 +1777,8 @@
             this.MainToolTip.SetToolTip(this.ReadmeFullScreenButton, "Fullscreen");
             this.ReadmeFullScreenButton.UseVisualStyleBackColor = false;
             this.ReadmeFullScreenButton.Visible = false;
-            this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeFullScreenButton_Click);
             this.ReadmeFullScreenButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ReadmeFullScreenButton_Paint);
+            this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeFullScreenButton_Click);
             this.ReadmeFullScreenButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeZoomInButton
@@ -1791,8 +1795,8 @@
             this.MainToolTip.SetToolTip(this.ReadmeZoomInButton, "Zoom in");
             this.ReadmeZoomInButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomInButton.Visible = false;
-            this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeZoomInButton_Click);
             this.ReadmeZoomInButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomInButtons_Paint);
+            this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeZoomInButton_Click);
             this.ReadmeZoomInButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeZoomOutButton
@@ -1809,8 +1813,8 @@
             this.MainToolTip.SetToolTip(this.ReadmeZoomOutButton, "Zoom out");
             this.ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomOutButton.Visible = false;
-            this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeZoomOutButton_Click);
             this.ReadmeZoomOutButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomOutButtons_Paint);
+            this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeZoomOutButton_Click);
             this.ReadmeZoomOutButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeResetZoomButton
@@ -1827,17 +1831,16 @@
             this.MainToolTip.SetToolTip(this.ReadmeResetZoomButton, "Reset zoom");
             this.ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             this.ReadmeResetZoomButton.Visible = false;
-            this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeResetZoomButton_Click);
             this.ReadmeResetZoomButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomResetButtons_Paint);
+            this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeResetZoomButton_Click);
             this.ReadmeResetZoomButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ChooseReadmeComboBox
             // 
             this.ChooseReadmeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ChooseReadmeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ChooseReadmeComboBox.FireMouseLeaveOnLeaveWindow = true;
             this.ChooseReadmeComboBox.FormattingEnabled = true;
             this.ChooseReadmeComboBox.Location = new System.Drawing.Point(1321, 8);
-            this.ChooseReadmeComboBox.FireMouseLeaveOnLeaveWindow = true;
             this.ChooseReadmeComboBox.Name = "ChooseReadmeComboBox";
             this.ChooseReadmeComboBox.Size = new System.Drawing.Size(170, 21);
             this.ChooseReadmeComboBox.TabIndex = 1;

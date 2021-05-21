@@ -318,7 +318,8 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnColumnAdded(DataGridViewColumnEventArgs e)
         {
             // Allows the highlight-removal hack to work. See the custom header cell class for details.
-            if (e.Column.HeaderCell is not DataGridViewColumnHeaderCellCustom)
+            if (!DesignMode &&
+                e.Column.HeaderCell is not DataGridViewColumnHeaderCellCustom)
             {
                 e.Column.HeaderCell = new DataGridViewColumnHeaderCellCustom();
             }

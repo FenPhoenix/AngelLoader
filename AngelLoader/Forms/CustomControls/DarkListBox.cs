@@ -39,24 +39,69 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new BorderStyle BorderStyle { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool FullRowSelect { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new ColumnHeaderStyle HeaderStyle { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool HideSelection { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool LabelWrap { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool OwnerDraw { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool ShowGroups { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool UseCompatibleStateImageBehavior { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new View View { get; set; }
+
         public DarkListBox()
         {
-            FullRowSelect = true;
-            HeaderStyle = ColumnHeaderStyle.None;
-            HideSelection = false;
-            LabelWrap = false;
-            ShowGroups = false;
-            UseCompatibleStateImageBehavior = false;
+            base.FullRowSelect = true;
+            base.HeaderStyle = ColumnHeaderStyle.None;
+            base.HideSelection = false;
+            base.LabelWrap = false;
+            base.ShowGroups = false;
+            base.UseCompatibleStateImageBehavior = false;
 
             // We would like to just do View.List, but then we get our items in implicit columns going across,
             // instead of just one column going downwards. So we have to use View.Details and add an invisible-
             // headered column.
-            View = View.Details;
+            base.View = View.Details;
             Columns.Add("");
 
-            BorderStyle = BorderStyle.FixedSingle;
+            base.BorderStyle = BorderStyle.FixedSingle;
 
-            OwnerDraw = true;
+            base.OwnerDraw = true;
             base.DoubleBuffered = true;
         }
 
@@ -106,6 +151,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public properties
 
+        [Browsable(false)]
         public string[] ItemsAsStrings
         {
             get
@@ -119,6 +165,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        [Browsable(false)]
         public int SelectedIndex
         {
             get => SelectedIndices.Count == 0 ? -1 : SelectedIndices[0];
@@ -129,8 +176,10 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        [Browsable(false)]
         public string SelectedItem => SelectedItems.Count == 0 ? "" : SelectedItems[0]?.Text ?? "";
 
+        [Browsable(false)]
         public string[] SelectedItemsAsStrings
         {
             get
@@ -145,6 +194,7 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         // Tested, this height is correct for the current ListView version
+        [Browsable(false)]
         public int ItemHeight => Font.Height + 4;
 
         #endregion
