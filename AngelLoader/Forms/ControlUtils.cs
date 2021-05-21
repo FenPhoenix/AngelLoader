@@ -457,9 +457,9 @@ namespace AngelLoader.Forms
             return (cancel, dontAskAgain);
         }
 
-        public static void ShowErrorDialog(string message, string? logFile = null)
+        public static void ShowErrorDialog(string message, bool showScannerLogFile = false)
         {
-            logFile ??= Paths.LogFile;
+            string logFile = showScannerLogFile ? Paths.ScannerLogFile : Paths.LogFile;
 
             using var d = new DarkErrorDialog(message, logFile);
             d.ShowDialogDark();

@@ -217,7 +217,7 @@ namespace AngelLoader.WinAPI.Dialogs
     // I could cut these down some if I wanted, but just for YAGNI violations and giggles, here is the whole mess
     // in all its glory and splendor.
 
-    #region IFileDialog (commented out
+    #region IFileDialog (commented out)
 
     /*
     [ComImport, Guid(Guids.IFileDialog), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

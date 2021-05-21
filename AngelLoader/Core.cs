@@ -521,8 +521,13 @@ namespace AngelLoader
             {
                 var data = gameExeSpecified
                     ? GameConfigFiles.GetInfoFromCamModIni(gamePath, out Error _)
-                    : (FMsPath: "", FMLanguage: "", FMLanguageForced: false, FMSelectorLines: new List<string>(),
-                        AlwaysShowLoader: false);
+                    : (
+                        FMsPath: "",
+                        FMLanguage: "",
+                        FMLanguageForced: false,
+                        FMSelectorLines: new List<string>(),
+                        AlwaysShowLoader: false
+                    );
 
                 Config.SetFMInstallPath(gameIndex, data.FMsPath);
                 Config.SetGameEditorDetected(gameIndex, gameExeSpecified && !Config.GetEditorExe_FromDisk(gameIndex).IsEmpty());
@@ -1066,7 +1071,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Unable to add .dml to installed folder " + fm.InstalledDir, ex);
-                ControlUtils.ShowAlert(LText.AlertMessages.Patch_AddDML_UnableToAdd, LText.AlertMessages.Alert);
+                ControlUtils.ShowErrorDialog(LText.AlertMessages.Patch_AddDML_UnableToAdd);
                 return false;
             }
 
@@ -1091,7 +1096,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Unable to remove .dml from installed folder " + fm.InstalledDir, ex);
-                ControlUtils.ShowAlert(LText.AlertMessages.Patch_RemoveDML_UnableToRemove, LText.AlertMessages.Alert);
+                ControlUtils.ShowErrorDialog(LText.AlertMessages.Patch_RemoveDML_UnableToRemove);
                 return false;
             }
 
@@ -1358,6 +1363,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception trying to open FM folder " + fmDir, ex);
+                ControlUtils.ShowErrorDialog(ErrorText.UnableToOpenFMFolder);
             }
         }
 
@@ -1385,11 +1391,12 @@ namespace AngelLoader
             catch (FileNotFoundException ex)
             {
                 Log("\"The PATH environment variable has a string containing quotes.\" (that's what MS docs says?!)", ex);
+                ControlUtils.ShowErrorDialog(LText.AlertMessages.WebSearchURL_ProblemOpening);
             }
             catch (Win32Exception ex)
             {
                 Log("Problem opening web search URL", ex);
-                ControlUtils.ShowAlert(LText.AlertMessages.WebSearchURL_ProblemOpening, LText.AlertMessages.Alert);
+                ControlUtils.ShowErrorDialog(LText.AlertMessages.WebSearchURL_ProblemOpening);
             }
         }
 
@@ -1415,11 +1422,13 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     Log("Exception opening HTML readme " + path, ex);
+                    ControlUtils.ShowErrorDialog(ErrorText.UnableToOpenHTMLReadme);
                 }
             }
             else
             {
                 Log("File not found: " + path, stackTrace: true);
+                ControlUtils.ShowErrorDialog(path + "\r\n\r\n" + ErrorText.HTMLReadmeNotFound);
             }
         }
 
@@ -1458,6 +1467,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
+                    // @BetterErrors: This one isn't important enough to put a dialog
                     Log("Exception writing temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
                     finalUri = helpFileUri;
                 }
@@ -1470,7 +1480,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception in " + nameof(ProcessStart_UseShellExecute) + ". Couldn't open help file.", ex);
-                ControlUtils.ShowAlert(LText.AlertMessages.Help_UnableToOpenHelpFile, LText.AlertMessages.Alert);
+                ControlUtils.ShowErrorDialog(LText.AlertMessages.Help_UnableToOpenHelpFile);
             }
         }
 
@@ -1483,6 +1493,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Problem opening clickable link from rtfbox", ex);
+                ControlUtils.ShowErrorDialog(ErrorText.UnableToOpenRTFLink);
             }
         }
 

@@ -15,6 +15,9 @@ namespace AngelLoader
 {
     internal static class FMAudio
     {
+        // @BetterErrors(FMAudio):
+        // Lots of exceptions possible here... we need to decide which to actually bother the user about...
+
         #region Public methods
 
         // PERF_TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
@@ -253,7 +256,8 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                bool yes = ControlUtils.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
+                bool yes = ControlUtils.AskToContinue(
+                    LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
                     LText.AlertMessages.Alert);
                 if (yes)
                 {
