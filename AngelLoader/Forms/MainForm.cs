@@ -33,6 +33,10 @@
  TODO: @vNext: Make dates/rating filter popups' OK & Cancel buttons be wider or allow them to resize wider
  Right now it looks a little tight and translations might be squeezed potentially?
 
+ TODO(MainForm Designer): The controls move positions because they're accounting for the scroll bar
+ but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
+ the scroll bar was).
+
  @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */
 
