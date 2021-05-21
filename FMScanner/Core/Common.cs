@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿//#define FMScanner_FullCode
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
 using AL_Common;
 using JetBrains.Annotations;
-//#define FMScanner_FullCode
 
 namespace FMScanner
 {

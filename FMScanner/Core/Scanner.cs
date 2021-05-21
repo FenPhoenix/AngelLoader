@@ -619,7 +619,11 @@ namespace FMScanner
                             fileNamesList.Add(entry.FileName);
                         }
                         // Only extract these if we need them!
-                        else if (_scanOptions.ScanGameType &&
+                        else if ((_scanOptions.ScanGameType
+#if FMScanner_FullCode
+                                  || _scanOptions.ScanNewDarkRequired
+#endif
+                                 ) &&
                                  !entry.FileName.ContainsDirSep() &&
                                  (entry.FileName.EndsWithI(".mis") ||
                                   entry.FileName.EndsWithI(".gam")))
@@ -628,8 +632,8 @@ namespace FMScanner
                         }
                         else if (!entry.FileName.ContainsDirSep() &&
                                  (entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
-                                 entry.FileName.EqualsI(FMFiles.FMIni) ||
-                                 entry.FileName.EqualsI(FMFiles.ModIni)))
+                                  entry.FileName.EqualsI(FMFiles.FMIni) ||
+                                  entry.FileName.EqualsI(FMFiles.ModIni)))
                         {
                             fileNamesList.Add(entry.FileName);
                         }
@@ -990,14 +994,14 @@ namespace FMScanner
             if (!fmIsT3)
             {
                 // This is here because it needs to come after the readmes are cached
-            #region NewDark minimum required version
+                #region NewDark minimum required version
 
                 if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
                 {
                     fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion);
                 }
 
-            #endregion
+                #endregion
             }
 #endif
 
