@@ -423,7 +423,7 @@ namespace FMScanner
                 if (missions[i].Path.IsEmpty())
                 {
                     missions[i].Path = "";
-                    scannedFMDataList.Add(null);
+                    scannedFMDataList.Add(new ScannedFMDataAndError());
                     nullAlreadyAdded = true;
                 }
                 else
