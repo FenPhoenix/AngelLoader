@@ -160,7 +160,7 @@ namespace AngelLoader.Forms
             }
             catch (Exception ex)
             {
-                ControlUtils.ShowAlert(ex.Message, LText.AlertMessages.Error, MessageBoxIcon.Error);
+                Dialogs.ShowAlert(ex.Message, LText.AlertMessages.Error, MessageBoxIcon.Error);
             }
         }
     }

@@ -69,7 +69,7 @@ namespace AngelLoader
 
                 if (!importFMData && !importSaves)
                 {
-                    ControlUtils.ShowAlert(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                    Dialogs.ShowAlert(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
                     return;
                 }
 
@@ -116,7 +116,7 @@ namespace AngelLoader
 
                 if (iniFiles.All(x => x.IsWhiteSpace()))
                 {
-                    ControlUtils.ShowAlert(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                    Dialogs.ShowAlert(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
                     return;
                 }
 
@@ -178,7 +178,7 @@ namespace AngelLoader
                                 ? (LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert)
                                 : (dlErrorMessage, LText.AlertMessages.Error);
 
-                            ControlUtils.ShowAlert(message, title);
+                            Dialogs.ShowAlert(message, title);
                         }
                     }
                     else // No error
@@ -206,7 +206,7 @@ namespace AngelLoader
 
                     if (importType == ImportType.DarkLoader)
                     {
-                        ControlUtils.ShowAlert(dlErrorMessage, LText.AlertMessages.Error);
+                        Dialogs.ShowAlert(dlErrorMessage, LText.AlertMessages.Error);
                     }
                 }
                 finally

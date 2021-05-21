@@ -186,7 +186,7 @@ namespace AngelLoader
                         {
                             // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
                             // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
-                            ControlUtils.ShowErrorDialog(ErrorText.ScanErrors, showScannerLogFile: true);
+                            Dialogs.ShowErrorDialog(ErrorText.ScanErrors, showScannerLogFile: true);
                         }
                     }
                 }
@@ -315,7 +315,7 @@ namespace AngelLoader
                 string message = scanningOne
                     ? LText.AlertMessages.Scan_ExceptionInScanOne
                     : LText.AlertMessages.Scan_ExceptionInScanMultiple;
-                ControlUtils.ShowAlert(message, LText.AlertMessages.Error);
+                Dialogs.ShowAlert(message, LText.AlertMessages.Error);
                 return false;
             }
             finally

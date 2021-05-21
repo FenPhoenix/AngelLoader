@@ -50,7 +50,7 @@ namespace AngelLoader
 
             if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
             {
-                (bool cancel, bool dontAskAgain) = ControlUtils.AskToContinueYesNoCustomStrings(
+                (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
                     message: fm.Installed ? LText.AlertMessages.Play_ConfirmMessage : LText.AlertMessages.Play_InstallAndPlayConfirmMessage,
                     title: LText.AlertMessages.Confirm,
                     icon: MessageBoxIcon.None,
@@ -67,7 +67,7 @@ namespace AngelLoader
 
             if (playMP && fm.Game == Game.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
-                ControlUtils.ShowAlert(
+                Dialogs.ShowAlert(
                     LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound,
                     LText.AlertMessages.Alert);
                 return;
@@ -111,7 +111,7 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                ControlUtils.ShowAlert(LText.AlertMessages.Play_UnknownGameType, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Play_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -175,7 +175,7 @@ namespace AngelLoader
             {
                 Log("Game is not Dark, is unknown, or is unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
-                ControlUtils.ShowAlert(LText.AlertMessages.DromEd_UnknownGameType, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.DromEd_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -196,7 +196,7 @@ namespace AngelLoader
             string editorExe = Config.GetEditorExe_FromDisk(game);
             if (editorExe.IsEmpty())
             {
-                ControlUtils.ShowAlert(fm.Game == Game.SS2
+                Dialogs.ShowAlert(fm.Game == Game.SS2
                     ? LText.AlertMessages.ShockEd_ExecutableNotFound
                     : LText.AlertMessages.DromEd_ExecutableNotFound, LText.AlertMessages.Alert);
                 return false;
@@ -312,7 +312,7 @@ namespace AngelLoader
                 Log("Exception starting " + exe + "\r\n" +
                     "workingPath: " + workingPath + "\r\n" +
                     "args: " + args, ex);
-                ControlUtils.ShowErrorDialog(exe + "\r\n\r\n" + ErrorText.UnableToStartExecutable);
+                Dialogs.ShowErrorDialog(exe + "\r\n\r\n" + ErrorText.UnableToStartExecutable);
             }
         }
 
@@ -330,7 +330,7 @@ namespace AngelLoader
             string gamePath = Config.GetGamePath(gameIndex);
             if (gamePath.IsEmpty())
             {
-                ControlUtils.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GamePathNotFound,
+                Dialogs.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GamePathNotFound,
                     LText.AlertMessages.Alert);
                 return failed;
             }
@@ -346,7 +346,7 @@ namespace AngelLoader
                 string exeNotFoundMessage = playingOriginalGame
                     ? LText.AlertMessages.Play_ExecutableNotFound
                     : LText.AlertMessages.Play_ExecutableNotFoundFM;
-                ControlUtils.ShowAlert(gameName + ":\r\n" + exeNotFoundMessage, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(gameName + ":\r\n" + exeNotFoundMessage, LText.AlertMessages.Alert);
                 return failed;
             }
 
@@ -356,7 +356,7 @@ namespace AngelLoader
 
             if (GameIsRunning(gameExe, checkAllGames: true))
             {
-                ControlUtils.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
                 return failed;
             }
 
@@ -473,13 +473,13 @@ namespace AngelLoader
 
             if (fm.Game == Game.Null)
             {
-                ControlUtils.ShowAlert(LText.AlertMessages.Install_UnknownGameType, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Install_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (fm.Game == Game.Unsupported)
             {
-                ControlUtils.ShowAlert(LText.AlertMessages.Install_UnsupportedGameType, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Install_UnsupportedGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -487,7 +487,7 @@ namespace AngelLoader
 
             if (fmArchivePath.IsEmpty())
             {
-                ControlUtils.ShowAlert(LText.AlertMessages.Install_ArchiveNotFound, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Install_ArchiveNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -495,8 +495,8 @@ namespace AngelLoader
             string gameName = GetLocalizedGameName(fm.Game);
             if (!File.Exists(gameExe))
             {
-                ControlUtils.ShowAlert(gameName + ":\r\n" +
-                                       LText.AlertMessages.Install_ExecutableNotFound, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(gameName + ":\r\n" +
+                                  LText.AlertMessages.Install_ExecutableNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -504,15 +504,15 @@ namespace AngelLoader
 
             if (!Directory.Exists(instBasePath))
             {
-                ControlUtils.ShowAlert(gameName + ":\r\n" +
-                                       LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(gameName + ":\r\n" +
+                                  LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (GameIsRunning(gameExe))
             {
-                ControlUtils.ShowAlert(gameName + ":\r\n" +
-                                       LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(gameName + ":\r\n" +
+                                  LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -651,7 +651,7 @@ namespace AngelLoader
             {
                 Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
                 Core.View.InvokeSync(new Action(() =>
-                    ControlUtils.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
+                    Dialogs.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                         LText.AlertMessages.Alert)));
             }
 
@@ -703,7 +703,7 @@ namespace AngelLoader
                         + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
 
                     Core.View.InvokeSync(new Action(() =>
-                        ControlUtils.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                        Dialogs.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
 
                     return !result.Canceled;
@@ -725,7 +725,7 @@ namespace AngelLoader
                 Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n", ex);
 
                 Core.View.InvokeSync(new Action(() =>
-                    ControlUtils.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                    Dialogs.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                         LText.AlertMessages.Alert)));
 
                 return !canceled;
@@ -744,7 +744,7 @@ namespace AngelLoader
 
             if (Config.ConfirmUninstall)
             {
-                (bool cancel, bool dontAskAgain) = ControlUtils.AskToContinueYesNoCustomStrings(
+                (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
                         message: LText.AlertMessages.Uninstall_Confirm,
                         title: LText.AlertMessages.Confirm,
                         icon: MessageBoxIcon.Warning,
@@ -761,7 +761,7 @@ namespace AngelLoader
             string gameName = GetLocalizedGameName(fm.Game);
             if (GameIsRunning(gameExe))
             {
-                ControlUtils.ShowAlert(
+                Dialogs.ShowAlert(
                     gameName + ":\r\n" + LText.AlertMessages.Uninstall_GameIsRunning,
                     LText.AlertMessages.Alert);
                 return false;
@@ -776,7 +776,7 @@ namespace AngelLoader
                 bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)
                 {
-                    bool yes = ControlUtils.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
+                    bool yes = Dialogs.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
                         LText.AlertMessages.Alert);
                     if (yes)
                     {
@@ -792,7 +792,7 @@ namespace AngelLoader
 
                 if (fmArchivePath.IsEmpty())
                 {
-                    (bool cancel, _) = ControlUtils.AskToContinueYesNoCustomStrings(
+                    (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
                         message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                         title: LText.AlertMessages.Warning,
                         icon: MessageBoxIcon.Warning,
@@ -829,7 +829,7 @@ namespace AngelLoader
                         ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                         : LText.AlertMessages.Uninstall_BackupAllData;
                     (bool cancel, bool cont, bool dontAskAgain) =
-                        ControlUtils.AskToContinueWithCancelCustomStrings(
+                        Dialogs.AskToContinueWithCancelCustomStrings(
                             message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                             title: LText.AlertMessages.Confirm,
                             icon: MessageBoxIcon.None,
@@ -856,7 +856,7 @@ namespace AngelLoader
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
                     // TODO: Make option to open the folder in Explorer and delete it manually?
-                    ControlUtils.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted, LText.AlertMessages.Alert);
+                    Dialogs.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted, LText.AlertMessages.Alert);
                 }
 
                 fm.Installed = false;
@@ -888,7 +888,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
-                ControlUtils.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially, LText.AlertMessages.Alert);
             }
             finally
             {

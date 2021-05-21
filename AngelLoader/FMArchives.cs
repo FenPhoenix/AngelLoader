@@ -110,7 +110,7 @@ namespace AngelLoader
             var archives = FindAllMatches(fm.Archive);
             if (archives.Count == 0)
             {
-                ControlUtils.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
+                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
                 return;
             }
 
@@ -137,7 +137,7 @@ namespace AngelLoader
 
             if (fm.Installed)
             {
-                (bool cancel, bool cont, _) = ControlUtils.AskToContinueWithCancelCustomStrings(
+                (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
                     message: LText.FMDeletion.AskToUninstallFMFirst,
                     title: LText.AlertMessages.DeleteFMArchive,
                     icon: MessageBoxIcon.Warning,
@@ -172,7 +172,7 @@ namespace AngelLoader
                             Log("Exception deleting archive '" + archive + "'", ex);
                             Core.View.InvokeSync(new Action(() =>
                             {
-                                ControlUtils.ShowErrorDialog(
+                                Dialogs.ShowErrorDialog(
                                      LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" +
                                      archive);
                             }));

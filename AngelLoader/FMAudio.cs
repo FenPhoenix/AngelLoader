@@ -247,7 +247,7 @@ namespace AngelLoader
             string gameName = GetLocalizedGameName(fm.Game);
             if (GameIsRunning(gameExe))
             {
-                ControlUtils.ShowAlert(
+                Dialogs.ShowAlert(
                     gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,
                     LText.AlertMessages.Alert);
 
@@ -256,7 +256,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                bool yes = ControlUtils.AskToContinue(
+                bool yes = Dialogs.AskToContinue(
                     LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
                     LText.AlertMessages.Alert);
                 if (yes)

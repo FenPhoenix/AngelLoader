@@ -1057,7 +1057,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                ControlUtils.ShowAlert(LText.AlertMessages.Patch_AddDML_InstallDirNotFound, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Patch_AddDML_InstallDirNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1071,7 +1071,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Unable to add .dml to installed folder " + fm.InstalledDir, ex);
-                ControlUtils.ShowErrorDialog(LText.AlertMessages.Patch_AddDML_UnableToAdd);
+                Dialogs.ShowErrorDialog(LText.AlertMessages.Patch_AddDML_UnableToAdd);
                 return false;
             }
 
@@ -1084,7 +1084,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                ControlUtils.ShowAlert(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1096,7 +1096,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Unable to remove .dml from installed folder " + fm.InstalledDir, ex);
-                ControlUtils.ShowErrorDialog(LText.AlertMessages.Patch_RemoveDML_UnableToRemove);
+                Dialogs.ShowErrorDialog(LText.AlertMessages.Patch_RemoveDML_UnableToRemove);
                 return false;
             }
 
@@ -1352,7 +1352,7 @@ namespace AngelLoader
             string fmDir;
             if (installsBasePath.IsEmpty() || !Directory.Exists(fmDir = Path.Combine(installsBasePath, fm.InstalledDir)))
             {
-                ControlUtils.ShowAlert(LText.AlertMessages.Patch_FMFolderNotFound, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Patch_FMFolderNotFound, LText.AlertMessages.Alert);
                 return;
             }
 
@@ -1363,7 +1363,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception trying to open FM folder " + fmDir, ex);
-                ControlUtils.ShowErrorDialog(ErrorText.UnableToOpenFMFolder);
+                Dialogs.ShowErrorDialog(ErrorText.UnableToOpenFMFolder);
             }
         }
 
@@ -1391,12 +1391,12 @@ namespace AngelLoader
             catch (FileNotFoundException ex)
             {
                 Log("\"The PATH environment variable has a string containing quotes.\" (that's what MS docs says?!)", ex);
-                ControlUtils.ShowErrorDialog(LText.AlertMessages.WebSearchURL_ProblemOpening);
+                Dialogs.ShowErrorDialog(LText.AlertMessages.WebSearchURL_ProblemOpening);
             }
             catch (Win32Exception ex)
             {
                 Log("Problem opening web search URL", ex);
-                ControlUtils.ShowErrorDialog(LText.AlertMessages.WebSearchURL_ProblemOpening);
+                Dialogs.ShowErrorDialog(LText.AlertMessages.WebSearchURL_ProblemOpening);
             }
         }
 
@@ -1422,13 +1422,13 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     Log("Exception opening HTML readme " + path, ex);
-                    ControlUtils.ShowErrorDialog(ErrorText.UnableToOpenHTMLReadme);
+                    Dialogs.ShowErrorDialog(ErrorText.UnableToOpenHTMLReadme);
                 }
             }
             else
             {
                 Log("File not found: " + path, stackTrace: true);
-                ControlUtils.ShowErrorDialog(path + "\r\n\r\n" + ErrorText.HTMLReadmeNotFound);
+                Dialogs.ShowErrorDialog(path + "\r\n\r\n" + ErrorText.HTMLReadmeNotFound);
             }
         }
 
@@ -1448,7 +1448,7 @@ namespace AngelLoader
 
             if (!File.Exists(Paths.DocFile))
             {
-                ControlUtils.ShowAlert(LText.AlertMessages.Help_HelpFileNotFound, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.AlertMessages.Help_HelpFileNotFound, LText.AlertMessages.Alert);
                 return;
             }
 
@@ -1480,7 +1480,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception in " + nameof(ProcessStart_UseShellExecute) + ". Couldn't open help file.", ex);
-                ControlUtils.ShowErrorDialog(LText.AlertMessages.Help_UnableToOpenHelpFile);
+                Dialogs.ShowErrorDialog(LText.AlertMessages.Help_UnableToOpenHelpFile);
             }
         }
 
@@ -1493,7 +1493,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Problem opening clickable link from rtfbox", ex);
-                ControlUtils.ShowErrorDialog(ErrorText.UnableToOpenRTFLink);
+                Dialogs.ShowErrorDialog(ErrorText.UnableToOpenRTFLink);
             }
         }
 

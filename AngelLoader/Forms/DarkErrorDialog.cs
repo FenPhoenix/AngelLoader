@@ -37,7 +37,7 @@ namespace AngelLoader.Forms
             }
             catch
             {
-                ControlUtils.ShowAlert(ErrorText.UnableToOpenLogFile + "\r\n\r\n" + _logFile, LText.AlertMessages.Error);
+                Dialogs.ShowAlert(ErrorText.UnableToOpenLogFile + "\r\n\r\n" + _logFile, LText.AlertMessages.Error);
             }
         }
 

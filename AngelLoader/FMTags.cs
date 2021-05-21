@@ -37,7 +37,7 @@ namespace AngelLoader
             {
                 // TODO: These messageboxes are annoying, but they prevent accidental deletion.
                 // Figure out something better.
-                bool cont = ControlUtils.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
+                bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
                 CatAndTags? cat = fm.Tags.Find(x => x.Category == catText);
@@ -50,7 +50,7 @@ namespace AngelLoader
             // Child node (tag)
             else
             {
-                bool cont = ControlUtils.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
+                bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
                 CatAndTags? cat = fm.Tags.Find(x => x.Category == catText);

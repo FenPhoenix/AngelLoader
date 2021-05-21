@@ -165,7 +165,7 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-            ControlUtils.ShowErrorDialog("This is a test of the error dialog!");
+            Dialogs.ShowErrorDialog("This is a test of the error dialog!");
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
@@ -1131,7 +1131,7 @@ namespace AngelLoader.Forms
             // Do I really want to put up this dialog during that situation?
             if (!EverythingPanel.Enabled || _viewBlocked)
             {
-                ControlUtils.ShowAlert(
+                Dialogs.ShowAlert(
                     LText.AlertMessages.AppClosing_OperationInProgress,
                     LText.AlertMessages.Alert);
                 e.Cancel = true;
@@ -1757,7 +1757,7 @@ namespace AngelLoader.Forms
 
             if (noneSelected)
             {
-                ControlUtils.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
+                Dialogs.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
                 return;
             }
 
