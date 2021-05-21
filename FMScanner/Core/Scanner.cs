@@ -994,14 +994,14 @@ namespace FMScanner
             if (!fmIsT3)
             {
                 // This is here because it needs to come after the readmes are cached
-                #region NewDark minimum required version
+            #region NewDark minimum required version
 
                 if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
                 {
                     fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion);
                 }
 
-                #endregion
+            #endregion
             }
 #endif
 
@@ -2254,14 +2254,17 @@ namespace FMScanner
                         ? new BinaryReader(readmeStream, Encoding.ASCII, leaveOpen: true)
                         : new BinaryReader(new FileStream(readmeFileOnDisk, FileMode.Open, FileAccess.Read), Encoding.ASCII, leaveOpen: false))
                     {
+                        // stupid micro-optimization
+                        const int rtfHeaderBytesLength = 6;
+
                         // Null is a stupid micro-optimization so we don't waste a 6-byte alloc.
-                        rtfHeader = readmeFileLen >= RtfTags_HeaderBytesLength
-                            ? br.ReadBytes(RtfTags_HeaderBytesLength)
+                        rtfHeader = readmeFileLen >= rtfHeaderBytesLength
+                            ? br.ReadBytes(rtfHeaderBytesLength)
                             : null;
                     }
 
                     // file is rtf
-                    if (rtfHeader?.SequenceEqual(RtfTags_HeaderBytes) == true)
+                    if (rtfHeader?.SequenceEqual(RTFHeaderBytes) == true)
                     {
                         bool success;
                         string text;
@@ -3845,7 +3848,7 @@ namespace FMScanner
             {
                 if (DateTime.TryParseExact(
                     dateString,
-                    DateFormatsEuropean,
+                    _dateFormatsEuropean,
                     DateTimeFormatInfo.InvariantInfo,
                     DateTimeStyles.None,
                     out DateTime eurDateResult))
@@ -3875,7 +3878,7 @@ namespace FMScanner
             // want to fail, and not assume the current year.
             bool success = DateTime.TryParseExact(
                 dateString,
-                DateFormats,
+                _dateFormats,
                 DateTimeFormatInfo.InvariantInfo,
                 DateTimeStyles.None,
                 out DateTime result);

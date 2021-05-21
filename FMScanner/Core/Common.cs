@@ -30,34 +30,6 @@ namespace FMScanner
         private const char LeftDoubleQuote = '\u201C';
         private const char RightDoubleQuote = '\u201D';
 
-        private readonly string[] _monthNamesEnglish =
-        {
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
-        };
-
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         private static class FMDirs
         {
@@ -136,13 +108,6 @@ namespace FMScanner
 
         #endregion
 
-        #region RTF
-
-        private readonly byte[] RtfTags_HeaderBytes = Encoding.ASCII.GetBytes(@"{\rtf1");
-        private const int RtfTags_HeaderBytesLength = 6; // stupid micro-optimization
-
-        #endregion
-
         #region Preallocated arrays
 
         // Perf, for passing to params[]-taking methods so we don't allocate all the time
@@ -150,7 +115,6 @@ namespace FMScanner
         private readonly char[] CA_Period = { '.' };
         private readonly char[] CA_Asterisk = { '*' };
         private readonly char[] CA_Hyphen = { '-' };
-        private readonly char[] CA_CommaSemicolon = { ',', ';' };
         private readonly char[] CA_DoubleQuote = { '\"' };
         private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
         private readonly string[] SA_CRLF = { "\r\n" };
@@ -259,8 +223,10 @@ namespace FMScanner
 
         #endregion
 
+        #region Dates
+
         private readonly string[]
-        DateFormatsEuropean =
+        _dateFormatsEuropean =
         {
             "d.M.yyyy",
             "dd.M.yyyy",
@@ -270,7 +236,7 @@ namespace FMScanner
         };
 
         private readonly string[]
-        DateFormats =
+        _dateFormats =
         {
             "MMM d yy",
             "MMM d, yy",
@@ -340,12 +306,51 @@ namespace FMScanner
             // TODO: Ambiguous months and days might pose a problem?
         };
 
+        private readonly string[]
+        _monthNamesEnglish =
+        {
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+        };
+
+        #endregion
+
         #region Game detect strings
 
-        // ReSharper disable StringLiteralTypo
         // ReSharper disable IdentifierTypo
 
-        private readonly byte[] OBJ_MAP = Encoding.ASCII.GetBytes("OBJ_MAP");
+        private readonly byte[] OBJ_MAP =
+        {
+            (byte)'O',
+            (byte)'B',
+            (byte)'J',
+            (byte)'_',
+            (byte)'M',
+            (byte)'A',
+            (byte)'P'
+        };
 
         /*
         In theory, someone could make a Thief 1 mission with a RopeyArrow archetype. It's never happened and is
@@ -355,13 +360,34 @@ namespace FMScanner
         extra strength defense against a custom RopeyArrow archetype... except that a handful of legit T2 missions
         have different ids. So unfortunately if we want to stay accurate we have to stay with just "RopeyArrow".
         */
-        private readonly byte[] Thief2UniqueString = Encoding.ASCII.GetBytes("RopeyArrow");
+        private readonly byte[] Thief2UniqueString =
+        {
+            (byte)'R',
+            (byte)'o',
+            (byte)'p',
+            (byte)'e',
+            (byte)'y',
+            (byte)'A',
+            (byte)'r',
+            (byte)'r',
+            (byte)'o',
+            (byte)'w'
+        };
 
         // SS2-only detection string
-        private readonly byte[] MAPPARAM = Encoding.ASCII.GetBytes("MAPPARAM");
+        private readonly byte[] MAPPARAM =
+        {
+            (byte)'M',
+            (byte)'A',
+            (byte)'P',
+            (byte)'P',
+            (byte)'A',
+            (byte)'R',
+            (byte)'A',
+            (byte)'M'
+        };
 
         // ReSharper restore IdentifierTypo
-        // ReSharper restore StringLiteralTypo
 
         #endregion
 

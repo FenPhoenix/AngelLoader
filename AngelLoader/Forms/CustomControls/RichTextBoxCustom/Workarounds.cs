@@ -390,12 +390,57 @@ namespace AngelLoader.Forms.CustomControls
         #region Workaround to fix black transparent regions in images
 
         // ReSharper disable IdentifierTypo
-        // ReSharper disable StringLiteralTypo
-        private static readonly byte[] _shppict = Encoding.ASCII.GetBytes(@"\shppict");
-        private static readonly byte[] _shppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxx");
-        private static readonly byte[] _nonshppict = Encoding.ASCII.GetBytes(@"\nonshppict");
-        private static readonly byte[] _nonshppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxxxxx");
-        // ReSharper restore StringLiteralTypo
+        private static readonly byte[] _shppict =
+        {
+            (byte)'\\',
+            (byte)'s',
+            (byte)'h',
+            (byte)'p',
+            (byte)'p',
+            (byte)'i',
+            (byte)'c',
+            (byte)'t'
+        };
+        private static readonly byte[] _shppictBlanked =
+        {
+            (byte)'\\',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x'
+        };
+
+        private static readonly byte[] _nonshppict =
+        {
+            (byte)'\\',
+            (byte)'n',
+            (byte)'o',
+            (byte)'n',
+            (byte)'s',
+            (byte)'h',
+            (byte)'p',
+            (byte)'p',
+            (byte)'i',
+            (byte)'c',
+            (byte)'t'
+        };
+        private static readonly byte[] _nonshppictBlanked =
+        {
+            (byte)'\\',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x',
+            (byte)'x'
+        };
         // ReSharper restore IdentifierTypo
 
         /*
