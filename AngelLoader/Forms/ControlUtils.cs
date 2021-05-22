@@ -88,11 +88,6 @@ namespace AngelLoader.Forms
         /// <param name="text"></param>
         internal static void SetTextForTextBoxButtonCombo(this Button button, TextBox textBox, string text)
         {
-            // Quick fix for this not working if layout is suspended.
-            // This will then cause any other controls within the same parent to do their full layout.
-            // If this becomes a problem, come up with a better solution here.
-            button.Parent.ResumeLayout();
-
             AnchorStyles oldAnchor = button.Anchor;
             button.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
