@@ -1541,44 +1541,52 @@ namespace AngelLoader.Forms
             // We used to defer some of these till Localize() but that was really stupid and brittle and didn't
             // even really gain us any perceptible time.
 
-            BottomPanel.ResumeLayout();
-
-            BottomRightButtonsFLP.ResumeLayout();
-            BottomLeftButtonsFLP.ResumeLayout();
-
-            EverythingPanel.ResumeLayout();
-            MainSplitContainer.Panel1.ResumeLayout();
-
-            MainSplitContainer.Panel2.ResumeLayout();
-
-            MainSplitContainer.EndInit();
-            MainSplitContainer.ResumeLayout();
-            TopSplitContainer.Panel1.ResumeLayout();
-            TopSplitContainer.Panel2.ResumeLayout();
-            TopSplitContainer.EndInit();
-            TopSplitContainer.ResumeLayout();
+            BottomPanel.ResumeLayout(false);
+            BottomPanel.PerformLayout();
+            BottomRightButtonsFLP.ResumeLayout(false);
+            BottomRightButtonsFLP.PerformLayout();
+            BottomLeftButtonsFLP.ResumeLayout(false);
+            BottomLeftButtonsFLP.PerformLayout();
+            EverythingPanel.ResumeLayout(false);
+            MainSplitContainer.Panel1.ResumeLayout(false);
+            MainSplitContainer.Panel2.ResumeLayout(false);
+            ((ISupportInitialize)MainSplitContainer).EndInit();
+            MainSplitContainer.ResumeLayout(false);
+            TopSplitContainer.Panel1.ResumeLayout(false);
+            TopSplitContainer.Panel1.PerformLayout();
+            TopSplitContainer.Panel2.ResumeLayout(false);
+            ((ISupportInitialize)TopSplitContainer).EndInit();
+            TopSplitContainer.ResumeLayout(false);
             ((ISupportInitialize)FMsDGV).EndInit();
-            FilterBarFLP.ResumeLayout();
-            FilterGameButtonsToolStrip.ResumeLayout();
-            FilterIconButtonsToolStrip.ResumeLayout();
-            RefreshAreaToolStrip.ResumeLayout();
-            GamesTabControl.ResumeLayout();
-            TopRightTabControl.ResumeLayout();
-
-            StatisticsTabPage.ResumeLayout();
-            StatsCheckBoxesPanel.ResumeLayout();
-            EditFMTabPage.ResumeLayout();
-            CommentTabPage.ResumeLayout();
-            TagsTabPage.ResumeLayout();
-            AddRemoveTagFLP.ResumeLayout();
-
-            PatchTabPage.ResumeLayout();
-
-            PatchMainPanel.ResumeLayout();
-
-            PatchDMLsPanel.ResumeLayout();
-
-            ResumeLayout();
+            FilterBarFLP.ResumeLayout(false);
+            FilterBarFLP.PerformLayout();
+            FilterGameButtonsToolStrip.ResumeLayout(false);
+            FilterGameButtonsToolStrip.PerformLayout();
+            FilterIconButtonsToolStrip.ResumeLayout(false);
+            FilterIconButtonsToolStrip.PerformLayout();
+            RefreshAreaToolStrip.ResumeLayout(false);
+            RefreshAreaToolStrip.PerformLayout();
+            GamesTabControl.ResumeLayout(false);
+            TopRightTabControl.ResumeLayout(false);
+            StatisticsTabPage.ResumeLayout(false);
+            StatisticsTabPage.PerformLayout();
+            StatsCheckBoxesPanel.ResumeLayout(false);
+            StatsCheckBoxesPanel.PerformLayout();
+            EditFMTabPage.ResumeLayout(false);
+            EditFMTabPage.PerformLayout();
+            CommentTabPage.ResumeLayout(false);
+            CommentTabPage.PerformLayout();
+            TagsTabPage.ResumeLayout(false);
+            TagsTabPage.PerformLayout();
+            AddRemoveTagFLP.ResumeLayout(false);
+            AddRemoveTagFLP.PerformLayout();
+            PatchTabPage.ResumeLayout(false);
+            PatchTabPage.PerformLayout();
+            PatchMainPanel.ResumeLayout(false);
+            PatchMainPanel.PerformLayout();
+            PatchDMLsPanel.ResumeLayout(false);
+            PatchDMLsPanel.PerformLayout();
+            ResumeLayout(false);
         }
     }
 }
