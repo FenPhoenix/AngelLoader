@@ -1537,22 +1537,19 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            // PERF: Some of these we resume in Localize(), so we don't want to do duplicate work
             // PERF_NOTE: ResumeLayouts: ~4ms
+            // We used to defer some of these till Localize() but that was really stupid and brittle and didn't
+            // even really gain us any perceptible time.
 
             BottomPanel.ResumeLayout();
 
-            /* Deferred
-                BottomRightButtonsFLP.ResumeLayout();
-                BottomLeftButtonsFLP.ResumeLayout();
-            */
+            BottomRightButtonsFLP.ResumeLayout();
+            BottomLeftButtonsFLP.ResumeLayout();
 
             EverythingPanel.ResumeLayout();
             MainSplitContainer.Panel1.ResumeLayout();
 
-            /* Deferred
-                MainSplitContainer.Panel2.ResumeLayout();
-            */
+            MainSplitContainer.Panel2.ResumeLayout();
 
             MainSplitContainer.EndInit();
             MainSplitContainer.ResumeLayout();
@@ -1568,20 +1565,16 @@ namespace AngelLoader.Forms
             GamesTabControl.ResumeLayout();
             TopRightTabControl.ResumeLayout();
 
-            /* Deferred
-                StatisticsTabPage.ResumeLayout();
-                StatsCheckBoxesPanel.ResumeLayout();
-                EditFMTabPage.ResumeLayout();
-                CommentTabPage.ResumeLayout();
-                TagsTabPage.ResumeLayout();
-                AddRemoveTagFLP.ResumeLayout();
-            */
+            StatisticsTabPage.ResumeLayout();
+            StatsCheckBoxesPanel.ResumeLayout();
+            EditFMTabPage.ResumeLayout();
+            CommentTabPage.ResumeLayout();
+            TagsTabPage.ResumeLayout();
+            AddRemoveTagFLP.ResumeLayout();
 
             PatchTabPage.ResumeLayout();
 
-            /* Deferred
-                PatchMainPanel.ResumeLayout();
-            */
+            PatchMainPanel.ResumeLayout();
 
             PatchDMLsPanel.ResumeLayout();
 

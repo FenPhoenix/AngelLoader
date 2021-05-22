@@ -1163,30 +1163,10 @@ namespace AngelLoader.Forms
             // make sure those controls' text is set correctly.
             FanMission? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
 
-            if (!startup)
-            {
-                EverythingPanel.SuspendDrawing();
-            }
-            else
-            {
-                // PERF: These will already have been suspended in InitComponentManual(), and we're going to
-                // resume them in the finally block
-#if DEBUG
-                BottomLeftButtonsFLP.SuspendLayout();
-                BottomRightButtonsFLP.SuspendLayout();
-                StatisticsTabPage.SuspendLayout();
-                StatsCheckBoxesPanel.SuspendLayout();
-                EditFMTabPage.SuspendLayout();
-                CommentTabPage.SuspendLayout();
-                TagsTabPage.SuspendLayout();
-                AddRemoveTagFLP.SuspendLayout();
-                PatchMainPanel.SuspendLayout();
-                MainSplitContainer.Panel2.SuspendLayout();
-                ChooseReadmeLLPanel.SuspendPanelLayout();
-#endif
-            }
             try
             {
+                if (!startup) EverythingPanel.SuspendDrawing();
+
                 MainToolTip.SetToolTip(MainMenuButton, LText.MainMenu.MainMenuToolTip);
                 MainLLMenu.Localize();
 
@@ -1415,24 +1395,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                if (!startup)
-                {
-                    EverythingPanel.ResumeDrawing();
-                }
-                else
-                {
-                    BottomLeftButtonsFLP.ResumeLayout();
-                    BottomRightButtonsFLP.ResumeLayout();
-                    StatisticsTabPage.ResumeLayout();
-                    StatsCheckBoxesPanel.ResumeLayout();
-                    EditFMTabPage.ResumeLayout();
-                    CommentTabPage.ResumeLayout();
-                    TagsTabPage.ResumeLayout();
-                    AddRemoveTagFLP.ResumeLayout();
-                    PatchMainPanel.ResumeLayout();
-                    MainSplitContainer.Panel2.ResumeLayout();
-                    ChooseReadmeLLPanel.ResumePanelLayout();
-                }
+                if (!startup) EverythingPanel.ResumeDrawing();
 
                 // We can't do this while the layout is suspended, because then it won't have the right dimensions
                 // for centering
