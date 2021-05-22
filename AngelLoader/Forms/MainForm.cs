@@ -1379,9 +1379,7 @@ namespace AngelLoader.Forms
                 PlayFMButton.Text = LText.MainButtons.PlayFM;
 
                 // Allow button to do its max-string-length layout thing
-                if (startup && !Config.HideUninstallButton) BottomLeftButtonsFLP.ResumeLayout();
                 InstallUninstallFMLLButton.Localize(startup);
-                if (startup && !Config.HideUninstallButton) BottomLeftButtonsFLP.SuspendLayout();
 
                 PlayOriginalGameButton.Text = LText.MainButtons.PlayOriginalGame;
                 WebSearchButton.Text = LText.MainButtons.WebSearch;

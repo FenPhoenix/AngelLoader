@@ -98,17 +98,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             if (_constructed) OKButton.Text = LText.Global.OK;
         }
 
-        [UsedImplicitly] // Actually used in an ifdef block
-        internal static void SuspendPanelLayout()
-        {
-            if (_constructed) Panel.SuspendLayout();
-        }
-
-        internal static void ResumePanelLayout()
-        {
-            if (_constructed) Panel.ResumeLayout();
-        }
-
         internal static void ShowPanel(bool value)
         {
             if (_constructed) Panel.Visible = value;
