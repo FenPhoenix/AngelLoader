@@ -5,22 +5,28 @@ using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using static AngelLoader.Misc;
 
+/*
+ Notes:
+    -Some Anchor / Dock combos have been kept despite the docs saying they're mutually exclusive, because
+     they currently work and I'm not 100% certain which one I should keep. Lowest priority.
+    -We need to always add the tab pages to the Controls collection on init, because otherwise in dark
+     mode the tabs have wrong sizes until you set it again after the UI is already shown(?!)
+    -The filter bar gets its x-pos and width set in GameTypeChange() and its y-pos is always 0.
+     Height is 100 so it goes behind the DataGridView and its actual scroll bars will be hidden but
+     they'll still function, and you can use your mousewheel or the custom arrow buttons to scroll.
+     2019-07-15: It has to have its designer-generated width set here or else the left scroll button
+     doesn't appear. Meh?
+    -Readme control buttons:
+     BackColor for these gets set when the readme box is shown or hidden (for classic mode)
+*/
+
 namespace AngelLoader.Forms
 {
     public sealed partial class MainForm
     {
-        /*
-         Notes:
-            -Some Anchor / Dock combos have been kept despite the docs saying they're mutually exclusive, because
-             they currently work and I'm not 100% certain which one I should keep. Lowest priority.
-        */
-
         private void InitComponentManual()
         {
             components = new Container();
-
-            #region Instantiation
-
             GameTabsImageList = new ImageList(components);
             BottomPanel = new Panel();
             BottomRightButtonsFLP = new FlowLayoutPanel();
@@ -32,6 +38,7 @@ namespace AngelLoader.Forms
             EverythingPanel = new Panel();
             MainSplitContainer = new SplitContainerCustom();
             TopSplitContainer = new SplitContainerCustom();
+            MainMenuButton = new DarkButton();
             FilterBarScrollRightButton = new ArrowButton();
             FilterBarScrollLeftButton = new ArrowButton();
             FMsDGV = new DataGridViewCustom();
@@ -146,12 +153,6 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new ComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
-            MainMenuButton = new DarkButton();
-
-            #endregion
-
-            #region SuspendLayout()
-
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
@@ -181,11 +182,6 @@ namespace AngelLoader.Forms
             PatchMainPanel.SuspendLayout();
             PatchDMLsPanel.SuspendLayout();
             SuspendLayout();
-
-            #endregion
-
-            #region Property sets
-
             // 
             // GameTabsImageList
             // 
@@ -333,6 +329,18 @@ namespace AngelLoader.Forms
             TopSplitContainer.SplitterDistance = 1116;
             TopSplitContainer.TabIndex = 0;
             // 
+            // MainMenuButton
+            // 
+            MainMenuButton.FlatAppearance.BorderSize = 0;
+            MainMenuButton.FlatStyle = FlatStyle.Flat;
+            MainMenuButton.Location = new Point(0, 0);
+            MainMenuButton.Size = new Size(24, 24);
+            MainMenuButton.TabIndex = 14;
+            MainMenuButton.UseVisualStyleBackColor = true;
+            MainMenuButton.PaintCustom += MainMenuButton_Paint;
+            MainMenuButton.Click += MainMenuButton_Click;
+            MainMenuButton.Enter += MainMenuButton_Enter;
+            // 
             // FilterBarScrollRightButton
             // 
             FilterBarScrollRightButton.FlatStyle = FlatStyle.Flat;
@@ -395,14 +403,6 @@ namespace AngelLoader.Forms
             FMsDGV.StandardTab = true;
             FMsDGV.TabIndex = 0;
             FMsDGV.VirtualMode = true;
-            // I may want to enable this in the future - less contrasty background color for DataGridView
-            /*
-            FMsDGV.BackgroundColor = SystemColors.Control;
-            FMsDGV.EnableHeadersVisualStyles = false;
-            FMsDGV.ColumnHeadersDefaultCellStyle.SelectionBackColor = SystemColors.Menu;
-            FMsDGV.ColumnHeadersDefaultCellStyle.SelectionForeColor = SystemColors.Menu;
-            FMsDGV.ColumnHeadersDefaultCellStyle.Padding = new Padding(1);
-            */
             FMsDGV.CellDoubleClick += FMsDGV_CellDoubleClick;
             FMsDGV.CellValueNeeded += FMsDGV_CellValueNeeded;
             FMsDGV.ColumnHeaderMouseClick += FMsDGV_ColumnHeaderMouseClick;
@@ -506,13 +506,7 @@ namespace AngelLoader.Forms
             FilterBarFLP.Controls.Add(FilterAuthorLabel);
             FilterBarFLP.Controls.Add(FilterAuthorTextBox);
             FilterBarFLP.Controls.Add(FilterIconButtonsToolStrip);
-            // PERF: The filter bar gets its x-pos and width set in GameTypeChange() and its y-pos is always 0.
-            // Height is 100 so it goes behind the DataGridView and its actual scroll bars will be hidden but
-            // they'll still function, and you can use your mousewheel or the custom arrow buttons to scroll.
-            // 2019-07-15: It has to have its designer-generated width set here or else the left scroll button
-            // doesn't appear. Meh?
             FilterBarFLP.Size = new Size(768, 100);
-
             FilterBarFLP.TabIndex = 11;
             FilterBarFLP.WrapContents = false;
             FilterBarFLP.Scroll += FilterBarFLP_Scroll;
@@ -563,16 +557,11 @@ namespace AngelLoader.Forms
             FilterByThief3Button.Size = new Size(25, 25);
             FilterByThief3Button.Click += Filters_Changed;
             // 
-            // TagsTabAutoScrollMarker
-            // 
-            TagsTabAutoScrollMarker.Size = new Size(240, 152);
-            // 
             // FilterBySS2Button
             // 
             FilterBySS2Button.AutoSize = false;
             FilterBySS2Button.CheckOnClick = true;
             FilterBySS2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            // Extra 2 padding on the right: Fix slight visual glitch on the right side
             FilterBySS2Button.Margin = new Padding(0, 0, 2, 0);
             FilterBySS2Button.Size = new Size(25, 25);
             FilterBySS2Button.Click += Filters_Changed;
@@ -753,7 +742,6 @@ namespace AngelLoader.Forms
             // 
             ClearFiltersButton.AutoSize = false;
             ClearFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            // 1 pixel to the bottom margin to prevent the bottom from getting cut off for some reason
             ClearFiltersButton.Margin = new Padding(0, 0, 9, 1);
             ClearFiltersButton.Size = new Size(25, 25);
             ClearFiltersButton.Click += Filters_Changed;
@@ -833,15 +821,11 @@ namespace AngelLoader.Forms
             // 
             TopRightTabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             TopRightTabControl.AllowReordering = true;
-
-            // We need to always add the tab pages to the Controls collection on init, because otherwise in dark
-            // mode the tabs have wrong sizes until you set it again after the UI is already shown(?!)
             TopRightTabControl.Controls.Add(StatisticsTabPage);
             TopRightTabControl.Controls.Add(EditFMTabPage);
             TopRightTabControl.Controls.Add(CommentTabPage);
             TopRightTabControl.Controls.Add(TagsTabPage);
             TopRightTabControl.Controls.Add(PatchTabPage);
-
             TopRightTabControl.Location = new Point(0, 0);
             TopRightTabControl.Size = new Size(535, 310);
             TopRightTabControl.TabIndex = 15;
@@ -1001,6 +985,15 @@ namespace AngelLoader.Forms
             EditFMTabPage.Size = new Size(526, 284);
             EditFMTabPage.TabIndex = 2;
             // 
+            // EditFMScanLanguagesButton
+            // 
+            EditFMScanLanguagesButton.Location = new Point(137, 261);
+            EditFMScanLanguagesButton.Size = new Size(22, 23);
+            EditFMScanLanguagesButton.TabIndex = 33;
+            EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
+            EditFMScanLanguagesButton.Click += EditFMScanLanguagesButton_Click;
+            EditFMScanLanguagesButton.PaintCustom += ScanIconButtons_Paint;
+            // 
             // EditFMLanguageLabel
             // 
             EditFMLanguageLabel.AutoSize = true;
@@ -1015,15 +1008,6 @@ namespace AngelLoader.Forms
             EditFMLanguageComboBox.Size = new Size(128, 21);
             EditFMLanguageComboBox.TabIndex = 32;
             EditFMLanguageComboBox.SelectedIndexChanged += EditFMLanguageComboBox_SelectedIndexChanged;
-            // 
-            // EditFMScanLanguagesButton
-            // 
-            EditFMScanLanguagesButton.Location = new Point(137, 261);
-            EditFMScanLanguagesButton.Size = new Size(22, 23);
-            EditFMScanLanguagesButton.TabIndex = 33;
-            EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
-            EditFMScanLanguagesButton.Click += EditFMScanLanguagesButton_Click;
-            EditFMScanLanguagesButton.PaintCustom += ScanIconButtons_Paint;
             // 
             // EditFMScanForReadmesButton
             // 
@@ -1301,6 +1285,10 @@ namespace AngelLoader.Forms
             TagsTreeView.Size = new Size(510, 216);
             TagsTreeView.TabIndex = 2;
             // 
+            // TagsTabAutoScrollMarker
+            // 
+            TagsTabAutoScrollMarker.Size = new Size(240, 152);
+            // 
             // PatchTabPage
             // 
             PatchTabPage.AutoScroll = true;
@@ -1381,35 +1369,6 @@ namespace AngelLoader.Forms
             // This thing gets centered later so no location is specified here
             PatchFMNotInstalledLabel.TabIndex = 45;
             // 
-            // ReadmeRichTextBox
-            // 
-            ReadmeRichTextBox.BackColor = SystemColors.Window;
-            ReadmeRichTextBox.BorderStyle = BorderStyle.None;
-            ReadmeRichTextBox.ReadOnly = true;
-            ReadmeRichTextBox.Dock = DockStyle.Fill;
-            ReadmeRichTextBox.TabIndex = 0;
-            ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
-            ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
-
-            #region Readme control buttons
-
-            // BackColor for these gets set when the readme box is shown or hidden (for classic mode)
-
-            // 
-            // ChooseReadmeComboBox
-            // 
-            ChooseReadmeComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ChooseReadmeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            ChooseReadmeComboBox.FormattingEnabled = true;
-            ChooseReadmeComboBox.Location = new Point(1321, 8);
-            ChooseReadmeComboBox.FireMouseLeaveOnLeaveWindow = true;
-            ChooseReadmeComboBox.Size = new Size(170, 21);
-            ChooseReadmeComboBox.TabIndex = 1;
-            ChooseReadmeComboBox.Visible = false;
-            ChooseReadmeComboBox.SelectedIndexChanged += ChooseReadmeComboBox_SelectedIndexChanged;
-            ChooseReadmeComboBox.DropDownClosed += ChooseReadmeComboBox_DropDownClosed;
-            ChooseReadmeComboBox.MouseLeave += ReadmeArea_MouseLeave;
-            // 
             // ReadmeEncodingButton
             // 
             ReadmeEncodingButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -1423,6 +1382,20 @@ namespace AngelLoader.Forms
             ReadmeEncodingButton.PaintCustom += ReadmeEncodingButton_Paint;
             ReadmeEncodingButton.Click += ReadmeEncodingButton_Click;
             ReadmeEncodingButton.MouseLeave += ReadmeArea_MouseLeave;
+            // 
+            // ReadmeFullScreenButton
+            // 
+            ReadmeFullScreenButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
+            ReadmeFullScreenButton.FlatStyle = FlatStyle.Flat;
+            ReadmeFullScreenButton.Location = new Point(1616, 8);
+            ReadmeFullScreenButton.Size = new Size(21, 21);
+            ReadmeFullScreenButton.TabIndex = 6;
+            ReadmeFullScreenButton.UseVisualStyleBackColor = false;
+            ReadmeFullScreenButton.Visible = false;
+            ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
+            ReadmeFullScreenButton.PaintCustom += ReadmeFullScreenButton_Paint;
+            ReadmeFullScreenButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ReadmeZoomInButton
             // 
@@ -1467,37 +1440,33 @@ namespace AngelLoader.Forms
             ReadmeResetZoomButton.PaintCustom += ZoomResetButtons_Paint;
             ReadmeResetZoomButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
-            // ReadmeFullScreenButton
+            // ChooseReadmeComboBox
             // 
-            ReadmeFullScreenButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
-            ReadmeFullScreenButton.FlatStyle = FlatStyle.Flat;
-            ReadmeFullScreenButton.Location = new Point(1616, 8);
-            ReadmeFullScreenButton.Size = new Size(21, 21);
-            ReadmeFullScreenButton.TabIndex = 6;
-            ReadmeFullScreenButton.UseVisualStyleBackColor = false;
-            ReadmeFullScreenButton.Visible = false;
-            ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
-            ReadmeFullScreenButton.PaintCustom += ReadmeFullScreenButton_Paint;
-            ReadmeFullScreenButton.MouseLeave += ReadmeArea_MouseLeave;
-            #endregion
+            ChooseReadmeComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ChooseReadmeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            ChooseReadmeComboBox.FormattingEnabled = true;
+            ChooseReadmeComboBox.Location = new Point(1321, 8);
+            ChooseReadmeComboBox.FireMouseLeaveOnLeaveWindow = true;
+            ChooseReadmeComboBox.Size = new Size(170, 21);
+            ChooseReadmeComboBox.TabIndex = 1;
+            ChooseReadmeComboBox.Visible = false;
+            ChooseReadmeComboBox.SelectedIndexChanged += ChooseReadmeComboBox_SelectedIndexChanged;
+            ChooseReadmeComboBox.DropDownClosed += ChooseReadmeComboBox_DropDownClosed;
+            ChooseReadmeComboBox.MouseLeave += ReadmeArea_MouseLeave;
             // 
-            // MainMenuButton
+            // ReadmeRichTextBox
             // 
-            MainMenuButton.FlatAppearance.BorderSize = 0;
-            MainMenuButton.FlatStyle = FlatStyle.Flat;
-            MainMenuButton.Location = new Point(0, 0);
-            MainMenuButton.Size = new Size(24, 24);
-            MainMenuButton.TabIndex = 14;
-            MainMenuButton.UseVisualStyleBackColor = true;
-            MainMenuButton.PaintCustom += MainMenuButton_Paint;
-            MainMenuButton.Click += MainMenuButton_Click;
-            MainMenuButton.Enter += MainMenuButton_Enter;
+            ReadmeRichTextBox.BackColor = SystemColors.Window;
+            ReadmeRichTextBox.BorderStyle = BorderStyle.None;
+            ReadmeRichTextBox.ReadOnly = true;
+            ReadmeRichTextBox.Dock = DockStyle.Fill;
+            ReadmeRichTextBox.TabIndex = 0;
+            ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
+            ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
-            // NOTE: Keeping this in just in case... it takes <1ms to do anyway
             ClientSize = new Size(1671, 716);
             AutoScaleMode = AutoScaleMode.Dpi;
             Controls.Add(EverythingPanel);
@@ -1512,12 +1481,6 @@ namespace AngelLoader.Forms
             LocationChanged += MainForm_LocationChanged;
             SizeChanged += MainForm_SizeChanged;
             KeyDown += MainForm_KeyDown;
-
-            #endregion
-
-            // We used to defer some of these till Localize() but that was really stupid and brittle and didn't
-            // even really gain us any perceptible time.
-
             BottomPanel.ResumeLayout(false);
             BottomPanel.PerformLayout();
             BottomRightButtonsFLP.ResumeLayout(false);
