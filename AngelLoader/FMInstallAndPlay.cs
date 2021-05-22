@@ -67,9 +67,9 @@ namespace AngelLoader
 
             if (playMP && fm.Game == Game.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
-                Dialogs.ShowAlert(
-                    LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound,
-                    LText.AlertMessages.Alert);
+                Log("Thief2MP.exe not found in Thief 2 game directory.\r\n" +
+                    "Thief 2 game directory: " + Config.GetGamePath(GameIndex.Thief2));
+                Dialogs.ShowError(LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound);
                 return;
             }
 
@@ -888,7 +888,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
-                Dialogs.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially, LText.AlertMessages.Alert);
+                Dialogs.ShowError(LText.AlertMessages.Uninstall_FailedFullyOrPartially);
             }
             finally
             {

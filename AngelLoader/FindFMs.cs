@@ -76,8 +76,7 @@ namespace AngelLoader
                     if (startup)
                     {
                         // Language will be loaded by this point
-                        Dialogs.ShowAlert(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni,
-                            LText.AlertMessages.Error, MessageBoxIcon.Error);
+                        Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
                         Core.EnvironmentExitDoShutdownTasks(1);
                     }
                     else

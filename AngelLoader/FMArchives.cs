@@ -110,7 +110,7 @@ namespace AngelLoader
             var archives = FindAllMatches(fm.Archive);
             if (archives.Count == 0)
             {
-                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
+                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
                 return;
             }
 
