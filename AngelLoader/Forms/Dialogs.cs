@@ -94,7 +94,7 @@ namespace AngelLoader.Forms
             return (cancel, dontAskAgain);
         }
 
-        public static void ShowErrorDialog(string message, bool showScannerLogFile = false)
+        public static void ShowError(string message, bool showScannerLogFile = false)
         {
             string logFile = showScannerLogFile ? Paths.ScannerLogFile : Paths.LogFile;
 

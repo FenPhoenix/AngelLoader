@@ -170,12 +170,7 @@ namespace AngelLoader
                         catch (Exception ex)
                         {
                             Log("Exception deleting archive '" + archive + "'", ex);
-                            Core.View.InvokeSync(new Action(() =>
-                            {
-                                Dialogs.ShowErrorDialog(
-                                     LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" +
-                                     archive);
-                            }));
+                            Core.View.InvokeSync(new Action(() => Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive)));
                         }
                     }
                 });

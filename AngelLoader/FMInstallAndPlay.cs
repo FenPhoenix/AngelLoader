@@ -312,7 +312,7 @@ namespace AngelLoader
                 Log("Exception starting " + exe + "\r\n" +
                     "workingPath: " + workingPath + "\r\n" +
                     "args: " + args, ex);
-                Dialogs.ShowErrorDialog(exe + "\r\n\r\n" + ErrorText.UnableToStartExecutable);
+                Dialogs.ShowError(ErrorText.UnableToStartExecutable + "\r\n\r\n" + exe);
             }
         }
 

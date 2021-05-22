@@ -168,7 +168,7 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-            Dialogs.ShowErrorDialog("This is a test of the error dialog!");
+            Dialogs.ShowError("This is a test of the error dialog!");
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
