@@ -15,27 +15,9 @@ namespace AngelLoader.Forms
              they currently work and I'm not 100% certain which one I should keep. Lowest priority.
         */
 
-#if DEBUG || Release_Testing
-        private readonly System.Diagnostics.Stopwatch initT = new System.Diagnostics.Stopwatch();
-
-        private void StartTimer()
-        {
-            initT.Restart();
-        }
-
-        private void StopTimer()
-        {
-            initT.Stop();
-            System.Diagnostics.Trace.WriteLine(nameof(InitComponentManual) + "up to stop point: " + initT.Elapsed);
-            System.Environment.Exit(1);
-        }
-#endif
-
         private void InitComponentManual()
         {
             components = new Container();
-
-            // PERF_NOTE: Instantiation: ~15ms (suspicion confirmed - worth it to lazy-load everything that can be!)
 
             #region Instantiation
 
@@ -168,8 +150,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            // PERF_NOTE: SuspendLayouts: <1ms
-
             #region SuspendLayout()
 
             BottomPanel.SuspendLayout();
@@ -203,8 +183,6 @@ namespace AngelLoader.Forms
             SuspendLayout();
 
             #endregion
-
-            // PERF_NOTE: Property sets: 15~17ms
 
             #region Property sets
 
@@ -1537,7 +1515,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            // PERF_NOTE: ResumeLayouts: ~4ms
             // We used to defer some of these till Localize() but that was really stupid and brittle and didn't
             // even really gain us any perceptible time.
 
