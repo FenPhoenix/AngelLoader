@@ -12,6 +12,6 @@ namespace AngelLoader.DataClasses
         internal static readonly string UnableToOpenFMFolder = "Unable to open FM folder.";
         internal static readonly string UnableToOpenHTMLReadme = "Unable to open HTML readme.";
         internal static readonly string HTMLReadmeNotFound = "The HTML readme file could not be found.";
-        internal static readonly string UnableToOpenRTFLink = "Unable to open link.";
+        internal static readonly string UnableToOpenLink = "Unable to open link.";
     }
 }

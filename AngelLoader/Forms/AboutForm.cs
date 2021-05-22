@@ -154,14 +154,7 @@ namespace AngelLoader.Forms
 
             if (link.IsEmpty()) return;
 
-            try
-            {
-                ProcessStart_UseShellExecute(link);
-            }
-            catch (Exception ex)
-            {
-                Dialogs.ShowAlert(ex.Message, LText.AlertMessages.Error, MessageBoxIcon.Error);
-            }
+            Core.OpenLink(link);
         }
     }
 }

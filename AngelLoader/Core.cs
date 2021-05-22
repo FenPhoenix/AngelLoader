@@ -1492,8 +1492,8 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Problem opening clickable link from rtfbox", ex);
-                Dialogs.ShowErrorDialog(ErrorText.UnableToOpenRTFLink);
+                Log("Problem opening link '" + link + "'", ex);
+                Dialogs.ShowErrorDialog(ErrorText.UnableToOpenLink + "\r\n\r\n" + link);
             }
         }
 
