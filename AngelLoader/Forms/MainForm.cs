@@ -4563,29 +4563,13 @@ namespace AngelLoader.Forms
 
         private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 
-        private
-#if !DEBUG
-        static
-#endif
-        void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanSmallButtons((Button)sender, e);
+        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanSmallButtons((Button)sender, e);
 
-        private
-#if !DEBUG
-        static
-#endif
-        void ZoomInButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.In);
+        private void ZoomInButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.In);
 
-        private
-#if !DEBUG
-        static
-#endif
-        void ZoomOutButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.Out);
+        private void ZoomOutButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.Out);
 
-        private
-#if !DEBUG
-        static
-#endif
-        void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.Reset);
+        private void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.Reset);
 
         #endregion
     }

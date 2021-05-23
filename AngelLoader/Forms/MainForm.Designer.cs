@@ -713,7 +713,6 @@
             // 
             // FilterTitleTextBox
             // 
-            this.FilterTitleTextBox.DisallowedCharacters = "";
             this.FilterTitleTextBox.Location = new System.Drawing.Point(146, 3);
             this.FilterTitleTextBox.Name = "FilterTitleTextBox";
             this.FilterTitleTextBox.Size = new System.Drawing.Size(144, 20);
@@ -732,7 +731,6 @@
             // 
             // FilterAuthorTextBox
             // 
-            this.FilterAuthorTextBox.DisallowedCharacters = "";
             this.FilterAuthorTextBox.Location = new System.Drawing.Point(346, 3);
             this.FilterAuthorTextBox.Name = "FilterAuthorTextBox";
             this.FilterAuthorTextBox.Size = new System.Drawing.Size(144, 20);

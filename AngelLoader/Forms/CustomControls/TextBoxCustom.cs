@@ -10,6 +10,7 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class TextBoxCustom : DarkTextBox
     {
         [PublicAPI]
+        [DefaultValue("")]
         public string DisallowedCharacters { get; set; } = "";
 
         /// <summary>

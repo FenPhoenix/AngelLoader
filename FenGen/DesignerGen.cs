@@ -27,7 +27,10 @@ namespace FenGen
             internal Point? Location;
             internal bool HasName;
             internal bool HasText;
+            internal bool HasHeaderText;
+            internal bool HasToolTipText;
             internal bool ExplicitAppIcon;
+            internal bool HasSetToolTip;
         }
 
         private sealed class NodeCustom
@@ -243,23 +246,45 @@ namespace FenGen
                 {
                     foreach (SyntaxNode mesN in ies.DescendantNodes())
                     {
-                        if (mesN is MemberAccessExpressionSyntax mes && mes.Name.ToString() == "Add")
+                        if (mesN is MemberAccessExpressionSyntax mes)
                         {
-                            string nodeStr = mesN.ToString().Trim();
-                            if (nodeStr.StartsWith("this.")) nodeStr = nodeStr.Substring(5);
-
-                            string nodeControlName = nodeStr.Substring(0, nodeStr.IndexOf('.'));
-
-                            if (nodeStr == nodeControlName + ".Controls.Add" &&
-                                controlTypes.TryGetValue(nodeControlName, out string nodeType) &&
-                                nodeType == "FlowLayoutPanel" &&
-                                ies.ArgumentList.Arguments.Count == 1)
+                            if (mes.Name.ToString() == "Add")
                             {
-                                var arg = ies.ArgumentList.Arguments[0];
-                                string argStr = arg.ToString().Trim();
-                                if (argStr.StartsWith("this.")) argStr = argStr.Substring(5);
-                                controlsInFlowLayoutPanels.Add(argStr);
-                                break;
+                                string nodeStr = mesN.ToString().Trim();
+                                if (nodeStr.StartsWith("this.")) nodeStr = nodeStr.Substring(5);
+
+                                string nodeControlName = nodeStr.Substring(0, nodeStr.IndexOf('.'));
+
+                                if (nodeStr == nodeControlName + ".Controls.Add" &&
+                                    controlTypes.TryGetValue(nodeControlName, out string nodeType) &&
+                                    nodeType == "FlowLayoutPanel" &&
+                                    ies.ArgumentList.Arguments.Count == 1)
+                                {
+                                    var arg = ies.ArgumentList.Arguments[0];
+                                    string argStr = arg.ToString().Trim();
+                                    if (argStr.StartsWith("this.")) argStr = argStr.Substring(5);
+                                    controlsInFlowLayoutPanels.Add(argStr);
+                                    break;
+                                }
+                            }
+                            else if (mes.Name.ToString() == "SetToolTip")
+                            {
+                                string nodeStr = mesN.ToString().Trim();
+                                if (nodeStr.StartsWith("this.")) nodeStr = nodeStr.Substring(5);
+
+                                string nodeControlName = nodeStr.Substring(0, nodeStr.IndexOf('.'));
+
+                                if (nodeStr == nodeControlName + ".SetToolTip" &&
+                                    controlTypes.TryGetValue(nodeControlName, out string nodeType) &&
+                                    nodeType == "ToolTip" &&
+                                    ies.ArgumentList.Arguments.Count == 2)
+                                {
+                                    curNode.ControlName = ies.DescendantNodes().First(x => x is IdentifierNameSyntax).ToString();
+                                    curNode.PropName = "SetToolTip";
+                                    CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+                                    props.HasSetToolTip = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -364,6 +389,8 @@ namespace FenGen
                     }
                     case "Name":
                     case "Text":
+                    case "HeaderText":
+                    case "ToolTipText":
                     {
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                         switch (curNode.PropName)
@@ -373,6 +400,12 @@ namespace FenGen
                                 break;
                             case "Text":
                                 props.HasText = true;
+                                break;
+                            case "HeaderText":
+                                props.HasHeaderText = true;
+                                break;
+                            case "ToolTipText":
+                                props.HasToolTipText = true;
                                 break;
                         }
                         break;
@@ -472,6 +505,24 @@ namespace FenGen
                     {
                         destNode.IgnoreExceptForComments = true;
                     }
+                }
+                else if (destNode.PropName == "HeaderText" && props.HasHeaderText &&
+                         (!controlAttributes.TryGetValue(destNode.ControlName, out attr) ||
+                          attr != GenAttributes.FenGenDoNotRemoveHeaderTextAttribute))
+                {
+                    destNode.IgnoreExceptForComments = true;
+                }
+                else if (destNode.PropName == "ToolTipText" && props.HasToolTipText &&
+                         (!controlAttributes.TryGetValue(destNode.ControlName, out attr) ||
+                          attr != GenAttributes.FenGenDoNotRemoveToolTipTextAttribute))
+                {
+                    destNode.IgnoreExceptForComments = true;
+                }
+                else if (destNode.PropName == "SetToolTip" && props.HasSetToolTip &&
+                         (!controlAttributes.TryGetValue(destNode.ControlName, out attr) ||
+                          attr != GenAttributes.FenGenDoNotRemoveToolTipTextAttribute))
+                {
+                    destNode.IgnoreExceptForComments = true;
                 }
                 else if (destNode.PropName == "Anchor" &&
                          (
