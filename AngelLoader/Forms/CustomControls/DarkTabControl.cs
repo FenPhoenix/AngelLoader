@@ -41,6 +41,13 @@ namespace AngelLoader.Forms.CustomControls
 
         public DarkTabControl() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 
+        /// <summary>
+        /// <para>Clears images and adds a set of new ones.</para>
+        /// This should always be called no matter what, because there's a ridiculous bug where if you add images
+        /// through the designer, they'll just always be rendered in like 4-bit quality even though the color
+        /// depth is set to 32 or whatever else.
+        /// </summary>
+        /// <param name="images"></param>
         public void SetImages(params Image[] images)
         {
             if (ImageList == null) return;
