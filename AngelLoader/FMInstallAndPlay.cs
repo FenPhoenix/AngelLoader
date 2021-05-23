@@ -37,6 +37,7 @@ namespace AngelLoader
             {
                 Log("Game is unknown or unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
+                Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
                 return;
             }
 
@@ -45,6 +46,7 @@ namespace AngelLoader
                 Log("playMP was true, but fm.Game was not Thief 2.\r\n" +
                     "fm: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
+                Dialogs.ShowError(ErrorText.MultiplayerForNonThief2);
                 return;
             }
 
@@ -111,7 +113,9 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Dialogs.ShowAlert(LText.AlertMessages.Play_UnknownGameType, LText.AlertMessages.Alert);
+                Log("Game is unknown or unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "fm.Game was: " + fm.Game, stackTrace: true);
+                Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
                 return false;
             }
 
@@ -171,34 +175,35 @@ namespace AngelLoader
         {
             #region Checks (specific to DromEd)
 
-            if (!GameIsKnownAndSupported(fm.Game))
+            // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
+            if (!GameIsDark(fm.Game))
             {
-                Log("Game is not Dark, is unknown, or is unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                Log("FM game type is not a Dark Engine game.\r\n" +
+                    "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
-                Dialogs.ShowAlert(LText.AlertMessages.DromEd_UnknownGameType, LText.AlertMessages.Alert);
+                Dialogs.ShowError(ErrorText.FMGameTypeIsNotDark);
                 return false;
             }
 
-            // This is different from the above: The above is just checking if the game is known, while this is
-            // checking if it's Dark specifically, because we don't support Thief 3 for editor opening.
-            // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
-            if (!GameIsDark(fm.Game)) return false;
+            GameIndex gameIndex = GameToGameIndex(fm.Game);
 
-            var game = GameToGameIndex(fm.Game);
-
-            string gamePath = Config.GetGamePath(game);
+            string gamePath = Config.GetGamePath(gameIndex);
             if (gamePath.IsEmpty())
             {
-                Log("Game path is empty for " + fm.Game, stackTrace: true);
+                Log("Game path is empty for " + gameIndex, stackTrace: true);
+                Dialogs.ShowError(gameIndex + ":\r\n" + ErrorText.GamePathEmpty);
                 return false;
             }
 
-            string editorExe = Config.GetEditorExe_FromDisk(game);
+            string editorExe = Config.GetEditorExe_FromDisk(gameIndex);
             if (editorExe.IsEmpty())
             {
-                Dialogs.ShowAlert(fm.Game == Game.SS2
+                Log(nameof(OpenFMInEditor) + ": Editor executable not found.\r\n" +
+                    "FM:" + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "Editor executable: " + editorExe);
+                Dialogs.ShowError(fm.Game == Game.SS2
                     ? LText.AlertMessages.ShockEd_ExecutableNotFound
-                    : LText.AlertMessages.DromEd_ExecutableNotFound, LText.AlertMessages.Alert);
+                    : LText.AlertMessages.DromEd_ExecutableNotFound);
                 return false;
             }
 
@@ -208,7 +213,7 @@ namespace AngelLoader
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
             // We don't need to do this here, right?
-            SetUsAsSelector(game, gamePath);
+            SetUsAsSelector(gameIndex, gamePath);
 
             // Since we don't use the stub currently, set this here
             // TODO: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
@@ -330,8 +335,8 @@ namespace AngelLoader
             string gamePath = Config.GetGamePath(gameIndex);
             if (gamePath.IsEmpty())
             {
-                Dialogs.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GamePathNotFound,
-                    LText.AlertMessages.Alert);
+                Log("Game path is empty for " + gameIndex, stackTrace: true);
+                Dialogs.ShowError(gameName + ":\r\n" + ErrorText.GamePathEmpty);
                 return failed;
             }
 
@@ -346,7 +351,7 @@ namespace AngelLoader
                 string exeNotFoundMessage = playingOriginalGame
                     ? LText.AlertMessages.Play_ExecutableNotFound
                     : LText.AlertMessages.Play_ExecutableNotFoundFM;
-                Dialogs.ShowAlert(gameName + ":\r\n" + exeNotFoundMessage, LText.AlertMessages.Alert);
+                Dialogs.ShowError(gameName + ":\r\n" + exeNotFoundMessage);
                 return failed;
             }
 
@@ -471,23 +476,22 @@ namespace AngelLoader
 
             AssertR(!fm.Installed, "fm.Installed == false");
 
-            if (fm.Game == Game.Null)
+            if (!GameIsKnownAndSupported(fm.Game))
             {
-                Dialogs.ShowAlert(LText.AlertMessages.Install_UnknownGameType, LText.AlertMessages.Alert);
-                return false;
-            }
-
-            if (fm.Game == Game.Unsupported)
-            {
-                Dialogs.ShowAlert(LText.AlertMessages.Install_UnsupportedGameType, LText.AlertMessages.Alert);
-                return false;
+                Log(nameof(InstallFM) + ": FM game type is unknown or unsupported.\r\n" +
+                    "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "FM game was: " + fm.Game);
+                Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
             }
 
             string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
 
             if (fmArchivePath.IsEmpty())
             {
-                Dialogs.ShowAlert(LText.AlertMessages.Install_ArchiveNotFound, LText.AlertMessages.Alert);
+                Log(nameof(InstallFM) + ": FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
+                    "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "FM game was: " + fm.Game);
+                Dialogs.ShowError(LText.AlertMessages.Install_ArchiveNotFound);
                 return false;
             }
 
@@ -495,8 +499,10 @@ namespace AngelLoader
             string gameName = GetLocalizedGameName(fm.Game);
             if (!File.Exists(gameExe))
             {
-                Dialogs.ShowAlert(gameName + ":\r\n" +
-                                  LText.AlertMessages.Install_ExecutableNotFound, LText.AlertMessages.Alert);
+                Log(nameof(InstallFM) + ": Game executable not found.\r\n" +
+                    "Game executable: " + gameExe);
+                Dialogs.ShowError(gameName + ":\r\n" +
+                                  LText.AlertMessages.Install_ExecutableNotFound);
                 return false;
             }
 
@@ -504,8 +510,13 @@ namespace AngelLoader
 
             if (!Directory.Exists(instBasePath))
             {
-                Dialogs.ShowAlert(gameName + ":\r\n" +
-                                  LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
+                Log(nameof(InstallFM) + ": FM install path not found.\r\n" +
+                    "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "FM game was: " + fm.Game + "\r\n" +
+                    "FM install path: " + instBasePath
+                    );
+                Dialogs.ShowError(gameName + ":\r\n" +
+                                  LText.AlertMessages.Install_FMInstallPathNotFound);
                 return false;
             }
 
@@ -651,8 +662,7 @@ namespace AngelLoader
             {
                 Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
                 Core.View.InvokeSync(new Action(() =>
-                    Dialogs.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
-                        LText.AlertMessages.Alert)));
+                    Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially)));
             }
 
             return !canceled;
@@ -703,8 +713,7 @@ namespace AngelLoader
                         + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
 
                     Core.View.InvokeSync(new Action(() =>
-                        Dialogs.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
-                            LText.AlertMessages.Alert)));
+                        Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially)));
 
                     return !result.Canceled;
                 }
@@ -725,8 +734,7 @@ namespace AngelLoader
                 Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n", ex);
 
                 Core.View.InvokeSync(new Action(() =>
-                    Dialogs.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
-                        LText.AlertMessages.Alert)));
+                    Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially)));
 
                 return !canceled;
             }
@@ -855,8 +863,11 @@ namespace AngelLoader
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
+                    Log(nameof(UninstallFM) + ": Could not delete FM installed directory.\r\n" +
+                        "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                        "FM installed path: " + fmInstalledPath);
                     // TODO: Make option to open the folder in Explorer and delete it manually?
-                    Dialogs.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted, LText.AlertMessages.Alert);
+                    Dialogs.ShowError(LText.AlertMessages.Uninstall_UninstallNotCompleted);
                 }
 
                 fm.Installed = false;

@@ -315,7 +315,7 @@ namespace AngelLoader
                 string message = scanningOne
                     ? LText.AlertMessages.Scan_ExceptionInScanOne
                     : LText.AlertMessages.Scan_ExceptionInScanMultiple;
-                Dialogs.ShowAlert(message, LText.AlertMessages.Error);
+                Dialogs.ShowError(message);
                 return false;
             }
             finally
