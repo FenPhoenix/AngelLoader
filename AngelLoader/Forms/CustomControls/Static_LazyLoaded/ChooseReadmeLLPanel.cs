@@ -10,7 +10,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static bool _constructed;
 
         private static Panel Panel = null!;
-        internal static DarkListBoxCustom ListBox = null!;
+        internal static DarkListBoxWithBackingItems ListBox = null!;
 
         private static FlowLayoutPanel OKButtonFLP = null!;
         private static DarkButton OKButton = null!;
@@ -64,7 +64,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             };
             OKButtonFLP.Controls.Add(OKButton);
 
-            ListBox = new DarkListBoxCustom
+            ListBox = new DarkListBoxWithBackingItems
             {
                 Tag = LazyLoaded.True,
                 MultiSelect = false,
