@@ -3,10 +3,84 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
+    #region DisableEvents
+
+    /*
+     Implement the interface on your form, and put guard clauses on all your event handlers that you want to
+     be disableable:
+
+     if (EventsDisabled) return;
+
+     Then whenever you want to disable those event handlers, just make a using block:
+
+     using (new DisableEvents(this))
+     {
+     }
+
+     Inside this block, put any code that changes the state of the controls in such a way that would normally
+     run their event handlers. The guard clauses will exit them before anything happens. Problem solved. And
+     much better than a nasty wall of Control.Event1 -= Control_Event1; Control.Event1 += Control_Event1; etc.,
+     and has the added bonus of guaranteeing a reset of the value due to the using block.
+    */
+
+    internal interface IEventDisabler
+    {
+        bool EventsDisabled { set; }
+    }
+
+    internal sealed class DisableEvents : IDisposable
+    {
+        private readonly IEventDisabler Obj;
+        internal DisableEvents(IEventDisabler obj)
+        {
+            Obj = obj;
+            Obj.EventsDisabled = true;
+        }
+
+        public void Dispose() => Obj.EventsDisabled = false;
+    }
+
+    #endregion
+
+    #region DisableKeyPresses
+
+    internal interface IKeyPressDisabler
+    {
+        bool KeyPressesDisabled { set; }
+    }
+
+    internal sealed class DisableKeyPresses : IDisposable
+    {
+        private readonly IKeyPressDisabler Obj;
+
+        internal DisableKeyPresses(IKeyPressDisabler obj)
+        {
+            Obj = obj;
+            Obj.KeyPressesDisabled = true;
+        }
+
+        public void Dispose() => Obj.KeyPressesDisabled = false;
+    }
+
+    #endregion
+
+    internal interface ISettingsChangeableWindow
+    {
+        void Localize();
+        void SetTheme(VisualTheme theme);
+    }
+
+    [PublicAPI]
+    public interface IDarkable
+    {
+        bool DarkModeEnabled { get; set; }
+    }
+
     internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IMessageFilter
     {
         #region Progress box

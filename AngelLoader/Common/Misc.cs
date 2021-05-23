@@ -132,77 +132,6 @@ namespace AngelLoader
             internal const uint MaxDaysRecent = 99999;
         }
 
-        #region Interfaces
-
-        #region DisableEvents
-
-        /*
-         Implement the interface on your form, and put guard clauses on all your event handlers that you want to
-         be disableable:
-
-         if (EventsDisabled) return;
-
-         Then whenever you want to disable those event handlers, just make a using block:
-
-         using (new DisableEvents(this))
-         {
-         }
-
-         Inside this block, put any code that changes the state of the controls in such a way that would normally
-         run their event handlers. The guard clauses will exit them before anything happens. Problem solved. And
-         much better than a nasty wall of Control.Event1 -= Control_Event1; Control.Event1 += Control_Event1; etc.,
-         and has the added bonus of guaranteeing a reset of the value due to the using block.
-        */
-
-        internal interface IEventDisabler
-        {
-            bool EventsDisabled { set; }
-        }
-
-        internal sealed class DisableEvents : IDisposable
-        {
-            private readonly IEventDisabler Obj;
-            internal DisableEvents(IEventDisabler obj)
-            {
-                Obj = obj;
-                Obj.EventsDisabled = true;
-            }
-
-            public void Dispose() => Obj.EventsDisabled = false;
-        }
-
-        #endregion
-
-        #region DisableKeyPresses
-
-        internal interface IKeyPressDisabler
-        {
-            bool KeyPressesDisabled { set; }
-        }
-
-        internal sealed class DisableKeyPresses : IDisposable
-        {
-            private readonly IKeyPressDisabler Obj;
-
-            internal DisableKeyPresses(IKeyPressDisabler obj)
-            {
-                Obj = obj;
-                Obj.KeyPressesDisabled = true;
-            }
-
-            public void Dispose() => Obj.KeyPressesDisabled = false;
-        }
-
-        #endregion
-
-        internal interface ISettingsChangeableWindow
-        {
-            void Localize();
-            void SetTheme(VisualTheme theme);
-        }
-
-        #endregion
-
         // IMPORTANT: Put these AFTER every other static field has been initialized!
         // Otherwise, these things' constructors might refer back to this class and get a field that may not have
         // been initialized. Ugh.
@@ -210,6 +139,9 @@ namespace AngelLoader
 
         internal static readonly ConfigData Config = new ConfigData();
 
+        // This one is sort of quasi-immutable: its fields are readonly (they're loaded by reflection) but the
+        // object itself is not readonly, so that the reader can start with a fresh instance with default values
+        // for all the fields it doesn't find a new value for.
         internal static LText_Class LText = new LText_Class();
 
         // Preset tags will be deep copied to this list later
