@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class ComboBoxWithBackingItems : DarkComboBox
+    public sealed class DarkComboBoxWithBackingItems : DarkComboBox
     {
         #region Backing items
 

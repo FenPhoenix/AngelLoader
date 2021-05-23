@@ -8,7 +8,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class FilterDateForm : DarkForm, IEventDisabler
+    public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
     {
         private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 

@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class ArrowButton : DarkButton
+    public sealed class DarkArrowButton : DarkButton
     {
         private Direction _arrowDirection;
 

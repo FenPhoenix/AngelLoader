@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 using AngelLoader.WinAPI;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms
 {
-    public class DarkForm : Form
+    /// <summary>
+    /// Prevents flickering of light-mode colors during initialization of a form when dark mode is enabled.
+    /// </summary>
+    public class DarkFormBase : Form
     {
         private bool _loading = true;
 

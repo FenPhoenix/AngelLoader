@@ -57,7 +57,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom? RatingMenuItem;
         private static ToolStripMenuItemCustom? RatingMenuUnrated;
         private static ToolStripMenuItemCustom? FinishedOnMenuItem;
-        private static ContextMenuStripCustom? FinishedOnMenu;
+        private static DarkContextMenu? FinishedOnMenu;
         private static ToolStripMenuItemCustom? FinishedOnNormalMenuItem;
         private static ToolStripMenuItemCustom? FinishedOnHardMenuItem;
         private static ToolStripMenuItemCustom? FinishedOnExpertMenuItem;
@@ -183,7 +183,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             #region Instantiation
 
             FMContextMenu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LazyLoaded.True };
-            FinishedOnMenu = new ContextMenuStripCustom(_darkModeEnabled, _owner.GetComponents()) { Tag = LazyLoaded.True };
+            FinishedOnMenu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LazyLoaded.True };
 
             #endregion
 

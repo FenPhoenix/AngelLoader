@@ -7,7 +7,16 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal sealed class TabControlCustom : DarkTabControl
+    /*
+    TODO(DarkTabControlCustom):
+    -Merge this with DarkTabControl
+    -Set it up so that adding tabs can be done normally:
+     In OnControlAdded()/OnControlRemoved(), add/remove from backing list, but have a bool guard check for that.
+     When we show/hide tabs, set the bool so that OnControlAdded()/OnControlRemoved() don't do anything while we
+     update the backing list ourselves.
+    */
+
+    internal sealed class DarkTabControlCustom : DarkTabControl
     {
         #region Private fields
 

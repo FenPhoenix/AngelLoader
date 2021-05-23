@@ -16,7 +16,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private static MainForm _owner = null!;
 
-        internal static ContextMenuStripCustom Menu = null!;
+        internal static DarkContextMenu Menu = null!;
         private static ToolStripMenuItemCustom TitleMenuItem = null!;
         private static ToolStripMenuItemCustom AuthorMenuItem = null!;
         private static ToolStripMenuItemCustom ReleaseDateMenuItem = null!;
@@ -49,7 +49,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             _owner = form;
 
-            Menu = new ContextMenuStripCustom(_darkModeEnabled, components) { Tag = LazyLoaded.True };
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 TitleMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },

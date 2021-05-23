@@ -26,7 +26,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    internal sealed partial class SettingsForm : DarkForm, IEventDisabler
+    internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         #region Private fields
 
@@ -52,7 +52,7 @@ namespace AngelLoader.Forms
 
         private VisualTheme _selfTheme;
 
-        private readonly RadioButtonCustom[] PageRadioButtons;
+        private readonly DarkRadioButtonCustom[] PageRadioButtons;
         private readonly ISettingsPage[] Pages;
         private readonly int?[] _pageVScrollValues;
 
@@ -68,7 +68,7 @@ namespace AngelLoader.Forms
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
         private readonly DateTime _exampleDate = new DateTime(DateTime.Now.Year, 8, 4);
 
-        private readonly ComboBoxWithBackingItems LangComboBox;
+        private readonly DarkComboBoxWithBackingItems LangComboBox;
         private readonly GroupBox LangGroupBox;
 
         private readonly PathsPage PathsPage;
@@ -1070,19 +1070,19 @@ namespace AngelLoader.Forms
         #region Page selection handler
 
         // This is to handle keyboard "clicks"
-        private void PageRadioButtons_Click(object sender, EventArgs e) => ((RadioButtonCustom)sender).Checked = true;
+        private void PageRadioButtons_Click(object sender, EventArgs e) => ((DarkRadioButtonCustom)sender).Checked = true;
 
         // This is for mouse use, to give a snappier experience, we change on MouseDown
         private void SectionButtons_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left) ((RadioButtonCustom)sender).Checked = true;
+            if (e.Button == MouseButtons.Left) ((DarkRadioButtonCustom)sender).Checked = true;
         }
 
         private void PathsRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
 
-            var s = (RadioButtonCustom)sender;
+            var s = (DarkRadioButtonCustom)sender;
             if (!s.Checked) return;
 
             using (new DisableEvents(this)) foreach (var b in PageRadioButtons) if (s != b) b.Checked = false;

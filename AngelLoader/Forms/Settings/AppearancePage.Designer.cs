@@ -80,7 +80,7 @@ namespace AngelLoader.Forms
             this.DarkThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.LanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxWithBackingItems();
+            this.LanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.FMsListGroupBox.SuspendLayout();
@@ -696,7 +696,7 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.DarkPanel PagePanel;
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
         internal AngelLoader.Forms.CustomControls.DarkGroupBox LanguageGroupBox;
-        internal AngelLoader.Forms.CustomControls.ComboBoxWithBackingItems LanguageComboBox;
+        internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems LanguageComboBox;
         internal AngelLoader.Forms.CustomControls.DarkGroupBox VisualThemeGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkRadioButton DarkThemeRadioButton;
         internal AngelLoader.Forms.CustomControls.DarkRadioButton ClassicThemeRadioButton;

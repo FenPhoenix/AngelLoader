@@ -8,7 +8,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class SplitContainerCustom : SplitContainer, IDarkable
+    public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
     {
         // Insightful Note:
         // Horizontal and Vertical are the opposite of what you expect them to mean...
@@ -28,7 +28,7 @@ namespace AngelLoader.Forms.CustomControls
 
         // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
         // control both its own SplitterDistance and that of its orthogonally-oriented sibling at the same time.
-        private SplitContainerCustom? _sibling;
+        private DarkSplitContainerCustom? _sibling;
 
         // This realtime-draw resize stuff still flickers a bit, but it's better than no redraw at all.
         private int _originalDistance;
@@ -104,7 +104,7 @@ namespace AngelLoader.Forms.CustomControls
         [Pure]
         private bool IsMain() => Orientation == Orientation.Horizontal;
 
-        public SplitContainerCustom()
+        public DarkSplitContainerCustom()
         {
             AutoScaleMode = AutoScaleMode.Dpi;
             DoubleBuffered = true;
@@ -113,7 +113,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public methods
 
-        internal void InjectSibling(SplitContainerCustom sibling) => _sibling = sibling;
+        internal void InjectSibling(DarkSplitContainerCustom sibling) => _sibling = sibling;
 
         internal void ToggleFullScreen() => SetFullScreen(!FullScreen);
 

@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class RadioButtonCustom : DarkButton
+    public sealed class DarkRadioButtonCustom : DarkButton
     {
         private bool _checked;
 
@@ -21,7 +21,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public RadioButtonCustom()
+        public DarkRadioButtonCustom()
         {
             DarkModeBackColor = DarkColors.Fen_ControlBackground;
             DarkModeHoverColor = DarkColors.Fen_DarkBackground;

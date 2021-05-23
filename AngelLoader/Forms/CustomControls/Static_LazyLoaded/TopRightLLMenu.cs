@@ -13,7 +13,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static bool _constructed;
         private static readonly bool[] _checkedStates = InitializedArray(TopRightTabsData.Count, true);
 
-        internal static ContextMenuStripCustom Menu = null!;
+        internal static DarkContextMenu Menu = null!;
 
         private static ToolStripMenuItemCustom StatsMenuItem = null!;
         private static ToolStripMenuItemCustom EditFMMenuItem = null!;
@@ -42,7 +42,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation and hookup events
 
-            Menu = new ContextMenuStripCustom(_darkModeEnabled, components) { Tag = LazyLoaded.True };
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 StatsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },

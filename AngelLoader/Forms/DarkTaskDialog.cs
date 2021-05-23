@@ -9,7 +9,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public partial class DarkTaskDialog : DarkForm
+    public partial class DarkTaskDialog : DarkFormBase
     {
         #region Private fields
 

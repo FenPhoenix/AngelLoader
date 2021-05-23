@@ -1,12 +1,16 @@
 ﻿using System.ComponentModel;
+using System.Linq;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class DarkContextMenu : ContextMenuStrip
+    public sealed class DarkContextMenu : ContextMenuStrip
     {
+        private bool _preventClose;
+        private ToolStripMenuItemCustom[]? _preventCloseItems;
+
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
@@ -34,6 +38,8 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        internal void SetPreventCloseOnClickItems(params ToolStripMenuItemCustom[] items) => _preventCloseItems = items;
+
         public void AddRange(ToolStripItem[] toolStripItems)
         {
             for (int i = 0; i < toolStripItems.Length; i++)
@@ -58,6 +64,28 @@ namespace AngelLoader.Forms.CustomControls
             RefreshDarkModeState();
         }
         */
+
+        protected override void OnItemClicked(ToolStripItemClickedEventArgs e)
+        {
+            if (_preventCloseItems?.Length > 0)
+            {
+                _preventClose = _preventCloseItems.Contains(e.ClickedItem) && ((ToolStripMenuItemCustom)e.ClickedItem).CheckOnClick;
+            }
+
+            base.OnItemClicked(e);
+        }
+
+        protected override void OnClosing(ToolStripDropDownClosingEventArgs e)
+        {
+            if (_preventCloseItems?.Length > 0 && _preventClose)
+            {
+                _preventClose = false;
+                e.Cancel = true;
+                return;
+            }
+
+            base.OnClosing(e);
+        }
 
         private void RefreshDarkModeState()
         {

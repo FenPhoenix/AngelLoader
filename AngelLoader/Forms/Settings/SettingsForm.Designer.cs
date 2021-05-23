@@ -25,10 +25,10 @@ namespace AngelLoader.Forms
             this.ErrorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
-            this.OtherRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
-            this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
-            this.PathsRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
+            this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
+            this.OtherRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
+            this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
+            this.PathsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.BottomFlowLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
@@ -237,10 +237,10 @@ namespace AngelLoader.Forms
         private AngelLoader.Forms.CustomControls.DarkButton OKButton;
         private System.Windows.Forms.ToolTip MainToolTip;
         private AngelLoader.Forms.CustomControls.DarkLabel ErrorLabel;
-        private AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom OtherRadioButton;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom AppearanceRadioButton;
-        private AngelLoader.Forms.CustomControls.RadioButtonCustom PathsRadioButton;
+        private AngelLoader.Forms.CustomControls.DarkSplitContainerCustom MainSplitContainer;
+        private AngelLoader.Forms.CustomControls.DarkRadioButtonCustom OtherRadioButton;
+        private AngelLoader.Forms.CustomControls.DarkRadioButtonCustom AppearanceRadioButton;
+        private AngelLoader.Forms.CustomControls.DarkRadioButtonCustom PathsRadioButton;
         private System.Windows.Forms.PictureBox ErrorIconPictureBox;
     }
 }

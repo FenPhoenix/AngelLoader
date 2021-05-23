@@ -22,7 +22,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #region Menu item fields
 
-        private static ContextMenuStripCustom? Menu;
+        private static DarkContextMenu? Menu;
 
         private static ToolStripMenuItemCustom? ResetColumnVisibilityMenuItem;
         private static ToolStripMenuItemCustom? ResetAllColumnWidthsMenuItem;
@@ -119,7 +119,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation
 
-            Menu = new ContextMenuStripCustom(_darkModeEnabled, _owner.GetComponents()) { Tag = LazyLoaded.True };
+            Menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LazyLoaded.True };
 
             #endregion
 

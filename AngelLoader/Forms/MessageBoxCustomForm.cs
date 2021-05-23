@@ -9,7 +9,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class MessageBoxCustomForm : DarkForm
+    public sealed partial class MessageBoxCustomForm : DarkFormBase
     {
         private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 

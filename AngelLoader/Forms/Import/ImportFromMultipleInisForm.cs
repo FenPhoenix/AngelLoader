@@ -8,7 +8,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class ImportFromMultipleInisForm : DarkForm
+    public sealed partial class ImportFromMultipleInisForm : DarkFormBase
     {
         private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
