@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : DarkFormBase
     {
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
-
         private readonly CatAndTagsList _sourceTags;
 
         internal readonly TagsFilter TagsFilter = new TagsFilter();

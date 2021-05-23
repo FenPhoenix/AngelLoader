@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
     public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
     {
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
-
         internal int RatingFrom;
         internal int RatingTo;
 

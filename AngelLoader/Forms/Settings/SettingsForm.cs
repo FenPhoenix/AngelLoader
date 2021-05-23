@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
@@ -29,8 +28,6 @@ namespace AngelLoader.Forms
     internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         #region Private fields
-
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         private readonly ISettingsChangeableWindow? _ownerForm;
 

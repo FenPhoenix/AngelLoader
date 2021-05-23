@@ -116,9 +116,21 @@ namespace AngelLoader.Forms
 
         #region Theming
 
+        internal sealed class ControlOriginalColors
+        {
+            internal readonly Color ForeColor;
+            internal readonly Color BackColor;
+
+            internal ControlOriginalColors(Color foreColor, Color backColor)
+            {
+                ForeColor = foreColor;
+                BackColor = backColor;
+            }
+        }
+
         private static void FillControlDict(
             Control control,
-            List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> controlColors,
+            List<KeyValuePair<Control, ControlOriginalColors?>> controlColors,
             bool alsoCreateControlHandles,
             int stackCounter = 0)
         {
@@ -126,7 +138,10 @@ namespace AngelLoader.Forms
 
             if (control.Tag is not LazyLoaded.True)
             {
-                controlColors.Add(new KeyValuePair<Control, (Color ForeColor, Color BackColor)>(control, (control.ForeColor, control.BackColor)));
+                ControlOriginalColors? origColors = control is IDarkable
+                    ? null
+                    : new ControlOriginalColors(control.ForeColor, control.BackColor);
+                controlColors.Add(new KeyValuePair<Control, ControlOriginalColors?>(control, origColors));
             }
 
             if (alsoCreateControlHandles && !control.IsHandleCreated)
@@ -173,7 +188,7 @@ namespace AngelLoader.Forms
         internal static void ChangeFormThemeMode(
             VisualTheme theme,
             Form form,
-            List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> controlColors,
+            List<KeyValuePair<Control, ControlOriginalColors?>> controlColors,
             Func<Component, bool>? excludePredicate = null,
             bool alsoCreateControlHandles = false,
             int capacity = -1
@@ -222,8 +237,9 @@ namespace AngelLoader.Forms
                     }
                     else
                     {
-                        control.ForeColor = item.Value.ForeColor;
-                        control.BackColor = item.Value.BackColor;
+                        control.ForeColor = item.Value!.ForeColor;
+                        control.BackColor = item.Value!.BackColor;
+
                     }
                 }
             }

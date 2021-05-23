@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
@@ -12,8 +10,6 @@ namespace AngelLoader.Forms
     public sealed partial class ScanAllFMsForm : DarkFormBase
     {
         private readonly DarkCheckBox[] _checkBoxes;
-
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         internal readonly ScanOptions ScanOptions = ScanOptions.FalseDefault();
         internal bool NoneSelected;

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
@@ -12,8 +10,6 @@ namespace AngelLoader.Forms
     public sealed partial class GameVersionsForm : DarkFormBase
     {
         private readonly (DarkLabel Label, DarkTextBox TextBox)[] GameVersionItems;
-
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
 
         public GameVersionsForm()
         {

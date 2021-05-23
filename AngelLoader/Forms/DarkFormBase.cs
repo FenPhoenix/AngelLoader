@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
@@ -6,12 +7,11 @@ using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms
 {
-    /// <summary>
-    /// Prevents flickering of light-mode colors during initialization of a form when dark mode is enabled.
-    /// </summary>
-    public class DarkFormBase : Form
+    public abstract class DarkFormBase : Form
     {
         private bool _loading = true;
+
+        private protected readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
 
         protected override void OnShown(EventArgs e)
         {

@@ -11,8 +11,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class MessageBoxCustomForm : DarkFormBase
     {
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
-
         private readonly bool _multiChoice;
         private const int _bottomAreaHeight = 42;
         private const int _leftAreaWidth = 60;

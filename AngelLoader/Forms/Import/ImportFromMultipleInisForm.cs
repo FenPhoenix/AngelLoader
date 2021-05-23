@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -10,8 +8,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class ImportFromMultipleInisForm : DarkFormBase
     {
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
-
         internal List<string> IniFiles = new List<string>();
         internal bool ImportTitle;
         internal bool ImportReleaseDate;

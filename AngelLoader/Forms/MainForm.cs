@@ -148,8 +148,6 @@ namespace AngelLoader.Forms
         }
 #endif
 
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
-
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
 
         private void TestButton_Click(object sender, EventArgs e)

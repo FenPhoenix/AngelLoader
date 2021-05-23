@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Reflection;
@@ -15,8 +14,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class AboutForm : DarkFormBase
     {
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
-
         public AboutForm()
         {
 #if DEBUG

@@ -1,7 +1,6 @@
 ﻿#if DEBUG || Release_Testing
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,7 +14,7 @@ namespace AngelLoader.Forms
 {
     public sealed partial class RTF_Visual_Test_Form : Form
     {
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
+        private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
 
         private bool _broadcastEnabled = true;
 

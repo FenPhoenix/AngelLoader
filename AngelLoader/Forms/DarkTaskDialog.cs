@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -11,12 +10,6 @@ namespace AngelLoader.Forms
 {
     public partial class DarkTaskDialog : DarkFormBase
     {
-        #region Private fields
-
-        private readonly List<KeyValuePair<Control, (Color ForeColor, Color BackColor)>> _controlColors = new();
-
-        #endregion
-
         #region Public fields
 
         [PublicAPI]
