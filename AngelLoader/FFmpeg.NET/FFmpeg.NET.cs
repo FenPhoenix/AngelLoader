@@ -36,22 +36,15 @@ namespace AngelLoader.FFmpeg.NET
         FormatConvert
     }
 
-    public sealed class Engine
+    public static class Engine
     {
-        private readonly string _ffmpegPath;
-
-        public Engine(string ffmpegPath)
+        public static async Task ConvertAsync(string input, string output, ConvertType convertType)
         {
-            if (!File.Exists(ffmpegPath))
+            if (!File.Exists(Paths.FFmpegExe))
             {
-                throw new ArgumentException("FFmpeg executable not found", ffmpegPath);
+                throw new ArgumentException("FFmpeg executable not found", Paths.FFmpegExe);
             }
 
-            _ffmpegPath = ffmpegPath;
-        }
-
-        public async Task ConvertAsync(string input, string output, ConvertType convertType)
-        {
             string arguments = convertType == ConvertType.FormatConvert
                 ? " -i \"" + input + "\" \"" + output + "\" "
                 : " -i \"" + input + "\" -ab 16k -map_metadata 0 \"" + output + "\" ";
@@ -60,7 +53,7 @@ namespace AngelLoader.FFmpeg.NET
             {
                 // -y overwrite output files
                 Arguments = "-y " + arguments,
-                FileName = _ffmpegPath,
+                FileName = Paths.FFmpegExe,
                 CreateNoWindow = true,
                 UseShellExecute = false
             };

@@ -129,8 +129,6 @@ namespace AngelLoader
                         {
                             var fmSndPaths = GetFMSoundPathsByGame(fm);
 
-                            var engine = new FFmpeg.NET.Engine(Paths.FFmpegExe);
-
                             foreach (string fmSndPath in fmSndPaths)
                             {
                                 if (!Directory.Exists(fmSndPath)) return;
@@ -152,7 +150,7 @@ namespace AngelLoader
 
                                     string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
 
-                                    await engine.ConvertAsync(f, tempFile, FFmpeg.NET.ConvertType.AudioBitRateTo16Bit);
+                                    await FFmpeg.NET.Engine.ConvertAsync(f, tempFile, FFmpeg.NET.ConvertType.AudioBitRateTo16Bit);
 
                                     File.Delete(f);
                                     File.Move(tempFile, f);
@@ -195,15 +193,13 @@ namespace AngelLoader
                                     return;
                                 }
 
-                                var engine = new FFmpeg.NET.Engine(Paths.FFmpegExe);
-
                                 foreach (string f in files)
                                 {
                                     File_UnSetReadOnly(f);
 
                                     try
                                     {
-                                        await engine.ConvertAsync(f, f.RemoveExtension() + ".wav", FFmpeg.NET.ConvertType.FormatConvert);
+                                        await FFmpeg.NET.Engine.ConvertAsync(f, f.RemoveExtension() + ".wav", FFmpeg.NET.ConvertType.FormatConvert);
                                     }
                                     catch (Exception ex)
                                     {
