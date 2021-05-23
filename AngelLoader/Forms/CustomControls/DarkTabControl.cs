@@ -130,7 +130,7 @@ namespace AngelLoader.Forms.CustomControls
 
                             Point imgPoint = new Point(
                                 tabRect.Left + 1 + ((leftMargin / 2) - (image.Width / 2)),
-                               focused ? 3 : 4
+                                focused ? 2 : 4
                             );
                             g.DrawImage(image, imgPoint.X, imgPoint.Y);
                         }
@@ -163,11 +163,16 @@ namespace AngelLoader.Forms.CustomControls
                             thisTabHasImage
                                 ? new Rectangle(
                                     tabRect.X - 2,
-                                    tabRect.Y + 1,
+                                    tabRect.Y + (focused ? 0 : 1),
                                     tabRect.Width,
                                     tabRect.Height - 1
                                 )
-                                : tabRect;
+                                : new Rectangle(
+                                    tabRect.X + 1,
+                                    tabRect.Y + (focused ? 0 : 1),
+                                    tabRect.Width,
+                                    tabRect.Height - 1
+                                );
 
                         Color textColor = DarkColors.LightText;
 
