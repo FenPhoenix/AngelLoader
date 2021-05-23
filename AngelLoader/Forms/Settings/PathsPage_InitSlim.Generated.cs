@@ -7,7 +7,7 @@
         /// </summary>
         private void InitializeComponentSlim()
         {
-            this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
+            this.PagePanel = new System.Windows.Forms.Panel();
             this.ActualPathsPanel = new System.Windows.Forms.Panel();
             this.FlowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.OtherGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();

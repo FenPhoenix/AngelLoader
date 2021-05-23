@@ -31,7 +31,7 @@ namespace AngelLoader.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
+            this.PagePanel = new System.Windows.Forms.Panel();
             this.FMsListGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.darkHorizontalDivider4 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
             this.darkHorizontalDivider3 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
@@ -693,7 +693,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        internal AngelLoader.Forms.CustomControls.DarkPanel PagePanel;
+        internal System.Windows.Forms.Panel PagePanel;
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
         internal AngelLoader.Forms.CustomControls.DarkGroupBox LanguageGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems LanguageComboBox;

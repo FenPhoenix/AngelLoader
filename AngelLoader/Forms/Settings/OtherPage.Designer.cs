@@ -31,7 +31,7 @@ namespace AngelLoader.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
+            this.PagePanel = new System.Windows.Forms.Panel();
             this.PlayFMOnDCOrEnterGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.WebSearchGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -289,7 +289,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        internal AngelLoader.Forms.CustomControls.DarkPanel PagePanel;
+        internal System.Windows.Forms.Panel PagePanel;
         internal AngelLoader.Forms.CustomControls.DarkGroupBox PlayFMOnDCOrEnterGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox ConfirmPlayOnDCOrEnterCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkGroupBox WebSearchGroupBox;

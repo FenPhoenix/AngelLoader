@@ -7,7 +7,7 @@
         /// </summary>
         private void InitializeComponentSlim()
         {
-            this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
+            this.PagePanel = new System.Windows.Forms.Panel();
             this.FMsListGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.darkHorizontalDivider4 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
             this.darkHorizontalDivider3 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();

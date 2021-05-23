@@ -31,7 +31,7 @@ namespace AngelLoader.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
+            this.PagePanel = new System.Windows.Forms.Panel();
             this.ActualPathsPanel = new System.Windows.Forms.Panel();
             this.FlowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.OtherGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -593,7 +593,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        internal AngelLoader.Forms.CustomControls.DarkPanel PagePanel;
+        internal System.Windows.Forms.Panel PagePanel;
         internal AngelLoader.Forms.CustomControls.DarkGroupBox OtherGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkLabel BackupPathLabel;
         internal AngelLoader.Forms.CustomControls.DarkButton BackupPathBrowseButton;

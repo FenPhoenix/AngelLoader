@@ -7,7 +7,7 @@
         /// </summary>
         private void InitializeComponentSlim()
         {
-            this.PagePanel = new AngelLoader.Forms.CustomControls.DarkPanel();
+            this.PagePanel = new System.Windows.Forms.Panel();
             this.PlayFMOnDCOrEnterGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.WebSearchGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
