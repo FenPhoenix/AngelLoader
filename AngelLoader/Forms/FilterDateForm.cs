@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -22,7 +21,7 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
-            if (Config.DarkMode) SetTheme(Config.VisualTheme);
+            if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
             Localize();
 
@@ -40,8 +39,6 @@ namespace AngelLoader.Forms
             if (from != null) FromDateTimePicker.Value = (DateTime)from;
             if (to != null) ToDateTimePicker.Value = (DateTime)to;
         }
-
-        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {

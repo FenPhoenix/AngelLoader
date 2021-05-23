@@ -27,7 +27,7 @@ namespace AngelLoader.Forms
             sourceTags.DeepCopyTo(_sourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);
 
-            if (Config.DarkMode) SetTheme(Config.VisualTheme);
+            if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
             Localize();
 
@@ -52,8 +52,6 @@ namespace AngelLoader.Forms
             if (TagsFilter.OrTags.Count > 0) FillTreeView(TagsFilter.OrTags);
             if (TagsFilter.NotTags.Count > 0) FillTreeView(TagsFilter.NotTags);
         }
-
-        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {

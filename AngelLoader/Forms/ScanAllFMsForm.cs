@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using FMScanner;
 using static AngelLoader.Misc;
@@ -33,12 +32,10 @@ namespace AngelLoader.Forms
                 TagsCheckBox
             };
 
-            if (Config.DarkMode) SetTheme(Config.VisualTheme);
+            if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
             Localize();
         }
-
-        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {

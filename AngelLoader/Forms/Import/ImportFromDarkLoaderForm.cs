@@ -2,7 +2,6 @@
 using System.IO;
 using System.Windows.Forms;
 using AL_Common;
-using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -28,12 +27,10 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
-            if (Config.DarkMode) SetTheme(Config.VisualTheme);
+            if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
         }
 
         private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e) => Localize();
-
-        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {

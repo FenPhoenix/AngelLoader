@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.WinAPI;
 
@@ -12,6 +13,8 @@ namespace AngelLoader.Forms
         private bool _loading = true;
 
         private protected readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
+
+        private protected void SetThemeBase(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         protected override void OnShown(EventArgs e)
         {

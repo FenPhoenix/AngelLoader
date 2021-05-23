@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -20,7 +19,7 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
-            if (Config.DarkMode) SetTheme(Config.VisualTheme);
+            if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
             Localize();
 
@@ -34,8 +33,6 @@ namespace AngelLoader.Forms
                 ToComboBox.SelectedIndex = ratingTo + 1;
             }
         }
-
-        private void SetTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         private void Localize()
         {
