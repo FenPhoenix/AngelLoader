@@ -1478,11 +1478,11 @@ namespace AngelLoader.Forms
                 FilterByThief3Button.Image = Images.Thief3_21;
                 FilterBySS2Button.Image = Images.Shock2_21;
 
-                GameTabsImageList.Images.Clear();
-                GameTabsImageList.Images.Add(Images.Thief1_16);
-                GameTabsImageList.Images.Add(Images.Thief2_16);
-                GameTabsImageList.Images.Add(Images.Thief3_16);
-                GameTabsImageList.Images.Add(Images.Shock2_16);
+                GamesTabControl.SetImages(
+                    Images.Thief1_16,
+                    Images.Thief2_16,
+                    Images.Thief3_16,
+                    Images.Shock2_16);
 
                 // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
                 // while running(?) meh, whatever.

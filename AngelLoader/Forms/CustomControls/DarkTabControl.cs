@@ -41,6 +41,14 @@ namespace AngelLoader.Forms.CustomControls
 
         public DarkTabControl() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 
+        public void SetImages(params Image[] images)
+        {
+            if (ImageList == null) return;
+
+            ImageList.Images.Clear();
+            ImageList.Images.AddRange(images);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             if (_darkModeEnabled)
