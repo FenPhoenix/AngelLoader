@@ -8,7 +8,7 @@ using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms
 {
-    public abstract class DarkFormBase : Form
+    public class DarkFormBase : Form
     {
         private bool _loading = true;
 
