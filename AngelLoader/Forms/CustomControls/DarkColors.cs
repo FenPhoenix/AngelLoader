@@ -44,7 +44,7 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Color GreyBackground = Color.FromArgb(60, 63, 65);
         public static readonly Color HeaderBackground = Color.FromArgb(57, 60, 62);
         public static readonly Color BlueBackground = Color.FromArgb(66, 77, 95);
-        public static readonly Color DarkBlueBackground = Color.FromArgb(52, 57, 66);
+        //public static readonly Color DarkBlueBackground = Color.FromArgb(52, 57, 66);
         public static readonly Color DarkBackground = Color.FromArgb(43, 43, 43);
         public static readonly Color MediumBackground = Color.FromArgb(49, 51, 53);
         public static readonly Color LightBackground = Color.FromArgb(69, 73, 74);
@@ -155,48 +155,5 @@ namespace AngelLoader.Forms.CustomControls
         public static IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_DarkBackground));
         public static IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_DarkForeground));
         public static IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkBackground));
-
-        /*
-        public static Dictionary<Color, (SolidBrush Brush, Pen Pen)> ColorsDict = new()
-        {
-            { Fen_DarkBackground, ((Fen_DarkBackgroundBrush), (Fen_DarkBackgroundPen)) },
-            { Fen_DarkForeground, ((Fen_DarkForegroundBrush), (Fen_DarkForegroundPen)) },
-            { Fen_ControlBackground, ((Fen_ControlBackgroundBrush), (Fen_ControlBackgroundPen)) },
-            { Fen_DeselectedTabBackground, ((Fen_DeselectedTabBackgroundBrush), (Fen_DeselectedTabBackgroundPen)) },
-            { Fen_HotTabBackground, ((Fen_HotTabBackgroundBrush), (Fen_HotTabBackgroundPen)) },
-            { Fen_RedHighlight, ((Fen_RedHighlightBrush), (Fen_RedHighlightPen)) },
-            { Fen_DGVCellBorders, ((Fen_DGVCellBordersBrush), (Fen_DGVCellBordersPen)) },
-            { Fen_DGVColumnHeaderHighlight, ((Fen_DGVColumnHeaderHighlightBrush), (Fen_DGVColumnHeaderHighlightPen)) },
-            { Fen_DGVColumnHeaderPressed, ((Fen_DGVColumnHeaderPressedBrush), (Fen_DGVColumnHeaderPressedPen)) },
-            { Fen_HighlightText, ((Fen_HighlightTextBrush), (Fen_HighlightTextPen)) },
-            { Fen_ThumbScrollBarHover, ((Fen_ThumbScrollBarHoverBrush), (Fen_ThumbScrollBarHoverPen)) },
-            { Fen_Hyperlink, ((Fen_HyperlinkBrush), (Fen_HyperlinkPen)) },
-            { Fen_HyperlinkPressed, ((Fen_HyperlinkPressedBrush), (Fen_HyperlinkPressedPen)) },
-            { ArrowEnabled, ((ArrowEnabledBrush), (ArrowEnabledPen)) },
-
-            { GreyBackground, ((GreyBackgroundBrush), (GreyBackgroundPen)) },
-            { HeaderBackground, ((HeaderBackgroundBrush), (HeaderBackgroundPen)) },
-            { BlueBackground, ((BlueBackgroundBrush), (BlueBackgroundPen)) },
-            { DarkBlueBackground, ((DarkBlueBackgroundBrush), (DarkBlueBackgroundPen)) },
-            { DarkBackground, ((DarkBackgroundBrush), (DarkBackgroundPen)) },
-            { MediumBackground, ((MediumBackgroundBrush), (MediumBackgroundPen)) },
-            { LightBackground, ((LightBackgroundBrush), (LightBackgroundPen)) },
-            { LighterBackground, ((LighterBackgroundBrush), (LighterBackgroundPen)) },
-            //{ LightestBackground, ((LightestBackgroundBrush), (LightestBackground)) },
-            { LightBorder, ((LightBorderBrush), (LightBorderPen)) },
-            { LighterBorder, ((LighterBorderBrush), (LighterBorderPen)) },
-            //{ DarkBorder, ((DarkBorderBrush), (DarkBorderPen)) },
-            { LightText, ((LightTextBrush), (LightTextPen)) },
-            { DisabledText, ((DisabledTextBrush), (DisabledTextPen)) },
-            { BlueHighlight, ((BlueHighlightBrush), (BlueHighlightPen)) },
-            { BlueSelection, ((BlueSelectionBrush), (BlueSelectionPen)) },
-            { GreyHighlight, ((GreyHighlightBrush), (GreyHighlightPen)) },
-            { GreySelection, ((GreySelectionBrush), (GreySelectionPen)) },
-            { DarkGreySelection, ((DarkGreySelectionBrush), (DarkGreySelectionPen)) },
-            //{ DarkBlueBorder, ((DarkBlueBorder), (DarkBlueBorderPen)) },
-            //{ LightBlueBorder, ((LightBlueBorder), (LightBlueBorderPen)) },
-            { ActiveControl, ((ActiveControlBrush), (ActiveControlPen)) }
-        };
-        */
     }
 }

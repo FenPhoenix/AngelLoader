@@ -3051,8 +3051,6 @@ namespace AngelLoader.Forms
                 // So suspend EverythingPanel instead and it works fine.
                 EverythingPanel.SuspendDrawing();
 
-                // No goal escapes me, mate
-
                 SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
                 Font f = FMsDGV.DefaultCellStyle.Font;
@@ -3153,8 +3151,6 @@ namespace AngelLoader.Forms
 
                 // Keep selected FM in the center of the list vertically where possible (UX nicety)
                 if (selIndex > -1 && selFM != null) CenterSelectedFM();
-
-                // And that's how you do it
             }
             finally
             {
