@@ -62,6 +62,7 @@ namespace AngelLoader.FFmpeg.NET
             await WaitForExitAsync(ffmpegProcess);
         }
 
+        // @BetterErrors(FFmpeg.NET.Engine)
         private static Task<int> WaitForExitAsync(Process process)
         {
             var tcs = new TaskCompletionSource<int>();
