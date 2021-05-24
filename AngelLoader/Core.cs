@@ -1385,8 +1385,28 @@ namespace AngelLoader
 
         internal static void OpenWebSearchUrl(string fmTitle)
         {
+            static bool CheckUrl(string url)
+            {
+                if (url.IsWhiteSpace())
+                {
+                    Log(nameof(OpenWebSearchUrl) + ": " + nameof(url) + " consists only of whitespace.");
+                    Dialogs.ShowError("Web search URL (as set in the Settings window) is empty or consists only of whitespace. Unable to create a valid link.");
+                    return false;
+                }
+
+                if (url.Length > 32766)
+                {
+                    Log(nameof(OpenWebSearchUrl) + ": " + nameof(url) + " is too long (>32766 chars).");
+                    Dialogs.ShowError("Web search URL (as set in the Settings window) is too long. Unable to create a valid link.");
+                    return false;
+                }
+
+                return true;
+            }
+
             string url = Config.WebSearchUrl;
-            if (url.IsWhiteSpace() || url.Length > 32766) return;
+
+            if (!CheckUrl(url)) return;
 
             // Possible exceptions are:
             // ArgumentNullException (stringToEscape is null)
@@ -1394,11 +1414,24 @@ namespace AngelLoader
             // Those are both checked for above so we're good.
             url = Uri.EscapeUriString(url);
 
+            if (!CheckUrl(url)) return;
+
             int index = url.IndexOf("$TITLE$", StringComparison.OrdinalIgnoreCase);
 
-            string finalUrl = index == -1
-                ? url
-                : url.Substring(0, index) + Uri.EscapeDataString(fmTitle) + url.Substring(index + "$TITLE$".Length);
+            string finalUrl;
+
+            try
+            {
+                finalUrl = index == -1
+                    ? url
+                    : url.Substring(0, index) + Uri.EscapeDataString(fmTitle) + url.Substring(index + "$TITLE$".Length);
+            }
+            catch (Exception ex)
+            {
+                Log("Problem opening web search URL", ex);
+                Dialogs.ShowError(LText.AlertMessages.WebSearchURL_ProblemOpening);
+                return;
+            }
 
             try
             {
@@ -1425,7 +1458,8 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ex: ex);
+                Log("Exception opening HTML readme " + fm.SelectedReadme, ex);
+                Dialogs.ShowError(ErrorText.UnableToOpenHTMLReadme);
                 return;
             }
 
