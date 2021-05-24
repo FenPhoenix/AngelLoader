@@ -19,11 +19,14 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    // @BetterErrors(FMInstallAndPlay):
-    // -We should have an error for if there's not enough disk space
-    // -Can we know that for sure? We need to know if there's also enough space for the backup restore, and the
-    //  audio file conversions, and then if we uninstall we also need to know if there's enough space for the
-    //  backup archive...
+    /*
+    @BetterErrors(FMInstallAndPlay):
+    -We should have an error for if there's not enough disk space
+    -Can we know that for sure? We need to know if there's also enough space for the backup restore, and the
+     audio file conversions, and then if we uninstall we also need to know if there's enough space for the
+     backup archive...
+    -If we can't write the stub file or set ourselves as the selector, maybe we should just cancel the play operation?
+    */
 
     internal static class FMInstallAndPlay
     {
@@ -242,6 +245,9 @@ namespace AngelLoader
                 Log("Unable to set us as the selector for " + Config.GetGameExe(game) + " (" +
                     (GameIsDark(game) ? nameof(GameConfigFiles.SetDarkFMSelector) : nameof(GameConfigFiles.SetT3FMSelector)) +
                     " returned false)", stackTrace: true);
+                // @BetterErrors(SetUsAsSelector()):
+                // Make this more specific (orig, editor, FM)
+                Dialogs.ShowError(game + ":\r\n\r\nFailed to set AngelLoader as the FM selector.");
             }
         }
 
@@ -295,7 +301,12 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception writing stub file " + Paths.StubFileName, ex);
+                Log("Exception writing stub file '" + Paths.StubFileName + "'\r\n" +
+                    (fm == null ? "Original game" : "FM"), ex);
+                Dialogs.ShowError("Unable to write stub comm file. " +
+                                  (fm == null
+                                      ? "Game may not start correctly."
+                                      : "FM cannot be passed to the game and therefore cannot be played."));
             }
         }
 
@@ -551,6 +562,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
+                        // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
                         Log("Unable to delete FM installed directory " + fmInstalledPath, ex);
                     }
                 });
