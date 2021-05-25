@@ -1,13 +1,40 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class DarkTabControl : TabControl, IDarkable
+    /*
+    TODO(DarkTabControlCustom):
+    -Set it up so that adding tabs can be done normally:
+    In OnControlAdded()/OnControlRemoved(), add/remove from backing list, but have a bool guard check for that.
+    When we show/hide tabs, set the bool so that OnControlAdded()/OnControlRemoved() don't do anything while we
+    update the backing list ourselves.
+    */
+    public sealed class DarkTabControl : TabControl, IDarkable
     {
+        #region Private fields
+
+        private sealed class BackingTab
+        {
+            internal TabPage TabPage;
+            internal bool Visible = true;
+            internal BackingTab(TabPage tabPage) => TabPage = tabPage;
+        }
+
+        private TabPage? _dragTab;
+
+        // TODO: This is using a specific tab count number, but in theory this class is generic.
+        // I'm only using it for the top-right tabs right now, but remove this capacity initializer if I use it
+        // in another place.
+        private readonly List<BackingTab> _backingTabList = new List<BackingTab>(DataClasses.TopRightTabsData.Count);
+
         private Font? _originalFont;
+
+        #endregion
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -39,22 +66,59 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        [PublicAPI]
+        [DefaultValue(false)]
+        public bool AllowReordering { get; set; }
+
         public DarkTabControl() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 
-        /// <summary>
-        /// <para>Clears images and adds a set of new ones.</para>
-        /// This should always be called no matter what, because there's a ridiculous bug where if you add images
-        /// through the designer, they'll just always be rendered in like 4-bit quality even though the color
-        /// depth is set to 32 or whatever else.
-        /// </summary>
-        /// <param name="images"></param>
-        public void SetImages(params Image[] images)
-        {
-            if (ImageList == null) return;
+        #region Private methods
 
-            ImageList.Images.Clear();
-            ImageList.Images.AddRange(images);
+        private (int Index, BackingTab BackingTab)
+        FindBackingTab(TabPage tabPage, bool indexVisibleOnly = false)
+        {
+            for (int i = 0, vi = 0; i < _backingTabList.Count; i++)
+            {
+                BackingTab backingTab = _backingTabList[i];
+                if (indexVisibleOnly && backingTab.Visible) vi++;
+                if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
+            }
+
+#if DEBUG
+            if (DesignMode) return (-1, null!);
+#endif
+
+            // We should never get here! (unless we're in infernal-forsaken design mode...!)
+            throw new InvalidOperationException("Can't find backing tab?!");
         }
+
+        private (int BackingTabIndex, TabPage? TabPage)
+        GetTabAtPoint(Point position, bool xOnly = false)
+        {
+            for (int i = 0; i < TabCount; i++)
+            {
+                var tabRect = GetTabRect(i);
+
+                bool contains =
+                    xOnly
+                        ? position.X >= tabRect.X && position.X <= tabRect.Width + tabRect.X
+                        : tabRect.Contains(position);
+
+                if (contains)
+                {
+                    TabPage tabPage = TabPages[i];
+                    var (index, backingTab) = FindBackingTab(tabPage);
+
+                    return index == -1 || backingTab == null! ? (-1, null) : (index, tabPage);
+                }
+            }
+
+            return (-1, null);
+        }
+
+        #endregion
+
+        #region Event overrides
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -190,5 +254,154 @@ namespace AngelLoader.Forms.CustomControls
 
             base.OnPaint(e);
         }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            if (DesignMode || !AllowReordering)
+            {
+                base.OnMouseDown(e);
+                return;
+            }
+
+            if (e.Button == MouseButtons.Left) (_, _dragTab) = GetTabAtPoint(e.Location);
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            if (DesignMode || !AllowReordering)
+            {
+                base.OnMouseUp(e);
+                return;
+            }
+
+            // Fix: Ensure we don't start dragging a tab again after we've released the button.
+            _dragTab = null;
+            base.OnMouseUp(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if (DesignMode || !AllowReordering)
+            {
+                base.OnMouseMove(e);
+                return;
+            }
+
+            // Run the base event handler if we're not actually dragging a tab
+            if (e.Button != MouseButtons.Left || _dragTab == null || TabCount <= 1)
+            {
+                base.OnMouseMove(e);
+                return;
+            }
+
+            // If we are dragging a tab, don't run the handler, because we want to be "modal" and block so nothing
+            // weird happens
+
+            int dragTabIndex = TabPages.IndexOf(_dragTab);
+            var (bDragTabIndex, _) = FindBackingTab(_dragTab);
+
+            Rectangle dragTabRect = GetTabRect(dragTabIndex);
+
+            // Special-case for if there's 2 tabs. This is not the most readable thing, but hey... it works.
+            bool rightNotYet = dragTabIndex < TabCount - 1 &&
+                              e.Location.X < dragTabRect.Left + GetTabRect(dragTabIndex + 1).Width;
+            bool leftNotYet = dragTabIndex > 0 &&
+                             e.Location.X > GetTabRect(dragTabIndex - 1).Left + dragTabRect.Width;
+            if ((TabCount == 2 && (rightNotYet || leftNotYet)) || (rightNotYet && leftNotYet))
+            {
+                return;
+            }
+
+            // If the user has moved the mouse off of the tab bar vertically, still stay in the move. This prevents
+            // a mis-ordering bug if the user drags a tab off the bar then back onto the bar at a different position.
+            var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location, xOnly: true);
+            if (bNewTabIndex == -1 || newTab == null || newTab == _dragTab) return;
+
+            int newTabIndex = TabPages.IndexOf(newTab);
+            TabPages[dragTabIndex] = newTab;
+            TabPages[newTabIndex] = _dragTab;
+
+            _backingTabList[bDragTabIndex].TabPage = newTab;
+            _backingTabList[bNewTabIndex].TabPage = _dragTab;
+
+            SelectedTab = _dragTab;
+        }
+
+        #endregion
+
+        #region Public methods
+
+        /// <summary>
+        /// <para>Clears images and adds a set of new ones.</para>
+        /// This should always be called no matter what, because there's a ridiculous bug where if you add images
+        /// through the designer, they'll just always be rendered in like 4-bit quality even though the color
+        /// depth is set to 32 or whatever else.
+        /// </summary>
+        /// <param name="images"></param>
+        [PublicAPI]
+        public void SetImages(params Image[] images)
+        {
+            if (ImageList == null) return;
+
+            ImageList.Images.Clear();
+            ImageList.Images.AddRange(images);
+        }
+
+        /// <summary>
+        /// Removes all tabs and adds a set of new ones.
+        /// </summary>
+        /// <param name="tabPages"></param>
+        [PublicAPI]
+        public void SetTabsFull(List<TabPage> tabPages)
+        {
+            ClearTabsFull();
+
+            foreach (TabPage tabPage in tabPages)
+            {
+                TabPages.Add(tabPage);
+                _backingTabList.Add(new BackingTab(tabPage));
+            }
+        }
+
+        [PublicAPI]
+        public void ClearTabsFull()
+        {
+            if (TabCount > 0) TabPages.Clear();
+            _backingTabList.Clear();
+        }
+
+        /// <summary>
+        /// Shows or hides the specified <see cref="TabPage"/>.
+        /// </summary>
+        /// <param name="tabPage"></param>
+        /// <param name="show"></param>
+        [PublicAPI]
+        public void ShowTab(TabPage tabPage, bool show)
+        {
+            var (index, bt) = FindBackingTab(tabPage, indexVisibleOnly: true);
+            if (index < 0 || bt == null!) return;
+
+            if (show)
+            {
+                bt.Visible = true;
+                if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
+            }
+            else
+            {
+                bt.Visible = false;
+                if (TabPages.Contains(bt.TabPage)) TabPages.Remove(bt.TabPage);
+            }
+        }
+
+        /// <summary>
+        /// Returns the display index of the specified <see cref="TabPage"/>.
+        /// </summary>
+        /// <param name="tabPage"></param>
+        /// <returns></returns>
+        [PublicAPI]
+        public int GetTabDisplayIndex(TabPage tabPage) => FindBackingTab(tabPage).Index;
+
+        #endregion
     }
 }

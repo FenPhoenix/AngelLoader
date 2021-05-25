@@ -19,7 +19,7 @@ namespace AngelLoader
         private static void Main()
         {
 #if DEBUG || Release_Testing
-            RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
+            Forms.RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
 #endif
 
             // Make this a single-instance application

@@ -81,14 +81,14 @@ namespace AngelLoader.Forms
             RefreshFiltersButton = new ToolStripButtonCustom();
             ClearFiltersButton = new ToolStripButtonCustom();
             ResetLayoutButton = new DarkButton();
-            GamesTabControl = new DarkTabControlCustom();
+            GamesTabControl = new DarkTabControl();
             Thief1TabPage = new DarkTabPageCustom();
             Thief2TabPage = new DarkTabPageCustom();
             Thief3TabPage = new DarkTabPageCustom();
             SS2TabPage = new DarkTabPageCustom();
             TopRightMenuButton = new DarkButton();
             TopRightCollapseButton = new DarkArrowButton();
-            TopRightTabControl = new DarkTabControlCustom();
+            TopRightTabControl = new DarkTabControl();
             StatisticsTabPage = new DarkTabPageCustom();
             StatsScanCustomResourcesButton = new DarkButton();
             StatsCheckBoxesPanel = new Panel();
