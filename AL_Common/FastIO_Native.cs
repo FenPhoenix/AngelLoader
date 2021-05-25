@@ -20,12 +20,6 @@ namespace AL_Common
         // so I guess I will too, though it seems never to have been a problem before(?)
         public const int ERROR_NO_MORE_FILES = 0x12;
 
-        public enum FileType
-        {
-            Files,
-            Directories
-        }
-
         #endregion
 
         #region Classes / structs / enums

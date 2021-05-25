@@ -10,6 +10,12 @@ namespace AngelLoader.WinAPI
 {
     internal static class FastIO
     {
+        private enum FileType
+        {
+            Files,
+            Directories
+        }
+
         // This is meant to be industrial-strength, so just call the params nullable and check them.
         // No screwing around.
         private static void ThrowException(string? searchPattern, int err, string? path)
