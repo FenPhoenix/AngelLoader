@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -14,6 +15,43 @@ namespace AngelLoader.Forms
 {
     public sealed partial class RTF_Visual_Test_Form : Form
     {
+        internal sealed class RTF_Dark_Test_AppContext : ApplicationContext
+        {
+            internal RTF_Dark_Test_AppContext(bool dark)
+            {
+                Config.VisualTheme = dark ? VisualTheme.Dark : VisualTheme.Classic;
+
+                using var f = new RTF_Visual_Test_Form();
+                f.ShowDialogDark();
+                Environment.Exit(1);
+            }
+        }
+
+        internal static void LoadIfCommandLineArgsArePresent()
+        {
+            string[] args = Environment.GetCommandLineArgs();
+
+            if (args.Length > 1 && args[1].StartsWith("-rtf_test_"))
+            {
+                bool dark = args[1] switch
+                {
+                    "-rtf_test_light" => false,
+                    "-rtf_test_dark" => true,
+                    _ => false
+                };
+
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new RTF_Dark_Test_AppContext(dark));
+            }
+        }
+
+        [DllImport("user32", CharSet = CharSet.Unicode)]
+        private static extern int RegisterWindowMessage(string message);
+
+        private static readonly int WM_CHANGECOMBOBOXSELECTEDINDEX = RegisterWindowMessage(nameof(WM_CHANGECOMBOBOXSELECTEDINDEX) + "|" + AppGuid);
+        private static readonly int WM_CHANGERICHTEXTBOXSCROLLINFO = RegisterWindowMessage(nameof(WM_CHANGERICHTEXTBOXSCROLLINFO) + "|" + AppGuid);
+
         private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
 
         private bool _broadcastEnabled = true;
@@ -95,7 +133,7 @@ namespace AngelLoader.Forms
 
             if (_broadcastEnabled)
             {
-                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, Native.WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
+                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
             }
         }
 
@@ -105,13 +143,13 @@ namespace AngelLoader.Forms
         {
             static int MsgAppNum(ref Message m) => m.WParam.ToInt32();
 
-            if (m.Msg == Native.WM_CHANGECOMBOBOXSELECTEDINDEX && MsgAppNum(ref m) != AppNum())
+            if (m.Msg == WM_CHANGECOMBOBOXSELECTEDINDEX && MsgAppNum(ref m) != AppNum())
             {
                 _broadcastEnabled = false;
                 RTFFileComboBox.SelectedIndex = m.LParam.ToInt32();
                 _broadcastEnabled = true;
             }
-            else if (m.Msg == Native.WM_CHANGERICHTEXTBOXSCROLLINFO && MsgAppNum(ref m) != AppNum())
+            else if (m.Msg == WM_CHANGERICHTEXTBOXSCROLLINFO && MsgAppNum(ref m) != AppNum())
             {
                 _broadcastEnabled = false;
                 var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
@@ -130,7 +168,7 @@ namespace AngelLoader.Forms
             if (_broadcastEnabled)
             {
                 var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
-                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, Native.WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
+                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
             }
         }
 

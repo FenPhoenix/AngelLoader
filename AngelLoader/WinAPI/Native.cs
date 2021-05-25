@@ -263,28 +263,27 @@ namespace AngelLoader.WinAPI
         // Second-instance telling first instance to show itself junk
         public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Misc.AppGuid);
 
-#if DEBUG || Release_Testing
-        public static readonly int WM_CHANGECOMBOBOXSELECTEDINDEX = RegisterWindowMessage(nameof(WM_CHANGECOMBOBOXSELECTEDINDEX) + "|" + Misc.AppGuid);
-        public static readonly int WM_CHANGERICHTEXTBOXSCROLLINFO = RegisterWindowMessage(nameof(WM_CHANGERICHTEXTBOXSCROLLINFO) + "|" + Misc.AppGuid);
-#endif
-
         [DllImport("user32", CharSet = CharSet.Unicode)]
         private static extern int RegisterWindowMessage(string message);
 
         [DllImport("user32.dll")]
         internal static extern IntPtr WindowFromPoint(Point pt);
 
-        [DllImport("user32.dll")]
-        internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+        #region SendMessage/PostMessage
 
         [DllImport("user32.dll")]
         internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
         internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
 
         [DllImport("user32.dll")]
         internal static extern void SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
+
+        #endregion
 
         #region Process
 
@@ -298,11 +297,10 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
-        [DllImport("user32.dll")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal static extern IntPtr SetCursor(HandleRef hcursor);
-
         #region RichTextBox
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr SetCursor(HandleRef hCursor);
 
         #region Reader mode
 
@@ -497,9 +495,6 @@ namespace AngelLoader.WinAPI
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
         internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
-
-        //[DllImport("uxtheme.dll", ExactSpelling = true)]
-        //internal static extern IntPtr GetWindowTheme(IntPtr hWnd);
 
         [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
         internal static extern IntPtr OpenThemeData(IntPtr hWnd, string classList);
