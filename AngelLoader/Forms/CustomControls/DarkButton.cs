@@ -34,6 +34,12 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        private enum DarkButtonStyle
+        {
+            Normal,
+            Flat
+        }
+
         #region Designer Property Region
 
         [PublicAPI]
