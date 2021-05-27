@@ -30,9 +30,7 @@ rem Still copy this for SevenZipSharp's use
 "%system%xcopy" "%TargetDir%x86\7z.dll" "%TargetDir%" /y
 
 "%system%xcopy" "%TargetDir%AngelLoader.exe" "%destDir%" /y
-rem dll.config is for .NET Core 3
-rem "%system%xcopy" "%TargetDir%AngelLoader.dll.config" "%destDir%" /y
-rem exe.config is for .NET Framework
+
 "%system%xcopy" "%TargetDir%AngelLoader.exe.config" "%destDir%" /y
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z32" "%destDir%\7z32\" /y /i
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z64" "%destDir%\7z64\" /y /i
@@ -50,9 +48,6 @@ del /F "%destDir%testhost.dll"
 del /F "%destDir%EasyLoad*.dll"
 del /F "%destDir%EasyHook64.dll"
 
-rem "%system%xcopy" "%SolutionDir%libs\x86\7z.dll" "%destDir%" /y
-rem "%system%xcopy" "%SolutionDir%\libs\x86\7z.dll" "%TargetDir%" /y
-
 "%system%xcopy" "%SolutionDir%bin_dependencies\ffmpeg" "%destDir%ffmpeg\" /y /i
 
 if %ConfigurationName% == Release_Public (
@@ -65,7 +60,6 @@ if %ConfigurationName% == Release_Public (
 
 "%system%xcopy" "%SolutionDir%BinReleaseOnly" "%destDir%" /y /i /e
 
-rem Exlude "history" dir without having to copy and delete it afterwards (it's large)
-rem or write out an excludes file
+rem Exlude "history" dir without having to copy and delete it afterwards (it's large) or write out an excludes file
 "%system%xcopy" "%SolutionDir%doc\*.html" "%destDir%doc\" /y /i
 "%system%xcopy" "%SolutionDir%doc\images" "%destDir%doc\images" /y /i /e
