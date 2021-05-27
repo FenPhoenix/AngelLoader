@@ -19,6 +19,12 @@ namespace AngelLoader.Forms.CustomControls
     selecting "An Enigmatic Treasure With A Recondite Discovery" and then switching between Classic and Dark
     modes rapidly.
     TODO(ReadmeRichTextBoxCustom memory leak): Test a stock RichTextBox in another project and see if it happens even there.
+    2021-05-27:
+    Tested with a new project, WinForms, .NET 5 (in case they fixed it somehow, but nope):
+    With "An Enigmatic Treasure With A Recondite Discovery" and "The Pursuance of an Inscrutable Reciprocity",
+    the leak happens. With "Tarnhill_V1" it doesn't. Tarnhill's readme does not contain images.
+    However, the leak also does NOT happen with "Feast of Pilgrims", whose readme DOES contain an image.
+    TODO(ReadmeRichTextBoxCustom memory leak): Determine what form of image causes the leak, if indeed images cause it.
     */
 
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
