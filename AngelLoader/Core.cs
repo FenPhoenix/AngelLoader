@@ -1155,7 +1155,7 @@ namespace AngelLoader
             byte[] buffer = new byte[headerLen];
 
             // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
-            using (var fs = new FileStream(readmeOnDisk, FileMode.Open, FileAccess.Read))
+            using (var fs = File.OpenRead(readmeOnDisk))
             {
                 // Fix: In theory, the readme could be less than headerLen bytes long and then we would throw and
                 // end up with an "unable to load readme" error.

@@ -56,7 +56,7 @@ namespace AngelLoader
                             // minute.
                             try
                             {
-                                using var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
+                                using var fs = File.OpenRead(file);
                                 using var br = new BinaryReader(fs, Encoding.ASCII);
 
                                 string riff = Encoding.ASCII.GetString(br.ReadBytes(4));

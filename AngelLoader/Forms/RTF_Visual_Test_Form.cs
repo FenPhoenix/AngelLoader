@@ -78,7 +78,7 @@ namespace AngelLoader.Forms
                 int headerLen = RTFHeaderBytes.Length;
                 byte[] buffer = new byte[headerLen];
 
-                using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                using (var fs = File.OpenRead(file))
                 {
                     if (fs.Length >= headerLen)
                     {

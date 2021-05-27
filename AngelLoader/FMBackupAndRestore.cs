@@ -468,7 +468,7 @@ namespace AngelLoader
             // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
             var entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
             entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
-            using var fs = new FileStream(fileNameOnDisk, FileMode.Open, FileAccess.Read);
+            using var fs = File.OpenRead(fileNameOnDisk);
             using var eo = entry.Open();
             fs.CopyTo(eo);
         }

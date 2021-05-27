@@ -716,7 +716,7 @@ namespace FMScanner
                 {
                     try
                     {
-                        _archive = new ZipArchiveFast(new FileStream(_archivePath, FileMode.Open, FileAccess.Read));
+                        _archive = new ZipArchiveFast(File.OpenRead(_archivePath));
 
                         // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
                         // thrown while loading them. If this passes, we're definitely good.
@@ -2253,7 +2253,7 @@ namespace FMScanner
                     byte[]? rtfHeader;
                     using (var br = _fmIsZip
                         ? new BinaryReader(readmeStream, Encoding.ASCII, leaveOpen: true)
-                        : new BinaryReader(new FileStream(readmeFileOnDisk, FileMode.Open, FileAccess.Read), Encoding.ASCII, leaveOpen: false))
+                        : new BinaryReader(File.OpenRead(readmeFileOnDisk), Encoding.ASCII, leaveOpen: false))
                     {
                         // stupid micro-optimization
                         const int rtfHeaderBytesLength = 6;
@@ -2277,7 +2277,7 @@ namespace FMScanner
                         }
                         else
                         {
-                            using var fs = new FileStream(readmeFileOnDisk, FileMode.Open, FileAccess.Read);
+                            using var fs = File.OpenRead(readmeFileOnDisk);
                             (success, text) = rtfConverter.Convert(fs, readmeFileLen);
                         }
 
@@ -3490,7 +3490,7 @@ namespace FMScanner
 
             using (var sr = _fmIsZip
                 ? new BinaryReader(misFileZipEntry.Open(), Encoding.ASCII, false)
-                : new BinaryReader(new FileStream(misFileOnDisk, FileMode.Open, FileAccess.Read), Encoding.ASCII, false))
+                : new BinaryReader(File.OpenRead(misFileOnDisk), Encoding.ASCII, false))
             {
                 for (int i = 0; i < locations.Length; i++)
                 {
@@ -3564,36 +3564,29 @@ namespace FMScanner
 
             static bool StreamContainsIdentString(Stream stream, byte[] identString)
             {
-                try
+                // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
+                // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
+                // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
+                int boundaryLen = identString.Length;
+                const int bufSize = 81_920;
+                byte[] chunk = new byte[boundaryLen + bufSize];
+
+                while (stream.Read(chunk, boundaryLen, bufSize) != 0)
                 {
-                    // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
-                    // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
-                    // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
-                    int boundaryLen = identString.Length;
-                    const int bufSize = 81_920;
-                    byte[] chunk = new byte[boundaryLen + bufSize];
+                    if (chunk.Contains(identString)) return true;
 
-                    while (stream.Read(chunk, boundaryLen, bufSize) != 0)
-                    {
-                        if (chunk.Contains(identString)) return true;
-
-                        // Copy the last boundaryLen bytes from chunk and put them at the beginning
-                        for (int si = 0, ei = bufSize; si < boundaryLen; si++, ei++) chunk[si] = chunk[ei];
-                    }
-
-                    return false;
+                    // Copy the last boundaryLen bytes from chunk and put them at the beginning
+                    for (int si = 0, ei = bufSize; si < boundaryLen; si++, ei++) chunk[si] = chunk[ei];
                 }
-                finally
-                {
-                    stream.Dispose();
-                }
+
+                return false;
             }
 
             if (_fmIsZip)
             {
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
-                Stream stream = smallestGamFile != null ? gamFileZipEntry.Open() : misFileZipEntry.Open();
+                using Stream stream = smallestGamFile != null ? gamFileZipEntry.Open() : misFileZipEntry.Open();
                 ret.Game = StreamContainsIdentString(stream, Thief2UniqueString)
                     ? Game.Thief2
                     : Game.Thief1;
@@ -3602,8 +3595,7 @@ namespace FMScanner
             {
                 // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
                 // OBJ_MAP chunk and search it for the string. Phew.
-                using var br = new BinaryReader(File.Open(misFileOnDisk, FileMode.Open, FileAccess.Read),
-                    Encoding.ASCII, leaveOpen: false);
+                using var br = new BinaryReader(File.OpenRead(misFileOnDisk), Encoding.ASCII, leaveOpen: false);
 
                 uint tocOffset = br.ReadUInt32();
 
@@ -3659,10 +3651,7 @@ namespace FMScanner
             // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
             if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
             {
-                Stream stream = _fmIsZip
-                    ? misFileZipEntry.Open()
-                    : new FileStream(misFileOnDisk, FileMode.Open, FileAccess.Read);
-
+                using Stream stream = _fmIsZip ? misFileZipEntry.Open() : File.OpenRead(misFileOnDisk);
                 if (StreamContainsIdentString(stream, MAPPARAM))
                 {
                     ret.Game = Game.SS2;

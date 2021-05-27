@@ -27,9 +27,9 @@
 
     License: http://www.opensource.org/licenses/mit-license.php
     Website: https://github.com/khalidsalomao/SimpleHelpers.Net
- */
 
-// Modified by FenPhoenix 2020 - perf and removal of stuff I'm not using
+    Modified by FenPhoenix 2020-2021
+ */
 #endregion
 
 using System;
@@ -88,7 +88,7 @@ namespace FMScanner.SimpleHelpers
         /// <returns></returns>
         public Encoding? DetectFileEncoding(string inputFilename, Encoding? defaultIfNotDetected = null)
         {
-            using var stream = new FileStream(inputFilename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, DEFAULT_BUFFER_SIZE);
+            using var stream = new FileStream(inputFilename, FileMode.Open, FileAccess.Read, FileShare.Read, DEFAULT_BUFFER_SIZE);
             return DetectFileEncoding(stream) ?? defaultIfNotDetected;
         }
 
