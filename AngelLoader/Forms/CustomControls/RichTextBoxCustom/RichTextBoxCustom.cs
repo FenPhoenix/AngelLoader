@@ -10,6 +10,17 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
+    /*
+    BUG: ReadmeRichTextBoxCustom: Memory leak on Windows' side
+    The RichTextBox leaks memory when new content is loaded when ReadOnly == false. It does NOT appear to leak
+    when ReadOnly == true. But we need ReadOnly to be false during load, otherwise we lose some of the images.
+    In real-world use the leak should not be very significant on average (1.4.8 exhibits it too, which means it's
+    probably always been there and it took me this long to notice). It can be made to happen very visibly by
+    selecting "An Enigmatic Treasure With A Recondite Discovery" and then switching between Classic and Dark
+    modes rapidly.
+    TODO(ReadmeRichTextBoxCustom memory leak): Test a stock RichTextBox in another project and see if it happens even there.
+    */
+
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     {
         #region Private fields / properties
