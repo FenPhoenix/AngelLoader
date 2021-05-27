@@ -1046,18 +1046,6 @@ namespace AngelLoader
             #endregion
         }
 
-        private static void LogFMInstDirError(FanMission fm, string topLog, Exception? ex = null)
-        {
-            Log(topLog + "\r\n" +
-                "FM game type: " + fm.Game + "\r\n" +
-                "FM archive name:" + fm.Archive + "\r\n" +
-                "FM installed name:" + fm.InstalledDir + "\r\n" +
-                (GameIsKnownAndSupported(fm.Game)
-                    ? "Base directory for installed FMs: " + Config.GetFMInstallPathUnsafe(fm.Game)
-                    : "Game type is not known or not supported.") +
-                (ex != null ? "\r\nException:\r\n" + ex : ""));
-        }
-
         #region DML
 
         internal static bool AddDML(FanMission fm, string sourceDMLPath)

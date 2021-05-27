@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AL_Common.Utils;
 
@@ -11,6 +12,18 @@ namespace AngelLoader
 {
     internal static class Logger
     {
+        internal static void LogFMInstDirError(FanMission fm, string topMessage, Exception? ex = null)
+        {
+            Log(topMessage + "\r\n" +
+                "FM game type: " + fm.Game + "\r\n" +
+                "FM archive name:" + fm.Archive + "\r\n" +
+                "FM installed name:" + fm.InstalledDir + "\r\n" +
+                (GameSupport.GameIsKnownAndSupported(fm.Game)
+                    ? "Base directory for installed FMs: " + Misc.Config.GetFMInstallPathUnsafe(fm.Game)
+                    : "Game type is not known or not supported.") +
+                (ex != null ? "\r\nException:\r\n" + ex : ""));
+        }
+
         private static readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
         #region Interop
