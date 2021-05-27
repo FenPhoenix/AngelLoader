@@ -552,25 +552,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        // Current scope needs to be mutable, so it's a single-instance class
-        private sealed class CurrentScope
-        {
-            internal RtfDestinationState RtfDestinationState;
-            internal RtfInternalState RtfInternalState;
-
-            internal readonly int[] Properties = new int[_propertiesLen];
-
-            internal void Reset()
-            {
-                RtfDestinationState = 0;
-                RtfInternalState = 0;
-
-                Properties[(int)Property.Hidden] = 0;
-                Properties[(int)Property.UnicodeCharSkipCount] = 1;
-                Properties[(int)Property.FontNum] = -1;
-            }
-        }
-
         private sealed class ScopeStack
         {
             private readonly Scope[] _scopesArray;
@@ -586,7 +567,7 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void Push(CurrentScope currentScope)
+            internal void Push(Scope currentScope)
             {
                 Scope nextScope = _scopesArray[Count++];
 
@@ -603,7 +584,6 @@ namespace AngelLoader.Forms.CustomControls
             internal void ClearFast() => Count = 0;
         }
 
-        // Scopes on the stack need not be mutable, and making them structs is faster/smaller/better cache locality/less GC/whatever
         private sealed class Scope
         {
             internal RtfDestinationState RtfDestinationState;
@@ -612,12 +592,22 @@ namespace AngelLoader.Forms.CustomControls
             internal readonly int[] Properties = new int[_propertiesLen];
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void DeepCopyTo(CurrentScope dest)
+            internal void DeepCopyTo(Scope dest)
             {
                 dest.RtfDestinationState = RtfDestinationState;
                 dest.RtfInternalState = RtfInternalState;
 
                 Array.Copy(Properties, 0, dest.Properties, 0, _propertiesLen);
+            }
+
+            internal void Reset()
+            {
+                RtfDestinationState = 0;
+                RtfInternalState = 0;
+
+                Properties[(int)Property.Hidden] = 0;
+                Properties[(int)Property.UnicodeCharSkipCount] = 1;
+                Properties[(int)Property.FontNum] = -1;
             }
         }
 
@@ -739,7 +729,7 @@ namespace AngelLoader.Forms.CustomControls
         // Highest measured was 10
         private readonly ScopeStack _scopeStack = new ScopeStack();
 
-        private readonly CurrentScope _currentScope = new CurrentScope();
+        private readonly Scope _currentScope = new Scope();
 
         // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
         private int _groupCount;
@@ -1132,6 +1122,9 @@ namespace AngelLoader.Forms.CustomControls
                 else
                 {
                     // Horrible but functional just to get it going
+                    // NOTE: In theory this could throw, but if so it'll be caught by the try-catch wrapping the
+                    // entire parse operation, and we'll return false, which is what we want. No need to add a
+                    // second try-catch here.
                     Match redMatch = Regex.Match(entry, @"\\red(?<Value>[0123456789]{1,3})");
                     Match greenMatch = Regex.Match(entry, @"\\green(?<Value>[0123456789]{1,3})");
                     Match blueMatch = Regex.Match(entry, @"\\blue(?<Value>[0123456789]{1,3})");

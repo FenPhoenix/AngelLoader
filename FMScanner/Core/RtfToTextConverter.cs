@@ -692,29 +692,6 @@ namespace FMScanner
             }
         }
 
-        // Current scope needs to be mutable, so it's a single-instance class
-        private sealed class CurrentScope
-        {
-            internal RtfDestinationState RtfDestinationState;
-            internal RtfInternalState RtfInternalState;
-            internal bool InFontTable;
-            internal SymbolFont SymbolFont;
-
-            internal readonly int[] Properties = new int[_propertiesLen];
-
-            internal void Reset()
-            {
-                RtfDestinationState = 0;
-                RtfInternalState = 0;
-                InFontTable = false;
-                SymbolFont = SymbolFont.None;
-
-                Properties[(int)Property.Hidden] = 0;
-                Properties[(int)Property.UnicodeCharSkipCount] = 1;
-                Properties[(int)Property.FontNum] = -1;
-            }
-        }
-
         private sealed class ScopeStack
         {
             private readonly Scope[] _scopesArray;
@@ -730,7 +707,7 @@ namespace FMScanner
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void Push(CurrentScope currentScope)
+            internal void Push(Scope currentScope)
             {
                 Scope nextScope = _scopesArray[Count++];
 
@@ -749,10 +726,6 @@ namespace FMScanner
             internal void ClearFast() => Count = 0;
         }
 
-        // Scopes on the stack need not be mutable, and making them structs is faster/smaller/better cache locality/less GC/whatever
-        // TODO(RtfToTextConverter Scope vs. CurrentScope):
-        // This used to be a struct. I don't remember changing it to a class but I guess it is now...?
-        // Since it's a class just like CurrentScope, shouldn't we just combine them again?
         private sealed class Scope
         {
             internal RtfDestinationState RtfDestinationState;
@@ -763,7 +736,7 @@ namespace FMScanner
             internal readonly int[] Properties = new int[_propertiesLen];
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void DeepCopyTo(CurrentScope dest)
+            internal void DeepCopyTo(Scope dest)
             {
                 dest.RtfDestinationState = RtfDestinationState;
                 dest.RtfInternalState = RtfInternalState;
@@ -771,6 +744,18 @@ namespace FMScanner
                 dest.SymbolFont = SymbolFont;
 
                 Array.Copy(Properties, 0, dest.Properties, 0, _propertiesLen);
+            }
+
+            internal void Reset()
+            {
+                RtfDestinationState = 0;
+                RtfInternalState = 0;
+                InFontTable = false;
+                SymbolFont = SymbolFont.None;
+
+                Properties[(int)Property.Hidden] = 0;
+                Properties[(int)Property.UnicodeCharSkipCount] = 1;
+                Properties[(int)Property.FontNum] = -1;
             }
         }
 
@@ -1724,7 +1709,7 @@ namespace FMScanner
         // Highest measured was 10
         private readonly ScopeStack _scopeStack = new ScopeStack();
 
-        private readonly CurrentScope _currentScope = new CurrentScope();
+        private readonly Scope _currentScope = new Scope();
 
         // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
         private int _groupCount;
