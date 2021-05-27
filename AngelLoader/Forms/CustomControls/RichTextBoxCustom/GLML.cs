@@ -14,8 +14,11 @@ namespace AngelLoader.Forms.CustomControls
     {
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         [SuppressMessage("ReSharper", "CommentTypo")]
-        private string GLMLToRTF(string glml)
+        private string GLMLToRTF(byte[] glmlBytes)
         {
+            // IMPORTANT: Use Encoding.UTF8 because anything else will break the character encoding!
+            string glml = Encoding.UTF8.GetString(glmlBytes);
+
             static string AddColorToTable(string table, Color color) => table + @"\red" + color.R + @"\green" + color.G + @"\blue" + color.B + ";";
 
             string colorTable = @"{\colortbl ";

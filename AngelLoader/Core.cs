@@ -162,7 +162,6 @@ namespace AngelLoader
 
             #region Set game data
 
-            // PERF: 9ms, but it's mostly IO. Darn.
             bool[] gameExeExists = new bool[SupportedGameCount];
             for (int i = 0; i < SupportedGameCount; i++)
             {
@@ -603,8 +602,6 @@ namespace AngelLoader
                 Column.DateAdded => Comparers.FMDateAdded,
                 Column.DisabledMods => Comparers.FMDisabledMods,
                 Column.Comment => Comparers.FMComment,
-                // NULL_TODO: Null only so I can run the assert below
-                // For if I ever need to add something here and forget... not likely
                 _ => null
             };
 

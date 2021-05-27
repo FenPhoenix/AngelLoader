@@ -81,7 +81,6 @@ namespace AngelLoader.DataClasses
 
     internal sealed class TopRightTabsData
     {
-        // Perf: so we only have to get it once
         /// <summary>
         /// Returns the number of tabs that have been defined in the <see cref="TopRightTab"/> enum.
         /// </summary>
@@ -105,7 +104,6 @@ namespace AngelLoader.DataClasses
 
             int[] set = InitializedArray(Count, -1);
 
-            // PERF: Unmeasurable. LINQ Distinct().Count() was 6ms. Sheesh.
             for (int i = 0; i < Tabs.Length; i++)
             {
                 for (int j = 0; j < set.Length; j++)

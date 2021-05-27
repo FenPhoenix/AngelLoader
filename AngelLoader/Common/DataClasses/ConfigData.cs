@@ -73,7 +73,7 @@ namespace AngelLoader.DataClasses
         internal readonly List<string> FMArchivePaths = new List<string>();
         internal bool FMArchivePathsIncludeSubfolders;
 
-        // TODO: Backup path is currently required. Notes on potentially making it optional:
+        // NOTE: Backup path is currently required. Notes on potentially making it optional:
         // -We would need to add a guard check before attempting to either back up or restore an FM. We'd put up
         //  a dialog telling the user they need to specify a backup path first, and let them click a button to go
         //  to the Settings window backup path field.

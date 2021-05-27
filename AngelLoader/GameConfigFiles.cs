@@ -306,7 +306,7 @@ namespace AngelLoader
             }
         }
 
-        // TODO: Pop up actual dialogs here if we fail, because we do NOT want scraps of the wrong language left
+        // @BetterErrors(SetCamCfgLanguage): Pop up actual dialogs here if we fail, because we do NOT want scraps of the wrong language left
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal static void SetCamCfgLanguage(string gamePath, string lang)
         {

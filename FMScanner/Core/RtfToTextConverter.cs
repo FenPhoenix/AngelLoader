@@ -40,7 +40,6 @@ To that end:
 -Note that we don't check for {\rtf1 at the start of the file to validate, as in FMScanner that will have been
  done already.
 
-TODO (RtfToTextConverter):
 Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?

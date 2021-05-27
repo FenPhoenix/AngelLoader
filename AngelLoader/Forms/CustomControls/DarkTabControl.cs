@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 namespace AngelLoader.Forms.CustomControls
 {
     /*
-    TODO(DarkTabControlCustom):
+    TODO(DarkTabControlCustom - designability):
     -Set it up so that adding tabs can be done normally:
     In OnControlAdded()/OnControlRemoved(), add/remove from backing list, but have a bool guard check for that.
     When we show/hide tabs, set the bool so that OnControlAdded()/OnControlRemoved() don't do anything while we

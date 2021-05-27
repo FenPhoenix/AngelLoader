@@ -110,7 +110,8 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
                 SetReadmeTypeAndColorState(_currentReadmeType);
-                // Perf: Don't load readme twice on startup, and don't load it again if we're on HTML or no FM selected or whatever
+                // Perf: Don't load readme twice on startup, and don't load it again if we're on HTML or no FM
+                // selected or whatever
                 if (Visible) RefreshDarkModeState();
             }
         }
@@ -309,7 +310,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 else if (_currentReadmeType == ReadmeType.GLML)
                 {
-                    Rtf = GLMLToRTF(Encoding.UTF8.GetString(_currentReadmeBytes));
+                    Rtf = GLMLToRTF(_currentReadmeBytes);
                 }
             }
             catch (Exception ex)

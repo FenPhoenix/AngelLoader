@@ -400,7 +400,6 @@ namespace AngelLoader.Forms
                         mainMenuWasOpen ? HelpSections.MainMenu :
                         FMsDGV_FM_LLMenu.Visible ? HelpSections.FMContextMenu :
                         FMsDGV_ColumnHeaderLLMenu.Visible ? HelpSections.ColumnHeaderContextMenu :
-                        // TODO: We could try to be clever and take mouse position into account in some cases?
                         AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
                         TopRightMenuButton.Focused || TopRightLLMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :
                         AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
@@ -409,7 +408,6 @@ namespace AngelLoader.Forms
                         AnyControlFocusedInTabPage(TagsTabPage) || AddTagLLDropDown.Focused ? HelpSections.TagsTab :
                         AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
                         AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
-                        // TODO: Handle bottom area controls (we need a whole other section delimiter in the help file)
                         HelpSections.MainWindow;
 
                     Core.OpenHelpFile(section);
@@ -1834,7 +1832,6 @@ namespace AngelLoader.Forms
         private (SelectedFM GameSelFM, Filter GameFilter, GameIndex GameIndex)
         GetGameSelFMAndFilter(TabPage tabPage)
         {
-            // NULL_TODO: Null so I can assert
             SelectedFM? gameSelFM = null;
             Filter? gameFilter = null;
             GameIndex? gameIndex = null;
@@ -3006,7 +3003,6 @@ namespace AngelLoader.Forms
         {
             var s = (ToolStripMenuItemCustom)sender;
 
-            // NULL_TODO: Null so I can assert
             TabPage? tab = null;
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
