@@ -33,8 +33,6 @@ using static FMScanner.Logger;
 
 namespace FMScanner
 {
-    [SuppressMessage("ReSharper", "ArrangeStaticMemberQualifier")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public sealed partial class Scanner : IDisposable
     {
 #if DEBUG
@@ -81,7 +79,6 @@ namespace FMScanner
         #region Disposable
 
         private ZipArchiveFast _archive = null!;
-        private SevenZipExtractor _sevenZipArchive = null!;
 
         #endregion
 
@@ -199,6 +196,7 @@ namespace FMScanner
         [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        [PublicAPI]
         public Scanner(string sevenZipExePath)
         {
             // Perf/size balance: we want to build these strings only once so we don't re-concat them a million
@@ -306,6 +304,7 @@ namespace FMScanner
 
         #region Scan synchronous
 
+        [PublicAPI]
         public ScannedFMDataAndError
         Scan(string mission, string tempPath, bool forceFullIfNew)
         {
@@ -314,6 +313,7 @@ namespace FMScanner
                 tempPath, _scanOptions, null, CancellationToken.None)[0];
         }
 
+        [PublicAPI]
         public ScannedFMDataAndError
         Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew)
         {
@@ -432,7 +432,6 @@ namespace FMScanner
                     _fmIsZip = fm.ExtIsZip() || fm.ExtIs7z();
 
                     _archive?.Dispose();
-                    _sevenZipArchive?.Dispose();
 
                     if (_fmIsZip)
                     {
@@ -598,54 +597,56 @@ namespace FMScanner
                     // involve any decompression and shouldn't trigger any out-of-memory errors. We use this so
                     // we can get last write times in DateTime format and not have to parse possible localized
                     // text dates out of the output stream.
-                    _sevenZipArchive = new SevenZipExtractor(_archivePath) { PreserveDirectoryStructure = true };
-                    sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
-
                     var fileNamesList = new List<string>();
-                    uint extractorFilesCount = _sevenZipArchive.FilesCount;
-                    for (int i = 0; i < extractorFilesCount; i++)
+                    uint extractorFilesCount;
+                    using (var _sevenZipArchive = new SevenZipExtractor(_archivePath) { PreserveDirectoryStructure = true })
                     {
-                        var entry = _sevenZipArchive.ArchiveFileData[i];
-                        string fn = entry.FileName;
-                        int dirSeps;
-                        // TODO: Calculate these exactly like they are on use (eg. only get the first title.str/titles.str etc.)
-                        // That way we can shave a bit of time in theory.
-                        if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                            (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
-                              (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
-                               fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
-                             dirSeps == 0))
+                        sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
+                        extractorFilesCount = _sevenZipArchive.FilesCount;
+                        for (int i = 0; i < extractorFilesCount; i++)
                         {
-                            fileNamesList.Add(entry.FileName);
-                        }
-                        // Only extract these if we need them!
-                        else if ((_scanOptions.ScanGameType
+                            var entry = _sevenZipArchive.ArchiveFileData[i];
+                            string fn = entry.FileName;
+                            int dirSeps;
+                            // TODO: Calculate these exactly like they are on use (eg. only get the first title.str/titles.str etc.)
+                            // That way we can shave a bit of time in theory.
+                            if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
+                                (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
+                                  (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
+                                   fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
+                                 dirSeps == 0))
+                            {
+                                fileNamesList.Add(entry.FileName);
+                            }
+                            // Only extract these if we need them!
+                            else if ((_scanOptions.ScanGameType
 #if FMScanner_FullCode
                                   || _scanOptions.ScanNewDarkRequired
 #endif
                                  ) &&
-                                 !entry.FileName.ContainsDirSep() &&
-                                 (entry.FileName.EndsWithI(".mis") ||
-                                  entry.FileName.EndsWithI(".gam")))
-                        {
-                            fileNamesList.Add(entry.FileName);
-                        }
-                        else if (!entry.FileName.ContainsDirSep() &&
-                                 (entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
-                                  entry.FileName.EqualsI(FMFiles.FMIni) ||
-                                  entry.FileName.EqualsI(FMFiles.ModIni)))
-                        {
-                            fileNamesList.Add(entry.FileName);
-                        }
-                        else if (entry.FileName.PathEndsWithI(FMFiles.SMissFlag) ||
-                                 entry.FileName.PathEndsWithI(FMFiles.SNewGameStr) ||
-                                 entry.FileName.PathEndsWithI("/titles.str") ||
-                                 entry.FileName.PathEndsWithI("/title.str"))
-                        {
-                            fileNamesList.Add(entry.FileName);
-                        }
+                                     !entry.FileName.ContainsDirSep() &&
+                                     (entry.FileName.EndsWithI(".mis") ||
+                                      entry.FileName.EndsWithI(".gam")))
+                            {
+                                fileNamesList.Add(entry.FileName);
+                            }
+                            else if (!entry.FileName.ContainsDirSep() &&
+                                     (entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
+                                      entry.FileName.EqualsI(FMFiles.FMIni) ||
+                                      entry.FileName.EqualsI(FMFiles.ModIni)))
+                            {
+                                fileNamesList.Add(entry.FileName);
+                            }
+                            else if (entry.FileName.PathEndsWithI(FMFiles.SMissFlag) ||
+                                     entry.FileName.PathEndsWithI(FMFiles.SNewGameStr) ||
+                                     entry.FileName.PathEndsWithI("/titles.str") ||
+                                     entry.FileName.PathEndsWithI("/title.str"))
+                            {
+                                fileNamesList.Add(entry.FileName);
+                            }
 
-                        _fmDirFileInfos.Add(new FileInfoCustom(entry));
+                            _fmDirFileInfos.Add(new FileInfoCustom(entry));
+                        }
                     }
 
                     string listFile = Path.Combine(_tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
@@ -1341,7 +1342,7 @@ namespace FMScanner
             }
         }
 
-        private void SetMiscTag(ScannedFMData fmData, string tag)
+        private static void SetMiscTag(ScannedFMData fmData, string tag)
         {
             if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
 
@@ -3889,10 +3890,7 @@ namespace FMScanner
 
         #endregion
 
-        public void Dispose()
-        {
-            _archive?.Dispose();
-            _sevenZipArchive?.Dispose();
-        }
+        [PublicAPI]
+        public void Dispose() => _archive?.Dispose();
     }
 }
