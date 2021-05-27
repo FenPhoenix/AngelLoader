@@ -22,6 +22,9 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Classes
 
+        // Keeping these as entirely separate classes (with attendant code duplication) for now, because of the
+        // stream being a Stream in one and List<byte> (for avoidance of conversion to an array and then to a
+        // MemoryStream) in the other.
         private sealed class RTFStream
         {
             #region Private fields
@@ -183,25 +186,14 @@ namespace AngelLoader.Forms.CustomControls
 
         private void Reset(List<byte> stream)
         {
+            base.ResetBase();
+
             #region Fixed-size fields
 
-            // Specific capacity and won't grow; no need to deallocate
-            _keyword.ClearFast();
-
-            // Fixed-size value types
-            _groupCount = 0;
-            _binaryCharsLeftToSkip = 0;
-            _unicodeCharsLeftToSkip = 0;
-            _skipDestinationIfUnknown = false;
             _colorTableStartIndex = 0;
             _colorTableEndIndex = 0;
 
-            // Types that contain only fixed-size value types
-            _currentScope.Reset();
-
             #endregion
-
-            _scopeStack.ClearFast();
 
             _colorTableSB.Clear();
             _colorTable.Clear();
@@ -215,6 +207,9 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         private bool _exiting;
+
+        protected override bool GetNextChar(out char ch) => _rtfStream.GetNextChar(out ch);
+        protected override void UnGetChar(char ch) => _rtfStream.UnGetChar(ch);
 
         private Error ParseRtf()
         {
@@ -273,77 +268,9 @@ namespace AngelLoader.Forms.CustomControls
             return _groupCount < 0 ? Error.StackUnderflow : _groupCount > 0 ? Error.UnmatchedBrace : Error.OK;
         }
 
-        private Error ParseKeyword()
-        {
-            bool hasParam = false;
-            bool negateParam = false;
-            int param = 0;
-
-            if (!_rtfStream.GetNextChar(out char ch)) return Error.EndOfFile;
-
-            _keyword.ClearFast();
-
-            if (!ch.IsAsciiAlpha())
-            {
-                /* From the spec:
-                 "A control symbol consists of a backslash followed by a single, non-alphabetical character.
-                 For example, \~ (backslash tilde) represents a non-breaking space. Control symbols do not have
-                 delimiters, i.e., a space following a control symbol is treated as text, not a delimiter."
-
-                 So just go straight to dispatching without looking for a param and without eating the space.
-                */
-                _keyword.AddFast(ch);
-                return DispatchKeyword(0, false);
-            }
-
-            int i;
-            bool eof = false;
-            for (i = 0; i < _keywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !_rtfStream.GetNextChar(out ch))
-            {
-                if (eof) return Error.EndOfFile;
-                _keyword.AddFast(ch);
-            }
-            if (i > _keywordMaxLen) return Error.KeywordTooLong;
-
-            if (ch == '-')
-            {
-                negateParam = true;
-                if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
-            }
-
-            if (ch.IsAsciiNumeric())
-            {
-                hasParam = true;
-
-                // Parse param in real-time to avoid doing a second loop over
-                for (i = 0; i < _paramMaxLen && ch.IsAsciiNumeric(); i++, eof = !_rtfStream.GetNextChar(out ch))
-                {
-                    if (eof) return Error.EndOfFile;
-                    param += ch - '0';
-                    param *= 10;
-                }
-                // Undo the last multiply just one time to avoid checking if we should do it every time through
-                // the loop
-                param /= 10;
-                if (i > _paramMaxLen) return Error.ParameterTooLong;
-
-                if (negateParam) param = -param;
-            }
-
-            /* From the spec:
-             "As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters)
-             that is not counted in the characters to skip."
-             This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
-             the space from the skip-chars to count.
-            */
-            if (ch != ' ') _rtfStream.UnGetChar(ch);
-
-            return DispatchKeyword(param, hasParam);
-        }
-
         #region Act on keywords
 
-        private Error DispatchKeyword(int param, bool hasParam)
+        protected override Error DispatchKeyword(int param, bool hasParam)
         {
             if (!_symbolTable.TryGetValue(_keyword, out Symbol? symbol))
             {
