@@ -64,8 +64,9 @@ namespace AngelLoader
 
         // For manual selection of language for playing an FM
         // Immediate use, so don't bother lazy-loading
+        // IMPORTANT: This must be instantiated with the StringComparer.OrdinalIgnoreCase comparer. Don't remove.
         internal static readonly Dictionary<string, string>
-        Translated = new Dictionary<string, string>(11)
+        Translated = new Dictionary<string, string>(11, StringComparer.OrdinalIgnoreCase)
         {
             { "english", "English" },
             { "czech", "Čeština" },
@@ -92,6 +93,7 @@ namespace AngelLoader
             // (matching FMSel behavior)
             if (langs.Count > 0)
             {
+                // @BigO
                 for (int i = 0; i < Supported.Length; i++)
                 {
                     string sl = Supported[i];

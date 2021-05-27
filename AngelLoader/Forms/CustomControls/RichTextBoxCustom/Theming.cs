@@ -122,13 +122,13 @@ namespace AngelLoader.Forms.CustomControls
         private static string CreateBGColorRTFCode(Color color) =>
             @"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv " +
             ColorTranslator.ToWin32(color) +
-            @"}}}}}";
+            "}}}}}";
 
         private static byte[] CreateBGColorRTFCode_Bytes(Color color)
         {
             var first = Encoding.ASCII.GetBytes(@"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv ");
             var colorStr = Encoding.ASCII.GetBytes(ColorTranslator.ToWin32(color).ToString());
-            var last = Encoding.ASCII.GetBytes(@"}}}}}");
+            var last = Encoding.ASCII.GetBytes("}}}}}");
 
             var ret = new byte[first.Length + colorStr.Length + last.Length];
             Array.Copy(first, 0, ret, 0, first.Length);
@@ -138,21 +138,25 @@ namespace AngelLoader.Forms.CustomControls
             return ret;
         }
 
-        private static byte[] Int8BitToASCIIBytes(int number)
-        {
-            byte[] ret = new byte[number <= 9 ? 1 : number <= 99 ? 2 : 3];
-
-            string numStr = number.ToString();
-            for (int i = 0; i < numStr.Length; i++) ret[i] = (byte)numStr[i];
-
-            return ret;
-        }
-
         private List<byte> CreateColorTableRTFBytes(List<Color> colorTable)
         {
+            #region Local functions
+
             // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match
             // our new background color to keep author intent (avoiding spoilers etc.)
             static bool ColorIsTheSameAsBackground(Color color) => color.R == 255 && color.G == 255 && color.B == 255;
+
+            static byte[] ByteToASCIICharBytes(byte number)
+            {
+                byte[] ret = new byte[number <= 9 ? 1 : number <= 99 ? 2 : 3];
+
+                string numStr = number.ToString();
+                for (int i = 0; i < numStr.Length; i++) ret[i] = (byte)numStr[i];
+
+                return ret;
+            }
+
+            #endregion
 
             const int maxColorEntryStringLength = 25; // "\red255\green255\blue255;" = 25 chars
 
@@ -187,13 +191,13 @@ namespace AngelLoader.Forms.CustomControls
                 }
 
                 colorEntriesBytesList.AddRange(_redFieldBytes);
-                colorEntriesBytesList.AddRange(Int8BitToASCIIBytes(invertedColor.R));
+                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.R));
 
                 colorEntriesBytesList.AddRange(_greenFieldBytes);
-                colorEntriesBytesList.AddRange(Int8BitToASCIIBytes(invertedColor.G));
+                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.G));
 
                 colorEntriesBytesList.AddRange(_blueFieldBytes);
-                colorEntriesBytesList.AddRange(Int8BitToASCIIBytes(invertedColor.B));
+                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.B));
 
                 colorEntriesBytesList.Add((byte)';');
             }

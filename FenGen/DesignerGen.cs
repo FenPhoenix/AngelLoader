@@ -412,23 +412,17 @@ namespace FenGen
                     }
                     case "Anchor":
                     {
-                        var ors = aes.Right.DescendantNodesAndSelf()
+                        SyntaxNode[] anchorStyles = aes.Right.DescendantNodesAndSelf()
                             .Where(x =>
                                 x is MemberAccessExpressionSyntax &&
                                 x.ToString().StartsWith("System.Windows.Forms.AnchorStyles."))
                             .ToArray();
 
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
-                        if (ors.Length == 2
-                            && Array.Find(ors, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Top") != null
-                            && Array.Find(ors, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Left") != null)
-                        {
-                            props.HasDefaultAnchor = true;
-                        }
-                        else
-                        {
-                            props.HasDefaultAnchor = false;
-                        }
+                        props.HasDefaultAnchor =
+                            anchorStyles.Length == 2 &&
+                            Array.Find(anchorStyles, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Top") != null &&
+                            Array.Find(anchorStyles, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Left") != null;
                         break;
                     }
                     case "Dock":

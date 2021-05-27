@@ -230,17 +230,10 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    if (darkMode)
-                    {
-                        control.ForeColor = DarkColors.LightText;
-                        control.BackColor = DarkColors.Fen_ControlBackground;
-                    }
-                    else
-                    {
-                        control.ForeColor = item.Value!.ForeColor;
-                        control.BackColor = item.Value!.BackColor;
-
-                    }
+                    (control.ForeColor, control.BackColor) =
+                        darkMode
+                            ? (DarkColors.LightText, DarkColors.Fen_ControlBackground)
+                            : (item.Value!.ForeColor, item.Value!.BackColor);
                 }
             }
         }

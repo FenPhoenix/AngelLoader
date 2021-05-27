@@ -412,7 +412,7 @@ namespace FMScanner
 
         // TODO: [a-z] is only ASCII letters, so it won't catch lowercase other stuff I guess
         private readonly Regex TitleContainsLowerCaseCharsRegex =
-            new Regex(@"[a-z]", RegexOptions.Compiled);
+            new Regex("[a-z]", RegexOptions.Compiled);
 
         private readonly Regex AuthorEmailRegex =
             new Regex(@"\(?\S+@\S+\.\S{2,5}\)?", RegexOptions.Compiled);
@@ -488,7 +488,7 @@ namespace FMScanner
 
         private const string _copyrightSecondPart =
             //language=regexp
-            @"(?<Months>( (Jan|Febr)uary| Ma(rch|y)| A(pril|ugust)| Ju(ne|ly)| (((Sept|Nov|Dec)em)|Octo)ber))?" +
+            "(?<Months>( (Jan|Febr)uary| Ma(rch|y)| A(pril|ugust)| Ju(ne|ly)| (((Sept|Nov|Dec)em)|Octo)ber))?" +
             //language=regexp
             @"(?(Months)(, ?| ))\d*( by| to)? (?<Author>.+)";
 

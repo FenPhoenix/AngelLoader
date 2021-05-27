@@ -2492,7 +2492,7 @@ namespace FMScanner
                     {
                         lineStartsWithKey = true;
                         // Regex perf: fast enough not to worry about it
-                        if (Regex.Match(lineStartTrimmed, @"^" + x + @"\s*(:|-|\u2013)",
+                        if (Regex.Match(lineStartTrimmed, "^" + x + @"\s*(:|-|\u2013)",
                             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Success)
                         {
                             lineStartsWithKeyAndSeparatorChar = true;
@@ -3274,7 +3274,7 @@ namespace FMScanner
                 if (fn.EqualsI("rus") ||
                     fn.EndsWithI("_ru") ||
                     fn.EndsWithI("_rus") ||
-                    Regex.Match(fn, @"[a-z]+RUS$").Success ||
+                    Regex.Match(fn, "[a-z]+RUS$").Success ||
                     fn.ContainsI("RusPack") || fn.ContainsI("RusText"))
                 {
                     langs.Add("russian");

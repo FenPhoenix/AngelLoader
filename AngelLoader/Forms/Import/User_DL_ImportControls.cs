@@ -51,7 +51,7 @@ namespace AngelLoader.Forms
             // Common locations. Don't go overboard and search the whole filesystem; that would take forever.
             string[] dlLocations =
             {
-                @"DarkLoader",
+                "DarkLoader",
                 @"Games\DarkLoader"
             };
 
