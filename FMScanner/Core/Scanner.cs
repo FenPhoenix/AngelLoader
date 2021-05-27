@@ -3797,11 +3797,11 @@ namespace FMScanner
             return lines;
         }
 
-        private static List<string> ReadAllLines(Stream stream, Encoding? encoding)
+        private static List<string> ReadAllLines(Stream stream, Encoding encoding)
         {
             var lines = new List<string>();
 
-            using var sr = new StreamReader(stream, encoding ?? Encoding.GetEncoding(1252), false);
+            using var sr = new StreamReader(stream, encoding, false);
             string? line;
             while ((line = sr.ReadLine()) != null) lines.Add(line);
 
