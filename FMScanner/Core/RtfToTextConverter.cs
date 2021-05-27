@@ -60,18 +60,16 @@ Other:
 */
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
-using static AL_Common.RTF;
 using static AL_Common.Utils;
 
 namespace FMScanner
 {
-    public sealed class RtfToTextConverter : AL_Common.RTF
+    public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     {
         #region Constants
 
@@ -79,6 +77,35 @@ namespace FMScanner
         private const int _shiftJisWin = 932;
         private const char _unicodeUnknown_Char = '\u25A1';
         private const string _unicodeUnknown_String = "\u25A1";
+
+        #endregion
+
+        #region Private fields
+
+        private Stream _stream = null!;
+
+        #endregion
+
+        #region Stream
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ResetStream(Stream stream, long streamLength)
+        {
+            _stream = stream;
+            base.ResetStreamBase(streamLength);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override byte StreamReadByte()
+        {
+            _bufferPos++;
+            if (_bufferPos == _bufferLen)
+            {
+                _bufferPos = 0;
+                _stream.Read(_buffer, 0, _bufferLen);
+            }
+            return _buffer[_bufferPos];
+        }
 
         #endregion
 
@@ -95,142 +122,6 @@ namespace FMScanner
             {
                 Top = value;
                 base[key] = value;
-            }
-        }
-
-        private sealed class RTFStream
-        {
-            #region Private fields
-
-            private Stream _stream = null!;
-            // We can't actually get the length of some kinds of streams (zip entry streams), so we take the
-            // length as a param and store it.
-            /// <summary>
-            /// Do not modify!
-            /// </summary>
-            internal long Length;
-
-            /// <summary>
-            /// Do not modify!
-            /// </summary>
-            internal long CurrentPos;
-
-            private const int _bufferLen = 81920;
-            private readonly byte[] _buffer = new byte[_bufferLen];
-            // Start it ready to roll over to 0 so we don't need extra logic for the first get
-            private int _bufferPos = _bufferLen - 1;
-
-            /*
-            We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
-            "into the stream", but they actually go in here and then when we go to read, we read from this first
-            and so on until it's empty, then go back to reading from the main stream again. In this way, we
-            support a rudimentary form of peek-and-rewind without ever actually seeking backwards in the stream.
-            This is required to support zip entry streams which are unseekable. If we required a seekable stream,
-            we would have to copy the entire, potentially very large, zip entry stream to memory first and then
-            read it, which is possibly unnecessarily memory-hungry.
-
-            2020-08-15:
-            We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
-            rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
-            */
-            private readonly Stack<char> _unGetBuffer = new Stack<char>(5);
-            private bool _unGetBufferEmpty = true;
-
-            #endregion
-
-            // PERF: Everything in here is inlined. This gives a shockingly massive speedup.
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void Reset(Stream stream, long streamLength)
-            {
-                _stream = stream;
-                Length = streamLength;
-
-                CurrentPos = 0;
-
-                // Don't clear the buffer; we don't need to and it wastes time
-                _bufferPos = _bufferLen - 1;
-
-                _unGetBuffer.Clear();
-                _unGetBufferEmpty = true;
-            }
-
-            /// <summary>
-            /// Puts a char back into the stream and decrements the read position. Actually doesn't really do that
-            /// but uses an internal seek-back buffer to allow it work with forward-only streams. But don't worry
-            /// about that. Just use it as normal.
-            /// </summary>
-            /// <param name="c"></param>
-            /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void UnGetChar(char c)
-            {
-                if (CurrentPos < 0) return;
-
-                _unGetBuffer.Push(c);
-                _unGetBufferEmpty = false;
-                if (CurrentPos > 0) CurrentPos--;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private byte StreamReadByte()
-            {
-                _bufferPos++;
-                if (_bufferPos == _bufferLen)
-                {
-                    _bufferPos = 0;
-                    _stream.Read(_buffer, 0, _bufferLen);
-                }
-                return _buffer[_bufferPos];
-            }
-
-            /// <summary>
-            /// Returns false if the end of the stream has been reached.
-            /// </summary>
-            /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal bool GetNextChar(out char ch)
-            {
-                if (CurrentPos == Length)
-                {
-                    ch = '\0';
-                    return false;
-                }
-
-                if (!_unGetBufferEmpty)
-                {
-                    ch = _unGetBuffer.Pop();
-                    _unGetBufferEmpty = _unGetBuffer.Count == 0;
-                }
-                else
-                {
-                    ch = (char)StreamReadByte();
-                }
-                CurrentPos++;
-
-                return true;
-            }
-
-            /// <summary>
-            /// For use in loops that already check the stream position against the end as a loop condition
-            /// </summary>
-            /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal char GetNextCharFast()
-            {
-                char ch;
-                if (!_unGetBufferEmpty)
-                {
-                    ch = _unGetBuffer.Pop();
-                    _unGetBufferEmpty = _unGetBuffer.Count == 0;
-                }
-                else
-                {
-                    ch = (char)StreamReadByte();
-                }
-                CurrentPos++;
-
-                return ch;
             }
         }
 
@@ -1051,8 +942,6 @@ namespace FMScanner
 
         #endregion
 
-        private readonly SymbolDict _symbolTable = new SymbolDict();
-
         #endregion
 
         #region Preallocated char arrays
@@ -1070,8 +959,6 @@ namespace FMScanner
         #endregion
 
         #region Resettables
-
-        private readonly RTFStream _rtfStream = new RTFStream();
 
         private readonly Header _header = new Header();
 
@@ -1198,20 +1085,17 @@ namespace FMScanner
             // Again, it's a stack so we can't check its capacity. But... meh. See above.
             // Not way into the idea of making another custom type where the only difference is we can access a
             // frigging internal variable, gonna be honest.
-            _rtfStream.Reset(stream, streamLength);
+            ResetStream(stream, streamLength);
         }
-
-        protected override bool GetNextChar(out char ch) => _rtfStream.GetNextChar(out ch);
-        protected override void UnGetChar(char ch) => _rtfStream.UnGetChar(ch);
 
         private Error ParseRtf()
         {
             int nibbleCount = 0;
             byte b = 0;
 
-            while (_rtfStream.CurrentPos < _rtfStream.Length)
+            while (CurrentPos < Length)
             {
-                char ch = _rtfStream.GetNextCharFast();
+                char ch = GetNextCharFast();
 
                 if (_groupCount < 0) return Error.StackUnderflow;
 
@@ -1548,9 +1432,9 @@ namespace FMScanner
             nibbleCount++;
             if (nibbleCount < 2 && _hexBuffer.Count > 0)
             {
-                if (!_rtfStream.GetNextChar(out ch))
+                if (!GetNextChar(out ch))
                 {
-                    _rtfStream.UnGetChar(ch);
+                    UnGetChar(ch);
                     return ResetBufferAndStateAndReturn();
                 }
                 goto restartButDontClearBuffer;
@@ -1575,14 +1459,14 @@ namespace FMScanner
 
                 // Put the LAST char back (for pch1 it's ch, for pch2 it's pch1) to fix last-char-in-stream
                 // corner case
-                if (!_rtfStream.GetNextChar(out char pch1))
+                if (!GetNextChar(out char pch1))
                 {
-                    _rtfStream.UnGetChar(ch);
+                    UnGetChar(ch);
                     lastCharInStream = true;
                 }
-                if (!_rtfStream.GetNextChar(out char pch2))
+                if (!GetNextChar(out char pch2))
                 {
-                    _rtfStream.UnGetChar(pch1);
+                    UnGetChar(pch1);
                     lastCharInStream = true;
                 }
 
@@ -1591,10 +1475,10 @@ namespace FMScanner
                 {
                     if (pch1 == '\\' && pch2 == '\'')
                     {
-                        if (!_rtfStream.GetNextChar(out ch))
+                        if (!GetNextChar(out ch))
                         {
-                            _rtfStream.UnGetChar(pch2);
-                            _rtfStream.UnGetChar(pch1);
+                            UnGetChar(pch2);
+                            UnGetChar(pch1);
 
                             return ResetBufferAndStateAndReturn();
                         }
@@ -1603,8 +1487,8 @@ namespace FMScanner
                     }
                     else
                     {
-                        _rtfStream.UnGetChar(pch2);
-                        _rtfStream.UnGetChar(pch1);
+                        UnGetChar(pch2);
+                        UnGetChar(pch1);
                     }
                 }
             }
@@ -1761,7 +1645,7 @@ namespace FMScanner
             int codePoint;
 
             // Eat the space
-            if (!_rtfStream.GetNextChar(out char ch)) return Error.EndOfFile;
+            if (!GetNextChar(out char ch)) return Error.EndOfFile;
 
             #region Check for SYMBOL instruction
 
@@ -1770,7 +1654,7 @@ namespace FMScanner
 
             int i;
             bool eof = false;
-            for (i = 0; i < 6; i++, eof = !_rtfStream.GetNextChar(out ch))
+            for (i = 0; i < 6; i++, eof = !GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
                 if (ch != _SYMBOLChars[i]) return RewindAndSkipGroup(ch);
@@ -1778,7 +1662,7 @@ namespace FMScanner
 
             #endregion
 
-            if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
+            if (!GetNextChar(out ch)) return Error.EndOfFile;
 
             bool numIsHex = false;
             bool negateNum = false;
@@ -1787,19 +1671,19 @@ namespace FMScanner
 
             if (ch == '-')
             {
-                _rtfStream.GetNextChar(out ch);
+                GetNextChar(out ch);
                 negateNum = true;
             }
 
             #region Handle if the param is hex
 
             if (ch == '0' &&
-                _rtfStream.GetNextChar(out char pch) && (pch is 'x' or 'X'))
+                GetNextChar(out char pch) && (pch is 'x' or 'X'))
             {
-                _rtfStream.GetNextChar(out ch);
+                GetNextChar(out ch);
                 if (ch == '-')
                 {
-                    _rtfStream.GetNextChar(out ch);
+                    GetNextChar(out ch);
                     if (ch != ' ') return RewindAndSkipGroup(ch);
                     negateNum = true;
                 }
@@ -1814,7 +1698,7 @@ namespace FMScanner
             bool alphaFound;
             for (i = 0;
                 i < _fldinstSymbolNumberMaxLen && ((alphaFound = ch.IsAsciiAlpha()) || ch.IsAsciiNumeric());
-                i++, eof = !_rtfStream.GetNextChar(out ch))
+                i++, eof = !GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
 
@@ -1874,13 +1758,13 @@ namespace FMScanner
 
             for (i = 0; i < maxParams; i++)
             {
-                if (!_rtfStream.GetNextChar(out pch) || pch != '\\' ||
-                    !_rtfStream.GetNextChar(out pch) || pch != '\\')
+                if (!GetNextChar(out pch) || pch != '\\' ||
+                    !GetNextChar(out pch) || pch != '\\')
                 {
                     continue;
                 }
 
-                if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
+                if (!GetNextChar(out ch)) return Error.EndOfFile;
 
                 // From the spec:
                 // "Interprets text in field-argument as the value of an ANSI character."
@@ -1925,7 +1809,7 @@ namespace FMScanner
                 */
                 else if (ch == 'f')
                 {
-                    if (!_rtfStream.GetNextChar(out ch))
+                    if (!GetNextChar(out ch))
                     {
                         return Error.EndOfFile;
                     }
@@ -1936,7 +1820,7 @@ namespace FMScanner
                     }
                     else if (ch == ' ')
                     {
-                        if (!_rtfStream.GetNextChar(out ch))
+                        if (!GetNextChar(out ch))
                         {
                             return Error.EndOfFile;
                         }
@@ -1948,7 +1832,7 @@ namespace FMScanner
 
                         int fontNameCharCount = 0;
 
-                        while (_rtfStream.GetNextChar(out ch) && ch != '\"')
+                        while (GetNextChar(out ch) && ch != '\"')
                         {
                             if (fontNameCharCount >= _fldinstSymbolFontNameMaxLen || IsSeparatorChar(ch))
                             {
@@ -1986,7 +1870,7 @@ namespace FMScanner
                 */
                 else if (ch == 'h')
                 {
-                    if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
+                    if (!GetNextChar(out ch)) return Error.EndOfFile;
                     if (IsSeparatorChar(ch)) break;
                 }
                 /*
@@ -1997,11 +1881,11 @@ namespace FMScanner
                 */
                 else if (ch == 's')
                 {
-                    if (!_rtfStream.GetNextChar(out ch)) return Error.EndOfFile;
+                    if (!GetNextChar(out ch)) return Error.EndOfFile;
                     if (ch != ' ') return RewindAndSkipGroup(ch);
 
                     int numDigitCount = 0;
-                    while (_rtfStream.GetNextChar(out ch) && ch.IsAsciiNumeric())
+                    while (GetNextChar(out ch) && ch.IsAsciiNumeric())
                     {
                         if (numDigitCount > _fldinstSymbolNumberMaxLen) goto breakout;
                         numDigitCount++;
@@ -2124,7 +2008,7 @@ namespace FMScanner
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error RewindAndSkipGroup(char ch)
         {
-            _rtfStream.UnGetChar(ch);
+            UnGetChar(ch);
             _currentScope.RtfDestinationState = RtfDestinationState.Skip;
             return Error.OK;
         }

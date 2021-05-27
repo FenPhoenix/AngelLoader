@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using AL_Common;
 using JetBrains.Annotations;
-using static AL_Common.RTF;
+using static AL_Common.Utils;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -16,140 +13,31 @@ namespace AngelLoader.Forms.CustomControls
     // We use a full parser here because rather than simply replacing all byte sequences with another, here we
     // need to parse and return the first and ONLY the first {\colortbl} group. In theory that could be in a
     // comment or invalidly in the middle of another group or something. I mean it won't, let's be honest, but
-    // the color table is important enough to take the perf hit and the code duplication.
+    // the color table is important enough to take the perf hit and the small amount of code duplication.
 
-    public sealed class RtfColorTableParser : AL_Common.RTF
+    public sealed class RtfColorTableParser : AL_Common.RTFParserBase
     {
-        #region Classes
+        #region Private fields
 
-        // Keeping these as entirely separate classes (with attendant code duplication) for now, because of the
-        // stream being a Stream in one and List<byte> (for avoidance of conversion to an array and then to a
-        // MemoryStream) in the other.
-        private sealed class RTFStream
+        private List<byte> _stream = null!;
+
+        #endregion
+
+        #region Stream
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ResetStream(List<byte> stream)
         {
-            #region Private fields
-
-            private List<byte> _stream = null!;
-
-            // We can't actually get the length of some kinds of streams (zip entry streams), so we take the
-            // length as a param and store it.
-            /// <summary>
-            /// Do not modify!
-            /// </summary>
-            internal long Length;
-
-            /// <summary>
-            /// Do not modify!
-            /// </summary>
-            internal int CurrentPos;
-
-            /*
-            We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
-            "into the stream", but they actually go in here and then when we go to read, we read from this first
-            and so on until it's empty, then go back to reading from the main stream again. In this way, we
-            support a rudimentary form of peek-and-rewind without ever actually seeking backwards in the stream.
-            This is required to support zip entry streams which are unseekable. If we required a seekable stream,
-            we would have to copy the entire, potentially very large, zip entry stream to memory first and then
-            read it, which is possibly unnecessarily memory-hungry.
-
-            2020-08-15:
-            We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
-            rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
-            */
-            private readonly Stack<char> _unGetBuffer = new Stack<char>(5);
-            private bool _unGetBufferEmpty = true;
-
-            #endregion
-
-            // PERF: Everything in here is inlined. This gives a shockingly massive speedup.
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void Reset(List<byte> stream)
-            {
-                _stream = stream;
-                Length = stream.Count;
-
-                CurrentPos = 0;
-
-                _unGetBuffer.Clear();
-                _unGetBufferEmpty = true;
-            }
-
-            /// <summary>
-            /// Puts a char back into the stream and decrements the read position. Actually doesn't really do that
-            /// but uses an internal seek-back buffer to allow it work with forward-only streams. But don't worry
-            /// about that. Just use it as normal.
-            /// </summary>
-            /// <param name="c"></param>
-            /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void UnGetChar(char c)
-            {
-                if (CurrentPos < 0) return;
-
-                _unGetBuffer.Push(c);
-                _unGetBufferEmpty = false;
-                if (CurrentPos > 0) CurrentPos--;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private byte StreamReadByte() => _stream[CurrentPos];
-
-            /// <summary>
-            /// Returns false if the end of the stream has been reached.
-            /// </summary>
-            /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal bool GetNextChar(out char ch)
-            {
-                if (CurrentPos == Length)
-                {
-                    ch = '\0';
-                    return false;
-                }
-
-                if (!_unGetBufferEmpty)
-                {
-                    ch = _unGetBuffer.Pop();
-                    _unGetBufferEmpty = _unGetBuffer.Count == 0;
-                }
-                else
-                {
-                    ch = (char)StreamReadByte();
-                }
-                CurrentPos++;
-
-                return true;
-            }
-
-            /// <summary>
-            /// For use in loops that already check the stream position against the end as a loop condition
-            /// </summary>
-            /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal char GetNextCharFast()
-            {
-                char ch;
-                if (!_unGetBufferEmpty)
-                {
-                    ch = _unGetBuffer.Pop();
-                    _unGetBufferEmpty = _unGetBuffer.Count == 0;
-                }
-                else
-                {
-                    ch = (char)StreamReadByte();
-                }
-                CurrentPos++;
-
-                return ch;
-            }
+            _stream = stream;
+            base.ResetStreamBase(stream.Count);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override byte StreamReadByte() => _stream[(int)CurrentPos];
 
         #endregion
 
         #region Resettables
-
-        private readonly RTFStream _rtfStream = new RTFStream();
 
         private readonly StringBuilder _colorTableSB = new StringBuilder(4096);
 
@@ -163,7 +51,7 @@ namespace AngelLoader.Forms.CustomControls
 
         [PublicAPI]
         public (bool Success, List<Color> ColorTable, int ColorTableStartIndex, int ColorTableEndIndex)
-            GetColorTable(List<byte> stream)
+        GetColorTable(List<byte> stream)
         {
             Reset(stream);
 
@@ -203,21 +91,18 @@ namespace AngelLoader.Forms.CustomControls
             // Again, it's a stack so we can't check its capacity. But... meh. See above.
             // Not way into the idea of making another custom type where the only difference is we can access a
             // frigging internal variable, gonna be honest.
-            _rtfStream.Reset(stream);
+            ResetStream(stream);
         }
 
         private bool _exiting;
 
-        protected override bool GetNextChar(out char ch) => _rtfStream.GetNextChar(out ch);
-        protected override void UnGetChar(char ch) => _rtfStream.UnGetChar(ch);
-
         private Error ParseRtf()
         {
-            while (_rtfStream.CurrentPos < _rtfStream.Length)
+            while (CurrentPos < Length)
             {
                 if (_exiting) return Error.OK;
 
-                char ch = _rtfStream.GetNextCharFast();
+                char ch = GetNextCharFast();
 
                 if (_groupCount < 0) return Error.StackUnderflow;
 
@@ -313,9 +198,11 @@ namespace AngelLoader.Forms.CustomControls
             {
                 case KeywordType.Property:
                     if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                    return _currentScope.RtfDestinationState == RtfDestinationState.Normal
-                        ? ChangeProperty((Property)symbol.Index, param)
-                        : Error.OK;
+                    if (_currentScope.RtfDestinationState == RtfDestinationState.Normal)
+                    {
+                        _currentScope.Properties[symbol.Index] = param;
+                    }
+                    return Error.OK;
                 case KeywordType.Character:
                     if (_currentScope.RtfDestinationState == RtfDestinationState.Normal &&
                         --_unicodeCharsLeftToSkip <= 0)
@@ -373,14 +260,6 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Error ChangeProperty(Property propertyTableIndex, int val)
-        {
-            _currentScope.Properties[(int)propertyTableIndex] = val;
-
-            return Error.OK;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error ChangeDestination(DestinationType destinationType)
         {
             switch (destinationType)
@@ -414,15 +293,15 @@ namespace AngelLoader.Forms.CustomControls
 
             ClearReturnFields(Error.OK);
 
-            _colorTableStartIndex = _rtfStream.CurrentPos;
+            _colorTableStartIndex = (int)CurrentPos;
 
             while (true)
             {
-                if (!_rtfStream.GetNextChar(out char ch)) return ClearReturnFields(Error.EndOfFile);
+                if (!GetNextChar(out char ch)) return ClearReturnFields(Error.EndOfFile);
                 if (ch == '}')
                 {
-                    _rtfStream.UnGetChar('}');
-                    _colorTableEndIndex = _rtfStream.CurrentPos;
+                    UnGetChar('}');
+                    _colorTableEndIndex = (int)CurrentPos;
                     break;
                 }
                 _colorTableSB.Append(ch);
