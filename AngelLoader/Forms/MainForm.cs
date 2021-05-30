@@ -30,9 +30,6 @@
   we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
  IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
- TODO: @vNext: Make dates/rating filter popups' OK & Cancel buttons be wider or allow them to resize wider
- Right now it looks a little tight and translations might be squeezed potentially?
-
  TODO(MainForm Designer): The controls move positions because they're accounting for the scroll bar
  but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
  the scroll bar was).
