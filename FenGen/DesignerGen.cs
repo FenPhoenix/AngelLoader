@@ -10,6 +10,33 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static FenGen.Misc;
 
+/*
+MainForm gen notes:
+-Remove tab control images
+-Handle Image properties (most if not all of these are set in code due to theming or vector drawing)
+-Properly ignore ifdef blocks outside the one around InitializeComponent() (we have some in MainForm.Designer.cs)
+-Decide how to handle the mess of DataGridViewCellStyle objects in the Designer file.
+ In the manual version we just set attributes on the attached ones directly, rather than making whole other objects
+ and then just assigning them to the attached ones which is bloated and pointless. But generating the removal of
+ these might be tricky(?). See if we can though!
+-Filter bar scroll buttons have locations, but we place them manually in code, so make a way to tell it to remove
+ location
+-ToolStrip AutoSize is true by default (thus not explicitly set if true), so we miss removing the Size property
+-BackColor = SystemColors.Control necessary always? (eg. Filter buttons - this prop is not set in InitComponentManual())
+-Game tab pages are "fake" tab pages (only the tab part is visible and matters) so we should remove everything
+ ImageIndex and TabIndex on these
+-Tab pages dock in their tab control, so "Location" for them is meaningless. We should remove this.
+ But Size is needed for internal layout, so keep that.
+-Buttons in FlowLayoutPanels that are AutoSize=true and AutoSizeMode=GrowAndShrink - I think we can remove Size here?
+ (Manual version does so)
+-TabsTagAutoScrollMarker: TabIndex when not needed (not tabbable)
+-Panels: Size is removed when AutoSize=true, but should be kept for internal layout!
+-Things are getting combinatorial-explosive in here already, with all these different cases... It's not really
+ future-proof (will likely break badly if normal but unaccounted-for UI things are done).
+ We could just switch to a simple Text-and-Name remove, that'll cut down our bloat a lot and maybe we can just
+ settle for that. But we also want to handle Image properties there, but that's probably all we need...
+*/
+
 namespace FenGen
 {
     internal static class DesignerGen
