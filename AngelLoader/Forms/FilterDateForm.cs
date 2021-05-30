@@ -15,7 +15,7 @@ namespace AngelLoader.Forms
 
         public bool EventsDisabled { get; set; }
 
-        private readonly int _minClientWidth = 170;
+        private const int _minClientWidth = 170;
 
         public FilterDateForm(string title, DateTime? from, DateTime? to)
         {
