@@ -7,6 +7,10 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms
 {
     // TODO(Tool window filter forms): SystemInformation.ToolWindowCaptionButtonSize (for auto width based on title text)
+    // We want to set width based on title bar text width, but ope, the %@#$ing measurement of the text is WRONG.
+    // Visual measurements show the test long title to be 356px wide, but it measures as 328 with TextRenderer.MeasureText()
+    // and 338.xxx with Graphics.MeasureString(). BOTH ARE #$@$%#$@!#ING WRONG AND USELESS. BOTH CAUSE CUT OFF
+    // TEXT WHICH IS THE #$@$ING THING WE'RE TRYING TO PREVENT IN THE FIRST PLACE.
     public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
     {
         private const int _minClientWidth = 170;
