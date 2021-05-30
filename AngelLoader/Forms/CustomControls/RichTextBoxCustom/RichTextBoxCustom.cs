@@ -278,7 +278,7 @@ namespace AngelLoader.Forms.CustomControls
                 SuspendState(toggleReadOnly: false);
 
                 ContentIsPlainText = true;
-                if (!text.IsEmpty()) Text = text;
+                Text = text;
             }
             finally
             {
