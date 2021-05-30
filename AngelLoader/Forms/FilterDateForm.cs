@@ -8,14 +8,14 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
     {
-        internal DateTime? DateFrom;
-        internal DateTime? DateTo;
+        private const int _minClientWidth = 170;
 
         private enum DateType { From, To }
 
         public bool EventsDisabled { get; set; }
 
-        private const int _minClientWidth = 170;
+        internal DateTime? DateFrom;
+        internal DateTime? DateTo;
 
         public FilterDateForm(string title, DateTime? from, DateTime? to)
         {

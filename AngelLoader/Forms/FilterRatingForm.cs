@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
+using AL_Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
     public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
     {
-        internal int RatingFrom;
-        internal int RatingTo;
+        private const int _minClientWidth = 170;
 
         public bool EventsDisabled { get; set; }
+
+        internal int RatingFrom;
+        internal int RatingTo;
 
         public FilterRatingForm(int ratingFrom, int ratingTo, bool outOfFive)
         {
@@ -22,6 +26,12 @@ namespace AngelLoader.Forms
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
             Localize();
+
+            int width = (OKButton.Width + Cancel_Button.Width + 24).Clamp(_minClientWidth, int.MaxValue);
+
+            ClientSize = new Size(width, ClientSize.Height);
+
+            Cancel_Button.Location = new Point(OKButton.Right + 8, Cancel_Button.Location.Y);
 
             FromComboBox.Items.Add(LText.Global.Unrated);
             for (int i = 0; i <= 10; i++) FromComboBox.Items.Add((outOfFive ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture));
