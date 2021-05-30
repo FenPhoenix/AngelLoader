@@ -6,6 +6,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
+    // TODO(Tool window filter forms): SystemInformation.ToolWindowCaptionButtonSize (for auto width based on title text)
     public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
     {
         private const int _minClientWidth = 170;
