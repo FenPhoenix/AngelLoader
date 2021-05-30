@@ -45,8 +45,11 @@ namespace AngelLoader.Forms
             // 
             // Cancel_Button
             // 
+            this.Cancel_Button.AutoSize = true;
+            this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(86, 128);
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -56,8 +59,11 @@ namespace AngelLoader.Forms
             // 
             // OKButton
             // 
+            this.OKButton.AutoSize = true;
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(7, 128);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -68,6 +74,8 @@ namespace AngelLoader.Forms
             // 
             // ResetButton
             // 
+            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ResetButton.Location = new System.Drawing.Point(7, 88);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -97,6 +105,8 @@ namespace AngelLoader.Forms
             // 
             // FromDateTimePicker
             // 
+            this.FromDateTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.FromDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.FromDateTimePicker.Location = new System.Drawing.Point(28, 24);
             this.FromDateTimePicker.Name = "FromDateTimePicker";
@@ -106,6 +116,8 @@ namespace AngelLoader.Forms
             // 
             // ToDateTimePicker
             // 
+            this.ToDateTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ToDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.ToDateTimePicker.Location = new System.Drawing.Point(28, 64);
             this.ToDateTimePicker.Name = "ToDateTimePicker";

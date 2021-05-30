@@ -22,25 +22,31 @@
             // 
             // Cancel_Button
             // 
+            this.Cancel_Button.AutoSize = true;
+            this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(86, 128);
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
             // OKButton
             // 
+            this.OKButton.AutoSize = true;
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(7, 128);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 11;
             this.OKButton.UseVisualStyleBackColor = true;
             this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
             // 
             // ResetButton
             // 
+            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ResetButton.Location = new System.Drawing.Point(7, 88);
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(154, 22);
@@ -62,6 +68,8 @@
             // 
             // FromDateTimePicker
             // 
+            this.FromDateTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.FromDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.FromDateTimePicker.Location = new System.Drawing.Point(28, 24);
             this.FromDateTimePicker.Size = new System.Drawing.Size(132, 20);
@@ -70,6 +78,8 @@
             // 
             // ToDateTimePicker
             // 
+            this.ToDateTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ToDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.ToDateTimePicker.Location = new System.Drawing.Point(28, 64);
             this.ToDateTimePicker.Size = new System.Drawing.Size(132, 20);

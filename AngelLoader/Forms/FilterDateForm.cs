@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -9,9 +11,11 @@ namespace AngelLoader.Forms
         internal DateTime? DateFrom;
         internal DateTime? DateTo;
 
-        private enum RDate { From, To }
+        private enum DateType { From, To }
 
         public bool EventsDisabled { get; set; }
+
+        private readonly int _minClientWidth = 170;
 
         public FilterDateForm(string title, DateTime? from, DateTime? to)
         {
@@ -21,11 +25,25 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
+            NoMinLabel.Location = FromDateTimePicker.Location;
+            NoMinLabel.Size = FromDateTimePicker.Size;
+            NoMinLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            NoMaxLabel.Location = ToDateTimePicker.Location;
+            NoMaxLabel.Size = ToDateTimePicker.Size;
+            NoMaxLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
             Localize();
 
             Text = title;
+
+            int width = (OKButton.Width + Cancel_Button.Width + 24).Clamp(_minClientWidth, int.MaxValue);
+
+            ClientSize = new Size(width, ClientSize.Height);
+
+            Cancel_Button.Location = new Point(OKButton.Right + 8, Cancel_Button.Location.Y);
 
             using (new DisableEvents(this))
             {
@@ -33,8 +51,8 @@ namespace AngelLoader.Forms
                 ToCheckBox.Checked = to != null;
             }
 
-            ShowDate(RDate.From, from != null);
-            ShowDate(RDate.To, to != null);
+            ShowDate(DateType.From, from != null);
+            ShowDate(DateType.To, to != null);
 
             if (from != null) FromDateTimePicker.Value = (DateTime)from;
             if (to != null) ToDateTimePicker.Value = (DateTime)to;
@@ -52,10 +70,10 @@ namespace AngelLoader.Forms
             Cancel_Button.Text = LText.Global.Cancel;
         }
 
-        private void ShowDate(RDate rDate, bool shown)
+        private void ShowDate(DateType dateType, bool shown)
         {
-            var label = rDate == RDate.From ? NoMinLabel : NoMaxLabel;
-            var dtp = rDate == RDate.From ? FromDateTimePicker : ToDateTimePicker;
+            var label = dateType == DateType.From ? NoMinLabel : NoMaxLabel;
+            var dtp = dateType == DateType.From ? FromDateTimePicker : ToDateTimePicker;
 
             if (shown)
             {
@@ -64,8 +82,6 @@ namespace AngelLoader.Forms
             }
             else
             {
-                label.Location = dtp.Location;
-                label.Size = dtp.Size;
                 label.Show();
                 dtp.Hide();
             }
@@ -75,7 +91,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             var s = (CheckBox)sender;
-            ShowDate(s == FromCheckBox ? RDate.From : RDate.To, s.Checked);
+            ShowDate(s == FromCheckBox ? DateType.From : DateType.To, s.Checked);
         }
 
         private void ResetButton_Click(object sender, EventArgs e)
@@ -86,8 +102,8 @@ namespace AngelLoader.Forms
                 ToCheckBox.Checked = false;
             }
 
-            ShowDate(RDate.From, false);
-            ShowDate(RDate.To, false);
+            ShowDate(DateType.From, false);
+            ShowDate(DateType.To, false);
 
             FromDateTimePicker.Value = DateTime.Now;
             ToDateTimePicker.Value = DateTime.Now;
