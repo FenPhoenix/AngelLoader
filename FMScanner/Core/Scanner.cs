@@ -82,8 +82,6 @@ namespace FMScanner
 
         #endregion
 
-        private string _fmPathField = "";
-
         private readonly string _sevenZipExePath;
 
         private readonly FileEncoding _fileEncoding = new FileEncoding();
@@ -95,9 +93,6 @@ namespace FMScanner
         private bool _fmIsZip;
         private bool _fmIsSevenZip;
 
-        private string _archivePath = "";
-
-        private string _tempPath = "";
         private string _fmWorkingPath = "";
 
         // Guess I'll leave this one global for reasons
@@ -400,8 +395,6 @@ namespace FMScanner
 
             #endregion
 
-            _tempPath = tempPath;
-
             var scannedFMDataList = new List<ScannedFMDataAndError>();
 
             // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
@@ -428,17 +421,16 @@ namespace FMScanner
                 }
                 else
                 {
-                    string fm = missions[i].Path;
-                    _fmIsZip = fm.ExtIsZip() || fm.ExtIs7z();
+                    string fmPath = missions[i].Path;
+                    _fmIsZip = fmPath.ExtIsZip() || fmPath.ExtIs7z();
 
                     _archive?.Dispose();
 
                     if (_fmIsZip)
                     {
-                        _archivePath = fm;
                         try
                         {
-                            _fmWorkingPath = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(_archivePath).Trim());
+                            _fmWorkingPath = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(fmPath).Trim());
                         }
                         catch (Exception ex)
                         {
@@ -449,7 +441,7 @@ namespace FMScanner
                     }
                     else
                     {
-                        _fmWorkingPath = fm;
+                        _fmWorkingPath = fmPath;
                     }
                 }
 
@@ -473,8 +465,6 @@ namespace FMScanner
 
                 #endregion
 
-                //Log(LogFile, "About to scan " + missions[i], methodName: false);
-
                 // If there was an error then we already added null to the list. DON'T add any extra items!
                 if (!nullAlreadyAdded)
                 {
@@ -490,11 +480,12 @@ namespace FMScanner
 
                         try
                         {
-                            scannedFMAndError = ScanCurrentFM(rtfConverter, missions[i]);
+                            scannedFMAndError = ScanCurrentFM(rtfConverter, missions[i], tempPath);
                         }
                         catch (Exception ex)
                         {
                             Log(LogFile, missions[i].Path + ": Exception in FM scan", ex);
+                            scannedFMAndError.ScannedFMData = null;
                             scannedFMAndError.Exception = ex;
                             scannedFMAndError.ErrorInfo = missions[i].Path + ": Exception in FM scan";
                             // Okay, we don't want to throw because that would stop the whole scan, but we want
@@ -516,8 +507,6 @@ namespace FMScanner
                     }
                 }
 
-                //Log(LogFile, "Finished scanning " + missions[i], methodName: false);
-
                 if (progress != null && i == missions.Count - 1)
                 {
                     progressReport.Percent = 100;
@@ -530,13 +519,11 @@ namespace FMScanner
         }
 
         private ScannedFMDataAndError
-        ScanCurrentFM(RtfToTextConverter rtfConverter, FMToScan fm)
+        ScanCurrentFM(RtfToTextConverter rtfConverter, FMToScan fm, string tempPath)
         {
 #if DEBUG
             _overallTimer.Restart();
 #endif
-
-            _fmPathField = fm.Path;
 
             // Sometimes we'll want to remove this from the start of a string to get a relative path, so it's
             // critical that we always know we have a dir separator on the end so we don't end up with a leading
@@ -576,7 +563,7 @@ namespace FMScanner
 
             #region Check for and setup 7-Zip
 
-            if (_fmIsZip && _archivePath.ExtIs7z())
+            if (_fmIsZip && fm.Path.ExtIs7z())
             {
                 _fmIsZip = false;
                 _fmIsSevenZip = true;
@@ -599,7 +586,7 @@ namespace FMScanner
                     // text dates out of the output stream.
                     var fileNamesList = new List<string>();
                     uint extractorFilesCount;
-                    using (var _sevenZipArchive = new SevenZipExtractor(_archivePath) { PreserveDirectoryStructure = true })
+                    using (var _sevenZipArchive = new SevenZipExtractor(fm.Path) { PreserveDirectoryStructure = true })
                     {
                         sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
                         extractorFilesCount = _sevenZipArchive.FilesCount;
@@ -649,12 +636,12 @@ namespace FMScanner
                         }
                     }
 
-                    string listFile = Path.Combine(_tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
+                    string listFile = Path.Combine(tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
 
                     var result = Fen7z.Fen7z.Extract(
                         Path.GetDirectoryName(_sevenZipExePath)!,
                         _sevenZipExePath,
-                        _archivePath,
+                        fm.Path,
                         _fmWorkingPath,
                         (int)extractorFilesCount,
                         listFile,
@@ -663,27 +650,27 @@ namespace FMScanner
                     if (result.ErrorOccurred)
                     {
                         Log(LogFile,
-                            _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z\r\n" +
+                            fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is 7z\r\n" +
                             "7z.exe path: " + _sevenZipExePath + "\r\n" +
                             result.ToString());
 
                         return UnsupportedZip(
-                            archivePath: _archivePath,
+                            archivePath: fm.Path,
                             fen7zResult: result,
                             ex: null,
                             errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                                       _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z\r\n");
+                                       fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is 7z\r\n");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log(LogFile, _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction", ex);
+                    Log(LogFile, fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction", ex);
                     return UnsupportedZip(
-                        archivePath: _archivePath,
+                        archivePath: fm.Path,
                         fen7zResult: null,
                         ex: ex,
                         errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                                   _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction"
+                                   fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction"
                     );
                 }
 
@@ -710,40 +697,40 @@ namespace FMScanner
 
             if (_fmIsZip)
             {
-                Debug.WriteLine("----------" + _archivePath);
+                Debug.WriteLine("----------" + fm.Path);
 
-                if (_archivePath.ExtIsZip())
+                if (fm.Path.ExtIsZip())
                 {
                     try
                     {
-                        _archive = new ZipArchiveFast(File.OpenRead(_archivePath));
+                        _archive = new ZipArchiveFast(File.OpenRead(fm.Path));
 
                         // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
                         // thrown while loading them. If this passes, we're definitely good.
                         if (_archive.Entries.Count == 0)
                         {
                             Log(LogFile,
-                                _fmPathField + ": " + nameof(ScanCurrentFM) +
+                                fm.Path + ": " + nameof(ScanCurrentFM) +
                                 "(): fm is zip, no files in archive. Returning 'Unsupported' game type.");
-                            return UnsupportedZip(_archivePath, null, null, "");
+                            return UnsupportedZip(fm.Path, null, null, "");
                         }
                     }
                     catch (Exception ex)
                     {
                         // Invalid zip file, whatever, move on
                         Log(LogFile,
-                            _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is zip, exception in " +
+                            fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is zip, exception in " +
                             nameof(ZipArchiveFast) +
                             " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                        return UnsupportedZip(_archivePath, null, ex, "");
+                        return UnsupportedZip(fm.Path, null, ex, "");
                     }
                 }
                 else
                 {
                     Log(LogFile,
-                        _fmPathField + ": " + nameof(ScanCurrentFM) + "(): " + nameof(_fmIsZip) +
+                        fm.Path + ": " + nameof(ScanCurrentFM) + "(): " + nameof(_fmIsZip) +
                         " == true, but extension was not .zip. Returning 'Unsupported' game type.");
-                    return UnsupportedZip(_archivePath, null, null, "");
+                    return UnsupportedZip(fm.Path, null, null, "");
                 }
             }
             else
@@ -751,7 +738,7 @@ namespace FMScanner
                 if (!Directory.Exists(_fmWorkingPath))
                 {
                     Log(LogFile,
-                        _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is dir, but " + nameof(_fmWorkingPath) +
+                        fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is dir, but " + nameof(_fmWorkingPath) +
                         " (" + _fmWorkingPath + ") doesn't exist. Returning 'Unsupported' game type.");
                     return UnsupportedDir(null, null, "");
                 }
@@ -765,7 +752,7 @@ namespace FMScanner
             var fmData = new ScannedFMData
             {
                 ArchiveName = _fmIsZip || _fmIsSevenZip
-                    ? Path.GetFileName(_archivePath)
+                    ? Path.GetFileName(fm.Path)
                     // PERF_TODO: Use fast string-only name getter
                     // Case against: Being built-in, this way is safe and complete. ArchiveName is monumentally
                     // important, we don't want to mess around.
@@ -833,18 +820,25 @@ namespace FMScanner
 
             #region Cache FM data
 
-            bool success =
-                ReadAndCacheFMData(fmData, baseDirFiles, misFiles, usedMisFiles, stringsDirFiles,
-                                   intrfaceDirFiles, booksDirFiles, t3FMExtrasDirFiles);
+            bool success = ReadAndCacheFMData(
+                fm.Path,
+                fmData,
+                baseDirFiles,
+                misFiles,
+                usedMisFiles,
+                stringsDirFiles,
+                intrfaceDirFiles,
+                booksDirFiles,
+                t3FMExtrasDirFiles);
 
             if (!success)
             {
                 string ext = _fmIsZip ? "zip" : _fmIsSevenZip ? "7z" : "dir";
                 Log(LogFile,
-                    _fmPathField + ": " + nameof(ScanCurrentFM) + "(): fm is " + ext + ", " +
+                    fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is " + ext + ", " +
                     nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.");
 
-                return _fmIsZip || _fmIsSevenZip ? UnsupportedZip(_archivePath, null, null, "") : UnsupportedDir(null, null, "");
+                return _fmIsZip || _fmIsSevenZip ? UnsupportedZip(fm.Path, null, null, "") : UnsupportedDir(null, null, "");
             }
 
             #endregion
@@ -1385,10 +1379,16 @@ namespace FMScanner
 
         #endregion
 
-        private bool ReadAndCacheFMData(ScannedFMData fmd, List<NameAndIndex> baseDirFiles,
-                                        List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles,
-                                        List<NameAndIndex> stringsDirFiles, List<NameAndIndex> intrfaceDirFiles,
-                                        List<NameAndIndex> booksDirFiles, List<NameAndIndex> t3FMExtrasDirFiles)
+        private bool ReadAndCacheFMData(
+            string fmPath,
+            ScannedFMData fmd,
+            List<NameAndIndex> baseDirFiles,
+            List<NameAndIndex> misFiles,
+            List<NameAndIndex> usedMisFiles,
+            List<NameAndIndex> stringsDirFiles,
+            List<NameAndIndex> intrfaceDirFiles,
+            List<NameAndIndex> booksDirFiles,
+            List<NameAndIndex> t3FMExtrasDirFiles)
         {
             #region Add BaseDirFiles
 
@@ -1569,7 +1569,7 @@ namespace FMScanner
                     if (baseDirFiles.Count == 0)
                     {
                         Log(LogFile,
-                            _fmPathField + ": " + nameof(ReadAndCacheFMData) +
+                            fmPath + ": " + nameof(ReadAndCacheFMData) +
                             "(): 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.");
                         return false;
                     }
@@ -1621,7 +1621,7 @@ namespace FMScanner
                     if (baseDirFiles.Count == 0)
                     {
                         Log(LogFile,
-                            _fmPathField + ": " + nameof(ReadAndCacheFMData) +
+                            fmPath + ": " + nameof(ReadAndCacheFMData) +
                             "(): 'fm is dir' codepath: No files in base dir. Returning false.");
                         return false;
                     }
@@ -1744,7 +1744,7 @@ namespace FMScanner
             if (misFiles.Count == 0)
             {
                 Log(LogFile,
-                    _fmPathField + ": " + nameof(ReadAndCacheFMData) +
+                    fmPath + ": " + nameof(ReadAndCacheFMData) +
                     "(): No mis files in base dir. Returning false.");
                 return false;
             }
