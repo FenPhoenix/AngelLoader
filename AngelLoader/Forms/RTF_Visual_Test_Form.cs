@@ -197,6 +197,37 @@ namespace AngelLoader.Forms
             Directory.CreateDirectory(ConfigDir);
             File.WriteAllText(ConfigFile, RTFFileComboBox.SelectedIndex.ToString());
         }
+
+        private void ConvertAllToHTMLButton_Click(object sender, EventArgs e)
+        {
+#if true
+            MessageBox.Show("Not implemented cause we need RtfPipe and we don't wanna reference that unless we're testing");
+#else
+            const string tempDir = @"C:\rtf-to-html-tests";
+            foreach (var item in RTFFileComboBox.Items)
+            {
+                try
+                {
+                    string itemStr = item.ToString();
+                    string dir = Path.GetDirectoryName(itemStr)!;
+                    string dir2 = new DirectoryInfo(dir).Name;
+                    string finalPath = Path.Combine(tempDir, dir2);
+
+                    Directory.CreateDirectory(finalPath);
+
+                    string rtf = File.ReadAllText(itemStr, Encoding.ASCII);
+
+                    string outFile = Path.Combine(finalPath, Path.GetFileNameWithoutExtension(itemStr) + ".html");
+                    string html = RtfPipe.Rtf.ToHtml(rtf);
+                    File.WriteAllText(outFile, html);
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+#endif
+        }
     }
 }
 #endif

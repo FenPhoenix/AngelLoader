@@ -33,11 +33,12 @@ namespace AngelLoader.Forms
             this.SaveButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.RTFBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
             this.RTFFileComboBox = new AngelLoader.Forms.CustomControls.DarkComboBox();
+            this.ConvertAllToHTMLButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // NotesTextBox
             // 
-            this.NotesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.NotesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.NotesTextBox.Location = new System.Drawing.Point(8, 32);
             this.NotesTextBox.Multiline = true;
@@ -58,8 +59,8 @@ namespace AngelLoader.Forms
             // 
             // RTFBox
             // 
-            this.RTFBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.RTFBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RTFBox.BackColor = System.Drawing.SystemColors.Window;
             this.RTFBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -73,7 +74,7 @@ namespace AngelLoader.Forms
             // 
             // RTFFileComboBox
             // 
-            this.RTFFileComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.RTFFileComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RTFFileComboBox.FormattingEnabled = true;
             this.RTFFileComboBox.Location = new System.Drawing.Point(8, 8);
@@ -82,11 +83,22 @@ namespace AngelLoader.Forms
             this.RTFFileComboBox.TabIndex = 1;
             this.RTFFileComboBox.SelectedIndexChanged += new System.EventHandler(this.RTFFileComboBox_SelectedIndexChanged);
             // 
+            // ConvertAllToHTMLButton
+            // 
+            this.ConvertAllToHTMLButton.Location = new System.Drawing.Point(904, 64);
+            this.ConvertAllToHTMLButton.Name = "ConvertAllToHTMLButton";
+            this.ConvertAllToHTMLButton.Size = new System.Drawing.Size(72, 23);
+            this.ConvertAllToHTMLButton.TabIndex = 4;
+            this.ConvertAllToHTMLButton.Text = "HTML";
+            this.ConvertAllToHTMLButton.UseVisualStyleBackColor = true;
+            this.ConvertAllToHTMLButton.Click += new System.EventHandler(this.ConvertAllToHTMLButton_Click);
+            // 
             // RTF_Visual_Test_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 648);
+            this.Controls.Add(this.ConvertAllToHTMLButton);
             this.Controls.Add(this.NotesTextBox);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.RTFBox);
@@ -105,6 +117,7 @@ namespace AngelLoader.Forms
         private CustomControls.DarkComboBox RTFFileComboBox;
         private CustomControls.DarkButton SaveButton;
         private CustomControls.DarkTextBox NotesTextBox;
+        private System.Windows.Forms.Button ConvertAllToHTMLButton;
     }
 }
 #endif
