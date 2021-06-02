@@ -24,6 +24,16 @@ namespace AngelLoader.Forms.CustomControls
     the leak happens. With "Tarnhill_V1" it doesn't. Tarnhill's readme does not contain images.
     However, the leak also does NOT happen with "Feast of Pilgrims", whose readme DOES contain an image.
     TODO(ReadmeRichTextBoxCustom memory leak): Determine what form of image causes the leak, if indeed images cause it.
+
+    2021-06-01:
+    https://blogs.lessthandot.com/index.php/desktopdev/mstech/winforms-richtextbox-and-a-memoryleak/
+    Tried this (putting ClearUndo()) after every content-loading thing, and it doesn't do jack squat.
+    Doesn't do jack squat in the test project either.
+    -Test with WPF project: The WPF RichTextBox does NOT leak memory on TPOAIR.
+    -WPF implements its RichTextBox from scratch!!! WT literal F?!?!?! I never in a million, million, gatrillion
+     years expected that! WPF, for Windows only, and they've got a built-in RichEdit (msftedit) Win32 control...
+     AND THEY MAKE A NEW ONE FROM SCRATCH JUST FOR WPF!!!! What?!?!?!?
+     And it's MIT now, so that means I could use it as a base to make my own frigging control??!?!?!?!?!?!?!?!
     */
 
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
