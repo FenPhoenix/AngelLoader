@@ -332,25 +332,19 @@ namespace AngelLoader.Forms.CustomControls
                 switch (fileType)
                 {
                     case ReadmeType.GLML:
-                        _currentReadmeSupportsEncodingChange = false;
-
-                        _currentReadmeBytes = File.ReadAllBytes(path);
-
-                        // This resets the font if false, so don't do it after the load or it messes up the RTF.
-                        ContentIsPlainText = false;
-
-                        RefreshDarkModeState(skipSuspend: true);
-
-                        break;
                     case ReadmeType.RichText:
                         _currentReadmeSupportsEncodingChange = false;
 
                         _currentReadmeBytes = File.ReadAllBytes(path);
 
-                        ReplaceByteSequence(_currentReadmeBytes, _shppict, _shppictBlanked);
-                        ReplaceByteSequence(_currentReadmeBytes, _nonshppict, _nonshppictBlanked);
+                        // We control the format of GLML-converted files, so no need to do this for those
+                        if (fileType == ReadmeType.RichText)
+                        {
+                            ReplaceByteSequence(_currentReadmeBytes, _shppict, _shppictBlanked);
+                            ReplaceByteSequence(_currentReadmeBytes, _nonshppict, _nonshppictBlanked);
+                        }
 
-                        // Ditto the above
+                        // This resets the font if false, so don't do it after the load or it messes up the RTF.
                         ContentIsPlainText = false;
 
                         RefreshDarkModeState(skipSuspend: true);
@@ -364,8 +358,6 @@ namespace AngelLoader.Forms.CustomControls
                             _currentReadmeSupportsEncodingChange = true;
                             _currentReadmeBytes = bytes ?? File.ReadAllBytes(path);
 
-                            // Load the file ourselves so we can do encoding detection. Otherwise it just loads
-                            // with frigging whatever (default system encoding maybe?)
                             using var ms = new MemoryStream(_currentReadmeBytes);
 
                             retEncoding = ChangeEncodingInternal(ms, encoding, suspendResume: false);
