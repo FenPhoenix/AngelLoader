@@ -39,8 +39,6 @@ MainForm gen notes:
 [ ] Buttons in FlowLayoutPanels that are AutoSize=true and AutoSizeMode=GrowAndShrink - I think we can remove Size here?
     (Manual version does so)
 
-[ ] TabsTagAutoScrollMarker: TabIndex when not needed (not tabbable)
-
 [x] Panels: Size is removed when AutoSize=true, but should be kept for internal layout!
 
 NOTE:
