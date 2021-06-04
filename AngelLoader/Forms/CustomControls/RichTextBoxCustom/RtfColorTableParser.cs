@@ -130,14 +130,10 @@ namespace AngelLoader.Forms.CustomControls
                         if ((ec = PopScope()) != Error.OK) return ec;
                         break;
                     case '\\':
-                        // We have to check what the keyword is before deciding whether to parse the Unicode.
-                        // If it's another \uN keyword, then obviously we don't want to parse yet because the
-                        // run isn't finished.
                         if ((ec = ParseKeyword()) != Error.OK) return ec;
                         break;
                     case '\r':
                     case '\n':
-                        // These DON'T count as Unicode barriers, so don't parse the Unicode here!
                         break;
                     default:
                         if (_currentScope.RtfInternalState == RtfInternalState.Normal &&
@@ -264,11 +260,9 @@ namespace AngelLoader.Forms.CustomControls
         {
             switch (destinationType)
             {
+                // IgnoreButDontSkipGroup is only relevant for plaintext extraction. As we're only parsing color
+                // tables, we can just skip groups so marked.
                 case DestinationType.IgnoreButDontSkipGroup:
-                    // The group this destination is in may contain text we want to extract, so parse it as normal.
-                    // We will still skip over the next nested destination group we find, if any, unless it too is
-                    // marked as ignore-but-don't-skip.
-                    return Error.OK;
                 case DestinationType.Skip:
                     _currentScope.RtfDestinationState = RtfDestinationState.Skip;
                     return Error.OK;
