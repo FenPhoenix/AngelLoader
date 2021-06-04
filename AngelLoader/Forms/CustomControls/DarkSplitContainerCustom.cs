@@ -53,27 +53,23 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                SetUpTheme();
-            }
-        }
 
-        private void SetUpTheme()
-        {
-            if (_darkModeEnabled)
-            {
-                _origBackColor ??= BackColor;
-                _origPanel1BackColor ??= Panel1.BackColor;
-                _origPanel2BackColor ??= Panel2.BackColor;
+                if (_darkModeEnabled)
+                {
+                    _origBackColor ??= BackColor;
+                    _origPanel1BackColor ??= Panel1.BackColor;
+                    _origPanel2BackColor ??= Panel2.BackColor;
 
-                BackColor = DarkColors.GreySelection;
-                Panel1.BackColor = Panel1DarkBackColor;
-                Panel2.BackColor = Panel2DarkBackColor;
-            }
-            else
-            {
-                if (_origBackColor != null) BackColor = (Color)_origBackColor;
-                if (_origPanel1BackColor != null) Panel1.BackColor = (Color)_origPanel1BackColor;
-                if (_origPanel2BackColor != null) Panel2.BackColor = (Color)_origPanel2BackColor;
+                    BackColor = DarkColors.GreySelection;
+                    Panel1.BackColor = Panel1DarkBackColor;
+                    Panel2.BackColor = Panel2DarkBackColor;
+                }
+                else
+                {
+                    if (_origBackColor != null) BackColor = (Color)_origBackColor;
+                    if (_origPanel1BackColor != null) Panel1.BackColor = (Color)_origPanel1BackColor;
+                    if (_origPanel2BackColor != null) Panel2.BackColor = (Color)_origPanel2BackColor;
+                }
             }
         }
 

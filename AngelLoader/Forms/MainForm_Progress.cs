@@ -34,7 +34,7 @@ namespace AngelLoader.Forms
 
             ProgressBox = new ProgressPanel { Tag = LazyLoaded.True, Visible = false };
             Controls.Add(ProgressBox);
-            ProgressBox.Inject(this);
+            ProgressBox.InjectOwner(this);
             ProgressBox.Localize();
             ProgressBox.Anchor = AnchorStyles.None;
             ProgressBox.DarkModeEnabled = _progressBoxDarkModeEnabled;

@@ -23,7 +23,62 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                SetUpTheme();
+
+                // Classic mode original values:
+
+                // This:
+                // ControlStyles.OptimizedDoubleBuffer == false
+                // ControlStyles.ResizeRedraw == true
+                // ControlStyles.UserPaint == true
+
+                // Controls[0]:
+                // ControlStyles.AllPaintingInWmPaint == true
+                // ControlStyles.DoubleBuffer == false
+
+                if (_darkModeEnabled)
+                {
+                    SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                             ControlStyles.ResizeRedraw |
+                             ControlStyles.UserPaint, true);
+
+                    _origForeColor ??= base.ForeColor;
+                    _origBackColor ??= base.BackColor;
+
+                    // @DarkModeNote(NumericUpDown): Fore/back colors don't take when we set them, but they end up correct anyway(?!)
+                    // My only guess is it's taking the parent's fore/back colors?
+                    base.ForeColor = DarkColors.LightText;
+                    base.BackColor = DarkColors.Fen_DarkBackground;
+                }
+                else
+                {
+                    SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
+                    SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
+
+                    if (_origForeColor != null) base.ForeColor = (Color)_origForeColor;
+                    if (_origBackColor != null) base.BackColor = (Color)_origBackColor;
+                }
+
+                try
+                {
+                    // Prevent flickering, only if our assembly has reflection permission
+                    MethodInfo? method = Controls[0].GetType().GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (method != null)
+                    {
+                        if (_darkModeEnabled)
+                        {
+                            method.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true });
+                        }
+                        else
+                        {
+                            method.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint, true });
+                            method.Invoke(Controls[0], new object[] { ControlStyles.DoubleBuffer, false });
+                        }
+                    }
+                }
+                catch
+                {
+                    // Oh well...
+                }
             }
         }
 
@@ -40,65 +95,6 @@ namespace AngelLoader.Forms.CustomControls
         public DarkNumericUpDown()
         {
             Controls[0].Paint += DarkNumericUpDown_Paint;
-        }
-
-        private void SetUpTheme()
-        {
-            // Classic mode original values:
-
-            // This:
-            // ControlStyles.OptimizedDoubleBuffer == false
-            // ControlStyles.ResizeRedraw == true
-            // ControlStyles.UserPaint == true
-
-            // Controls[0]:
-            // ControlStyles.AllPaintingInWmPaint == true
-            // ControlStyles.DoubleBuffer == false
-
-            if (_darkModeEnabled)
-            {
-                SetStyle(ControlStyles.OptimizedDoubleBuffer |
-                         ControlStyles.ResizeRedraw |
-                         ControlStyles.UserPaint, true);
-
-                _origForeColor ??= base.ForeColor;
-                _origBackColor ??= base.BackColor;
-
-                // @DarkModeNote(NumericUpDown): Fore/back colors don't take when we set them, but they end up correct anyway(?!)
-                // My only guess is it's taking the parent's fore/back colors?
-                base.ForeColor = DarkColors.LightText;
-                base.BackColor = DarkColors.Fen_DarkBackground;
-            }
-            else
-            {
-                SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
-                SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
-
-                if (_origForeColor != null) base.ForeColor = (Color)_origForeColor;
-                if (_origBackColor != null) base.BackColor = (Color)_origBackColor;
-            }
-
-            try
-            {
-                // Prevent flickering, only if our assembly has reflection permission
-                MethodInfo? method = Controls[0].GetType().GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (method != null)
-                {
-                    if (_darkModeEnabled)
-                    {
-                        method.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true });
-                    }
-                    else
-                    {
-                        method.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint, true });
-                        method.Invoke(Controls[0], new object[] { ControlStyles.DoubleBuffer, false });
-                    }
-                }
-            }
-            catch
-            {
-                // Oh well...
-            }
         }
 
         protected override void OnMouseMove(MouseEventArgs e)

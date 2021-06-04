@@ -19,39 +19,35 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                SetUpTheme();
+
+                // Original:
+
+                // ControlStyles.OptimizedDoubleBuffer == false
+                // ControlStyles.ResizeRedraw == true
+                // ControlStyles.UserPaint == true
+                // ResizeRedraw == true
+                // DoubleBuffered == false
+
+                if (_darkModeEnabled)
+                {
+                    SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                             ControlStyles.ResizeRedraw |
+                             ControlStyles.UserPaint, true);
+
+                    ResizeRedraw = true;
+                    DoubleBuffered = true;
+                }
+                else
+                {
+                    SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
+                    SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
+                    ResizeRedraw = true;
+                    DoubleBuffered = false;
+                }
             }
         }
 
         private const int _padding = 10;
-
-        private void SetUpTheme()
-        {
-            // Original:
-
-            // ControlStyles.OptimizedDoubleBuffer == false
-            // ControlStyles.ResizeRedraw == true
-            // ControlStyles.UserPaint == true
-            // ResizeRedraw == true
-            // DoubleBuffered == false
-
-            if (_darkModeEnabled)
-            {
-                SetStyle(ControlStyles.OptimizedDoubleBuffer |
-                         ControlStyles.ResizeRedraw |
-                         ControlStyles.UserPaint, true);
-
-                ResizeRedraw = true;
-                DoubleBuffered = true;
-            }
-            else
-            {
-                SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
-                SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
-                ResizeRedraw = true;
-                DoubleBuffered = false;
-            }
-        }
 
         protected override void OnPaint(PaintEventArgs e)
         {

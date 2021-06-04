@@ -27,10 +27,10 @@ namespace AngelLoader.Forms.CustomControls
 
         private TabPage? _dragTab;
 
-        // TODO: This is using a specific tab count number, but in theory this class is generic.
-        // I'm only using it for the top-right tabs right now, but remove this capacity initializer if I use it
-        // in another place.
-        private readonly List<BackingTab> _backingTabList = new List<BackingTab>(DataClasses.TopRightTabsData.Count);
+        // Because of the lack of any clean and easy way to pass in an initial capacity value (we can't do it
+        // through the constructor because that gets called in the Designer code-behind), let's just give it a
+        // reasonable constant value and be done with it.
+        private readonly List<BackingTab> _backingTabList = new List<BackingTab>(10);
 
         private Font? _originalFont;
 

@@ -10,7 +10,7 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed partial class ProgressPanel : UserControl, IDarkable
     {
-        // TODO: The way this works is no longer really tenable - rework it to be cleaner
+        // TODO(ProgressPanel): Make this more general and flexible
 
         #region Fields etc.
 
@@ -30,37 +30,33 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                SetUpTheme();
+
+                ProgressCancelButton.DarkModeEnabled = _darkModeEnabled;
+
+                Color back, fore;
+
+                if (_darkModeEnabled)
+                {
+                    // Use a lighter background so make it easy to see we're supposed to be in front and modal
+                    back = DarkColors.LightBackground;
+                    fore = DarkColors.LightText;
+                }
+                else
+                {
+                    back = SystemColors.Control;
+                    fore = SystemColors.ControlText;
+                }
+
+                BackColor = back;
+                ForeColor = fore;
+                CurrentThingLabel.BackColor = back;
+                CurrentThingLabel.ForeColor = fore;
+                ProgressMessageLabel.ForeColor = fore;
+                ProgressMessageLabel.BackColor = back;
+                ProgressPercentLabel.ForeColor = fore;
+                ProgressPercentLabel.BackColor = back;
+                ProgressBar.DarkModeEnabled = _darkModeEnabled;
             }
-        }
-
-        private void SetUpTheme()
-        {
-            ProgressCancelButton.DarkModeEnabled = _darkModeEnabled;
-
-            Color back, fore;
-
-            if (_darkModeEnabled)
-            {
-                // Use a lighter background so make it easy to see we're supposed to be in front and modal
-                back = DarkColors.LightBackground;
-                fore = DarkColors.LightText;
-            }
-            else
-            {
-                back = SystemColors.Control;
-                fore = SystemColors.ControlText;
-            }
-
-            BackColor = back;
-            ForeColor = fore;
-            CurrentThingLabel.BackColor = back;
-            CurrentThingLabel.ForeColor = fore;
-            ProgressMessageLabel.ForeColor = fore;
-            ProgressMessageLabel.ForeColor = fore;
-            ProgressPercentLabel.ForeColor = fore;
-            ProgressPercentLabel.ForeColor = fore;
-            ProgressBar.DarkModeEnabled = _darkModeEnabled;
         }
 
         public ProgressPanel()
@@ -72,7 +68,7 @@ namespace AngelLoader.Forms.CustomControls
 #endif
         }
 
-        internal void Inject(MainForm owner) => _owner = owner;
+        internal void InjectOwner(MainForm owner) => _owner = owner;
 
         #region Open/close
 

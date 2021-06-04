@@ -35,7 +35,21 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                SetUpTheme();
+
+                SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                         ControlStyles.ResizeRedraw |
+                         ControlStyles.UserPaint, _darkModeEnabled);
+
+                if (_darkModeEnabled)
+                {
+                    DrawMode = DrawMode.OwnerDrawFixed;
+                    base.FlatStyle = FlatStyle.Flat;
+                }
+                else
+                {
+                    DrawMode = DrawMode.Normal;
+                    base.FlatStyle = FlatStyle.Standard;
+                }
             }
         }
 
@@ -66,24 +80,6 @@ namespace AngelLoader.Forms.CustomControls
         {
             // We only support DropDownList for dark mode
             base.DropDownStyle = ComboBoxStyle.DropDownList;
-        }
-
-        private void SetUpTheme()
-        {
-            SetStyle(ControlStyles.OptimizedDoubleBuffer |
-                     ControlStyles.ResizeRedraw |
-                     ControlStyles.UserPaint, _darkModeEnabled);
-
-            if (_darkModeEnabled)
-            {
-                DrawMode = DrawMode.OwnerDrawFixed;
-                base.FlatStyle = FlatStyle.Flat;
-            }
-            else
-            {
-                DrawMode = DrawMode.Normal;
-                base.FlatStyle = FlatStyle.Standard;
-            }
         }
 
         private void SetButtonState(DarkControlState buttonState)

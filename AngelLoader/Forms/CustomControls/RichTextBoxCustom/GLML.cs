@@ -80,9 +80,6 @@ namespace AngelLoader.Forms.CustomControls
 
             // In quick testing, smallest final rtf size was ~8K chars and largest was ~38K chars. Preallocating
             // 16K chars reduces GC time substantially. 40K or something may be fine but this works for now.
-            // PERF_TODO: RichTextBoxCustom: GLMLToRTF()
-            // We could also get fancy and try to calculate a final size estimate based on the original file size,
-            // the fixed size cost of the rtf header plus however many horizontal lines there are etc.
             var sb = new StringBuilder(ByteSize.KB * 16);
 
             // 16 chars is the default starting capacity. The longest known tag name is "FMSTRUCTURE" at 11 chars,
