@@ -114,8 +114,6 @@ namespace AngelLoader.WinAPI
 
         internal const int EN_LINK = 0x070b;
 
-        internal const int WM_CHANGEUISTATE = 0x0127;
-
         internal const uint OBJID_HSCROLL = 0xFFFFFFFA;
         internal const uint OBJID_VSCROLL = 0xFFFFFFFB;
 
@@ -154,6 +152,8 @@ namespace AngelLoader.WinAPI
         #endregion
 
         #region WM_CHANGEUISTATE
+
+        internal const int WM_CHANGEUISTATE = 0x0127;
 
         private const int UIS_SET = 1;
         //internal const int UIS_CLEAR = 2;
