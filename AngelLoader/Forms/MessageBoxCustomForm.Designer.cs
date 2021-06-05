@@ -247,7 +247,7 @@ namespace AngelLoader.Forms
         private System.Windows.Forms.TableLayoutPanel OuterTLP;
         private System.Windows.Forms.FlowLayoutPanel BottomFLP;
         private System.Windows.Forms.FlowLayoutPanel MainFLP;
-        [Attributes.FenGenForceRemoveSizeAttribute]
+        [FenGenAttributes.FenGenForceRemoveSizeAttribute]
         private AngelLoader.Forms.CustomControls.DarkListBox ChoiceListBox;
         private AngelLoader.Forms.CustomControls.DarkLabel MessageBottomLabel;
         private System.Windows.Forms.FlowLayoutPanel SelectButtonsFLP;

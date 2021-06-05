@@ -2,7 +2,7 @@
 
 using System;
 using AngelLoader.DataClasses;
-using static AngelLoader.Attributes;
+using static AngelLoader.FenGenAttributes;
 using static AngelLoader.Misc;
 
 namespace AngelLoader

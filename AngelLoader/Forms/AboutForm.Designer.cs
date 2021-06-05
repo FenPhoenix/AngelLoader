@@ -329,29 +329,29 @@ namespace AngelLoader.Forms
         private System.Windows.Forms.FlowLayoutPanel OKFlowLayoutPanel;
         private AngelLoader.Forms.CustomControls.DarkButton OKButton;
         private AngelLoader.Forms.CustomControls.DarkLabel AngelLoaderUsesLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel GitHubLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel SevenZipLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel SevenZipSharpLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel FFmpegLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel FFmpegDotNetLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel SimpleHelpersDotNetLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel UdeNetStandardLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel OokiiDialogsLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel NetCore3SysIOCompLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel DarkUILinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private CustomControls.DarkLinkLabel EasyHookLinkLabel;
-        [Attributes.FenGenDoNotRemoveText]
+        [FenGenAttributes.FenGenDoNotRemoveText]
         private CustomControls.DarkLinkLabel OpenSansLinkLabel;
     }
 }

@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using AL_Common;
-using static AngelLoader.Attributes;
+using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
 
 namespace AngelLoader.DataClasses

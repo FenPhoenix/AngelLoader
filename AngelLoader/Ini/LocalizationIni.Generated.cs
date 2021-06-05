@@ -13,7 +13,7 @@ using System.IO;
 using System.Text;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AngelLoader.Attributes;
+using static AngelLoader.FenGenAttributes;
 
 /*
  New cached reflection method (2020-07-31):

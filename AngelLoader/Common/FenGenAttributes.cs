@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 namespace AngelLoader
 {
     [PublicAPI]
-    internal static class Attributes
+    internal static class FenGenAttributes
     {
         // IMPORTANT (Attributes):
         // Do NOT change the names of any FenGen attributes without also going in to FenGen and changing their
