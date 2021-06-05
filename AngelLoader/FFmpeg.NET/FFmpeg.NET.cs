@@ -59,7 +59,15 @@ namespace AngelLoader.FFmpeg.NET
             };
 
             using var ffmpegProcess = new Process { StartInfo = startInfo };
-            await WaitForExitAsync(ffmpegProcess);
+            try
+            {
+                await WaitForExitAsync(ffmpegProcess);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed trying to run or exit FFmpeg", ex);
+                throw;
+            }
         }
 
         // @BetterErrors(FFmpeg.NET.Engine)
