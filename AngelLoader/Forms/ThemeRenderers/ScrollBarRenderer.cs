@@ -102,10 +102,12 @@ namespace AngelLoader.Forms.ThemeRenderers
                     case Native.ABS_RIGHTHOT:
                         pen = DarkColors.GreyHighlightPen;
                         break;
+                    /*
                     case Native.ABS_UPNORMAL:
                     case Native.ABS_DOWNNORMAL:
                     case Native.ABS_LEFTNORMAL:
                     case Native.ABS_RIGHTNORMAL:
+                    */
                     default:
                         pen = DarkColors.GreySelectionPen;
                         break;
@@ -135,11 +137,13 @@ namespace AngelLoader.Forms.ThemeRenderers
                     case Native.ABS_UPDISABLED:
                         direction = Misc.Direction.Up;
                         break;
+                    /*
                     case Native.ABS_DOWNNORMAL:
                     case Native.ABS_DOWNHOT:
                     case Native.ABS_DOWNPRESSED:
                     case Native.ABS_DOWNHOVER:
                     case Native.ABS_DOWNDISABLED:
+                    */
                     default:
                         direction = Misc.Direction.Down;
                         break;

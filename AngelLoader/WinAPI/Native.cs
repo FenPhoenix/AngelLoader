@@ -16,21 +16,6 @@ namespace AngelLoader.WinAPI
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static class Native
     {
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        internal static extern IntPtr CreateSolidBrush(int crColor);
-
-        #region ListView
-
-        private const int LVM_FIRST = 0x1000;
-        internal const int LVM_SETITEMA = LVM_FIRST + 6;
-        internal const int LVM_SETITEMW = LVM_FIRST + 76;
-        internal const int LVM_INSERTITEMA = LVM_FIRST + 7;
-        internal const int LVM_INSERTITEMW = LVM_FIRST + 77;
-        internal const int LVM_DELETEITEM = LVM_FIRST + 8;
-        internal const int LVM_DELETEALLITEMS = LVM_FIRST + 9;
-
-        #endregion
-
         private const int WM_USER = 0x0400;
         internal const int WM_REFLECT = WM_USER + 0x1C00;
         internal const int WM_NOTIFY = 0x004E;
@@ -46,10 +31,179 @@ namespace AngelLoader.WinAPI
         internal const uint WM_CTLCOLORLISTBOX = 0x0134;
         internal const int SWP_NOSIZE = 0x0001;
 
-        internal const uint WS_VSCROLL = 0x00200000;
+        #region SendMessage/PostMessage
 
         [DllImport("user32.dll")]
-        internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+        internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
+
+        [DllImport("user32.dll")]
+        internal static extern void SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
+
+        #endregion
+
+        #region Show first instance
+
+        internal const int HWND_BROADCAST = 0xffff;
+
+        // Second-instance telling first instance to show itself junk
+        public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Misc.AppGuid);
+
+        [DllImport("user32", CharSet = CharSet.Unicode)]
+        private static extern int RegisterWindowMessage(string message);
+
+        #endregion
+
+        #region Control-specific
+
+        #region ListView
+
+        private const int LVM_FIRST = 0x1000;
+        internal const int LVM_SETITEMA = LVM_FIRST + 6;
+        internal const int LVM_SETITEMW = LVM_FIRST + 76;
+        internal const int LVM_INSERTITEMA = LVM_FIRST + 7;
+        internal const int LVM_INSERTITEMW = LVM_FIRST + 77;
+        internal const int LVM_DELETEITEM = LVM_FIRST + 8;
+        internal const int LVM_DELETEALLITEMS = LVM_FIRST + 9;
+
+        #endregion
+
+        #region MessageBox/TaskDialog
+
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal enum SHSTOCKICONID : uint
+        {
+            SIID_HELP = 23,
+            SIID_WARNING = 78,
+            SIID_INFO = 79,
+            SIID_ERROR = 80
+        }
+
+        internal const uint SHGSI_ICON = 0x000000100;
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
+        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        [PublicAPI]
+        internal struct SHSTOCKICONINFO
+        {
+            internal uint cbSize;
+            internal IntPtr hIcon;
+            internal int iSysIconIndex;
+            internal int iIcon;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260/*MAX_PATH*/)]
+            internal string szPath;
+        }
+
+        [DllImport("Shell32.dll", SetLastError = false)]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern bool DestroyIcon(IntPtr hIcon);
+
+        #endregion
+
+        #region RichTextBox
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr SetCursor(HandleRef hCursor);
+
+        #region Reader mode
+
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal delegate bool TranslateDispatchCallbackDelegate(ref Message lpmsg);
+
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal delegate bool ReaderScrollCallbackDelegate(ref READERMODEINFO prmi, int dx, int dy);
+
+        [Flags]
+        internal enum ReaderModeFlags
+        {
+            //None = 0x00,
+            //ZeroCursor = 0x01,
+            VerticalOnly = 0x02,
+            //HorizontalOnly = 0x04
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal struct READERMODEINFO
+        {
+            internal int cbSize;
+            internal IntPtr hwnd;
+            internal ReaderModeFlags fFlags;
+            internal IntPtr prc;
+            internal ReaderScrollCallbackDelegate pfnScroll;
+            internal TranslateDispatchCallbackDelegate fFlags2;
+            internal IntPtr lParam;
+        }
+
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
+        internal static extern void DoReaderMode(ref READERMODEINFO prmi);
+
+        #endregion
+
+        #region Cursor fix
+
+        internal const int EN_LINK = 0x070b;
+
+        [StructLayout(LayoutKind.Sequential)]
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        [SuppressMessage("ReSharper", "CommentTypo")]
+        internal struct NMHDR
+        {
+            internal IntPtr hwndFrom;
+            internal IntPtr idFrom; //This is declared as UINT_PTR in winuser.h
+            internal int code;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+        [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal class ENLINK
+        {
+            internal NMHDR nmhdr;
+            internal int msg = 0;
+            internal IntPtr wParam = IntPtr.Zero;
+            internal IntPtr lParam = IntPtr.Zero;
+            internal CHARRANGE? charrange = null;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal class CHARRANGE
+        {
+            internal int cpMin;
+            internal int cpMax;
+        }
+
+        #endregion
+
+        #region Auto URL detect
+
+        internal const int EM_AUTOURLDETECT = WM_USER + 91;
+        internal const int AURL_ENABLEURL = 1;
+        internal const int AURL_ENABLEEMAILADDR = 2;
+
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #region Device context
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetWindowDC(IntPtr hWnd);
@@ -77,7 +231,12 @@ namespace AngelLoader.WinAPI
             }
         }
 
+        #endregion
+
         #region Window
+
+        [DllImport("user32.dll")]
+        internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
         {
@@ -108,17 +267,10 @@ namespace AngelLoader.WinAPI
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
         */
 
+        [DllImport("user32.dll")]
+        internal static extern IntPtr WindowFromPoint(Point pt);
+
         #endregion
-
-        internal const int HWND_BROADCAST = 0xffff;
-
-        internal const int EN_LINK = 0x070b;
-
-        internal const uint OBJID_HSCROLL = 0xFFFFFFFA;
-        internal const uint OBJID_VSCROLL = 0xFFFFFFFB;
-
-        internal const int SB_HORZ = 0;
-        internal const int SB_VERT = 1;
 
         #region lParam/wParam
 
@@ -151,7 +303,7 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
-        #region WM_CHANGEUISTATE
+        #region Hide focus rectangle
 
         internal const int WM_CHANGEUISTATE = 0x0127;
 
@@ -164,32 +316,6 @@ namespace AngelLoader.WinAPI
         //internal const int UISF_ACTIVE = 4;
 
         internal const int SetControlFocusToHidden = UISF_HIDEFOCUS + (UIS_SET << 16);
-
-        #endregion
-
-        #region Scrollbar
-
-        internal const int WM_SCROLL = 0x114;
-        internal const int WM_VSCROLL = 0x115;
-        internal const int WM_HSCROLL = 0x114;
-        //internal const int SB_LINEUP = 0;
-        internal const int SB_LINELEFT = 0;
-        //internal const int SB_LINEDOWN = 1;
-        internal const int SB_LINERIGHT = 1;
-        /*
-        internal const int SB_PAGEUP = 2;
-        internal const int SB_PAGELEFT = 2;
-        internal const int SB_PAGEDOWN = 3;
-        internal const int SB_PAGERIGHT = 3;
-        internal const int SB_PAGETOP = 6;
-        internal const int SB_LEFT = 6;
-        internal const int SB_PAGEBOTTOM = 7;
-        internal const int SB_RIGHT = 7;
-        internal const int SB_ENDSCROLL = 8;
-        internal const int SBM_GETPOS = 225;
-        internal const int SB_HORZ = 0;
-        */
-        internal const uint SB_THUMBTRACK = 5;
 
         #endregion
 
@@ -260,31 +386,6 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
-        // Second-instance telling first instance to show itself junk
-        public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Misc.AppGuid);
-
-        [DllImport("user32", CharSet = CharSet.Unicode)]
-        private static extern int RegisterWindowMessage(string message);
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr WindowFromPoint(Point pt);
-
-        #region SendMessage/PostMessage
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
-
-        [DllImport("user32.dll")]
-        internal static extern void SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
-
-        #endregion
-
         #region Process
 
         internal const uint QUERY_LIMITED_INFORMATION = 0x00001000;
@@ -297,93 +398,7 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
-        #region RichTextBox
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr SetCursor(HandleRef hCursor);
-
-        #region Reader mode
-
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal delegate bool TranslateDispatchCallbackDelegate(ref Message lpmsg);
-
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal delegate bool ReaderScrollCallbackDelegate(ref READERMODEINFO prmi, int dx, int dy);
-
-        [Flags]
-        internal enum ReaderModeFlags
-        {
-            //None = 0x00,
-            //ZeroCursor = 0x01,
-            VerticalOnly = 0x02,
-            //HorizontalOnly = 0x04
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal struct READERMODEINFO
-        {
-            internal int cbSize;
-            internal IntPtr hwnd;
-            internal ReaderModeFlags fFlags;
-            internal IntPtr prc;
-            internal ReaderScrollCallbackDelegate pfnScroll;
-            internal TranslateDispatchCallbackDelegate fFlags2;
-            internal IntPtr lParam;
-        }
-
-        [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
-        internal static extern void DoReaderMode(ref READERMODEINFO prmi);
-
-        #endregion
-
-        #region Cursor fix
-
-        [StructLayout(LayoutKind.Sequential)]
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        [SuppressMessage("ReSharper", "CommentTypo")]
-        internal struct NMHDR
-        {
-            internal IntPtr hwndFrom;
-            internal IntPtr idFrom; //This is declared as UINT_PTR in winuser.h
-            internal int code;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal class ENLINK
-        {
-            internal NMHDR nmhdr;
-            internal int msg = 0;
-            internal IntPtr wParam = IntPtr.Zero;
-            internal IntPtr lParam = IntPtr.Zero;
-            internal CHARRANGE? charrange = null;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal class CHARRANGE
-        {
-            internal int cpMin;
-            internal int cpMax;
-        }
-
-        #endregion
-
-        internal const int EM_AUTOURLDETECT = WM_USER + 91;
-
-        internal const int AURL_ENABLEURL = 1;
-        internal const int AURL_ENABLEEMAILADDR = 2;
-
-        #endregion
-
-        #region Scroll
+        #region Scrolling / scroll bars
 
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -421,9 +436,37 @@ namespace AngelLoader.WinAPI
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
 
-        #endregion
 
-        #region Scroll bars
+        internal const uint WS_VSCROLL = 0x00200000;
+
+        internal const uint OBJID_HSCROLL = 0xFFFFFFFA;
+        internal const uint OBJID_VSCROLL = 0xFFFFFFFB;
+
+        internal const int SB_HORZ = 0;
+        internal const int SB_VERT = 1;
+
+        internal const int WM_SCROLL = 0x114;
+        internal const int WM_VSCROLL = 0x115;
+        internal const int WM_HSCROLL = 0x114;
+        //internal const int SB_LINEUP = 0;
+        internal const int SB_LINELEFT = 0;
+        //internal const int SB_LINEDOWN = 1;
+        internal const int SB_LINERIGHT = 1;
+        /*
+        internal const int SB_PAGEUP = 2;
+        internal const int SB_PAGELEFT = 2;
+        internal const int SB_PAGEDOWN = 3;
+        internal const int SB_PAGERIGHT = 3;
+        internal const int SB_PAGETOP = 6;
+        internal const int SB_LEFT = 6;
+        internal const int SB_PAGEBOTTOM = 7;
+        internal const int SB_RIGHT = 7;
+        internal const int SB_ENDSCROLL = 8;
+        internal const int SBM_GETPOS = 225;
+        internal const int SB_HORZ = 0;
+        */
+        internal const uint SB_THUMBTRACK = 5;
+
 
         public readonly struct RECT
         {
@@ -464,13 +507,28 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
+        #region Theming
+
+        internal const int WM_THEMECHANGED = 0x031A;
+
+        internal const int TMT_FILLCOLOR = 3802;
+        internal const int TMT_TEXTCOLOR = 3803;
+
+        #region ToolTip parts
+
         internal const int TTP_STANDARD = 1;
         internal const int TTP_STANDARDTITLE = 2;
-        //internal const int TTP_BALLOON = 3;
-        //internal const int TTP_BALLOONTITLE = 4;
-        //internal const int TTP_CLOSE = 5;
-        //internal const int TTP_BALLOONSTEM = 6;
-        //internal const int TTP_WRENCH = 7;
+        /*
+        internal const int TTP_BALLOON = 3;
+        internal const int TTP_BALLOONTITLE = 4;
+        internal const int TTP_CLOSE = 5;
+        internal const int TTP_BALLOONSTEM = 6;
+        internal const int TTP_WRENCH = 7;
+        */
+
+        #endregion
+
+        #region DateTimePicker
 
         internal const int DTM_GETDATETIMEPICKERINFO = 0x100E;
 
@@ -491,7 +549,79 @@ namespace AngelLoader.WinAPI
             internal IntPtr hwndDropDown;
         }
 
-        #region Theming
+        #endregion
+
+        #region Scroll bar parts
+
+        internal const int SBP_ARROWBTN = 1;
+        internal const int SBP_THUMBBTNHORZ = 2;
+        internal const int SBP_THUMBBTNVERT = 3;
+        /*
+        internal const int SBP_LOWERTRACKHORZ = 4;
+        internal const int SBP_UPPERTRACKHORZ = 5;
+        internal const int SBP_LOWERTRACKVERT = 6;
+        internal const int SBP_UPPERTRACKVERT = 7;
+        */
+        internal const int SBP_GRIPPERHORZ = 8;
+        internal const int SBP_GRIPPERVERT = 9;
+        //internal const int SBP_SIZEBOX = 10;
+        // Uh, this one isn't listed in vsstyle.h, but it works...?
+        internal const int SBP_CORNER = 11;
+
+        #endregion
+
+        #region Scroll bar arrow button states
+
+        internal const int ABS_UPNORMAL = 1;
+        internal const int ABS_UPHOT = 2;
+        internal const int ABS_UPPRESSED = 3;
+        internal const int ABS_UPDISABLED = 4;
+        //internal const int ABS_DOWNNORMAL = 5;
+        internal const int ABS_DOWNHOT = 6;
+        internal const int ABS_DOWNPRESSED = 7;
+        internal const int ABS_DOWNDISABLED = 8;
+        internal const int ABS_LEFTNORMAL = 9;
+        internal const int ABS_LEFTHOT = 10;
+        internal const int ABS_LEFTPRESSED = 11;
+        internal const int ABS_LEFTDISABLED = 12;
+        internal const int ABS_RIGHTNORMAL = 13;
+        internal const int ABS_RIGHTHOT = 14;
+        internal const int ABS_RIGHTPRESSED = 15;
+        internal const int ABS_RIGHTDISABLED = 16;
+        internal const int ABS_UPHOVER = 17;
+        //internal const int ABS_DOWNHOVER = 18;
+        internal const int ABS_LEFTHOVER = 19;
+        internal const int ABS_RIGHTHOVER = 20;
+
+        #endregion
+
+        #region Scroll bar thumb states
+
+        internal const int SCRBS_NORMAL = 1;
+        internal const int SCRBS_HOT = 2;
+        internal const int SCRBS_PRESSED = 3;
+        //internal const int SCRBS_DISABLED = 4;
+        internal const int SCRBS_HOVER = 5;
+
+        #endregion
+
+        #region TreeView parts
+
+        //internal const int TVP_TREEITEM = 1;
+        internal const int TVP_GLYPH = 2;
+        //internal const int TVP_BRANCH = 3;
+        internal const int TVP_HOTGLYPH = 4;
+
+        #endregion
+
+        #region TreeView glyph states
+
+        internal const int GLPS_CLOSED = 1;
+        //internal const int GLPS_OPENED = 2;
+        internal const int HGLPS_CLOSED = 1;
+        //internal const int HGLPS_OPENED = 2;
+
+        #endregion
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
         internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
@@ -502,107 +632,11 @@ namespace AngelLoader.WinAPI
         [DllImport("uxtheme.dll", ExactSpelling = true)]
         public static extern int CloseThemeData(IntPtr hTheme);
 
-        internal const int
-            ABS_UPNORMAL = 1,
-            ABS_UPHOT = 2,
-            ABS_UPPRESSED = 3,
-            ABS_UPDISABLED = 4,
-            ABS_DOWNNORMAL = 5,
-            ABS_DOWNHOT = 6,
-            ABS_DOWNPRESSED = 7,
-            ABS_DOWNDISABLED = 8,
-            ABS_LEFTNORMAL = 9,
-            ABS_LEFTHOT = 10,
-            ABS_LEFTPRESSED = 11,
-            ABS_LEFTDISABLED = 12,
-            ABS_RIGHTNORMAL = 13,
-            ABS_RIGHTHOT = 14,
-            ABS_RIGHTPRESSED = 15,
-            ABS_RIGHTDISABLED = 16,
-            ABS_UPHOVER = 17,
-            ABS_DOWNHOVER = 18,
-            ABS_LEFTHOVER = 19,
-            ABS_RIGHTHOVER = 20;
-
-        internal const int
-            SCRBS_NORMAL = 1,
-            SCRBS_HOT = 2,
-            SCRBS_PRESSED = 3,
-            //SCRBS_DISABLED = 4,
-            SCRBS_HOVER = 5;
-
-        internal const int
-            SBP_ARROWBTN = 1,
-            SBP_THUMBBTNHORZ = 2,
-            SBP_THUMBBTNVERT = 3,
-            //SBP_LOWERTRACKHORZ = 4,
-            //SBP_UPPERTRACKHORZ = 5,
-            //SBP_LOWERTRACKVERT = 6,
-            //SBP_UPPERTRACKVERT = 7,
-            SBP_GRIPPERHORZ = 8,
-            SBP_GRIPPERVERT = 9,
-            //SBP_SIZEBOX = 10,
-            // Uh, this one isn't listed in vsstyle.h, but it works...?
-            SBP_CORNER = 11;
-
-        internal const int WM_THEMECHANGED = 0x031A;
-
-        internal const int TMT_FILLCOLOR = 3802;
-        internal const int TMT_TEXTCOLOR = 3803;
-
-        internal const int
-            //TVP_TREEITEM = 1,
-            TVP_GLYPH = 2,
-            //TVP_BRANCH = 3,
-            TVP_HOTGLYPH = 4;
-
-        internal const int
-            GLPS_CLOSED = 1;
-        //GLPS_OPENED = 2;
-
-        internal const int
-            HGLPS_CLOSED = 1;
-        //HGLPS_OPENED = 2;
-
         [DllImport("uxtheme.dll", ExactSpelling = true)]
         internal static extern bool IsThemeActive();
 
-        #endregion
-
-        #region MessageBox/TaskDialog
-
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal enum SHSTOCKICONID : uint
-        {
-            SIID_HELP = 23,
-            SIID_WARNING = 78,
-            SIID_INFO = 79,
-            SIID_ERROR = 80
-        }
-
-        internal const uint SHGSI_ICON = 0x000000100;
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        [PublicAPI]
-        internal struct SHSTOCKICONINFO
-        {
-            internal uint cbSize;
-            internal IntPtr hIcon;
-            internal int iSysIconIndex;
-            internal int iIcon;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260/*MAX_PATH*/)]
-            internal string szPath;
-        }
-
-        [DllImport("Shell32.dll", SetLastError = false)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool DestroyIcon(IntPtr hIcon);
+        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
+        internal static extern IntPtr CreateSolidBrush(int crColor);
 
         #endregion
 
