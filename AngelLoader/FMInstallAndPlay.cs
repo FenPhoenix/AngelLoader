@@ -201,7 +201,7 @@ namespace AngelLoader
             string editorExe = Config.GetEditorExe_FromDisk(gameIndex);
             if (editorExe.IsEmpty())
             {
-                Log(nameof(OpenFMInEditor) + ": Editor executable not found.\r\n" +
+                Log("Editor executable not found.\r\n" +
                     "FM:" + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "Editor executable: " + editorExe);
                 Dialogs.ShowError(fm.Game == Game.SS2
@@ -489,7 +489,7 @@ namespace AngelLoader
 
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(nameof(InstallFM) + ": FM game type is unknown or unsupported.\r\n" +
+                Log("FM game type is unknown or unsupported.\r\n" +
                     "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "FM game was: " + fm.Game);
                 Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
@@ -499,7 +499,7 @@ namespace AngelLoader
 
             if (fmArchivePath.IsEmpty())
             {
-                Log(nameof(InstallFM) + ": FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
+                Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
                     "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "FM game was: " + fm.Game);
                 Dialogs.ShowError(LText.AlertMessages.Install_ArchiveNotFound);
@@ -510,7 +510,7 @@ namespace AngelLoader
             string gameName = GetLocalizedGameName(fm.Game);
             if (!File.Exists(gameExe))
             {
-                Log(nameof(InstallFM) + ": Game executable not found.\r\n" +
+                Log("Game executable not found.\r\n" +
                     "Game executable: " + gameExe);
                 Dialogs.ShowError(gameName + ":\r\n" +
                                   LText.AlertMessages.Install_ExecutableNotFound);
@@ -521,7 +521,7 @@ namespace AngelLoader
 
             if (!Directory.Exists(instBasePath))
             {
-                Log(nameof(InstallFM) + ": FM install path not found.\r\n" +
+                Log("FM install path not found.\r\n" +
                     "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "FM game was: " + fm.Game + "\r\n" +
                     "FM install path: " + instBasePath
@@ -875,7 +875,7 @@ namespace AngelLoader
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
-                    Log(nameof(UninstallFM) + ": Could not delete FM installed directory.\r\n" +
+                    Log("Could not delete FM installed directory.\r\n" +
                         "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                         "FM installed path: " + fmInstalledPath);
                     // TODO: Make option to open the folder in Explorer and delete it manually?

@@ -123,7 +123,6 @@ namespace AngelLoader
             string message = "",
             Exception? ex = null,
             bool stackTrace = false,
-            bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
         {
             try
@@ -153,7 +152,7 @@ namespace AngelLoader
 
                 using var sw = new StreamWriter(Paths.LogFile, append: true);
 
-                string methodNameStr = methodName ? callerMemberName + "\r\n" : "";
+                string methodNameStr = callerMemberName + "\r\n";
                 sw.WriteLine(GetDateTimeStringFast() + " " + methodNameStr + message);
                 if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
                 if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);

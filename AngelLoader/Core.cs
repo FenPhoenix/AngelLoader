@@ -1054,7 +1054,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                LogFMInstDirError(fm, nameof(AddDML) + ": FM install directory not found.");
+                LogFMInstDirError(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_InstallDirNotFound);
                 return false;
             }
@@ -1082,7 +1082,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                LogFMInstDirError(fm, nameof(RemoveDML) + ": FM install directory not found.");
+                LogFMInstDirError(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound);
                 return false;
             }
@@ -1094,7 +1094,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                LogFMInstDirError(fm, nameof(RemoveDML) + ": Unable to remove .dml from installed folder.", ex);
+                LogFMInstDirError(fm, "Unable to remove .dml from installed folder.", ex);
                 Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_UnableToRemove);
                 return false;
             }
@@ -1343,7 +1343,7 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(nameof(OpenFMFolder) + ": fm is not known or supported. FM game type: " + fm.Game, stackTrace: true);
+                Log("fm is not known or supported. FM game type: " + fm.Game, stackTrace: true);
                 Dialogs.ShowError(ErrorText.UnableToOpenFMFolder);
                 return;
             }
@@ -1352,7 +1352,7 @@ namespace AngelLoader
             string fmDir;
             if (installsBasePath.IsEmpty() || !Directory.Exists(fmDir = Path.Combine(installsBasePath, fm.InstalledDir)))
             {
-                LogFMInstDirError(fm, nameof(OpenFMFolder) + ": FM install directory not found.");
+                LogFMInstDirError(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_FMFolderNotFound);
                 return;
             }
@@ -1374,14 +1374,14 @@ namespace AngelLoader
             {
                 if (url.IsWhiteSpace())
                 {
-                    Log(nameof(OpenWebSearchUrl) + ": " + nameof(url) + " consists only of whitespace.");
+                    Log(nameof(url) + " consists only of whitespace.");
                     Dialogs.ShowError("Web search URL (as set in the Settings window) is empty or consists only of whitespace. Unable to create a valid link.");
                     return false;
                 }
 
                 if (url.Length > 32766)
                 {
-                    Log(nameof(OpenWebSearchUrl) + ": " + nameof(url) + " is too long (>32766 chars).");
+                    Log(nameof(url) + " is too long (>32766 chars).");
                     Dialogs.ShowError("Web search URL (as set in the Settings window) is too long. Unable to create a valid link.");
                     return false;
                 }
@@ -1483,7 +1483,7 @@ namespace AngelLoader
 
             if (!File.Exists(Paths.DocFile))
             {
-                Log(nameof(OpenHelpFile) + ": Help file not found: " + Paths.DocFile);
+                Log("Help file not found: " + Paths.DocFile);
                 Dialogs.ShowError(LText.AlertMessages.Help_HelpFileNotFound + "\r\n\r\n" + Paths.DocFile);
                 return;
             }

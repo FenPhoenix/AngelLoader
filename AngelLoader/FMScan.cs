@@ -209,8 +209,7 @@ namespace AngelLoader
                         {
                             Log("(one) scanned FM was null. FM was:\r\n" +
                                 "Archive: " + fmsToScanFiltered[0].Archive + "\r\n" +
-                                "InstalledDir: " + fmsToScanFiltered[0].InstalledDir,
-                                methodName: false);
+                                "InstalledDir: " + fmsToScanFiltered[0].InstalledDir);
                             return false;
                         }
                         continue;

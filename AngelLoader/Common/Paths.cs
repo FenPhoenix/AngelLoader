@@ -285,7 +285,7 @@ namespace AngelLoader
             {
                 // Shouldn't happen, but it was because of the lack of this catch-all that an unlikely but serious
                 // bug used to be possible here.
-                Log("Unexpected exception occurred in " + nameof(GetSneakyOptionsIni), ex);
+                Log("Unexpected exception occurred.", ex);
             }
 
             return "";

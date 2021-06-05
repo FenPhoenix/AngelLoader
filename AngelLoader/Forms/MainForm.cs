@@ -4394,7 +4394,7 @@ namespace AngelLoader.Forms
             }
             catch (Exception ex)
             {
-                Log(nameof(LoadReadme) + " failed.", ex);
+                Log("Readme load failed.", ex);
 
                 ViewHTMLReadmeLLButton.Hide();
                 SetReadmeVisible(true);
