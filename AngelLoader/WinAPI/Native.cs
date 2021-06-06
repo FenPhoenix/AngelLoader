@@ -31,6 +31,26 @@ namespace AngelLoader.WinAPI
         internal const uint WM_CTLCOLORLISTBOX = 0x0134;
         internal const int SWP_NOSIZE = 0x0001;
 
+        internal const int STATE_SYSTEM_INVISIBLE = 0x00008000;
+        internal const int STATE_SYSTEM_UNAVAILABLE = 0x00000001;
+
+        [PublicAPI]
+        public readonly struct RECT
+        {
+            public readonly int left;
+            public readonly int top;
+            public readonly int right;
+            public readonly int bottom;
+
+            public RECT(int left, int top, int right, int bottom)
+            {
+                this.left = left;
+                this.top = top;
+                this.right = right;
+                this.bottom = bottom;
+            }
+        }
+
         #region SendMessage/PostMessage
 
         [DllImport("user32.dll")]
@@ -75,7 +95,6 @@ namespace AngelLoader.WinAPI
 
         #region MessageBox/TaskDialog
 
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal enum SHSTOCKICONID : uint
         {
             SIID_HELP = 23,
@@ -86,11 +105,8 @@ namespace AngelLoader.WinAPI
 
         internal const uint SHGSI_ICON = 0x000000100;
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
         [PublicAPI]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         internal struct SHSTOCKICONINFO
         {
             internal uint cbSize;
@@ -102,7 +118,6 @@ namespace AngelLoader.WinAPI
         }
 
         [DllImport("Shell32.dll", SetLastError = false)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -117,10 +132,8 @@ namespace AngelLoader.WinAPI
 
         #region Reader mode
 
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal delegate bool TranslateDispatchCallbackDelegate(ref Message lpmsg);
 
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal delegate bool ReaderScrollCallbackDelegate(ref READERMODEINFO prmi, int dx, int dy);
 
         [Flags]
@@ -133,7 +146,6 @@ namespace AngelLoader.WinAPI
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal struct READERMODEINFO
         {
             internal int cbSize;
@@ -145,8 +157,6 @@ namespace AngelLoader.WinAPI
             internal IntPtr lParam;
         }
 
-        [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
         [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
         internal static extern void DoReaderMode(ref READERMODEINFO prmi);
 
@@ -158,8 +168,6 @@ namespace AngelLoader.WinAPI
 
         [StructLayout(LayoutKind.Sequential)]
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        [SuppressMessage("ReSharper", "CommentTypo")]
         internal struct NMHDR
         {
             internal IntPtr hwndFrom;
@@ -167,10 +175,9 @@ namespace AngelLoader.WinAPI
             internal int code;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        [StructLayout(LayoutKind.Sequential)]
         internal class ENLINK
         {
             internal NMHDR nmhdr;
@@ -180,9 +187,8 @@ namespace AngelLoader.WinAPI
             internal CHARRANGE? charrange = null;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        [StructLayout(LayoutKind.Sequential)]
         internal class CHARRANGE
         {
             internal int cpMin;
@@ -400,43 +406,6 @@ namespace AngelLoader.WinAPI
 
         #region Scrolling / scroll bars
 
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct SCROLLINFO
-        {
-            internal uint cbSize;
-            internal uint fMask;
-            internal int nMin;
-            internal int nMax;
-            internal uint nPage;
-            internal int nPos;
-            internal int nTrackPos;
-        }
-
-        //[PublicAPI]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        [Flags]
-        internal enum ScrollInfoMask
-        {
-            SIF_RANGE = 0x0001,
-            SIF_PAGE = 0x0002,
-            SIF_POS = 0x0004,
-            //SIF_DISABLENOSCROLL = 0x0008,
-            SIF_TRACKPOS = 0x0010,
-            SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
-        }
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
-
-        [DllImport("user32.dll")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
-
-
         internal const uint WS_VSCROLL = 0x00200000;
 
         internal const uint OBJID_HSCROLL = 0xFFFFFFFA;
@@ -467,26 +436,21 @@ namespace AngelLoader.WinAPI
         */
         internal const uint SB_THUMBTRACK = 5;
 
-
-        public readonly struct RECT
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct SCROLLINFO
         {
-            public readonly int left;
-            public readonly int top;
-            public readonly int right;
-            public readonly int bottom;
-
-            [UsedImplicitly]
-            public RECT(int left, int top, int right, int bottom)
-            {
-                this.left = left;
-                this.top = top;
-                this.right = right;
-                this.bottom = bottom;
-            }
+            internal uint cbSize;
+            internal uint fMask;
+            internal int nMin;
+            internal int nMax;
+            internal uint nPage;
+            internal int nPos;
+            internal int nTrackPos;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         [PublicAPI]
+        [StructLayout(LayoutKind.Sequential)]
         internal struct SCROLLBARINFO
         {
             internal int cbSize;
@@ -499,8 +463,23 @@ namespace AngelLoader.WinAPI
             internal int[] rgstate;
         }
 
-        internal const int STATE_SYSTEM_INVISIBLE = 0x00008000;
-        internal const int STATE_SYSTEM_UNAVAILABLE = 0x00000001;
+        [Flags]
+        internal enum ScrollInfoMask
+        {
+            SIF_RANGE = 0x0001,
+            SIF_PAGE = 0x0002,
+            SIF_POS = 0x0004,
+            //SIF_DISABLENOSCROLL = 0x0008,
+            SIF_TRACKPOS = 0x0010,
+            SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
+        }
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
+
+        [DllImport("user32.dll")]
+        internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
         internal static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
