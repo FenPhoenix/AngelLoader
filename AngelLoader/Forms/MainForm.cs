@@ -87,7 +87,6 @@ namespace AngelLoader.Forms
         private float _fmsListDefaultFontSizeInPoints;
         private int _fmsListDefaultRowHeight;
 
-        // To order them such that we can just look them up with an index
         private readonly TabPage[] _gameTabsInOrder;
         private readonly ToolStripButtonCustom[] _filterByGameButtonsInOrder;
         private readonly TabPage[] _topRightTabsInOrder;
@@ -177,12 +176,10 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-            Dialogs.ShowError("This is a test of the error dialog!");
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
         {
-
         }
 
 #endif
@@ -216,7 +213,6 @@ namespace AngelLoader.Forms
 
         public bool PreFilterMessage(ref Message m)
         {
-            // So I don't forget what the return values do
             const bool BlockMessage = true;
             const bool PassMessageOn = false;
 
@@ -247,8 +243,8 @@ namespace AngelLoader.Forms
                 int delta = Native.SignedHIWORD(m.WParam);
                 if (CanFocus && CursorOverControl(FilterBarFLP) && !CursorOverControl(FMsDGV))
                 {
-                    // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing
-                    // and disappearing as appropriate
+                    // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing and
+                    // disappearing as appropriate
                     if (delta != 0)
                     {
                         int direction = delta > 0 ? Native.SB_LINELEFT : Native.SB_LINERIGHT;
@@ -304,7 +300,6 @@ namespace AngelLoader.Forms
                     }
                 }
             }
-            // Just handle the NC* messages and presto, we don't even need the mouse hook anymore!
             // NC = Non-Client, ie. the mouse was in a non-client area of the control
             else if (m.Msg is Native.WM_MOUSEMOVE or Native.WM_NCMOUSEMOVE)
             {
@@ -595,9 +590,6 @@ namespace AngelLoader.Forms
             };
             // @GENGAMES (tabs and filter buttons): End
 
-            // Putting these into a list whose order matches the enum allows us to just iterate the list without
-            // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
-            // when we add new tab pages.
             _topRightTabsInOrder = new TabPage[]
             {
                 StatisticsTabPage,
@@ -826,7 +818,6 @@ namespace AngelLoader.Forms
             // Find() to have been run first.
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
-            // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
             if (fmsViewListUnscanned?.Count > 0)
             {
                 Show();
@@ -1211,15 +1202,9 @@ namespace AngelLoader.Forms
 
                 FilterByRatingButton.ToolTipText = LText.FilterBar.RatingToolTip;
 
+                Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByRating);
                 // This one is tricky - it could have LText.Global.None as part of its text. Finally caught!
-                if (startup)
-                {
-                    Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByRating);
-                }
-                else
-                {
-                    UpdateRatingLabel();
-                }
+                if (!startup) UpdateRatingLabel();
 
                 FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowUnsupported;
                 FilterShowUnavailableButton.ToolTipText = LText.FilterBar.ShowUnavailable;
@@ -1385,7 +1370,6 @@ namespace AngelLoader.Forms
 
                 PlayFMButton.Text = LText.MainButtons.PlayFM;
 
-                // Allow button to do its max-string-length layout thing
                 InstallUninstallFMLLButton.Localize(startup);
 
                 PlayOriginalGameButton.Text = LText.MainButtons.PlayOriginalGame;
@@ -1543,8 +1527,13 @@ namespace AngelLoader.Forms
 
         private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
 
-        private static void ShowMenu(ContextMenuStrip menu, Control control, MenuPos pos,
-                                     int xOffset = 0, int yOffset = 0, bool unstickMenu = false)
+        private static void ShowMenu(
+            ContextMenuStrip menu,
+            Control control,
+            MenuPos pos,
+            int xOffset = 0,
+            int yOffset = 0,
+            bool unstickMenu = false)
         {
             int x = pos is MenuPos.LeftUp or MenuPos.LeftDown or MenuPos.TopRight or MenuPos.BottomRight
                 ? 0
@@ -1836,9 +1825,9 @@ namespace AngelLoader.Forms
             }
         }
 
+        // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
         private void AutosizeGameTabsWidth()
         {
-            // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
             if (GamesTabControl.TabCount == 0)
             {
                 GamesTabControl.Width = 0;
@@ -3202,8 +3191,6 @@ namespace AngelLoader.Forms
 
             Core.SortFMsViewList(column, sortDirection);
 
-            // Perf: doing it this way is significantly faster than the old method of indiscriminately setting
-            // all columns to None and then setting the current one back to the CurrentSortDirection glyph again
             int intCol = (int)column;
             for (int i = 0; i < FMsDGV.Columns.Count; i++)
             {
@@ -3686,8 +3673,6 @@ namespace AngelLoader.Forms
 
             var fm = FMsDGV.GetSelectedFM();
             fm.SelectedReadme = ChooseReadmeComboBox.SelectedBackingItem();
-            // Just load the readme; don't call DisplaySelectedFM() because that will re-get readmes and screw
-            // things up
             LoadReadme(fm);
         }
 
@@ -3929,7 +3914,6 @@ namespace AngelLoader.Forms
             PlayFMButton.Enabled = false;
 
             SetReadmeVisible(false);
-            // Save memory
             ReadmeRichTextBox.SetText("");
 
             ChooseReadmeLLPanel.ShowPanel(false);

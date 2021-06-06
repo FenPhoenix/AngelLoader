@@ -654,7 +654,6 @@ namespace AngelLoader
             using (new DisableEvents(View))
             {
                 var fmsViewListUnscanned = FindFMs.Find();
-                // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
                 if (fmsViewListUnscanned.Count > 0) await FMScan.ScanNewFMs(fmsViewListUnscanned);
             }
             await View.SortAndSetFilter(selFM, forceDisplayFM: true);
