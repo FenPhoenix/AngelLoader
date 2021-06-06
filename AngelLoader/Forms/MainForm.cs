@@ -1,40 +1,54 @@
 ﻿/* TODO: MainForm notes:
- NOTE: Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
- in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
+NOTE: Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
+in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
- Images to switch to drawing:
- -Install / uninstall
- -Green CheckCircle
- -Settings (can we do gradients and curved paths?)
- -Calendars (these are "pixel art" now, so we can definitely draw them!)
- -Anything else not listed in "definitely won't draw" is at least a possibility
+Images to switch to drawing:
+-Install / uninstall
+-Green CheckCircle
+-Settings (can we do gradients and curved paths?)
+-Calendars (these are "pixel art" now, so we can definitely draw them!)
+-Anything else not listed in "definitely won't draw" is at least a possibility
 
- Images we definitely won't draw (iow that really need to be rasters):
- -Thief logos
- -Zip logo (Show_Unsupported)
- -Rating examples (two of them have text)
+Images we definitely won't draw (iow that really need to be rasters):
+-Thief logos
+-Zip logo (Show_Unsupported)
+-Rating examples (two of them have text)
 
- Things to lazy load:
- -Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
-  controls on each tab page (in case the tabs are visible but not selected on startup)
- -Game buttons and game tabs (one or the other will be invisible on startup)
- -DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
+Things to lazy load:
+-Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
+ controls on each tab page (in case the tabs are visible but not selected on startup)
+-Game buttons and game tabs (one or the other will be invisible on startup)
+-DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
 
- @NET5: Fonts will change and control sizes will all change too.
- -We could go through and set font to MS Sans Serif 8.25pt everywhere. This would get us up and running quickly
-  with no other changes, but we would have to remember to set it for every single control manually (including
-  ones we lazy-load manually - that would preclude us from simply running a loop through all controls on the form
-  and setting the font on them all that way!)
- -We could bite the bullet and go through the entire UI fixing and adjusting the layout and layout logic (including
-  our "75,23" button min sizes etc!). This would give us a nicer font and a UI layout that supports it, but now
-  we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
- IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
+@NET5: Fonts will change and control sizes will all change too.
+-We could go through and set font to MS Sans Serif 8.25pt everywhere. This would get us up and running quickly
+ with no other changes, but we would have to remember to set it for every single control manually (including
+ ones we lazy-load manually - that would preclude us from simply running a loop through all controls on the form
+ and setting the font on them all that way!)
+-We could bite the bullet and go through the entire UI fixing and adjusting the layout and layout logic (including
+ our "75,23" button min sizes etc!). This would give us a nicer font and a UI layout that supports it, but now
+ we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
+IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
- TODO(MainForm Designer): The controls move positions because they're accounting for the scroll bar
- but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
- the scroll bar was).
+TODO/NOTE(Hide game controls when game not specified):
+This has some subtleties that make it trickier than it seems at first glance. If we just hide the controls based
+on whether the game exe is specified, then we still show FMs for that game if they exist, but then you don't have
+a way to filter them and it looks like a bug or unintended behavior. If we only hide the controls when the game
+exe is not specified AND there are no FMs for that game in the list, we now have to update the controls' visible
+state every time we scan something, which might cause a chain reaction if we change the filters and land on some
+other FM that isn't scanned. Or else we end up not updating the filters to make it so FMs don't disappear right
+away, which might also look jank, and it's a mess.
+Options:
+-Just give up and say "if you choose this 'hide game controls when no game specified' option, then we're just
+ going to assume you also have no FMs for that game, and if you do, you'll see them in the list, so oh well."
+-Give up on any sort of automation and just put a show/hide dropdown arrow button like with the filter controls
+ and allow the user to hide them manually. That way we push the burden of knowing what they're doing onto them.
 
- @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
+TODO(MainForm Designer): The controls move positions because they're accounting for the scroll bar
+but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
+the scroll bar was).
+
+@X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 */
 
 using System;
@@ -1755,27 +1769,37 @@ namespace AngelLoader.Forms
                     GamesTabControl.SuspendDrawing();
                 }
 
-                for (int i = 0; i < SupportedGameCount; i++)
+                using (Config.HideGameFilterElementsIfGameNotSpecified ? new DisableEvents(this) : null)
                 {
-                    GameIndex gameIndex = (GameIndex)i;
-                    Game game = GameIndexToGame(gameIndex);
-                    ToolStripButtonCustom button = _filterByGameButtonsInOrder[i];
-                    bool gameSpecified = !Config.GetGameExe(gameIndex).IsEmpty();
-
-                    if (Config.HideGameFilterElementsIfGameNotSpecified)
+                    for (int i = 0; i < SupportedGameCount; i++)
                     {
-                        button.Checked = gameSpecified && Config.Filter.Games.HasFlagFast(game);
-                        button.Visible = gameSpecified;
-                        GamesTabControl.ShowTab(_gameTabsInOrder[i], gameSpecified);
-                        if (!gameSpecified)
+                        GameIndex gameIndex = (GameIndex)i;
+                        Game game = GameIndexToGame(gameIndex);
+                        ToolStripButtonCustom button = _filterByGameButtonsInOrder[i];
+                        bool gameSpecified = !Config.GetGameExe(gameIndex).IsEmpty();
+
+                        if (Config.HideGameFilterElementsIfGameNotSpecified)
                         {
-                            Config.Filter.Games &= ~game;
-                            FMsDGV.Filter.Games &= ~game;
+                            button.Checked = gameSpecified && Config.Filter.Games.HasFlagFast(game);
+                            button.Visible = gameSpecified;
+                            GamesTabControl.ShowTab(_gameTabsInOrder[i], gameSpecified);
+                            if (!gameSpecified)
+                            {
+                                Config.Filter.Games &= ~game;
+                                FMsDGV.Filter.Games &= ~game;
+                            }
+                        }
+                        else
+                        {
+                            button.Checked = Config.Filter.Games.HasFlagFast(game);
                         }
                     }
-                    else
+                    if (Config.HideGameFilterElementsIfGameNotSpecified)
                     {
-                        button.Checked = Config.Filter.Games.HasFlagFast(game);
+                        Config.ClearAllSelectedFMs();
+                        Config.ClearAllFilters();
+                        Config.GameTab = Thief1;
+                        if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
                     }
                 }
             }
