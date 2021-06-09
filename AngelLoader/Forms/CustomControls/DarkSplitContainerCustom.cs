@@ -236,6 +236,12 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
+            if (DesignMode)
+            {
+                base.OnMouseDown(e);
+                return;
+            }
+
             if (FullScreen) return;
 
             if (e.Button == MouseButtons.Left &&
@@ -257,6 +263,12 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            if (DesignMode)
+            {
+                base.OnMouseUp(e);
+                return;
+            }
+
             if (FullScreen) return;
 
             _mouseOverCrossSection = false;
@@ -267,6 +279,12 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
+            if (DesignMode)
+            {
+                base.OnMouseMove(e);
+                return;
+            }
+
             if (FullScreen) return;
 
             if (!IsSplitterFixed && _sibling != null)
