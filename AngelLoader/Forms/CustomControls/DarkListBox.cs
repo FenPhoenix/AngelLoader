@@ -166,6 +166,7 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int SelectedIndex
         {
             get => SelectedIndices.Count == 0 ? -1 : SelectedIndices[0];

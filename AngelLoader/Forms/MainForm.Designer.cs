@@ -396,7 +396,6 @@
             // FilterBarScrollRightButton
             // 
             this.FilterBarScrollRightButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
-            this.FilterBarScrollRightButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.FilterBarScrollRightButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.FilterBarScrollRightButton.Location = new System.Drawing.Point(1088, 56);
             this.FilterBarScrollRightButton.Name = "FilterBarScrollRightButton";
@@ -413,7 +412,6 @@
             // FilterBarScrollLeftButton
             // 
             this.FilterBarScrollLeftButton.ArrowDirection = AngelLoader.Misc.Direction.Left;
-            this.FilterBarScrollLeftButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.FilterBarScrollLeftButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.FilterBarScrollLeftButton.Location = new System.Drawing.Point(1072, 56);
             this.FilterBarScrollLeftButton.Name = "FilterBarScrollLeftButton";
@@ -644,7 +642,6 @@
             this.FilterGameButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterGameButtonsToolStrip.Location = new System.Drawing.Point(0, 0);
             this.FilterGameButtonsToolStrip.Name = "FilterGameButtonsToolStrip";
-            this.FilterGameButtonsToolStrip.PaddingDrawNudge = 0;
             this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(103, 26);
             this.FilterGameButtonsToolStrip.TabIndex = 3;
             // 
@@ -761,7 +758,6 @@
             this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(493, 0);
             this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
-            this.FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
             this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(291, 26);
             this.FilterIconButtonsToolStrip.TabIndex = 3;
             this.FilterIconButtonsToolStrip.Paint += new System.Windows.Forms.PaintEventHandler(this.FilterIconButtonsToolStrip_Paint);
@@ -914,7 +910,6 @@
             this.RefreshAreaToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.RefreshAreaToolStrip.Location = new System.Drawing.Point(994, 0);
             this.RefreshAreaToolStrip.Name = "RefreshAreaToolStrip";
-            this.RefreshAreaToolStrip.PaddingDrawNudge = 0;
             this.RefreshAreaToolStrip.Size = new System.Drawing.Size(91, 26);
             this.RefreshAreaToolStrip.TabIndex = 12;
             this.RefreshAreaToolStrip.Paint += new System.Windows.Forms.PaintEventHandler(this.RefreshAreaToolStrip_Paint);
@@ -1049,7 +1044,6 @@
             this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightCollapseButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
-            this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
             this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.TopRightCollapseButton.Location = new System.Drawing.Point(533, 20);
