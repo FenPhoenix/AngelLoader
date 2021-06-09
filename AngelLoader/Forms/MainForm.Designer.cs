@@ -642,7 +642,7 @@
             this.FilterGameButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterGameButtonsToolStrip.Location = new System.Drawing.Point(0, 0);
             this.FilterGameButtonsToolStrip.Name = "FilterGameButtonsToolStrip";
-            this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(103, 26);
+            this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(104, 26);
             this.FilterGameButtonsToolStrip.TabIndex = 3;
             // 
             // FilterByThief1Button
@@ -701,7 +701,7 @@
             // FilterTitleLabel
             // 
             this.FilterTitleLabel.AutoSize = true;
-            this.FilterTitleLabel.Location = new System.Drawing.Point(113, 6);
+            this.FilterTitleLabel.Location = new System.Drawing.Point(114, 6);
             this.FilterTitleLabel.Margin = new System.Windows.Forms.Padding(10, 6, 0, 0);
             this.FilterTitleLabel.Name = "FilterTitleLabel";
             this.FilterTitleLabel.Size = new System.Drawing.Size(30, 13);
@@ -710,7 +710,7 @@
             // 
             // FilterTitleTextBox
             // 
-            this.FilterTitleTextBox.Location = new System.Drawing.Point(146, 3);
+            this.FilterTitleTextBox.Location = new System.Drawing.Point(147, 3);
             this.FilterTitleTextBox.Name = "FilterTitleTextBox";
             this.FilterTitleTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterTitleTextBox.TabIndex = 6;
@@ -719,7 +719,7 @@
             // FilterAuthorLabel
             // 
             this.FilterAuthorLabel.AutoSize = true;
-            this.FilterAuthorLabel.Location = new System.Drawing.Point(302, 6);
+            this.FilterAuthorLabel.Location = new System.Drawing.Point(303, 6);
             this.FilterAuthorLabel.Margin = new System.Windows.Forms.Padding(9, 6, 0, 0);
             this.FilterAuthorLabel.Name = "FilterAuthorLabel";
             this.FilterAuthorLabel.Size = new System.Drawing.Size(41, 13);
@@ -728,7 +728,7 @@
             // 
             // FilterAuthorTextBox
             // 
-            this.FilterAuthorTextBox.Location = new System.Drawing.Point(346, 3);
+            this.FilterAuthorTextBox.Location = new System.Drawing.Point(347, 3);
             this.FilterAuthorTextBox.Name = "FilterAuthorTextBox";
             this.FilterAuthorTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterAuthorTextBox.TabIndex = 8;
@@ -756,9 +756,9 @@
             this.FilterShowRecentAtTopButton,
             this.FilterControlsShowHideButton});
             this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(493, 0);
+            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(494, 0);
             this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
-            this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(291, 26);
+            this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(285, 26);
             this.FilterIconButtonsToolStrip.TabIndex = 3;
             this.FilterIconButtonsToolStrip.Paint += new System.Windows.Forms.PaintEventHandler(this.FilterIconButtonsToolStrip_Paint);
             // 
@@ -988,7 +988,7 @@
             this.Thief1TabPage.Location = new System.Drawing.Point(4, 23);
             this.Thief1TabPage.Name = "Thief1TabPage";
             this.Thief1TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.Thief1TabPage.Size = new System.Drawing.Size(1071, 0);
+            this.Thief1TabPage.Size = new System.Drawing.Size(1067, 0);
             this.Thief1TabPage.TabIndex = 0;
             this.Thief1TabPage.Text = "Thief 1";
             this.Thief1TabPage.UseVisualStyleBackColor = true;
@@ -999,7 +999,7 @@
             this.Thief2TabPage.Location = new System.Drawing.Point(4, 23);
             this.Thief2TabPage.Name = "Thief2TabPage";
             this.Thief2TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.Thief2TabPage.Size = new System.Drawing.Size(1071, 0);
+            this.Thief2TabPage.Size = new System.Drawing.Size(1067, 0);
             this.Thief2TabPage.TabIndex = 1;
             this.Thief2TabPage.Text = "Thief 2";
             this.Thief2TabPage.UseVisualStyleBackColor = true;
@@ -1010,7 +1010,7 @@
             this.Thief3TabPage.Location = new System.Drawing.Point(4, 23);
             this.Thief3TabPage.Name = "Thief3TabPage";
             this.Thief3TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.Thief3TabPage.Size = new System.Drawing.Size(1071, 0);
+            this.Thief3TabPage.Size = new System.Drawing.Size(1067, 0);
             this.Thief3TabPage.TabIndex = 2;
             this.Thief3TabPage.Text = "Thief 3";
             this.Thief3TabPage.UseVisualStyleBackColor = true;
@@ -1021,7 +1021,7 @@
             this.SS2TabPage.Location = new System.Drawing.Point(4, 23);
             this.SS2TabPage.Name = "SS2TabPage";
             this.SS2TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.SS2TabPage.Size = new System.Drawing.Size(1071, 0);
+            this.SS2TabPage.Size = new System.Drawing.Size(1067, 0);
             this.SS2TabPage.TabIndex = 3;
             this.SS2TabPage.Text = "System Shock 2";
             this.SS2TabPage.UseVisualStyleBackColor = true;
@@ -1846,10 +1846,10 @@
             this.ReadmeRichTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ReadmeRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ReadmeRichTextBox.Location = new System.Drawing.Point(0, 0);
+            this.ReadmeRichTextBox.Location = new System.Drawing.Point(1, 1);
             this.ReadmeRichTextBox.Name = "ReadmeRichTextBox";
             this.ReadmeRichTextBox.ReadOnly = true;
-            this.ReadmeRichTextBox.Size = new System.Drawing.Size(1671, 359);
+            this.ReadmeRichTextBox.Size = new System.Drawing.Size(1668, 356);
             this.ReadmeRichTextBox.TabIndex = 0;
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
