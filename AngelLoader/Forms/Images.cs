@@ -227,9 +227,11 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Plus
+        #region Plus / ex
 
         private static readonly Rectangle[] _plusRects = new Rectangle[2];
+
+        private static readonly Point[] _exPoints = new Point[12];
 
         #endregion
 
@@ -1138,31 +1140,29 @@ namespace AngelLoader.Forms
         {
             int wh = button.ClientRectangle.Width / 2;
             int hh = button.ClientRectangle.Height / 2;
-            Point[] ps =
-            {
-                // top
-                new Point(wh - 3, hh - 4),
-                new Point(wh, hh - 1),
-                new Point(wh + 3, hh - 4),
 
-                // right
-                new Point(wh + 4, hh - 3),
-                new Point(wh + 1, hh),
-                new Point(wh + 4, hh + 3),
+            // top
+            _exPoints[0] = new Point(wh - 3, hh - 4);
+            _exPoints[1] = new Point(wh, hh - 1);
+            _exPoints[2] = new Point(wh + 3, hh - 4);
 
-                // bottom
-                new Point(wh + 3, hh + 4),
-                new Point(wh, hh + 1),
-                new Point(wh - 3, hh + 4),
+            // right
+            _exPoints[3] = new Point(wh + 4, hh - 3);
+            _exPoints[4] = new Point(wh + 1, hh);
+            _exPoints[5] = new Point(wh + 4, hh + 3);
 
-                // left
-                new Point(wh - 4, hh + 3),
-                new Point(wh - 1, hh),
-                new Point(wh - 4, hh - 3)
-            };
+            // bottom
+            _exPoints[6] = new Point(wh + 3, hh + 4);
+            _exPoints[7] = new Point(wh, hh + 1);
+            _exPoints[8] = new Point(wh - 3, hh + 4);
+
+            // left
+            _exPoints[9] = new Point(wh - 4, hh + 3);
+            _exPoints[10] = new Point(wh - 1, hh);
+            _exPoints[11] = new Point(wh - 4, hh - 3);
 
             SetSmoothingMode(e, SmoothingMode.AntiAlias);
-            e.Graphics.FillPolygon(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, ps);
+            e.Graphics.FillPolygon(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, _exPoints);
         }
 
         internal static void PaintHamburgerMenuButton_TopRight(Button button, PaintEventArgs e)
