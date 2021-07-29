@@ -30,6 +30,13 @@ namespace AngelLoader
 
     internal static class FMInstallAndPlay
     {
+        private enum PlaySource
+        {
+            OriginalGame,
+            Editor,
+            FM
+        }
+
         private static CancellationTokenSource _extractCts = new CancellationTokenSource();
 
         internal static Task InstallOrUninstall(FanMission fm) => fm.Installed ? UninstallFM(fm) : InstallFM(fm);
@@ -94,7 +101,7 @@ namespace AngelLoader
             if (!success) return false;
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            SetUsAsSelector(game, gamePath);
+            SetUsAsSelector(game, gamePath, PlaySource.OriginalGame);
 
 #if !ReleaseBeta && !ReleasePublic
             string args = Config.ForceWindowed ? "+force_windowed" : "";
@@ -131,7 +138,7 @@ namespace AngelLoader
             // Always do this for robustness, see below
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            SetUsAsSelector(game, gamePath);
+            SetUsAsSelector(game, gamePath, PlaySource.FM);
 
             string steamArgs = "";
             string workingPath = Config.GetGamePath(game);
@@ -216,7 +223,7 @@ namespace AngelLoader
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
             // We don't need to do this here, right?
-            SetUsAsSelector(gameIndex, gamePath);
+            SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
 
             // Since we don't use the stub currently, set this here
             // TODO: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
@@ -235,7 +242,7 @@ namespace AngelLoader
 
         #region Helpers
 
-        private static void SetUsAsSelector(GameIndex game, string gamePath)
+        private static void SetUsAsSelector(GameIndex game, string gamePath, PlaySource playSource)
         {
             bool success = GameIsDark(game)
                 ? GameConfigFiles.SetDarkFMSelector(game, gamePath)
@@ -244,10 +251,16 @@ namespace AngelLoader
             {
                 Log("Unable to set us as the selector for " + Config.GetGameExe(game) + " (" +
                     (GameIsDark(game) ? nameof(GameConfigFiles.SetDarkFMSelector) : nameof(GameConfigFiles.SetT3FMSelector)) +
-                    " returned false)", stackTrace: true);
-                // @BetterErrors(SetUsAsSelector()):
-                // Make this more specific (orig, editor, FM)
-                Dialogs.ShowError(game + ":\r\n\r\nFailed to set AngelLoader as the FM selector.");
+                    " returned false)\r\n" +
+                    "Source: " + playSource,
+                    stackTrace: true);
+
+                Dialogs.ShowError(
+                    "Failed to set AngelLoader as the FM selector.\r\n\r\n" +
+                    "Game: " + game + "\r\n" +
+                    "Game exe: " + Config.GetGameExe(game) + "\r\n" +
+                    "Source: " + playSource + "\r\n" +
+                    "");
             }
         }
 
