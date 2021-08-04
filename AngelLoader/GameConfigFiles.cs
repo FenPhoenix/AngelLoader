@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AL_Common;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
@@ -27,6 +28,14 @@ namespace AngelLoader
         private const string key_fm = "fm";
         private const string key_fm_path = "fm_path";
         private const int key_fm_path_len = 7;
+        private const string mod_path = "mod_path";
+        private const int mod_path_len = 8;
+        private const string uber_mod_path = "uber_mod_path";
+        private const int uber_mod_path_len = 13;
+        private const string mp_mod_path = "mp_mod_path";
+        private const int mp_mod_path_len = 11;
+        private const string mp_u_mod_path = "mp_u_mod_path";
+        private const int mp_u_mod_path_len = 13;
 
         // cam_mod.ini, cam.cfg
         private const string key_fm_language = "fm_language";
@@ -879,6 +888,94 @@ namespace AngelLoader
         }
 
 #endif
+
+        private enum ModPaths
+        {
+            ModPath,
+            UberModPath,
+            MPModMath,
+            MPUberModPath
+        }
+
+        private static readonly int _modPathsCount = Enum.GetValues(typeof(ModPaths)).Length;
+
+        private static readonly Dictionary<string, string> _modNamesToFriendlyNames = new()
+        {
+            { "NecroAge", "The Necro Age" },
+            { "HDMOD", "HD Mod" },
+            { "EP", "Enhancement Pack" },
+            { "EP2", "Enhancement Pack 2" },
+            { "T2FMDML", "T2FMDML: A Collection of NewDark Thief 2 FM Fixes" }
+        };
+
+        internal static (Error Error, List<Mod>)
+        GetGameMods(FanMission fm)
+        {
+            var list = new List<Mod>();
+
+            if (!GameIsDark(fm.Game)) return (Error.None, list);
+
+            GameIndex gameIndex = GameToGameIndex(fm.Game);
+
+            string gamePath = Config.GetGamePath(gameIndex);
+
+            if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
+            {
+                return (Error.CamModIniNotFound, list);
+            }
+
+            int[] modPathLastIndexes = Utils.InitializedArray(_modPathsCount, -1);
+            string[] modPathLines = new string[_modPathsCount];
+            (string Key, int Length)[] modPathKeys = new (string Key, int Length)[_modPathsCount];
+
+            string[] lines = File.ReadAllLines(camModIni);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string lineT = lines[i].Trim();
+
+                if (lineT.IsEmpty() || lineT[0] == ';') continue;
+
+                if (lineT.StartsWithI(mod_path))
+                {
+                    modPathLastIndexes[(int)ModPaths.ModPath] = i;
+                }
+                else if (lineT.StartsWithI(uber_mod_path))
+                {
+                    modPathLastIndexes[(int)ModPaths.UberModPath] = i;
+                }
+                else if (lineT.StartsWithI(mp_mod_path))
+                {
+                    modPathLastIndexes[(int)ModPaths.MPModMath] = i;
+                }
+                else if (lineT.StartsWithI(mp_u_mod_path))
+                {
+                    modPathLastIndexes[(int)ModPaths.MPUberModPath] = i;
+                }
+            }
+
+            for (int i = 0; i < _modPathsCount; i++)
+            {
+                int index = modPathLastIndexes[i];
+                if (index > -1)
+                {
+                    string modPathLine = lines[index].Substring(modPathKeys[i].Length).Trim();
+                    string[] modsOnThisLine = modPathLine.Split(Utils.CA_Plus, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string mod in modsOnThisLine)
+                    {
+                        int lastSepIndex = mod.LastIndexOfDirSep();
+                        // @Mods(Get mods from cam_mod.ini): This will need to match more than just a single word for a name
+                        // We'll need to match like "NecroAge\Thief1", "mods\EP\Thief1", etc.
+                        // We also need to combine mods, like if we see "EP+mods\EP\Thief1" we need to know that's
+                        // the same thing
+                    }
+                }
+            }
+
+
+
+            return (Error.None, list);
+        }
 
         #region Helpers
 

@@ -64,6 +64,7 @@ namespace AL_Common
         //internal static readonly char[] CA_ForwardSlash = { '/' };
         public static readonly char[] CA_BS_FS = { '\\', '/' };
         public static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
+        public static readonly char[] CA_Plus = { '+' };
 
         #endregion
 

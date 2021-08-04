@@ -6,11 +6,11 @@
         /*
         NoGamesSpecified,
         BackupPathNotSpecified,
-        CamModIniNotFound,
         T1CamModIniNotFound,
         T2CamModIniNotFound,
         SS2CamModIniNotFound,
         */
+        CamModIniNotFound,
         SneakyOptionsNoRegKey,
         SneakyOptionsNotFound,
         T3FMInstPathNotFound,

@@ -425,4 +425,20 @@ namespace AngelLoader.DataClasses
             for (int i = 0; i < SupportedGameCount; i++) Filters[i].ClearAll();
         }
     }
+
+    internal sealed class Mod
+    {
+        internal string FriendlyName;
+        internal string InternalName;
+        internal bool Enabled;
+        internal bool Uber;
+
+        internal Mod(string friendlyName, string internalName, bool enabled, bool uber)
+        {
+            FriendlyName = friendlyName;
+            InternalName = internalName;
+            Enabled = enabled;
+            Uber = uber;
+        }
+    }
 }

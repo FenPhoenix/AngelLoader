@@ -165,6 +165,7 @@
             this.PatchAddDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchFMNotInstalledLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -173,7 +174,7 @@
             this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
             this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
+            this.ModsPanel = new System.Windows.Forms.Panel();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -1742,6 +1743,29 @@
             this.PatchFMNotInstalledLabel.TabIndex = 45;
             this.PatchFMNotInstalledLabel.Text = "FM must be installed in order to use this section.";
             // 
+            // ModsTabPage
+            // 
+            this.ModsTabPage.AutoScroll = true;
+            this.ModsTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.ModsTabPage.Controls.Add(this.ModsPanel);
+            this.ModsTabPage.Location = new System.Drawing.Point(4, 22);
+            this.ModsTabPage.Name = "ModsTabPage";
+            this.ModsTabPage.Size = new System.Drawing.Size(527, 284);
+            this.ModsTabPage.TabIndex = 4;
+            this.ModsTabPage.Text = "Mods";
+            // 
+            // ModsPanel
+            // 
+            this.ModsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                                                                              | System.Windows.Forms.AnchorStyles.Left)
+                                                                          | System.Windows.Forms.AnchorStyles.Right)));
+            this.ModsPanel.AutoScroll = true;
+            this.ModsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ModsPanel.Location = new System.Drawing.Point(8, 8);
+            this.ModsPanel.Name = "ModsPanel";
+            this.ModsPanel.Size = new System.Drawing.Size(512, 184);
+            this.ModsPanel.TabIndex = 0;
+            // 
             // ReadmeEncodingButton
             // 
             this.ReadmeEncodingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -1857,16 +1881,6 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
-            // 
-            // ModsTabPage
-            // 
-            this.ModsTabPage.AutoScroll = true;
-            this.ModsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.ModsTabPage.Location = new System.Drawing.Point(4, 22);
-            this.ModsTabPage.Name = "ModsTabPage";
-            this.ModsTabPage.Size = new System.Drawing.Size(527, 284);
-            this.ModsTabPage.TabIndex = 4;
-            this.ModsTabPage.Text = "Mods";
             // 
             // MainForm
             // 
@@ -2084,5 +2098,6 @@
         internal CustomControls.DarkButton ReadmeEncodingButton;
         internal CustomControls.ToolStripButtonCustom FilterShowUnavailableButton;
         internal CustomControls.DarkTabPageCustom ModsTabPage;
+        internal System.Windows.Forms.Panel ModsPanel;
     }
 }

@@ -667,6 +667,8 @@ namespace AngelLoader.Forms
 
             #region Top-right tabs
 
+            AssertR(_topRightTabsInOrder.Length == TopRightTabsData.Count, nameof(_topRightTabsInOrder) + " length is different than enum length");
+
             var sortedTabPages = new SortedDictionary<int, TabPage>();
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
@@ -3964,6 +3966,9 @@ namespace AngelLoader.Forms
                 foreach (Control c in TagsTabPage.Controls) c.Enabled = false;
 
                 ShowPatchSection(enable: false);
+
+                ModsPanel.Controls.Clear();
+                ModsPanel.Enabled = false;
             }
         }
 
@@ -4167,6 +4172,18 @@ namespace AngelLoader.Forms
                         }
                     }
                     PatchDMLsListBox.EndUpdate();
+                }
+
+                if (GameIsDark(fm.Game))
+                {
+                    // @Mods(Mods panel checkbox list): PERF: Recycle these instead of clearing an re-adding them all the time
+                    ModsPanel.Controls.Clear();
+                    ModsPanel.Enabled = true;
+                    (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
+                }
+                else
+                {
+                    ModsPanel.Enabled = false;
                 }
             }
 

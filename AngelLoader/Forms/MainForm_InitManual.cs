@@ -145,6 +145,7 @@ namespace AngelLoader.Forms
             PatchAddDMLButton = new DarkButton();
             PatchOpenFMFolderButton = new DarkButton();
             PatchFMNotInstalledLabel = new DarkLabel();
+            ModsTabPage = new DarkTabPageCustom();
             ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
@@ -153,7 +154,7 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
-            ModsTabPage = new DarkTabPageCustom();
+            ModsPanel = new Panel();
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
@@ -1361,6 +1362,23 @@ namespace AngelLoader.Forms
             // This thing gets centered later so no location is specified here
             PatchFMNotInstalledLabel.TabIndex = 45;
             // 
+            // ModsTabPage
+            // 
+            ModsTabPage.AutoScroll = true;
+            ModsTabPage.BackColor = SystemColors.Control;
+            ModsTabPage.Controls.Add(ModsPanel);
+            ModsTabPage.Size = new Size(527, 284);
+            ModsTabPage.TabIndex = 4;
+            // 
+            // ModsPanel
+            // 
+            this.ModsPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.ModsPanel.AutoScroll = true;
+            this.ModsPanel.BorderStyle = BorderStyle.FixedSingle;
+            this.ModsPanel.Location = new Point(8, 8);
+            this.ModsPanel.Size = new Size(512, 184);
+            this.ModsPanel.TabIndex = 0;
+            // 
             // ReadmeEncodingButton
             // 
             ReadmeEncodingButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -1454,13 +1472,6 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.TabIndex = 0;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
             ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
-            // 
-            // ModsTabPage
-            // 
-            ModsTabPage.AutoScroll = true;
-            ModsTabPage.BackColor = SystemColors.Control;
-            ModsTabPage.Size = new Size(527, 284);
-            ModsTabPage.TabIndex = 4;
             // 
             // MainForm
             // 
