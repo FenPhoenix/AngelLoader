@@ -306,11 +306,14 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    // @BetterErrors(ResetGameConfigTempChanges())
                     Log("Exception trying to unset temp config values\r\n" +
                         "GameIndex: " + gameIndex + "\r\n" +
                         "GameExe: " + gameExe,
                         ex);
+
+                    Dialogs.ShowError("Error attempting to restore previous game config file settings.\r\n" +
+                                      "Game: " + gameIndex + "\r\n" +
+                                      "Game exe: " + gameExe);
                 }
             }
         }
