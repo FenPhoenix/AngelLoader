@@ -69,7 +69,7 @@ namespace AngelLoader.DataClasses
 
     #region Top-right tabs
 
-    internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch }
+    internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch, Mods }
 
     internal sealed class TopRightTabData
     {
@@ -97,6 +97,7 @@ namespace AngelLoader.DataClasses
         internal TopRightTabData CommentTab => Tabs[(int)TopRightTab.Comment];
         internal TopRightTabData TagsTab => Tabs[(int)TopRightTab.Tags];
         internal TopRightTabData PatchTab => Tabs[(int)TopRightTab.Patch];
+        internal TopRightTabData ModsTab => Tabs[(int)TopRightTab.Mods];
 
         internal void EnsureValidity()
         {

@@ -596,7 +596,8 @@ namespace AngelLoader.Forms
                 EditFMTabPage,
                 CommentTabPage,
                 TagsTabPage,
-                PatchTabPage
+                PatchTabPage,
+                ModsTabPage
             };
 
             #region Separated items

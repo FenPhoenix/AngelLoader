@@ -589,6 +589,11 @@ namespace AngelLoader
                     int.TryParse(val, out int result);
                     config.TopRightTabsData.PatchTab.DisplayIndex = result;
                 }
+                else if (lineTS.StartsWithFast_NoNullChecks("ModsTabPosition="))
+                {
+                    int.TryParse(val, out int result);
+                    config.TopRightTabsData.ModsTab.DisplayIndex = result;
+                }
                 else if (lineTS.StartsWithFast_NoNullChecks("StatsTabVisible="))
                 {
                     config.TopRightTabsData.StatsTab.Visible = val.EqualsTrue();
@@ -608,6 +613,10 @@ namespace AngelLoader
                 else if (lineTS.StartsWithFast_NoNullChecks("PatchTabVisible="))
                 {
                     config.TopRightTabsData.PatchTab.Visible = val.EqualsTrue();
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("ModsTabVisible="))
+                {
+                    config.TopRightTabsData.ModsTab.Visible = val.EqualsTrue();
                 }
 
                 #endregion
@@ -902,12 +911,14 @@ namespace AngelLoader
             sb.Append("CommentTabPosition=").Append(config.TopRightTabsData.CommentTab.DisplayIndex).AppendLine();
             sb.Append("TagsTabPosition=").Append(config.TopRightTabsData.TagsTab.DisplayIndex).AppendLine();
             sb.Append("PatchTabPosition=").Append(config.TopRightTabsData.PatchTab.DisplayIndex).AppendLine();
+            sb.Append("ModsTabPosition=").Append(config.TopRightTabsData.ModsTab.DisplayIndex).AppendLine();
 
             sb.Append("StatsTabVisible=").Append(config.TopRightTabsData.StatsTab.Visible).AppendLine();
             sb.Append("EditFMTabVisible=").Append(config.TopRightTabsData.EditFMTab.Visible).AppendLine();
             sb.Append("CommentTabVisible=").Append(config.TopRightTabsData.CommentTab.Visible).AppendLine();
             sb.Append("TagsTabVisible=").Append(config.TopRightTabsData.TagsTab.Visible).AppendLine();
             sb.Append("PatchTabVisible=").Append(config.TopRightTabsData.PatchTab.Visible).AppendLine();
+            sb.Append("ModsTabVisible=").Append(config.TopRightTabsData.ModsTab.Visible).AppendLine();
 
             sb.Append("ReadmeZoomFactor=").AppendLine(config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
             sb.Append("ReadmeUseFixedWidthFont=").Append(config.ReadmeUseFixedWidthFont).AppendLine();

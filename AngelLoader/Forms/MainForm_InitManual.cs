@@ -153,6 +153,7 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
+            ModsTabPage = new DarkTabPageCustom();
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
@@ -181,6 +182,7 @@ namespace AngelLoader.Forms
             PatchTabPage.SuspendLayout();
             PatchMainPanel.SuspendLayout();
             PatchDMLsPanel.SuspendLayout();
+            ModsTabPage.SuspendLayout();
             SuspendLayout();
             // 
             // GameTabsImageList
@@ -825,6 +827,7 @@ namespace AngelLoader.Forms
             TopRightTabControl.Controls.Add(CommentTabPage);
             TopRightTabControl.Controls.Add(TagsTabPage);
             TopRightTabControl.Controls.Add(PatchTabPage);
+            TopRightTabControl.Controls.Add(ModsTabPage);
             TopRightTabControl.Size = new Size(535, 310);
             TopRightTabControl.TabIndex = 15;
             // 
@@ -1452,6 +1455,13 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
             ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
             // 
+            // ModsTabPage
+            // 
+            ModsTabPage.AutoScroll = true;
+            ModsTabPage.BackColor = SystemColors.Control;
+            ModsTabPage.Size = new Size(527, 284);
+            ModsTabPage.TabIndex = 4;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
@@ -1514,6 +1524,7 @@ namespace AngelLoader.Forms
             PatchMainPanel.PerformLayout();
             PatchDMLsPanel.ResumeLayout(false);
             PatchDMLsPanel.PerformLayout();
+            ModsTabPage.ResumeLayout(false);
             ResumeLayout(false);
         }
     }
