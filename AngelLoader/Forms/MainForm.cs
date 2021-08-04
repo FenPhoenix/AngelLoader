@@ -375,24 +375,17 @@ namespace AngelLoader.Forms
                 {
                     static bool AnyControlFocusedIn(Control control, int stackCounter = 0)
                     {
-                        try
+                        stackCounter++;
+                        if (stackCounter > 100) return false;
+
+                        if (control.Focused) return true;
+
+                        for (int i = 0; i < control.Controls.Count; i++)
                         {
-                            stackCounter++;
-                            if (stackCounter > 100) return false;
-
-                            if (control.Focused) return true;
-
-                            for (int i = 0; i < control.Controls.Count; i++)
-                            {
-                                if (AnyControlFocusedIn(control.Controls[i], stackCounter)) return true;
-                            }
-
-                            return false;
+                            if (AnyControlFocusedIn(control.Controls[i], stackCounter)) return true;
                         }
-                        finally
-                        {
-                            stackCounter--;
-                        }
+
+                        return false;
                     }
 
                     bool AnyControlFocusedInTabPage(TabPage tabPage) =>

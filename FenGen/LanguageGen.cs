@@ -137,7 +137,7 @@ namespace FenGen
                     else
                     {
                         var pds = (PropertyDeclarationSyntax)m;
-                        fName = pds!.Identifier.ToString();
+                        fName = pds.Identifier.ToString();
                         initializer = pds.Initializer;
                     }
 

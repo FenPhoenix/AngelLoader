@@ -2273,7 +2273,7 @@ namespace FMScanner
                         {
                             readmeStream?.Dispose();
                             readmeStream = readmeEntry!.Open();
-                            (success, text) = rtfConverter.Convert(readmeStream!, readmeFileLen);
+                            (success, text) = rtfConverter.Convert(readmeStream, readmeFileLen);
                         }
                         else
                         {

@@ -195,7 +195,7 @@ namespace AngelLoader.Forms.CustomControls
                                 Font
                             ).Width;
 
-                            Image image = ImageList!.Images![tabPage.ImageIndex]!;
+                            Image image = ImageList!.Images![tabPage.ImageIndex];
 
                             int leftMargin = tabRect.Width - textWidth;
 
