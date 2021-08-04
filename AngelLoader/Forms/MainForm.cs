@@ -1351,6 +1351,12 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region Mods tab
+
+                ModsTabPage.Text = LText.ModsTab.TabText;
+
+                #endregion
+
                 #endregion
 
                 #region Readme area
