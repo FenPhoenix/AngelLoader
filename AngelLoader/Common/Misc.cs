@@ -130,6 +130,13 @@ namespace AngelLoader
 
             internal const uint DaysRecent = 15;
             internal const uint MaxDaysRecent = 99999;
+
+            internal static readonly string[] FixMods =
+            {
+                "FMdml",
+                "T2FMDML",
+                "packfix"
+            };
         }
 
         // IMPORTANT: Put these AFTER every other static field has been initialized!

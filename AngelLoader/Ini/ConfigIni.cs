@@ -718,6 +718,11 @@ namespace AngelLoader
                         config.VisualTheme = (VisualTheme)field.GetValue(null);
                     }
                 }
+
+                else if (lineTS.StartsWithFast_NoNullChecks("FixMod="))
+                {
+                    config.FixMods.Add(val.Trim());
+                }
             }
 
             // Vital, don't remove!
@@ -924,6 +929,8 @@ namespace AngelLoader
             sb.Append("ReadmeUseFixedWidthFont=").Append(config.ReadmeUseFixedWidthFont).AppendLine();
 
             #endregion
+
+            foreach (string fixMod in config.FixMods) sb.Append("FixMod=").AppendLine(fixMod.Trim());
 
             using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
             sw.Write(sb.ToString());

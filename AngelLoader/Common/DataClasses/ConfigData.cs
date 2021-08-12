@@ -1,5 +1,6 @@
 ﻿#define FenGen_ConfigSource
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -39,6 +40,11 @@ namespace AngelLoader.DataClasses
 
                 UseSteamSwitches[i] = true;
                 StartupFMSelectorLines[i] = new List<string>();
+            }
+
+            for (int i = 0; i < Defaults.FixMods.Length; i++)
+            {
+                FixMods.Add(Defaults.FixMods[i]);
             }
         }
 
@@ -403,6 +409,9 @@ namespace AngelLoader.DataClasses
         internal bool ShowUnavailableFMs;
 
         internal bool HideGameFilterElementsIfGameNotSpecified;
+
+        // Mods for the "disable all except fix mods" option
+        internal readonly HashSet<string> FixMods = new(StringComparer.OrdinalIgnoreCase);
 
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
