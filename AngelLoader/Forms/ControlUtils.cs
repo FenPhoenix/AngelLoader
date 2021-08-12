@@ -597,5 +597,11 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        internal static void DisposeAndClear(this Control.ControlCollection controlCollection)
+        {
+            foreach (Control? control in controlCollection) control?.Dispose();
+            controlCollection.Clear();
+        }
     }
 }

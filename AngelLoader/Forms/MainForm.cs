@@ -3967,7 +3967,7 @@ namespace AngelLoader.Forms
 
                 ShowPatchSection(enable: false);
 
-                ModsPanel.Controls.Clear();
+                ModsPanel.Controls.DisposeAndClear();
                 ModsPanel.Enabled = false;
             }
         }
@@ -4176,14 +4176,21 @@ namespace AngelLoader.Forms
 
                 if (GameIsDark(fm.Game))
                 {
-                    // @Mods(Mods panel checkbox list): PERF: Recycle these instead of clearing an re-adding them all the time
-                    ModsPanel.Controls.Clear();
+                    // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
+                    ModsPanel.Controls.DisposeAndClear();
                     ModsPanel.Enabled = true;
                     (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
                     Trace.WriteLine("****");
-                    foreach (var mod in mods)
+                    for (int i = 0, y = 0; i < mods.Count; i++, y += 20)
                     {
-                        Trace.WriteLine(nameof(mod.InternalName) + ": " + mod.InternalName + ", " + nameof(mod.Uber) + ": " + mod.Uber);
+                        var mod = mods[i];
+                        //Trace.WriteLine(nameof(mod.InternalName) + ": " + mod.InternalName + ", " + nameof(mod.Uber) + ": " + mod.Uber);
+                        ModsPanel.Controls.Add(new DarkCheckBox
+                        {
+                            Text = mod.InternalName,
+                            Location = new Point(4, y),
+                            DarkModeEnabled = Config.DarkMode
+                        });
                     }
                 }
                 else
