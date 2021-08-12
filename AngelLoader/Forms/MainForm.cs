@@ -4179,18 +4179,24 @@ namespace AngelLoader.Forms
                     // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
                     ModsPanel.Controls.DisposeAndClear();
                     ModsPanel.Enabled = true;
+
                     (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
+
+                    var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
+
                     Trace.WriteLine("****");
                     for (int i = 0, y = 0; i < mods.Count; i++, y += 20)
                     {
                         var mod = mods[i];
                         //Trace.WriteLine(nameof(mod.InternalName) + ": " + mod.InternalName + ", " + nameof(mod.Uber) + ": " + mod.Uber);
-                        ModsPanel.Controls.Add(new DarkCheckBox
+                        var cb = new DarkCheckBox
                         {
                             Text = mod.InternalName,
                             Location = new Point(4, y),
-                            DarkModeEnabled = Config.DarkMode
-                        });
+                            DarkModeEnabled = Config.DarkMode,
+                            Checked = disabledModsList.Contains(mod.InternalName)
+                        };
+                        ModsPanel.Controls.Add(cb);
                     }
                 }
                 else
