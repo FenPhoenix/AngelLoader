@@ -54,6 +54,7 @@ the scroll bar was).
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -4179,6 +4180,11 @@ namespace AngelLoader.Forms
                     ModsPanel.Controls.Clear();
                     ModsPanel.Enabled = true;
                     (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
+                    Trace.WriteLine("****");
+                    foreach (var mod in mods)
+                    {
+                        Trace.WriteLine(nameof(mod.InternalName) + ": " + mod.InternalName + ", " + nameof(mod.Uber) + ": " + mod.Uber);
+                    }
                 }
                 else
                 {

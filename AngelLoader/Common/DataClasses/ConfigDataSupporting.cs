@@ -431,6 +431,7 @@ namespace AngelLoader.DataClasses
         internal string FriendlyName;
         internal string InternalName;
         internal bool Enabled;
+        // @Mods(Mod class): Check if uber overrides mod-disabling per FM, if it does, we need to not count uber mods for disabling, otherwise, count them
         internal bool Uber;
 
         internal Mod(string friendlyName, string internalName, bool enabled, bool uber)

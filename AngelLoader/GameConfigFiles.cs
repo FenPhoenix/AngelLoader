@@ -930,6 +930,10 @@ namespace AngelLoader
             int[] modPathLastIndexes = Utils.InitializedArray(_modPathsCount, -1);
             string[] modPathLines = new string[_modPathsCount];
             (string Key, int Length)[] modPathKeys = new (string Key, int Length)[_modPathsCount];
+            modPathKeys[0] = (mod_path, mod_path_len);
+            modPathKeys[1] = (uber_mod_path, uber_mod_path_len);
+            modPathKeys[2] = (mp_mod_path, mp_mod_path_len);
+            modPathKeys[3] = (mp_u_mod_path, mp_u_mod_path_len);
 
             string[] lines = File.ReadAllLines(camModIni);
 
@@ -957,16 +961,25 @@ namespace AngelLoader
                 }
             }
 
+            var modPathsAll = new List<string>();
+
             for (int i = 0; i < _modPathsCount; i++)
             {
                 int index = modPathLastIndexes[i];
                 if (index > -1)
                 {
                     string modPathLine = lines[index].Substring(modPathKeys[i].Length).Trim();
-                    string[] modsOnThisLine = modPathLine.Split(Utils.CA_Plus, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string mod in modsOnThisLine)
+                    string[] modPathsOnThisLine = modPathLine.Split(Utils.CA_Plus, StringSplitOptions.RemoveEmptyEntries);
+
+                    //modPathsOnThisLine = modPathsOnThisLine.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+
+                    foreach (string modPath in modPathsOnThisLine)
                     {
-                        int lastSepIndex = mod.LastIndexOfDirSep();
+                        //int lastSepIndex = modPath.LastIndexOfDirSep();
+                        //var mod = new Mod("", modPath, true, i is (int)ModPaths.UberModPath or (int)ModPaths.MPUberModPath);
+                        //list.Add(mod);
+                        modPathsAll.Add(modPath);
+
                         // @Mods(Get mods from cam_mod.ini): This will need to match more than just a single word for a name
                         // We'll need to match like "NecroAge\Thief1", "mods\EP\Thief1", etc.
                         // We also need to combine mods, like if we see "EP+mods\EP\Thief1" we need to know that's
@@ -975,7 +988,12 @@ namespace AngelLoader
                 }
             }
 
+            modPathsAll = modPathsAll.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
+            foreach (var modPath in modPathsAll)
+            {
+                list.Add(new Mod("", modPath, true, false));
+            }
 
             return (Error.None, list);
         }
