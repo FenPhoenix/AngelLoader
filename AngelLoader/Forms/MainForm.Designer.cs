@@ -174,7 +174,7 @@
             this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
             this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.ModsPanel = new System.Windows.Forms.Panel();
+            this.ModsPanel = new CustomControls.DarkCheckList();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -2098,6 +2098,6 @@
         internal CustomControls.DarkButton ReadmeEncodingButton;
         internal CustomControls.ToolStripButtonCustom FilterShowUnavailableButton;
         internal CustomControls.DarkTabPageCustom ModsTabPage;
-        internal System.Windows.Forms.Panel ModsPanel;
+        internal CustomControls.DarkCheckList ModsPanel;
     }
 }

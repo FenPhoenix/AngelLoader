@@ -4188,12 +4188,10 @@ namespace AngelLoader.Forms
                     for (int i = 0, y = 0; i < mods.Count; i++, y += 20)
                     {
                         var mod = mods[i];
-                        //Trace.WriteLine(nameof(mod.InternalName) + ": " + mod.InternalName + ", " + nameof(mod.Uber) + ": " + mod.Uber);
                         var cb = new DarkCheckBox
                         {
                             Text = mod.InternalName,
                             Location = new Point(4, y),
-                            DarkModeEnabled = Config.DarkMode,
                             Checked = disabledModsList.Contains(mod.InternalName)
                         };
                         ModsPanel.Controls.Add(cb);
@@ -4203,6 +4201,8 @@ namespace AngelLoader.Forms
                 {
                     ModsPanel.Enabled = false;
                 }
+
+                ModsPanel.RefreshDarkMode();
             }
 
             DisplayFMTags(fm.Tags);

@@ -154,7 +154,7 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
-            ModsPanel = new Panel();
+            ModsPanel = new DarkCheckList();
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
