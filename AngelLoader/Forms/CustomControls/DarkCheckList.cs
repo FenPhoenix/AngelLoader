@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
@@ -7,9 +8,42 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed class DarkCheckList : Panel, IDarkable
     {
+        public sealed class CheckItem
+        {
+            public bool Checked;
+            public string Text;
+
+            public CheckItem(bool @checked, string text)
+            {
+                Checked = @checked;
+                Text = text;
+            }
+        }
+
+        public sealed class DarkCheckListEventArgs : EventArgs
+        {
+            public readonly int Index;
+            public readonly bool Checked;
+            public readonly string Text;
+
+            public DarkCheckListEventArgs(int index, bool @checked, string text)
+            {
+                Index = index;
+                Checked = @checked;
+                Text = text;
+            }
+        }
+
         private bool _origValuesStored;
         private Color? _origBackColor;
         private Color? _origForeColor;
+
+        [PublicAPI]
+        public CheckItem[] CheckItems = Array.Empty<CheckItem>();
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool Controls { get; set; }
 
         [PublicAPI]
         public new Color BackColor { get; set; } = SystemColors.Control;
@@ -60,13 +94,48 @@ namespace AngelLoader.Forms.CustomControls
                 }
             }
 
-            foreach (Control control in Controls)
+            foreach (Control control in base.Controls)
             {
                 if (control is DarkCheckBox and IDarkable darkableControl)
                 {
                     darkableControl.DarkModeEnabled = _darkModeEnabled;
                 }
             }
+        }
+
+        internal void ClearList()
+        {
+            base.Controls.DisposeAndClear();
+            CheckItems = Array.Empty<CheckItem>();
+        }
+
+        [PublicAPI]
+        public EventHandler<DarkCheckListEventArgs>? ItemCheckedChanged;
+
+        internal void FillList(CheckItem[] items)
+        {
+            ClearList();
+
+            for (int i = 0, y = 0; i < items.Length; i++, y += 20)
+            {
+                var item = items[i];
+                var cb = new DarkCheckBox
+                {
+                    Text = item.Text,
+                    Location = new Point(4, y),
+                    Checked = item.Checked
+                };
+                base.Controls.Add(cb);
+                cb.CheckedChanged += OnItemsCheckedChanged;
+            }
+
+            CheckItems = items;
+        }
+
+        private void OnItemsCheckedChanged(object sender, EventArgs e)
+        {
+            var s = (DarkCheckBox)sender;
+            ItemCheckedChanged?.Invoke(this, new DarkCheckListEventArgs(base.Controls.IndexOf(s), s.Checked, s.Text));
         }
     }
 }

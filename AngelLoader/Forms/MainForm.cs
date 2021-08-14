@@ -3967,7 +3967,7 @@ namespace AngelLoader.Forms
 
                 ShowPatchSection(enable: false);
 
-                ModsPanel.Controls.DisposeAndClear();
+                ModsPanel.ClearList();
                 ModsPanel.Enabled = false;
             }
         }
@@ -4174,28 +4174,28 @@ namespace AngelLoader.Forms
                     PatchDMLsListBox.EndUpdate();
                 }
 
+                ModsPanel.ClearList();
+
                 if (GameIsDark(fm.Game))
                 {
                     // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
-                    ModsPanel.Controls.DisposeAndClear();
                     ModsPanel.Enabled = true;
 
                     (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
 
                     var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-                    Trace.WriteLine("****");
-                    for (int i = 0, y = 0; i < mods.Count; i++, y += 20)
+                    var checkItems = new DarkCheckList.CheckItem[mods.Count];
+
+                    for (int i = 0; i < mods.Count; i++)
                     {
-                        var mod = mods[i];
-                        var cb = new DarkCheckBox
-                        {
-                            Text = mod.InternalName,
-                            Location = new Point(4, y),
-                            Checked = disabledModsList.Contains(mod.InternalName)
-                        };
-                        ModsPanel.Controls.Add(cb);
+                        Mod mod = mods[i];
+                        checkItems[i] = new DarkCheckList.CheckItem(
+                            disabledModsList.Contains(mod.InternalName),
+                            mod.InternalName);
                     }
+
+                    ModsPanel.FillList(checkItems);
                 }
                 else
                 {
