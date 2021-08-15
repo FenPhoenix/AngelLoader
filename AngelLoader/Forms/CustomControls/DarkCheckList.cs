@@ -51,8 +51,12 @@ namespace AngelLoader.Forms.CustomControls
         public new Color ForeColor { get; set; } = SystemColors.ControlText;
 
         [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color DarkModeBackColor { get; set; } = DarkColors.Fen_ControlBackground;
         [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color DarkModeForeColor { get; set; } = DarkColors.LightText;
 
         private bool _darkModeEnabled;
@@ -130,6 +134,8 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             CheckItems = items;
+
+            RefreshDarkMode();
         }
 
         private void OnItemsCheckedChanged(object sender, EventArgs e)

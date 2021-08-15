@@ -120,9 +120,6 @@ namespace AngelLoader.Forms
             EditFMReleaseDateDateTimePicker = new DarkDateTimePicker();
             EditFMLastPlayedCheckBox = new DarkCheckBox();
             EditFMReleaseDateCheckBox = new DarkCheckBox();
-            EditFMDisableAllModsCheckBox = new DarkCheckBox();
-            EditFMDisabledModsTextBox = new DarkTextBox();
-            EditFMDisabledModsLabel = new DarkLabel();
             EditFMAuthorTextBox = new DarkTextBox();
             EditFMAuthorLabel = new DarkLabel();
             EditFMTitleLabel = new DarkLabel();
@@ -146,6 +143,10 @@ namespace AngelLoader.Forms
             PatchOpenFMFolderButton = new DarkButton();
             PatchFMNotInstalledLabel = new DarkLabel();
             ModsTabPage = new DarkTabPageCustom();
+            EditFMDisableAllModsCheckBox = new DarkCheckBox();
+            EditFMDisabledModsTextBox = new DarkTextBox();
+            EditFMDisabledModsLabel = new DarkLabel();
+            ModsPanel = new DarkCheckList();
             ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
@@ -154,7 +155,6 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
-            ModsPanel = new DarkCheckList();
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
@@ -977,9 +977,6 @@ namespace AngelLoader.Forms
             EditFMTabPage.Controls.Add(EditFMReleaseDateDateTimePicker);
             EditFMTabPage.Controls.Add(EditFMLastPlayedCheckBox);
             EditFMTabPage.Controls.Add(EditFMReleaseDateCheckBox);
-            EditFMTabPage.Controls.Add(EditFMDisableAllModsCheckBox);
-            EditFMTabPage.Controls.Add(EditFMDisabledModsTextBox);
-            EditFMTabPage.Controls.Add(EditFMDisabledModsLabel);
             EditFMTabPage.Controls.Add(EditFMAuthorTextBox);
             EditFMTabPage.Controls.Add(EditFMAuthorLabel);
             EditFMTabPage.Controls.Add(EditFMTitleLabel);
@@ -1143,26 +1140,28 @@ namespace AngelLoader.Forms
             // 
             // EditFMDisableAllModsCheckBox
             // 
+            EditFMDisableAllModsCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             EditFMDisableAllModsCheckBox.AutoSize = true;
-            EditFMDisableAllModsCheckBox.Location = new Point(8, 216);
-            EditFMDisableAllModsCheckBox.TabIndex = 30;
+            EditFMDisableAllModsCheckBox.Location = new Point(8, 240);
+            EditFMDisableAllModsCheckBox.TabIndex = 33;
             EditFMDisableAllModsCheckBox.UseVisualStyleBackColor = true;
             EditFMDisableAllModsCheckBox.CheckedChanged += EditFMDisableAllModsCheckBox_CheckedChanged;
             // 
             // EditFMDisabledModsTextBox
             // 
-            EditFMDisabledModsTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            EditFMDisabledModsTextBox.Location = new Point(8, 192);
-            EditFMDisabledModsTextBox.Size = new Size(507, 20);
-            EditFMDisabledModsTextBox.TabIndex = 29;
+            EditFMDisabledModsTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            EditFMDisabledModsTextBox.Location = new Point(8, 216);
+            EditFMDisabledModsTextBox.Size = new Size(512, 20);
+            EditFMDisabledModsTextBox.TabIndex = 32;
             EditFMDisabledModsTextBox.TextChanged += EditFMDisabledModsTextBox_TextChanged;
             EditFMDisabledModsTextBox.Leave += EditFMDisabledModsTextBox_Leave;
             // 
             // EditFMDisabledModsLabel
             // 
+            EditFMDisabledModsLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             EditFMDisabledModsLabel.AutoSize = true;
-            EditFMDisabledModsLabel.Location = new Point(8, 176);
-            EditFMDisabledModsLabel.TabIndex = 28;
+            EditFMDisabledModsLabel.Location = new Point(8, 200);
+            EditFMDisabledModsLabel.TabIndex = 31;
             // 
             // EditFMAuthorTextBox
             // 
@@ -1366,6 +1365,9 @@ namespace AngelLoader.Forms
             // 
             ModsTabPage.AutoScroll = true;
             ModsTabPage.BackColor = SystemColors.Control;
+            ModsTabPage.Controls.Add(EditFMDisableAllModsCheckBox);
+            ModsTabPage.Controls.Add(EditFMDisabledModsTextBox);
+            ModsTabPage.Controls.Add(EditFMDisabledModsLabel);
             ModsTabPage.Controls.Add(ModsPanel);
             ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
@@ -1536,6 +1538,7 @@ namespace AngelLoader.Forms
             PatchDMLsPanel.ResumeLayout(false);
             PatchDMLsPanel.PerformLayout();
             ModsTabPage.ResumeLayout(false);
+            ModsTabPage.PerformLayout();
             ResumeLayout(false);
         }
     }
