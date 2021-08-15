@@ -4243,32 +4243,41 @@ namespace AngelLoader.Forms
                 EditFMDisableAllModsCheckBox.Enabled = true;
                 EditFMDisabledModsLabel.Enabled = true;
 
-                ModsPanel.ClearList();
-
-                if (GameIsDark(fm.Game))
+                try
                 {
-                    // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
-                    ModsPanel.Enabled = true;
+                    ModsPanel.SuspendDrawing();
 
-                    (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
+                    ModsPanel.ClearList();
 
-                    var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-                    var checkItems = new DarkCheckList.CheckItem[mods.Count];
-
-                    for (int i = 0; i < mods.Count; i++)
+                    if (GameIsDark(fm.Game))
                     {
-                        Mod mod = mods[i];
-                        checkItems[i] = new DarkCheckList.CheckItem(
-                            disabledModsList.Contains(mod.InternalName),
-                            mod.InternalName);
-                    }
+                        // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
+                        ModsPanel.Enabled = true;
 
-                    ModsPanel.FillList(checkItems);
+                        (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
+
+                        var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                        var checkItems = new DarkCheckList.CheckItem[mods.Count];
+
+                        for (int i = 0; i < mods.Count; i++)
+                        {
+                            Mod mod = mods[i];
+                            checkItems[i] = new DarkCheckList.CheckItem(
+                                disabledModsList.Contains(mod.InternalName),
+                                mod.InternalName);
+                        }
+
+                        ModsPanel.FillList(checkItems);
+                    }
+                    else
+                    {
+                        ModsPanel.Enabled = false;
+                    }
                 }
-                else
+                finally
                 {
-                    ModsPanel.Enabled = false;
+                    ModsPanel.ResumeDrawing();
                 }
 
                 #endregion
