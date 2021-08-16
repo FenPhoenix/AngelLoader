@@ -263,46 +263,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RatingExample_FMSel_Number {
-            get {
-                object obj = ResourceManager.GetObject("RatingExample_FMSel_Number", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RatingExample_FMSel_Number_Dark {
-            get {
-                object obj = ResourceManager.GetObject("RatingExample_FMSel_Number_Dark", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RatingExample_NDL {
-            get {
-                object obj = ResourceManager.GetObject("RatingExample_NDL", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RatingExample_NDL_Dark {
-            get {
-                object obj = ResourceManager.GetObject("RatingExample_NDL_Dark", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap RedExclamationMarkCircle {
             get {
                 object obj = ResourceManager.GetObject("RedExclamationMarkCircle", resourceCulture);

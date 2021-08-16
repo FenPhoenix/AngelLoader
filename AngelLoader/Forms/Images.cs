@@ -654,8 +654,8 @@ namespace AngelLoader.Forms
         private static Bitmap? _ratingExample_NDL_Dark;
         public static Bitmap RatingExample_NDL =>
             DarkModeEnabled
-                ? _ratingExample_NDL_Dark ??= Resources.RatingExample_NDL_Dark
-                : _ratingExample_NDL ??= Resources.RatingExample_NDL;
+                ? _ratingExample_NDL_Dark ??= CreateRatingExample_Number(outOfFive: false, darkMode: true)
+                : _ratingExample_NDL ??= CreateRatingExample_Number(outOfFive: false, darkMode: false);
 
         private static Bitmap? _ratingExample_FMSel_Stars;
         private static Bitmap? _ratingExample_FMSel_Stars_Dark;
@@ -668,8 +668,8 @@ namespace AngelLoader.Forms
         private static Bitmap? _ratingExample_FMSel_Number_Dark;
         public static Bitmap RatingExample_FMSel_Number =>
             DarkModeEnabled
-                ? _ratingExample_FMSel_Number_Dark ??= Resources.RatingExample_FMSel_Number_Dark
-                : _ratingExample_FMSel_Number ??= Resources.RatingExample_FMSel_Number;
+                ? _ratingExample_FMSel_Number_Dark ??= CreateRatingExample_Number(outOfFive: true, darkMode: true)
+                : _ratingExample_FMSel_Number ??= CreateRatingExample_Number(outOfFive: true, darkMode: false);
 
         #endregion
 
@@ -907,6 +907,40 @@ namespace AngelLoader.Forms
             return bmp;
         }
 
+        private static Bitmap CreateRatingExampleRectangle(bool darkMode)
+        {
+            Bitmap ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
+            using var g = Graphics.FromImage(ret);
+            g.FillRectangle(darkMode ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White, 1, 1, 77, 21);
+
+            var borderRect = new Rectangle(0, 0, 78, 22);
+
+            Pen pen = darkMode ? DarkColors.Fen_DGVCellBordersPen : SystemPens.ControlDark;
+            g.DrawRectangle(pen, borderRect);
+
+            return ret;
+        }
+
+        private static Bitmap CreateRatingExample_Number(bool outOfFive, bool darkMode)
+        {
+            Bitmap ret = CreateRatingExampleRectangle(darkMode);
+
+            using var g = Graphics.FromImage(ret);
+
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using Font font = ControlUtils.GetMicrosoftSansSerifDefault();
+            TextRenderer.DrawText(
+                dc: g,
+                text: outOfFive ? "3.5" : "7",
+                font: font,
+                pt: new Point(1, 5),
+                foreColor: darkMode ? DarkColors.Fen_DarkForeground : SystemColors.ControlText,
+                backColor: darkMode ? DarkColors.Fen_DarkBackground : Color.White);
+
+            return ret;
+        }
+
         private static Bitmap CreateRatingExample_FMSel_Stars(bool darkMode)
         {
             Bitmap ret;
@@ -921,14 +955,9 @@ namespace AngelLoader.Forms
                 Bitmap GetStarRightEmpty() => _starRightEmpty = CreateStarImage(StarRightEmptyGPath, px);
                 Bitmap GetStarFull() => _starFull ??= CreateStarImage(StarFullGPath, px);
 
-                ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
+                ret = CreateRatingExampleRectangle(darkMode);
+
                 using var g = Graphics.FromImage(ret);
-                g.FillRectangle(darkMode ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White, 1, 1, 77, 21);
-
-                var borderRect = new Rectangle(0, 0, 78, 22);
-
-                Pen pen = darkMode ? DarkColors.Fen_DGVCellBordersPen : SystemPens.ControlDark;
-                g.DrawRectangle(pen, borderRect);
 
                 g.SmoothingMode = SmoothingMode.AntiAlias;
 

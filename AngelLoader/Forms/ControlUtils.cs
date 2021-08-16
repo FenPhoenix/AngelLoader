@@ -603,5 +603,7 @@ namespace AngelLoader.Forms
             foreach (Control? control in controlCollection) control?.Dispose();
             controlCollection.Clear();
         }
+
+        internal static Font GetMicrosoftSansSerifDefault() => new("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
     }
 }
