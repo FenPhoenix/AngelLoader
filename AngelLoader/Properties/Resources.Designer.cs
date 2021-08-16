@@ -143,46 +143,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FilterByLastPlayed {
-            get {
-                object obj = ResourceManager.GetObject("FilterByLastPlayed", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap FilterByLastPlayed_Dark {
-            get {
-                object obj = ResourceManager.GetObject("FilterByLastPlayed_Dark", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap FilterByReleaseDate {
-            get {
-                object obj = ResourceManager.GetObject("FilterByReleaseDate", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap FilterByReleaseDate_Dark {
-            get {
-                object obj = ResourceManager.GetObject("FilterByReleaseDate_Dark", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap FilterByTags {
             get {
                 object obj = ResourceManager.GetObject("FilterByTags", resourceCulture);

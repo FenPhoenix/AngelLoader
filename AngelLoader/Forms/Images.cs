@@ -359,6 +359,42 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Calendars
+
+        private static readonly Brush _calendarBackgroundBrushDark = new SolidBrush(Color.FromArgb(220, 220, 220));
+        private static readonly Brush _calendarBackgroundBrush = Brushes.White;
+
+        private static readonly Pen _calendarBackgroundPenDark = new Pen(Color.FromArgb(220, 220, 220));
+        private static readonly Pen _calendarBackgroundPen = Pens.White;
+
+        #region Release date
+
+        private static readonly Color _releaseDateForegroundDark = Color.FromArgb(0, 150, 255);
+        private static readonly Color _releaseDateForeground = Color.FromArgb(28, 132, 204);
+
+        private static readonly Brush _releaseDateForegroundBrushDark = new SolidBrush(_releaseDateForegroundDark);
+        private static readonly Brush _releaseDateForegroundBrush = new SolidBrush(_releaseDateForeground);
+
+        private static readonly Pen _releaseDateForegroundPenDark = new Pen(_releaseDateForegroundDark);
+        private static readonly Pen _releaseDateForegroundPen = new Pen(_releaseDateForeground);
+
+        #endregion
+
+        #region Last played
+
+        private static readonly Color _lastPlayedForegroundDark = Color.FromArgb(19, 172, 48);
+        private static readonly Color _lastPlayedForeground = Color.FromArgb(0, 163, 0);
+
+        private static readonly Brush _lastPlayedForegroundBrushDark = new SolidBrush(_lastPlayedForegroundDark);
+        private static readonly Brush _lastPlayedForegroundBrush = new SolidBrush(_lastPlayedForeground);
+
+        private static readonly Pen _lastPlayedForegroundPenDark = new Pen(_lastPlayedForegroundDark);
+        private static readonly Pen _lastPlayedForegroundPen = new Pen(_lastPlayedForeground);
+
+        #endregion
+
+        #endregion
+
         #region Stars
 
         private static readonly Brush _starOutlineBrushDark = new SolidBrush(Color.FromArgb(200, 128, 26));
@@ -531,15 +567,15 @@ namespace AngelLoader.Forms
         private static Bitmap? _filterByReleaseDate_Dark;
         public static Bitmap FilterByReleaseDate =>
             DarkModeEnabled
-                ? _filterByReleaseDate_Dark ??= Resources.FilterByReleaseDate_Dark
-                : _filterByReleaseDate ??= Resources.FilterByReleaseDate;
+                ? _filterByReleaseDate_Dark ??= CreateCalendarImage(lastPlayed: false, darkMode: true)
+                : _filterByReleaseDate ??= CreateCalendarImage(lastPlayed: false, darkMode: false);
 
         private static Bitmap? _filterByLastPlayed;
         private static Bitmap? _filterByLastPlayed_Dark;
         public static Bitmap FilterByLastPlayed =>
             DarkModeEnabled
-                ? _filterByLastPlayed_Dark ??= Resources.FilterByLastPlayed_Dark
-                : _filterByLastPlayed ??= Resources.FilterByLastPlayed;
+                ? _filterByLastPlayed_Dark ??= CreateCalendarImage(lastPlayed: true, darkMode: true)
+                : _filterByLastPlayed ??= CreateCalendarImage(lastPlayed: true, darkMode: false);
 
         private static Bitmap? _filterByTags;
         private static Bitmap? _filterByTags_Dark;
@@ -907,6 +943,69 @@ namespace AngelLoader.Forms
             return bmp;
         }
 
+        private static Bitmap CreateCalendarImage(bool lastPlayed, bool darkMode)
+        {
+            Bitmap ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
+            using var g = Graphics.FromImage(ret);
+
+            g.SmoothingMode = SmoothingMode.None;
+
+            (Brush bgBrush, Pen bgPen) =
+                darkMode
+                    ? (_calendarBackgroundBrushDark, _calendarBackgroundPenDark)
+                    : (_calendarBackgroundBrush, _calendarBackgroundPen);
+
+            (Brush fgBrush, Pen fgPen) =
+                lastPlayed
+                    ? darkMode
+                        ? (_lastPlayedForegroundBrushDark, _lastPlayedForegroundPenDark)
+                        : (_lastPlayedForegroundBrush, _lastPlayedForegroundPen)
+                    : darkMode
+                        ? (_releaseDateForegroundBrushDark, _releaseDateForegroundPenDark)
+                        : (_releaseDateForegroundBrush, _releaseDateForegroundPen);
+
+            // Top bar
+            g.FillRectangle(fgBrush, 0, 2, 21, 4);
+
+            // Main section background
+            g.FillRectangle(bgBrush, 1, 8, 19, 11);
+
+            // Main section outline
+            g.DrawRectangle(fgPen, 0, 7, 20, 12);
+
+            // Vertical line 1
+            g.DrawLine(fgPen, 5, 8, 5, 18);
+            // Vertical line 2
+            g.DrawLine(fgPen, 10, 8, 10, 18);
+            // Vertical line 3
+            g.DrawLine(fgPen, 15, 8, 15, 18);
+
+            // Horizontal line 1
+            g.DrawLine(fgPen, 1, 11, 19, 11);
+            // Horizontal line 2
+            g.DrawLine(fgPen, 1, 15, 19, 15);
+
+            if (lastPlayed)
+            {
+                // Erase middle of horizontal lines on right half
+                g.DrawLine(bgPen, 12, 11, 17, 11);
+                g.DrawLine(bgPen, 12, 15, 17, 15);
+
+                // Erase middle of vertical line on right half
+                g.DrawLine(bgPen, 15, 9, 15, 17);
+
+                PaintArrow9x5(
+                    g: g,
+                    direction: Direction.Right,
+                    area: new Rectangle(13, 9, 5, 9),
+                    pen: fgPen);
+            }
+
+            return ret;
+        }
+
+        #region Rating example
+
         private static Bitmap CreateRatingExampleRectangle(bool darkMode)
         {
             Bitmap ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
@@ -975,6 +1074,8 @@ namespace AngelLoader.Forms
             }
             return ret;
         }
+
+        #endregion
 
         private static Bitmap CreateStarImage(GraphicsPath gp, int px)
         {
