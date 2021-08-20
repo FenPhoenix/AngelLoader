@@ -173,7 +173,7 @@ namespace AngelLoader
                 if (gameExeExists[i])
                 {
                     SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
-                    if (gameIndex is Thief1 or Thief2) GameConfigFiles.FixCharacterDetailLineInCamCfg(Config.GetGamePath(gameIndex));
+                    if (gameIndex is Thief1 or Thief2) GameConfigFiles.FixCharacterDetailLine(Config.GetGamePath(gameIndex));
                 }
             }
 
