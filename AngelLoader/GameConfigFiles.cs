@@ -352,9 +352,6 @@ namespace AngelLoader
             // permanently for other FMs, which causes broken texture UV on many models. The fix is to just force
             // character_detail back to 1 in cam.cfg.
             // TODO(character_detail fix): Let the user turn this off with an advanced option.
-            // TODO(character_detail fix): Alert the user with a dialog on startup/play.
-            // Ask if they want to always apply the fix, give a "don't ask again" checkbox, and tell them they
-            // can always change it in the options.
 
             bool atLeastOneCharacterDetailOneLineFound = false;
             bool linesModified = false;
