@@ -410,6 +410,8 @@ namespace AngelLoader.DataClasses
 
         internal bool HideGameFilterElementsIfGameNotSpecified;
 
+        internal bool EnableCharacterDetailFix = true;
+
         // Mods for the "disable all except fix mods" option
         internal readonly HashSet<string> FixMods = new(StringComparer.OrdinalIgnoreCase);
 

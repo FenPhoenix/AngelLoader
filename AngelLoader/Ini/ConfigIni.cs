@@ -718,10 +718,13 @@ namespace AngelLoader
                         config.VisualTheme = (VisualTheme)field.GetValue(null);
                     }
                 }
-
                 else if (lineTS.StartsWithFast_NoNullChecks("FixMod="))
                 {
                     config.FixMods.Add(val.Trim());
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("EnableCharacterDetailFix="))
+                {
+                    config.EnableCharacterDetailFix = val.EqualsTrue();
                 }
             }
 
@@ -931,6 +934,8 @@ namespace AngelLoader
             #endregion
 
             foreach (string fixMod in config.FixMods) sb.Append("FixMod=").AppendLine(fixMod.Trim());
+
+            sb.Append("EnableCharacterDetailFix=").Append(config.EnableCharacterDetailFix).AppendLine();
 
             using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
             sw.Write(sb.ToString());

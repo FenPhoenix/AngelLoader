@@ -43,6 +43,9 @@ namespace AngelLoader
         private const string key_fm_language_forced = "fm_language_forced";
         private const int key_fm_language_forced_len = 18;
 
+        // cam.cfg
+        private const string key_character_detail = "character_detail";
+
         // SneakyOptions.ini
         private const string key_ExternSelector = "ExternSelector=";
         private const string key_AlwaysShow = "AlwaysShow=";
@@ -289,8 +292,10 @@ namespace AngelLoader
                         // For Dark, we need to know if the game exe itself actually exists.
                         if (GameIsDark(gameIndex) && File.Exists(gameExe))
                         {
-                            SetCamCfgLanguage(Config.GetGamePath(gameIndex), "");
-                            SetDarkFMSelector(gameIndex, Config.GetGamePath(gameIndex), resetSelector: true);
+                            string gamePath = Config.GetGamePath(gameIndex);
+                            SetCamCfgLanguage(gamePath, "");
+                            SetDarkFMSelector(gameIndex, gamePath, resetSelector: true);
+                            if (gameIndex == GameIndex.Thief1) FixCharacterDetailLineInCamCfg(gamePath);
                         }
                         else
                         {
@@ -315,6 +320,81 @@ namespace AngelLoader
                                       "Game: " + gameIndex + "\r\n" +
                                       "Game exe: " + gameExe);
                 }
+            }
+        }
+
+        // @BetterErrors(FixCharacterDetailLineInCamCfg)
+        internal static void FixCharacterDetailLineInCamCfg(string gamePath)
+        {
+            if (!Config.EnableCharacterDetailFix) return;
+
+            if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamCfg, out string camCfg))
+            {
+                Log(Paths.CamCfg + " not found for " + gamePath, stackTrace: true);
+                return;
+            }
+
+            List<string> lines;
+            try
+            {
+                lines = File.ReadAllLines(camCfg).ToList();
+            }
+            catch (Exception ex)
+            {
+                Log("Exception reading " + Paths.CamCfg + " for " + gamePath, ex);
+                return;
+            }
+
+            // The bug:
+            // Ascend the Dim Valley has "character_detail 0" in its fm.cfg file. This file is supposed to contain
+            // values that ONLY apply to that specific FM. But, NewDark writes the character_detail value back
+            // out to the global cam.cfg after reading it from the FM-specific fm.cfg, causing the value to persist
+            // permanently for other FMs, which causes broken texture UV on many models. The fix is to just force
+            // character_detail back to 1 in cam.cfg.
+            // TODO(character_detail fix): Let the user turn this off with an advanced option.
+            // TODO(character_detail fix): Alert the user with a dialog on startup/play.
+            // Ask if they want to always apply the fix, give a "don't ask again" checkbox, and tell them they
+            // can always change it in the options.
+
+            bool atLeastOneCharacterDetailOneLineFound = false;
+            bool linesModified = false;
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lt = lines[i].Trim();
+                if (lt.StartsWithI(key_character_detail))
+                {
+                    string val = lt.Substring(key_character_detail.Length).Trim();
+                    if (val == "0")
+                    {
+                        lines.RemoveAt(i);
+                        i--;
+                        linesModified = true;
+                    }
+                    else if (val == "1")
+                    {
+                        atLeastOneCharacterDetailOneLineFound = true;
+                    }
+                }
+            }
+
+            if (!atLeastOneCharacterDetailOneLineFound)
+            {
+                lines.Add(key_character_detail + " 1");
+                linesModified = true;
+            }
+
+            if (!linesModified) return;
+
+            try
+            {
+                File.WriteAllLines(camCfg, lines);
+            }
+            catch (Exception ex)
+            {
+                Log("Exception writing " + Paths.CamCfg + " for " + gamePath, ex);
+                // ReSharper disable once RedundantJumpStatement
+                return; // Explicit for clarity of intent
             }
         }
 
