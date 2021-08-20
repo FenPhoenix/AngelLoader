@@ -101,7 +101,7 @@ namespace AngelLoader
             if (!success) return false;
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            if (game == GameIndex.Thief1) GameConfigFiles.FixCharacterDetailLineInCamCfg(gamePath);
+            if (game is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLineInCamCfg(gamePath);
             SetUsAsSelector(game, gamePath, PlaySource.OriginalGame);
 
 #if !ReleaseBeta && !ReleasePublic
@@ -139,7 +139,7 @@ namespace AngelLoader
             // Always do this for robustness, see below
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            if (game == GameIndex.Thief1) GameConfigFiles.FixCharacterDetailLineInCamCfg(gamePath);
+            if (game is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLineInCamCfg(gamePath);
             SetUsAsSelector(game, gamePath, PlaySource.FM);
 
             string steamArgs = "";
@@ -224,7 +224,7 @@ namespace AngelLoader
             // Just in case, and for consistency
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            if (fm.Game == Game.Thief1) GameConfigFiles.FixCharacterDetailLineInCamCfg(gamePath);
+            if (fm.Game is Game.Thief1 or Game.Thief2) GameConfigFiles.FixCharacterDetailLineInCamCfg(gamePath);
             // We don't need to do this here, right?
             SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
 

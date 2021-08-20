@@ -295,7 +295,7 @@ namespace AngelLoader
                             string gamePath = Config.GetGamePath(gameIndex);
                             SetCamCfgLanguage(gamePath, "");
                             SetDarkFMSelector(gameIndex, gamePath, resetSelector: true);
-                            if (gameIndex == GameIndex.Thief1) FixCharacterDetailLineInCamCfg(gamePath);
+                            if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2) FixCharacterDetailLineInCamCfg(gamePath);
                         }
                         else
                         {

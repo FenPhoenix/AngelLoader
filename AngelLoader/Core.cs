@@ -165,11 +165,16 @@ namespace AngelLoader
             bool[] gameExeExists = new bool[SupportedGameCount];
             for (int i = 0; i < SupportedGameCount; i++)
             {
+                GameIndex gameIndex = (GameIndex)i;
                 // Existence checks on startup are merely a perf optimization: values start blank so just don't
                 // set them if we don't have a game exe
-                string gameExe = Config.GetGameExe((GameIndex)i);
+                string gameExe = Config.GetGameExe(gameIndex);
                 gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
-                if (gameExeExists[i]) SetGameDataFromDisk((GameIndex)i, storeConfigInfo: true);
+                if (gameExeExists[i])
+                {
+                    SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                    if (gameIndex is Thief1 or Thief2) GameConfigFiles.FixCharacterDetailLineInCamCfg(Config.GetGamePath(gameIndex));
+                }
             }
 
             #endregion
