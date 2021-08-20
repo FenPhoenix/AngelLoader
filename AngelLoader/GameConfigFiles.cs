@@ -415,7 +415,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception reading " + Paths.CamModIni + " for " + gamePath, ex);
+                Log("Exception reading " + Paths.CamCfg + " for " + gamePath, ex);
                 return;
             }
 
@@ -441,7 +441,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception writing " + Paths.CamModIni + " for " + gamePath, ex);
+                Log("Exception writing " + Paths.CamCfg + " for " + gamePath, ex);
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
             }
