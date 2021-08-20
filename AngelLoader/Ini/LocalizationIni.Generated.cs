@@ -139,12 +139,6 @@ namespace AngelLoader
             {
                 PatchTab_Dict.Add(f.Name, f);
             }
-            var modsTabFields = typeof(LText_Class.ModsTab_Class).GetFields(_bfLText);
-            var ModsTab_Dict = new Dictionary<string, FieldInfo>(modsTabFields.Length);
-            foreach (var f in modsTabFields)
-            {
-                ModsTab_Dict.Add(f.Name, f);
-            }
             var readmeAreaFields = typeof(LText_Class.ReadmeArea_Class).GetFields(_bfLText);
             var ReadmeArea_Dict = new Dictionary<string, FieldInfo>(readmeAreaFields.Length);
             foreach (var f in readmeAreaFields)
@@ -585,28 +579,6 @@ namespace AngelLoader
                             if (PatchTab_Dict.TryGetValue(key, out FieldInfo value))
                             {
                                 value.SetValue(ret.PatchTab, lt.Substring(eqIndex + 1));
-                            }
-                        }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[')
-                        {
-                            break;
-                        }
-                        i++;
-                    }
-                }
-                else if (lineT == "[ModsTab]")
-                {
-                    while (i < linesLength - 1)
-                    {
-                        int ltLength;
-                        string lt = lines[i + 1].TrimStart();
-                        int eqIndex = lt.IndexOf('=');
-                        if (eqIndex > -1)
-                        {
-                            string key = lt.Substring(0, eqIndex);
-                            if (ModsTab_Dict.TryGetValue(key, out FieldInfo value))
-                            {
-                                value.SetValue(ret.ModsTab, lt.Substring(eqIndex + 1));
                             }
                         }
                         else if ((ltLength = lt.Length) > 0 && lt[0] == '[')
