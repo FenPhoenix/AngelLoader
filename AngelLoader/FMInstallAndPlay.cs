@@ -224,7 +224,7 @@ namespace AngelLoader
             // Just in case, and for consistency
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            if (fm.Game is Game.Thief1 or Game.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
+            if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
             // We don't need to do this here, right?
             SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
 
@@ -423,7 +423,7 @@ namespace AngelLoader
         private static void GenerateMissFlagFileIfRequired(FanMission fm)
         {
             // Only T1 and T2 have/require missflag.str
-            if (fm.Game != Game.Thief1 && fm.Game != Game.Thief2) return;
+            if (fm.Game is not Game.Thief1 and not Game.Thief2) return;
 
             try
             {
