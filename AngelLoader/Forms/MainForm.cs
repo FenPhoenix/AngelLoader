@@ -1445,6 +1445,7 @@ namespace AngelLoader.Forms
                     AddTagLLMenu.DarkModeEnabled = darkMode;
                     AddTagLLDropDown.DarkModeEnabled = darkMode;
                     AltTitlesLLMenu.DarkModeEnabled = darkMode;
+                    GameFilterControlsLLMenu.DarkModeEnabled = darkMode;
                     FilterControlsLLMenu.DarkModeEnabled = darkMode;
                     PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
                     InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
@@ -2291,6 +2292,33 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
+        {
+            GameFilterControlsLLMenu.Construct(this, components);
+            ShowMenu(GameFilterControlsLLMenu.Menu,
+                GameFilterControlsShowHideButtonToolStrip,
+                MenuPos.RightDown,
+                -GameFilterControlsShowHideButton.Width,
+                GameFilterControlsShowHideButton.Height);
+        }
+
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+        internal void GameFilterControlsMenuItems_Click(object sender, EventArgs e)
+        {
+            var s = (ToolStripMenuItemCustom)sender;
+
+            int index = (int)s.Tag;
+
+            if (Config.GameOrganization == GameOrganization.OneList)
+            {
+                // Not Implemented
+            }
+            else // ByTab
+            {
+                // Not Implemented
+            }
+        }
 
         #region Filter controls visibility menu
 

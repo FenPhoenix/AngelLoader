@@ -726,6 +726,7 @@
             this.GameFilterControlsShowHideButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.GameFilterControlsShowHideButton.Name = "GameFilterControlsShowHideButton";
             this.GameFilterControlsShowHideButton.Size = new System.Drawing.Size(11, 23);
+            this.GameFilterControlsShowHideButton.Click += new System.EventHandler(this.GameFilterControlsShowHideButton_Click);
             // 
             // FilterTitleLabel
             // 

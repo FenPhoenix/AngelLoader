@@ -588,6 +588,7 @@ namespace AngelLoader.Forms
             GameFilterControlsShowHideButton.AutoSize = false;
             GameFilterControlsShowHideButton.DisplayStyle = ToolStripItemDisplayStyle.None;
             GameFilterControlsShowHideButton.Size = new Size(11, 23);
+            GameFilterControlsShowHideButton.Click += GameFilterControlsShowHideButton_Click;
             // 
             // FilterTitleLabel
             // 
