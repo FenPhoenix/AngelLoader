@@ -81,6 +81,7 @@
             this.FilterByThief2Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.FilterByThief3Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.FilterBySS2Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
+            this.GameFilterControlsShowHideButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.FilterTitleLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.FilterTitleTextBox = new AngelLoader.Forms.CustomControls.DarkTextBoxCustom();
             this.FilterAuthorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -613,6 +614,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
+            this.FilterBarFLP.Controls.Add(this.GameFilterControlsShowHideButton);
             this.FilterBarFLP.Controls.Add(this.FilterTitleLabel);
             this.FilterBarFLP.Controls.Add(this.FilterTitleTextBox);
             this.FilterBarFLP.Controls.Add(this.FilterAuthorLabel);
@@ -701,10 +703,20 @@
             this.FilterBySS2Button.ToolTipText = "System Shock 2";
             this.FilterBySS2Button.Click += new System.EventHandler(this.Filters_Changed);
             // 
+            // GameFilterControlsShowHideButton
+            // 
+            this.GameFilterControlsShowHideButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
+            this.GameFilterControlsShowHideButton.Location = new System.Drawing.Point(104, 0);
+            this.GameFilterControlsShowHideButton.Margin = new System.Windows.Forms.Padding(0, 0, 0, 2);
+            this.GameFilterControlsShowHideButton.Name = "GameFilterControlsShowHideButton";
+            this.GameFilterControlsShowHideButton.Size = new System.Drawing.Size(13, 25);
+            this.GameFilterControlsShowHideButton.TabIndex = 0;
+            this.GameFilterControlsShowHideButton.UseVisualStyleBackColor = true;
+            // 
             // FilterTitleLabel
             // 
             this.FilterTitleLabel.AutoSize = true;
-            this.FilterTitleLabel.Location = new System.Drawing.Point(114, 6);
+            this.FilterTitleLabel.Location = new System.Drawing.Point(127, 6);
             this.FilterTitleLabel.Margin = new System.Windows.Forms.Padding(10, 6, 0, 0);
             this.FilterTitleLabel.Name = "FilterTitleLabel";
             this.FilterTitleLabel.Size = new System.Drawing.Size(30, 13);
@@ -713,7 +725,7 @@
             // 
             // FilterTitleTextBox
             // 
-            this.FilterTitleTextBox.Location = new System.Drawing.Point(147, 3);
+            this.FilterTitleTextBox.Location = new System.Drawing.Point(160, 3);
             this.FilterTitleTextBox.Name = "FilterTitleTextBox";
             this.FilterTitleTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterTitleTextBox.TabIndex = 6;
@@ -722,7 +734,7 @@
             // FilterAuthorLabel
             // 
             this.FilterAuthorLabel.AutoSize = true;
-            this.FilterAuthorLabel.Location = new System.Drawing.Point(303, 6);
+            this.FilterAuthorLabel.Location = new System.Drawing.Point(316, 6);
             this.FilterAuthorLabel.Margin = new System.Windows.Forms.Padding(9, 6, 0, 0);
             this.FilterAuthorLabel.Name = "FilterAuthorLabel";
             this.FilterAuthorLabel.Size = new System.Drawing.Size(41, 13);
@@ -731,7 +743,7 @@
             // 
             // FilterAuthorTextBox
             // 
-            this.FilterAuthorTextBox.Location = new System.Drawing.Point(347, 3);
+            this.FilterAuthorTextBox.Location = new System.Drawing.Point(360, 3);
             this.FilterAuthorTextBox.Name = "FilterAuthorTextBox";
             this.FilterAuthorTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterAuthorTextBox.TabIndex = 8;
@@ -759,7 +771,7 @@
             this.FilterShowRecentAtTopButton,
             this.FilterControlsShowHideButton});
             this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(494, 0);
+            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(507, 0);
             this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
             this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(285, 26);
             this.FilterIconButtonsToolStrip.TabIndex = 3;
@@ -2099,6 +2111,7 @@
         internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
         internal CustomControls.DarkButton ReadmeEncodingButton;
         internal CustomControls.ToolStripButtonCustom FilterShowUnavailableButton;
+        internal CustomControls.DarkArrowButton GameFilterControlsShowHideButton;
         //internal CustomControls.DarkTabPageCustom ModsTabPage;
         //internal CustomControls.DarkCheckList ModsPanel;
     }
