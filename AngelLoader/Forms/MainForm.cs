@@ -1753,55 +1753,12 @@ namespace AngelLoader.Forms
                 }
             }
 
-            try
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                if (!startup && Config.HideGameFilterElementsIfGameNotSpecified)
-                {
-                    FilterBarFLP.SuspendDrawing();
-                    GamesTabControl.SuspendDrawing();
-                }
-
-                using (Config.HideGameFilterElementsIfGameNotSpecified ? new DisableEvents(this) : null)
-                {
-                    for (int i = 0; i < SupportedGameCount; i++)
-                    {
-                        GameIndex gameIndex = (GameIndex)i;
-                        Game game = GameIndexToGame(gameIndex);
-                        ToolStripButtonCustom button = _filterByGameButtonsInOrder[i];
-                        bool gameSpecified = !Config.GetGameExe(gameIndex).IsEmpty();
-
-                        if (Config.HideGameFilterElementsIfGameNotSpecified)
-                        {
-                            button.Checked = gameSpecified && Config.Filter.Games.HasFlagFast(game);
-                            button.Visible = gameSpecified;
-                            GamesTabControl.ShowTab(_gameTabsInOrder[i], gameSpecified);
-                            if (!gameSpecified)
-                            {
-                                Config.Filter.Games &= ~game;
-                                FMsDGV.Filter.Games &= ~game;
-                            }
-                        }
-                        else
-                        {
-                            button.Checked = Config.Filter.Games.HasFlagFast(game);
-                        }
-                    }
-                    if (Config.HideGameFilterElementsIfGameNotSpecified)
-                    {
-                        Config.ClearAllSelectedFMs();
-                        Config.ClearAllFilters();
-                        Config.GameTab = Thief1;
-                        if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
-                    }
-                }
-            }
-            finally
-            {
-                if (!startup && Config.HideGameFilterElementsIfGameNotSpecified)
-                {
-                    GamesTabControl.ResumeDrawing();
-                    FilterBarFLP.ResumeDrawing();
-                }
+                GameIndex gameIndex = (GameIndex)i;
+                Game game = GameIndexToGame(gameIndex);
+                ToolStripButtonCustom button = _filterByGameButtonsInOrder[i];
+                button.Checked = Config.Filter.Games.HasFlagFast(game);
             }
 
             AutosizeGameTabsWidth();

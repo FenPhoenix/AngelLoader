@@ -408,8 +408,6 @@ namespace AngelLoader.DataClasses
         internal bool ShowUnsupported;
         internal bool ShowUnavailableFMs;
 
-        internal bool HideGameFilterElementsIfGameNotSpecified;
-
         internal bool EnableCharacterDetailFix = true;
 
         // Mods for the "disable all except fix mods" option
