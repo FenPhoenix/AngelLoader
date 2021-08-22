@@ -332,6 +332,7 @@ namespace AngelLoader
         // character_detail back to 1 in cam.cfg.
         // We also force character_detail 1 in all other config files from which that value can be read and applied.
         // TODO(character_detail fix): Let the user turn this off with an advanced option.
+        // @CAN_RUN_BEFORE_VIEW_INIT
         internal static void FixCharacterDetailLine(string gamePath)
         {
             if (!Config.EnableCharacterDetailFix) return;
