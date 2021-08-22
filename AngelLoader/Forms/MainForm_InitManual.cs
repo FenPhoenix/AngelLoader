@@ -61,7 +61,8 @@ namespace AngelLoader.Forms
             FilterByThief2Button = new ToolStripButtonCustom();
             FilterByThief3Button = new ToolStripButtonCustom();
             FilterBySS2Button = new ToolStripButtonCustom();
-            GameFilterControlsShowHideButton = new DarkArrowButton();
+            GameFilterControlsShowHideButtonToolStrip = new ToolStripCustom();
+            GameFilterControlsShowHideButton = new ToolStripArrowButton();
             FilterTitleLabel = new DarkLabel();
             FilterTitleTextBox = new DarkTextBoxCustom();
             FilterAuthorLabel = new DarkLabel();
@@ -171,6 +172,7 @@ namespace AngelLoader.Forms
             ((ISupportInitialize)FMsDGV).BeginInit();
             FilterBarFLP.SuspendLayout();
             FilterGameButtonsToolStrip.SuspendLayout();
+            GameFilterControlsShowHideButtonToolStrip.SuspendLayout();
             FilterIconButtonsToolStrip.SuspendLayout();
             RefreshAreaToolStrip.SuspendLayout();
             GamesTabControl.SuspendLayout();
@@ -504,7 +506,7 @@ namespace AngelLoader.Forms
             FilterBarFLP.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             FilterBarFLP.AutoScroll = true;
             FilterBarFLP.Controls.Add(FilterGameButtonsToolStrip);
-            FilterBarFLP.Controls.Add(GameFilterControlsShowHideButton);
+            FilterBarFLP.Controls.Add(GameFilterControlsShowHideButtonToolStrip);
             FilterBarFLP.Controls.Add(FilterTitleLabel);
             FilterBarFLP.Controls.Add(FilterTitleTextBox);
             FilterBarFLP.Controls.Add(FilterAuthorLabel);
@@ -570,14 +572,22 @@ namespace AngelLoader.Forms
             FilterBySS2Button.Size = new Size(25, 25);
             FilterBySS2Button.Click += Filters_Changed;
             // 
+            // GameFilterControlsShowHideButtonToolStrip
+            // 
+            GameFilterControlsShowHideButtonToolStrip.CanOverflow = false;
+            GameFilterControlsShowHideButtonToolStrip.Dock = DockStyle.None;
+            GameFilterControlsShowHideButtonToolStrip.Items.Add(GameFilterControlsShowHideButton);
+            GameFilterControlsShowHideButtonToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
+            GameFilterControlsShowHideButtonToolStrip.Padding = new Padding(0);
+            GameFilterControlsShowHideButtonToolStrip.Size = new Size(11, 26);
+            GameFilterControlsShowHideButtonToolStrip.TabIndex = 0;
+            // 
             // GameFilterControlsShowHideButton
             // 
             GameFilterControlsShowHideButton.ArrowDirection = Direction.Down;
             GameFilterControlsShowHideButton.AutoSize = false;
-            GameFilterControlsShowHideButton.Margin = new Padding(0, 0, 0, 2);
-            GameFilterControlsShowHideButton.Size = new Size(13, 25);
-            GameFilterControlsShowHideButton.TabIndex = 0;
-            GameFilterControlsShowHideButton.UseVisualStyleBackColor = true;
+            GameFilterControlsShowHideButton.DisplayStyle = ToolStripItemDisplayStyle.None;
+            GameFilterControlsShowHideButton.Size = new Size(11, 23);
             // 
             // FilterTitleLabel
             // 
@@ -1524,6 +1534,8 @@ namespace AngelLoader.Forms
             FilterBarFLP.PerformLayout();
             FilterGameButtonsToolStrip.ResumeLayout(false);
             FilterGameButtonsToolStrip.PerformLayout();
+            GameFilterControlsShowHideButtonToolStrip.ResumeLayout(false);
+            GameFilterControlsShowHideButtonToolStrip.PerformLayout();
             FilterIconButtonsToolStrip.ResumeLayout(false);
             FilterIconButtonsToolStrip.PerformLayout();
             RefreshAreaToolStrip.ResumeLayout(false);
