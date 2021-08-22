@@ -61,6 +61,7 @@ namespace AngelLoader.Forms
             FilterByThief2Button = new ToolStripButtonCustom();
             FilterByThief3Button = new ToolStripButtonCustom();
             FilterBySS2Button = new ToolStripButtonCustom();
+            GameFilterControlsShowHideButton = new DarkArrowButton();
             FilterTitleLabel = new DarkLabel();
             FilterTitleTextBox = new DarkTextBoxCustom();
             FilterAuthorLabel = new DarkLabel();
@@ -503,6 +504,7 @@ namespace AngelLoader.Forms
             FilterBarFLP.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             FilterBarFLP.AutoScroll = true;
             FilterBarFLP.Controls.Add(FilterGameButtonsToolStrip);
+            FilterBarFLP.Controls.Add(GameFilterControlsShowHideButton);
             FilterBarFLP.Controls.Add(FilterTitleLabel);
             FilterBarFLP.Controls.Add(FilterTitleTextBox);
             FilterBarFLP.Controls.Add(FilterAuthorLabel);
@@ -567,6 +569,15 @@ namespace AngelLoader.Forms
             FilterBySS2Button.Margin = new Padding(0, 0, 2, 0);
             FilterBySS2Button.Size = new Size(25, 25);
             FilterBySS2Button.Click += Filters_Changed;
+            // 
+            // GameFilterControlsShowHideButton
+            // 
+            GameFilterControlsShowHideButton.ArrowDirection = Direction.Down;
+            GameFilterControlsShowHideButton.AutoSize = false;
+            GameFilterControlsShowHideButton.Margin = new Padding(0, 0, 0, 2);
+            GameFilterControlsShowHideButton.Size = new Size(13, 25);
+            GameFilterControlsShowHideButton.TabIndex = 0;
+            GameFilterControlsShowHideButton.UseVisualStyleBackColor = true;
             // 
             // FilterTitleLabel
             // 
