@@ -327,6 +327,9 @@ namespace AngelLoader.DataClasses
 
         internal sealed class FilterBar_Class
         {
+            internal readonly string ShowHideGameFilterMenu_Tabs_ToolTip = "Show or hide game tabs";
+            internal readonly string ShowHideGameFilterMenu_Filters_ToolTip = "Show or hide game filters";
+            [FenGenBlankLine]
             internal readonly string Title = "Title:";
             internal readonly string Author = "Author:";
             [FenGenBlankLine]
@@ -345,7 +348,6 @@ namespace AngelLoader.DataClasses
             internal readonly string RefreshFiltersButtonToolTip = "Refresh filters";
             internal readonly string ClearFiltersButtonToolTip = "Clear filters";
             internal readonly string ResetLayoutButtonToolTip = "Reset layout";
-
             [FenGenBlankLine]
             internal readonly string ShowHideMenuToolTip = "Show or hide filter controls";
             internal readonly string ShowHideMenu_Title = "Title";

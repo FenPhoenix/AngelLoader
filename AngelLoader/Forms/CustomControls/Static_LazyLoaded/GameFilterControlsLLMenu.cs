@@ -60,8 +60,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Localize();
         }
 
-        private static void Localize()
+        internal static void Localize()
         {
+            if (!_constructed) return;
+
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 Menu.Items[i].Text = GetLocalizedGameName((GameIndex)i);

@@ -1148,6 +1148,12 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private void SetGameFilterShowHideMenuText() =>
+            GameFilterControlsShowHideButton.ToolTipText =
+                Config.GameOrganization == GameOrganization.OneList
+                    ? LText.FilterBar.ShowHideGameFilterMenu_Filters_ToolTip
+                    : LText.FilterBar.ShowHideGameFilterMenu_Tabs_ToolTip;
+
         #region ISettingsChangeableWindow
 
         public void Localize() => Localize(startup: false);
@@ -1184,6 +1190,9 @@ namespace AngelLoader.Forms
                     _filterByGameButtonsInOrder[i].ToolTipText = GetLocalizedGameName((GameIndex)i);
                 }
 
+                SetGameFilterShowHideMenuText();
+                GameFilterControlsLLMenu.Localize();
+
                 FilterTitleLabel.Text = LText.FilterBar.Title;
                 FilterAuthorLabel.Text = LText.FilterBar.Author;
 
@@ -1208,6 +1217,7 @@ namespace AngelLoader.Forms
                 FilterShowRecentAtTopButton.ToolTipText = LText.FilterBar.ShowRecentAtTop;
 
                 FilterControlsShowHideButton.ToolTipText = LText.FilterBar.ShowHideMenuToolTip;
+                FilterControlsLLMenu.Localize();
 
                 #endregion
 
@@ -1916,6 +1926,8 @@ namespace AngelLoader.Forms
                 FilterGameButtonsToolStrip.Hide();
                 GamesTabControl.Show();
             }
+
+            SetGameFilterShowHideMenuText();
 
             SetFilterBarScrollButtons();
         }
