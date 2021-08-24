@@ -80,8 +80,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Localize();
         }
 
-        private static void Localize()
+        internal static void Localize()
         {
+            if (!_constructed) return;
+
             TitleMenuItem.Text = LText.FilterBar.ShowHideMenu_Title;
             AuthorMenuItem.Text = LText.FilterBar.ShowHideMenu_Author;
             ReleaseDateMenuItem.Text = LText.FilterBar.ShowHideMenu_ReleaseDate;

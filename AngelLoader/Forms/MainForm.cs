@@ -1208,6 +1208,7 @@ namespace AngelLoader.Forms
                 FilterShowRecentAtTopButton.ToolTipText = LText.FilterBar.ShowRecentAtTop;
 
                 FilterControlsShowHideButton.ToolTipText = LText.FilterBar.ShowHideMenuToolTip;
+                FilterControlsLLMenu.Localize();
 
                 #endregion
 
