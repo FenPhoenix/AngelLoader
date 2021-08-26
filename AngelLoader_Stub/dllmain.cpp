@@ -136,7 +136,7 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     // Note: using ifstream instead of fopen bloats the dll up by 10k, but I can't get fopen to work. Reads the
     // encoding wrong I'm guessing, I don't frickin' know. At least this works, and I can come back and shrink it
     // down later when I know better what I'm doing.
-    std::ifstream ifs(args_file.string().c_str());
+    std::ifstream ifs(args_file.c_str());
     // This will be false if anything's wrong, including if the file doesn't exist (which is a check we need to make)
     if (!ifs)
     {
@@ -178,7 +178,7 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 
     ifs.close();
 
-    std::remove(args_file.string().c_str());
+    fs::remove(args_file);
 
     if (play_original_game_key_found && play_original_game)
     {
