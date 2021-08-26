@@ -5,6 +5,13 @@ namespace AngelLoader
 {
     public static partial class Misc
     {
+        // These wrappers that set UseShellExecute to true are just here for compatibility with .NET Core 3 and
+        // above:
+        // In Framework, UseShellExecute defaults to true, but in Core 3 and above, it defaults to false (it's
+        // something to do with cross-platform concerns). We just want to keep it true to keep behavior the same
+        // and I think sometimes we want it true because there are behavioral differences and some things only
+        // work with it true or false. I can't remember the details at the moment but yeah.
+
         /// <summary>
         /// Starts a process resource by specifying the name of a document or application file and associates the resource with a new <see cref="T:System.Diagnostics.Process" /> component.
         /// <para>
