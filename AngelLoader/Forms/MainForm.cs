@@ -54,7 +54,6 @@ the scroll bar was).
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -729,6 +728,8 @@ namespace AngelLoader.Forms
 
             #region Filters
 
+            GameFilterControlsLLMenu.SetCheckedStates(Config.GameFilterControlVisibilities);
+
             #region Set filter control visibilities
 
             FilterControlsLLMenu.SetCheckedStates(Config.FilterControlVisibilities);
@@ -1148,6 +1149,12 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private void SetGameFilterShowHideMenuText() =>
+            GameFilterControlsShowHideButton.ToolTipText =
+                Config.GameOrganization == GameOrganization.OneList
+                    ? LText.FilterBar.ShowHideGameFilterMenu_Filters_ToolTip
+                    : LText.FilterBar.ShowHideGameFilterMenu_Tabs_ToolTip;
+
         #region ISettingsChangeableWindow
 
         public void Localize() => Localize(startup: false);
@@ -1183,6 +1190,9 @@ namespace AngelLoader.Forms
                 {
                     _filterByGameButtonsInOrder[i].ToolTipText = GetLocalizedGameName((GameIndex)i);
                 }
+
+                SetGameFilterShowHideMenuText();
+                GameFilterControlsLLMenu.Localize();
 
                 FilterTitleLabel.Text = LText.FilterBar.Title;
                 FilterAuthorLabel.Text = LText.FilterBar.Author;
@@ -1446,6 +1456,7 @@ namespace AngelLoader.Forms
                     AddTagLLMenu.DarkModeEnabled = darkMode;
                     AddTagLLDropDown.DarkModeEnabled = darkMode;
                     AltTitlesLLMenu.DarkModeEnabled = darkMode;
+                    GameFilterControlsLLMenu.DarkModeEnabled = darkMode;
                     FilterControlsLLMenu.DarkModeEnabled = darkMode;
                     PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
                     InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
@@ -1650,6 +1661,7 @@ namespace AngelLoader.Forms
                 FMsDGV.CurrentSortDirection,
                 FMsDGV.DefaultCellStyle.Font.SizeInPoints,
                 FMsDGV.Filter,
+                GameFilterControlsLLMenu.GetCheckedStates(),
                 FilterControlsLLMenu.GetCheckedStates(),
                 selectedFM,
                 FMsDGV.GameTabsState,
@@ -1754,60 +1766,17 @@ namespace AngelLoader.Forms
                 }
             }
 
-            try
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                if (!startup && Config.HideGameFilterElementsIfGameNotSpecified)
-                {
-                    FilterBarFLP.SuspendDrawing();
-                    GamesTabControl.SuspendDrawing();
-                }
-
-                using (Config.HideGameFilterElementsIfGameNotSpecified ? new DisableEvents(this) : null)
-                {
-                    for (int i = 0; i < SupportedGameCount; i++)
-                    {
-                        GameIndex gameIndex = (GameIndex)i;
-                        Game game = GameIndexToGame(gameIndex);
-                        ToolStripButtonCustom button = _filterByGameButtonsInOrder[i];
-                        bool gameSpecified = !Config.GetGameExe(gameIndex).IsEmpty();
-
-                        if (Config.HideGameFilterElementsIfGameNotSpecified)
-                        {
-                            button.Checked = gameSpecified && Config.Filter.Games.HasFlagFast(game);
-                            button.Visible = gameSpecified;
-                            GamesTabControl.ShowTab(_gameTabsInOrder[i], gameSpecified);
-                            if (!gameSpecified)
-                            {
-                                Config.Filter.Games &= ~game;
-                                FMsDGV.Filter.Games &= ~game;
-                            }
-                        }
-                        else
-                        {
-                            button.Checked = Config.Filter.Games.HasFlagFast(game);
-                        }
-                    }
-                    if (Config.HideGameFilterElementsIfGameNotSpecified)
-                    {
-                        Config.ClearAllSelectedFMs();
-                        Config.ClearAllFilters();
-                        Config.GameTab = Thief1;
-                        if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
-                    }
-                }
+                GameIndex gameIndex = (GameIndex)i;
+                Game game = GameIndexToGame(gameIndex);
+                ToolStripButtonCustom button = _filterByGameButtonsInOrder[i];
+                button.Checked = Config.Filter.Games.HasFlagFast(game);
             }
-            finally
-            {
-                if (!startup && Config.HideGameFilterElementsIfGameNotSpecified)
-                {
-                    GamesTabControl.ResumeDrawing();
-                    FilterBarFLP.ResumeDrawing();
-                }
-            }
-
-            AutosizeGameTabsWidth();
 
             if (!startup) ChangeFilterControlsForGameType();
+
+            AutosizeGameTabsWidth();
         }
 
         #region Game tabs
@@ -1943,6 +1912,67 @@ namespace AngelLoader.Forms
         // controls properly) but keep the rest of the work before load
         private void ChangeFilterControlsForGameType()
         {
+            if (Config.GameOrganization == GameOrganization.ByTab)
+            {
+                #region Select target tab in advance
+
+                // Perf optimization: We select what will be our target tab in advance, because otherwise we might
+                // cause a chain reaction where one tab gets hidden and the next gets selected, triggering a refresh,
+                // and then that tab gets hidden and the next gets selected, triggering a refresh, etc.
+
+                bool[] checkedStates = GameFilterControlsLLMenu.GetCheckedStates();
+
+                int selectedTabOrderIndex = 0;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    if (GamesTabControl.SelectedTab == _gameTabsInOrder[i])
+                    {
+                        selectedTabOrderIndex = i;
+                        break;
+                    }
+                }
+
+                if (!checkedStates[selectedTabOrderIndex])
+                {
+                    int index = 0;
+                    for (int i = 0; i < checkedStates.Length; i++)
+                    {
+                        if (checkedStates[i])
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    GamesTabControl.SelectedTab = _gameTabsInOrder[index];
+                }
+
+                // Twice through, show first and then hide, to prevent the possibility of a temporary state of no
+                // tabs in the list, thus setting selection to none and screwing us up
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
+                    if (visible) GamesTabControl.ShowTab(_gameTabsInOrder[i], true);
+                }
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
+                    if (!visible) GamesTabControl.ShowTab(_gameTabsInOrder[i], false);
+                }
+
+                #endregion
+            }
+            else // OneList
+            {
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
+                    var button = _filterByGameButtonsInOrder[i];
+                    button.Visible = visible;
+                    if (button.Checked && !visible) button.Checked = false;
+                }
+            }
+
             if (Config.GameOrganization == GameOrganization.OneList)
             {
                 GamesTabControl.Hide();
@@ -1959,6 +1989,8 @@ namespace AngelLoader.Forms
                 FilterGameButtonsToolStrip.Hide();
                 GamesTabControl.Show();
             }
+
+            SetGameFilterShowHideMenuText();
 
             SetFilterBarScrollButtons();
         }
@@ -2335,6 +2367,68 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
+        {
+            GameFilterControlsLLMenu.Construct(this, components);
+            ShowMenu(GameFilterControlsLLMenu.Menu,
+                GameFilterControlsShowHideButtonToolStrip,
+                MenuPos.RightDown,
+                -GameFilterControlsShowHideButton.Width,
+                GameFilterControlsShowHideButton.Height);
+        }
+
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+        internal async void GameFilterControlsMenuItems_Click(object sender, EventArgs e)
+        {
+            var s = (ToolStripMenuItemCustom)sender;
+
+            if (!s.Checked && GameFilterControlsLLMenu.GetCheckedStates().All(x => !x))
+            {
+                s.Checked = true;
+                return;
+            }
+
+            if (Config.GameOrganization == GameOrganization.OneList)
+            {
+                ToolStripButtonCustom? button = null;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    if (s == (ToolStripMenuItemCustom)GameFilterControlsLLMenu.Menu.Items[i])
+                    {
+                        button = _filterByGameButtonsInOrder[i];
+                        break;
+                    }
+                }
+
+                AssertR(button != null, nameof(button) + " is null - button does not have a corresponding menu item");
+
+                button!.Visible = s.Checked;
+                if (button!.Checked && !s.Checked) button.Checked = false;
+
+                // We have to refresh manually because Checked change doesn't trigger the refresh, only Click
+                await SortAndSetFilter(keepSelection: true);
+            }
+            else // ByTab
+            {
+                TabPage? tab = null;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    if (s == (ToolStripMenuItemCustom)GameFilterControlsLLMenu.Menu.Items[i])
+                    {
+                        tab = _gameTabsInOrder[i];
+                        break;
+                    }
+                }
+
+                AssertR(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
+
+                // We don't need to do a manual refresh here because ShowTab will end up resulting in one
+                GamesTabControl.ShowTab(tab!, s.Checked);
+                AutosizeGameTabsWidth();
+                PositionFilterBarAfterTabs();
+            }
+        }
 
         #region Filter controls visibility menu
 

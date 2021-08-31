@@ -49,6 +49,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             _owner = form;
 
+            // TODO: Component LazyLoaded tags are ignored because only Controls are checked in the dictionary filler.
+            // Also, they get stomped on below anyway with the indexes.
+
             Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
             Menu.Items.AddRange(new ToolStripItem[]
             {
