@@ -1922,7 +1922,6 @@ namespace AngelLoader.Forms
 
                 bool[] checkedStates = GameFilterControlsLLMenu.GetCheckedStates();
 
-
                 int selectedTabOrderIndex = 0;
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
