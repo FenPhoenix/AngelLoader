@@ -432,6 +432,39 @@ namespace AngelLoader
         /// <param name="config"></param>
         private static void FinalizeConfig(ConfigData config)
         {
+            #region Ensure validity of game filter visibilities
+
+            bool atLeastOneVisible = false;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                if (config.GameFilterControlVisibilities[i])
+                {
+                    atLeastOneVisible = true;
+                    break;
+                }
+            }
+
+            if (!atLeastOneVisible)
+            {
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    config.GameFilterControlVisibilities[i] = true;
+                }
+            }
+
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                Game game = GameIndexToGame((GameIndex)i);
+
+                if (config.Filter.Games.HasFlagFast(game) &&
+                    !config.GameFilterControlVisibilities[i])
+                {
+                    config.Filter.Games &= ~game;
+                }
+            }
+
+            #endregion
+
             config.TopRightTabsData.EnsureValidity();
 
             #region Date format

@@ -1596,6 +1596,7 @@ namespace AngelLoader
             SortOrder sortDirection,
             float fmsListFontSizeInPoints,
             Filter filter,
+            bool[] gameFilterControlVisibilities,
             bool[] filterControlVisibilities,
             SelectedFM selectedFM,
             GameTabsState gameTabsState,
@@ -1627,6 +1628,7 @@ namespace AngelLoader
 
             #endregion
 
+            Array.Copy(gameFilterControlVisibilities, Config.GameFilterControlVisibilities, SupportedGameCount);
             Array.Copy(filterControlVisibilities, Config.FilterControlVisibilities, HideableFilterControlsCount);
 
             filter.DeepCopyTo(Config.Filter);

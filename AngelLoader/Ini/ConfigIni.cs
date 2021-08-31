@@ -86,6 +86,20 @@ namespace AngelLoader
 
                 #region Filter
 
+                else if (lineTS.StartsWithFast_NoNullChecks("GameFilterVisible") && lineTS[17] != '=')
+                {
+                    string prefix = lineTS.Substring(17, indexOfEq - 17);
+
+                    for (int i = 0; i < SupportedGameCount; i++)
+                    {
+                        if (prefix == GetGamePrefix((GameIndex)i))
+                        {
+                            config.GameFilterControlVisibilities[i] = val.EqualsTrue();
+                            break;
+                        }
+                    }
+                }
+
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterVisible") && lineTS[13] != '=')
                 {
                     string filterName = lineTS.Substring(13, indexOfEq - 13);
@@ -832,6 +846,11 @@ namespace AngelLoader
             #endregion
 
             #region Filters
+
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                sb.Append("GameFilterVisible").Append(GetGamePrefix((GameIndex)i)).Append('=').AppendLine(config.GameFilterControlVisibilities[i].ToString());
+            }
 
             for (int i = 0; i < HideableFilterControlsCount; i++)
             {

@@ -1,6 +1,5 @@
 ﻿#define FenGen_ConfigSource
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -27,6 +26,7 @@ namespace AngelLoader.DataClasses
             // Leave all false
             StartupAlwaysStartSelector = new bool[SupportedGameCount];
 
+            GameFilterControlVisibilities = new bool[SupportedGameCount];
             FilterControlVisibilities = InitializedArray(HideableFilterControlsCount, true);
 
             // We want them empty strings, not null, for safety
@@ -40,6 +40,8 @@ namespace AngelLoader.DataClasses
 
                 UseSteamSwitches[i] = true;
                 StartupFMSelectorLines[i] = new List<string>();
+
+                GameFilterControlVisibilities[i] = true;
             }
 
             //for (int i = 0; i < Defaults.FixMods.Length; i++)
@@ -258,6 +260,8 @@ namespace AngelLoader.DataClasses
         internal readonly Filter Filter = new Filter();
 
         internal readonly bool[] FilterControlVisibilities;
+
+        internal readonly bool[] GameFilterControlVisibilities;
 
         #endregion
 
