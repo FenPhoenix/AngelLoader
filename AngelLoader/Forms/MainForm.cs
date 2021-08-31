@@ -2316,19 +2316,54 @@ namespace AngelLoader.Forms
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void GameFilterControlsMenuItems_Click(object sender, EventArgs e)
+        internal async void GameFilterControlsMenuItems_Click(object sender, EventArgs e)
         {
             var s = (ToolStripMenuItemCustom)sender;
 
-            int index = (int)s.Tag;
+            if (!s.Checked && GameFilterControlsLLMenu.GetCheckedStates().All(x => !x))
+            {
+                s.Checked = true;
+                return;
+            }
 
             if (Config.GameOrganization == GameOrganization.OneList)
             {
-                // Not Implemented
+                ToolStripButtonCustom? button = null;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    if (s == (ToolStripMenuItemCustom)GameFilterControlsLLMenu.Menu.Items[i])
+                    {
+                        button = _filterByGameButtonsInOrder[i];
+                        break;
+                    }
+                }
+
+                AssertR(button != null, nameof(button) + " is null - button does not have a corresponding menu item");
+
+                //GamesTabControl.ShowTab(button!, s.Checked);
+                button!.Visible = s.Checked;
+                if (button!.Checked && !s.Checked) button.Checked = false;
+
+                // We have to refresh manually because Checked change doesn't trigger the refresh, only Click
+                await SortAndSetFilter(keepSelection: true);
             }
             else // ByTab
             {
-                // Not Implemented
+                TabPage? tab = null;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    if (s == (ToolStripMenuItemCustom)GameFilterControlsLLMenu.Menu.Items[i])
+                    {
+                        tab = _gameTabsInOrder[i];
+                        break;
+                    }
+                }
+
+                AssertR(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
+
+                // We don't need to do a manual refresh here because ShowTab will end up resulting in one
+                GamesTabControl.ShowTab(tab!, s.Checked);
+                PositionFilterBarAfterTabs();
             }
         }
 
