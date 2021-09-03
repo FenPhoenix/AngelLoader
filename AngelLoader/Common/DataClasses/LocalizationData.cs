@@ -154,8 +154,6 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string WebSearchURL_ProblemOpening = "There was a problem opening the specified web search URL.";
             [FenGenBlankLine]
-            internal readonly string Install_UnknownGameType = "This FM's game type is unknown, so it can't be installed.";
-            internal readonly string Install_UnsupportedGameType = "This FM's game type is unsupported, so it can't be installed.";
             internal readonly string Install_ArchiveNotFound = "FM archive not found. Unable to install.";
             [FenGenComment(
                 "These messages will be displayed with the game name and then the message itself.",
@@ -184,15 +182,12 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Play_ExecutableNotFound = "Game executable file not specified or not found. Unable to play.";
             internal readonly string Play_ExecutableNotFoundFM = "Game executable file not specified or not found. Unable to play FM.";
-            internal readonly string Play_GamePathNotFound = "Game path not found. Unable to play.";
             internal readonly string Play_AnyGameIsRunning = "One or more supported games are already running. Please exit them first.";
-            internal readonly string Play_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.";
             internal readonly string Play_ConfirmMessage = "Play FM?";
             internal readonly string Play_InstallAndPlayConfirmMessage = "Install and play FM?";
             [FenGenBlankLine]
             internal readonly string DromEd_ExecutableNotFound = "DromEd.exe was not found in the game directory. Unable to open FM.";
             internal readonly string ShockEd_ExecutableNotFound = "ShockEd.exe was not found in the game directory. Unable to open FM.";
-            internal readonly string DromEd_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to open FM.";
             [FenGenBlankLine]
             // @GENGAMES (Localization - Alerts - Dark multiplayer): Begin
             internal readonly string Thief2_Multiplayer_ExecutableNotFound = "Thief2MP.exe was not found in the game directory. Unable to play FM in multiplayer mode.";

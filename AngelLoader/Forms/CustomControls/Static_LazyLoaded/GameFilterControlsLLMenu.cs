@@ -46,7 +46,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 {
                     CheckOnClick = true,
                     Tag = i,
-                    Checked = _checkedStates[i],
+                    Checked = _checkedStates[i]
                 };
                 item.Click += _owner.GameFilterControlsMenuItems_Click;
 
