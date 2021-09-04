@@ -983,7 +983,6 @@ namespace AngelLoader
 
 #endif
 
-        /*
         private enum ModPaths
         {
             ModPath,
@@ -1089,7 +1088,6 @@ namespace AngelLoader
 
             return (Error.None, list);
         }
-        */
 
         #region Helpers
 

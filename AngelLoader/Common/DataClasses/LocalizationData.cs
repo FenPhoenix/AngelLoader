@@ -41,7 +41,7 @@ namespace AngelLoader.DataClasses
         internal readonly CommentTab_Class CommentTab = new CommentTab_Class();
         internal readonly TagsTab_Class TagsTab = new TagsTab_Class();
         internal readonly PatchTab_Class PatchTab = new PatchTab_Class();
-        //internal readonly ModsTab_Class ModsTab = new ModsTab_Class();
+        internal readonly ModsTab_Class ModsTab = new ModsTab_Class();
         internal readonly ReadmeArea_Class ReadmeArea = new ReadmeArea_Class();
         internal readonly PlayOriginalGameMenu_Class PlayOriginalGameMenu = new PlayOriginalGameMenu_Class();
         internal readonly MainButtons_Class MainButtons = new MainButtons_Class();
@@ -479,10 +479,10 @@ namespace AngelLoader.DataClasses
             internal readonly string OpenFMFolder = "Open FM folder";
         }
 
-        //internal sealed class ModsTab_Class
-        //{
-        //    internal readonly string TabText = "Mods";
-        //}
+        internal sealed class ModsTab_Class
+        {
+            internal readonly string TabText = "Mods";
+        }
 
         internal sealed class ReadmeArea_Class
         {
