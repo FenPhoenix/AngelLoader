@@ -707,15 +707,19 @@
             // 
             // GameFilterControlsShowHideButtonToolStrip
             // 
+            this.GameFilterControlsShowHideButtonToolStrip.AutoSize = false;
+            this.GameFilterControlsShowHideButtonToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.GameFilterControlsShowHideButtonToolStrip.CanOverflow = false;
             this.GameFilterControlsShowHideButtonToolStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.GameFilterControlsShowHideButtonToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
+            this.GameFilterControlsShowHideButtonToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.GameFilterControlsShowHideButtonToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.GameFilterControlsShowHideButton});
             this.GameFilterControlsShowHideButtonToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.GameFilterControlsShowHideButtonToolStrip.Location = new System.Drawing.Point(104, 0);
             this.GameFilterControlsShowHideButtonToolStrip.Name = "GameFilterControlsShowHideButtonToolStrip";
             this.GameFilterControlsShowHideButtonToolStrip.Padding = new System.Windows.Forms.Padding(0);
-            this.GameFilterControlsShowHideButtonToolStrip.Size = new System.Drawing.Size(11, 26);
+            this.GameFilterControlsShowHideButtonToolStrip.Size = new System.Drawing.Size(13, 26);
             this.GameFilterControlsShowHideButtonToolStrip.TabIndex = 0;
             // 
             // GameFilterControlsShowHideButton

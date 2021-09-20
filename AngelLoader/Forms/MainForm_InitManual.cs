@@ -574,12 +574,16 @@ namespace AngelLoader.Forms
             // 
             // GameFilterControlsShowHideButtonToolStrip
             // 
+            GameFilterControlsShowHideButtonToolStrip.AutoSize = false;
+            GameFilterControlsShowHideButtonToolStrip.BackColor = SystemColors.Control;
             GameFilterControlsShowHideButtonToolStrip.CanOverflow = false;
             GameFilterControlsShowHideButtonToolStrip.Dock = DockStyle.None;
+            GameFilterControlsShowHideButtonToolStrip.GripMargin = new Padding(0);
+            GameFilterControlsShowHideButtonToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             GameFilterControlsShowHideButtonToolStrip.Items.Add(GameFilterControlsShowHideButton);
             GameFilterControlsShowHideButtonToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
             GameFilterControlsShowHideButtonToolStrip.Padding = new Padding(0);
-            GameFilterControlsShowHideButtonToolStrip.Size = new Size(11, 26);
+            GameFilterControlsShowHideButtonToolStrip.Size = new Size(13, 26);
             GameFilterControlsShowHideButtonToolStrip.TabIndex = 0;
             // 
             // GameFilterControlsShowHideButton
