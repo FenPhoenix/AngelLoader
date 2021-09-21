@@ -19,6 +19,21 @@ Thanks for checking it out!
 
 ## List of localization-related changes by version
 
+### v1.5.3:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.5.0_1.5.3.html)
+
+#### AngelLoader documentation.html changes:
+
+No changed text.
+
+Updated images (updated to show game filters show/hide menu arrow button):
+
+`filter_bar.png`  
+`fms_list_960.png`  
+`main_menu.png`  
+`main_window_full_960.png`  
+
 ### v1.5.2:
 
 No localizable text changes.
