@@ -3095,7 +3095,30 @@ namespace AngelLoader.Forms
 
         private void ModsPanel_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
+            if (EventsDisabled) return;
 
+            if (!FMsDGV.RowSelected()) return;
+
+            var fm = FMsDGV.GetSelectedFM();
+
+            fm.DisabledMods = "";
+
+            foreach (DarkCheckList.CheckItem item in ModsPanel.CheckItems)
+            {
+                if (item.Checked)
+                {
+                    if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
+                    fm.DisabledMods += item.Text;
+                }
+            }
+
+            using (new DisableEvents(this))
+            {
+                EditFMDisabledModsTextBox.Text = fm.DisabledMods;
+            }
+
+            fm.DisabledMods = EditFMDisabledModsTextBox.Text;
+            RefreshSelectedFM(rowOnly: true);
         }
 
         #endregion

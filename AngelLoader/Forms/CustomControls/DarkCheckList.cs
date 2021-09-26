@@ -143,7 +143,12 @@ namespace AngelLoader.Forms.CustomControls
         private void OnItemsCheckedChanged(object sender, EventArgs e)
         {
             var s = (DarkCheckBox)sender;
-            ItemCheckedChanged?.Invoke(this, new DarkCheckListEventArgs(base.Controls.IndexOf(s), s.Checked, s.Text));
+
+            int checkBoxIndex = base.Controls.IndexOf(s);
+
+            CheckItems[checkBoxIndex].Checked = s.Checked;
+
+            ItemCheckedChanged?.Invoke(this, new DarkCheckListEventArgs(checkBoxIndex, s.Checked, s.Text));
         }
     }
 }
