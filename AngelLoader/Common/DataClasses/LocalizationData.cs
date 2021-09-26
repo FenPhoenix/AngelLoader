@@ -220,6 +220,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Help_HelpFileNotFound = "Help file not found.";
             internal readonly string Help_UnableToOpenHelpFile = "Unable to open help file.";
             [FenGenBlankLine]
+            [FenGenComment("Text for the button in the Error dialog box that lets the user view the error log file.")]
             internal readonly string Error_ViewLog = "View log";
         }
 
@@ -322,6 +323,9 @@ namespace AngelLoader.DataClasses
 
         internal sealed class FilterBar_Class
         {
+            [FenGenComment(
+                "Depending on whether game organization is set to \"each game in its own tab\" or \"one list and games are filters\",",
+                "one or the other of these messages will be shown.")]
             internal readonly string ShowHideGameFilterMenu_Tabs_ToolTip = "Show or hide game tabs";
             internal readonly string ShowHideGameFilterMenu_Filters_ToolTip = "Show or hide game filters";
             [FenGenBlankLine]
