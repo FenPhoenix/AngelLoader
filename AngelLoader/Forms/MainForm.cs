@@ -168,10 +168,13 @@ namespace AngelLoader.Forms
 
         private void Test2Button_Click(object sender, EventArgs e)
         {
-            return;
+            //return;
 
-            Width = 1305;
-            Height = 750;
+            //Width = 1305;
+            //Height = 750;
+
+            Width = 1458;
+            Height = 872;
         }
 
         private void Test3Button_Click(object sender, EventArgs e)
