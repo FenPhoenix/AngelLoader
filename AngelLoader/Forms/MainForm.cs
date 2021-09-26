@@ -2743,29 +2743,6 @@ namespace AngelLoader.Forms
             Ini.WriteFullFMDataIni();
         }
 
-        private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
-            RefreshSelectedFM(rowOnly: true);
-        }
-
-        private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
-
-            FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
-            RefreshSelectedFM(rowOnly: true);
-            Ini.WriteFullFMDataIni();
-        }
-
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
@@ -3088,6 +3065,38 @@ namespace AngelLoader.Forms
         }
 
         private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
+
+        #endregion
+
+        #region Mods tab
+
+        private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            FMsDGV.GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
+            RefreshSelectedFM(rowOnly: true);
+        }
+
+        private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            Ini.WriteFullFMDataIni();
+        }
+
+        private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
+
+            FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
+            RefreshSelectedFM(rowOnly: true);
+            Ini.WriteFullFMDataIni();
+        }
+
+        private void ModsPanel_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
+        {
+
+        }
 
         #endregion
 

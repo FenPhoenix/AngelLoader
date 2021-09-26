@@ -1798,6 +1798,7 @@
             this.ModsPanel.Name = "ModsPanel";
             this.ModsPanel.Size = new System.Drawing.Size(512, 184);
             this.ModsPanel.TabIndex = 0;
+            this.ModsPanel.ItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.ModsPanel_ItemCheckedChanged);
             // 
             // ReadmeEncodingButton
             // 

@@ -114,7 +114,9 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         [PublicAPI]
-        public EventHandler<DarkCheckListEventArgs>? ItemCheckedChanged;
+        [Browsable(true)]
+        [EditorBrowsable(EditorBrowsableState.Always)]
+        public event EventHandler<DarkCheckListEventArgs>? ItemCheckedChanged;
 
         internal void FillList(CheckItem[] items)
         {

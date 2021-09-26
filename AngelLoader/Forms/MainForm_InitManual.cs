@@ -1406,6 +1406,7 @@ namespace AngelLoader.Forms
             ModsPanel.Location = new Point(8, 8);
             ModsPanel.Size = new Size(512, 184);
             ModsPanel.TabIndex = 0;
+            ModsPanel.ItemCheckedChanged += ModsPanel_ItemCheckedChanged;
             // 
             // ReadmeEncodingButton
             // 
