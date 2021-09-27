@@ -1318,8 +1318,6 @@ namespace AngelLoader.Forms
                 }
 
                 EditFMFinishedOnButton.Text = LText.EditFMTab.FinishedOn;
-                EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
-                EditFMDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
 
                 MainToolTip.SetToolTip(EditFMScanTitleButton, LText.EditFMTab.RescanTitleToolTip);
                 MainToolTip.SetToolTip(EditFMScanAuthorButton, LText.EditFMTab.RescanAuthorToolTip);
@@ -1362,6 +1360,9 @@ namespace AngelLoader.Forms
                 #region Mods tab
 
                 ModsTabPage.Text = LText.ModsTab.TabText;
+
+                ModsDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
+                ModsDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
 
                 #endregion
 
@@ -3070,30 +3071,30 @@ namespace AngelLoader.Forms
 
         #region Mods tab
 
-        private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+        private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
+            FMsDGV.GetSelectedFM().DisabledMods = ModsDisabledModsTextBox.Text;
             RefreshSelectedFM(rowOnly: true);
         }
 
-        private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
+        private void ModsDisabledModsTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             Ini.WriteFullFMDataIni();
         }
 
-        private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void ModsDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
+            ModsDisabledModsTextBox.Enabled = !ModsDisableAllModsCheckBox.Checked;
 
-            FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
+            FMsDGV.GetSelectedFM().DisableAllMods = ModsDisableAllModsCheckBox.Checked;
             RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
-        private void ModsPanel_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
+        private void ModsCheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
             if (EventsDisabled) return;
 
@@ -3103,7 +3104,7 @@ namespace AngelLoader.Forms
 
             fm.DisabledMods = "";
 
-            foreach (DarkCheckList.CheckItem item in ModsPanel.CheckItems)
+            foreach (DarkCheckList.CheckItem item in ModsCheckList.CheckItems)
             {
                 if (item.Checked)
                 {
@@ -3114,10 +3115,10 @@ namespace AngelLoader.Forms
 
             using (new DisableEvents(this))
             {
-                EditFMDisabledModsTextBox.Text = fm.DisabledMods;
+                ModsDisabledModsTextBox.Text = fm.DisabledMods;
             }
 
-            fm.DisabledMods = EditFMDisabledModsTextBox.Text;
+            fm.DisabledMods = ModsDisabledModsTextBox.Text;
             RefreshSelectedFM(rowOnly: true);
         }
 
@@ -4133,8 +4134,8 @@ namespace AngelLoader.Forms
 
                 #region Mods tab
 
-                ModsPanel.ClearList();
-                ModsPanel.Enabled = false;
+                ModsCheckList.ClearList();
+                ModsCheckList.Enabled = false;
 
                 foreach (Control c in ModsTabPage.Controls)
                 {
@@ -4365,24 +4366,24 @@ namespace AngelLoader.Forms
 
                 #region Mods tab
 
-                EditFMDisableAllModsCheckBox.Checked = fm.DisableAllMods;
-                EditFMDisabledModsTextBox.Text = fm.DisabledMods;
-                EditFMDisabledModsTextBox.Enabled = !fm.DisableAllMods;
+                ModsDisableAllModsCheckBox.Checked = fm.DisableAllMods;
+                ModsDisabledModsTextBox.Text = fm.DisabledMods;
+                ModsDisabledModsTextBox.Enabled = !fm.DisableAllMods;
 
-                ModsPanel.Enabled = true;
-                EditFMDisableAllModsCheckBox.Enabled = true;
-                EditFMDisabledModsLabel.Enabled = true;
+                ModsCheckList.Enabled = true;
+                ModsDisableAllModsCheckBox.Enabled = true;
+                ModsDisabledModsLabel.Enabled = true;
 
                 try
                 {
-                    ModsPanel.SuspendDrawing();
+                    ModsCheckList.SuspendDrawing();
 
-                    ModsPanel.ClearList();
+                    ModsCheckList.ClearList();
 
                     if (GameIsDark(fm.Game))
                     {
                         // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
-                        ModsPanel.Enabled = true;
+                        ModsCheckList.Enabled = true;
 
                         (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
 
@@ -4398,16 +4399,16 @@ namespace AngelLoader.Forms
                                 mod.InternalName);
                         }
 
-                        ModsPanel.FillList(checkItems);
+                        ModsCheckList.FillList(checkItems);
                     }
                     else
                     {
-                        ModsPanel.Enabled = false;
+                        ModsCheckList.Enabled = false;
                     }
                 }
                 finally
                 {
-                    ModsPanel.ResumeDrawing();
+                    ModsCheckList.ResumeDrawing();
                 }
 
                 #endregion

@@ -145,9 +145,10 @@ namespace AngelLoader.Forms
             PatchOpenFMFolderButton = new DarkButton();
             PatchFMNotInstalledLabel = new DarkLabel();
             ModsTabPage = new DarkTabPageCustom();
-            EditFMDisableAllModsCheckBox = new DarkCheckBox();
-            EditFMDisabledModsTextBox = new DarkTextBox();
-            EditFMDisabledModsLabel = new DarkLabel();
+            ModsDisableAllModsCheckBox = new DarkCheckBox();
+            ModsDisabledModsTextBox = new DarkTextBox();
+            ModsDisabledModsLabel = new DarkLabel();
+            ModsCheckList = new DarkCheckList();
             ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
@@ -156,7 +157,6 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
-            ModsPanel = new DarkCheckList();
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
@@ -1164,31 +1164,6 @@ namespace AngelLoader.Forms
             EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
             EditFMReleaseDateCheckBox.CheckedChanged += EditFMReleaseDateCheckBox_CheckedChanged;
             // 
-            // EditFMDisableAllModsCheckBox
-            // 
-            EditFMDisableAllModsCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            EditFMDisableAllModsCheckBox.AutoSize = true;
-            EditFMDisableAllModsCheckBox.Location = new Point(8, 240);
-            EditFMDisableAllModsCheckBox.TabIndex = 33;
-            EditFMDisableAllModsCheckBox.UseVisualStyleBackColor = true;
-            EditFMDisableAllModsCheckBox.CheckedChanged += EditFMDisableAllModsCheckBox_CheckedChanged;
-            // 
-            // EditFMDisabledModsTextBox
-            // 
-            EditFMDisabledModsTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            EditFMDisabledModsTextBox.Location = new Point(8, 216);
-            EditFMDisabledModsTextBox.Size = new Size(512, 20);
-            EditFMDisabledModsTextBox.TabIndex = 32;
-            EditFMDisabledModsTextBox.TextChanged += EditFMDisabledModsTextBox_TextChanged;
-            EditFMDisabledModsTextBox.Leave += EditFMDisabledModsTextBox_Leave;
-            // 
-            // EditFMDisabledModsLabel
-            // 
-            EditFMDisabledModsLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            EditFMDisabledModsLabel.AutoSize = true;
-            EditFMDisabledModsLabel.Location = new Point(8, 200);
-            EditFMDisabledModsLabel.TabIndex = 31;
-            // 
             // EditFMAuthorTextBox
             // 
             EditFMAuthorTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
@@ -1391,22 +1366,47 @@ namespace AngelLoader.Forms
             // 
             ModsTabPage.AutoScroll = true;
             ModsTabPage.BackColor = SystemColors.Control;
-            ModsTabPage.Controls.Add(EditFMDisableAllModsCheckBox);
-            ModsTabPage.Controls.Add(EditFMDisabledModsTextBox);
-            ModsTabPage.Controls.Add(EditFMDisabledModsLabel);
-            ModsTabPage.Controls.Add(ModsPanel);
+            ModsTabPage.Controls.Add(ModsDisableAllModsCheckBox);
+            ModsTabPage.Controls.Add(ModsDisabledModsTextBox);
+            ModsTabPage.Controls.Add(ModsDisabledModsLabel);
+            ModsTabPage.Controls.Add(ModsCheckList);
             ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
             // 
-            // ModsPanel
+            // ModsDisableAllModsCheckBox
             // 
-            ModsPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ModsPanel.AutoScroll = true;
-            ModsPanel.BorderStyle = BorderStyle.FixedSingle;
-            ModsPanel.Location = new Point(8, 8);
-            ModsPanel.Size = new Size(512, 184);
-            ModsPanel.TabIndex = 0;
-            ModsPanel.ItemCheckedChanged += ModsPanel_ItemCheckedChanged;
+            ModsDisableAllModsCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ModsDisableAllModsCheckBox.AutoSize = true;
+            ModsDisableAllModsCheckBox.Location = new Point(8, 240);
+            ModsDisableAllModsCheckBox.TabIndex = 33;
+            ModsDisableAllModsCheckBox.UseVisualStyleBackColor = true;
+            ModsDisableAllModsCheckBox.CheckedChanged += ModsDisableAllModsCheckBox_CheckedChanged;
+            // 
+            // ModsDisabledModsTextBox
+            // 
+            ModsDisabledModsTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ModsDisabledModsTextBox.Location = new Point(8, 216);
+            ModsDisabledModsTextBox.Size = new Size(512, 20);
+            ModsDisabledModsTextBox.TabIndex = 32;
+            ModsDisabledModsTextBox.TextChanged += ModsDisabledModsTextBox_TextChanged;
+            ModsDisabledModsTextBox.Leave += ModsDisabledModsTextBox_Leave;
+            // 
+            // ModsDisabledModsLabel
+            // 
+            ModsDisabledModsLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ModsDisabledModsLabel.AutoSize = true;
+            ModsDisabledModsLabel.Location = new Point(8, 200);
+            ModsDisabledModsLabel.TabIndex = 31;
+            // 
+            // ModsCheckList
+            // 
+            ModsCheckList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ModsCheckList.AutoScroll = true;
+            ModsCheckList.BorderStyle = BorderStyle.FixedSingle;
+            ModsCheckList.Location = new Point(8, 8);
+            ModsCheckList.Size = new Size(512, 184);
+            ModsCheckList.TabIndex = 0;
+            ModsCheckList.ItemCheckedChanged += ModsCheckList_ItemCheckedChanged;
             // 
             // ReadmeEncodingButton
             // 
@@ -1567,6 +1567,7 @@ namespace AngelLoader.Forms
             PatchDMLsPanel.ResumeLayout(false);
             PatchDMLsPanel.PerformLayout();
             ModsTabPage.ResumeLayout(false);
+            ModsTabPage.PerformLayout();
             ResumeLayout(false);
         }
     }
