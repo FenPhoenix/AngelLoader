@@ -38,6 +38,12 @@ namespace AngelLoader.Forms.CustomControls
         private Color? _origBackColor;
         private Color? _origForeColor;
 
+        public DarkCheckList()
+        {
+            base.BackColor = BackColor;
+            base.ForeColor = ForeColor;
+        }
+
         [PublicAPI]
         public CheckItem[] CheckItems = Array.Empty<CheckItem>();
 
@@ -46,7 +52,7 @@ namespace AngelLoader.Forms.CustomControls
         public new bool Controls { get; set; }
 
         [PublicAPI]
-        public new Color BackColor { get; set; } = SystemColors.Control;
+        public new Color BackColor { get; set; } = SystemColors.Window;
         [PublicAPI]
         public new Color ForeColor { get; set; } = SystemColors.ControlText;
 
@@ -86,15 +92,15 @@ namespace AngelLoader.Forms.CustomControls
                     _origValuesStored = true;
                 }
 
-                BackColor = DarkModeBackColor;
-                ForeColor = DarkModeForeColor;
+                base.BackColor = DarkModeBackColor;
+                base.ForeColor = DarkModeForeColor;
             }
             else
             {
                 if (_origValuesStored)
                 {
-                    BackColor = (Color)_origBackColor!;
-                    ForeColor = (Color)_origForeColor!;
+                    base.BackColor = (Color)_origBackColor!;
+                    base.ForeColor = (Color)_origForeColor!;
                 }
             }
 
@@ -149,6 +155,18 @@ namespace AngelLoader.Forms.CustomControls
             CheckItems[checkBoxIndex].Checked = s.Checked;
 
             ItemCheckedChanged?.Invoke(this, new DarkCheckListEventArgs(checkBoxIndex, s.Checked, s.Text));
+        }
+
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            base.OnEnabledChanged(e);
+
+            base.BackColor =
+                _darkModeEnabled
+                    ? DarkModeBackColor
+                    : Enabled
+                        ? BackColor
+                        : SystemColors.Control;
         }
     }
 }

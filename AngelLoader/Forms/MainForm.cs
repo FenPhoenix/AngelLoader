@@ -4378,28 +4378,35 @@ namespace AngelLoader.Forms
                 {
                     ModsCheckList.SuspendDrawing();
 
+                    // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
                     ModsCheckList.ClearList();
 
                     if (GameIsDark(fm.Game))
                     {
-                        // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
-                        ModsCheckList.Enabled = true;
-
                         (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
 
-                        var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-                        var checkItems = new DarkCheckList.CheckItem[mods.Count];
-
-                        for (int i = 0; i < mods.Count; i++)
+                        if (error == Error.None)
                         {
-                            Mod mod = mods[i];
-                            checkItems[i] = new DarkCheckList.CheckItem(
-                                disabledModsList.Contains(mod.InternalName),
-                                mod.InternalName);
-                        }
+                            ModsCheckList.Enabled = true;
 
-                        ModsCheckList.FillList(checkItems);
+                            var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                            var checkItems = new DarkCheckList.CheckItem[mods.Count];
+
+                            for (int i = 0; i < mods.Count; i++)
+                            {
+                                Mod mod = mods[i];
+                                checkItems[i] = new DarkCheckList.CheckItem(
+                                    disabledModsList.Contains(mod.InternalName),
+                                    mod.InternalName);
+                            }
+
+                            ModsCheckList.FillList(checkItems);
+                        }
+                        else
+                        {
+                            ModsCheckList.Enabled = false;
+                        }
                     }
                     else
                     {
