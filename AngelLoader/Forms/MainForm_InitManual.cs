@@ -1011,7 +1011,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanLanguagesButton
             // 
-            EditFMScanLanguagesButton.Location = new Point(137, 261);
+            EditFMScanLanguagesButton.Location = new Point(137, 200);
             EditFMScanLanguagesButton.Size = new Size(22, 23);
             EditFMScanLanguagesButton.TabIndex = 33;
             EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
@@ -1021,13 +1021,13 @@ namespace AngelLoader.Forms
             // EditFMLanguageLabel
             // 
             EditFMLanguageLabel.AutoSize = true;
-            EditFMLanguageLabel.Location = new Point(8, 246);
+            EditFMLanguageLabel.Location = new Point(8, 185);
             EditFMLanguageLabel.TabIndex = 31;
             // 
             // EditFMLanguageComboBox
             // 
             EditFMLanguageComboBox.FormattingEnabled = true;
-            EditFMLanguageComboBox.Location = new Point(9, 262);
+            EditFMLanguageComboBox.Location = new Point(9, 201);
             EditFMLanguageComboBox.Size = new Size(128, 21);
             EditFMLanguageComboBox.TabIndex = 32;
             EditFMLanguageComboBox.SelectedIndexChanged += EditFMLanguageComboBox_SelectedIndexChanged;
@@ -1036,7 +1036,7 @@ namespace AngelLoader.Forms
             // 
             EditFMScanForReadmesButton.AutoSize = true;
             EditFMScanForReadmesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            EditFMScanForReadmesButton.Location = new Point(8, 299);
+            EditFMScanForReadmesButton.Location = new Point(8, 238);
             EditFMScanForReadmesButton.MinimumSize = new Size(130, 23);
             EditFMScanForReadmesButton.Padding = new Padding(13, 0, 0, 0);
             EditFMScanForReadmesButton.TabIndex = 34;

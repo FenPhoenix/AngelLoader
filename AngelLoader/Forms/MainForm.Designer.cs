@@ -1303,7 +1303,7 @@
             // 
             // EditFMScanLanguagesButton
             // 
-            this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 261);
+            this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 200);
             this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
             this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
             this.EditFMScanLanguagesButton.TabIndex = 33;
@@ -1314,7 +1314,7 @@
             // EditFMLanguageLabel
             // 
             this.EditFMLanguageLabel.AutoSize = true;
-            this.EditFMLanguageLabel.Location = new System.Drawing.Point(8, 246);
+            this.EditFMLanguageLabel.Location = new System.Drawing.Point(8, 185);
             this.EditFMLanguageLabel.Name = "EditFMLanguageLabel";
             this.EditFMLanguageLabel.Size = new System.Drawing.Size(125, 13);
             this.EditFMLanguageLabel.TabIndex = 31;
@@ -1323,7 +1323,7 @@
             // EditFMLanguageComboBox
             // 
             this.EditFMLanguageComboBox.FormattingEnabled = true;
-            this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 262);
+            this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 201);
             this.EditFMLanguageComboBox.Name = "EditFMLanguageComboBox";
             this.EditFMLanguageComboBox.Size = new System.Drawing.Size(128, 21);
             this.EditFMLanguageComboBox.TabIndex = 32;
@@ -1333,7 +1333,7 @@
             // 
             this.EditFMScanForReadmesButton.AutoSize = true;
             this.EditFMScanForReadmesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 299);
+            this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 238);
             this.EditFMScanForReadmesButton.MinimumSize = new System.Drawing.Size(130, 23);
             this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
             this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
