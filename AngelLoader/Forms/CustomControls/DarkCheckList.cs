@@ -52,8 +52,12 @@ namespace AngelLoader.Forms.CustomControls
         public new bool Controls { get; set; }
 
         [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new Color BackColor { get; set; } = SystemColors.Window;
         [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new Color ForeColor { get; set; } = SystemColors.ControlText;
 
         [PublicAPI]
