@@ -1224,24 +1224,26 @@ namespace FMScanner
         private DateTime? GetReleaseDate(bool fmIsT3, List<NameAndIndex> usedMisFiles)
         {
             // Look in the readme
-            DateTime? topDT = GetReleaseDateFromTopOfReadmes();
+            DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
 
             // Search for updated dates FIRST, because they'll be the correct ones!
             string ds = GetValueFromReadme(SpecialLogic.None, null, SA_LatestUpdateDateDetect);
             DateTime? dt = null;
-            if (!ds.IsEmpty()) StringToDate(ds, out dt);
+            bool dtIsAmbiguous = false;
+            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
 
             if (ds.IsEmpty() || dt == null)
             {
                 ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
             }
 
-            if (!ds.IsEmpty()) StringToDate(ds, out dt);
-            // Keep the newest of the dates, as it's most likely to be correct; after all, who puts a future date
-            // in their readme?
+            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
+
             if (topDT != null && dt != null)
             {
-                return DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0 ? topDT : dt;
+                return !topDtIsAmbiguous && dtIsAmbiguous ? topDT
+                     : !dtIsAmbiguous && topDtIsAmbiguous ? dt
+                     : DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0 ? topDT : dt;
             }
             else if (topDT != null)
             {
@@ -1885,7 +1887,7 @@ namespace FMScanner
             if (xReleaseDate.Count > 0)
             {
                 string rdString = xReleaseDate[0]?.InnerText ?? "";
-                if (!rdString.IsEmpty()) releaseDate = StringToDate(rdString, out DateTime? dt) ? dt : null;
+                if (!rdString.IsEmpty()) releaseDate = StringToDate(rdString, checkForAmbiguity: false, out DateTime? dt, out _) ? dt : null;
             }
 
             // These files also specify languages and whether the mission has custom stuff, but we're not going
@@ -2063,7 +2065,7 @@ namespace FMScanner
                 }
                 else if (!fmIni.ReleaseDate.IsEmpty())
                 {
-                    ret.LastUpdateDate = StringToDate(fmIni.ReleaseDate, out DateTime? dt) ? dt : null;
+                    ret.LastUpdateDate = StringToDate(fmIni.ReleaseDate, checkForAmbiguity: false, out DateTime? dt, out _) ? dt : null;
                 }
             }
 
@@ -2590,8 +2592,12 @@ namespace FMScanner
             return ret;
         }
 
-        private DateTime? GetReleaseDateFromTopOfReadmes()
+        private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
         {
+            // Always false for now, because we only return dates that have month names in them currently
+            // (was I concerned about number-only dates having not enough context to be sure they're dates?)
+            isAmbiguous = false;
+
             if (_readmeFiles.Count == 0) return null;
 
             const int maxTopLines = 5;
@@ -2614,7 +2620,7 @@ namespace FMScanner
                     string lineT = lines[i].Trim();
                     foreach (var item in _monthNamesEnglish)
                     {
-                        if (lineT.ContainsI(item) && StringToDate(lineT, out DateTime? result))
+                        if (lineT.ContainsI(item) && StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
                         {
                             return result;
                         }
@@ -3830,7 +3836,7 @@ namespace FMScanner
 
         #endregion
 
-        private bool StringToDate(string dateString, [NotNullWhen(true)] out DateTime? dateTime)
+        private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
         {
             // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
             // to guessing about day/month order.
@@ -3844,6 +3850,7 @@ namespace FMScanner
                     out DateTime eurDateResult))
                 {
                     dateTime = eurDateResult;
+                    isAmbiguous = true;
                     return true;
                 }
             }
@@ -3873,8 +3880,62 @@ namespace FMScanner
                 DateTimeStyles.None,
                 out DateTime result);
 
-            dateTime = success ? result : null;
-            return success;
+            if (success)
+            {
+                isAmbiguous = true;
+
+                if (checkForAmbiguity)
+                {
+                    foreach (char c in dateString)
+                    {
+                        if (c.IsAsciiAlpha())
+                        {
+                            isAmbiguous = false;
+                            break;
+                        }
+                    }
+
+                    if (isAmbiguous)
+                    {
+                        string[] nums = dateString.Split(new[] { ' ', '-', '/' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (nums.Length == 3)
+                        {
+                            bool unambiguousYearFound = false;
+                            bool unambiguousDayFound = false;
+
+                            for (int i = 0; i < nums.Length; i++)
+                            {
+                                if (int.TryParse(nums[i], out int numInt))
+                                {
+                                    switch (numInt)
+                                    {
+                                        case >= 1000 and <= 9999:
+                                            unambiguousYearFound = true;
+                                            break;
+                                        case > 12 and <= 31:
+                                            unambiguousDayFound = true;
+                                            break;
+                                    }
+                                }
+                            }
+
+                            if (unambiguousYearFound && unambiguousDayFound)
+                            {
+                                isAmbiguous = false;
+                            }
+                        }
+                    }
+                }
+
+                dateTime = result;
+                return true;
+            }
+            else
+            {
+                isAmbiguous = false;
+                dateTime = null;
+                return false;
+            }
         }
 
         #endregion
