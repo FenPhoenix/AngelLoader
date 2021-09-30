@@ -3859,7 +3859,7 @@ namespace AngelLoader.Forms
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
-        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText);
+        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText, fixUpEmailLinks: true);
 
         private void ReadmeEncodingButton_Click(object sender, EventArgs e)
         {

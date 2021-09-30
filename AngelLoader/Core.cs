@@ -1524,10 +1524,22 @@ namespace AngelLoader
             }
         }
 
-        internal static void OpenLink(string link)
+        internal static void OpenLink(string link, bool fixUpEmailLinks = false)
         {
             try
             {
+                // The RichTextBox may send a link that's supposed to be an email but without the "mailto:" prefix,
+                // so use a crappy heuristic to add it if necessary.
+                if (fixUpEmailLinks && !link.StartsWithI("mailto:") && link.CountCharsUpToAmount('@', 2) == 1)
+                {
+                    int atIndex = link.IndexOf('@');
+                    if (link.IndexOf(':', 0, atIndex) == -1 &&
+                        link.IndexOf('.', atIndex) > 0)
+                    {
+                        link = "mailto:" + link;
+                    }
+                }
+
                 ProcessStart_UseShellExecute(link);
             }
             catch (Exception ex)
