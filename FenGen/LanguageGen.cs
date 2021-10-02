@@ -285,6 +285,8 @@ namespace FenGen
             var sb = new StringBuilder();
             sb.AppendLine("; This is an AngelLoader language file.");
             sb.AppendLine("; This file MUST be saved with UTF8 encoding in order to guarantee correct display of strings.");
+            sb.AppendLine("; Lines beginning with ; are comments to assist the translator and are not used by AngelLoader itself,");
+            sb.AppendLine("; so translation of these lines is not required.");
             sb.AppendLine();
 
             string[] linebreaks = { "\r\n", "\r", "\n" };
