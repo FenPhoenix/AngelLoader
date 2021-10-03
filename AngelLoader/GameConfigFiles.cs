@@ -1005,12 +1005,26 @@ namespace AngelLoader
                 return (Error.CamModIniNotFound, list);
             }
 
+            string[] lines;
+            try
+            {
+                lines = File.ReadAllLines(camModIni);
+            }
+            catch (Exception ex)
+            {
+                Log("Exception reading " + camModIni + "\r\n" +
+                    "Game: " + gameIndex, ex);
+                // @BetterErrors(GetGameMods): Should we show the dialog?
+                //Dialogs.ShowError(nameof(GetGameMods) + "():" +
+                //                  "Couldn't read " + camModIni + "\r\n" +
+                //                  "Game: " + gameIndex);
+                return (Error.CamModIniCouldNotBeRead, list);
+            }
+
             int modPathLastIndex = -1;
             int uberModPathLastIndex = -1;
             int mpModPathLastIndex = -1;
             int mpUberModPathLastIndex = -1;
-
-            string[] lines = File.ReadAllLines(camModIni);
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -1042,7 +1056,7 @@ namespace AngelLoader
                 return lastIndex > -1
                     ? lines[lastIndex].Substring(pathKey.Length).Trim()
                         .Split(Utils.CA_Plus, StringSplitOptions.RemoveEmptyEntries)
-                        .Distinct<string>(StringComparer.OrdinalIgnoreCase).ToList()
+                        .Distinct(StringComparer.OrdinalIgnoreCase).ToList()
                     : new List<string>();
             }
 
@@ -1051,8 +1065,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < list.Count; i++)
                 {
-                    string modPath = list[i];
-                    if (hashSet.Contains(modPath))
+                    if (hashSet.Contains(list[i]))
                     {
                         list.RemoveAt(i);
                         i--;
