@@ -4424,8 +4424,6 @@ namespace AngelLoader.Forms
                             }
 
                             ModsCheckList.FillList(checkItems);
-
-                            ReactOnDisabledModsCheckBox();
                         }
                         else
                         {
@@ -4436,6 +4434,8 @@ namespace AngelLoader.Forms
                     {
                         ModsCheckList.Enabled = false;
                     }
+
+                    ReactOnDisabledModsCheckBox();
                 }
                 finally
                 {
