@@ -3084,10 +3084,25 @@ namespace AngelLoader.Forms
             Ini.WriteFullFMDataIni();
         }
 
+        private void ReactOnDisabledModsCheckBox()
+        {
+            if (ModsDisableAllModsCheckBox.Checked)
+            {
+                ModsDisabledModsTextBox.Enabled = false;
+                ModsCheckList.Enabled = false;
+            }
+            else
+            {
+                ModsDisabledModsTextBox.Enabled = true;
+                ModsCheckList.Enabled = true;
+            }
+        }
+
         private void ModsDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            ModsDisabledModsTextBox.Enabled = !ModsDisableAllModsCheckBox.Checked;
+
+            ReactOnDisabledModsCheckBox();
 
             FMsDGV.GetSelectedFM().DisableAllMods = ModsDisableAllModsCheckBox.Checked;
             RefreshSelectedFM(rowOnly: true);
@@ -4368,9 +4383,7 @@ namespace AngelLoader.Forms
 
                 ModsDisableAllModsCheckBox.Checked = fm.DisableAllMods;
                 ModsDisabledModsTextBox.Text = fm.DisabledMods;
-                ModsDisabledModsTextBox.Enabled = !fm.DisableAllMods;
 
-                ModsCheckList.Enabled = true;
                 ModsDisableAllModsCheckBox.Enabled = true;
                 ModsDisabledModsLabel.Enabled = true;
 
@@ -4402,6 +4415,8 @@ namespace AngelLoader.Forms
                             }
 
                             ModsCheckList.FillList(checkItems);
+
+                            ReactOnDisabledModsCheckBox();
                         }
                         else
                         {

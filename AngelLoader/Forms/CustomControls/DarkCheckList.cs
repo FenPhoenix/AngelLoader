@@ -139,7 +139,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     AutoSize = true,
                     Text = item.Text,
-                    Location = new Point(4, y),
+                    Location = new Point(4, 4 + y),
                     Checked = item.Checked
                 };
                 base.Controls.Add(cb);
