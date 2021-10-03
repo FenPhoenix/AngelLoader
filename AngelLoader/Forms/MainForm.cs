@@ -3106,7 +3106,7 @@ namespace AngelLoader.Forms
 
             foreach (DarkCheckList.CheckItem item in ModsCheckList.CheckItems)
             {
-                if (item.Checked)
+                if (!item.Checked)
                 {
                     if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
                     fm.DisabledMods += item.Text;
@@ -4397,7 +4397,7 @@ namespace AngelLoader.Forms
                             {
                                 Mod mod = mods[i];
                                 checkItems[i] = new DarkCheckList.CheckItem(
-                                    disabledModsList.Contains(mod.InternalName),
+                                    !disabledModsList.Contains(mod.InternalName),
                                     mod.InternalName);
                             }
 
