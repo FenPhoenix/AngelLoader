@@ -134,8 +134,7 @@ namespace AngelLoader
             internal static readonly string[] FixMods =
             {
                 "FMdml",
-                "T2FMDML",
-                "packfix"
+                "T2FMDML"
             };
         }
 
