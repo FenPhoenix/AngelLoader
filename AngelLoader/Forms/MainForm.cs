@@ -4404,6 +4404,15 @@ namespace AngelLoader.Forms
 
                             var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+                            for (int i = 0; i < mods.Count; i++)
+                            {
+                                if (mods[i].IsUber)
+                                {
+                                    mods.RemoveAt(i);
+                                    i--;
+                                }
+                            }
+
                             var checkItems = new DarkCheckList.CheckItem[mods.Count];
 
                             for (int i = 0; i < mods.Count; i++)
