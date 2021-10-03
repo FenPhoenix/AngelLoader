@@ -137,6 +137,7 @@ namespace AngelLoader.Forms.CustomControls
                 var item = items[i];
                 var cb = new DarkCheckBox
                 {
+                    AutoSize = true,
                     Text = item.Text,
                     Location = new Point(4, y),
                     Checked = item.Checked
