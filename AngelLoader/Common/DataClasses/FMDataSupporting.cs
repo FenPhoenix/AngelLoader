@@ -39,6 +39,16 @@ namespace AngelLoader.DataClasses
         }
     }
 
+    [Flags]
+    internal enum DisableModsSwitches
+    {
+        None = 0,
+        Safe = 1,
+        DmlFixes = 2,
+        Scripts = 4,
+        All = Safe | DmlFixes | Scripts
+    }
+
     // IMPORTANT: Do not rename elements or compatibility will break!
     [Flags]
     internal enum CustomResources

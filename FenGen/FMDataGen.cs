@@ -52,7 +52,8 @@ namespace FenGen
         private enum CustomCodeBlockNames
         {
             None,
-            LegacyCustomResources
+            LegacyCustomResources,
+            OldDisableAllMods
         }
 
         private static readonly string[] _numericTypes =
@@ -136,6 +137,15 @@ namespace FenGen
                 "    resourcesFound = true;",
                 "}",
                 "#endregion"
+            };
+
+            internal static readonly string[] OldDisableAllMods =
+            {
+                "else if (lineT.StartsWithFast_NoNullChecks(\"DisableAllMods=\"))",
+                "{",
+                "   string val = lineT.Substring(15);",
+                "   fm.DisableModsSwitches = val.EqualsTrue() ? DisableModsSwitches.Safe : DisableModsSwitches.None;",
+                "}"
             };
         }
 
@@ -348,11 +358,11 @@ namespace FenGen
                     if (ignore) continue;
 
                     last.Name = (item.IsKind(SyntaxKind.FieldDeclaration)
-                            ? ((FieldDeclarationSyntax)item).Declaration.Variables[0].Identifier
-                            : ((PropertyDeclarationSyntax)item).Identifier).Value!.ToString();
+                        ? ((FieldDeclarationSyntax)item).Declaration.Variables[0].Identifier
+                        : ((PropertyDeclarationSyntax)item).Identifier).Value!.ToString();
                     last.Type = (item.IsKind(SyntaxKind.FieldDeclaration)
-                            ? ((FieldDeclarationSyntax)item).Declaration.Type
-                            : ((PropertyDeclarationSyntax)item).Type).ToString();
+                        ? ((FieldDeclarationSyntax)item).Declaration.Type
+                        : ((PropertyDeclarationSyntax)item).Type).ToString();
 
                     fields.Add(last);
                 }
@@ -493,7 +503,7 @@ namespace FenGen
                     }
                 }
                 else if (field.Type[field.Type.Length - 1] == '?' &&
-                        _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
+                         _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
                 {
                     string floatArgs = GetFloatArgsRead(field.Type);
                     string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
@@ -535,13 +545,17 @@ namespace FenGen
                 {
                     w.WL("// PERF: Don't convert to local here; do it at display-time");
                     w.WL(objDotField + " = ConvertHexUnixDateToDateTime(val, convertToLocal: " +
-                                  (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
+                         (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
                 }
                 else if (field.Type == "CustomResources")
                 {
                     // Totally shouldn't be hardcoded...
                     w.WL(obj + ".ResourcesScanned = !val.EqualsI(\"NotScanned\");");
                     w.WL("FillFMHasXFields(fm, val);");
+                }
+                else if (field.Type == "DisableModsSwitches")
+                {
+                    w.WL("FillDisableModsSwitches(fm, val);");
                 }
 
                 // if
@@ -553,6 +567,9 @@ namespace FenGen
                     {
                         case CustomCodeBlockNames.LegacyCustomResources:
                             w.WLs(CustomCodeBlocks.LegacyCustomResourceReads);
+                            break;
+                        case CustomCodeBlockNames.OldDisableAllMods:
+                            w.WLs(CustomCodeBlocks.OldDisableAllMods);
                             break;
                     }
                 }
@@ -795,6 +812,22 @@ namespace FenGen
                     w.WL("sb.AppendLine(\"NotScanned\");");
                     w.WL("}");
                     w.WL("#endif");
+                }
+                else if (field.Type == "DisableModsSwitches")
+                {
+                    if (fields.WriteEmptyValues)
+                    {
+                        w.WL("sb.Append(\"" + fieldIniName + "=\");");
+                        w.WL("CommaCombineDisableModsSwitches(fm, sb);");
+                    }
+                    else
+                    {
+                        w.WL("if(" + objDotField + " != DisableModsSwitches.None)");
+                        w.WL("{");
+                        w.WL("sb.Append(\"" + fieldIniName + "=\");");
+                        w.WL("CommaCombineDisableModsSwitches(fm, sb);");
+                        w.WL("}");
+                    }
                 }
             }
 

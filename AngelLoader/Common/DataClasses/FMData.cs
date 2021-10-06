@@ -94,7 +94,8 @@ namespace AngelLoader.DataClasses
         internal string Comment = "";
 
         internal string DisabledMods = "";
-        internal bool DisableAllMods;
+        [FenGenInsertAfter("OldDisableAllMods")]
+        internal DisableModsSwitches DisableModsSwitches = DisableModsSwitches.None;
 
         [FenGenIgnore]
         internal bool ResourcesScanned;

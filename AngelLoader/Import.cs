@@ -619,7 +619,7 @@ namespace AngelLoader
                                 string val = lineFM.Substring(11);
                                 if (val == "*")
                                 {
-                                    fm.DisableAllMods = true;
+                                    fm.DisableModsSwitches = DisableModsSwitches.Safe;
                                 }
                                 else
                                 {
@@ -772,7 +772,7 @@ namespace AngelLoader
                                 string val = lineFM.Substring(11);
                                 if (val == "*")
                                 {
-                                    fm.DisableAllMods = true;
+                                    fm.DisableModsSwitches = DisableModsSwitches.Safe;
                                 }
                                 else
                                 {
@@ -891,7 +891,7 @@ namespace AngelLoader
                             if (fields.DisabledMods)
                             {
                                 mainFM.DisabledMods = importedFM.DisabledMods;
-                                mainFM.DisableAllMods = importedFM.DisableAllMods;
+                                mainFM.DisableModsSwitches = importedFM.DisableModsSwitches;
                             }
                             if (fields.Tags)
                             {
@@ -963,7 +963,7 @@ namespace AngelLoader
                         if (fields.DisabledMods)
                         {
                             newFM.DisabledMods = importedFM.DisabledMods;
-                            newFM.DisableAllMods = importedFM.DisableAllMods;
+                            newFM.DisableModsSwitches = importedFM.DisableModsSwitches;
                         }
                         if (fields.Tags)
                         {

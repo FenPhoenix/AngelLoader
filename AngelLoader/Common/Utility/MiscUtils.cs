@@ -86,6 +86,11 @@ namespace AngelLoader
             if (value) { fm.Resources |= resource; } else { fm.Resources &= ~resource; }
         }
 
+        internal static void SetDisableModsSwitch(FanMission fm, DisableModsSwitches @switch, bool value)
+        {
+            if (value) { fm.DisableModsSwitches |= @switch; } else { fm.DisableModsSwitches &= ~@switch; }
+        }
+
         internal static bool FMHasResource(FanMission fm, CustomResources resource) => (fm.Resources & resource) == resource;
 
         internal static bool FMNeedsScan(FanMission fm) => !fm.MarkedUnavailable && (fm.Game == Game.Null ||
@@ -122,11 +127,13 @@ namespace AngelLoader
 
         #region Enum HasFlagFast
 
-        internal static bool HasFlagFast(this FinishedState finishedState, FinishedState flag) => (finishedState & flag) == flag;
+        internal static bool HasFlagFast(this FinishedState @enum, FinishedState flag) => (@enum & flag) == flag;
 
-        internal static bool HasFlagFast(this Game game, Game flag) => (game & flag) == flag;
+        internal static bool HasFlagFast(this Game @enum, Game flag) => (@enum & flag) == flag;
 
-        internal static bool HasFlagFast(this Difficulty difficulty, Difficulty flag) => (difficulty & flag) == flag;
+        internal static bool HasFlagFast(this Difficulty @enum, Difficulty flag) => (@enum & flag) == flag;
+
+        internal static bool HasFlagFast(this DisableModsSwitches @enum, DisableModsSwitches flag) => (@enum & flag) == flag;
 
         #endregion
 

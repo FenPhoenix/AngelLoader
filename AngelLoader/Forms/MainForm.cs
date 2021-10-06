@@ -3104,7 +3104,9 @@ namespace AngelLoader.Forms
 
             ReactOnDisabledModsCheckBox();
 
-            FMsDGV.GetSelectedFM().DisableAllMods = ModsDisableAllModsCheckBox.Checked;
+            FMsDGV.GetSelectedFM().DisableModsSwitches = ModsDisableAllModsCheckBox.Checked
+                ? DisableModsSwitches.Safe
+                : DisableModsSwitches.None;
             RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
@@ -3526,7 +3528,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.DisabledMods:
-                    e.Value = fm.DisableAllMods ? LText.FMsList.AllModsDisabledMessage : fm.DisabledMods;
+                    e.Value = fm.DisableModsSwitches == DisableModsSwitches.All ? LText.FMsList.AllModsDisabledMessage : fm.DisabledMods;
                     break;
 
                 case Column.Comment:
@@ -4381,7 +4383,7 @@ namespace AngelLoader.Forms
 
                 #region Mods tab
 
-                ModsDisableAllModsCheckBox.Checked = fm.DisableAllMods;
+                ModsDisableAllModsCheckBox.Checked = fm.DisableModsSwitches.HasFlagFast(DisableModsSwitches.Safe);
                 ModsDisabledModsTextBox.Text = fm.DisabledMods;
 
                 ModsDisableAllModsCheckBox.Enabled = true;
