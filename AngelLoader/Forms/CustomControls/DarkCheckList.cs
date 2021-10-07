@@ -12,11 +12,13 @@ namespace AngelLoader.Forms.CustomControls
         {
             public bool Checked;
             public string Text;
+            public bool Caution;
 
-            public CheckItem(bool @checked, string text)
+            public CheckItem(bool @checked, string text, bool caution)
             {
                 Checked = @checked;
                 Text = text;
+                Caution = caution;
             }
         }
 
@@ -142,6 +144,8 @@ namespace AngelLoader.Forms.CustomControls
                     Location = new Point(4, 4 + y),
                     Checked = item.Checked
                 };
+                // @Mods(DarkCheckBox/FillList()): Temp for development - replace this
+                if (item.Caution) cb.DarkModeBackColor = Color.DarkOrange;
                 base.Controls.Add(cb);
                 cb.CheckedChanged += OnItemsCheckedChanged;
             }

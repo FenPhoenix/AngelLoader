@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using AngelLoader.DataClasses;
+using static AngelLoader.GameSupport;
 
 namespace AngelLoader
 {
@@ -131,16 +132,11 @@ namespace AngelLoader
             internal const uint DaysRecent = 15;
             internal const uint MaxDaysRecent = 99999;
 
-            internal static readonly string[][] FixModsPerGame =
+            internal static readonly Dictionary<GameIndex, HashSet<string>> FixModsPerGame = new()
             {
-                // Thief 1
-                new[] { "OSM", "MPOSM", "FMDML" },
-                // Thief 2
-                new[] { "OSM", "MPOSM", "T2FMDML" },
-                // Thief 3
-                new[] { "" },
-                // System Shock 2
-                new[] { "OSM", "MPOSM", "ubermod", "patch_ext" }
+                { GameIndex.Thief1, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "OSM", "MPOSM", "FMDML" } },
+                { GameIndex.Thief2, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "OSM", "MPOSM", "T2FMDML" } },
+                { GameIndex.SS2, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "OSM", "MPOSM", "ubermod", "patch_ext" } }
             };
         }
 

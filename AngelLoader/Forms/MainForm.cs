@@ -4408,10 +4408,11 @@ namespace AngelLoader.Forms
 
                             for (int i = 0; i < mods.Count; i++)
                             {
-                                if (mods[i].IsUber)
+                                Mod mod = mods[i];
+                                if (mod.IsUber)
                                 {
                                     mods.RemoveAt(i);
-                                    i--;
+                                    mods.Add(mod);
                                 }
                             }
 
@@ -4422,7 +4423,8 @@ namespace AngelLoader.Forms
                                 Mod mod = mods[i];
                                 checkItems[i] = new DarkCheckList.CheckItem(
                                     !disabledModsList.Contains(mod.InternalName),
-                                    mod.InternalName);
+                                    mod.InternalName,
+                                    mod.IsUber);
                             }
 
                             ModsCheckList.FillList(checkItems);
