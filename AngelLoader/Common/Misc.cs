@@ -131,10 +131,16 @@ namespace AngelLoader
             internal const uint DaysRecent = 15;
             internal const uint MaxDaysRecent = 99999;
 
-            internal static readonly string[] FixMods =
+            internal static readonly string[][] FixModsPerGame =
             {
-                "FMdml",
-                "T2FMDML"
+                // Thief 1
+                new[] { "OSM", "MPOSM", "FMDML" },
+                // Thief 2
+                new[] { "OSM", "MPOSM", "T2FMDML" },
+                // Thief 3
+                new[] { "" },
+                // System Shock 2
+                new[] { "OSM", "MPOSM", "ubermod", "patch_ext" }
             };
         }
 
