@@ -145,7 +145,6 @@ namespace AngelLoader.Forms
             PatchOpenFMFolderButton = new DarkButton();
             PatchFMNotInstalledLabel = new DarkLabel();
             ModsTabPage = new DarkTabPageCustom();
-            ModsDisableAllModsCheckBox = new DarkCheckBox();
             ModsDisabledModsTextBox = new DarkTextBox();
             ModsDisabledModsLabel = new DarkLabel();
             ModsCheckList = new DarkCheckList();
@@ -1366,21 +1365,11 @@ namespace AngelLoader.Forms
             // 
             ModsTabPage.AutoScroll = true;
             ModsTabPage.BackColor = SystemColors.Control;
-            ModsTabPage.Controls.Add(ModsDisableAllModsCheckBox);
             ModsTabPage.Controls.Add(ModsDisabledModsTextBox);
             ModsTabPage.Controls.Add(ModsDisabledModsLabel);
             ModsTabPage.Controls.Add(ModsCheckList);
             ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
-            // 
-            // ModsDisableAllModsCheckBox
-            // 
-            ModsDisableAllModsCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ModsDisableAllModsCheckBox.AutoSize = true;
-            ModsDisableAllModsCheckBox.Location = new Point(8, 240);
-            ModsDisableAllModsCheckBox.TabIndex = 33;
-            ModsDisableAllModsCheckBox.UseVisualStyleBackColor = true;
-            ModsDisableAllModsCheckBox.CheckedChanged += ModsDisableAllModsCheckBox_CheckedChanged;
             // 
             // ModsDisabledModsTextBox
             // 

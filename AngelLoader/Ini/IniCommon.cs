@@ -120,62 +120,6 @@ namespace AngelLoader
 
         #region Helpers
 
-        private static void FillDisableModsSwitches(FanMission fm, string fieldsString)
-        {
-            string[] fields = fieldsString.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
-
-            fm.DisableModsSwitches = DisableModsSwitches.None;
-
-            if (fields.Length > 0 && fields[0].EqualsI(nameof(DisableModsSwitches.None))) return;
-
-            for (int i = 0; i < fields.Length; i++)
-            {
-                string field = fields[i];
-
-                if (field.EqualsI(nameof(DisableModsSwitches.Safe)))
-                {
-                    SetDisableModsSwitch(fm, DisableModsSwitches.Safe, true);
-                }
-                else if (field.EqualsI(nameof(DisableModsSwitches.DmlFixes)))
-                {
-                    SetDisableModsSwitch(fm, DisableModsSwitches.DmlFixes, true);
-                }
-                else if (field.EqualsI(nameof(DisableModsSwitches.Scripts)))
-                {
-                    SetDisableModsSwitch(fm, DisableModsSwitches.Scripts, true);
-                }
-            }
-        }
-
-        private static void CommaCombineDisableModsSwitches(FanMission fm, StringBuilder sb)
-        {
-            if (fm.DisableModsSwitches == DisableModsSwitches.None)
-            {
-                sb.AppendLine(nameof(DisableModsSwitches.None));
-                return;
-            }
-            // Hmm... doesn't make for good code, but fast...
-            bool notEmpty = false;
-            if (fm.DisableModsSwitches.HasFlagFast(DisableModsSwitches.Safe))
-            {
-                sb.Append(nameof(DisableModsSwitches.Safe));
-                notEmpty = true;
-            }
-            if (fm.DisableModsSwitches.HasFlagFast(DisableModsSwitches.DmlFixes))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(DisableModsSwitches.DmlFixes));
-                notEmpty = true;
-            }
-            if (fm.DisableModsSwitches.HasFlagFast(DisableModsSwitches.Scripts))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(DisableModsSwitches.Scripts));
-            }
-
-            sb.AppendLine();
-        }
-
         #region FM custom resource work
 
         private static void FillFMHasXFields(FanMission fm, string fieldsString)

@@ -403,12 +403,10 @@ namespace AngelLoader
 
             public int Compare(FanMission x, FanMission y)
             {
-                bool xDisableAllMods = x.DisableModsSwitches == DisableModsSwitches.All;
-                bool yDisableAllMods = y.DisableModsSwitches == DisableModsSwitches.All;
                 int ret =
-                    xDisableAllMods && !yDisableAllMods ? -1 :
-                    !xDisableAllMods && yDisableAllMods ? 1 :
-                    (xDisableAllMods && yDisableAllMods) || x.DisabledMods == y.DisabledMods ? TitleCompare(x, y) :
+                    x.DisableAllMods && !y.DisableAllMods ? -1 :
+                    !x.DisableAllMods && y.DisableAllMods ? 1 :
+                    (x.DisableAllMods && y.DisableAllMods) || x.DisabledMods == y.DisabledMods ? TitleCompare(x, y) :
                     // Sort this column content-first for better UX
                     x.DisabledMods.IsEmpty() ? 1 :
                     y.DisabledMods.IsEmpty() ? -1 :

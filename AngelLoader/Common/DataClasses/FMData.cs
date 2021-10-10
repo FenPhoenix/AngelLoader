@@ -94,8 +94,12 @@ namespace AngelLoader.DataClasses
         internal string Comment = "";
 
         internal string DisabledMods = "";
-        [FenGenInsertAfter("OldDisableAllMods")]
-        internal DisableModsSwitches DisableModsSwitches = DisableModsSwitches.None;
+
+        /// <summary>
+        /// This is for backward compatibility only. Use only for that purpose.
+        /// </summary>
+        [FenGenDoNotWrite]
+        internal bool DisableAllMods;
 
         [FenGenIgnore]
         internal bool ResourcesScanned;

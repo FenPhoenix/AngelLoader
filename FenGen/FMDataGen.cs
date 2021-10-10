@@ -24,6 +24,7 @@ namespace FenGen
             internal bool DoNotTrimValue;
             internal bool DoNotConvertDateTimeToLocal;
             internal CustomCodeBlockNames CodeBlockToInsertAfter = CustomCodeBlockNames.None;
+            internal bool DoNotWrite;
         }
 
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
@@ -273,6 +274,9 @@ namespace FenGen
                             case GenAttributes.FenGenIgnore:
                                 ignore = true;
                                 return;
+                            case GenAttributes.FenGenDoNotWrite:
+                                field.DoNotWrite = true;
+                                break;
                             case GenAttributes.FenGenDoNotConvertDateTimeToLocal:
                                 field.DoNotConvertDateTimeToLocal = true;
                                 break;
@@ -608,6 +612,8 @@ namespace FenGen
             {
                 string objDotField = obj + "." + field.Name;
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
+
+                if (field.DoNotWrite) continue;
 
                 void swlSBAppend(string objField, string value, string suffix = "")
                 {

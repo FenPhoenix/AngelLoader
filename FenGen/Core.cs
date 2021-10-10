@@ -54,6 +54,7 @@ namespace FenGen
 
         internal const string FenGenFMDataSourceClass = nameof(FenGenFMDataSourceClass);
         internal const string FenGenIgnore = nameof(FenGenIgnore);
+        internal const string FenGenDoNotWrite = nameof(FenGenDoNotWrite);
         internal const string FenGenIniName = nameof(FenGenIniName);
         internal const string FenGenNumericEmpty = nameof(FenGenNumericEmpty);
         internal const string FenGenListType = nameof(FenGenListType);

@@ -165,7 +165,6 @@
             this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchFMNotInstalledLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.ModsDisableAllModsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ModsDisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.ModsDisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsCheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
@@ -1744,7 +1743,6 @@
             // 
             this.ModsTabPage.AutoScroll = true;
             this.ModsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.ModsTabPage.Controls.Add(this.ModsDisableAllModsCheckBox);
             this.ModsTabPage.Controls.Add(this.ModsDisabledModsTextBox);
             this.ModsTabPage.Controls.Add(this.ModsDisabledModsLabel);
             this.ModsTabPage.Controls.Add(this.ModsCheckList);
@@ -1753,18 +1751,6 @@
             this.ModsTabPage.Size = new System.Drawing.Size(527, 284);
             this.ModsTabPage.TabIndex = 4;
             this.ModsTabPage.Text = "Mods";
-            // 
-            // ModsDisableAllModsCheckBox
-            // 
-            this.ModsDisableAllModsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ModsDisableAllModsCheckBox.AutoSize = true;
-            this.ModsDisableAllModsCheckBox.Location = new System.Drawing.Point(8, 240);
-            this.ModsDisableAllModsCheckBox.Name = "ModsDisableAllModsCheckBox";
-            this.ModsDisableAllModsCheckBox.Size = new System.Drawing.Size(102, 17);
-            this.ModsDisableAllModsCheckBox.TabIndex = 33;
-            this.ModsDisableAllModsCheckBox.Text = "Disable all mods";
-            this.ModsDisableAllModsCheckBox.UseVisualStyleBackColor = true;
-            this.ModsDisableAllModsCheckBox.CheckedChanged += new System.EventHandler(this.ModsDisableAllModsCheckBox_CheckedChanged);
             // 
             // ModsDisabledModsTextBox
             // 
@@ -2135,7 +2121,6 @@
         internal CustomControls.ToolStripArrowButton GameFilterControlsShowHideButton;
         internal CustomControls.DarkTabPageCustom ModsTabPage;
         internal CustomControls.DarkCheckList ModsCheckList;
-        internal CustomControls.DarkCheckBox ModsDisableAllModsCheckBox;
         internal CustomControls.DarkTextBox ModsDisabledModsTextBox;
         internal CustomControls.DarkLabel ModsDisabledModsLabel;
     }

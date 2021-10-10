@@ -1362,7 +1362,6 @@ namespace AngelLoader.Forms
                 ModsTabPage.Text = LText.ModsTab.TabText;
 
                 ModsDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
-                ModsDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
 
                 #endregion
 
@@ -3084,33 +3083,6 @@ namespace AngelLoader.Forms
             Ini.WriteFullFMDataIni();
         }
 
-        private void ReactOnDisabledModsCheckBox()
-        {
-            if (ModsDisableAllModsCheckBox.Checked)
-            {
-                ModsDisabledModsTextBox.Enabled = false;
-                ModsCheckList.Enabled = false;
-            }
-            else
-            {
-                ModsDisabledModsTextBox.Enabled = true;
-                ModsCheckList.Enabled = true;
-            }
-        }
-
-        private void ModsDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-
-            ReactOnDisabledModsCheckBox();
-
-            FMsDGV.GetSelectedFM().DisableModsSwitches = ModsDisableAllModsCheckBox.Checked
-                ? DisableModsSwitches.Safe
-                : DisableModsSwitches.None;
-            RefreshSelectedFM(rowOnly: true);
-            Ini.WriteFullFMDataIni();
-        }
-
         private void ModsCheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
             if (EventsDisabled) return;
@@ -3528,7 +3500,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.DisabledMods:
-                    e.Value = fm.DisableModsSwitches == DisableModsSwitches.All ? LText.FMsList.AllModsDisabledMessage : fm.DisabledMods;
+                    e.Value = fm.DisableAllMods ? LText.FMsList.AllModsDisabledMessage : fm.DisabledMods;
                     break;
 
                 case Column.Comment:
@@ -4383,10 +4355,8 @@ namespace AngelLoader.Forms
 
                 #region Mods tab
 
-                ModsDisableAllModsCheckBox.Checked = fm.DisableModsSwitches.HasFlagFast(DisableModsSwitches.Safe);
                 ModsDisabledModsTextBox.Text = fm.DisabledMods;
 
-                ModsDisableAllModsCheckBox.Enabled = true;
                 ModsDisabledModsLabel.Enabled = true;
 
                 try
@@ -4406,6 +4376,10 @@ namespace AngelLoader.Forms
 
                             var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+                            bool allDisabled = fm.DisableAllMods;
+
+                            if (allDisabled) fm.DisabledMods = "";
+
                             for (int i = 0; i < mods.Count; i++)
                             {
                                 Mod mod = mods[i];
@@ -4422,9 +4396,21 @@ namespace AngelLoader.Forms
                             {
                                 Mod mod = mods[i];
                                 checkItems[i] = new DarkCheckList.CheckItem(
-                                    !disabledModsList.Contains(mod.InternalName),
-                                    mod.InternalName,
-                                    mod.IsUber);
+                                    @checked: allDisabled ? mod.IsUber : !disabledModsList.Contains(mod.InternalName),
+                                    text: mod.InternalName,
+                                    caution: mod.IsUber);
+
+                                if (allDisabled && !mod.IsUber)
+                                {
+                                    if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
+                                    fm.DisabledMods += mod.InternalName;
+                                }
+                            }
+
+                            if (allDisabled)
+                            {
+                                ModsDisabledModsTextBox.Text = fm.DisabledMods;
+                                fm.DisableAllMods = false;
                             }
 
                             ModsCheckList.FillList(checkItems);
@@ -4438,8 +4424,6 @@ namespace AngelLoader.Forms
                     {
                         ModsCheckList.Enabled = false;
                     }
-
-                    ReactOnDisabledModsCheckBox();
                 }
                 finally
                 {

@@ -616,15 +616,7 @@ namespace AngelLoader
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
                             {
-                                string val = lineFM.Substring(11);
-                                if (val == "*")
-                                {
-                                    fm.DisableModsSwitches = DisableModsSwitches.Safe;
-                                }
-                                else
-                                {
-                                    fm.DisabledMods = val;
-                                }
+                                fm.DisabledMods = lineFM.Substring(11);
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
                             {
@@ -769,15 +761,7 @@ namespace AngelLoader
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
                             {
-                                string val = lineFM.Substring(11);
-                                if (val == "*")
-                                {
-                                    fm.DisableModsSwitches = DisableModsSwitches.Safe;
-                                }
-                                else
-                                {
-                                    fm.DisabledMods = val;
-                                }
+                                fm.DisabledMods = lineFM.Substring(11);
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
                             {
@@ -891,7 +875,7 @@ namespace AngelLoader
                             if (fields.DisabledMods)
                             {
                                 mainFM.DisabledMods = importedFM.DisabledMods;
-                                mainFM.DisableModsSwitches = importedFM.DisableModsSwitches;
+                                mainFM.DisableAllMods = mainFM.DisabledMods == "*";
                             }
                             if (fields.Tags)
                             {
@@ -963,7 +947,7 @@ namespace AngelLoader
                         if (fields.DisabledMods)
                         {
                             newFM.DisabledMods = importedFM.DisabledMods;
-                            newFM.DisableModsSwitches = importedFM.DisableModsSwitches;
+                            newFM.DisableAllMods = newFM.DisabledMods == "*";
                         }
                         if (fields.Tags)
                         {

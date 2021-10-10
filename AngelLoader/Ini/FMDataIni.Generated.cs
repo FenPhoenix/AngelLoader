@@ -188,15 +188,10 @@ namespace AngelLoader
                     string val = lineT.Substring(13);
                     fm.DisabledMods = val;
                 }
-                else if (lineT.StartsWithFast_NoNullChecks("DisableModsSwitches="))
-                {
-                    string val = lineT.Substring(20);
-                    FillDisableModsSwitches(fm, val);
-                }
                 else if (lineT.StartsWithFast_NoNullChecks("DisableAllMods="))
                 {
                     string val = lineT.Substring(15);
-                    fm.DisableModsSwitches = val.EqualsTrue() ? DisableModsSwitches.Safe : DisableModsSwitches.None;
+                    fm.DisableAllMods = val.EqualsTrue();
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasResources="))
                 {
@@ -421,11 +416,6 @@ namespace AngelLoader
                 {
                     sb.Append("DisabledMods=");
                     sb.AppendLine(fm.DisabledMods);
-                }
-                if(fm.DisableModsSwitches != DisableModsSwitches.None)
-                {
-                    sb.Append("DisableModsSwitches=");
-                    CommaCombineDisableModsSwitches(fm, sb);
                 }
 #if write_old_resources_style
                 if (fm.ResourcesScanned)
