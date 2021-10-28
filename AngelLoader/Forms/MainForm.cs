@@ -3089,6 +3089,11 @@ namespace AngelLoader.Forms
 
             if (!FMsDGV.RowSelected()) return;
 
+            SetDisabledModsFromCheckItems();
+        }
+
+        private void SetDisabledModsFromCheckItems()
+        {
             var fm = FMsDGV.GetSelectedFM();
 
             fm.DisabledMods = "";
