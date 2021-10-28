@@ -1765,7 +1765,7 @@
             this.ModsResetFLP.Location = new System.Drawing.Point(8, 192);
             this.ModsResetFLP.Name = "ModsResetFLP";
             this.ModsResetFLP.Size = new System.Drawing.Size(513, 24);
-            this.ModsResetFLP.TabIndex = 34;
+            this.ModsResetFLP.TabIndex = 1;
             this.ModsResetFLP.WrapContents = false;
             // 
             // ModsResetButton
@@ -1775,7 +1775,7 @@
             this.ModsResetButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ModsResetButton.Name = "ModsResetButton";
             this.ModsResetButton.Size = new System.Drawing.Size(75, 23);
-            this.ModsResetButton.TabIndex = 33;
+            this.ModsResetButton.TabIndex = 0;
             this.ModsResetButton.Text = "Reset";
             this.ModsResetButton.UseVisualStyleBackColor = true;
             this.ModsResetButton.Click += new System.EventHandler(this.ModsResetButton_Click);
@@ -1787,7 +1787,7 @@
             this.ModsDisabledModsTextBox.Location = new System.Drawing.Point(8, 236);
             this.ModsDisabledModsTextBox.Name = "ModsDisabledModsTextBox";
             this.ModsDisabledModsTextBox.Size = new System.Drawing.Size(512, 20);
-            this.ModsDisabledModsTextBox.TabIndex = 32;
+            this.ModsDisabledModsTextBox.TabIndex = 3;
             this.ModsDisabledModsTextBox.TextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
             this.ModsDisabledModsTextBox.Leave += new System.EventHandler(this.ModsDisabledModsTextBox_Leave);
             // 
@@ -1798,7 +1798,7 @@
             this.ModsDisabledModsLabel.Location = new System.Drawing.Point(8, 220);
             this.ModsDisabledModsLabel.Name = "ModsDisabledModsLabel";
             this.ModsDisabledModsLabel.Size = new System.Drawing.Size(79, 13);
-            this.ModsDisabledModsLabel.TabIndex = 31;
+            this.ModsDisabledModsLabel.TabIndex = 2;
             this.ModsDisabledModsLabel.Text = "Disabled mods:";
             // 
             // ModsCheckList

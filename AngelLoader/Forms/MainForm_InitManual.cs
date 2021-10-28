@@ -1382,7 +1382,7 @@ namespace AngelLoader.Forms
             ModsResetFLP.FlowDirection = FlowDirection.RightToLeft;
             ModsResetFLP.Location = new Point(8, 192);
             ModsResetFLP.Size = new Size(513, 24);
-            ModsResetFLP.TabIndex = 34;
+            ModsResetFLP.TabIndex = 1;
             ModsResetFLP.WrapContents = false;
             // 
             // ModsResetButton
@@ -1390,7 +1390,7 @@ namespace AngelLoader.Forms
             ModsResetButton.Location = new Point(438, 0);
             ModsResetButton.Margin = new Padding(0);
             ModsResetButton.MinimumSize = new Size(75, 23);
-            ModsResetButton.TabIndex = 33;
+            ModsResetButton.TabIndex = 0;
             ModsResetButton.UseVisualStyleBackColor = true;
             ModsResetButton.Click += ModsResetButton_Click;
             // 
@@ -1399,7 +1399,7 @@ namespace AngelLoader.Forms
             ModsDisabledModsTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             ModsDisabledModsTextBox.Location = new Point(8, 236);
             ModsDisabledModsTextBox.Size = new Size(512, 20);
-            ModsDisabledModsTextBox.TabIndex = 32;
+            ModsDisabledModsTextBox.TabIndex = 3;
             ModsDisabledModsTextBox.TextChanged += ModsDisabledModsTextBox_TextChanged;
             ModsDisabledModsTextBox.Leave += ModsDisabledModsTextBox_Leave;
             // 
@@ -1408,7 +1408,7 @@ namespace AngelLoader.Forms
             ModsDisabledModsLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             ModsDisabledModsLabel.AutoSize = true;
             ModsDisabledModsLabel.Location = new Point(8, 220);
-            ModsDisabledModsLabel.TabIndex = 31;
+            ModsDisabledModsLabel.TabIndex = 2;
             // 
             // ModsCheckList
             // 
