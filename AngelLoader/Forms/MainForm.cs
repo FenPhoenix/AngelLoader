@@ -1361,6 +1361,8 @@ namespace AngelLoader.Forms
 
                 ModsTabPage.Text = LText.ModsTab.TabText;
 
+                ModsResetButton.Text = LText.ModsTab.Reset;
+
                 ModsDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
 
                 #endregion

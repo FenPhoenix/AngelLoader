@@ -486,6 +486,7 @@ namespace AngelLoader.DataClasses
         internal sealed class ModsTab_Class
         {
             internal readonly string TabText = "Mods";
+            internal readonly string Reset = "Reset";
         }
 
         internal sealed class ReadmeArea_Class
