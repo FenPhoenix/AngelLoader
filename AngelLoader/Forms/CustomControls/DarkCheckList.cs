@@ -49,10 +49,6 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         public CheckItem[] CheckItems = Array.Empty<CheckItem>();
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool Controls { get; set; }
-
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

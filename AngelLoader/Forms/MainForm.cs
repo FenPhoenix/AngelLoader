@@ -3089,11 +3089,6 @@ namespace AngelLoader.Forms
 
             if (!FMsDGV.RowSelected()) return;
 
-            SetDisabledModsFromCheckItems();
-        }
-
-        private void SetDisabledModsFromCheckItems()
-        {
             var fm = FMsDGV.GetSelectedFM();
 
             fm.DisabledMods = "";
@@ -3113,6 +3108,27 @@ namespace AngelLoader.Forms
             }
 
             fm.DisabledMods = ModsDisabledModsTextBox.Text;
+            RefreshSelectedFM(rowOnly: true);
+        }
+
+        private void ModsResetButton_Click(object sender, EventArgs e)
+        {
+            var fm = FMsDGV.GetSelectedFM();
+
+            using (new DisableEvents(this))
+            {
+                foreach (Control control in ModsCheckList.Controls)
+                {
+                    if (control is CheckBox checkBox)
+                    {
+                        checkBox.Checked = true;
+                    }
+                }
+
+                fm.DisabledMods = "";
+                ModsDisabledModsTextBox.Text = "";
+            }
+
             RefreshSelectedFM(rowOnly: true);
         }
 

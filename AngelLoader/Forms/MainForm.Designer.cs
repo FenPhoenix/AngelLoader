@@ -165,6 +165,8 @@
             this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchFMNotInstalledLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
+            this.ModsResetFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.ModsResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ModsDisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.ModsDisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsCheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
@@ -206,6 +208,7 @@
             this.PatchMainPanel.SuspendLayout();
             this.PatchDMLsPanel.SuspendLayout();
             this.ModsTabPage.SuspendLayout();
+            this.ModsResetFLP.SuspendLayout();
             this.SuspendLayout();
             // 
             // GameTabsImageList
@@ -1743,6 +1746,7 @@
             // 
             this.ModsTabPage.AutoScroll = true;
             this.ModsTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.ModsTabPage.Controls.Add(this.ModsResetFLP);
             this.ModsTabPage.Controls.Add(this.ModsDisabledModsTextBox);
             this.ModsTabPage.Controls.Add(this.ModsDisabledModsLabel);
             this.ModsTabPage.Controls.Add(this.ModsCheckList);
@@ -1752,11 +1756,35 @@
             this.ModsTabPage.TabIndex = 4;
             this.ModsTabPage.Text = "Mods";
             // 
+            // ModsResetFLP
+            // 
+            this.ModsResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ModsResetFLP.Controls.Add(this.ModsResetButton);
+            this.ModsResetFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.ModsResetFLP.Location = new System.Drawing.Point(8, 192);
+            this.ModsResetFLP.Name = "ModsResetFLP";
+            this.ModsResetFLP.Size = new System.Drawing.Size(513, 24);
+            this.ModsResetFLP.TabIndex = 34;
+            this.ModsResetFLP.WrapContents = false;
+            // 
+            // ModsResetButton
+            // 
+            this.ModsResetButton.Location = new System.Drawing.Point(438, 0);
+            this.ModsResetButton.Margin = new System.Windows.Forms.Padding(0);
+            this.ModsResetButton.MinimumSize = new System.Drawing.Size(75, 23);
+            this.ModsResetButton.Name = "ModsResetButton";
+            this.ModsResetButton.Size = new System.Drawing.Size(75, 23);
+            this.ModsResetButton.TabIndex = 33;
+            this.ModsResetButton.Text = "Reset";
+            this.ModsResetButton.UseVisualStyleBackColor = true;
+            this.ModsResetButton.Click += new System.EventHandler(this.ModsResetButton_Click);
+            // 
             // ModsDisabledModsTextBox
             // 
             this.ModsDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ModsDisabledModsTextBox.Location = new System.Drawing.Point(8, 216);
+            this.ModsDisabledModsTextBox.Location = new System.Drawing.Point(8, 236);
             this.ModsDisabledModsTextBox.Name = "ModsDisabledModsTextBox";
             this.ModsDisabledModsTextBox.Size = new System.Drawing.Size(512, 20);
             this.ModsDisabledModsTextBox.TabIndex = 32;
@@ -1767,7 +1795,7 @@
             // 
             this.ModsDisabledModsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ModsDisabledModsLabel.AutoSize = true;
-            this.ModsDisabledModsLabel.Location = new System.Drawing.Point(8, 200);
+            this.ModsDisabledModsLabel.Location = new System.Drawing.Point(8, 220);
             this.ModsDisabledModsLabel.Name = "ModsDisabledModsLabel";
             this.ModsDisabledModsLabel.Size = new System.Drawing.Size(79, 13);
             this.ModsDisabledModsLabel.TabIndex = 31;
@@ -1971,6 +1999,7 @@
             this.PatchDMLsPanel.PerformLayout();
             this.ModsTabPage.ResumeLayout(false);
             this.ModsTabPage.PerformLayout();
+            this.ModsResetFLP.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -2123,5 +2152,7 @@
         internal CustomControls.DarkCheckList ModsCheckList;
         internal CustomControls.DarkTextBox ModsDisabledModsTextBox;
         internal CustomControls.DarkLabel ModsDisabledModsLabel;
+        internal System.Windows.Forms.FlowLayoutPanel ModsResetFLP;
+        internal CustomControls.DarkButton ModsResetButton;
     }
 }

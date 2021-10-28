@@ -145,6 +145,8 @@ namespace AngelLoader.Forms
             PatchOpenFMFolderButton = new DarkButton();
             PatchFMNotInstalledLabel = new DarkLabel();
             ModsTabPage = new DarkTabPageCustom();
+            ModsResetFLP = new FlowLayoutPanel();
+            ModsResetButton = new DarkButton();
             ModsDisabledModsTextBox = new DarkTextBox();
             ModsDisabledModsLabel = new DarkLabel();
             ModsCheckList = new DarkCheckList();
@@ -186,6 +188,7 @@ namespace AngelLoader.Forms
             PatchMainPanel.SuspendLayout();
             PatchDMLsPanel.SuspendLayout();
             ModsTabPage.SuspendLayout();
+            ModsResetFLP.SuspendLayout();
             SuspendLayout();
             // 
             // GameTabsImageList
@@ -1365,16 +1368,36 @@ namespace AngelLoader.Forms
             // 
             ModsTabPage.AutoScroll = true;
             ModsTabPage.BackColor = SystemColors.Control;
+            ModsTabPage.Controls.Add(ModsResetFLP);
             ModsTabPage.Controls.Add(ModsDisabledModsTextBox);
             ModsTabPage.Controls.Add(ModsDisabledModsLabel);
             ModsTabPage.Controls.Add(ModsCheckList);
             ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
             // 
+            // ModsResetFLP
+            // 
+            ModsResetFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ModsResetFLP.Controls.Add(ModsResetButton);
+            ModsResetFLP.FlowDirection = FlowDirection.RightToLeft;
+            ModsResetFLP.Location = new Point(8, 192);
+            ModsResetFLP.Size = new Size(513, 24);
+            ModsResetFLP.TabIndex = 34;
+            ModsResetFLP.WrapContents = false;
+            // 
+            // ModsResetButton
+            // 
+            ModsResetButton.Location = new Point(438, 0);
+            ModsResetButton.Margin = new Padding(0);
+            ModsResetButton.MinimumSize = new Size(75, 23);
+            ModsResetButton.TabIndex = 33;
+            ModsResetButton.UseVisualStyleBackColor = true;
+            ModsResetButton.Click += ModsResetButton_Click;
+            // 
             // ModsDisabledModsTextBox
             // 
             ModsDisabledModsTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ModsDisabledModsTextBox.Location = new Point(8, 216);
+            ModsDisabledModsTextBox.Location = new Point(8, 236);
             ModsDisabledModsTextBox.Size = new Size(512, 20);
             ModsDisabledModsTextBox.TabIndex = 32;
             ModsDisabledModsTextBox.TextChanged += ModsDisabledModsTextBox_TextChanged;
@@ -1384,7 +1407,7 @@ namespace AngelLoader.Forms
             // 
             ModsDisabledModsLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             ModsDisabledModsLabel.AutoSize = true;
-            ModsDisabledModsLabel.Location = new Point(8, 200);
+            ModsDisabledModsLabel.Location = new Point(8, 220);
             ModsDisabledModsLabel.TabIndex = 31;
             // 
             // ModsCheckList
@@ -1557,6 +1580,7 @@ namespace AngelLoader.Forms
             PatchDMLsPanel.PerformLayout();
             ModsTabPage.ResumeLayout(false);
             ModsTabPage.PerformLayout();
+            ModsResetFLP.ResumeLayout(false);
             ResumeLayout(false);
         }
     }
