@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -49,6 +50,8 @@ namespace AngelLoader.Forms.CustomControls
 
         [PublicAPI]
         public CheckItem[] CheckItems = Array.Empty<CheckItem>();
+
+        private DarkCheckBox[] CheckBoxes = Array.Empty<DarkCheckBox>();
 
         [PublicAPI]
         [Browsable(false)]
@@ -119,6 +122,8 @@ namespace AngelLoader.Forms.CustomControls
         internal void ClearList()
         {
             base.Controls.DisposeAndClear();
+            CheckBoxes.DisposeAndClear();
+            CheckBoxes = Array.Empty<DarkCheckBox>();
             CheckItems = Array.Empty<CheckItem>();
         }
 
@@ -130,6 +135,7 @@ namespace AngelLoader.Forms.CustomControls
         internal void FillList(CheckItem[] items)
         {
             ClearList();
+            CheckBoxes = new DarkCheckBox[items.Length];
 
             int x = 18;
 
@@ -186,6 +192,7 @@ namespace AngelLoader.Forms.CustomControls
                 //    cb.DarkModeForeColor = DarkColors.Fen_CautionText;
                 //}
                 base.Controls.Add(cb);
+                CheckBoxes[i] = cb;
                 cb.CheckedChanged += OnItemsCheckedChanged;
             }
 
@@ -216,7 +223,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             var s = (DarkCheckBox)sender;
 
-            int checkBoxIndex = base.Controls.IndexOf(s);
+            int checkBoxIndex = Array.IndexOf(CheckBoxes, s);
 
             CheckItems[checkBoxIndex].Checked = s.Checked;
 
