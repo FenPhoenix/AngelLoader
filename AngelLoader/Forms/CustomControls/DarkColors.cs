@@ -35,6 +35,8 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly Color Fen_Hyperlink = Color.FromArgb(121, 180, 240);
         public static readonly Color Fen_HyperlinkPressed = Color.FromArgb(243, 110, 110);
 
+        public static readonly Color Fen_CautionText = Color.FromArgb(225, 135, 135);
+
         public static readonly Color ArrowEnabled = Color.FromArgb(150, 156, 160);
 
         #endregion

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -108,7 +109,7 @@ namespace AngelLoader.Forms.CustomControls
 
             foreach (Control control in base.Controls)
             {
-                if (control is DarkCheckBox and IDarkable darkableControl)
+                if (control is IDarkable darkableControl)
                 {
                     darkableControl.DarkModeEnabled = _darkModeEnabled;
                 }
@@ -130,20 +131,80 @@ namespace AngelLoader.Forms.CustomControls
         {
             ClearList();
 
-            for (int i = 0, y = 0; i < items.Length; i++, y += 20)
+            int x = 18;
+
+            //bool firstCautionDone = false;
+            bool cautionsExist = false;
+
+            int y = 0;
+
+            for (int i = 0; i < items.Length; i++, y += 20)
             {
                 var item = items[i];
+
+                //if (!firstCautionDone && item.Caution)
+                //{
+                //    var label = new DarkLabel
+                //    {
+                //        Text = "Test caution text",
+                //        Location = new Point(x, 4 + y),
+                //        Padding = new Padding(0),
+                //        Margin = new Padding(0)
+                //    };
+                //    base.Controls.Add(label);
+                //    firstCautionDone = true;
+                //    i--;
+                //    continue;
+                //}
+
+                if (item.Caution)
+                {
+                    cautionsExist = true;
+                    var label = new DarkLabel
+                    {
+                        AutoSize = true,
+                        Text = "*",
+                        ForeColor = Color.Maroon,
+                        DarkModeForeColor = DarkColors.Fen_CautionText,
+                        Location = new Point(x - 14, 4 + y),
+                        Padding = new Padding(0),
+                        Margin = new Padding(0)
+                    };
+                    base.Controls.Add(label);
+                }
+
                 var cb = new DarkCheckBox
                 {
                     AutoSize = true,
                     Text = item.Text,
-                    Location = new Point(4, 4 + y),
+                    Location = new Point(x, 4 + y),
                     Checked = item.Checked
                 };
-                // @Mods(DarkCheckBox/FillList()): Temp for development - replace this
-                if (item.Caution) cb.DarkModeBackColor = Color.DarkOrange;
+                //if (item.Caution)
+                //{
+                //    cb.ForeColor = Color.Maroon;
+                //    cb.DarkModeForeColor = DarkColors.Fen_CautionText;
+                //}
                 base.Controls.Add(cb);
                 cb.CheckedChanged += OnItemsCheckedChanged;
+            }
+
+            if (cautionsExist)
+            {
+                var label = new DarkLabel
+                {
+                    AutoSize = true,
+                    Text = "* " + LText.ModsTab.ImportantModsCaution,
+                    ForeColor = Color.Maroon,
+                    DarkModeForeColor = DarkColors.Fen_CautionText,
+                    Location = new Point(4, 4 + y),
+                    Padding = new Padding(0),
+                    Margin = new Padding(0),
+                };
+                //var f = label.Font;
+                //label.Font = new Font(f.FontFamily, f.Size, FontStyle.Italic, f.Unit, f.GdiCharSet,
+                //    f.GdiVerticalFont);
+                base.Controls.Add(label);
             }
 
             CheckItems = items;
@@ -166,12 +227,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnEnabledChanged(e);
 
-            base.BackColor =
-                _darkModeEnabled
-                    ? DarkModeBackColor
-                    : Enabled
-                        ? BackColor
-                        : SystemColors.Control;
+            base.BackColor = _darkModeEnabled ? DarkModeBackColor : Enabled ? BackColor : SystemColors.Control;
         }
     }
 }

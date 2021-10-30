@@ -12,6 +12,11 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled { get; set; }
 
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Color? DarkModeForeColor { get; set; }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             if (DarkModeEnabled)
@@ -22,7 +27,7 @@ namespace AngelLoader.Forms.CustomControls
                     TextFormatFlags.NoClipping |
                     TextFormatFlags.WordBreak;
 
-                Color color = Enabled ? DarkColors.LightText : DarkColors.DisabledText;
+                Color color = Enabled ? DarkModeForeColor ?? DarkColors.LightText : DarkColors.DisabledText;
                 TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, textFormatFlags);
             }
             else

@@ -29,6 +29,11 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Color? DarkModeForeColor { get; set; }
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new bool UseMnemonic
         {
             get => base.UseMnemonic;
@@ -292,7 +297,8 @@ namespace AngelLoader.Forms.CustomControls
                 TextFormatFlags.WordBreak;
 
             var textRect = new Rectangle(_checkBoxSize + 4, 0, rect.Width - _checkBoxSize, rect.Height);
-            TextRenderer.DrawText(g, Text, Font, textRect, textColorPen.Color, textFormatFlags);
+            using var textPen = DarkModeForeColor != null ? new Pen((Color)DarkModeForeColor) : null;
+            TextRenderer.DrawText(g, Text, Font, textRect, textPen?.Color ?? textColorPen.Color, textFormatFlags);
         }
 
         #endregion

@@ -486,6 +486,7 @@ namespace AngelLoader.DataClasses
         internal sealed class ModsTab_Class
         {
             internal readonly string TabText = "Mods";
+            internal readonly string ImportantModsCaution = "These mods should not be disabled unless you know what you're doing.";
             internal readonly string Reset = "Reset";
         }
 
