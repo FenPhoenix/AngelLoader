@@ -158,6 +158,7 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
+            ModsShowUberCheckBox = new DarkCheckBox();
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
@@ -1379,6 +1380,7 @@ namespace AngelLoader.Forms
             // 
             ModsResetFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             ModsResetFLP.Controls.Add(ModsResetButton);
+            ModsResetFLP.Controls.Add(ModsShowUberCheckBox);
             ModsResetFLP.FlowDirection = FlowDirection.RightToLeft;
             ModsResetFLP.Location = new Point(8, 192);
             ModsResetFLP.Size = new Size(513, 24);
@@ -1514,6 +1516,13 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
             ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
             // 
+            // ModsShowUberCheckBox
+            // 
+            ModsShowUberCheckBox.AutoSize = true;
+            ModsShowUberCheckBox.TabIndex = 1;
+            ModsShowUberCheckBox.UseVisualStyleBackColor = true;
+            ModsShowUberCheckBox.CheckedChanged += ModsShowUberCheckBox_CheckedChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
@@ -1581,6 +1590,7 @@ namespace AngelLoader.Forms
             ModsTabPage.ResumeLayout(false);
             ModsTabPage.PerformLayout();
             ModsResetFLP.ResumeLayout(false);
+            ModsResetFLP.PerformLayout();
             ResumeLayout(false);
         }
     }

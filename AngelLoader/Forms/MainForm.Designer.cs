@@ -178,6 +178,7 @@
             this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
             this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.ModsShowUberCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -1761,6 +1762,7 @@
             this.ModsResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ModsResetFLP.Controls.Add(this.ModsResetButton);
+            this.ModsResetFLP.Controls.Add(this.ModsShowUberCheckBox);
             this.ModsResetFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.ModsResetFLP.Location = new System.Drawing.Point(8, 192);
             this.ModsResetFLP.Name = "ModsResetFLP";
@@ -1930,6 +1932,17 @@
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
+            // ModsShowUberCheckBox
+            // 
+            this.ModsShowUberCheckBox.AutoSize = true;
+            this.ModsShowUberCheckBox.Location = new System.Drawing.Point(358, 3);
+            this.ModsShowUberCheckBox.Name = "ModsShowUberCheckBox";
+            this.ModsShowUberCheckBox.Size = new System.Drawing.Size(77, 17);
+            this.ModsShowUberCheckBox.TabIndex = 1;
+            this.ModsShowUberCheckBox.Text = "Show uber";
+            this.ModsShowUberCheckBox.UseVisualStyleBackColor = true;
+            this.ModsShowUberCheckBox.CheckedChanged += new System.EventHandler(this.ModsShowUberCheckBox_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2000,6 +2013,7 @@
             this.ModsTabPage.ResumeLayout(false);
             this.ModsTabPage.PerformLayout();
             this.ModsResetFLP.ResumeLayout(false);
+            this.ModsResetFLP.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2154,5 +2168,6 @@
         internal CustomControls.DarkLabel ModsDisabledModsLabel;
         internal System.Windows.Forms.FlowLayoutPanel ModsResetFLP;
         internal CustomControls.DarkButton ModsResetButton;
+        internal CustomControls.DarkCheckBox ModsShowUberCheckBox;
     }
 }

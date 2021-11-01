@@ -38,6 +38,12 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        private enum Caution
+        {
+            Yes,
+            No
+        }
+
         private bool _origValuesStored;
         private Color? _origBackColor;
         private Color? _origForeColor;
@@ -195,6 +201,8 @@ namespace AngelLoader.Forms.CustomControls
                 };
                 if (item.Caution)
                 {
+                    cb.Tag = Caution.Yes;
+                    cb.Visible = _predicate?.Invoke() ?? true;
                     var f = cb.Font;
                     cb.Font = new Font(f.FontFamily, f.Size, FontStyle.Italic, f.Unit, f.GdiCharSet,
                         f.GdiVerticalFont);
@@ -218,6 +226,8 @@ namespace AngelLoader.Forms.CustomControls
             {
                 var label = new DarkLabel
                 {
+                    Tag = Caution.Yes,
+                    Visible = _predicate?.Invoke() ?? true,
                     AutoSize = true,
                     Text = "* " + LText.ModsTab.ImportantModsCaution,
                     ForeColor = Color.Maroon,
@@ -231,8 +241,11 @@ namespace AngelLoader.Forms.CustomControls
                 //    f.GdiVerticalFont);
                 base.Controls.Add(label);
                 cautionLabel?.SendToBack();
+
                 var panel = new Panel
                 {
+                    Tag = Caution.Yes,
+                    Visible = _predicate?.Invoke() ?? true,
                     Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right,
                     BackColor = DarkColors.Fen_RedHighlight,
                     Location = new Point(4, 4 + firstCautionY),
@@ -245,6 +258,21 @@ namespace AngelLoader.Forms.CustomControls
             CheckItems = items;
 
             RefreshDarkMode();
+        }
+
+        private Func<bool>? _predicate;
+
+        internal void Inject(Func<bool> predicate) => _predicate = predicate;
+
+        internal void ShowCautionSection(bool show)
+        {
+            foreach (Control c in base.Controls)
+            {
+                if (c.Tag is Caution.Yes)
+                {
+                    c.Visible = show;
+                }
+            }
         }
 
         private void OnItemsCheckedChanged(object sender, EventArgs e)

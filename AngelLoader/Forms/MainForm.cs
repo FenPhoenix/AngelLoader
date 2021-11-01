@@ -790,6 +790,8 @@ namespace AngelLoader.Forms
                 SetTopRightCollapsedState();
             }
 
+            ModsCheckList.Inject(() => ModsShowUberCheckBox.Checked);
+
             #endregion
 
             // Set these here because they depend on the splitter positions
@@ -1361,6 +1363,7 @@ namespace AngelLoader.Forms
 
                 ModsTabPage.Text = LText.ModsTab.TabText;
 
+                ModsShowUberCheckBox.Text = LText.ModsTab.ShowUber;
                 ModsResetButton.Text = LText.ModsTab.Reset;
 
                 ModsDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
@@ -3111,6 +3114,11 @@ namespace AngelLoader.Forms
 
             fm.DisabledMods = ModsDisabledModsTextBox.Text;
             RefreshSelectedFM(rowOnly: true);
+        }
+
+        private void ModsShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ModsCheckList.ShowCautionSection(ModsShowUberCheckBox.Checked);
         }
 
         private void ModsResetButton_Click(object sender, EventArgs e)
