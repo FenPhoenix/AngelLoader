@@ -139,53 +139,70 @@ namespace AngelLoader.Forms.CustomControls
 
             int x = 18;
 
-            //bool firstCautionDone = false;
+            bool firstCautionDone = false;
             bool cautionsExist = false;
 
             int y = 0;
+            int firstCautionY = 0;
+
+            DarkLabel? cautionLabel = null;
 
             for (int i = 0; i < items.Length; i++, y += 20)
             {
                 var item = items[i];
 
-                //if (!firstCautionDone && item.Caution)
+                if (!firstCautionDone && item.Caution)
+                {
+                    //cautionLabel = new DarkLabel
+                    //{
+                    //    AutoSize = true,
+                    //    Text = "* " + LText.ModsTab.ImportantModsCaution,
+                    //    ForeColor = Color.Maroon,
+                    //    DarkModeForeColor = DarkColors.Fen_CautionText,
+                    //    Location = new Point(x, 4 + y),
+                    //    Padding = new Padding(0),
+                    //    Margin = new Padding(0)
+                    //};
+                    //base.Controls.Add(cautionLabel);
+                    firstCautionDone = true;
+                    //i--;
+                    firstCautionY = y;
+                    //continue;
+                }
+
+                //if (item.Caution)
                 //{
+                //    cautionsExist = true;
                 //    var label = new DarkLabel
                 //    {
-                //        Text = "Test caution text",
-                //        Location = new Point(x, 4 + y),
+                //        AutoSize = true,
+                //        Text = "*",
+                //        //ForeColor = Color.Maroon,
+                //        //DarkModeForeColor = DarkColors.Fen_CautionText,
+                //        Location = new Point(x - 14, 4 + y),
                 //        Padding = new Padding(0),
                 //        Margin = new Padding(0)
                 //    };
                 //    base.Controls.Add(label);
-                //    firstCautionDone = true;
-                //    i--;
-                //    continue;
                 //}
-
-                if (item.Caution)
-                {
-                    cautionsExist = true;
-                    var label = new DarkLabel
-                    {
-                        AutoSize = true,
-                        Text = "*",
-                        ForeColor = Color.Maroon,
-                        DarkModeForeColor = DarkColors.Fen_CautionText,
-                        Location = new Point(x - 14, 4 + y),
-                        Padding = new Padding(0),
-                        Margin = new Padding(0)
-                    };
-                    base.Controls.Add(label);
-                }
 
                 var cb = new DarkCheckBox
                 {
                     AutoSize = true,
-                    Text = item.Text,
+                    Text = item.Text + (item.Caution ? " *" : ""),
                     Location = new Point(x, 4 + y),
-                    Checked = item.Checked
+                    Checked = item.Checked,
                 };
+                if (item.Caution)
+                {
+                    var f = cb.Font;
+                    cb.Font = new Font(f.FontFamily, f.Size, FontStyle.Italic, f.Unit, f.GdiCharSet,
+                        f.GdiVerticalFont);
+                }
+                if (firstCautionDone)
+                {
+                    cb.DarkModeBackColor = DarkColors.Fen_RedHighlight;
+                }
                 //if (item.Caution)
                 //{
                 //    cb.ForeColor = Color.Maroon;
@@ -196,7 +213,8 @@ namespace AngelLoader.Forms.CustomControls
                 cb.CheckedChanged += OnItemsCheckedChanged;
             }
 
-            if (cautionsExist)
+            //if (cautionsExist)
+            if (firstCautionDone)
             {
                 var label = new DarkLabel
                 {
@@ -204,7 +222,7 @@ namespace AngelLoader.Forms.CustomControls
                     Text = "* " + LText.ModsTab.ImportantModsCaution,
                     ForeColor = Color.Maroon,
                     DarkModeForeColor = DarkColors.Fen_CautionText,
-                    Location = new Point(4, 4 + y),
+                    Location = new Point(4, 8 + y),
                     Padding = new Padding(0),
                     Margin = new Padding(0),
                 };
@@ -212,6 +230,16 @@ namespace AngelLoader.Forms.CustomControls
                 //label.Font = new Font(f.FontFamily, f.Size, FontStyle.Italic, f.Unit, f.GdiCharSet,
                 //    f.GdiVerticalFont);
                 base.Controls.Add(label);
+                cautionLabel?.SendToBack();
+                var panel = new Panel
+                {
+                    Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right,
+                    BackColor = DarkColors.Fen_RedHighlight,
+                    Location = new Point(4, 4 + firstCautionY),
+                    Size = new Size(ClientRectangle.Width - 8, (4 + y) - (4 + firstCautionY))
+                };
+                base.Controls.Add(panel);
+                panel.SendToBack();
             }
 
             CheckItems = items;
