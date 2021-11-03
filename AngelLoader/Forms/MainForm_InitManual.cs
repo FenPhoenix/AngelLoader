@@ -836,7 +836,6 @@ namespace AngelLoader.Forms
             // 
             TopRightCollapseButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             TopRightCollapseButton.ArrowDirection = Direction.Right;
-            TopRightCollapseButton.BackgroundImageLayout = ImageLayout.None;
             TopRightCollapseButton.FlatAppearance.BorderSize = 0;
             TopRightCollapseButton.FlatStyle = FlatStyle.Flat;
             TopRightCollapseButton.Location = new Point(533, 20);
