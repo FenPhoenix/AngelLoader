@@ -3857,6 +3857,8 @@ namespace FMScanner
 
             dateString = Regex.Replace(dateString, @"\s*,\s*", " ");
             dateString = Regex.Replace(dateString, @"\s+", " ");
+            // Auldale Chess Tournament saying "March ~8, 2006"
+            dateString = Regex.Replace(dateString, @"\s*~\s*", " ");
             dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
             dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
             dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
