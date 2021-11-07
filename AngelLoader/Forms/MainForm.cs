@@ -1366,7 +1366,7 @@ namespace AngelLoader.Forms
                 ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportant;
                 ModsResetButton.Text = LText.ModsTab.Reset;
 
-                ModsDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
+                ModsDisabledModsLabel.Text = LText.ModsTab.DisabledMods;
 
                 #endregion
 

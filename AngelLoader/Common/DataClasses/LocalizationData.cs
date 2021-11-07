@@ -439,8 +439,6 @@ namespace AngelLoader.DataClasses
             internal readonly string LastPlayed = "Last played:";
             internal readonly string Rating = "Rating:";
             internal readonly string FinishedOn = "Finished on...";
-            internal readonly string DisabledMods = "Disabled mods:";
-            internal readonly string DisableAllMods = "Disable all mods";
             internal readonly string PlayFMInThisLanguage = "Play FM in this language:";
             internal readonly string DefaultLanguage = "Default";
             [FenGenBlankLine]
@@ -489,6 +487,7 @@ namespace AngelLoader.DataClasses
             internal readonly string ImportantModsCaution = "These mods should not be disabled unless you know what you're doing.";
             internal readonly string ShowImportant = "Show important";
             internal readonly string Reset = "Reset";
+            internal readonly string DisabledMods = "Disabled mods:";
         }
 
         internal sealed class ReadmeArea_Class
