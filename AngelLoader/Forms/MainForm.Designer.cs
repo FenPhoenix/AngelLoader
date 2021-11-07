@@ -1777,7 +1777,7 @@
             this.ModsResetButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ModsResetButton.Name = "ModsResetButton";
             this.ModsResetButton.Size = new System.Drawing.Size(75, 23);
-            this.ModsResetButton.TabIndex = 0;
+            this.ModsResetButton.TabIndex = 1;
             this.ModsResetButton.Text = "Reset";
             this.ModsResetButton.UseVisualStyleBackColor = true;
             this.ModsResetButton.Click += new System.EventHandler(this.ModsResetButton_Click);
@@ -1938,7 +1938,7 @@
             this.ModsShowUberCheckBox.Location = new System.Drawing.Point(358, 3);
             this.ModsShowUberCheckBox.Name = "ModsShowUberCheckBox";
             this.ModsShowUberCheckBox.Size = new System.Drawing.Size(77, 17);
-            this.ModsShowUberCheckBox.TabIndex = 1;
+            this.ModsShowUberCheckBox.TabIndex = 0;
             this.ModsShowUberCheckBox.Text = "Show uber";
             this.ModsShowUberCheckBox.UseVisualStyleBackColor = true;
             this.ModsShowUberCheckBox.CheckedChanged += new System.EventHandler(this.ModsShowUberCheckBox_CheckedChanged);

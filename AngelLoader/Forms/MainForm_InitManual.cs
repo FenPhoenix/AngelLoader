@@ -1391,7 +1391,7 @@ namespace AngelLoader.Forms
             ModsResetButton.Location = new Point(438, 0);
             ModsResetButton.Margin = new Padding(0);
             ModsResetButton.MinimumSize = new Size(75, 23);
-            ModsResetButton.TabIndex = 0;
+            ModsResetButton.TabIndex = 1;
             ModsResetButton.UseVisualStyleBackColor = true;
             ModsResetButton.Click += ModsResetButton_Click;
             // 
@@ -1518,7 +1518,7 @@ namespace AngelLoader.Forms
             // ModsShowUberCheckBox
             // 
             ModsShowUberCheckBox.AutoSize = true;
-            ModsShowUberCheckBox.TabIndex = 1;
+            ModsShowUberCheckBox.TabIndex = 0;
             ModsShowUberCheckBox.UseVisualStyleBackColor = true;
             ModsShowUberCheckBox.CheckedChanged += ModsShowUberCheckBox_CheckedChanged;
             // 
