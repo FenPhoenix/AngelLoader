@@ -69,7 +69,7 @@ namespace AngelLoader.DataClasses
 
     #region Top-right tabs
 
-    internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch }
+    internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch, Mods }
 
     internal sealed class TopRightTabData
     {
@@ -97,7 +97,7 @@ namespace AngelLoader.DataClasses
         internal TopRightTabData CommentTab => Tabs[(int)TopRightTab.Comment];
         internal TopRightTabData TagsTab => Tabs[(int)TopRightTab.Tags];
         internal TopRightTabData PatchTab => Tabs[(int)TopRightTab.Patch];
-        //internal TopRightTabData ModsTab => Tabs[(int)TopRightTab.Mods];
+        internal TopRightTabData ModsTab => Tabs[(int)TopRightTab.Mods];
 
         internal void EnsureValidity()
         {
@@ -426,20 +426,26 @@ namespace AngelLoader.DataClasses
         }
     }
 
+    internal enum ModType
+    {
+        ModPath,
+        UberModPath,
+        MPModPath,
+        MPUberModPath
+    }
+
     internal sealed class Mod
     {
-        internal string FriendlyName;
-        internal string InternalName;
-        internal bool Enabled;
-        // @Mods(Mod class): Check if uber overrides mod-disabling per FM, if it does, we need to not count uber mods for disabling, otherwise, count them
-        internal bool Uber;
+        internal readonly string FriendlyName;
+        internal readonly string InternalName;
+        internal readonly ModType Type;
+        internal bool IsUber => Type is ModType.UberModPath or ModType.MPUberModPath;
 
-        internal Mod(string friendlyName, string internalName, bool enabled, bool uber)
+        internal Mod(string friendlyName, string internalName, ModType type)
         {
             FriendlyName = friendlyName;
             InternalName = internalName;
-            Enabled = enabled;
-            Uber = uber;
+            Type = type;
         }
     }
 }

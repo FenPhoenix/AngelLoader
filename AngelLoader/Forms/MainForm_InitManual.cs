@@ -122,9 +122,6 @@ namespace AngelLoader.Forms
             EditFMReleaseDateDateTimePicker = new DarkDateTimePicker();
             EditFMLastPlayedCheckBox = new DarkCheckBox();
             EditFMReleaseDateCheckBox = new DarkCheckBox();
-            EditFMDisableAllModsCheckBox = new DarkCheckBox();
-            EditFMDisabledModsTextBox = new DarkTextBox();
-            EditFMDisabledModsLabel = new DarkLabel();
             EditFMAuthorTextBox = new DarkTextBox();
             EditFMAuthorLabel = new DarkLabel();
             EditFMTitleLabel = new DarkLabel();
@@ -147,7 +144,15 @@ namespace AngelLoader.Forms
             PatchAddDMLButton = new DarkButton();
             PatchOpenFMFolderButton = new DarkButton();
             PatchFMNotInstalledLabel = new DarkLabel();
-            //ModsTabPage = new DarkTabPageCustom();
+            ModsTabPage = new DarkTabPageCustom();
+            ModsHeaderLabel = new DarkLabel();
+            ModsResetFLP = new FlowLayoutPanel();
+            ModsResetButton = new DarkButton();
+            ModsShowUberCheckBox = new DarkCheckBox();
+            ModsDisabledModsTextBox = new DarkTextBox();
+            ModsDisabledModsLabel = new DarkLabel();
+            ModsCheckList = new DarkCheckList();
+            ModsAutoScrollDummyPanel = new Panel();
             ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
@@ -156,7 +161,6 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
-            //ModsPanel = new DarkCheckList();
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
@@ -186,7 +190,8 @@ namespace AngelLoader.Forms
             PatchTabPage.SuspendLayout();
             PatchMainPanel.SuspendLayout();
             PatchDMLsPanel.SuspendLayout();
-            //ModsTabPage.SuspendLayout();
+            ModsTabPage.SuspendLayout();
+            ModsResetFLP.SuspendLayout();
             SuspendLayout();
             // 
             // GameTabsImageList
@@ -853,7 +858,7 @@ namespace AngelLoader.Forms
             TopRightTabControl.Controls.Add(CommentTabPage);
             TopRightTabControl.Controls.Add(TagsTabPage);
             TopRightTabControl.Controls.Add(PatchTabPage);
-            //TopRightTabControl.Controls.Add(ModsTabPage);
+            TopRightTabControl.Controls.Add(ModsTabPage);
             TopRightTabControl.Size = new Size(535, 310);
             TopRightTabControl.TabIndex = 15;
             // 
@@ -1002,9 +1007,6 @@ namespace AngelLoader.Forms
             EditFMTabPage.Controls.Add(EditFMReleaseDateDateTimePicker);
             EditFMTabPage.Controls.Add(EditFMLastPlayedCheckBox);
             EditFMTabPage.Controls.Add(EditFMReleaseDateCheckBox);
-            EditFMTabPage.Controls.Add(EditFMDisableAllModsCheckBox);
-            EditFMTabPage.Controls.Add(EditFMDisabledModsTextBox);
-            EditFMTabPage.Controls.Add(EditFMDisabledModsLabel);
             EditFMTabPage.Controls.Add(EditFMAuthorTextBox);
             EditFMTabPage.Controls.Add(EditFMAuthorLabel);
             EditFMTabPage.Controls.Add(EditFMTitleLabel);
@@ -1013,7 +1015,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanLanguagesButton
             // 
-            EditFMScanLanguagesButton.Location = new Point(137, 261);
+            EditFMScanLanguagesButton.Location = new Point(137, 200);
             EditFMScanLanguagesButton.Size = new Size(22, 23);
             EditFMScanLanguagesButton.TabIndex = 33;
             EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
@@ -1023,13 +1025,13 @@ namespace AngelLoader.Forms
             // EditFMLanguageLabel
             // 
             EditFMLanguageLabel.AutoSize = true;
-            EditFMLanguageLabel.Location = new Point(8, 246);
+            EditFMLanguageLabel.Location = new Point(8, 185);
             EditFMLanguageLabel.TabIndex = 31;
             // 
             // EditFMLanguageComboBox
             // 
             EditFMLanguageComboBox.FormattingEnabled = true;
-            EditFMLanguageComboBox.Location = new Point(9, 262);
+            EditFMLanguageComboBox.Location = new Point(9, 201);
             EditFMLanguageComboBox.Size = new Size(128, 21);
             EditFMLanguageComboBox.TabIndex = 32;
             EditFMLanguageComboBox.SelectedIndexChanged += EditFMLanguageComboBox_SelectedIndexChanged;
@@ -1038,7 +1040,7 @@ namespace AngelLoader.Forms
             // 
             EditFMScanForReadmesButton.AutoSize = true;
             EditFMScanForReadmesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            EditFMScanForReadmesButton.Location = new Point(8, 299);
+            EditFMScanForReadmesButton.Location = new Point(8, 238);
             EditFMScanForReadmesButton.MinimumSize = new Size(130, 23);
             EditFMScanForReadmesButton.Padding = new Padding(13, 0, 0, 0);
             EditFMScanForReadmesButton.TabIndex = 34;
@@ -1165,29 +1167,6 @@ namespace AngelLoader.Forms
             EditFMReleaseDateCheckBox.TabIndex = 20;
             EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
             EditFMReleaseDateCheckBox.CheckedChanged += EditFMReleaseDateCheckBox_CheckedChanged;
-            // 
-            // EditFMDisableAllModsCheckBox
-            // 
-            EditFMDisableAllModsCheckBox.AutoSize = true;
-            EditFMDisableAllModsCheckBox.Location = new Point(8, 216);
-            EditFMDisableAllModsCheckBox.TabIndex = 30;
-            EditFMDisableAllModsCheckBox.UseVisualStyleBackColor = true;
-            EditFMDisableAllModsCheckBox.CheckedChanged += EditFMDisableAllModsCheckBox_CheckedChanged;
-            // 
-            // EditFMDisabledModsTextBox
-            // 
-            EditFMDisabledModsTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            EditFMDisabledModsTextBox.Location = new Point(8, 192);
-            EditFMDisabledModsTextBox.Size = new Size(507, 20);
-            EditFMDisabledModsTextBox.TabIndex = 29;
-            EditFMDisabledModsTextBox.TextChanged += EditFMDisabledModsTextBox_TextChanged;
-            EditFMDisabledModsTextBox.Leave += EditFMDisabledModsTextBox_Leave;
-            // 
-            // EditFMDisabledModsLabel
-            // 
-            EditFMDisabledModsLabel.AutoSize = true;
-            EditFMDisabledModsLabel.Location = new Point(8, 176);
-            EditFMDisabledModsLabel.TabIndex = 28;
             // 
             // EditFMAuthorTextBox
             // 
@@ -1386,25 +1365,84 @@ namespace AngelLoader.Forms
             PatchFMNotInstalledLabel.AutoSize = true;
             // This thing gets centered later so no location is specified here
             PatchFMNotInstalledLabel.TabIndex = 45;
-            /*
             // 
             // ModsTabPage
             // 
             ModsTabPage.AutoScroll = true;
             ModsTabPage.BackColor = SystemColors.Control;
-            ModsTabPage.Controls.Add(ModsPanel);
+            ModsTabPage.Controls.Add(ModsHeaderLabel);
+            ModsTabPage.Controls.Add(ModsResetFLP);
+            ModsTabPage.Controls.Add(ModsDisabledModsTextBox);
+            ModsTabPage.Controls.Add(ModsDisabledModsLabel);
+            ModsTabPage.Controls.Add(ModsCheckList);
+            ModsTabPage.Controls.Add(ModsAutoScrollDummyPanel);
             ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
             // 
-            // ModsPanel
+            // ModsHeaderLabel
             // 
-            this.ModsPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            this.ModsPanel.AutoScroll = true;
-            this.ModsPanel.BorderStyle = BorderStyle.FixedSingle;
-            this.ModsPanel.Location = new Point(8, 8);
-            this.ModsPanel.Size = new Size(512, 184);
-            this.ModsPanel.TabIndex = 0;
-            */
+            ModsHeaderLabel.AutoSize = true;
+            ModsHeaderLabel.Location = new Point(8, 8);
+            ModsHeaderLabel.TabIndex = 4;
+            // 
+            // ModsResetFLP
+            // 
+            ModsResetFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ModsResetFLP.Controls.Add(ModsResetButton);
+            ModsResetFLP.Controls.Add(ModsShowUberCheckBox);
+            ModsResetFLP.FlowDirection = FlowDirection.RightToLeft;
+            ModsResetFLP.Location = new Point(8, 216);
+            ModsResetFLP.Size = new Size(513, 24);
+            ModsResetFLP.TabIndex = 1;
+            ModsResetFLP.WrapContents = false;
+            // 
+            // ModsResetButton
+            // 
+            ModsResetButton.Location = new Point(438, 0);
+            ModsResetButton.Margin = new Padding(0);
+            ModsResetButton.MinimumSize = new Size(75, 23);
+            ModsResetButton.TabIndex = 1;
+            ModsResetButton.UseVisualStyleBackColor = true;
+            ModsResetButton.Click += ModsResetButton_Click;
+            // 
+            // ModsShowUberCheckBox
+            // 
+            ModsShowUberCheckBox.AutoSize = true;
+            ModsShowUberCheckBox.TabIndex = 0;
+            ModsShowUberCheckBox.UseVisualStyleBackColor = true;
+            ModsShowUberCheckBox.CheckedChanged += ModsShowUberCheckBox_CheckedChanged;
+            // 
+            // ModsDisabledModsTextBox
+            // 
+            ModsDisabledModsTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ModsDisabledModsTextBox.Location = new Point(8, 256);
+            ModsDisabledModsTextBox.Size = new Size(512, 20);
+            ModsDisabledModsTextBox.TabIndex = 3;
+            ModsDisabledModsTextBox.TextChanged += ModsDisabledModsTextBox_TextChanged;
+            ModsDisabledModsTextBox.Leave += ModsDisabledModsTextBox_Leave;
+            // 
+            // ModsDisabledModsLabel
+            // 
+            ModsDisabledModsLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            ModsDisabledModsLabel.AutoSize = true;
+            ModsDisabledModsLabel.Location = new Point(8, 240);
+            ModsDisabledModsLabel.TabIndex = 2;
+            // 
+            // ModsCheckList
+            // 
+            ModsCheckList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ModsCheckList.AutoScroll = true;
+            ModsCheckList.BorderStyle = BorderStyle.FixedSingle;
+            ModsCheckList.Location = new Point(8, 32);
+            ModsCheckList.Size = new Size(512, 184);
+            ModsCheckList.TabIndex = 0;
+            ModsCheckList.ItemCheckedChanged += ModsCheckList_ItemCheckedChanged;
+            // 
+            // ModsAutoScrollDummyPanel
+            // 
+            ModsAutoScrollDummyPanel.Location = new Point(8, 8);
+            ModsAutoScrollDummyPanel.Size = new Size(280, 208);
+            ModsAutoScrollDummyPanel.TabIndex = 5;
             // 
             // ReadmeEncodingButton
             // 
@@ -1564,7 +1602,10 @@ namespace AngelLoader.Forms
             PatchMainPanel.PerformLayout();
             PatchDMLsPanel.ResumeLayout(false);
             PatchDMLsPanel.PerformLayout();
-            //ModsTabPage.ResumeLayout(false);
+            ModsTabPage.ResumeLayout(false);
+            ModsTabPage.PerformLayout();
+            ModsResetFLP.ResumeLayout(false);
+            ModsResetFLP.PerformLayout();
             ResumeLayout(false);
         }
     }

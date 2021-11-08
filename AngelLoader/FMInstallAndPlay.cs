@@ -309,7 +309,7 @@ namespace AngelLoader
                 if (fm != null)
                 {
                     sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                    sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
+                    sw.WriteLine("DisabledMods=" + fm.DisabledMods);
                     // Pass blank if we have nothing, so the stub will leave whatever was in there before
                     if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
                     if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);

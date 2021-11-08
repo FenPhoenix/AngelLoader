@@ -41,7 +41,7 @@ namespace AngelLoader.DataClasses
         internal readonly CommentTab_Class CommentTab = new CommentTab_Class();
         internal readonly TagsTab_Class TagsTab = new TagsTab_Class();
         internal readonly PatchTab_Class PatchTab = new PatchTab_Class();
-        //internal readonly ModsTab_Class ModsTab = new ModsTab_Class();
+        internal readonly ModsTab_Class ModsTab = new ModsTab_Class();
         internal readonly ReadmeArea_Class ReadmeArea = new ReadmeArea_Class();
         internal readonly PlayOriginalGameMenu_Class PlayOriginalGameMenu = new PlayOriginalGameMenu_Class();
         internal readonly MainButtons_Class MainButtons = new MainButtons_Class();
@@ -439,8 +439,6 @@ namespace AngelLoader.DataClasses
             internal readonly string LastPlayed = "Last played:";
             internal readonly string Rating = "Rating:";
             internal readonly string FinishedOn = "Finished on...";
-            internal readonly string DisabledMods = "Disabled mods:";
-            internal readonly string DisableAllMods = "Disable all mods";
             internal readonly string PlayFMInThisLanguage = "Play FM in this language:";
             internal readonly string DefaultLanguage = "Default";
             [FenGenBlankLine]
@@ -483,10 +481,15 @@ namespace AngelLoader.DataClasses
             internal readonly string OpenFMFolder = "Open FM folder";
         }
 
-        //internal sealed class ModsTab_Class
-        //{
-        //    internal readonly string TabText = "Mods";
-        //}
+        internal sealed class ModsTab_Class
+        {
+            internal readonly string TabText = "Mods";
+            internal readonly string Header = "Enable or disable these mods for this FM:";
+            internal readonly string ImportantModsCaution = "These mods should not be disabled unless you know what you're doing.";
+            internal readonly string ShowImportant = "Show important";
+            internal readonly string Reset = "Reset";
+            internal readonly string DisabledMods = "Disabled mods:";
+        }
 
         internal sealed class ReadmeArea_Class
         {

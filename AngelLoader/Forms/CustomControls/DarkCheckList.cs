@@ -1,8 +1,8 @@
-﻿/*
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -13,11 +13,13 @@ namespace AngelLoader.Forms.CustomControls
         {
             public bool Checked;
             public string Text;
+            public bool Caution;
 
-            public CheckItem(bool @checked, string text)
+            public CheckItem(bool @checked, string text, bool caution)
             {
                 Checked = @checked;
                 Text = text;
+                Caution = caution;
             }
         }
 
@@ -35,20 +37,34 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        private enum Caution
+        {
+            Yes,
+            No
+        }
+
         private bool _origValuesStored;
         private Color? _origBackColor;
         private Color? _origForeColor;
 
+        public DarkCheckList()
+        {
+            base.BackColor = BackColor;
+            base.ForeColor = ForeColor;
+        }
+
         [PublicAPI]
         public CheckItem[] CheckItems = Array.Empty<CheckItem>();
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool Controls { get; set; }
+        private DarkCheckBox[] CheckBoxes = Array.Empty<DarkCheckBox>();
 
         [PublicAPI]
-        public new Color BackColor { get; set; } = SystemColors.Control;
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new Color BackColor { get; set; } = SystemColors.Window;
         [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new Color ForeColor { get; set; } = SystemColors.ControlText;
 
         [PublicAPI]
@@ -76,7 +92,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void RefreshDarkMode()
+        private void RefreshDarkMode()
         {
             if (_darkModeEnabled)
             {
@@ -87,21 +103,21 @@ namespace AngelLoader.Forms.CustomControls
                     _origValuesStored = true;
                 }
 
-                BackColor = DarkModeBackColor;
-                ForeColor = DarkModeForeColor;
+                base.BackColor = DarkModeBackColor;
+                base.ForeColor = DarkModeForeColor;
             }
             else
             {
                 if (_origValuesStored)
                 {
-                    BackColor = (Color)_origBackColor!;
-                    ForeColor = (Color)_origForeColor!;
+                    base.BackColor = (Color)_origBackColor!;
+                    base.ForeColor = (Color)_origForeColor!;
                 }
             }
 
             foreach (Control control in base.Controls)
             {
-                if (control is DarkCheckBox and IDarkable darkableControl)
+                if (control is IDarkable darkableControl)
                 {
                     darkableControl.DarkModeEnabled = _darkModeEnabled;
                 }
@@ -111,27 +127,90 @@ namespace AngelLoader.Forms.CustomControls
         internal void ClearList()
         {
             base.Controls.DisposeAndClear();
+            CheckBoxes.DisposeAndClear();
+            CheckBoxes = Array.Empty<DarkCheckBox>();
             CheckItems = Array.Empty<CheckItem>();
         }
 
         [PublicAPI]
-        public EventHandler<DarkCheckListEventArgs>? ItemCheckedChanged;
+        [Browsable(true)]
+        [EditorBrowsable(EditorBrowsableState.Always)]
+        public event EventHandler<DarkCheckListEventArgs>? ItemCheckedChanged;
 
-        internal void FillList(CheckItem[] items)
+        internal void FillList(CheckItem[] items, string cautionText)
         {
             ClearList();
+            CheckBoxes = new DarkCheckBox[items.Length];
 
-            for (int i = 0, y = 0; i < items.Length; i++, y += 20)
+            const int x = 18;
+
+            bool firstCautionDone = false;
+
+            int y = 0;
+            int firstCautionY = 0;
+
+            DarkLabel? cautionLabel = null;
+
+            for (int i = 0; i < items.Length; i++, y += 20)
             {
                 var item = items[i];
+
+                if (!firstCautionDone && item.Caution)
+                {
+                    firstCautionDone = true;
+                    firstCautionY = y;
+                }
+
                 var cb = new DarkCheckBox
                 {
-                    Text = item.Text,
-                    Location = new Point(4, y),
+                    AutoSize = true,
+                    Text = item.Text + (item.Caution ? " *" : ""),
+                    Location = new Point(x, 4 + y),
                     Checked = item.Checked
                 };
+                if (item.Caution)
+                {
+                    cb.Tag = Caution.Yes;
+                    cb.Visible = _predicate?.Invoke() ?? true;
+                    cb.SetFontStyle(FontStyle.Italic);
+                    cb.BackColor = Color.MistyRose;
+                }
+                if (firstCautionDone)
+                {
+                    cb.DarkModeBackColor = DarkColors.Fen_RedHighlight;
+                }
                 base.Controls.Add(cb);
+                CheckBoxes[i] = cb;
                 cb.CheckedChanged += OnItemsCheckedChanged;
+            }
+
+            if (firstCautionDone)
+            {
+                _cautionLabel = new DarkLabel
+                {
+                    Tag = Caution.Yes,
+                    Visible = _predicate?.Invoke() ?? true,
+                    AutoSize = true,
+                    ForeColor = Color.Maroon,
+                    DarkModeForeColor = DarkColors.Fen_CautionText,
+                    Location = new Point(4, 8 + y),
+                };
+                RefreshCautionLabelText(cautionText);
+                base.Controls.Add(_cautionLabel);
+                cautionLabel?.SendToBack();
+
+                _cautionPanel = new DrawnPanel
+                {
+                    Tag = Caution.Yes,
+                    Visible = _predicate?.Invoke() ?? true,
+                    Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right,
+                    DrawnBackColor = Color.MistyRose,
+                    DarkModeDrawnBackColor = DarkColors.Fen_RedHighlight,
+                    Location = new Point(4, 4 + firstCautionY),
+                    Size = new Size(ClientRectangle.Width - 8, (4 + y) - (4 + firstCautionY))
+                };
+                base.Controls.Add(_cautionPanel);
+                _cautionPanel.SendToBack();
             }
 
             CheckItems = items;
@@ -139,11 +218,48 @@ namespace AngelLoader.Forms.CustomControls
             RefreshDarkMode();
         }
 
+        private Func<bool>? _predicate;
+
+        private DarkLabel? _cautionLabel;
+        private DrawnPanel? _cautionPanel;
+
+        internal void Inject(Func<bool> predicate) => _predicate = predicate;
+
+        internal void RefreshCautionLabelText(string text)
+        {
+            if (_cautionLabel != null)
+            {
+                _cautionLabel.Text = "* " + text;
+            }
+        }
+
+        internal void ShowCautionSection(bool show)
+        {
+            foreach (Control c in base.Controls)
+            {
+                if (c.Tag is Caution.Yes)
+                {
+                    c.Visible = show;
+                }
+            }
+        }
+
         private void OnItemsCheckedChanged(object sender, EventArgs e)
         {
             var s = (DarkCheckBox)sender;
-            ItemCheckedChanged?.Invoke(this, new DarkCheckListEventArgs(base.Controls.IndexOf(s), s.Checked, s.Text));
+
+            int checkBoxIndex = Array.IndexOf(CheckBoxes, s);
+
+            CheckItems[checkBoxIndex].Checked = s.Checked;
+
+            ItemCheckedChanged?.Invoke(this, new DarkCheckListEventArgs(checkBoxIndex, s.Checked, s.Text));
+        }
+
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            base.OnEnabledChanged(e);
+
+            base.BackColor = _darkModeEnabled ? DarkModeBackColor : Enabled ? BackColor : SystemColors.Control;
         }
     }
 }
-*/

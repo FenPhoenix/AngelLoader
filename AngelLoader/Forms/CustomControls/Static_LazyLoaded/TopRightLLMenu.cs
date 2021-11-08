@@ -15,12 +15,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static DarkContextMenu Menu = null!;
 
-        private static ToolStripMenuItemCustom StatsMenuItem = null!;
-        private static ToolStripMenuItemCustom EditFMMenuItem = null!;
-        private static ToolStripMenuItemCustom CommentMenuItem = null!;
-        private static ToolStripMenuItemCustom TagsMenuItem = null!;
-        private static ToolStripMenuItemCustom PatchMenuItem = null!;
-
         private static bool _darkModeEnabled;
         [PublicAPI]
         internal static bool DarkModeEnabled
@@ -43,14 +37,19 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             #region Instantiation and hookup events
 
             Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
-            Menu.Items.AddRange(new ToolStripItem[]
+
+            // Can't use InitializedArray() because them neu wants the array to be of a base type even though the
+            // items will be of a derived type, to avoid the stupid covariance warning
+            var menuItems = new ToolStripItem[TopRightTabsData.Count];
+            for (int i = 0; i < menuItems.Length; i++)
             {
-                StatsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                EditFMMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                CommentMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                TagsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                PatchMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True }
-            });
+                menuItems[i] = new ToolStripMenuItemCustom { Tag = LazyLoaded.True };
+            }
+
+            Menu.Items.AddRange(menuItems);
+
+            AssertR(Menu.Items.Count == TopRightTabsData.Count, "top-right tabs menu item count is different than enum length");
+
             for (int i = 0; i < Menu.Items.Count; i++)
             {
                 var item = (ToolStripMenuItemCustom)Menu.Items[i];
@@ -83,11 +82,12 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            StatsMenuItem.Text = LText.StatisticsTab.TabText;
-            EditFMMenuItem.Text = LText.EditFMTab.TabText;
-            CommentMenuItem.Text = LText.CommentTab.TabText;
-            TagsMenuItem.Text = LText.TagsTab.TabText;
-            PatchMenuItem.Text = LText.PatchTab.TabText;
+            Menu.Items[(int)TopRightTab.Statistics].Text = LText.StatisticsTab.TabText;
+            Menu.Items[(int)TopRightTab.EditFM].Text = LText.EditFMTab.TabText;
+            Menu.Items[(int)TopRightTab.Comment].Text = LText.CommentTab.TabText;
+            Menu.Items[(int)TopRightTab.Tags].Text = LText.TagsTab.TabText;
+            Menu.Items[(int)TopRightTab.Patch].Text = LText.PatchTab.TabText;
+            Menu.Items[(int)TopRightTab.Mods].Text = LText.ModsTab.TabText;
         }
 
         internal static bool Focused => _constructed && Menu.Focused;

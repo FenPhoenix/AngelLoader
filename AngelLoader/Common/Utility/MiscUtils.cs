@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -122,11 +124,11 @@ namespace AngelLoader
 
         #region Enum HasFlagFast
 
-        internal static bool HasFlagFast(this FinishedState finishedState, FinishedState flag) => (finishedState & flag) == flag;
+        internal static bool HasFlagFast(this FinishedState @enum, FinishedState flag) => (@enum & flag) == flag;
 
-        internal static bool HasFlagFast(this Game game, Game flag) => (game & flag) == flag;
+        internal static bool HasFlagFast(this Game @enum, Game flag) => (@enum & flag) == flag;
 
-        internal static bool HasFlagFast(this Difficulty difficulty, Difficulty flag) => (difficulty & flag) == flag;
+        internal static bool HasFlagFast(this Difficulty @enum, Difficulty flag) => (@enum & flag) == flag;
 
         #endregion
 
@@ -268,6 +270,18 @@ namespace AngelLoader
             }
 
             return new ZipArchive(File.OpenRead(fileName), ZipArchiveMode.Read, leaveOpen: false, enc);
+        }
+
+        internal static void SetFontStyle(this Control control, FontStyle fontStyle)
+        {
+            Font f = control.Font;
+            control.Font = new Font(
+                f.FontFamily,
+                f.Size,
+                fontStyle,
+                f.Unit,
+                f.GdiCharSet,
+                f.GdiVerticalFont);
         }
     }
 }

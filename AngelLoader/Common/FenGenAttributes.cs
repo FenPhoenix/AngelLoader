@@ -42,6 +42,13 @@ namespace AngelLoader
         internal sealed class FenGenIgnoreAttribute : Attribute { }
 
         /// <summary>
+        /// The generator will create code to read this field, but not to write it.
+        /// </summary>
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal sealed class FenGenDoNotWriteAttribute : Attribute { }
+
+        /// <summary>
         /// If this field or property should have a different name in the ini file, you can specify that name here.
         /// </summary>
         [Conditional("compile_FenGen_attributes")]

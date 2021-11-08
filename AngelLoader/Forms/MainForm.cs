@@ -593,7 +593,7 @@ namespace AngelLoader.Forms
                 CommentTabPage,
                 TagsTabPage,
                 PatchTabPage,
-                //ModsTabPage
+                ModsTabPage
             };
 
             #region Separated items
@@ -789,6 +789,8 @@ namespace AngelLoader.Forms
                 TopSplitContainer.SetFullScreen(true, suspendResume: false);
                 SetTopRightCollapsedState();
             }
+
+            ModsCheckList.Inject(() => ModsShowUberCheckBox.Checked);
 
             #endregion
 
@@ -1318,8 +1320,6 @@ namespace AngelLoader.Forms
                 }
 
                 EditFMFinishedOnButton.Text = LText.EditFMTab.FinishedOn;
-                EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
-                EditFMDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
 
                 MainToolTip.SetToolTip(EditFMScanTitleButton, LText.EditFMTab.RescanTitleToolTip);
                 MainToolTip.SetToolTip(EditFMScanAuthorButton, LText.EditFMTab.RescanAuthorToolTip);
@@ -1361,7 +1361,16 @@ namespace AngelLoader.Forms
 
                 #region Mods tab
 
-                //ModsTabPage.Text = LText.ModsTab.TabText;
+                ModsTabPage.Text = LText.ModsTab.TabText;
+
+                ModsHeaderLabel.Text = LText.ModsTab.Header;
+
+                ModsCheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
+
+                ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportant;
+                ModsResetButton.Text = LText.ModsTab.Reset;
+
+                ModsDisabledModsLabel.Text = LText.ModsTab.DisabledMods;
 
                 #endregion
 
@@ -2743,29 +2752,6 @@ namespace AngelLoader.Forms
             Ini.WriteFullFMDataIni();
         }
 
-        private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
-            RefreshSelectedFM(rowOnly: true);
-        }
-
-        private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
-
-            FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
-            RefreshSelectedFM(rowOnly: true);
-            Ini.WriteFullFMDataIni();
-        }
-
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
@@ -3088,6 +3074,77 @@ namespace AngelLoader.Forms
         }
 
         private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
+
+        #endregion
+
+        #region Mods tab
+
+        private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            FMsDGV.GetSelectedFM().DisabledMods = ModsDisabledModsTextBox.Text;
+            RefreshSelectedFM(rowOnly: true);
+        }
+
+        private void ModsDisabledModsTextBox_Leave(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            Ini.WriteFullFMDataIni();
+        }
+
+        private void ModsCheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
+        {
+            if (EventsDisabled) return;
+
+            if (!FMsDGV.RowSelected()) return;
+
+            var fm = FMsDGV.GetSelectedFM();
+
+            fm.DisabledMods = "";
+
+            foreach (DarkCheckList.CheckItem item in ModsCheckList.CheckItems)
+            {
+                if (!item.Checked)
+                {
+                    if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
+                    fm.DisabledMods += item.Text;
+                }
+            }
+
+            using (new DisableEvents(this))
+            {
+                ModsDisabledModsTextBox.Text = fm.DisabledMods;
+            }
+
+            fm.DisabledMods = ModsDisabledModsTextBox.Text;
+            RefreshSelectedFM(rowOnly: true);
+        }
+
+        private void ModsShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ModsCheckList.ShowCautionSection(ModsShowUberCheckBox.Checked);
+        }
+
+        private void ModsResetButton_Click(object sender, EventArgs e)
+        {
+            var fm = FMsDGV.GetSelectedFM();
+
+            using (new DisableEvents(this))
+            {
+                foreach (Control control in ModsCheckList.Controls)
+                {
+                    if (control is CheckBox checkBox)
+                    {
+                        checkBox.Checked = true;
+                    }
+                }
+
+                fm.DisabledMods = "";
+                ModsDisabledModsTextBox.Text = "";
+            }
+
+            RefreshSelectedFM(rowOnly: true);
+        }
 
         #endregion
 
@@ -3988,6 +4045,8 @@ namespace AngelLoader.Forms
         // Perpetual TODO: Make sure this clears everything including the top right tab stuff
         private void ClearShownData()
         {
+            #region Menus
+
             MainLLMenu.ScanAllFMsMenuItemEnabled = FMsViewList.Count > 0;
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(false);
@@ -4009,25 +4068,42 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(false);
 
+            #endregion
+
+            #region Bottom bar
+
             InstallUninstallFMLLButton.SetSayInstall(true);
             InstallUninstallFMLLButton.SetEnabled(false);
 
             PlayFMButton.Enabled = false;
+
+            WebSearchButton.Enabled = false;
+
+            #endregion
+
+            #region Readme area
 
             SetReadmeVisible(false);
             ReadmeRichTextBox.SetText("");
 
             ChooseReadmeLLPanel.ShowPanel(false);
             ViewHTMLReadmeLLButton.Hide();
-            WebSearchButton.Enabled = false;
+
+            #endregion
+
+            #region Stats tab
 
             BlankStatsPanelWithMessage(LText.StatisticsTab.NoFMSelected);
             StatsScanCustomResourcesButton.Hide();
 
-            AltTitlesLLMenu.ClearItems();
+            #endregion
 
             using (new DisableEvents(this))
             {
+                #region Edit FM tab
+
+                AltTitlesLLMenu.ClearItems();
+
                 EditFMRatingComboBox.SelectedIndex = 0;
 
                 EditFMLanguageComboBox.ClearFullItems();
@@ -4055,18 +4131,52 @@ namespace AngelLoader.Forms
 
                 FMsDGV_FM_LLMenu.ClearFinishedOnMenuItemChecks();
 
+                #endregion
+
+                #region Comment tab
+
                 CommentTextBox.Text = "";
                 CommentTextBox.Enabled = false;
+
+                #endregion
+
+                #region Tags tab
+
                 AddTagTextBox.Text = "";
 
                 TagsTreeView.Nodes.Clear();
 
                 foreach (Control c in TagsTabPage.Controls) c.Enabled = false;
 
+                #endregion
+
+                #region Patch tab
+
                 ShowPatchSection(enable: false);
 
-                //ModsPanel.ClearList();
-                //ModsPanel.Enabled = false;
+                #endregion
+
+                #region Mods tab
+
+                ModsCheckList.ClearList();
+                ModsCheckList.Enabled = false;
+
+                foreach (Control c in ModsTabPage.Controls)
+                {
+                    switch (c)
+                    {
+                        case TextBox tb:
+                            tb.Text = "";
+                            break;
+                        case CheckBox chk:
+                            chk.Checked = false;
+                            break;
+                    }
+
+                    c.Enabled = false;
+                }
+
+                #endregion
             }
         }
 
@@ -4186,11 +4296,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            #region FinishedOn
-
             FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
-
-            #endregion
 
             #region Custom resources
 
@@ -4225,10 +4331,10 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            #region Other tabs
-
             using (new DisableEvents(this))
             {
+                #region Edit FM tab
+
                 EditFMTitleTextBox.Text = fm.Title;
 
                 FillAltTitlesMenu(fm.AltTitles);
@@ -4243,17 +4349,25 @@ namespace AngelLoader.Forms
                 EditFMLastPlayedDateTimePicker.Value = fm.LastPlayed.DateTime ?? DateTime.Now;
                 EditFMLastPlayedDateTimePicker.Visible = fm.LastPlayed.DateTime != null;
 
-                EditFMDisableAllModsCheckBox.Checked = fm.DisableAllMods;
-                EditFMDisabledModsTextBox.Text = fm.DisabledMods;
-                EditFMDisabledModsTextBox.Enabled = !fm.DisableAllMods;
-
                 UpdateRatingMenus(fm.Rating, disableEvents: false);
 
                 ScanAndFillLanguagesBox(fm, disableEvents: false);
 
+                #endregion
+
+                #region Comment tab
+
                 CommentTextBox.Text = fm.Comment.FromRNEscapes();
 
+                #endregion
+
+                #region Tags tab
+
                 AddTagTextBox.Text = "";
+
+                #endregion
+
+                #region Patch tab
 
                 if (GameIsDark(fm.Game) && fm.Installed)
                 {
@@ -4272,40 +4386,90 @@ namespace AngelLoader.Forms
                     PatchDMLsListBox.EndUpdate();
                 }
 
-                //ModsPanel.ClearList();
+                #endregion
 
-                //if (GameIsDark(fm.Game))
-                //{
-                //    // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
-                //    ModsPanel.Enabled = true;
+                #region Mods tab
 
-                //    (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
+                ModsDisabledModsTextBox.Text = fm.DisabledMods;
 
-                //    var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
+                ModsDisabledModsLabel.Enabled = true;
 
-                //    var checkItems = new DarkCheckList.CheckItem[mods.Count];
+                try
+                {
+                    ModsCheckList.SuspendDrawing();
 
-                //    for (int i = 0; i < mods.Count; i++)
-                //    {
-                //        Mod mod = mods[i];
-                //        checkItems[i] = new DarkCheckList.CheckItem(
-                //            disabledModsList.Contains(mod.InternalName),
-                //            mod.InternalName);
-                //    }
+                    // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
+                    ModsCheckList.ClearList();
 
-                //    ModsPanel.FillList(checkItems);
-                //}
-                //else
-                //{
-                //    ModsPanel.Enabled = false;
-                //}
+                    if (GameIsDark(fm.Game))
+                    {
+                        (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
 
-                //ModsPanel.RefreshDarkMode();
+                        if (error == Error.None)
+                        {
+                            ModsCheckList.Enabled = true;
+
+                            var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                            bool allDisabled = fm.DisableAllMods;
+
+                            if (allDisabled) fm.DisabledMods = "";
+
+                            for (int i = 0; i < mods.Count; i++)
+                            {
+                                Mod mod = mods[i];
+                                if (mod.IsUber)
+                                {
+                                    mods.RemoveAt(i);
+                                    mods.Add(mod);
+                                }
+                            }
+
+                            var checkItems = new DarkCheckList.CheckItem[mods.Count];
+
+                            for (int i = 0; i < mods.Count; i++)
+                            {
+                                Mod mod = mods[i];
+                                checkItems[i] = new DarkCheckList.CheckItem(
+                                    @checked: allDisabled ? mod.IsUber : !disabledModsList.Contains(mod.InternalName),
+                                    text: mod.InternalName,
+                                    caution: mod.IsUber);
+
+                                if (allDisabled && !mod.IsUber)
+                                {
+                                    if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
+                                    fm.DisabledMods += mod.InternalName;
+                                }
+                            }
+
+                            if (allDisabled)
+                            {
+                                ModsDisabledModsTextBox.Text = fm.DisabledMods;
+                                fm.DisableAllMods = false;
+                            }
+
+                            ModsCheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
+                        }
+                        else
+                        {
+                            ModsCheckList.Enabled = false;
+                        }
+                    }
+                    else
+                    {
+                        ModsCheckList.Enabled = false;
+                    }
+                }
+                finally
+                {
+                    ModsCheckList.ResumeDrawing();
+                }
+
+                #endregion
             }
 
+            // TODO: Is this outside the disable events block for a reason? Do we need events to fire here?
             DisplayFMTags(fm.Tags);
-
-            #endregion
         }
 
         private async Task DisplaySelectedFM(bool refreshCache = false)

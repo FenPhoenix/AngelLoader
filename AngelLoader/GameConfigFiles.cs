@@ -29,13 +29,9 @@ namespace AngelLoader
         private const string key_fm_path = "fm_path";
         private const int key_fm_path_len = 7;
         private const string mod_path = "mod_path";
-        private const int mod_path_len = 8;
         private const string uber_mod_path = "uber_mod_path";
-        private const int uber_mod_path_len = 13;
         private const string mp_mod_path = "mp_mod_path";
-        private const int mp_mod_path_len = 11;
         private const string mp_u_mod_path = "mp_u_mod_path";
-        private const int mp_u_mod_path_len = 13;
 
         // cam_mod.ini, cam.cfg
         private const string key_fm_language = "fm_language";
@@ -983,23 +979,13 @@ namespace AngelLoader
 
 #endif
 
-        /*
-        private enum ModPaths
-        {
-            ModPath,
-            UberModPath,
-            MPModMath,
-            MPUberModPath
-        }
-
-        private static readonly int _modPathsCount = Enum.GetValues(typeof(ModPaths)).Length;
-
         private static readonly Dictionary<string, string> _modNamesToFriendlyNames = new()
         {
             { "NecroAge", "The Necro Age" },
             { "HDMOD", "HD Mod" },
             { "EP", "Enhancement Pack" },
             { "EP2", "Enhancement Pack 2" },
+            { "FMDML", "FMDML: A Collection of NewDark Thief FM Fixes" },
             { "T2FMDML", "T2FMDML: A Collection of NewDark Thief 2 FM Fixes" }
         };
 
@@ -1019,15 +1005,26 @@ namespace AngelLoader
                 return (Error.CamModIniNotFound, list);
             }
 
-            int[] modPathLastIndexes = Utils.InitializedArray(_modPathsCount, -1);
-            string[] modPathLines = new string[_modPathsCount];
-            (string Key, int Length)[] modPathKeys = new (string Key, int Length)[_modPathsCount];
-            modPathKeys[0] = (mod_path, mod_path_len);
-            modPathKeys[1] = (uber_mod_path, uber_mod_path_len);
-            modPathKeys[2] = (mp_mod_path, mp_mod_path_len);
-            modPathKeys[3] = (mp_u_mod_path, mp_u_mod_path_len);
+            string[] lines;
+            try
+            {
+                lines = File.ReadAllLines(camModIni);
+            }
+            catch (Exception ex)
+            {
+                Log("Exception reading " + camModIni + "\r\n" +
+                    "Game: " + gameIndex, ex);
+                // @BetterErrors(GetGameMods): Should we show the dialog?
+                //Dialogs.ShowError(nameof(GetGameMods) + "():" +
+                //                  "Couldn't read " + camModIni + "\r\n" +
+                //                  "Game: " + gameIndex);
+                return (Error.CamModIniCouldNotBeRead, list);
+            }
 
-            string[] lines = File.ReadAllLines(camModIni);
+            int modPathLastIndex = -1;
+            int uberModPathLastIndex = -1;
+            int mpModPathLastIndex = -1;
+            int mpUberModPathLastIndex = -1;
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -1037,59 +1034,65 @@ namespace AngelLoader
 
                 if (lineT.StartsWithI(mod_path))
                 {
-                    modPathLastIndexes[(int)ModPaths.ModPath] = i;
+                    modPathLastIndex = i;
                 }
                 else if (lineT.StartsWithI(uber_mod_path))
                 {
-                    modPathLastIndexes[(int)ModPaths.UberModPath] = i;
+                    uberModPathLastIndex = i;
                 }
                 else if (lineT.StartsWithI(mp_mod_path))
                 {
-                    modPathLastIndexes[(int)ModPaths.MPModMath] = i;
+                    mpModPathLastIndex = i;
                 }
                 else if (lineT.StartsWithI(mp_u_mod_path))
                 {
-                    modPathLastIndexes[(int)ModPaths.MPUberModPath] = i;
+                    mpUberModPathLastIndex = i;
                 }
             }
 
-            var modPathsAll = new List<string>();
-
-            for (int i = 0; i < _modPathsCount; i++)
+            static List<string>
+            GetModPaths(string[] lines, int lastIndex, string pathKey)
             {
-                int index = modPathLastIndexes[i];
-                if (index > -1)
+                return lastIndex > -1
+                    ? lines[lastIndex].Substring(pathKey.Length).Trim()
+                        .Split(Utils.CA_Plus, StringSplitOptions.RemoveEmptyEntries)
+                        .Distinct(StringComparer.OrdinalIgnoreCase).ToList()
+                    : new List<string>();
+            }
+
+            // Keeps the item in the hash set and removes it from the list if there are duplicates
+            static void DeDupe(HashSet<string> hashSet, List<string> list)
+            {
+                for (int i = 0; i < list.Count; i++)
                 {
-                    string modPathLine = lines[index].Substring(modPathKeys[i].Length).Trim();
-                    string[] modPathsOnThisLine = modPathLine.Split(Utils.CA_Plus, StringSplitOptions.RemoveEmptyEntries);
-
-                    //modPathsOnThisLine = modPathsOnThisLine.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-
-                    foreach (string modPath in modPathsOnThisLine)
+                    if (hashSet.Contains(list[i]))
                     {
-                        //int lastSepIndex = modPath.LastIndexOfDirSep();
-                        //var mod = new Mod("", modPath, true, i is (int)ModPaths.UberModPath or (int)ModPaths.MPUberModPath);
-                        //list.Add(mod);
-                        modPathsAll.Add(modPath);
-
-                        // @Mods(Get mods from cam_mod.ini): This will need to match more than just a single word for a name
-                        // We'll need to match like "NecroAge\Thief1", "mods\EP\Thief1", etc.
-                        // We also need to combine mods, like if we see "EP+mods\EP\Thief1" we need to know that's
-                        // the same thing
+                        list.RemoveAt(i);
+                        i--;
                     }
                 }
             }
 
-            modPathsAll = modPathsAll.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            var modPaths = GetModPaths(lines, modPathLastIndex, mod_path);
+            var uberModPaths = GetModPaths(lines, uberModPathLastIndex, uber_mod_path);
+            var mpModPaths = GetModPaths(lines, mpModPathLastIndex, mp_mod_path);
+            var mpUberModPaths = GetModPaths(lines, mpUberModPathLastIndex, mp_u_mod_path);
 
-            foreach (var modPath in modPathsAll)
-            {
-                list.Add(new Mod("", modPath, true, false));
-            }
+            var modPathsHash = modPaths.ToHashSet();
+            var uberModPathsHash = uberModPaths.ToHashSet();
+
+            DeDupe(uberModPathsHash, mpUberModPaths);
+            DeDupe(uberModPathsHash, modPaths);
+            DeDupe(uberModPathsHash, mpModPaths);
+            DeDupe(modPathsHash, mpModPaths);
+
+            foreach (var modPath in modPaths) list.Add(new Mod("", modPath, ModType.ModPath));
+            foreach (var modPath in uberModPaths) list.Add(new Mod("", modPath, ModType.UberModPath));
+            foreach (var modPath in mpModPaths) list.Add(new Mod("", modPath, ModType.MPModPath));
+            foreach (var modPath in mpUberModPaths) list.Add(new Mod("", modPath, ModType.MPUberModPath));
 
             return (Error.None, list);
         }
-        */
 
         #region Helpers
 

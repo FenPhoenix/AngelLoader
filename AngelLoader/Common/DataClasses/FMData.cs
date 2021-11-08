@@ -94,6 +94,11 @@ namespace AngelLoader.DataClasses
         internal string Comment = "";
 
         internal string DisabledMods = "";
+
+        /// <summary>
+        /// This is for backward compatibility only. Use only for that purpose.
+        /// </summary>
+        [FenGenDoNotWrite]
         internal bool DisableAllMods;
 
         [FenGenIgnore]
