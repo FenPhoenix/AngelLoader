@@ -616,12 +616,12 @@ namespace AngelLoader
 
             FMsViewList.Sort(comparer);
 
+            var tempFMs = new List<FanMission>();
+
             if (View.GetShowRecentAtTop())
             {
                 // Store it so it doesn't change
                 var dtNow = DateTime.Now;
-
-                var tempFMs = new List<FanMission>();
 
                 for (int i = 0; i < FMsViewList.Count; i++)
                 {
@@ -651,6 +651,27 @@ namespace AngelLoader
             {
                 for (int i = 0; i < FMsViewList.Count; i++) FMsViewList[i].MarkedRecent = false;
             }
+
+            #region Pinned
+
+            tempFMs.Clear();
+
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                var fm = FMsViewList[i];
+                if (fm.Pinned) tempFMs.Add(fm);
+            }
+
+            tempFMs.Reverse();
+
+            for (int i = 0; i < tempFMs.Count; i++)
+            {
+                var fm = tempFMs[i];
+                FMsViewList.Remove(fm);
+                FMsViewList.Insert(0, fm);
+            }
+
+            #endregion
         }
 
         public static async Task RefreshFMsListFromDisk()

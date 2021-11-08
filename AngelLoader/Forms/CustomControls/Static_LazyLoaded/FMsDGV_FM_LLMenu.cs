@@ -45,6 +45,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItemCustom? PlayFMMenuItem;
         private static ToolStripMenuItemCustom? PlayFMInMPMenuItem;
         private static ToolStripMenuItemCustom? InstallUninstallMenuItem;
+        private static ToolStripMenuItemCustom? PinToTopMenuItem;
         private static ToolStripMenuItemCustom? DeleteFMMenuItem;
         private static ToolStripSeparator? OpenInDromEdSep;
         private static ToolStripMenuItemCustom? OpenInDromEdMenuItem;
@@ -195,6 +196,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 PlayFMInMPMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
                 InstallUninstallMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
                 new ToolStripSeparator { Tag = LazyLoaded.True },
+                PinToTopMenuItem= new ToolStripMenuItemCustom{ Tag = LazyLoaded.True },
+                new ToolStripSeparator { Tag = LazyLoaded.True },
                 DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16, Tag = LazyLoaded.True },
                 OpenInDromEdSep = new ToolStripSeparator { Tag = LazyLoaded.True },
                 OpenInDromEdMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
@@ -242,6 +245,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             PlayFMMenuItem.Click += AsyncMenuItems_Click;
             PlayFMInMPMenuItem.Click += AsyncMenuItems_Click;
             InstallUninstallMenuItem.Click += AsyncMenuItems_Click;
+            PinToTopMenuItem.Click += AsyncMenuItems_Click;
             DeleteFMMenuItem.Click += AsyncMenuItems_Click;
             OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
             OpenFMFolderMenuItem.Click += AsyncMenuItems_Click;
@@ -319,6 +323,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             bool sayInstall = selFM == null || !selFM.Installed;
             // @GENGAMES - Localize FM context menu - "sayShockEd"
             bool sayShockEd = selFM != null && selFM.Game == Game.SS2;
+            bool sayPin = selFM == null || !selFM.Pinned;
 
             #endregion
 
@@ -330,6 +335,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             #endregion
 
             SetInstallUninstallMenuItemText(sayInstall);
+
+            SetPinOrUnpinMenuItemText(sayPin);
 
             DeleteFMMenuItem!.Text = LText.FMsList.FMMenu_DeleteFM;
 
@@ -438,6 +445,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             InstallUninstallMenuItem!.Text = sayInstall
                 ? LText.FMsList.FMMenu_InstallFM
                 : LText.FMsList.FMMenu_UninstallFM;
+        }
+
+        internal static void SetPinOrUnpinMenuItemText(bool sayPin)
+        {
+            if (!_constructed) return;
+
+            PinToTopMenuItem!.Text = sayPin
+                ? LText.FMsList.FMMenu_PinFM
+                : LText.FMsList.FMMenu_UnpinFM;
         }
 
         internal static void SetDeleteFMMenuItemEnabled(bool value)
@@ -619,6 +635,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
                 await FMAudio.ConvertToWAVs(_owner.FMsDGV.GetSelectedFM(), convertType, true);
+            }
+            else if (sender == PinToTopMenuItem)
+            {
+                await _owner.PinOrUnpinFM();
             }
         }
 

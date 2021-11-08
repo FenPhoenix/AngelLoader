@@ -3336,6 +3336,18 @@ namespace AngelLoader.Forms
             }
         }
 
+        internal async Task PinOrUnpinFM()
+        {
+            if (!FMsDGV.RowSelected()) return;
+
+            var fm = FMsDGV.GetSelectedFM();
+            fm.Pinned = !fm.Pinned;
+
+            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemText(!fm.Pinned);
+
+            await SortAndSetFilter(keepSelection: false);
+        }
+
         #region FMs list sorting
 
         public Column GetCurrentSortedColumnIndex() => FMsDGV.CurrentSortedColumn;
@@ -3465,6 +3477,12 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Title:
+                    if (fm.Pinned)
+                    {
+                        var cell = FMsDGV.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                        cell.Style.Padding = new Padding(32, 0, 0, 0);
+                    }
+
                     if (Config.EnableArticles && Config.MoveArticlesToEnd)
                     {
                         string title = fm.Title;
@@ -4237,6 +4255,8 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
+
+            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemText(!fm.Pinned);
 
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(!fm.MarkedUnavailable);
 
