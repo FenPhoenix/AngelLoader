@@ -167,9 +167,11 @@
             this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.ModsResetFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.ModsResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ModsShowUberCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ModsDisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.ModsDisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsCheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
+            this.ModsHeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -178,7 +180,6 @@
             this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
             this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.ModsShowUberCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -1747,6 +1748,7 @@
             // 
             this.ModsTabPage.AutoScroll = true;
             this.ModsTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.ModsTabPage.Controls.Add(this.ModsHeaderLabel);
             this.ModsTabPage.Controls.Add(this.ModsResetFLP);
             this.ModsTabPage.Controls.Add(this.ModsDisabledModsTextBox);
             this.ModsTabPage.Controls.Add(this.ModsDisabledModsLabel);
@@ -1764,7 +1766,7 @@
             this.ModsResetFLP.Controls.Add(this.ModsResetButton);
             this.ModsResetFLP.Controls.Add(this.ModsShowUberCheckBox);
             this.ModsResetFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.ModsResetFLP.Location = new System.Drawing.Point(8, 192);
+            this.ModsResetFLP.Location = new System.Drawing.Point(8, 216);
             this.ModsResetFLP.Name = "ModsResetFLP";
             this.ModsResetFLP.Size = new System.Drawing.Size(513, 24);
             this.ModsResetFLP.TabIndex = 1;
@@ -1782,11 +1784,22 @@
             this.ModsResetButton.UseVisualStyleBackColor = true;
             this.ModsResetButton.Click += new System.EventHandler(this.ModsResetButton_Click);
             // 
+            // ModsShowUberCheckBox
+            // 
+            this.ModsShowUberCheckBox.AutoSize = true;
+            this.ModsShowUberCheckBox.Location = new System.Drawing.Point(336, 3);
+            this.ModsShowUberCheckBox.Name = "ModsShowUberCheckBox";
+            this.ModsShowUberCheckBox.Size = new System.Drawing.Size(99, 17);
+            this.ModsShowUberCheckBox.TabIndex = 0;
+            this.ModsShowUberCheckBox.Text = "Show important";
+            this.ModsShowUberCheckBox.UseVisualStyleBackColor = true;
+            this.ModsShowUberCheckBox.CheckedChanged += new System.EventHandler(this.ModsShowUberCheckBox_CheckedChanged);
+            // 
             // ModsDisabledModsTextBox
             // 
             this.ModsDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ModsDisabledModsTextBox.Location = new System.Drawing.Point(8, 236);
+            this.ModsDisabledModsTextBox.Location = new System.Drawing.Point(8, 256);
             this.ModsDisabledModsTextBox.Name = "ModsDisabledModsTextBox";
             this.ModsDisabledModsTextBox.Size = new System.Drawing.Size(512, 20);
             this.ModsDisabledModsTextBox.TabIndex = 3;
@@ -1797,7 +1810,7 @@
             // 
             this.ModsDisabledModsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ModsDisabledModsLabel.AutoSize = true;
-            this.ModsDisabledModsLabel.Location = new System.Drawing.Point(8, 220);
+            this.ModsDisabledModsLabel.Location = new System.Drawing.Point(8, 240);
             this.ModsDisabledModsLabel.Name = "ModsDisabledModsLabel";
             this.ModsDisabledModsLabel.Size = new System.Drawing.Size(79, 13);
             this.ModsDisabledModsLabel.TabIndex = 2;
@@ -1810,11 +1823,22 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ModsCheckList.AutoScroll = true;
             this.ModsCheckList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ModsCheckList.Location = new System.Drawing.Point(8, 8);
+            this.ModsCheckList.Location = new System.Drawing.Point(8, 32);
             this.ModsCheckList.Name = "ModsCheckList";
             this.ModsCheckList.Size = new System.Drawing.Size(512, 184);
             this.ModsCheckList.TabIndex = 0;
             this.ModsCheckList.ItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.ModsCheckList_ItemCheckedChanged);
+            // 
+            // ModsHeaderLabel
+            // 
+            this.ModsHeaderLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                | System.Windows.Forms.AnchorStyles.Right)));
+            this.ModsHeaderLabel.Location = new System.Drawing.Point(8, 4);
+            this.ModsHeaderLabel.Name = "ModsHeaderLabel";
+            this.ModsHeaderLabel.Size = new System.Drawing.Size(512, 23);
+            this.ModsHeaderLabel.TabIndex = 4;
+            this.ModsHeaderLabel.Text = "Enable or disable mods for this FM:";
+            this.ModsHeaderLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ReadmeEncodingButton
             // 
@@ -1931,17 +1955,6 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
-            // 
-            // ModsShowUberCheckBox
-            // 
-            this.ModsShowUberCheckBox.AutoSize = true;
-            this.ModsShowUberCheckBox.Location = new System.Drawing.Point(358, 3);
-            this.ModsShowUberCheckBox.Name = "ModsShowUberCheckBox";
-            this.ModsShowUberCheckBox.Size = new System.Drawing.Size(77, 17);
-            this.ModsShowUberCheckBox.TabIndex = 0;
-            this.ModsShowUberCheckBox.Text = "Show uber";
-            this.ModsShowUberCheckBox.UseVisualStyleBackColor = true;
-            this.ModsShowUberCheckBox.CheckedChanged += new System.EventHandler(this.ModsShowUberCheckBox_CheckedChanged);
             // 
             // MainForm
             // 
@@ -2169,5 +2182,6 @@
         internal System.Windows.Forms.FlowLayoutPanel ModsResetFLP;
         internal CustomControls.DarkButton ModsResetButton;
         internal CustomControls.DarkCheckBox ModsShowUberCheckBox;
+        internal CustomControls.DarkLabel ModsHeaderLabel;
     }
 }

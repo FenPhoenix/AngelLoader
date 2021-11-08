@@ -147,9 +147,11 @@ namespace AngelLoader.Forms
             ModsTabPage = new DarkTabPageCustom();
             ModsResetFLP = new FlowLayoutPanel();
             ModsResetButton = new DarkButton();
+            ModsShowUberCheckBox = new DarkCheckBox();
             ModsDisabledModsTextBox = new DarkTextBox();
             ModsDisabledModsLabel = new DarkLabel();
             ModsCheckList = new DarkCheckList();
+            ModsHeaderLabel = new DarkLabel();
             ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
@@ -158,7 +160,6 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
-            ModsShowUberCheckBox = new DarkCheckBox();
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
@@ -1368,6 +1369,7 @@ namespace AngelLoader.Forms
             // 
             ModsTabPage.AutoScroll = true;
             ModsTabPage.BackColor = SystemColors.Control;
+            ModsTabPage.Controls.Add(ModsHeaderLabel);
             ModsTabPage.Controls.Add(ModsResetFLP);
             ModsTabPage.Controls.Add(ModsDisabledModsTextBox);
             ModsTabPage.Controls.Add(ModsDisabledModsLabel);
@@ -1381,7 +1383,7 @@ namespace AngelLoader.Forms
             ModsResetFLP.Controls.Add(ModsResetButton);
             ModsResetFLP.Controls.Add(ModsShowUberCheckBox);
             ModsResetFLP.FlowDirection = FlowDirection.RightToLeft;
-            ModsResetFLP.Location = new Point(8, 192);
+            ModsResetFLP.Location = new Point(8, 216);
             ModsResetFLP.Size = new Size(513, 24);
             ModsResetFLP.TabIndex = 1;
             ModsResetFLP.WrapContents = false;
@@ -1395,10 +1397,17 @@ namespace AngelLoader.Forms
             ModsResetButton.UseVisualStyleBackColor = true;
             ModsResetButton.Click += ModsResetButton_Click;
             // 
+            // ModsShowUberCheckBox
+            // 
+            ModsShowUberCheckBox.AutoSize = true;
+            ModsShowUberCheckBox.TabIndex = 0;
+            ModsShowUberCheckBox.UseVisualStyleBackColor = true;
+            ModsShowUberCheckBox.CheckedChanged += ModsShowUberCheckBox_CheckedChanged;
+            // 
             // ModsDisabledModsTextBox
             // 
             ModsDisabledModsTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ModsDisabledModsTextBox.Location = new Point(8, 236);
+            ModsDisabledModsTextBox.Location = new Point(8, 256);
             ModsDisabledModsTextBox.Size = new Size(512, 20);
             ModsDisabledModsTextBox.TabIndex = 3;
             ModsDisabledModsTextBox.TextChanged += ModsDisabledModsTextBox_TextChanged;
@@ -1408,7 +1417,7 @@ namespace AngelLoader.Forms
             // 
             ModsDisabledModsLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             ModsDisabledModsLabel.AutoSize = true;
-            ModsDisabledModsLabel.Location = new Point(8, 220);
+            ModsDisabledModsLabel.Location = new Point(8, 240);
             ModsDisabledModsLabel.TabIndex = 2;
             // 
             // ModsCheckList
@@ -1416,10 +1425,18 @@ namespace AngelLoader.Forms
             ModsCheckList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             ModsCheckList.AutoScroll = true;
             ModsCheckList.BorderStyle = BorderStyle.FixedSingle;
-            ModsCheckList.Location = new Point(8, 8);
+            ModsCheckList.Location = new Point(8, 32);
             ModsCheckList.Size = new Size(512, 184);
             ModsCheckList.TabIndex = 0;
             ModsCheckList.ItemCheckedChanged += ModsCheckList_ItemCheckedChanged;
+            // 
+            // ModsHeaderLabel
+            // 
+            ModsHeaderLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ModsHeaderLabel.Location = new Point(8, 4);
+            ModsHeaderLabel.Size = new Size(512, 23);
+            ModsHeaderLabel.TabIndex = 4;
+            ModsHeaderLabel.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // ReadmeEncodingButton
             // 
@@ -1514,13 +1531,6 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.TabIndex = 0;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
             ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
-            // 
-            // ModsShowUberCheckBox
-            // 
-            ModsShowUberCheckBox.AutoSize = true;
-            ModsShowUberCheckBox.TabIndex = 0;
-            ModsShowUberCheckBox.UseVisualStyleBackColor = true;
-            ModsShowUberCheckBox.CheckedChanged += ModsShowUberCheckBox_CheckedChanged;
             // 
             // MainForm
             // 

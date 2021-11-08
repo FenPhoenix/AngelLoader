@@ -484,6 +484,7 @@ namespace AngelLoader.DataClasses
         internal sealed class ModsTab_Class
         {
             internal readonly string TabText = "Mods";
+            internal readonly string Header = "Enable or disable these mods for this FM:";
             internal readonly string ImportantModsCaution = "These mods should not be disabled unless you know what you're doing.";
             internal readonly string ShowImportant = "Show important";
             internal readonly string Reset = "Reset";
