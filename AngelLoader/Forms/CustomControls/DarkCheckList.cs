@@ -172,9 +172,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     cb.Tag = Caution.Yes;
                     cb.Visible = _predicate?.Invoke() ?? true;
-                    var f = cb.Font;
-                    cb.Font = new Font(f.FontFamily, f.Size, FontStyle.Italic, f.Unit, f.GdiCharSet,
-                        f.GdiVerticalFont);
+                    cb.SetFontStyle(FontStyle.Italic);
                     cb.BackColor = Color.MistyRose;
                 }
                 if (firstCautionDone)

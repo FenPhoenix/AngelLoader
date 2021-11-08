@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -268,6 +270,18 @@ namespace AngelLoader
             }
 
             return new ZipArchive(File.OpenRead(fileName), ZipArchiveMode.Read, leaveOpen: false, enc);
+        }
+
+        internal static void SetFontStyle(this Control control, FontStyle fontStyle)
+        {
+            Font f = control.Font;
+            control.Font = new Font(
+                f.FontFamily,
+                f.Size,
+                fontStyle,
+                f.Unit,
+                f.GdiCharSet,
+                f.GdiVerticalFont);
         }
     }
 }
