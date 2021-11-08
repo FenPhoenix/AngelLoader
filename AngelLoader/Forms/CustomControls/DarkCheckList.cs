@@ -197,7 +197,7 @@ namespace AngelLoader.Forms.CustomControls
                     AutoSize = true,
                     Text = item.Text + (item.Caution ? " *" : ""),
                     Location = new Point(x, 4 + y),
-                    Checked = item.Checked,
+                    Checked = item.Checked
                 };
                 if (item.Caution)
                 {
@@ -206,6 +206,7 @@ namespace AngelLoader.Forms.CustomControls
                     var f = cb.Font;
                     cb.Font = new Font(f.FontFamily, f.Size, FontStyle.Italic, f.Unit, f.GdiCharSet,
                         f.GdiVerticalFont);
+                    cb.BackColor = Color.MistyRose;
                 }
                 if (firstCautionDone)
                 {
@@ -224,7 +225,7 @@ namespace AngelLoader.Forms.CustomControls
             //if (cautionsExist)
             if (firstCautionDone)
             {
-                _cautionLabel ??= new DarkLabel
+                _cautionLabel = new DarkLabel
                 {
                     Tag = Caution.Yes,
                     Visible = _predicate?.Invoke() ?? true,
@@ -233,7 +234,7 @@ namespace AngelLoader.Forms.CustomControls
                     DarkModeForeColor = DarkColors.Fen_CautionText,
                     Location = new Point(4, 8 + y),
                     Padding = new Padding(0),
-                    Margin = new Padding(0),
+                    Margin = new Padding(0)
                 };
                 RefreshCautionLabelText(cautionText);
                 //var f = label.Font;
@@ -242,17 +243,18 @@ namespace AngelLoader.Forms.CustomControls
                 base.Controls.Add(_cautionLabel);
                 cautionLabel?.SendToBack();
 
-                var panel = new Panel
+                _cautionPanel = new DrawnPanel
                 {
                     Tag = Caution.Yes,
                     Visible = _predicate?.Invoke() ?? true,
                     Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right,
-                    BackColor = DarkColors.Fen_RedHighlight,
+                    DrawnBackColor = Color.MistyRose,
+                    DarkModeDrawnBackColor = DarkColors.Fen_RedHighlight,
                     Location = new Point(4, 4 + firstCautionY),
                     Size = new Size(ClientRectangle.Width - 8, (4 + y) - (4 + firstCautionY))
                 };
-                base.Controls.Add(panel);
-                panel.SendToBack();
+                base.Controls.Add(_cautionPanel);
+                _cautionPanel.SendToBack();
             }
 
             CheckItems = items;
@@ -263,6 +265,7 @@ namespace AngelLoader.Forms.CustomControls
         private Func<bool>? _predicate;
 
         private DarkLabel? _cautionLabel;
+        private DrawnPanel? _cautionPanel;
 
         internal void Inject(Func<bool> predicate) => _predicate = predicate;
 
