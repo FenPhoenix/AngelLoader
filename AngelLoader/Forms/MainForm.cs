@@ -1365,6 +1365,8 @@ namespace AngelLoader.Forms
 
                 ModsHeaderLabel.Text = LText.ModsTab.Header;
 
+                ModsCheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
+
                 ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportant;
                 ModsResetButton.Text = LText.ModsTab.Reset;
 
@@ -4446,7 +4448,7 @@ namespace AngelLoader.Forms
                                 fm.DisableAllMods = false;
                             }
 
-                            ModsCheckList.FillList(checkItems);
+                            ModsCheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
                         }
                         else
                         {

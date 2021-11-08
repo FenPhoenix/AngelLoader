@@ -138,7 +138,7 @@ namespace AngelLoader.Forms.CustomControls
         [EditorBrowsable(EditorBrowsableState.Always)]
         public event EventHandler<DarkCheckListEventArgs>? ItemCheckedChanged;
 
-        internal void FillList(CheckItem[] items)
+        internal void FillList(CheckItem[] items, string cautionText)
         {
             ClearList();
             CheckBoxes = new DarkCheckBox[items.Length];
@@ -224,22 +224,22 @@ namespace AngelLoader.Forms.CustomControls
             //if (cautionsExist)
             if (firstCautionDone)
             {
-                var label = new DarkLabel
+                _cautionLabel ??= new DarkLabel
                 {
                     Tag = Caution.Yes,
                     Visible = _predicate?.Invoke() ?? true,
                     AutoSize = true,
-                    Text = "* " + LText.ModsTab.ImportantModsCaution,
                     ForeColor = Color.Maroon,
                     DarkModeForeColor = DarkColors.Fen_CautionText,
                     Location = new Point(4, 8 + y),
                     Padding = new Padding(0),
                     Margin = new Padding(0),
                 };
+                RefreshCautionLabelText(cautionText);
                 //var f = label.Font;
                 //label.Font = new Font(f.FontFamily, f.Size, FontStyle.Italic, f.Unit, f.GdiCharSet,
                 //    f.GdiVerticalFont);
-                base.Controls.Add(label);
+                base.Controls.Add(_cautionLabel);
                 cautionLabel?.SendToBack();
 
                 var panel = new Panel
@@ -262,7 +262,17 @@ namespace AngelLoader.Forms.CustomControls
 
         private Func<bool>? _predicate;
 
+        private DarkLabel? _cautionLabel;
+
         internal void Inject(Func<bool> predicate) => _predicate = predicate;
+
+        internal void RefreshCautionLabelText(string text)
+        {
+            if (_cautionLabel != null)
+            {
+                _cautionLabel.Text = "* " + text;
+            }
+        }
 
         internal void ShowCautionSection(bool show)
         {
