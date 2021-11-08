@@ -165,13 +165,14 @@
             this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchFMNotInstalledLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
+            this.ModsHeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsResetFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.ModsResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ModsShowUberCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ModsDisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.ModsDisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsCheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
-            this.ModsHeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.ModsAutoScrollDummyPanel = new System.Windows.Forms.Panel();
             this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -1753,11 +1754,22 @@
             this.ModsTabPage.Controls.Add(this.ModsDisabledModsTextBox);
             this.ModsTabPage.Controls.Add(this.ModsDisabledModsLabel);
             this.ModsTabPage.Controls.Add(this.ModsCheckList);
+            this.ModsTabPage.Controls.Add(this.ModsAutoScrollDummyPanel);
             this.ModsTabPage.Location = new System.Drawing.Point(4, 22);
             this.ModsTabPage.Name = "ModsTabPage";
             this.ModsTabPage.Size = new System.Drawing.Size(527, 284);
             this.ModsTabPage.TabIndex = 4;
             this.ModsTabPage.Text = "Mods";
+            // 
+            // ModsHeaderLabel
+            // 
+            this.ModsHeaderLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left))));
+            this.ModsHeaderLabel.AutoSize = true;
+            this.ModsHeaderLabel.Location = new System.Drawing.Point(8, 8);
+            this.ModsHeaderLabel.Name = "ModsHeaderLabel";
+            this.ModsHeaderLabel.Size = new System.Drawing.Size(174, 13);
+            this.ModsHeaderLabel.TabIndex = 4;
+            this.ModsHeaderLabel.Text = "Enable or disable mods for this FM: ";
             // 
             // ModsResetFLP
             // 
@@ -1829,16 +1841,12 @@
             this.ModsCheckList.TabIndex = 0;
             this.ModsCheckList.ItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.ModsCheckList_ItemCheckedChanged);
             // 
-            // ModsHeaderLabel
+            // ModsAutoScrollDummyPanel
             // 
-            this.ModsHeaderLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                | System.Windows.Forms.AnchorStyles.Right)));
-            this.ModsHeaderLabel.Location = new System.Drawing.Point(8, 4);
-            this.ModsHeaderLabel.Name = "ModsHeaderLabel";
-            this.ModsHeaderLabel.Size = new System.Drawing.Size(512, 23);
-            this.ModsHeaderLabel.TabIndex = 4;
-            this.ModsHeaderLabel.Text = "Enable or disable mods for this FM:";
-            this.ModsHeaderLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ModsAutoScrollDummyPanel.Location = new System.Drawing.Point(8, 8);
+            this.ModsAutoScrollDummyPanel.Name = "ModsAutoScrollDummyPanel";
+            this.ModsAutoScrollDummyPanel.Size = new System.Drawing.Size(280, 208);
+            this.ModsAutoScrollDummyPanel.TabIndex = 5;
             // 
             // ReadmeEncodingButton
             // 
@@ -2183,5 +2191,6 @@
         internal CustomControls.DarkButton ModsResetButton;
         internal CustomControls.DarkCheckBox ModsShowUberCheckBox;
         internal CustomControls.DarkLabel ModsHeaderLabel;
+        internal System.Windows.Forms.Panel ModsAutoScrollDummyPanel;
     }
 }

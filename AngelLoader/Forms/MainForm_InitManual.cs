@@ -145,13 +145,14 @@ namespace AngelLoader.Forms
             PatchOpenFMFolderButton = new DarkButton();
             PatchFMNotInstalledLabel = new DarkLabel();
             ModsTabPage = new DarkTabPageCustom();
+            ModsHeaderLabel = new DarkLabel();
             ModsResetFLP = new FlowLayoutPanel();
             ModsResetButton = new DarkButton();
             ModsShowUberCheckBox = new DarkCheckBox();
             ModsDisabledModsTextBox = new DarkTextBox();
             ModsDisabledModsLabel = new DarkLabel();
             ModsCheckList = new DarkCheckList();
-            ModsHeaderLabel = new DarkLabel();
+            ModsAutoScrollDummyPanel = new Panel();
             ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
@@ -1374,8 +1375,15 @@ namespace AngelLoader.Forms
             ModsTabPage.Controls.Add(ModsDisabledModsTextBox);
             ModsTabPage.Controls.Add(ModsDisabledModsLabel);
             ModsTabPage.Controls.Add(ModsCheckList);
+            ModsTabPage.Controls.Add(ModsAutoScrollDummyPanel);
             ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
+            // 
+            // ModsHeaderLabel
+            // 
+            ModsHeaderLabel.AutoSize = true;
+            ModsHeaderLabel.Location = new Point(8, 8);
+            ModsHeaderLabel.TabIndex = 4;
             // 
             // ModsResetFLP
             // 
@@ -1430,13 +1438,11 @@ namespace AngelLoader.Forms
             ModsCheckList.TabIndex = 0;
             ModsCheckList.ItemCheckedChanged += ModsCheckList_ItemCheckedChanged;
             // 
-            // ModsHeaderLabel
+            // ModsAutoScrollDummyPanel
             // 
-            ModsHeaderLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            ModsHeaderLabel.Location = new Point(8, 4);
-            ModsHeaderLabel.Size = new Size(512, 23);
-            ModsHeaderLabel.TabIndex = 4;
-            ModsHeaderLabel.TextAlign = ContentAlignment.MiddleLeft;
+            ModsAutoScrollDummyPanel.Location = new Point(8, 8);
+            ModsAutoScrollDummyPanel.Size = new Size(280, 208);
+            ModsAutoScrollDummyPanel.TabIndex = 5;
             // 
             // ReadmeEncodingButton
             // 
