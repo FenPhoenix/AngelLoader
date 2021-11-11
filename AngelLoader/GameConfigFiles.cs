@@ -979,16 +979,6 @@ namespace AngelLoader
 
 #endif
 
-        private static readonly Dictionary<string, string> _modNamesToFriendlyNames = new()
-        {
-            { "NecroAge", "The Necro Age" },
-            { "HDMOD", "HD Mod" },
-            { "EP", "Enhancement Pack" },
-            { "EP2", "Enhancement Pack 2" },
-            { "FMDML", "FMDML: A Collection of NewDark Thief FM Fixes" },
-            { "T2FMDML", "T2FMDML: A Collection of NewDark Thief 2 FM Fixes" }
-        };
-
         internal static (Error Error, List<Mod>)
         GetGameMods(FanMission fm)
         {
