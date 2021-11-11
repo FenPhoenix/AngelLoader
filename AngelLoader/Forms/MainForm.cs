@@ -3477,12 +3477,6 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Title:
-                    if (fm.Pinned)
-                    {
-                        var cell = FMsDGV.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                        cell.Style.Padding = new Padding(32, 0, 0, 0);
-                    }
-
                     if (Config.EnableArticles && Config.MoveArticlesToEnd)
                     {
                         string title = fm.Title;
