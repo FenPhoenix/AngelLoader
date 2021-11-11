@@ -628,7 +628,12 @@ namespace AngelLoader
                     var fm = FMsViewList[i];
                     fm.MarkedRecent = false;
 
-                    if (fm.DateAdded != null &&
+                    if (
+                        // Don't mess with the sort order of pinned FMs, because they should be in the same sort
+                        // order as the main list but just placed at the top. Whereas the recent FMs will always
+                        // be displayed in order of date added.
+                        !fm.Pinned &&
+                        fm.DateAdded != null &&
                         ((DateTime)fm.DateAdded).ToLocalTime().CompareTo(dtNow) <= 0 &&
                         (dtNow - ((DateTime)fm.DateAdded).ToLocalTime()).TotalDays <= Config.DaysRecent)
                     {
