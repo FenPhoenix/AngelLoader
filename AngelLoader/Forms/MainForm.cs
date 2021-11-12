@@ -1154,12 +1154,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void SetGameFilterShowHideMenuText() =>
-            GameFilterControlsShowHideButton.ToolTipText =
-                Config.GameOrganization == GameOrganization.OneList
-                    ? LText.FilterBar.ShowHideGameFilterMenu_Filters_ToolTip
-                    : LText.FilterBar.ShowHideGameFilterMenu_Tabs_ToolTip;
-
         #region ISettingsChangeableWindow
 
         public void Localize() => Localize(startup: false);
@@ -2378,8 +2372,6 @@ namespace AngelLoader.Forms
             if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
         }
 
-        #endregion
-
         private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
         {
             GameFilterControlsLLMenu.Construct(this, components);
@@ -2441,6 +2433,14 @@ namespace AngelLoader.Forms
                 PositionFilterBarAfterTabs();
             }
         }
+
+        private void SetGameFilterShowHideMenuText() =>
+            GameFilterControlsShowHideButton.ToolTipText =
+                Config.GameOrganization == GameOrganization.OneList
+                    ? LText.FilterBar.ShowHideGameFilterMenu_Filters_ToolTip
+                    : LText.FilterBar.ShowHideGameFilterMenu_Tabs_ToolTip;
+
+        #endregion
 
         #region Filter controls visibility menu
 
