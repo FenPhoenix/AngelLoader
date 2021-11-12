@@ -4406,7 +4406,10 @@ namespace AngelLoader.Forms
 
                 ModsDisabledModsTextBox.Text = fm.DisabledMods;
 
-                ModsDisabledModsLabel.Enabled = true;
+                foreach (Control c in ModsTabPage.Controls)
+                {
+                    c.Enabled = true;
+                }
 
                 try
                 {
@@ -4421,8 +4424,6 @@ namespace AngelLoader.Forms
 
                         if (error == Error.None)
                         {
-                            ModsCheckList.Enabled = true;
-
                             var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                             bool allDisabled = fm.DisableAllMods;
@@ -4464,14 +4465,6 @@ namespace AngelLoader.Forms
 
                             ModsCheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
                         }
-                        else
-                        {
-                            ModsCheckList.Enabled = false;
-                        }
-                    }
-                    else
-                    {
-                        ModsCheckList.Enabled = false;
                     }
                 }
                 finally
