@@ -21,6 +21,7 @@ namespace AngelLoader.Forms.CustomControls
         private readonly Color DefaultRowBackColor = SystemColors.Window;
         private readonly Color RecentHighlightColor = Color.LightGoldenrodYellow;
         private readonly Color UnavailableColor = Color.MistyRose;
+        private readonly Color PinnedColor = Color.FromArgb(203, 226, 206);
 
         private bool _mouseHere;
         private int _mouseDownOnHeader = -1;
@@ -421,6 +422,8 @@ namespace AngelLoader.Forms.CustomControls
                 Rows[e.RowIndex].DefaultCellStyle.BackColor =
                     fm.MarkedUnavailable
                     ? UnavailableColor
+                    : fm.Pinned
+                    ? PinnedColor
                     : fm.MarkedRecent
                     ? RecentHighlightColor
                     : DefaultRowBackColor;
@@ -447,6 +450,8 @@ namespace AngelLoader.Forms.CustomControls
                     ? DarkColors.BlueSelectionBrush
                     : fm.MarkedUnavailable
                     ? DarkColors.Fen_RedHighlightBrush
+                    : fm.Pinned
+                    ? DarkColors.PinnedBackgroundDarkBrush
                     : fm.MarkedRecent
                     ? DarkColors.Fen_DGVCellBordersBrush
                     : DarkColors.Fen_DarkBackgroundBrush;

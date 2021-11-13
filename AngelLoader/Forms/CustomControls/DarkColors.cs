@@ -39,6 +39,8 @@ namespace AngelLoader.Forms.CustomControls
 
         public static readonly Color ArrowEnabled = Color.FromArgb(150, 156, 160);
 
+        public static readonly Color PinnedBackgroundDark = Color.FromArgb(0, 59, 0);
+
         #endregion
 
         #region DarkUI
@@ -145,6 +147,8 @@ namespace AngelLoader.Forms.CustomControls
         //public static readonly SolidBrush LightBlueBorderBrush = new SolidBrush(LightBlueBorder);
         public static readonly SolidBrush ActiveControlBrush = new SolidBrush(ActiveControl);
         //public static readonly SolidBrush ArrowEnabledBrush = new SolidBrush(ArrowEnabled);
+
+        public static readonly SolidBrush PinnedBackgroundDarkBrush = new SolidBrush(PinnedBackgroundDark);
 
         #endregion
 

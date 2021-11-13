@@ -3462,6 +3462,8 @@ namespace AngelLoader.Forms
                 ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
                 : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
 
+            const string pinChar = "\U0001F4CC ";
+
             switch ((Column)e.ColumnIndex)
             {
                 case Column.Game:
@@ -3477,6 +3479,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Title:
+                    string finalTitle;
                     if (Config.EnableArticles && Config.MoveArticlesToEnd)
                     {
                         string title = fm.Title;
@@ -3490,20 +3493,33 @@ namespace AngelLoader.Forms
                                 break;
                             }
                         }
-                        e.Value = title;
+                        finalTitle = title;
                     }
                     else
                     {
-                        e.Value = fm.Title;
+                        finalTitle = fm.Title;
                     }
+
+                    if (TitleColumn.Visible && fm.Pinned)
+                    {
+                        finalTitle = pinChar + finalTitle;
+                    }
+
+                    e.Value = finalTitle;
+
                     break;
 
                 case Column.Archive:
-                    e.Value = fm.Archive;
+
+                    e.Value = !TitleColumn.Visible && ArchiveColumn.Visible && fm.Pinned
+                        ? pinChar + fm.Archive
+                        : fm.Archive;
                     break;
 
                 case Column.Author:
-                    e.Value = fm.Author;
+                    e.Value = !TitleColumn.Visible && !ArchiveColumn.Visible && AuthorColumn.Visible && fm.Pinned
+                        ? pinChar + fm.Author
+                        : fm.Author;
                     break;
 
                 case Column.Size:
