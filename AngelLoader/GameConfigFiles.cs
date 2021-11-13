@@ -1076,10 +1076,10 @@ namespace AngelLoader
             DeDupe(uberModPathsHash, mpModPaths);
             DeDupe(modPathsHash, mpModPaths);
 
-            foreach (var modPath in modPaths) list.Add(new Mod("", modPath, ModType.ModPath));
-            foreach (var modPath in uberModPaths) list.Add(new Mod("", modPath, ModType.UberModPath));
-            foreach (var modPath in mpModPaths) list.Add(new Mod("", modPath, ModType.MPModPath));
-            foreach (var modPath in mpUberModPaths) list.Add(new Mod("", modPath, ModType.MPUberModPath));
+            foreach (var modPath in modPaths) list.Add(new Mod(modPath, ModType.ModPath));
+            foreach (var modPath in uberModPaths) list.Add(new Mod(modPath, ModType.UberModPath));
+            foreach (var modPath in mpModPaths) list.Add(new Mod(modPath, ModType.MPModPath));
+            foreach (var modPath in mpUberModPaths) list.Add(new Mod(modPath, ModType.MPUberModPath));
 
             return (Error.None, list);
         }

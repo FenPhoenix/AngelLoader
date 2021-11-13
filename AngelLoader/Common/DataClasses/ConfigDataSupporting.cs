@@ -436,14 +436,12 @@ namespace AngelLoader.DataClasses
 
     internal sealed class Mod
     {
-        internal readonly string FriendlyName;
         internal readonly string InternalName;
         internal readonly ModType Type;
         internal bool IsUber => Type is ModType.UberModPath or ModType.MPUberModPath;
 
-        internal Mod(string friendlyName, string internalName, ModType type)
+        internal Mod(string internalName, ModType type)
         {
-            FriendlyName = friendlyName;
             InternalName = internalName;
             Type = type;
         }
