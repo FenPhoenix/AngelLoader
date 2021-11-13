@@ -59,6 +59,11 @@ namespace AngelLoader
                     string val = lineT.Substring(14);
                     fm.MarkedScanned = val.EqualsTrue();
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("Pinned="))
+                {
+                    string val = lineT.Substring(7);
+                    fm.Pinned = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("Archive="))
                 {
                     string val = lineT.Substring(8);
@@ -305,6 +310,11 @@ namespace AngelLoader
                 {
                     sb.Append("MarkedScanned=");
                     sb.AppendLine(fm.MarkedScanned.ToString());
+                }
+                if (fm.Pinned)
+                {
+                    sb.Append("Pinned=");
+                    sb.AppendLine(fm.Pinned.ToString());
                 }
                 if (!string.IsNullOrEmpty(fm.Archive))
                 {
