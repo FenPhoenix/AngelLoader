@@ -31,7 +31,6 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         internal bool MarkedRecent;
 
-        // Remove ignore attribute when we're ready to persist this
         internal bool Pinned;
 
         // For FMs that have metadata but don't exist on disk
