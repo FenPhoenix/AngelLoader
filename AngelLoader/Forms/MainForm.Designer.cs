@@ -1669,7 +1669,7 @@
             this.PatchMainPanel.Controls.Add(this.PatchOpenFMFolderButton);
             this.PatchMainPanel.Location = new System.Drawing.Point(0, 0);
             this.PatchMainPanel.Name = "PatchMainPanel";
-            this.PatchMainPanel.Size = new System.Drawing.Size(175, 154);
+            this.PatchMainPanel.Size = new System.Drawing.Size(311, 250);
             this.PatchMainPanel.TabIndex = 38;
             // 
             // PatchDMLsPanel
@@ -1682,7 +1682,7 @@
             this.PatchDMLsPanel.Controls.Add(this.PatchAddDMLButton);
             this.PatchDMLsPanel.Location = new System.Drawing.Point(0, 0);
             this.PatchDMLsPanel.Name = "PatchDMLsPanel";
-            this.PatchDMLsPanel.Size = new System.Drawing.Size(172, 120);
+            this.PatchDMLsPanel.Size = new System.Drawing.Size(308, 218);
             this.PatchDMLsPanel.TabIndex = 39;
             // 
             // PatchDMLPatchesLabel
@@ -1699,12 +1699,12 @@
             this.PatchDMLsListBox.Location = new System.Drawing.Point(8, 24);
             this.PatchDMLsListBox.MultiSelect = false;
             this.PatchDMLsListBox.Name = "PatchDMLsListBox";
-            this.PatchDMLsListBox.Size = new System.Drawing.Size(160, 69);
+            this.PatchDMLsListBox.Size = new System.Drawing.Size(296, 168);
             this.PatchDMLsListBox.TabIndex = 41;
             // 
             // PatchRemoveDMLButton
             // 
-            this.PatchRemoveDMLButton.Location = new System.Drawing.Point(122, 94);
+            this.PatchRemoveDMLButton.Location = new System.Drawing.Point(258, 192);
             this.PatchRemoveDMLButton.Name = "PatchRemoveDMLButton";
             this.PatchRemoveDMLButton.Size = new System.Drawing.Size(23, 23);
             this.PatchRemoveDMLButton.TabIndex = 42;
@@ -1714,7 +1714,7 @@
             // 
             // PatchAddDMLButton
             // 
-            this.PatchAddDMLButton.Location = new System.Drawing.Point(146, 94);
+            this.PatchAddDMLButton.Location = new System.Drawing.Point(282, 192);
             this.PatchAddDMLButton.Name = "PatchAddDMLButton";
             this.PatchAddDMLButton.Size = new System.Drawing.Size(23, 23);
             this.PatchAddDMLButton.TabIndex = 43;
@@ -1726,7 +1726,7 @@
             // 
             this.PatchOpenFMFolderButton.AutoSize = true;
             this.PatchOpenFMFolderButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 128);
+            this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 224);
             this.PatchOpenFMFolderButton.MinimumSize = new System.Drawing.Size(162, 23);
             this.PatchOpenFMFolderButton.Name = "PatchOpenFMFolderButton";
             this.PatchOpenFMFolderButton.Size = new System.Drawing.Size(162, 23);
@@ -1763,7 +1763,6 @@
             // 
             // ModsHeaderLabel
             // 
-            this.ModsHeaderLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left))));
             this.ModsHeaderLabel.AutoSize = true;
             this.ModsHeaderLabel.Location = new System.Drawing.Point(8, 8);
             this.ModsHeaderLabel.Name = "ModsHeaderLabel";

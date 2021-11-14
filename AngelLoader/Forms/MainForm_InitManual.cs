@@ -1304,7 +1304,7 @@ namespace AngelLoader.Forms
             PatchMainPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             PatchMainPanel.Controls.Add(PatchDMLsPanel);
             PatchMainPanel.Controls.Add(PatchOpenFMFolderButton);
-            PatchMainPanel.Size = new Size(175, 154);
+            PatchMainPanel.Size = new Size(311, 250);
             PatchMainPanel.TabIndex = 38;
             // 
             // PatchDMLsPanel
@@ -1315,7 +1315,7 @@ namespace AngelLoader.Forms
             PatchDMLsPanel.Controls.Add(PatchDMLsListBox);
             PatchDMLsPanel.Controls.Add(PatchRemoveDMLButton);
             PatchDMLsPanel.Controls.Add(PatchAddDMLButton);
-            PatchDMLsPanel.Size = new Size(172, 120);
+            PatchDMLsPanel.Size = new Size(308, 218);
             PatchDMLsPanel.TabIndex = 39;
             // 
             // PatchDMLPatchesLabel
@@ -1328,12 +1328,12 @@ namespace AngelLoader.Forms
             // 
             PatchDMLsListBox.Location = new Point(8, 24);
             PatchDMLsListBox.MultiSelect = false;
-            PatchDMLsListBox.Size = new Size(160, 69);
+            PatchDMLsListBox.Size = new Size(296, 168);
             PatchDMLsListBox.TabIndex = 41;
             // 
             // PatchRemoveDMLButton
             // 
-            PatchRemoveDMLButton.Location = new Point(122, 94);
+            PatchRemoveDMLButton.Location = new Point(258, 192);
             PatchRemoveDMLButton.Size = new Size(23, 23);
             PatchRemoveDMLButton.TabIndex = 42;
             PatchRemoveDMLButton.UseVisualStyleBackColor = true;
@@ -1342,7 +1342,7 @@ namespace AngelLoader.Forms
             // 
             // PatchAddDMLButton
             // 
-            PatchAddDMLButton.Location = new Point(146, 94);
+            PatchAddDMLButton.Location = new Point(282, 192);
             PatchAddDMLButton.Size = new Size(23, 23);
             PatchAddDMLButton.TabIndex = 43;
             PatchAddDMLButton.UseVisualStyleBackColor = true;
@@ -1353,7 +1353,7 @@ namespace AngelLoader.Forms
             // 
             PatchOpenFMFolderButton.AutoSize = true;
             PatchOpenFMFolderButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            PatchOpenFMFolderButton.Location = new Point(7, 128);
+            PatchOpenFMFolderButton.Location = new Point(7, 224);
             PatchOpenFMFolderButton.MinimumSize = new Size(162, 23);
             PatchOpenFMFolderButton.TabIndex = 44;
             PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
