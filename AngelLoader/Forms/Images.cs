@@ -732,6 +732,20 @@ namespace AngelLoader.Forms
 
         #region Misc
 
+        private static Bitmap? _pin_16;
+        private static Bitmap? _pin_16_Dark;
+        public static Bitmap Pin_16 =>
+            DarkModeEnabled
+                ? _pin_16_Dark ??= Resources.Pin_16_Dark
+                : _pin_16 ??= Resources.Pin_16;
+
+        private static Bitmap? _unpin_16;
+        private static Bitmap? _unpin_16_Dark;
+        public static Bitmap Unpin_16 =>
+            DarkModeEnabled
+                ? _unpin_16_Dark ??= Resources.Unpin_16_Dark
+                : _unpin_16 ??= Resources.Unpin_16;
+
         private static Bitmap? _trash_16;
         private static Bitmap? _trash_16_Dark;
         public static Bitmap Trash_16 =>

@@ -36,6 +36,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #endregion
 
+        private static bool _sayPin = true;
+
         private static MainForm _owner = null!;
 
         #region Menu item fields
@@ -83,6 +85,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 FinishedOnMenu!.DarkModeEnabled = _darkModeEnabled;
 
                 DeleteFMMenuItem!.Image = Images.Trash_16;
+                PinToTopMenuItem!.Image = _sayPin ? Images.Pin_16 : Images.Unpin_16;
             }
         }
 
@@ -336,7 +339,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             SetInstallUninstallMenuItemText(sayInstall);
 
-            SetPinOrUnpinMenuItemText(sayPin);
+            SetPinOrUnpinMenuItemState(sayPin);
 
             DeleteFMMenuItem!.Text = LText.FMsList.FMMenu_DeleteFM;
 
@@ -447,13 +450,19 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 : LText.FMsList.FMMenu_UninstallFM;
         }
 
-        internal static void SetPinOrUnpinMenuItemText(bool sayPin)
+        internal static void SetPinOrUnpinMenuItemState(bool sayPin)
         {
             if (!_constructed) return;
+
+            _sayPin = sayPin;
 
             PinToTopMenuItem!.Text = sayPin
                 ? LText.FMsList.FMMenu_PinFM
                 : LText.FMsList.FMMenu_UnpinFM;
+
+            PinToTopMenuItem!.Image = sayPin
+                ? Images.Pin_16
+                : Images.Unpin_16;
         }
 
         internal static void SetDeleteFMMenuItemEnabled(bool value)

@@ -3328,7 +3328,7 @@ namespace AngelLoader.Forms
             var fm = FMsDGV.GetSelectedFM();
             fm.Pinned = !fm.Pinned;
 
-            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemText(!fm.Pinned);
+            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
 
             await SortAndSetFilter(keepSelection: false);
         }
@@ -4251,7 +4251,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
 
-            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemText(!fm.Pinned);
+            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
 
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(!fm.MarkedUnavailable);
 
