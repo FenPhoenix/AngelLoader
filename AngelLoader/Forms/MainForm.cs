@@ -3071,9 +3071,47 @@ namespace AngelLoader.Forms
             RefreshSelectedFM(rowOnly: true);
         }
 
+        private void ModsDisabledModsTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                ModsDisabledModsTextBoxCommit();
+            }
+        }
+
         private void ModsDisabledModsTextBox_Leave(object sender, EventArgs e)
         {
+            ModsDisabledModsTextBoxCommit();
+        }
+
+        private void ModsDisabledModsTextBoxCommit()
+        {
             if (EventsDisabled) return;
+
+            if (!FMsDGV.RowSelected()) return;
+
+            string[] disabledMods = FMsDGV.GetSelectedFM().DisabledMods.Split('+');
+
+            var modNames = new Dictionary<string, int>(ModsCheckList.CheckItems.Length, StringComparer.OrdinalIgnoreCase);
+
+            for (int i = 0; i < ModsCheckList.CheckItems.Length; i++)
+            {
+                var checkItem = ModsCheckList.CheckItems[i];
+                modNames[checkItem.Text] = i;
+            }
+
+            bool[] checkedStates = InitializedArray(ModsCheckList.CheckItems.Length, true);
+
+            foreach (string mod in disabledMods)
+            {
+                if (modNames.TryGetValue(mod, out int index))
+                {
+                    checkedStates[index] = false;
+                }
+            }
+
+            ModsCheckList.SetItemCheckedStates(checkedStates);
+
             Ini.WriteFullFMDataIni();
         }
 

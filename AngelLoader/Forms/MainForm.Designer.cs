@@ -1,4 +1,6 @@
-﻿namespace AngelLoader.Forms
+﻿using System.Windows.Forms;
+
+namespace AngelLoader.Forms
 {
     /*
     // 
@@ -1814,6 +1816,8 @@
             this.ModsDisabledModsTextBox.Name = "ModsDisabledModsTextBox";
             this.ModsDisabledModsTextBox.Size = new System.Drawing.Size(512, 20);
             this.ModsDisabledModsTextBox.TabIndex = 3;
+            //ModsDisabledModsTextBox.KeyDown += ModsDisabledModsTextBox_KeyDown;
+            this.ModsDisabledModsTextBox.KeyDown += new KeyEventHandler(this.ModsDisabledModsTextBox_KeyDown);
             this.ModsDisabledModsTextBox.TextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
             this.ModsDisabledModsTextBox.Leave += new System.EventHandler(this.ModsDisabledModsTextBox_Leave);
             // 

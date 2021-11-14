@@ -7,8 +7,10 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class DarkCheckList : Panel, IDarkable
+    public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
     {
+        public bool EventsDisabled { get; set; }
+
         #region Private fields
 
         private Func<bool>? _predicate;
@@ -270,12 +272,29 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        internal void SetItemCheckedStates(bool[] checkedStates)
+        {
+            if (checkedStates.Length != CheckItems.Length) return;
+
+            using (new DisableEvents(this))
+            {
+                for (int i = 0; i < checkedStates.Length; i++)
+                {
+                    bool checkedState = checkedStates[i];
+                    CheckItems[i].Checked = checkedState;
+                    _checkBoxes[i].Checked = checkedState;
+                }
+            }
+        }
+
         #endregion
 
         #region Event handlers
 
         private void OnItemsCheckedChanged(object sender, EventArgs e)
         {
+            if (EventsDisabled) return;
+
             var s = (DarkCheckBox)sender;
 
             int checkBoxIndex = Array.IndexOf(_checkBoxes, s);

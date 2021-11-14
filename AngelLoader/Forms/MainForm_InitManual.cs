@@ -1418,6 +1418,7 @@ namespace AngelLoader.Forms
             ModsDisabledModsTextBox.Location = new Point(8, 256);
             ModsDisabledModsTextBox.Size = new Size(512, 20);
             ModsDisabledModsTextBox.TabIndex = 3;
+            ModsDisabledModsTextBox.KeyDown += ModsDisabledModsTextBox_KeyDown;
             ModsDisabledModsTextBox.TextChanged += ModsDisabledModsTextBox_TextChanged;
             ModsDisabledModsTextBox.Leave += ModsDisabledModsTextBox_Leave;
             // 
