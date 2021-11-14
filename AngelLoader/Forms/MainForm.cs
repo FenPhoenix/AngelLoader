@@ -1346,8 +1346,8 @@ namespace AngelLoader.Forms
 
                 ModsCheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
 
-                ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportant;
-                ModsResetButton.Text = LText.ModsTab.Reset;
+                ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportantMods;
+                ModsResetButton.Text = LText.ModsTab.EnableAll;
 
                 ModsDisabledModsLabel.Text = LText.ModsTab.DisabledMods;
 

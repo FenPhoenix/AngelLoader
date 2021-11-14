@@ -488,8 +488,12 @@ namespace AngelLoader.DataClasses
             internal readonly string TabText = "Mods";
             internal readonly string Header = "Enable or disable these mods for this FM:";
             internal readonly string ImportantModsCaution = "These mods should not be disabled unless you know what you're doing.";
-            internal readonly string ShowImportant = "Show important";
-            internal readonly string Reset = "Reset";
+            [FenGenComment(
+                "This is for the checkbox that toggles showing \"important\" mods, which is to say, mods that",
+                "are necessary for correct functioning of the game and/or fan missions and should not be disabled",
+                "under normal circumstances.")]
+            internal readonly string ShowImportantMods = "Show important mods";
+            internal readonly string EnableAll = "Enable all";
             internal readonly string DisabledMods = "Disabled mods:";
         }
 
