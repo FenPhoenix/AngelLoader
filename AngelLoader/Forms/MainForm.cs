@@ -6,7 +6,6 @@ Images to switch to drawing:
 -Install / uninstall
 -Green CheckCircle
 -Settings (can we do gradients and curved paths?)
--Calendars (these are "pixel art" now, so we can definitely draw them!)
 -Anything else not listed in "definitely won't draw" is at least a possibility
 
 Images we definitely won't draw (iow that really need to be rasters):
@@ -29,20 +28,6 @@ Things to lazy load:
  our "75,23" button min sizes etc!). This would give us a nicer font and a UI layout that supports it, but now
  we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
 IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
-
-TODO/NOTE(Hide game controls when game not specified):
-This has some subtleties that make it trickier than it seems at first glance. If we just hide the controls based
-on whether the game exe is specified, then we still show FMs for that game if they exist, but then you don't have
-a way to filter them and it looks like a bug or unintended behavior. If we only hide the controls when the game
-exe is not specified AND there are no FMs for that game in the list, we now have to update the controls' visible
-state every time we scan something, which might cause a chain reaction if we change the filters and land on some
-other FM that isn't scanned. Or else we end up not updating the filters to make it so FMs don't disappear right
-away, which might also look jank, and it's a mess.
-Options:
--Just give up and say "if you choose this 'hide game controls when no game specified' option, then we're just
- going to assume you also have no FMs for that game, and if you do, you'll see them in the list, so oh well."
--Give up on any sort of automation and just put a show/hide dropdown arrow button like with the filter controls
- and allow the user to hide them manually. That way we push the burden of knowing what they're doing onto them.
 
 TODO(MainForm Designer): The controls move positions because they're accounting for the scroll bar
 but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side

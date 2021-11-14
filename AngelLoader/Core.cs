@@ -5,11 +5,6 @@
   For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
   if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
   every time we write
- -@Robustness: Move away from the "hide errors, fail silently, I'm scared to know" and towards failing clearly and fast with dialogs
-  This will need a lot of extra localization strings. So also put more comments in the lang files.
- -Maybe delete the stub comm file on exit, but:
-  Don't do it for Steam because Steam could start without running a game and/or give the user time to maybe exit
-  AngelLoader and then the FM wouldn't load. Also it may be too aggressive in general, but it's an idea.
 */
 using System;
 using System.Collections.Generic;
