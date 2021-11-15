@@ -3368,7 +3368,10 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
 
-            await SortAndSetFilter(keepSelection: false);
+            // @vNext: We need to write code that will select the nearest FM to the old pinned location of this FM after it gets unpinned
+            // Our current "select nearest" code only works for FMs that have been removed from the filtered list,
+            // not FMs that remain in it but merely change position.
+            await SortAndSetFilter(keepSelection: fm.Pinned);
         }
 
         #region FMs list sorting
