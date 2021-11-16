@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
@@ -89,15 +90,16 @@ namespace AngelLoader
         {
             var ret = new List<string>();
 
+            var langsHash = langs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
             // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
             // (matching FMSel behavior)
             if (langs.Count > 0)
             {
-                // @BigO
                 for (int i = 0; i < Supported.Length; i++)
                 {
                     string sl = Supported[i];
-                    if (langs.ContainsI(sl)) ret.Add(sl);
+                    if (langsHash.Contains(sl)) ret.Add(sl);
                 }
             }
 
