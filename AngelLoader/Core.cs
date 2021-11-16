@@ -720,8 +720,9 @@ namespace AngelLoader
 
             filterShownIndexList.Clear();
 
-            // This one gets checked in a loop, so cache it. Others are only checked once, so leave them be.
+            // These are checked in a loop, so cache them. Others are only checked once, so leave them be.
             bool titleIsWhitespace = viewFilter.Title.IsWhiteSpace();
+            string titleTrimmed = viewFilter.Title.Trim();
 
             // Note: we used to have an early-out here if all filter options were off, but since the filter
             // requires ShowUnsupported to be active to be considered "off", in practice, the early-out would
@@ -736,13 +737,12 @@ namespace AngelLoader
             {
                 var fm = FMsViewList[i];
 
-                string titleTrimmed;
                 if (fm.MarkedRecent ||
                     fm.Pinned ||
                     titleIsWhitespace ||
                     fm.Title.ContainsI(viewFilter.Title) ||
                     (fm.Archive.ExtIsArchive()
-                        ? (titleTrimmed = viewFilter.Title.Trim()).EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
+                        ? titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
                             ? fm.Archive.EndsWithI(titleTrimmed)
                             : titleTrimmed.EqualsI(fm.Archive) ||
                               fm.Archive.IndexOf(viewFilter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
