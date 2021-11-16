@@ -738,6 +738,7 @@ namespace AngelLoader
 
                 string titleTrimmed;
                 if (fm.MarkedRecent ||
+                    fm.Pinned ||
                     titleIsWhitespace ||
                     fm.Title.ContainsI(viewFilter.Title) ||
                     (fm.Archive.ExtIsArchive()
@@ -761,6 +762,7 @@ namespace AngelLoader
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedRecent &&
+                        !fm.Pinned &&
                         !fm.Author.ContainsI(viewFilter.Author))
                     {
                         filterShownIndexList.RemoveAt(i);
@@ -821,7 +823,7 @@ namespace AngelLoader
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
 
-                    if (fm.MarkedRecent) continue;
+                    if (fm.MarkedRecent || fm.Pinned) continue;
 
                     if (fm.Tags.Count == 0 && notTags.Count == 0)
                     {
@@ -969,6 +971,7 @@ namespace AngelLoader
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedRecent &&
+                        !fm.Pinned &&
                         (fm.Rating < rf || fm.Rating > rt))
                     {
                         filterShownIndexList.RemoveAt(i);
@@ -990,6 +993,7 @@ namespace AngelLoader
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedRecent &&
+                        !fm.Pinned &&
                         (fm.ReleaseDate.DateTime == null ||
                         (rdf != null &&
                          fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdf.Value.Date) < 0) ||
@@ -1015,6 +1019,7 @@ namespace AngelLoader
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedRecent &&
+                        !fm.Pinned &&
                         (fm.LastPlayed.DateTime == null ||
                         (lpdf != null &&
                          fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdf.Value.Date) < 0) ||
@@ -1040,6 +1045,7 @@ namespace AngelLoader
                     bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
                     if (!fm.MarkedRecent &&
+                        !fm.Pinned &&
                         (((fmFinished > 0 || fmFinishedOnUnknown) &&
                           !viewFilter.Finished.HasFlagFast(FinishedState.Finished)) ||
                          (fmFinished == 0 && !fmFinishedOnUnknown &&
