@@ -3368,10 +3368,17 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
 
-            // @vNext: We need to write code that will select the nearest FM to the old pinned location of this FM after it gets unpinned
-            // Our current "select nearest" code only works for FMs that have been removed from the filtered list,
-            // not FMs that remain in it but merely change position.
-            await SortAndSetFilter(keepSelection: fm.Pinned);
+            SelectedFM? selFM;
+            if (fm.Pinned || FMsDGV.RowCount == 1)
+            {
+                selFM = null;
+            }
+            else
+            {
+                int index = FMsDGV.SelectedRows[0].Index;
+                selFM = FMsDGV.GetFMPosInfoFromIndex(index == FMsDGV.RowCount - 1 ? index - 1 : index + 1);
+            }
+            await SortAndSetFilter(keepSelection: fm.Pinned, selectedFM: selFM);
         }
 
         #region FMs list sorting

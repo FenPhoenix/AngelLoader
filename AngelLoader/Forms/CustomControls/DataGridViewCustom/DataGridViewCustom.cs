@@ -153,21 +153,25 @@ namespace AngelLoader.Forms.CustomControls
             return 0;
         }
 
-        internal SelectedFM GetSelectedFMPosInfo()
+        internal SelectedFM GetSelectedFMPosInfo() =>
+            SelectedRows.Count == 0
+                ? new SelectedFM { InstalledName = "", IndexFromTop = 0 }
+                : GetFMPosInfoFromIndex(index: SelectedRows[0].Index);
+
+        internal SelectedFM GetFMPosInfoFromIndex(int index)
         {
             var ret = new SelectedFM { InstalledName = "", IndexFromTop = 0 };
 
             if (SelectedRows.Count == 0) return ret;
 
-            int sel = SelectedRows[0].Index;
             int firstDisplayed = FirstDisplayedScrollingRowIndex;
             int lastDisplayed = firstDisplayed + DisplayedRowCount(false);
 
-            int indexFromTop = sel >= firstDisplayed && sel <= lastDisplayed
-                ? sel - firstDisplayed
+            int indexFromTop = index >= firstDisplayed && index <= lastDisplayed
+                ? index - firstDisplayed
                 : DisplayedRowCount(true) / 2;
 
-            ret.InstalledName = GetFMFromIndex(sel).InstalledDir;
+            ret.InstalledName = GetFMFromIndex(index).InstalledDir;
             ret.IndexFromTop = indexFromTop;
             return ret;
         }
