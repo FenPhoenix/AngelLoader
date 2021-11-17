@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded

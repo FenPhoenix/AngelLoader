@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using JetBrains.Annotations;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 
 namespace Fen7z
 {

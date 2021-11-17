@@ -8,11 +8,9 @@ using static System.StringComparison;
 namespace AL_Common
 {
     [PublicAPI]
-    public static class Utils
+    public static class Common
     {
-        // TODO: Put these somewhere else more appropriate
-
-        #region Non-utils
+        #region Fields / classes
 
         // Class instead of enum so we don't have to keep casting its fields
         public static class ByteSize
@@ -70,7 +68,7 @@ namespace AL_Common
 
         #endregion
 
-        // ---
+        #region Methods
 
         #region String
 
@@ -755,5 +753,7 @@ namespace AL_Common
         }
 
         public static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
+
+        #endregion
     }
 }

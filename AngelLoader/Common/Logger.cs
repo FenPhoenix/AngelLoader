@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 
 namespace AngelLoader
 {

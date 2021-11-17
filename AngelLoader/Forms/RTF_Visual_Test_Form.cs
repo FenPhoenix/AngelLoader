@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms

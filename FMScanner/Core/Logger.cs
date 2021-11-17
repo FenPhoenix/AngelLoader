@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 
 namespace FMScanner
 {

@@ -1045,7 +1045,7 @@ namespace AngelLoader
             {
                 return lastIndex > -1
                     ? lines[lastIndex].Substring(pathKey.Length).Trim()
-                        .Split(Utils.CA_Plus, StringSplitOptions.RemoveEmptyEntries)
+                        .Split(Common.CA_Plus, StringSplitOptions.RemoveEmptyEntries)
                         .Distinct(StringComparer.OrdinalIgnoreCase).ToList()
                     : new List<string>();
             }

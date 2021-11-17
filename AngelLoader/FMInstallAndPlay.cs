@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using SevenZip;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 using static AngelLoader.FMBackupAndRestore;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;

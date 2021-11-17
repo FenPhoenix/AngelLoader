@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader

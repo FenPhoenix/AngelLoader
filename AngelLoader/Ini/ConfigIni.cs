@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Misc;

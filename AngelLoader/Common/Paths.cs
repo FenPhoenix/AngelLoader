@@ -3,7 +3,7 @@ using System.IO;
 using System.Security;
 using AngelLoader.WinAPI;
 using Microsoft.Win32;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 using static AngelLoader.Logger;
 
 namespace AngelLoader

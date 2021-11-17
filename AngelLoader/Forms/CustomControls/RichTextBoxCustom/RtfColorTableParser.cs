@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 
 namespace AngelLoader.Forms.CustomControls
 {

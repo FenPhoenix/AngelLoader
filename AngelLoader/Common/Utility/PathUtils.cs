@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 
 namespace AngelLoader
 {

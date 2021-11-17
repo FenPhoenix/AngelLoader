@@ -53,7 +53,7 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.WinAPI;
-using static AL_Common.Utils;
+using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
@@ -3090,7 +3090,7 @@ namespace AngelLoader.Forms
 
             if (!FMsDGV.RowSelected()) return;
 
-            string[] disabledMods = FMsDGV.GetSelectedFM().DisabledMods.Split('+');
+            string[] disabledMods = FMsDGV.GetSelectedFM().DisabledMods.Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries);
 
             var modNames = new Dictionary<string, int>(ModsCheckList.CheckItems.Length, StringComparer.OrdinalIgnoreCase);
 
@@ -4473,7 +4473,9 @@ namespace AngelLoader.Forms
 
                         if (error == Error.None)
                         {
-                            var disabledModsList = fm.DisabledMods.Split('+').ToHashSet(StringComparer.OrdinalIgnoreCase);
+                            var disabledModsList = fm.DisabledMods
+                                .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
+                                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                             bool allDisabled = fm.DisableAllMods;
 
