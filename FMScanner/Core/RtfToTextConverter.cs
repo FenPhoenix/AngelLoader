@@ -1407,8 +1407,8 @@ namespace FMScanner
 
             _hexBuffer.ClearFast();
 
-            // Quick-n-dirty goto for now. TODO: Make this better or something
-            restartButDontClearBuffer:
+// Quick-n-dirty goto for now. TODO: Make this better or something
+restartButDontClearBuffer:
 
             b = (byte)(b << 4);
 
@@ -1633,9 +1633,6 @@ namespace FMScanner
         unexpected. Otherwise, we only want either \\f, \\a, \\j, or \\u. The others we ignore. Once we've found
         what we need, looped through six params and not found what we need, or reached a separator char, we quit
         and skip the rest of the group.
-
-        TODO: I should try to integrate this just to see if it ends up being as bad as I'm assuming.
-        Maybe it won't. Who knows.
         */
         private Error HandleFieldInstruction()
         {
@@ -1895,9 +1892,9 @@ namespace FMScanner
                 }
             }
 
-            breakout:
+breakout:
 
-            #endregion
+#endregion
 
             if (finalChar != "") PutChar(finalChar);
 

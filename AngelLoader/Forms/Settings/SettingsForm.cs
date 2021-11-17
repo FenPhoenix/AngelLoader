@@ -1,8 +1,9 @@
 ﻿// TODO: @IO_SAFETY: @Robustness: Check paths and exes for conflicts, duplicates, disallowed locations, etc.
 
-// TODO: @DarkMode(SettingsForm): Switch left buttons to a TreeView, and subdivide Appearance page into smaller ones.
+// Idea I had:
 // Change out the left buttons for a TreeView that can have subcategories. That way, we can divide up the settings
 // into small enough pages that no page has an unreasonable loading delay.
+// But...
 // UPDATE 2021-04-27: We have severe flickering issues with the TreeView. Reverting to old style for now.
 
 using System;

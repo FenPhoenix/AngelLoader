@@ -989,14 +989,14 @@ namespace FMScanner
             if (!fmIsT3)
             {
                 // This is here because it needs to come after the readmes are cached
-                #region NewDark minimum required version
+            #region NewDark minimum required version
 
                 if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
                 {
                     fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion);
                 }
 
-                #endregion
+            #endregion
             }
 #endif
 
@@ -1651,7 +1651,6 @@ namespace FMScanner
                         booksDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
 
-                    // TODO: Maybe extract this again, but then I have to extract MapFileExists() too
                     if (SS2FingerprintRequiredAndNotDone() || _scanOptions.ScanCustomResources)
                     {
                         // PERF_TODO: Scanner: Dir: GetDirectories(fm base dir, "*", TopDirectoryOnly)

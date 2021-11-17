@@ -229,7 +229,7 @@ namespace AngelLoader
             SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
 
             // Since we don't use the stub currently, set this here
-            // TODO: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
+            // NOTE: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
             GameConfigFiles.SetCamCfgLanguage(gamePath, "");
 
             // Why not
@@ -889,12 +889,12 @@ namespace AngelLoader
                 #endregion
 
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
+                // Make option to open the folder in Explorer and delete it manually?
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
                     Log("Could not delete FM installed directory.\r\n" +
                         "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                         "FM installed path: " + fmInstalledPath);
-                    // TODO: Make option to open the folder in Explorer and delete it manually?
                     Dialogs.ShowError(LText.AlertMessages.Uninstall_UninstallNotCompleted);
                 }
 

@@ -1,4 +1,4 @@
-﻿/* TODO: Core ideas:
+﻿/* NOTE: Core ideas:
  -We could have the stub be called back on game exit and use that to track game lifetime, for temp config var changes
   But note we may have to handle no_unload_fmsel option - make sure we don't have stale values on SelectFM call?
  -@IO_SAFETY: Make a system where files get temp-copied and then if writes fail, we copy the old file back (FMSel does this)

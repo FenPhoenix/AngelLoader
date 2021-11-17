@@ -1,4 +1,4 @@
-﻿/* TODO: MainForm notes:
+﻿/* NOTE: MainForm notes:
 NOTE: Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
 in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
@@ -29,7 +29,7 @@ Things to lazy load:
  we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
 IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
-TODO(MainForm Designer): The controls move positions because they're accounting for the scroll bar
+NOTE(MainForm Designer): The controls move positions because they're accounting for the scroll bar
 but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
 the scroll bar was).
 
@@ -1116,8 +1116,6 @@ namespace AngelLoader.Forms
         {
             // Extremely cheap and cheesy, but otherwise I have to figure out how to wait for a completely
             // separate and detached thread to complete. Argh. Threading sucks.
-            // TODO: I only block the view during zip extracts, which are pretty quick.
-            // Do I really want to put up this dialog during that situation?
             if (!EverythingPanel.Enabled || _viewBlocked)
             {
                 Dialogs.ShowAlert(
