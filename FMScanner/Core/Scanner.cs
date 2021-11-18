@@ -1975,10 +1975,9 @@ namespace FMScanner
 #if FMScanner_FullCode
             #region Fixup description
 
-            // Descr can be multiline. You're supposed to use \n for linebreaks. Most of the time people do that.
-            // That's always nice when people do that. It's so much nicer than when they break an ini value into
-            // multiple actual lines for some reason. God help us if any more keys get added to the spec and some
-            // wise guy puts one of those keys after a multiline Descr.
+            // Descr can be multiline, and you're supposed to use \n for linebreaks, but sometimes this value
+            // is multiple actual lines. Despite this being a horrific violation of the .ini format, we still
+            // have to handle it.
 
             if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty())
             {
@@ -2050,7 +2049,7 @@ namespace FMScanner
 
                 // The fm.ini Unix timestamp looks 32-bit, but FMSel's source code pegs it as int64. It must just
                 // be writing only as many digits as it needs. That's good, because 32-bit will run out in 2038.
-                // Anyway, we should parse it as long (NDL only does int, so it's in for a surprise in 20 years :P)
+                // Anyway, we should parse it as long.
                 if (long.TryParse(rd, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out long seconds))
                 {
                     try
@@ -3615,8 +3614,8 @@ namespace FMScanner
 
                     if (!header.Contains(OBJ_MAP)) continue;
 
-                    // Put us past the name (12), version high (4), version low (4), and the zero (4) - length
-                    // starts AFTER this 24-byte header! (thanks JayRude)
+                    // Put us past the name (12), version high (4), version low (4), and the zero (4).
+                    // Length starts AFTER this 24-byte header! (thanks JayRude)
                     br.BaseStream.Position = offset + 24;
 
                     byte[] content = br.ReadBytes((int)length);
@@ -3835,6 +3834,7 @@ namespace FMScanner
 
         #endregion
 
+        // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
         private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
         {
             // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
@@ -3874,6 +3874,7 @@ namespace FMScanner
 
             // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
             // want to fail, and not assume the current year.
+            // TODO(Scanner/StringToDate()): Write a custom parser that returns which format it ended up using (for correct ambiguity detection)
             bool success = DateTime.TryParseExact(
                 dateString,
                 _dateFormats,
