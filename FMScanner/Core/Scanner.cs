@@ -2616,7 +2616,7 @@ namespace FMScanner
                 for (int i = 0; i < lines.Count; i++)
                 {
                     string lineT = lines[i].Trim();
-                    foreach (var item in _monthNamesEnglish)
+                    foreach (string item in _monthNamesEnglish)
                     {
                         if (lineT.ContainsI(item) && StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
                         {

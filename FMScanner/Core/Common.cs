@@ -323,6 +323,7 @@ namespace FMScanner
             "Feb",
             "Mar",
             "Apr",
+            // "May" left out because it's already three letters and thus already exists in the full name set
             "Jun",
             "Jul",
             "Aug",
