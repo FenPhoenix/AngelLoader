@@ -192,20 +192,20 @@ namespace FMScanner
 
         // Single source of truth for language names (but we use this to build more arrays based on it for perf)
         private readonly string[]
-        Languages =
-        {
-            "english",
-            "czech",
-            "dutch",
-            "french",
-            "german",
-            "hungarian",
-            "italian",
-            "japanese",
-            "polish",
-            "russian",
-            "spanish"
-        };
+            Languages =
+            {
+                "english",
+                "czech",
+                "dutch",
+                "french",
+                "german",
+                "hungarian",
+                "italian",
+                "japanese",
+                "polish",
+                "russian",
+                "spanish"
+            };
 
         private readonly string[] Languages_FS_Lang_FS;
         private readonly string[] Languages_FS_Lang_Language_FS;
@@ -225,75 +225,82 @@ namespace FMScanner
             "dd.MM.yyyy"
         };
 
-        private readonly string[]
+        // Fields we use in here:
+        // d - The day of the month, from 1 through 31.
+        // dd - The day of the month, from 01 through 31.
+        // M - The month, from 1 through 12.
+        // MM - The month, from 01 through 12.
+        // MMM - abbreviated name (ie. Sept)
+        // MMMM - full name (ie. September)
+        // y - The year, from 0 to 99.
+        // yy - The year, from 00 to 99.
+        // yyyy - The year as a four-digit number.
+        private readonly (string Format, bool CanBeAmbiguous)[]
         _dateFormats =
         {
-            "MMM d yy",
-            "MMM d, yy",
-            "MMM dd yy",
-            "MMM dd, yy",
+            ("MMM d yy", false),
+            ("MMM d, yy", false),
+            ("MMM dd yy", false),
+            ("MMM dd, yy", false),
 
-            "MMM d yyyy",
-            "MMM d, yyyy",
-            "MMM dd yyyy",
-            "MMM dd, yyyy",
+            ("MMM d yyyy", false),
+            ("MMM d, yyyy", false),
+            ("MMM dd yyyy", false),
+            ("MMM dd, yyyy", false),
 
-            "MMMM d yy",
-            "MMMM d, yy",
-            "MMMM dd yy",
-            "MMMM dd, yy",
+            ("MMMM d yy", false),
+            ("MMMM d, yy", false),
+            ("MMMM dd yy", false),
+            ("MMMM dd, yy", false),
 
-            "MMMM d yyyy",
-            "MMMM d, yyyy",
-            "MMMM dd yyyy",
-            "MMMM dd, yyyy",
+            ("MMMM d yyyy", false),
+            ("MMMM d, yyyy", false),
+            ("MMMM dd yyyy", false),
+            ("MMMM dd, yyyy", false),
 
-            "d MMM yy",
-            "d MMM, yy",
-            "dd MMM yy",
-            "dd MMM, yy",
+            ("d MMM yy", true),
+            ("d MMM, yy", true),
+            ("dd MMM yy", true),
+            ("dd MMM, yy", true),
 
-            "d MMM yyyy",
-            "d MMM, yyyy",
-            "dd MMM yyyy",
-            "dd MMM, yyyy",
+            ("d MMM yyyy", false),
+            ("d MMM, yyyy", false),
+            ("dd MMM yyyy", false),
+            ("dd MMM, yyyy", false),
 
-            "d MMMM yy",
-            "d MMMM, yy",
-            "dd MMMM yy",
-            "dd MMMM, yy",
+            ("d MMMM yy", true),
+            ("d MMMM, yy", true),
+            ("dd MMMM yy", true),
+            ("dd MMMM, yy", true),
+            ("d MMMM yyyy", false),
+            ("d MMMM, yyyy", false),
+            ("dd MMMM yyyy", false),
+            ("dd MMMM, yyyy", false),
 
-            "d MMMM yyyy",
-            "d MMMM, yyyy",
-            "dd MMMM yyyy",
-            "dd MMMM, yyyy",
+            ("yyyy MMM d", false),
+            ("yyyy MMM dd", false),
+            ("yyyy MMMM d", false),
+            ("yyyy MMMM dd", false),
 
-            "yyyy MMM d",
-            "yyyy MMM dd",
-            "yyyy MMMM d",
-            "yyyy MMMM dd",
+            ("MM/dd/yyyy", true),
+            ("dd/MM/yyyy", true),
+            ("MM/dd/yy", true),
+            ("dd/MM/yy", true),
 
-            "MM/dd/yyyy",
-            "dd/MM/yyyy",
-            "MM/dd/yy",
-            "dd/MM/yy",
+            ("M/d/yyyy", true),
+            ("d/M/yyyy", true),
+            ("M/d/yy", true),
+            ("d/M/yy", true),
 
-            "M/d/yyyy",
-            "d/M/yyyy",
-            "M/d/yy",
-            "d/M/yy",
+            ("MM-dd-yyyy", true),
+            ("dd-MM-yyyy", true),
+            ("MM-dd-yy", true),
+            ("dd-MM-yy", true),
 
-            "MM-dd-yyyy",
-            "dd-MM-yyyy",
-            "MM-dd-yy",
-            "dd-MM-yy",
-
-            "M-d-yyyy",
-            "d-M-yyyy",
-            "M-d-yy",
-            "d-M-yy"
-
-            // TODO: Ambiguous months and days might pose a problem?
+            ("M-d-yyyy", true),
+            ("d-M-yyyy", true),
+            ("M-d-yy", true),
+            ("d-M-yy", true)
         };
 
         private readonly string[]

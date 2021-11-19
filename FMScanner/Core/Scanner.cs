@@ -3875,69 +3875,84 @@ namespace FMScanner
             // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
             // want to fail, and not assume the current year.
             // TODO(Scanner/StringToDate()): Write a custom parser that returns which format it ended up using (for correct ambiguity detection)
-            bool success = DateTime.TryParseExact(
-                dateString,
-                _dateFormats,
-                DateTimeFormatInfo.InvariantInfo,
-                DateTimeStyles.None,
-                out DateTime result);
-
-            if (success)
+            bool success = false;
+            bool canBeAmbiguous = false;
+            DateTime? result = null!;
+            for (int i = 0; i < _dateFormats.Length; i++)
             {
-                isAmbiguous = true;
-
-                if (checkForAmbiguity)
+                var item = _dateFormats[i];
+                success = DateTime.TryParseExact(
+                    dateString,
+                    item.Format,
+                    DateTimeFormatInfo.InvariantInfo,
+                    DateTimeStyles.None,
+                    out DateTime result_);
+                if (success)
                 {
-                    foreach (char c in dateString)
-                    {
-                        if (c.IsAsciiAlpha())
-                        {
-                            isAmbiguous = false;
-                            break;
-                        }
-                    }
-
-                    if (isAmbiguous)
-                    {
-                        string[] nums = dateString.Split(new[] { ' ', '-', '/' }, StringSplitOptions.RemoveEmptyEntries);
-                        if (nums.Length == 3)
-                        {
-                            bool unambiguousYearFound = false;
-                            bool unambiguousDayFound = false;
-
-                            for (int i = 0; i < nums.Length; i++)
-                            {
-                                if (int.TryParse(nums[i], out int numInt))
-                                {
-                                    switch (numInt)
-                                    {
-                                        case >= 1000 and <= 9999:
-                                            unambiguousYearFound = true;
-                                            break;
-                                        case > 12 and <= 31:
-                                            unambiguousDayFound = true;
-                                            break;
-                                    }
-                                }
-                            }
-
-                            if (unambiguousYearFound && unambiguousDayFound)
-                            {
-                                isAmbiguous = false;
-                            }
-                        }
-                    }
+                    canBeAmbiguous = item.CanBeAmbiguous;
+                    result = result_;
+                    break;
                 }
-
-                dateTime = result;
-                return true;
             }
-            else
+
+            if (!success)
             {
                 isAmbiguous = false;
                 dateTime = null;
                 return false;
             }
+
+
+            if (!checkForAmbiguity || !canBeAmbiguous)
+            {
+                isAmbiguous = false;
+                dateTime = result;
+                return true;
+            }
+
+            isAmbiguous = true;
+            foreach (char c in dateString)
+            {
+                if (c.IsAsciiAlpha())
+                {
+                    isAmbiguous = false;
+                    break;
+                }
+            }
+
+            if (isAmbiguous)
+            {
+                string[] nums = dateString.Split(new[] { ' ', '-', '/' }, StringSplitOptions.RemoveEmptyEntries);
+                if (nums.Length == 3)
+                {
+                    bool unambiguousYearFound = false;
+                    bool unambiguousDayFound = false;
+
+                    for (int i = 0; i < nums.Length; i++)
+                    {
+                        if (int.TryParse(nums[i], out int numInt))
+                        {
+                            switch (numInt)
+                            {
+                                case >= 1000 and <= 9999:
+                                    unambiguousYearFound = true;
+                                    break;
+                                case > 12 and <= 31:
+                                    unambiguousDayFound = true;
+                                    break;
+                            }
+                        }
+                    }
+
+                    if (unambiguousYearFound && unambiguousDayFound)
+                    {
+                        isAmbiguous = false;
+                    }
+                }
+            }
+
+            dateTime = result;
+            return true;
         }
 
         #endregion
