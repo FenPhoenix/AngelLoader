@@ -192,20 +192,20 @@ namespace FMScanner
 
         // Single source of truth for language names (but we use this to build more arrays based on it for perf)
         private readonly string[]
-            Languages =
-            {
-                "english",
-                "czech",
-                "dutch",
-                "french",
-                "german",
-                "hungarian",
-                "italian",
-                "japanese",
-                "polish",
-                "russian",
-                "spanish"
-            };
+        Languages =
+        {
+            "english",
+            "czech",
+            "dutch",
+            "french",
+            "german",
+            "hungarian",
+            "italian",
+            "japanese",
+            "polish",
+            "russian",
+            "spanish"
+        };
 
         private readonly string[] Languages_FS_Lang_FS;
         private readonly string[] Languages_FS_Lang_Language_FS;
