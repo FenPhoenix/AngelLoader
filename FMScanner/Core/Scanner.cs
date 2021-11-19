@@ -3874,7 +3874,6 @@ namespace FMScanner
 
             // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
             // want to fail, and not assume the current year.
-            // TODO(Scanner/StringToDate()): Write a custom parser that returns which format it ended up using (for correct ambiguity detection)
             bool success = false;
             bool canBeAmbiguous = false;
             DateTime? result = null!;
