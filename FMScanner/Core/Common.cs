@@ -230,7 +230,7 @@ namespace FMScanner
         // dd - The day of the month, from 01 through 31.
         // M - The month, from 1 through 12.
         // MM - The month, from 01 through 12.
-        // MMM - abbreviated name (ie. Sept)
+        // MMM - abbreviated name (ie. Sep)
         // MMMM - full name (ie. September)
         // y - The year, from 0 to 99.
         // yy - The year, from 00 to 99.
