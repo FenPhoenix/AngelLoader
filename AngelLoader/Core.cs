@@ -685,6 +685,17 @@ namespace AngelLoader
             await View.SortAndSetFilter(selFM, forceDisplayFM: true);
         }
 
+        internal static bool FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
+        {
+            return fm.Title.ContainsI(title) ||
+                   (fm.Archive.ExtIsArchive()
+                       ? titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
+                           ? fm.Archive.EndsWithI(titleTrimmed)
+                           : titleTrimmed.EqualsI(fm.Archive) ||
+                             fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
+                       : fm.Archive.ContainsI(title));
+        }
+
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
         //       the majority had no tags for this test.
         //       This was tested with the Release_Testing (optimized) profile.
@@ -740,13 +751,7 @@ namespace AngelLoader
                 if (fm.MarkedRecent ||
                     fm.Pinned ||
                     titleIsWhitespace ||
-                    fm.Title.ContainsI(viewFilter.Title) ||
-                    (fm.Archive.ExtIsArchive()
-                        ? titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
-                            ? fm.Archive.EndsWithI(titleTrimmed)
-                            : titleTrimmed.EqualsI(fm.Archive) ||
-                              fm.Archive.IndexOf(viewFilter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
-                        : fm.Archive.ContainsI(viewFilter.Title)))
+                    FMTitleContains_AllTests(fm, viewFilter.Title, titleTrimmed))
                 {
                     filterShownIndexList.Add(i);
                 }

@@ -3477,7 +3477,7 @@ namespace AngelLoader.Forms
                             break;
                         }
 
-                        if ((!titleIsWhiteSpace && fm.Title.ContainsI(FilterTitleTextBox.Text)) ||
+                        if ((!titleIsWhiteSpace && Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim())) ||
                             (!authorIsWhiteSpace && fm.Author.ContainsI(FilterAuthorTextBox.Text)))
                         {
                             selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
