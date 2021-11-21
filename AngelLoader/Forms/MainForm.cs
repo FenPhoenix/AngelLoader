@@ -2217,7 +2217,11 @@ namespace AngelLoader.Forms
                 // But if we tell it to land on the first one past the pinned set, what if our mission is _in_
                 // the pinned set? Should we land on it then?
                 bool keepSel = sender != FilterShowRecentAtTopButton && !senderIsTextBox;
-                await SortAndSetFilter(keepSelection: keepSel);
+                await SortAndSetFilter(
+                    keepSelection: keepSel,
+                    landImmediate: senderIsTextBox &&
+                                   !FilterTitleTextBox.Text.IsWhiteSpace() ||
+                                   !FilterAuthorTextBox.Text.IsWhiteSpace());
             }
         }
 
@@ -3417,9 +3421,11 @@ namespace AngelLoader.Forms
         /// <param name="forceDisplayFM"></param>
         /// <param name="keepSelection"></param>
         /// <param name="gameTabSwitch"></param>
+        /// <param name="landImmediate"></param>
         /// <returns></returns>
         public async Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
-                                           bool keepSelection = true, bool gameTabSwitch = false)
+                                           bool keepSelection = true, bool gameTabSwitch = false,
+                                           bool landImmediate = false)
         {
             bool selFMWasPassedIn = selectedFM != null;
 
@@ -3441,6 +3447,47 @@ namespace AngelLoader.Forms
             SortFMsDGV(FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
 
             Core.SetFilter();
+
+            if (landImmediate && FMsDGV.FilterShownIndexList.Count > 0)
+            {
+                bool foundUnTopped = false;
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                {
+                    var fm = FMsDGV.GetFMFromIndex(i);
+                    if (!fm.MarkedRecent && !fm.Pinned)
+                    {
+                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                        keepSel = KeepSel.True;
+                        foundUnTopped = true;
+                        break;
+                    }
+                }
+
+                if (!foundUnTopped)
+                {
+                    bool titleIsWhiteSpace = FilterTitleTextBox.Text.IsWhiteSpace();
+                    bool authorIsWhiteSpace = FilterAuthorTextBox.Text.IsWhiteSpace();
+
+                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                    {
+                        var fm = FMsDGV.GetFMFromIndex(i);
+
+                        if (!fm.MarkedRecent && !fm.Pinned)
+                        {
+                            break;
+                        }
+
+                        if ((!titleIsWhiteSpace && fm.Title.ContainsI(FilterTitleTextBox.Text)) ||
+                            (!authorIsWhiteSpace && fm.Author.ContainsI(FilterAuthorTextBox.Text)))
+                        {
+                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                            keepSel = KeepSel.True;
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (RefreshFMsList(selectedFM, keepSelection: keepSel))
             {
                 // DEBUG: Keep this in for testing this because the whole thing is irrepressibly finicky
