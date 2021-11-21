@@ -3496,7 +3496,7 @@ namespace AngelLoader.Forms
                 //Trace.WriteLine("!selectedFM.InstalledName.IsEmpty(): " + (selectedFM != null && !selectedFM.InstalledName.IsEmpty()));
                 //Trace.WriteLine("selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir: " + (selectedFM != null && selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir));
 
-                // Optimization in case we land on the same as FM as before, don't reload it
+                // Optimization in case we land on the same FM as before, don't reload it
                 // And whaddaya know, I still ended up having to have this eyes-glazing-over stuff here.
                 if (forceDisplayFM ||
                     (keepSelection &&
