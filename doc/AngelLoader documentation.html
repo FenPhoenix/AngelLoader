@@ -317,7 +317,7 @@ Displays the FM's last played date in the <a href="#settings_date_format">specif
 Displays the date the FM was added to the list.
 
 <h4>Disabled Mods</h4>
-Displays the disabled mods, if any, for the FM. If all mods are disabled for the FM, it will display "* [All]".
+Displays the disabled mods, if any, for the FM.
 
 <h4>Comment</h4>
 Displays the FM's comment, if any, up to the first 100 characters or the first linebreak, whichever comes first.
@@ -342,6 +342,9 @@ This item will only appear if Thief2MP.exe was found in the Thief 2 directory. C
 
 <h4>Install / Uninstall FM</h4>
 If the currently selected FM is not installed, this will install it; otherwise, it will uninstall it.
+
+<h4>Pin to top / Unpin from top</h4>
+You can choose to pin FMs to the top of list so that they will always remain there regardless of sorting or filtering. When an FM is pinned, this option will unpin it instead.
 
 <h4>Delete FM archive</h4>
 This will allow you to delete an FM's archive from disk. You can also press the Delete key while the FMs list is focused to achieve the same thing. In both cases, you will be asked for confirmation first.
@@ -401,17 +404,6 @@ Sometimes, multiple different titles will be detected during a scan. If the defa
 <h4>Release date and Last played</h4>
 If a date hasn't been scanned for or cannot be detected, its checkbox will be unchecked and no date will be shown.
 
-<h4>Disabled mods</h4>
-You can disable certain mods per-mission here. To see which mods you have installed, look at <code>cam_mod.ini</code> in your game folder. This string must be in the format <code>modname1+modname2+modname3</code> etc. So to disable the Enhancement Pack 2, it should be:
-
-<p><code>ep2</code></p>
-
-<p>To disable the Enhancement Pack 2 and the HD mod, it would be:</p>
-
-<p><code>ep2+hdmod</code></p>
-
-<p>To disable all mods for the current FM, check the <b>Disable all mods</b> checkbox.</p>
-
 <h4>Language selection</h4>
 Here you can choose to play an FM in a particular language. Only languages the FM supports will be available.
 
@@ -439,6 +431,22 @@ Some older fan missions don't quite work as they should when played with NewDark
 <h4>Open FM folder</h4>
 If you want to manually modify the FM's installed folder, you can open it here.<br>
 <a style="color:red;"><b>NOTE!</b></a> FM folders contain a special file, <code>fmsel.inf</code>, which must <a style="color:red;"><b>not</b></a> be deleted. This file contains metadata and is, due to its nature, not included in differential backups. While AngelLoader will sometimes be able to regenerate it or work without it, deleting it is asking for trouble. Don't do it.
+
+<h4><a name="mods_tab" />Mods tab</h4>
+
+<p><img src="images/mods_tab.png" /></p>
+
+<h4>Mods list</h4>
+Here you can enable or disable mods per-FM. Checked mods will be enabled and unchecked mods will be disabled. The <b>Disabled mods</b> text box will show disabled mods in the single-line format (like in FMSel) and can be edited manually if desired, but it's best to leave it and just use the checkboxes.
+
+<p/>
+
+Note that the list simply displays all mods that are specified in <code>cam_mod.ini</code>; you may or may not actually have all of them installed. If a mod is not actually installed, then enabling it will do nothing.
+
+<h4>Show important mods</h4>
+There are some mods that are vital to the normal functioning of an up-to-date Thief install, and should not be disabled under normal circumstances. Check this box to display those mods in the list anyway.
+
+<p/>
 
 <hr>
 
