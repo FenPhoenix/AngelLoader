@@ -163,9 +163,10 @@ namespace AngelLoader.Forms
             // backing lists rather than their Controls collection.
             if (control is DarkTabControl dtc)
             {
-                for (int i = 0; i < dtc.BackingTabPages.Length; i++)
+                var backingPages = dtc.BackingTabPages;
+                for (int i = 0; i < backingPages.Length; i++)
                 {
-                    FillControlDict(dtc.BackingTabPages[i], controlColors, alsoCreateControlHandles, stackCounter);
+                    FillControlDict(backingPages[i], controlColors, alsoCreateControlHandles, stackCounter);
                 }
             }
             else
@@ -195,9 +196,21 @@ namespace AngelLoader.Forms
                 stackCounter <= maxStackCount,
                 nameof(CreateAllControlsHandles) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
 
-            for (int i = 0; i < control.Controls.Count; i++)
+            // Special-case the custom tab control, see control dictionary filler method for explanation
+            if (control is DarkTabControl dtc)
             {
-                CreateAllControlsHandles(control.Controls[i], stackCounter);
+                var backingPages = dtc.BackingTabPages;
+                for (int i = 0; i < backingPages.Length; i++)
+                {
+                    CreateAllControlsHandles(backingPages[i], stackCounter);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < control.Controls.Count; i++)
+                {
+                    CreateAllControlsHandles(control.Controls[i], stackCounter);
+                }
             }
         }
 
