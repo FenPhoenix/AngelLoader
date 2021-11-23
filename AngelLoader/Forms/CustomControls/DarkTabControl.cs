@@ -70,6 +70,21 @@ namespace AngelLoader.Forms.CustomControls
         [DefaultValue(false)]
         public bool AllowReordering { get; set; }
 
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Control[] BackingTabPages
+        {
+            get
+            {
+                var ret = new Control[_backingTabList.Count];
+                for (int i = 0; i < ret.Length; i++)
+                {
+                    ret[i] = _backingTabList[i].TabPage;
+                }
+                return ret;
+            }
+        }
+
         public DarkTabControl() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 
         #region Private methods

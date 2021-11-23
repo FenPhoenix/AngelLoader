@@ -665,6 +665,12 @@ namespace AngelLoader.Forms
             foreach (TabPage item in _gameTabsInOrder) gameTabs.Add(item);
             GamesTabControl.SetTabsFull(gameTabs);
 
+            for (int i = 0; i < TopRightTabsData.Count; i++)
+            {
+                TopRightTabControl.ShowTab(_topRightTabsInOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
+                TopRightLLMenu.SetItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
+            }
+
             #endregion
 
             #region SplitContainers
@@ -746,6 +752,16 @@ namespace AngelLoader.Forms
             FilterShowUnavailableButton.Checked = Config.ShowUnavailableFMs;
             FilterShowRecentAtTopButton.Checked = Config.ShowRecentAtTop;
 
+            // EnsureValidity() guarantees selected tab will not be invisible
+            for (int i = 0; i < TopRightTabsData.Count; i++)
+            {
+                if ((int)Config.TopRightTabsData.SelectedTab == i)
+                {
+                    TopRightTabControl.SelectedTab = _topRightTabsInOrder[i];
+                    break;
+                }
+            }
+
             // This button is a weird special case (see its class) so we just construct it here and it will be
             // shown when localized.
             // TODO (inst/uninst button): We might be able to wrangle this into something cleaner nonetheless.
@@ -775,31 +791,6 @@ namespace AngelLoader.Forms
 
             // Do this here to prevent double-loading of RTF/GLML readmes
             SetTheme(Config.VisualTheme, startup: true, alsoCreateControlHandles: true);
-
-            #region Top-right tab after-theme stuff
-
-            // IMPORTANT: Put these AFTER SetTheme() to avoid the following bug:
-            // You hide a tab, close the app, open the app, show the tab again, and switch to it. The tab's theme
-            // is not correctly applied (looks like buggy light-mode in dark mode). This happens because we
-            // actually remove the tab page from the control with ShowTab(), and if we do it before SetTheme(),
-            // it doesn't get themed because it isn't a child of the UI at the point.
-            for (int i = 0; i < TopRightTabsData.Count; i++)
-            {
-                TopRightTabControl.ShowTab(_topRightTabsInOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
-                TopRightLLMenu.SetItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
-            }
-
-            // EnsureValidity() guarantees selected tab will not be invisible
-            for (int i = 0; i < TopRightTabsData.Count; i++)
-            {
-                if ((int)Config.TopRightTabsData.SelectedTab == i)
-                {
-                    TopRightTabControl.SelectedTab = _topRightTabsInOrder[i];
-                    break;
-                }
-            }
-
-            #endregion
 
 #if !ReleaseBeta && !ReleasePublic
             UpdateGameScreenShotModes();

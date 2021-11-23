@@ -155,9 +155,25 @@ namespace AngelLoader.Forms
                 stackCounter <= maxStackCount,
                 nameof(FillControlDict) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
 
-            for (int i = 0; i < control.Controls.Count; i++)
+            // Our custom tab control is a special case in that we have the ability to show/hide tabs, which is
+            // implemented by actually adding and removing the tab pages from the control and keeping them in a
+            // backing list (that's the only way to do it). So we can run into problems where if a tab page is
+            // not part of the control (because it's hidden), it will not be hit by this method and therefore
+            // will never be themed correctly. So handle custom tab controls separately and go through their
+            // backing lists rather than their Controls collection.
+            if (control is DarkTabControl dtc)
             {
-                FillControlDict(control.Controls[i], controlColors, alsoCreateControlHandles, stackCounter);
+                for (int i = 0; i < dtc.BackingTabPages.Length; i++)
+                {
+                    FillControlDict(dtc.BackingTabPages[i], controlColors, alsoCreateControlHandles, stackCounter);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < control.Controls.Count; i++)
+                {
+                    FillControlDict(control.Controls[i], controlColors, alsoCreateControlHandles, stackCounter);
+                }
             }
         }
 
