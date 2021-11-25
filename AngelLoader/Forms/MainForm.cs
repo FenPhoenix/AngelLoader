@@ -394,6 +394,7 @@ namespace AngelLoader.Forms
                         // Add tag dropdown is in EverythingPanel, not tags tab page
                         AnyControlFocusedInTabPage(TagsTabPage) || AddTagLLDropDown.Focused ? HelpSections.TagsTab :
                         AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
+                        AnyControlFocusedInTabPage(ModsTabPage) ? HelpSections.ModsTab :
                         AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
                         HelpSections.MainWindow;
 

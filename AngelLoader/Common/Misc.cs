@@ -77,6 +77,7 @@ namespace AngelLoader
             internal static readonly string CommentTab = "#comment_tab";
             internal static readonly string TagsTab = "#tags_tab";
             internal static readonly string PatchTab = "#patch_tab";
+            internal static readonly string ModsTab = "#mods_tab";
 
             internal static readonly string ReadmeArea = "#readme_area";
 
