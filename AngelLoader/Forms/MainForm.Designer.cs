@@ -324,6 +324,7 @@ namespace AngelLoader.Forms
             // 
             // EverythingPanel
             // 
+            this.EverythingPanel.AllowDrop = true;
             this.EverythingPanel.Controls.Add(this.MainSplitContainer);
             this.EverythingPanel.Controls.Add(this.BottomPanel);
             this.EverythingPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -331,6 +332,8 @@ namespace AngelLoader.Forms
             this.EverythingPanel.Name = "EverythingPanel";
             this.EverythingPanel.Size = new System.Drawing.Size(1671, 716);
             this.EverythingPanel.TabIndex = 4;
+            this.EverythingPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.EverythingPanel_DragDrop);
+            this.EverythingPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.EverythingPanel_DragEnter);
             // 
             // MainSplitContainer
             // 

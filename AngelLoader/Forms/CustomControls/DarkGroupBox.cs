@@ -49,6 +49,20 @@ namespace AngelLoader.Forms.CustomControls
 
         private const int _padding = 10;
 
+        // Store non-ampersand-doubled text so we can measure it accurately for the purposes of positioning the
+        // gap in the border correctly to fit the text.
+        private string _rawText = "";
+
+        public override string Text
+        {
+            get => _rawText;
+            set
+            {
+                _rawText = value;
+                base.Text = value.EscapeAmpersands();
+            }
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             if (!_darkModeEnabled)
@@ -59,7 +73,7 @@ namespace AngelLoader.Forms.CustomControls
 
             var g = e.Graphics;
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
-            var stringSize = g.MeasureString(Text, Font);
+            var stringSize = g.MeasureString(_rawText, Font);
 
             g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
 
@@ -84,12 +98,15 @@ namespace AngelLoader.Forms.CustomControls
                 TextFormatFlags.Default |
                 TextFormatFlags.VerticalCenter |
                 TextFormatFlags.NoClipping |
-                TextFormatFlags.NoPrefix |
+                // Don't remove ampersand garbage, because we can't tell the classic-mode control to not use the
+                // feature, so to be consistent between modes we have to just manually escape the ampersands at
+                // all times.
+                //TextFormatFlags.NoPrefix |
                 TextFormatFlags.EndEllipsis |
                 TextFormatFlags.SingleLine;
 
             Color textColor = Enabled ? DarkColors.LightText : DarkColors.DisabledText;
-            TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);
+            TextRenderer.DrawText(g, base.Text, Font, textRect, textColor, textFormatFlags);
         }
     }
 }

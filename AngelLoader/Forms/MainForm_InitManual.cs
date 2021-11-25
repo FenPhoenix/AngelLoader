@@ -277,11 +277,14 @@ namespace AngelLoader.Forms
             // 
             // EverythingPanel
             // 
+            EverythingPanel.AllowDrop = true;
             EverythingPanel.Controls.Add(MainSplitContainer);
             EverythingPanel.Controls.Add(BottomPanel);
             EverythingPanel.Dock = DockStyle.Fill;
             EverythingPanel.Size = new Size(1671, 716);
             EverythingPanel.TabIndex = 4;
+            EverythingPanel.DragDrop += EverythingPanel_DragDrop;
+            EverythingPanel.DragEnter += EverythingPanel_DragEnter;
             // 
             // MainSplitContainer
             // 
