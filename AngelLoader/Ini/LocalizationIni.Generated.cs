@@ -211,6 +211,12 @@ namespace AngelLoader
             {
                 CharacterEncoding_Dict.Add(f.Name, f);
             }
+            var addFMsToSetFields = typeof(LText_Class.AddFMsToSet_Class).GetFields(_bfLText);
+            var AddFMsToSet_Dict = new Dictionary<string, FieldInfo>(addFMsToSetFields.Length);
+            foreach (var f in addFMsToSetFields)
+            {
+                AddFMsToSet_Dict.Add(f.Name, f);
+            }
 
             #endregion
 
@@ -849,6 +855,28 @@ namespace AngelLoader
                             if (CharacterEncoding_Dict.TryGetValue(key, out FieldInfo value))
                             {
                                 value.SetValue(ret.CharacterEncoding, lt.Substring(eqIndex + 1));
+                            }
+                        }
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                else if (lineT == "[AddFMsToSet]")
+                {
+                    while (i < linesLength - 1)
+                    {
+                        int ltLength;
+                        string lt = lines[i + 1].TrimStart();
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
+                        {
+                            string key = lt.Substring(0, eqIndex);
+                            if (AddFMsToSet_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.AddFMsToSet, lt.Substring(eqIndex + 1));
                             }
                         }
                         else if ((ltLength = lt.Length) > 0 && lt[0] == '[')

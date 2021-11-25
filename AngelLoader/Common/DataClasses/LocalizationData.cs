@@ -53,6 +53,7 @@ namespace AngelLoader.DataClasses
         internal readonly Importing_Class Importing = new Importing_Class();
         internal readonly ScanAllFMsBox_Class ScanAllFMsBox = new ScanAllFMsBox_Class();
         internal readonly CharacterEncoding_Class CharacterEncoding = new CharacterEncoding_Class();
+        internal readonly AddFMsToSet_Class AddFMsToSet = new AddFMsToSet_Class();
 
         internal sealed class Meta_Class
         {
@@ -219,6 +220,8 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Help_HelpFileNotFound = "Help file not found.";
             internal readonly string Help_UnableToOpenHelpFile = "Unable to open help file.";
+            [FenGenBlankLine]
+            internal readonly string AddFM_UnableToCopy = "Unable to copy FM.";
             [FenGenBlankLine]
             [FenGenComment("Text for the button in the Error dialog box that lets the user view the error log file.")]
             internal readonly string Error_ViewLog = "View log";
@@ -743,6 +746,18 @@ namespace AngelLoader.DataClasses
             internal readonly string Category_Vietnamese = "Vietnamese";
             internal readonly string Category_WesternEuropean = "Western European";
             internal readonly string Category_Other = "Other";
+        }
+
+        internal sealed class AddFMsToSet_Class
+        {
+            // Working text - testing purposes
+            internal readonly string AddFM_DialogTitle = "Add FM";
+            internal readonly string AddFMs_DialogTitle = "Add FMs";
+            internal readonly string AddFM_Dialog_AskMessage = "Do you want to add this FM to the list?";
+            internal readonly string AddFMs_Dialog_AskMessage = "Do you want to add these FMs to the list?";
+            internal readonly string AddFM_Dialog_ChooseArchiveDir = "You have multiple FM archive directories. Please choose the one you want this FM archive to be copied to:";
+            internal readonly string AddFMs_Dialog_ChooseArchiveDir = "You have multiple FM archive directories. Please choose the one you want these FM archives to be copied to:";
+            internal readonly string AddFM_Add = "Add";
         }
     }
 }

@@ -4979,66 +4979,53 @@ namespace AngelLoader.Forms
 
         private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                object? data = e.Data.GetData(DataFormats.FileDrop);
-                if (data is not string?[] droppedItems) return;
-
-                int validItems = 0;
-
-                for (int i = 0; i < droppedItems.Length; i++)
-                {
-                    if (droppedItems[i]?.ExtIsArchive() == true) validItems++;
-                }
-
-                e.Effect = validItems > 0 ? DragDropEffects.Copy : DragDropEffects.None;
-            }
-            else
-            {
-                e.Effect = DragDropEffects.None;
-            }
-        }
-
-        private void EverythingPanel_DragDrop(object sender, DragEventArgs e)
-        {
-            object? data = e.Data.GetData(DataFormats.FileDrop);
-            if (data is not string?[] droppedItems) return;
-
-            var droppedItemsList = droppedItems.ToList();
-
-            string test = "";
-            for (int i = 0; i < droppedItemsList.Count; i++)
-            {
-                string? di = droppedItemsList[i];
-                if (di == null || !di.ExtIsArchive() ||
-                    /*
-                    Reject tomfoolery where a directory could be named "whatever.zip" etc.
-                    Don't do this in the drag-over handler, because we don't want to potentially take a long
-                    wait to hit the disk there. It does mean that for directories that are named like archive
-                    files we'll have a "you can do this drop operation" icon and then do nothing once we get
-                    here, but that should be a rare case anyway.
-                    */
-                    Directory.Exists(di))
-                {
-                    droppedItemsList.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-
-                if (!test.IsEmpty()) test += "\r\n";
-                test += di;
-            }
-
-            if (droppedItemsList.Count == 0)
+            if (!EverythingPanel.Enabled ||
+                !e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effect = DragDropEffects.None;
                 return;
             }
 
-            Dialogs.ShowAlert(
-                "Do you want to add these FMs to the set? (testing, does nothing at the moment)" + "\r\n\r\n" + test,
-                "Test",
-                MessageBoxIcon.Information);
+            object? data = e.Data.GetData(DataFormats.FileDrop);
+            if (data is not string[] droppedItems) return;
+
+            int validItems = 0;
+
+            for (int i = 0; i < droppedItems.Length; i++)
+            {
+                var di = droppedItems[i];
+                if (!di.IsEmpty() && di.ExtIsArchive())
+                {
+                    validItems++;
+                }
+            }
+
+            e.Effect = validItems > 0 ? DragDropEffects.Copy : DragDropEffects.None;
+        }
+
+        private async void EverythingPanel_DragDrop(object sender, DragEventArgs e)
+        {
+            if (!EverythingPanel.Enabled)
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            object? data = e.Data.GetData(DataFormats.FileDrop);
+            if (data is not string[] droppedItems) return;
+            try
+            {
+                EnableEverything(false);
+
+                if (!await FMArchives.Add(droppedItems.ToList()))
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+            }
+            finally
+            {
+                EnableEverything(true);
+            }
         }
     }
 }

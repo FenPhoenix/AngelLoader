@@ -26,7 +26,8 @@ namespace AngelLoader.Forms
             string okText,
             string cancelText,
             bool okIsDangerous,
-            string[]? choiceStrings = null)
+            string[]? choiceStrings = null,
+            bool multiSelectionAllowed = true)
         {
 #if DEBUG
             InitializeComponent();
@@ -58,6 +59,8 @@ namespace AngelLoader.Forms
 
             if (_multiChoice)
             {
+                ChoiceListBox.MultiSelect = multiSelectionAllowed;
+
                 ChoiceListBox.BeginUpdate();
                 // Set this first: the list is now populated
                 for (int i = 0; i < choiceStrings!.Length; i++)
@@ -65,6 +68,11 @@ namespace AngelLoader.Forms
                     ChoiceListBox.Items.Add(choiceStrings[i]);
                 }
                 ChoiceListBox.EndUpdate();
+
+                if (!multiSelectionAllowed)
+                {
+                    SelectAllButton.Hide();
+                }
             }
             else
             {
