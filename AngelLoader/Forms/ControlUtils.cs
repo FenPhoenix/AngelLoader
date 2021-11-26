@@ -423,6 +423,15 @@ namespace AngelLoader.Forms
         /// <returns></returns>
         internal static DialogResult ShowDialogDark(this Form dialog) => dialog.ShowDialog();
 
+        /// <summary>
+        /// Just redirects to ShowDialog(), but it's so I can make every call ShowDialogDark() so if I find any
+        /// ShowDialog() call I'll know it could be a bug (if it's calling a built-in dialog).
+        /// </summary>
+        /// <param name="dialog"></param>
+        /// <param name="owner"></param>
+        /// <returns></returns>
+        internal static DialogResult ShowDialogDark(this Form dialog, IWin32Window owner) => dialog.ShowDialog(owner);
+
         #endregion
 
         #region ToolTips

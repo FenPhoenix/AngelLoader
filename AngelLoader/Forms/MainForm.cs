@@ -5013,11 +5013,12 @@ namespace AngelLoader.Forms
 
             object? data = e.Data.GetData(DataFormats.FileDrop);
             if (data is not string[] droppedItems) return;
+
             try
             {
                 EnableEverything(false);
 
-                if (!await FMArchives.Add(droppedItems.ToList()))
+                if (!await FMArchives.Add(this, droppedItems.ToList()))
                 {
                     e.Effect = DragDropEffects.None;
                 }

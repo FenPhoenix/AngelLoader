@@ -189,7 +189,7 @@ namespace AngelLoader
             }
         }
 
-        internal static async Task<bool> Add(List<string> droppedItemsList)
+        internal static async Task<bool> Add(IWin32Window owner, List<string> droppedItemsList)
         {
             if (Config.FMArchivePaths.Count == 0) return false;
 
@@ -254,7 +254,10 @@ namespace AngelLoader
                         choiceStrings: singleArchivePath ? null : Config.FMArchivePaths.ToArray(),
                         multiSelectionAllowed: false);
 
-                    DialogResult result = f.ShowDialogDark();
+                    // Show with explicit owner because otherwise we get in a "halfway" state where the dialog is
+                    // modal, but it can be made to be underneath the main window and then you can never get back
+                    // to it again and have to kill the app through Task Manager.
+                    DialogResult result = f.ShowDialogDark(owner);
 
                     if (result != DialogResult.OK) return DialogResult.Cancel;
 
