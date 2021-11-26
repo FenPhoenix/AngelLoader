@@ -81,6 +81,14 @@ namespace AngelLoader.Forms
         bool DarkModeEnabled { get; set; }
     }
 
+    // We need to pass this around to a whole chain of methods to get it to the right places for it to be able to
+    // close before long-running work is done but still stay open long enough for the main window to initialize.
+    // We pass as this interface to guarantee that nobody can do anything dangerous with it.
+    public interface ISplashScreen_Safe
+    {
+        void Hide();
+    }
+
     internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IMessageFilter
     {
         #region Progress box
@@ -112,7 +120,7 @@ namespace AngelLoader.Forms
         /// Call this only after the FindFMs() thread has finished.
         /// </summary>
         /// <returns></returns>
-        Task FinishInitAndShow(List<int> fmsViewListUnscanned);
+        Task FinishInitAndShow(List<int> fmsViewListUnscanned, ISplashScreen_Safe splashScreen);
 
         void ShowOnly();
 

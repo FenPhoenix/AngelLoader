@@ -195,7 +195,7 @@ namespace AngelLoader
                 }
                 // IMPORTANT: End no-splash-screen-call zone
 
-                return View.FinishInitAndShow(fmsViewListUnscanned!);
+                return View.FinishInitAndShow(fmsViewListUnscanned!, splashScreen);
             }
 
             if (!openSettings)

@@ -799,7 +799,7 @@ namespace AngelLoader.Forms
         }
 
         // This one can't be multithreaded because it depends on the FMs list
-        public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned)
+        public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen)
         {
             if (Visible) return;
 
@@ -810,13 +810,14 @@ namespace AngelLoader.Forms
             if (fmsViewListUnscanned?.Count > 0)
             {
                 Show();
+                splashScreen.Hide();
                 await FMScan.ScanNewFMs(fmsViewListUnscanned);
             }
 
             Core.SetFilter();
             if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
             {
-                await DisplaySelectedFM();
+                await DisplaySelectedFM(splashScreen: splashScreen);
             }
 
             FMsDGV.Focus();
@@ -4579,7 +4580,7 @@ namespace AngelLoader.Forms
             DisplayFMTags(fm.Tags);
         }
 
-        private async Task DisplaySelectedFM(bool refreshCache = false)
+        private async Task DisplaySelectedFM(bool refreshCache = false, ISplashScreen_Safe? splashScreen = null)
         {
             FanMission fm = FMsDGV.GetSelectedFM();
 
@@ -4587,6 +4588,7 @@ namespace AngelLoader.Forms
             {
                 using (new DisableKeyPresses(this))
                 {
+                    splashScreen?.Hide();
                     if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
                     {
                         RefreshSelectedFM(rowOnly: true);
@@ -4596,7 +4598,7 @@ namespace AngelLoader.Forms
 
             UpdateAllFMUIDataExceptReadme(fm);
 
-            var cacheData = await FMCache.GetCacheableData(fm, refreshCache);
+            var cacheData = await FMCache.GetCacheableData(fm, refreshCache, splashScreen);
 
             #region Readme
 

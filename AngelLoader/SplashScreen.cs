@@ -6,7 +6,7 @@ namespace AngelLoader
 {
     // Slim wrapper around the splash screen form for cleanliness (and so we can translate a Dispose() call to a
     // ProgrammaticClose() call on the form).
-    internal sealed class SplashScreen : IDisposable
+    internal sealed class SplashScreen : IDisposable, ISplashScreen_Safe
     {
         private readonly SplashScreenForm _splashScreenForm;
 
@@ -19,7 +19,7 @@ namespace AngelLoader
 
         internal void Show(VisualTheme theme) => _splashScreenForm.Show(theme);
 
-        internal void Hide() => _splashScreenForm.Hide();
+        public void Hide() => _splashScreenForm.Hide();
 
         internal void SetMessage(string message)
         {
