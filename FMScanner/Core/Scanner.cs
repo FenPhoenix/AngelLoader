@@ -1,6 +1,6 @@
 ﻿// Enable this (and the one in FMData.cs) to get all features (we use it for testing)
 //#define FMScanner_FullCode
-//#define Enable7zReadmeCacheCode
+#define Enable7zReadmeCacheCode
 
 // NULL_TODO (Scanner - Main)
 // -Lists are nullable because we want to avoid allocating new Lists all over the place.
@@ -595,8 +595,13 @@ namespace FMScanner
                             var entry = _sevenZipArchive.ArchiveFileData[i];
                             string fn = entry.FileName;
                             int dirSeps;
+
                             // TODO: Calculate these exactly like they are on use (eg. only get the first title.str/titles.str etc.)
                             // That way we can shave a bit of time in theory.
+
+                            // NOTE: Always extract readmes no matter what, so our .7z caching is always correct.
+                            // Also maybe we would need to always extract them regardless for other reasons, but
+                            // yeah.
                             if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
                                 (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
                                   (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
@@ -1211,9 +1216,24 @@ namespace FMScanner
 
             if (readmes.Count > 0)
             {
-                foreach (var (source, dest) in readmes)
+                try
                 {
-                    File.Copy(source, dest, overwrite: true);
+                    foreach (var (source, dest) in readmes)
+                    {
+                        File.Copy(source, dest, overwrite: true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log(LogFile, "Exception copying files to cache during scan", ex);
+                    try
+                    {
+                        Directory.Delete(cachePath);
+                    }
+                    catch (Exception ex2)
+                    {
+                        Log(LogFile, "Exception deleting cache path '" + cachePath + "' as part of exception handling for cache copy failure", ex2);
+                    }
                 }
             }
         }

@@ -32,8 +32,7 @@ namespace AngelLoader
             List<FanMission> fmsToScan,
             FMScanner.ScanOptions? scanOptions = null,
             bool scanFullIfNew = false,
-            bool hideBoxIfZip = false,
-            bool cacheReadmesFor7zFMs = true)
+            bool hideBoxIfZip = false)
         {
             #region Local functions
 
@@ -120,7 +119,10 @@ namespace AngelLoader
                         fms.Add(new FMScanner.FMToScan
                         {
                             Path = fmArchivePath,
-                            ForceFullScan = scanFullIfNew && !fm.MarkedScanned
+                            ForceFullScan = scanFullIfNew && !fm.MarkedScanned,
+                            CachePath = fm.Archive.ExtIs7z()
+                                ? Path.Combine(Paths.FMsCache, fm.InstalledDir)
+                                : ""
                         });
                     }
                     else if (GameIsKnownAndSupported(fm.Game))
@@ -343,8 +345,7 @@ namespace AngelLoader
 
             return ScanFMs(fmsToScan,
                 FMScanner.ScanOptions.FalseDefault(scanGameType: true),
-                scanFullIfNew: true,
-                cacheReadmesFor7zFMs: true);
+                scanFullIfNew: true);
         }
     }
 }
