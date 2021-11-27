@@ -226,7 +226,7 @@ namespace AngelLoader.Forms.CustomControls
                     AutoSize = true,
                     ForeColor = Color.Maroon,
                     DarkModeForeColor = DarkColors.Fen_CautionText,
-                    Location = new Point(4, 8 + y),
+                    Location = new Point(4, 8 + y)
                 };
                 RefreshCautionLabelText(cautionText);
                 base.Controls.Add(_cautionLabel);

@@ -132,13 +132,6 @@ namespace AngelLoader
 
             internal const uint DaysRecent = 15;
             internal const uint MaxDaysRecent = 99999;
-
-            internal static readonly Dictionary<GameIndex, HashSet<string>> FixModsPerGame = new()
-            {
-                { GameIndex.Thief1, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "OSM", "MPOSM", "FMDML" } },
-                { GameIndex.Thief2, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "OSM", "MPOSM", "T2FMDML" } },
-                { GameIndex.SS2, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "OSM", "MPOSM", "ubermod", "patch_ext" } }
-            };
         }
 
         // IMPORTANT: Put these AFTER every other static field has been initialized!
