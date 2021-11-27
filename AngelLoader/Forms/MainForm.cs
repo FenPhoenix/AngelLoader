@@ -11,7 +11,6 @@ Images to switch to drawing:
 Images we definitely won't draw (iow that really need to be rasters):
 -Thief logos
 -Zip logo (Show_Unsupported)
--Rating examples (two of them have text)
 
 Things to lazy load:
 -Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
