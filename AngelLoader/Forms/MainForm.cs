@@ -2222,8 +2222,8 @@ namespace AngelLoader.Forms
                 await SortAndSetFilter(
                     keepSelection: keepSel,
                     landImmediate: senderIsTextBox &&
-                                   !FilterTitleTextBox.Text.IsWhiteSpace() ||
-                                   !FilterAuthorTextBox.Text.IsWhiteSpace());
+                                   (!FilterTitleTextBox.Text.IsWhiteSpace() ||
+                                   !FilterAuthorTextBox.Text.IsWhiteSpace()));
             }
         }
 
