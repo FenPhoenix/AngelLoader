@@ -260,7 +260,7 @@ namespace AngelLoader.Forms.CustomControls
                                     tabRect.Height - 1
                                 );
 
-                        Color textColor = DarkColors.LightText;
+                        Color textColor = Enabled ? DarkColors.LightText : DarkColors.DisabledText;
 
                         TextRenderer.DrawText(g, tabPage.Text, Font, textRect, textColor, textFormat);
                     }
