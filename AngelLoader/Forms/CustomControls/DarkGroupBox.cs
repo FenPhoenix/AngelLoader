@@ -53,7 +53,9 @@ namespace AngelLoader.Forms.CustomControls
         // gap in the border correctly to fit the text.
         private string _rawText = "";
 
-        public override string Text
+        // Overriding is allowed, but if we do that then it breaks and doesn't show text unless it actually has
+        // an ampersand for some goddamn reason we don't know why so just do new. Blah.
+        public new string Text
         {
             get => _rawText;
             set
