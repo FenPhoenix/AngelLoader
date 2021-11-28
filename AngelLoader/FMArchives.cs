@@ -231,42 +231,47 @@ namespace AngelLoader
 
                 string destDir = "";
 
-                DialogResult result = (DialogResult)Core.View.InvokeSync(new Func<DialogResult>(() =>
+                if (!singleArchivePath)
                 {
-                    using var f = new MessageBoxCustomForm(
-                        messageTop:
-                        (singleArchive
-                            ? LText.AddFMsToSet.AddFM_Dialog_AskMessage
-                            : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + "\r\n\r\n" + archivesLines +
-                        (singleArchivePath
-                            ? ""
-                            : "\r\n\r\n" + (singleArchive
+                    DialogResult result = (DialogResult)Core.View.InvokeSync(new Func<DialogResult>(() =>
+                    {
+                        using var f = new MessageBoxCustomForm(
+                            messageTop:
+                            (singleArchive
+                                ? LText.AddFMsToSet.AddFM_Dialog_AskMessage
+                                : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + "\r\n\r\n" + archivesLines + "\r\n\r\n" +
+                            (singleArchive
                                 ? LText.AddFMsToSet.AddFM_Dialog_ChooseArchiveDir
-                                : LText.AddFMsToSet.AddFMs_Dialog_ChooseArchiveDir)),
-                        messageBottom: "",
-                        title: singleArchive
-                            ? LText.AddFMsToSet.AddFM_DialogTitle
-                            : LText.AddFMsToSet.AddFMs_DialogTitle,
-                        icon: MessageBoxIcon.None,
-                        okText: LText.AddFMsToSet.AddFM_Add,
-                        cancelText: LText.Global.Cancel,
-                        okIsDangerous: false,
-                        choiceStrings: singleArchivePath ? null : Config.FMArchivePaths.ToArray(),
-                        multiSelectionAllowed: false);
+                                : LText.AddFMsToSet.AddFMs_Dialog_ChooseArchiveDir),
+                            messageBottom: "",
+                            title: singleArchive
+                                ? LText.AddFMsToSet.AddFM_DialogTitle
+                                : LText.AddFMsToSet.AddFMs_DialogTitle,
+                            icon: MessageBoxIcon.None,
+                            okText: LText.AddFMsToSet.AddFM_Add,
+                            cancelText: LText.Global.Cancel,
+                            okIsDangerous: false,
+                            choiceStrings: Config.FMArchivePaths.ToArray(),
+                            multiSelectionAllowed: false);
 
-                    // Show with explicit owner because otherwise we get in a "halfway" state where the dialog is
-                    // modal, but it can be made to be underneath the main window and then you can never get back
-                    // to it again and have to kill the app through Task Manager.
-                    DialogResult result = f.ShowDialogDark(owner);
+                        // Show with explicit owner because otherwise we get in a "halfway" state where the dialog is
+                        // modal, but it can be made to be underneath the main window and then you can never get back
+                        // to it again and have to kill the app through Task Manager.
+                        DialogResult result = f.ShowDialogDark(owner);
 
-                    if (result != DialogResult.OK) return DialogResult.Cancel;
+                        if (result != DialogResult.OK) return DialogResult.Cancel;
 
-                    destDir = singleArchivePath ? Config.FMArchivePaths[0] : f.SelectedItems[0];
+                        destDir = f.SelectedItems[0];
 
-                    return DialogResult.OK;
-                }));
+                        return DialogResult.OK;
+                    }));
 
-                if (result != DialogResult.OK) return false;
+                    if (result != DialogResult.OK) return false;
+                }
+                else
+                {
+                    destDir = Config.FMArchivePaths[0];
+                }
 
                 int successfulFilesCopiedCount = 0;
 
