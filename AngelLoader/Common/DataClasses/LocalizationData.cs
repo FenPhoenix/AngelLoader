@@ -753,10 +753,10 @@ namespace AngelLoader.DataClasses
             // Working text - testing purposes
             internal readonly string AddFM_DialogTitle = "Add FM";
             internal readonly string AddFMs_DialogTitle = "Add FMs";
-            internal readonly string AddFM_Dialog_AskMessage = "Do you want to add this FM to the list?";
-            internal readonly string AddFMs_Dialog_AskMessage = "Do you want to add these FMs to the list?";
-            internal readonly string AddFM_Dialog_ChooseArchiveDir = "You have multiple FM archive directories. Please choose one to copy this FM to:";
-            internal readonly string AddFMs_Dialog_ChooseArchiveDir = "You have multiple FM archive directories. Please choose one to copy these FMs to:";
+            internal readonly string AddFM_Dialog_AskMessage = "The following FM is about to be added:";
+            internal readonly string AddFMs_Dialog_AskMessage = "The following FMs are about to be added:";
+            internal readonly string AddFM_Dialog_ChooseArchiveDir = "You have multiple FM archive directories. Please choose one to copy this FM to.";
+            internal readonly string AddFMs_Dialog_ChooseArchiveDir = "You have multiple FM archive directories. Please choose one to copy these FMs to.";
             internal readonly string AddFM_Add = "Add";
         }
     }

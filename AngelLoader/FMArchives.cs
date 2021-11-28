@@ -237,12 +237,12 @@ namespace AngelLoader
                         messageTop:
                         (singleArchive
                             ? LText.AddFMsToSet.AddFM_Dialog_AskMessage
-                            : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + "\r\n\r\n" + archivesLines + "\r\n\r\n\r\n" +
+                            : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + "\r\n\r\n" + archivesLines +
                         (singleArchivePath
                             ? ""
-                            : singleArchive
+                            : "\r\n\r\n" + (singleArchive
                                 ? LText.AddFMsToSet.AddFM_Dialog_ChooseArchiveDir
-                                : LText.AddFMsToSet.AddFMs_Dialog_ChooseArchiveDir),
+                                : LText.AddFMsToSet.AddFMs_Dialog_ChooseArchiveDir)),
                         messageBottom: "",
                         title: singleArchive
                             ? LText.AddFMsToSet.AddFM_DialogTitle
