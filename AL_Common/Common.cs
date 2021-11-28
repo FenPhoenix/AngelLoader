@@ -153,8 +153,7 @@ namespace AL_Common
             !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
 
         /// <summary>
-        /// Determines whether a string contains a specified substring. Uses
-        /// <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// Determines whether a string contains a specified substring. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="substring"></param>
@@ -163,7 +162,7 @@ namespace AL_Common
         public static bool ContainsI(this string value, string substring) => value.Contains(substring, OrdinalIgnoreCase);
 
         /// <summary>
-        /// Determines whether a List&lt;string&gt; contains a specified element. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// Determines whether a string[] contains a specified element. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="substring"></param>
@@ -175,7 +174,7 @@ namespace AL_Common
         }
 
         /// <summary>
-        /// Determines whether a string[] contains a specified element. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// Determines whether a List&lt;string&gt; contains a specified element. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="substring"></param>
