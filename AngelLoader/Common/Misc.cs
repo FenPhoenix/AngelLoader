@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 
 namespace AngelLoader
@@ -89,6 +92,69 @@ namespace AngelLoader
         }
 
         #endregion
+
+        [PublicAPI]
+        public class SortableOrderedHashSet<T> : IEnumerable<T>
+        {
+            private readonly HashSet<T> _hashSet;
+            private readonly List<T> _list;
+
+            public SortableOrderedHashSet()
+            {
+                _hashSet = new HashSet<T>();
+                _list = new List<T>();
+            }
+
+            public SortableOrderedHashSet(int capacity)
+            {
+                _hashSet = new HashSet<T>(capacity);
+                _list = new List<T>(capacity);
+            }
+
+            public void Add(T key)
+            {
+                if (_hashSet.Add(key))
+                {
+                    _list.Add(key);
+                }
+            }
+
+            public void Remove(T key)
+            {
+                if (_hashSet.Remove(key))
+                {
+                    _list.Remove(key);
+                }
+            }
+
+            public void Clear()
+            {
+                _hashSet.Clear();
+                _list.Clear();
+            }
+
+            public int Count => _list.Count;
+
+            public bool TryGetValue(T equalValue, out T actualValue) => _hashSet.TryGetValue(equalValue, out actualValue);
+
+            public bool Contains(T item) => _hashSet.Contains(item);
+
+            public T? Find(Predicate<T> match) => _list.Find(match);
+
+            public void Sort() => _list.Sort();
+
+            public void Sort(IComparer<T> comparer) => _list.Sort(comparer);
+
+            public void Sort(int index, int count, IComparer<T> comparer) => _list.Sort(index, count, comparer);
+
+            public void Sort(Comparison<T> comparison) => _list.Sort(comparison);
+
+            public T this[int index] => _list[index];
+
+            public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
 
         internal static readonly string[] ValidDateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
 

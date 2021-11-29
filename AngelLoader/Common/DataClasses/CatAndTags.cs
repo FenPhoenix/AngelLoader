@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses
 {
     internal sealed class CatAndTags
     {
         internal string Category = "";
-        internal readonly List<string> Tags;
+        internal readonly Misc.SortableOrderedHashSet<string> Tags;
 
-        internal CatAndTags() => Tags = new List<string>();
-        internal CatAndTags(int tagsCapacity) => Tags = new List<string>(tagsCapacity);
+        internal CatAndTags() => Tags = new SortableOrderedHashSet<string>();
+        internal CatAndTags(int tagsCapacity) => Tags = new SortableOrderedHashSet<string>(tagsCapacity);
     }
 
-    internal sealed class CatAndTagsList : List<CatAndTags>
+    internal sealed class CatAndTagsList : SortableOrderedHashSet<CatAndTags>
     {
         internal CatAndTagsList() { }
 
