@@ -170,7 +170,7 @@ namespace AngelLoader
         // Can't really save time with dictionaries here, because it creates new ones every time we call this.
         // Also, we can't really make the lists dictionaries to start with, because they need to be sorted.
         // OrderedDictionary doesn't seem to have a sort method either?
-        // Can't use SortedDictionary either because we need to put misc at the end!\
+        // Can't use SortedDictionary either because we need to put misc at the end!
         // Can we make a custom ordered dictionary?
         internal static void AddTagsToFMAndGlobalList(string tagsToAdd, CatAndTagsList existingFMTags, bool addToGlobalList = true)
         {
