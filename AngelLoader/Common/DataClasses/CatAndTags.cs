@@ -5,11 +5,20 @@ namespace AngelLoader.DataClasses
 {
     internal sealed class CatAndTags
     {
-        internal string Category = "";
+        internal readonly string Category;
         internal readonly List<string> Tags;
 
-        internal CatAndTags() => Tags = new List<string>();
-        internal CatAndTags(int tagsCapacity) => Tags = new List<string>(tagsCapacity);
+        internal CatAndTags(string category)
+        {
+            Category = category;
+            Tags = new List<string>();
+        }
+
+        internal CatAndTags(string category, int tagsCapacity)
+        {
+            Category = category;
+            Tags = new List<string>(tagsCapacity);
+        }
     }
 
     internal sealed class CatAndTagsList : List<CatAndTags>
@@ -27,7 +36,7 @@ namespace AngelLoader.DataClasses
             for (int i = 0; i < Count; i++)
             {
                 CatAndTags thisI = this[i];
-                var item = new CatAndTags(thisI.Tags.Count) { Category = thisI.Category };
+                var item = new CatAndTags(thisI.Category, thisI.Tags.Count);
                 for (int j = 0; j < thisI.Tags.Count; j++) item.Tags.Add(thisI.Tags[j]);
                 dest.Add(item);
             }
@@ -117,7 +126,7 @@ namespace AngelLoader.DataClasses
             for (int i = 0; i < Count; i++)
             {
                 var pt = _presetTags[i];
-                var item = new CatAndTags(pt.Value.Length) { Category = pt.Key };
+                var item = new CatAndTags(pt.Key, pt.Value.Length);
                 for (int j = 0; j < pt.Value.Length; j++)
                 {
                     item.Tags.Add(pt.Value[j]);

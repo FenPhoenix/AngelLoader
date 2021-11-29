@@ -215,7 +215,7 @@ namespace AngelLoader
                 }
                 if (match == null)
                 {
-                    existingFMTags.Add(new CatAndTags { Category = cat });
+                    existingFMTags.Add(new CatAndTags(cat));
                     existingFMTags[existingFMTags.Count - 1].Tags.Add(tag);
                 }
                 else
@@ -240,7 +240,7 @@ namespace AngelLoader
                 }
                 if (globalMatch == null)
                 {
-                    GlobalTags.Add(new CatAndTags { Category = cat });
+                    GlobalTags.Add(new CatAndTags(cat));
                     GlobalTags[GlobalTags.Count - 1].Tags.Add(tag);
                 }
                 else
