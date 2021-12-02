@@ -81,7 +81,6 @@ div.headerElements:before {
     <ul>
       <li><a href="#localization">Localization</a></li>
       <li><a href="#supported_formats">Supported formats</a></li>
-      <li><a href="#7z_note">A note to authors about 7-Zip files (don't use them)</a></li>
       <li><a href="#thanks">Thanks and credits</a></li>
     </ul>
   </li>
@@ -545,24 +544,13 @@ AngelLoader supports the localization of its user interface. New languages may b
 <h3><a name="supported_formats" />Supported formats</h3>
 
 <h4>Archive files</h4>
-Zip (.zip) and 7-Zip (.7z) files are supported. But see <a href="#7z_note">here</a> for a note about 7-Zip files.
+Zip (.zip) and 7-Zip (.7z) files are supported.
 
 <h4>Audio files</h4>
 MP3 (.mp3), Ogg Vorbis (.ogg), and Wave (.wav) files are supported in fan missions. MP3 files will be automatically converted to WAV files on install, as NewDark does not support playing them directly.
 
 <h4>Readme files</h4>
 Plain text (.txt), Rich text (.rtf), HTML (.htm, .html), and GarrettLoader Markup Language (.glml) files are supported. HTML files can be a great deal fancier than any of the other formats, but they must be viewed in a web browser (AngelLoader does not support viewing them in-app, although it provides a button to launch them in the user's web browser).
-
-<h3><a name="7z_note" />A note to authors about 7-Zip files (don't use them)</h3>
-
-FMSel, the official NewDark fan mission loader, has always supported 7-Zip (.7z) files, and other NewDark FM loaders have followed suit. AngelLoader, too, supports these files, for compatibility with the handful that are out there. However, I propose that 7-Zip is ill-suited as a fan mission archive format, for the following reasons:
-<p>
-<ul>
-<li>7z files are, by default, <a href="https://en.wikipedia.org/wiki/Solid_compression">solid archives</a>. This means that it is <i>not</i> possible to decompress individual files within the archive in random-access fashion: the archive must be decompressed starting at the beginning and continuing until the desired file entry is found. This is fine for simple installation, as the entire archive needs to be extracted anyway, but for <i>scanning</i> an FM, it's an <i>order of magnitude</i> slower. In fact, when AngelLoader's scanner comes across a 7z file, it simply extracts the whole thing to a temp directory on disk, because doing so is on average <i>faster</i> than seeking around in a compressed solid archive to read what it needs to read.</li>
-<li>7z files are just slower to extract all-around.</li>
-</ul>
-</p>
-7z files do give better compression than zip files, but it's only modestly better, and it's this author's opinion that the modest amount of space savings is not worth the severely degraded user experience of waiting for 7z fan mission archives to be scanned and extracted. So I would personally say that unless you have a really good reason, you shouldn't use 7z files for FMs: the venerable Zip format is still the best balance between size and speed for fan mission purposes.
 
 <hr>
 
