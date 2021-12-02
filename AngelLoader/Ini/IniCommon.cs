@@ -334,7 +334,7 @@ namespace AngelLoader
                 }
                 if (match == null)
                 {
-                    tagsList.Add(new CatAndTags { Category = cat });
+                    tagsList.Add(new CatAndTags(cat));
                     if (!tag.IsEmpty()) tagsList[tagsList.Count - 1].Tags.Add(tag);
                 }
                 else

@@ -184,7 +184,7 @@ namespace AngelLoader.Forms
             }
             if (match == null)
             {
-                filteredTags.Add(new CatAndTags { Category = cat });
+                filteredTags.Add(new CatAndTags(cat));
                 if (!isCategory)
                 {
                     CatAndTags last = filteredTags[filteredTags.Count - 1];

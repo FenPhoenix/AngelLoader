@@ -1,19 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using AL_Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses
 {
     internal sealed class CatAndTags
     {
-        internal string Category = "";
+        internal readonly string Category;
         internal readonly Misc.SortableOrderedHashSet<string> Tags;
 
-        internal CatAndTags() => Tags = new SortableOrderedHashSet<string>();
-        internal CatAndTags(int tagsCapacity) => Tags = new SortableOrderedHashSet<string>(tagsCapacity);
+        internal CatAndTags(string category)
+        {
+            Category = category;
+            Tags = new SortableOrderedHashSet<string>();
+        }
+
+        internal CatAndTags(string category, int tagsCapacity)
+        {
+            Category = category;
+            Tags = new SortableOrderedHashSet<string>(tagsCapacity);
+        }
+
+        public static bool operator ==(CatAndTags x, CatAndTags y)
+        {
+            return x.Category.EqualsI(y.Category);
+        }
+
+        public static bool operator !=(CatAndTags x, CatAndTags y)
+        {
+            return x.Category != y.Category;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is CatAndTags catAndTags && this == catAndTags;
+        }
+
+        public override int GetHashCode()
+        {
+            return Category.GetHashCode();
+        }
     }
 
-    internal sealed class CatAndTagsList : SortableOrderedHashSet<CatAndTags>
+    internal sealed class CatAndTagsList : List<CatAndTags>
     {
         internal CatAndTagsList() { }
 
@@ -28,7 +58,7 @@ namespace AngelLoader.DataClasses
             for (int i = 0; i < Count; i++)
             {
                 CatAndTags thisI = this[i];
-                var item = new CatAndTags(thisI.Tags.Count) { Category = thisI.Category };
+                var item = new CatAndTags(thisI.Category, thisI.Tags.Count);
                 for (int j = 0; j < thisI.Tags.Count; j++) item.Tags.Add(thisI.Tags[j]);
                 dest.Add(item);
             }
@@ -118,7 +148,7 @@ namespace AngelLoader.DataClasses
             for (int i = 0; i < Count; i++)
             {
                 var pt = _presetTags[i];
-                var item = new CatAndTags(pt.Value.Length) { Category = pt.Key };
+                var item = new CatAndTags(pt.Key, pt.Value.Length);
                 for (int j = 0; j < pt.Value.Length; j++)
                 {
                     item.Tags.Add(pt.Value[j]);

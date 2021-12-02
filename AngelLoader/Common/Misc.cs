@@ -93,7 +93,69 @@ namespace AngelLoader
 
         #endregion
 
-        [PublicAPI]
+        public class SortableOrderedDictionary<TKey, TValue> : IEnumerable<TKey>
+        {
+            private readonly Dictionary<TKey, TValue> _dict;
+            private readonly List<TKey> _list;
+
+            public SortableOrderedDictionary()
+            {
+                _dict = new Dictionary<TKey, TValue>();
+                _list = new List<TKey>();
+            }
+
+            public SortableOrderedDictionary(int capacity)
+            {
+                _dict = new Dictionary<TKey, TValue>(capacity);
+                _list = new List<TKey>(capacity);
+            }
+
+            public void Add(TKey key, TValue value)
+            {
+                if (!_dict.ContainsKey(key))
+                {
+                    _dict[key] = value;
+                    _list.Add(key);
+                }
+            }
+
+            public void Remove(TKey key)
+            {
+                if (_dict.Remove(key))
+                {
+                    _list.Remove(key);
+                }
+            }
+
+            public void Clear()
+            {
+                _dict.Clear();
+                _list.Clear();
+            }
+
+            public int Count => _list.Count;
+
+            public bool TryGetValue(TKey equalValue, out TValue value) => _dict.TryGetValue(equalValue, out value);
+
+            //public bool Contains(TKey item) => _dict.Contains(item);
+
+            public TKey? Find(Predicate<TKey> match) => _list.Find(match);
+
+            public void Sort() => _list.Sort();
+
+            public void Sort(IComparer<TKey> comparer) => _list.Sort(comparer);
+
+            public void Sort(int index, int count, IComparer<TKey> comparer) => _list.Sort(index, count, comparer);
+
+            public void Sort(Comparison<TKey> comparison) => _list.Sort(comparison);
+
+            public TKey this[int index] => _list[index];
+
+            public IEnumerator<TKey> GetEnumerator() => _list.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
         public class SortableOrderedHashSet<T> : IEnumerable<T>
         {
             private readonly HashSet<T> _hashSet;
