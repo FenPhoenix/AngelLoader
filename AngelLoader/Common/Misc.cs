@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using AngelLoader.DataClasses;
@@ -96,58 +97,56 @@ namespace AngelLoader
 
         public class SOH2 : HashSet<string>
         {
-            private readonly List<string> _list;
+            public readonly List<string> List;
 
             public SOH2() : base(StringComparer.OrdinalIgnoreCase)
             {
-                _list = new List<string>();
+                List = new List<string>();
             }
 
             public SOH2(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
             {
-                _list = new List<string>(capacity);
+                List = new List<string>(capacity);
             }
 
             public new void Add(string tag)
             {
                 if (base.Add(tag))
                 {
-                    _list.Add(tag.ToLowerInvariant());
+                    List.Add(tag.ToLowerInvariant());
                 }
             }
 
             public new void Remove(string category)
             {
                 base.Remove(category);
-                _list.Remove(category.ToLowerInvariant());
+                List.Remove(category.ToLowerInvariant());
             }
 
             public void RemoveAt(int index)
             {
-                string item = _list[index];
+                string item = List[index];
                 base.Remove(item);
             }
 
-            public string this[int index] => _list[index];
-
             public void SortCaseInsensitive()
             {
-                _list.Sort(StringComparer.OrdinalIgnoreCase);
+                List.Sort(StringComparer.OrdinalIgnoreCase);
             }
         }
 
         public class SOD2 : Dictionary<string, SOH2>
         {
-            private readonly List<string> _list;
+            public readonly List<string> List;
 
             public SOD2() : base(StringComparer.OrdinalIgnoreCase)
             {
-                _list = new List<string>();
+                List = new List<string>();
             }
 
             public SOD2(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
             {
-                _list = new List<string>(capacity);
+                List = new List<string>(capacity);
             }
 
             public new void Add(string category, SOH2 tags)
@@ -155,41 +154,39 @@ namespace AngelLoader
                 if (!base.ContainsKey(category))
                 {
                     base[category] = tags;
-                    _list.Add(category.ToLowerInvariant());
+                    List.Add(category.ToLowerInvariant());
                 }
             }
 
             public new bool Remove(string category)
             {
-                _list.Remove(category.ToLowerInvariant());
+                List.Remove(category.ToLowerInvariant());
                 return base.Remove(category);
             }
 
             public bool RemoveAt(int index)
             {
-                string item = _list[index];
+                string item = List[index];
                 return base.Remove(item);
             }
-
-            public string this[int index] => _list[index];
 
             public new void Clear()
             {
                 base.Clear();
-                _list.Clear();
+                List.Clear();
             }
 
             public void DeepCopyTo(SOD2 dest)
             {
                 dest.Clear();
-                for (int i = 0; i < _list.Count; i++)
+                for (int i = 0; i < List.Count; i++)
                 {
-                    string category = _list[i];
+                    string category = List[i];
                     SOH2 srcTags = base[category];
                     var destTags = new SOH2(srcTags.Count);
                     for (int j = 0; j < srcTags.Count; j++)
                     {
-                        destTags.Add(srcTags[j]);
+                        destTags.Add(srcTags.List[j]);
                     }
                     dest.Add(category, destTags);
                 }
@@ -197,24 +194,24 @@ namespace AngelLoader
 
             internal void SortAndMoveMiscToEnd()
             {
-                if (_list.Count == 0) return;
+                if (List.Count == 0) return;
 
-                _list.Sort(StringComparer.OrdinalIgnoreCase);
+                List.Sort(StringComparer.OrdinalIgnoreCase);
 
                 foreach (var item in this)
                 {
                     item.Value.SortCaseInsensitive();
                 }
 
-                if (_list[_list.Count - 1] == "misc") return;
+                if (List[List.Count - 1] == "misc") return;
 
-                for (int i = 0; i < _list.Count; i++)
+                for (int i = 0; i < List.Count; i++)
                 {
-                    string item = _list[i];
-                    if (_list[i] == "misc")
+                    string item = List[i];
+                    if (List[i] == "misc")
                     {
-                        _list.Remove(item);
-                        _list.Add(item);
+                        List.Remove(item);
+                        List.Add(item);
                         return;
                     }
                 }

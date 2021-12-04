@@ -157,7 +157,7 @@ namespace AngelLoader.DataClasses
                     tags.Add(pt.Value[j]);
                 }
 
-                dest[category] = tags;
+                dest.Add(category, tags);
             }
         }
     }

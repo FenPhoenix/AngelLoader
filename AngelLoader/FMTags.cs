@@ -214,28 +214,7 @@ namespace AngelLoader
                     tag = item.Trim();
                 }
 
-                // Note: We've already converted cat to lowercase, so we just do straight == to shave time off
-
                 #region FM tags
-
-                //CatAndTags? match = null;
-                //for (int i = 0; i < existingFMTags.Count; i++)
-                //{
-                //    if (existingFMTags[i].Category == cat)
-                //    {
-                //        match = existingFMTags[i];
-                //        break;
-                //    }
-                //}
-                //if (match == null)
-                //{
-                //    existingFMTags.Add(new CatAndTags(cat));
-                //    existingFMTags[existingFMTags.Count - 1].Tags.Add(tag);
-                //}
-                //else
-                //{
-                //    if (!match.Tags.ContainsI(tag)) match.Tags.Add(tag);
-                //}
 
                 if (existingFMTags.TryGetValue(cat, out SOH2 tagsList))
                 {
@@ -253,37 +232,6 @@ namespace AngelLoader
                 if (!addToGlobalList) continue;
 
                 #region Global tags
-
-                //CatAndTags? globalMatch = null;
-                //for (int i = 0; i < GlobalTags.Count; i++)
-                //{
-                //    if (GlobalTags[i].Category == cat)
-                //    {
-                //        globalMatch = GlobalTags[i];
-                //        break;
-                //    }
-                //}
-                //if (globalMatch == null)
-                //{
-                //    GlobalTags.Add(new CatAndTags(cat));
-                //    GlobalTags[GlobalTags.Count - 1].Tags.Add(tag);
-                //}
-                //else
-                //{
-                //    string? ft = null;
-                //    for (int i = 0; i < globalMatch.Tags.Count; i++)
-                //    {
-                //        if (globalMatch.Tags[i].EqualsI(tag))
-                //        {
-                //            ft = globalMatch.Tags[i];
-                //            break;
-                //        }
-                //    }
-                //    if (ft == null)
-                //    {
-                //        globalMatch.Tags.Add(tag);
-                //    }
-                //}
 
                 if (GlobalTags.TryGetValue(cat, out SOH2 globalTagsList))
                 {

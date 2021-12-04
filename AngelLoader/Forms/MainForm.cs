@@ -2941,22 +2941,24 @@ namespace AngelLoader.Forms
             AddTagLLMenu.Menu.Items.Clear();
 
             var addTagMenuItems = new List<ToolStripItem>(GlobalTags.Count);
-            foreach (var catAndTag in GlobalTags)
+            foreach (string category in GlobalTags.List)
             {
-                if (catAndTag.Value.Count == 0)
+                var tags = GlobalTags[category];
+
+                if (tags.Count == 0)
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Key + ":") { Tag = LazyLoaded.True };
+                    var catItem = new ToolStripMenuItemWithBackingText(category + ":") { Tag = LazyLoaded.True };
                     catItem.Click += AddTagMenuEmptyItem_Click;
                     addTagMenuItems.Add(catItem);
                 }
                 else
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(catAndTag.Key) { Tag = LazyLoaded.True };
+                    var catItem = new ToolStripMenuItemWithBackingText(category) { Tag = LazyLoaded.True };
                     addTagMenuItems.Add(catItem);
 
                     var last = addTagMenuItems[addTagMenuItems.Count - 1];
 
-                    if (catAndTag.Key != "misc")
+                    if (category != "misc")
                     {
                         var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory) { Tag = LazyLoaded.True };
                         customItem.Click += AddTagMenuCustomItem_Click;
@@ -2964,11 +2966,11 @@ namespace AngelLoader.Forms
                         ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator { Tag = LazyLoaded.True });
                     }
 
-                    foreach (string tag in catAndTag.Value)
+                    foreach (string tag in tags.List)
                     {
                         var tagItem = new ToolStripMenuItemWithBackingText(tag) { Tag = LazyLoaded.True };
 
-                        if (catAndTag.Key == "misc")
+                        if (category == "misc")
                         {
                             tagItem.Click += AddTagMenuMiscItem_Click;
                         }
@@ -4856,11 +4858,16 @@ namespace AngelLoader.Forms
 
                 fmTags.SortAndMoveMiscToEnd();
 
-                foreach (var item in fmTags)
+                foreach (string category in fmTags.List)
                 {
-                    tv.Nodes.Add(item.Key);
-                    var last = tv.Nodes[tv.Nodes.Count - 1];
-                    foreach (string tag in item.Value) last.Nodes.Add(tag);
+                    SOH2 tags = fmTags[category];
+
+                    var last = new TreeNode(category);
+                    tv.Nodes.Add(last);
+                    foreach (string tag in tags.List)
+                    {
+                        last.Nodes.Add(tag);
+                    }
                 }
 
                 tv.ExpandAll();

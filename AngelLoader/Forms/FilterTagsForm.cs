@@ -36,11 +36,13 @@ namespace AngelLoader.Forms
             tv.BeginUpdate();
             _sourceTags.SortAndMoveMiscToEnd();
 
-            foreach (var catAndTags in _sourceTags)
+            foreach (string category in _sourceTags.List)
             {
-                tv.Nodes.Add(catAndTags.Key);
-                var last = tv.Nodes[tv.Nodes.Count - 1];
-                foreach (string tag in catAndTags.Value) last.Nodes.Add(tag);
+                var tags = _sourceTags[category];
+
+                var last = new TreeNode(category);
+                tv.Nodes.Add(last);
+                foreach (string tag in tags) last.Nodes.Add(tag);
             }
 
             tv.ExpandAll();
