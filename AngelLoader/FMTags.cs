@@ -67,7 +67,7 @@ namespace AngelLoader
                 //    UpdateFMTagsString(fm);
                 //}
 
-                if (fm.Tags.TryGetValue(catText, out SOH2 tagsList) &&
+                if (fm.Tags.TryGetValue(catText, out HashSetList tagsList) &&
                     tagsList.Contains(tagText))
                 {
                     tagsList.Remove(tagText);
@@ -186,7 +186,7 @@ namespace AngelLoader
         // OrderedDictionary doesn't seem to have a sort method either?
         // Can't use SortedDictionary either because we need to put misc at the end!
         // Can we make a custom ordered dictionary?
-        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, SOD2 existingFMTags, bool addToGlobalList = true)
+        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, DictList existingFMTags, bool addToGlobalList = true)
         {
             if (tagsToAdd.IsEmpty()) return;
 
@@ -216,13 +216,13 @@ namespace AngelLoader
 
                 #region FM tags
 
-                if (existingFMTags.TryGetValue(cat, out SOH2 tagsList))
+                if (existingFMTags.TryGetValue(cat, out HashSetList tagsList))
                 {
                     tagsList.Add(tag);
                 }
                 else
                 {
-                    var newTagsList = new SOH2();
+                    var newTagsList = new HashSetList();
                     existingFMTags.Add(cat, newTagsList);
                     newTagsList.Add(tag);
                 }
@@ -233,13 +233,13 @@ namespace AngelLoader
 
                 #region Global tags
 
-                if (GlobalTags.TryGetValue(cat, out SOH2 globalTagsList))
+                if (GlobalTags.TryGetValue(cat, out HashSetList globalTagsList))
                 {
                     globalTagsList.Add(tag);
                 }
                 else
                 {
-                    var newGlobalTagsList = new SOH2();
+                    var newGlobalTagsList = new HashSetList();
                     GlobalTags.Add(cat, newGlobalTagsList);
                     newGlobalTagsList.Add(tag);
                 }

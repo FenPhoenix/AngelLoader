@@ -115,7 +115,7 @@ namespace AngelLoader.DataClasses
         internal string SelectedLang = "";
 
         [FenGenIgnore]
-        internal readonly SOD2 Tags = new SOD2();
+        internal readonly DictList Tags = new DictList();
         internal string TagsString = "";
     }
 }

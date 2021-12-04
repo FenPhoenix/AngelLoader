@@ -299,7 +299,7 @@ namespace AngelLoader
             return ret;
         }
 
-        private static void ReadTags(SOD2 tags, string val)
+        private static void ReadTags(DictList tags, string val)
         {
             if (val.IsWhiteSpace()) return;
 
@@ -342,13 +342,13 @@ namespace AngelLoader
                 //    if (!tag.IsEmpty() && !match.Tags.ContainsI(tag)) match.Tags.Add(tag);
                 //}
 
-                if (tags.TryGetValue(cat, out SOH2 tagsList))
+                if (tags.TryGetValue(cat, out HashSetList tagsList))
                 {
                     if (!tag.IsEmpty()) tagsList.Add(tag);
                 }
                 else
                 {
-                    var newTagsList = new SOH2();
+                    var newTagsList = new HashSetList();
                     tags.Add(cat, newTagsList);
                     if (!tag.IsEmpty()) newTagsList.Add(tag);
                 }
@@ -415,7 +415,7 @@ namespace AngelLoader
             ? ""
             : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X");
 
-        private static string TagsToString(SOD2 tagsList)
+        private static string TagsToString(DictList tagsList)
         {
             var intermediateTagsList = new List<string>();
             foreach (var catAndTags in tagsList)

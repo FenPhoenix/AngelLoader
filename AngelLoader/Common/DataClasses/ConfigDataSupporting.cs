@@ -325,9 +325,9 @@ namespace AngelLoader.DataClasses
 
     internal sealed class TagsFilter
     {
-        internal readonly SOD2 AndTags = new SOD2();
-        internal readonly SOD2 OrTags = new SOD2();
-        internal readonly SOD2 NotTags = new SOD2();
+        internal readonly DictList AndTags = new DictList();
+        internal readonly DictList OrTags = new DictList();
+        internal readonly DictList NotTags = new DictList();
 
         internal void Clear()
         {

@@ -140,10 +140,10 @@ namespace AngelLoader.DataClasses
         internal static readonly int Count = _presetTags.Length;
 
         /// <summary>
-        /// Deep-copies the set of preset tags to a <see cref="SOD2"/>.
+        /// Deep-copies the set of preset tags to a <see cref="DictList"/>.
         /// </summary>
-        /// <param name="dest">The <see cref="SOD2"/> to copy the preset tags to.</param>
-        internal static void DeepCopyTo(SOD2 dest)
+        /// <param name="dest">The <see cref="DictList"/> to copy the preset tags to.</param>
+        internal static void DeepCopyTo(DictList dest)
         {
             dest.Clear();
 
@@ -151,7 +151,7 @@ namespace AngelLoader.DataClasses
             {
                 var pt = _presetTags[i];
                 string category = pt.Key;
-                var tags = new SOH2(pt.Value.Length);
+                var tags = new HashSetList(pt.Value.Length);
                 for (int j = 0; j < pt.Value.Length; j++)
                 {
                     tags.Add(pt.Value[j]);

@@ -820,9 +820,9 @@ namespace AngelLoader
                 viewFilter.Tags.OrTags.Count > 0 ||
                 viewFilter.Tags.NotTags.Count > 0)
             {
-                SOD2 andTags = viewFilter.Tags.AndTags;
-                SOD2 orTags = viewFilter.Tags.OrTags;
-                SOD2 notTags = viewFilter.Tags.NotTags;
+                DictList andTags = viewFilter.Tags.AndTags;
+                DictList orTags = viewFilter.Tags.OrTags;
+                DictList notTags = viewFilter.Tags.NotTags;
 
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
@@ -853,7 +853,7 @@ namespace AngelLoader
                             //    break;
                             //}
 
-                            if (!fm.Tags.TryGetValue(andTag.Key, out SOH2 match))
+                            if (!fm.Tags.TryGetValue(andTag.Key, out HashSetList match))
                             {
                                 andPass = false;
                                 break;
@@ -903,7 +903,7 @@ namespace AngelLoader
                             //CatAndTags? match = fm.Tags.Find(x => x.Category == orTag.Category);
                             //if (match == null) continue;
 
-                            if (!fm.Tags.TryGetValue(orTag.Key, out SOH2 match))
+                            if (!fm.Tags.TryGetValue(orTag.Key, out HashSetList match))
                             {
                                 continue;
                             }
@@ -953,7 +953,7 @@ namespace AngelLoader
                             //CatAndTags? match = fm.Tags.Find(x => x.Category == notTag.Category);
                             //if (match == null) continue;
 
-                            if (!fm.Tags.TryGetValue(notTag.Key, out SOH2 match))
+                            if (!fm.Tags.TryGetValue(notTag.Key, out HashSetList match))
                             {
                                 continue;
                             }

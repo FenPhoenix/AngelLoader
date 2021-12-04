@@ -10,11 +10,11 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : DarkFormBase
     {
-        private readonly SOD2 _sourceTags;
+        private readonly DictList _sourceTags;
 
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
-        internal FilterTagsForm(SOD2 sourceTags, TagsFilter tagsFilter)
+        internal FilterTagsForm(DictList sourceTags, TagsFilter tagsFilter)
         {
 #if DEBUG
             InitializeComponent();
@@ -22,7 +22,7 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
-            _sourceTags = new SOD2(sourceTags.Count);
+            _sourceTags = new DictList(sourceTags.Count);
 
             sourceTags.DeepCopyTo(_sourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);
@@ -42,7 +42,7 @@ namespace AngelLoader.Forms
 
                 var last = new TreeNode(category);
                 tv.Nodes.Add(last);
-                foreach (string tag in tags) last.Nodes.Add(tag);
+                foreach (string tag in tags.List) last.Nodes.Add(tag);
             }
 
             tv.ExpandAll();
@@ -142,7 +142,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void FillTreeView(SOD2 tags)
+        private void FillTreeView(DictList tags)
         {
             var tv =
                 tags == TagsFilter.AndTags ? AndTreeView :
@@ -170,7 +170,7 @@ namespace AngelLoader.Forms
 
             if (o.SelectedNode == null) return;
 
-            SOD2 filteredTags =
+            DictList filteredTags =
                 sender == AndButton ? TagsFilter.AndTags :
                 sender == OrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -206,7 +206,7 @@ namespace AngelLoader.Forms
             //    }
             //}
 
-            if (filteredTags.TryGetValue(cat, out SOH2 tags))
+            if (filteredTags.TryGetValue(cat, out HashSetList tags))
             {
                 if (isCategory)
                 {
@@ -219,7 +219,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                var item = new SOH2();
+                var item = new HashSetList();
                 filteredTags.Add(cat, item);
                 if (!isCategory)
                 {
@@ -232,7 +232,7 @@ namespace AngelLoader.Forms
 
         private void RemoveSelectedButtons_Click(object sender, EventArgs e)
         {
-            SOD2 tags =
+            DictList tags =
                 sender == RemoveSelectedAndButton ? TagsFilter.AndTags :
                 sender == RemoveSelectedOrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -264,7 +264,7 @@ namespace AngelLoader.Forms
 
                 string cat = tv.SelectedNode.Parent.Text;
 
-                if (tags.TryGetValue(cat, out SOH2 tagsList))
+                if (tags.TryGetValue(cat, out HashSetList tagsList))
                 {
                     tagsList.Remove(tv.SelectedNode.Text);
                     if (tagsList.Count == 0)
@@ -279,7 +279,7 @@ namespace AngelLoader.Forms
 
         private void RemoveAllButtons_Click(object sender, EventArgs e)
         {
-            SOD2 tags =
+            DictList tags =
                 sender == RemoveAllAndButton ? TagsFilter.AndTags :
                 sender == RemoveAllOrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -313,7 +313,7 @@ namespace AngelLoader.Forms
 
             for (int t = 0; t < 3; t++)
             {
-                SOD2 filteredTags = t switch
+                DictList filteredTags = t switch
                 {
                     0 => TagsFilter.AndTags,
                     1 => TagsFilter.OrTags,
@@ -335,7 +335,7 @@ namespace AngelLoader.Forms
                 //    }
                 //}
 
-                if (filteredTags.TryGetValue(cat, out SOH2 tagsList) &&
+                if (filteredTags.TryGetValue(cat, out HashSetList tagsList) &&
                     (isCategory || tagsList.Contains(o.SelectedNode.Text) ||
                      (cat == o.SelectedNode.Parent!.Text && tagsList.Count == 0)))
                 {

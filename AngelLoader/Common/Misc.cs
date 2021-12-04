@@ -95,16 +95,16 @@ namespace AngelLoader
 
         #endregion
 
-        public class SOH2 : HashSet<string>
+        public sealed class HashSetList : HashSet<string>
         {
             public readonly List<string> List;
 
-            public SOH2() : base(StringComparer.OrdinalIgnoreCase)
+            public HashSetList() : base(StringComparer.OrdinalIgnoreCase)
             {
                 List = new List<string>();
             }
 
-            public SOH2(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
+            public HashSetList(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
             {
                 List = new List<string>(capacity);
             }
@@ -129,27 +129,24 @@ namespace AngelLoader
                 base.Remove(item);
             }
 
-            public void SortCaseInsensitive()
-            {
-                List.Sort(StringComparer.OrdinalIgnoreCase);
-            }
+            public void SortCaseInsensitive() => List.Sort(StringComparer.OrdinalIgnoreCase);
         }
 
-        public class SOD2 : Dictionary<string, SOH2>
+        public sealed class DictList : Dictionary<string, HashSetList>
         {
             public readonly List<string> List;
 
-            public SOD2() : base(StringComparer.OrdinalIgnoreCase)
+            public DictList() : base(StringComparer.OrdinalIgnoreCase)
             {
                 List = new List<string>();
             }
 
-            public SOD2(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
+            public DictList(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
             {
                 List = new List<string>(capacity);
             }
 
-            public new void Add(string category, SOH2 tags)
+            public new void Add(string category, HashSetList tags)
             {
                 if (!base.ContainsKey(category))
                 {
@@ -176,14 +173,14 @@ namespace AngelLoader
                 List.Clear();
             }
 
-            public void DeepCopyTo(SOD2 dest)
+            public void DeepCopyTo(DictList dest)
             {
                 dest.Clear();
                 for (int i = 0; i < List.Count; i++)
                 {
                     string category = List[i];
-                    SOH2 srcTags = base[category];
-                    var destTags = new SOH2(srcTags.Count);
+                    HashSetList srcTags = base[category];
+                    var destTags = new HashSetList(srcTags.Count);
                     for (int j = 0; j < srcTags.Count; j++)
                     {
                         destTags.Add(srcTags.List[j]);
@@ -217,133 +214,6 @@ namespace AngelLoader
                 }
             }
         }
-
-        /*
-        public class SortableOrderedDictionary<TKey, TValue> : IEnumerable<TKey>
-        {
-            private readonly Dictionary<TKey, TValue> _dict;
-            private readonly List<TKey> _list;
-
-            public SortableOrderedDictionary()
-            {
-                _dict = new Dictionary<TKey, TValue>();
-                _list = new List<TKey>();
-            }
-
-            public SortableOrderedDictionary(int capacity)
-            {
-                _dict = new Dictionary<TKey, TValue>(capacity);
-                _list = new List<TKey>(capacity);
-            }
-
-            public void Add(TKey key, TValue value)
-            {
-                if (!_dict.ContainsKey(key))
-                {
-                    _dict[key] = value;
-                    _list.Add(key);
-                }
-            }
-
-            public void Remove(TKey key)
-            {
-                if (_dict.Remove(key))
-                {
-                    _list.Remove(key);
-                }
-            }
-
-            public void Clear()
-            {
-                _dict.Clear();
-                _list.Clear();
-            }
-
-            public int Count => _list.Count;
-
-            public bool TryGetValue(TKey equalValue, out TValue value) => _dict.TryGetValue(equalValue, out value);
-
-            //public bool Contains(TKey item) => _dict.Contains(item);
-
-            public TKey? Find(Predicate<TKey> match) => _list.Find(match);
-
-            public void Sort() => _list.Sort();
-
-            public void Sort(IComparer<TKey> comparer) => _list.Sort(comparer);
-
-            public void Sort(int index, int count, IComparer<TKey> comparer) => _list.Sort(index, count, comparer);
-
-            public void Sort(Comparison<TKey> comparison) => _list.Sort(comparison);
-
-            public TKey this[int index] => _list[index];
-
-            public IEnumerator<TKey> GetEnumerator() => _list.GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-
-        public class SortableOrderedHashSet<T> : IEnumerable<T>
-        {
-            private readonly HashSet<T> _hashSet;
-            private readonly List<T> _list;
-
-            public SortableOrderedHashSet()
-            {
-                _hashSet = new HashSet<T>();
-                _list = new List<T>();
-            }
-
-            public SortableOrderedHashSet(int capacity)
-            {
-                _hashSet = new HashSet<T>(capacity);
-                _list = new List<T>(capacity);
-            }
-
-            public void Add(T key)
-            {
-                if (_hashSet.Add(key))
-                {
-                    _list.Add(key);
-                }
-            }
-
-            public void Remove(T key)
-            {
-                if (_hashSet.Remove(key))
-                {
-                    _list.Remove(key);
-                }
-            }
-
-            public void Clear()
-            {
-                _hashSet.Clear();
-                _list.Clear();
-            }
-
-            public int Count => _list.Count;
-
-            public bool TryGetValue(T equalValue, out T actualValue) => _hashSet.TryGetValue(equalValue, out actualValue);
-
-            public bool Contains(T item) => _hashSet.Contains(item);
-
-            public T? Find(Predicate<T> match) => _list.Find(match);
-
-            public void Sort() => _list.Sort();
-
-            public void Sort(IComparer<T> comparer) => _list.Sort(comparer);
-
-            public void Sort(int index, int count, IComparer<T> comparer) => _list.Sort(index, count, comparer);
-
-            public void Sort(Comparison<T> comparison) => _list.Sort(comparison);
-
-            public T this[int index] => _list[index];
-
-            public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-        */
 
         internal static readonly string[] ValidDateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
 
@@ -402,7 +272,7 @@ namespace AngelLoader
         internal static LText_Class LText = new LText_Class();
 
         // Preset tags will be deep copied to this list later
-        internal static readonly SOD2 GlobalTags = new SOD2(PresetTags.Count);
+        internal static readonly DictList GlobalTags = new DictList(PresetTags.Count);
 
         #region FM lists
 
