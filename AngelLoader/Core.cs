@@ -844,20 +844,35 @@ namespace AngelLoader
                     if (andTags.Count > 0)
                     {
                         bool andPass = true;
-                        foreach (CatAndTags andTag in andTags)
+                        foreach (var andTag in andTags)
                         {
-                            CatAndTags? match = fm.Tags.Find(x => x.Category == andTag.Category);
-                            if (match == null)
+                            //CatAndTags? match = fm.Tags.Find(x => x.Category == andTag.Category);
+                            //if (match == null)
+                            //{
+                            //    andPass = false;
+                            //    break;
+                            //}
+
+                            if (!fm.Tags.TryGetValue(andTag.Key, out SOH2 match))
                             {
                                 andPass = false;
                                 break;
                             }
 
-                            if (andTag.Tags.Count > 0)
+                            if (andTag.Value.Count > 0)
                             {
-                                foreach (string andTagTag in andTag.Tags)
+                                //foreach (string andTagTag in andTag.Tags)
+                                //{
+                                //    if (match.Tags.Find(x => x == andTagTag) == null)
+                                //    {
+                                //        andPass = false;
+                                //        break;
+                                //    }
+                                //}
+
+                                foreach (string andTagTag in andTag.Value)
                                 {
-                                    if (match.Tags.Find(x => x == andTagTag) == null)
+                                    if (!match.Contains(andTagTag))
                                     {
                                         andPass = false;
                                         break;
@@ -883,16 +898,27 @@ namespace AngelLoader
                     if (orTags.Count > 0)
                     {
                         bool orPass = false;
-                        foreach (CatAndTags orTag in orTags)
+                        foreach (var orTag in orTags)
                         {
-                            CatAndTags? match = fm.Tags.Find(x => x.Category == orTag.Category);
-                            if (match == null) continue;
+                            //CatAndTags? match = fm.Tags.Find(x => x.Category == orTag.Category);
+                            //if (match == null) continue;
 
-                            if (orTag.Tags.Count > 0)
+                            if (!fm.Tags.TryGetValue(orTag.Key, out SOH2 match))
                             {
-                                foreach (string orTagTag in orTag.Tags)
+                                continue;
+                            }
+
+                            if (orTag.Value.Count > 0)
+                            {
+                                foreach (string orTagTag in orTag.Value)
                                 {
-                                    if (match.Tags.Find(x => x == orTagTag) != null)
+                                    //if (match.Tags.Find(x => x == orTagTag) != null)
+                                    //{
+                                    //    orPass = true;
+                                    //    break;
+                                    //}
+
+                                    if (match.Contains(orTagTag))
                                     {
                                         orPass = true;
                                         break;
@@ -922,22 +948,33 @@ namespace AngelLoader
                     if (notTags.Count > 0)
                     {
                         bool notPass = true;
-                        foreach (CatAndTags notTag in notTags)
+                        foreach (var notTag in notTags)
                         {
-                            CatAndTags? match = fm.Tags.Find(x => x.Category == notTag.Category);
-                            if (match == null) continue;
+                            //CatAndTags? match = fm.Tags.Find(x => x.Category == notTag.Category);
+                            //if (match == null) continue;
 
-                            if (notTag.Tags.Count == 0)
+                            if (!fm.Tags.TryGetValue(notTag.Key, out SOH2 match))
+                            {
+                                continue;
+                            }
+
+                            if (notTag.Value.Count == 0)
                             {
                                 notPass = false;
                                 continue;
                             }
 
-                            if (notTag.Tags.Count > 0)
+                            if (notTag.Value.Count > 0)
                             {
-                                foreach (string notTagTag in notTag.Tags)
+                                foreach (string notTagTag in notTag.Value)
                                 {
-                                    if (match.Tags.Find(x => x == notTagTag) != null)
+                                    //if (match.Tags.Find(x => x == notTagTag) != null)
+                                    //{
+                                    //    notPass = false;
+                                    //    break;
+                                    //}
+
+                                    if (match.Contains(notTagTag))
                                     {
                                         notPass = false;
                                         break;
