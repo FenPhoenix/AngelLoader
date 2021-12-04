@@ -113,14 +113,14 @@ namespace AngelLoader
             {
                 if (base.Add(tag))
                 {
-                    List.Add(tag.ToLowerInvariant());
+                    List.Add(tag);
                 }
             }
 
             public new void Remove(string category)
             {
                 base.Remove(category);
-                List.Remove(category.ToLowerInvariant());
+                List.Remove(category);
             }
 
             public void RemoveAt(int index)
@@ -151,13 +151,13 @@ namespace AngelLoader
                 if (!base.ContainsKey(category))
                 {
                     base[category] = tags;
-                    List.Add(category.ToLowerInvariant());
+                    List.Add(category);
                 }
             }
 
             public new bool Remove(string category)
             {
-                List.Remove(category.ToLowerInvariant());
+                List.Remove(category);
                 return base.Remove(category);
             }
 
