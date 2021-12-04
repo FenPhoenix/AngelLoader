@@ -903,7 +903,6 @@ namespace FMScanner
 
                 #endregion
 
-#if FMScanner_FullCode
                 // If we're Thief 3, we just skip figuring this out - I don't know how to detect if a T3 mission
                 // is a campaign, and I'm not even sure any T3 campaigns have been released (not counting ones
                 // that are just a series of separate FMs, of course).
@@ -911,7 +910,6 @@ namespace FMScanner
                 // Until I can figure out how to detect which .mis files are used without there being an actual
                 // list...
                 fmData.Type = fmIsSS2 || usedMisFiles.Count <= 1 ? FMType.FanMission : FMType.Campaign;
-#endif
 
                 #region Check info files
 
