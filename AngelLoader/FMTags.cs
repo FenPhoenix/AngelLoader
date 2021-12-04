@@ -39,10 +39,9 @@ namespace AngelLoader
                 bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
-                CatAndTags? cat = fm.Tags.Find(x => x.Category == catText);
-                if (cat != null)
+                if (fm.Tags.ContainsKey(catText))
                 {
-                    fm.Tags.Remove(cat);
+                    fm.Tags.Remove(catText);
                     UpdateFMTagsString(fm);
                 }
             }
@@ -52,12 +51,11 @@ namespace AngelLoader
                 bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
-                CatAndTags? cat = fm.Tags.Find(x => x.Category == catText);
-                string? tag = cat?.Tags.Find(x => x == tagText);
-                if (tag != null)
+                if (fm.Tags.TryGetValue(catText, out FMTagsCollection tagsList) &&
+                    tagsList.Contains(tagText))
                 {
-                    cat!.Tags.Remove(tag);
-                    if (cat.Tags.Count == 0) fm.Tags.Remove(cat);
+                    tagsList.Remove(tagText);
+                    if (tagsList.Count == 0) fm.Tags.Remove(catText);
                     UpdateFMTagsString(fm);
                 }
             }
@@ -92,35 +90,35 @@ namespace AngelLoader
             var list = new List<string>();
             foreach (var gCat in GlobalTags)
             {
-                if (gCat.Category.ContainsI(text.First))
+                if (gCat.Key.ContainsI(text.First))
                 {
-                    if (gCat.Tags.Count == 0)
+                    if (gCat.Value.Count == 0)
                     {
-                        if (gCat.Category != "misc") list.Add(gCat.Category + ":");
+                        if (gCat.Key != "misc") list.Add(gCat.Key + ":");
                     }
                     else
                     {
-                        foreach (var gTag in gCat.Tags)
+                        foreach (var gTag in gCat.Value)
                         {
                             if (!text.Second.IsWhiteSpace() && !gTag.ContainsI(text.Second)) continue;
-                            if (gCat.Category == "misc")
+                            if (gCat.Key == "misc")
                             {
-                                if (text.Second.IsWhiteSpace() && !gCat.Category.ContainsI(text.First))
+                                if (text.Second.IsWhiteSpace() && !gCat.Key.ContainsI(text.First))
                                 {
                                     list.Add(gTag);
                                 }
                             }
                             else
                             {
-                                list.Add(gCat.Category + ": " + gTag);
+                                list.Add(gCat.Key + ": " + gTag);
                             }
                         }
                     }
                 }
                 // if, not else if - we want to display found tags both categorized and uncategorized
-                if (gCat.Category == "misc")
+                if (gCat.Key == "misc")
                 {
-                    foreach (var gTag in gCat.Tags)
+                    foreach (var gTag in gCat.Value)
                     {
                         if (gTag.ContainsI(searchText)) list.Add(gTag);
                     }
@@ -140,17 +138,17 @@ namespace AngelLoader
         private static void UpdateFMTagsString(FanMission fm)
         {
             var intermediateList = new List<string>();
-            foreach (CatAndTags item in fm.Tags)
+            foreach (var item in fm.Tags)
             {
-                if (item.Tags.Count == 0)
+                if (item.Value.Count == 0)
                 {
-                    intermediateList.Add(item.Category);
+                    intermediateList.Add(item.Key);
                 }
                 else
                 {
-                    foreach (string tag in item.Tags)
+                    foreach (string tag in item.Value)
                     {
-                        intermediateList.Add(item.Category + ":" + tag);
+                        intermediateList.Add(item.Key + ":" + tag);
                     }
                 }
             }
@@ -172,7 +170,7 @@ namespace AngelLoader
         // OrderedDictionary doesn't seem to have a sort method either?
         // Can't use SortedDictionary either because we need to put misc at the end!
         // Can we make a custom ordered dictionary?
-        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, CatAndTagsList existingFMTags, bool addToGlobalList = true)
+        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, FMCategoriesCollection existingFMTags, bool addToGlobalList = true)
         {
             if (tagsToAdd.IsEmpty()) return;
 
@@ -200,27 +198,17 @@ namespace AngelLoader
                     tag = item.Trim();
                 }
 
-                // Note: We've already converted cat to lowercase, so we just do straight == to shave time off
-
                 #region FM tags
 
-                CatAndTags? match = null;
-                for (int i = 0; i < existingFMTags.Count; i++)
+                if (existingFMTags.TryGetValue(cat, out FMTagsCollection tagsList))
                 {
-                    if (existingFMTags[i].Category == cat)
-                    {
-                        match = existingFMTags[i];
-                        break;
-                    }
-                }
-                if (match == null)
-                {
-                    existingFMTags.Add(new CatAndTags(cat));
-                    existingFMTags[existingFMTags.Count - 1].Tags.Add(tag);
+                    tagsList.Add(tag);
                 }
                 else
                 {
-                    if (!match.Tags.ContainsI(tag)) match.Tags.Add(tag);
+                    var newTagsList = new FMTagsCollection();
+                    existingFMTags.Add(cat, newTagsList);
+                    newTagsList.Add(tag);
                 }
 
                 #endregion
@@ -229,35 +217,15 @@ namespace AngelLoader
 
                 #region Global tags
 
-                CatAndTags? globalMatch = null;
-                for (int i = 0; i < GlobalTags.Count; i++)
+                if (GlobalTags.TryGetValue(cat, out FMTagsCollection globalTagsList))
                 {
-                    if (GlobalTags[i].Category == cat)
-                    {
-                        globalMatch = GlobalTags[i];
-                        break;
-                    }
-                }
-                if (globalMatch == null)
-                {
-                    GlobalTags.Add(new CatAndTags(cat));
-                    GlobalTags[GlobalTags.Count - 1].Tags.Add(tag);
+                    globalTagsList.Add(tag);
                 }
                 else
                 {
-                    string? ft = null;
-                    for (int i = 0; i < globalMatch.Tags.Count; i++)
-                    {
-                        if (globalMatch.Tags[i].EqualsI(tag))
-                        {
-                            ft = globalMatch.Tags[i];
-                            break;
-                        }
-                    }
-                    if (ft == null)
-                    {
-                        globalMatch.Tags.Add(tag);
-                    }
+                    var newGlobalTagsList = new FMTagsCollection();
+                    GlobalTags.Add(cat, newGlobalTagsList);
+                    newGlobalTagsList.Add(tag);
                 }
 
                 #endregion

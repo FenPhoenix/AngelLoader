@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using AL_Common;
 using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses
 {
@@ -114,7 +115,7 @@ namespace AngelLoader.DataClasses
         internal string SelectedLang = "";
 
         [FenGenIgnore]
-        internal readonly CatAndTagsList Tags = new CatAndTagsList();
+        internal readonly FMCategoriesCollection Tags = new FMCategoriesCollection();
         internal string TagsString = "";
     }
 }

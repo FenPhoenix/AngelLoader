@@ -58,13 +58,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Category comparers
-
-        private static CategoryComparer? _categoryComparer;
-        internal static CategoryComparer Category => _categoryComparer ??= new CategoryComparer();
-
-        #endregion
-
         #region Misc comparers
 
         private static FileNameNoExtComparer? _fileNameNoExtComparer;
@@ -434,25 +427,6 @@ namespace AngelLoader
         }
 
         #endregion
-
-        #endregion
-
-        #region Category and tags
-
-        internal sealed class CategoryComparer : IComparer<CatAndTags>
-        {
-            public int Compare(CatAndTags x, CatAndTags y)
-            {
-                AssertR(!x.Category.IsEmpty(), "CategoryComparer: x.Name is null or empty");
-                AssertR(!y.Category.IsEmpty(), "CategoryComparer: y.Name is null or empty");
-
-                AssertR(x.Category.ToLowerInvariant() == x.Category, "CategoryComparer: x.Name is not lowercase");
-                AssertR(y.Category.ToLowerInvariant() == y.Category, "CategoryComparer: y.Name is not lowercase");
-
-                // Category names are supposed to always be lowercase, so don't waste time checking
-                return string.CompareOrdinal(x.Category, y.Category);
-            }
-        }
 
         #endregion
 

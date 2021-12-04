@@ -299,7 +299,7 @@ namespace AngelLoader
             return ret;
         }
 
-        private static void ReadTags(CatAndTagsList tagsList, string val)
+        private static void ReadTags(FMCategoriesCollection tags, string val)
         {
             if (val.IsWhiteSpace()) return;
 
@@ -323,23 +323,15 @@ namespace AngelLoader
                     tag = item.Trim();
                 }
 
-                CatAndTags? match = null;
-                for (int i = 0; i < tagsList.Count; i++)
+                if (tags.TryGetValue(cat, out FMTagsCollection tagsList))
                 {
-                    if (tagsList[i].Category == cat)
-                    {
-                        match = tagsList[i];
-                        break;
-                    }
-                }
-                if (match == null)
-                {
-                    tagsList.Add(new CatAndTags(cat));
-                    if (!tag.IsEmpty()) tagsList[tagsList.Count - 1].Tags.Add(tag);
+                    if (!tag.IsEmpty()) tagsList.Add(tag);
                 }
                 else
                 {
-                    if (!tag.IsEmpty() && !match.Tags.ContainsI(tag)) match.Tags.Add(tag);
+                    var newTagsList = new FMTagsCollection();
+                    tags.Add(cat, newTagsList);
+                    if (!tag.IsEmpty()) newTagsList.Add(tag);
                 }
             }
         }
@@ -404,19 +396,19 @@ namespace AngelLoader
             ? ""
             : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X");
 
-        private static string TagsToString(CatAndTagsList tagsList)
+        private static string TagsToString(FMCategoriesCollection tagsList)
         {
             var intermediateTagsList = new List<string>();
-            foreach (CatAndTags catAndTags in tagsList)
+            foreach (var catAndTags in tagsList)
             {
-                if (catAndTags.Tags.Count == 0)
+                if (catAndTags.Value.Count == 0)
                 {
-                    intermediateTagsList.Add(catAndTags.Category + ":");
+                    intermediateTagsList.Add(catAndTags.Key + ":");
                 }
                 else
                 {
-                    string catC = catAndTags.Category + ":";
-                    foreach (string tag in catAndTags.Tags)
+                    string catC = catAndTags.Key + ":";
+                    foreach (string tag in catAndTags.Value)
                     {
                         intermediateTagsList.Add(catC + tag);
                     }

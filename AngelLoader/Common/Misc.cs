@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using AngelLoader.DataClasses;
-using static AngelLoader.GameSupport;
 
 namespace AngelLoader
 {
@@ -147,7 +146,7 @@ namespace AngelLoader
         internal static LText_Class LText = new LText_Class();
 
         // Preset tags will be deep copied to this list later
-        internal static readonly CatAndTagsList GlobalTags = new CatAndTagsList(PresetTags.Count);
+        internal static readonly FMCategoriesCollection GlobalTags = new FMCategoriesCollection(PresetTags.Count);
 
         #region FM lists
 

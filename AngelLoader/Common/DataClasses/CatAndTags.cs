@@ -3,61 +3,120 @@ using System.Collections.Generic;
 
 namespace AngelLoader.DataClasses
 {
-    internal sealed class CatAndTags
+    public sealed class FMTagsCollection : HashSet<string>
     {
-        internal readonly string Category;
-        internal readonly List<string> Tags;
+        public readonly List<string> List;
 
-        internal CatAndTags(string category)
+        public FMTagsCollection() : base(StringComparer.OrdinalIgnoreCase)
         {
-            Category = category;
-            Tags = new List<string>();
+            List = new List<string>();
         }
 
-        internal CatAndTags(string category, int tagsCapacity)
+        public FMTagsCollection(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
         {
-            Category = category;
-            Tags = new List<string>(tagsCapacity);
+            List = new List<string>(capacity);
         }
+
+        public new void Add(string tag)
+        {
+            if (base.Add(tag))
+            {
+                List.Add(tag);
+            }
+        }
+
+        public new void Remove(string category)
+        {
+            base.Remove(category);
+            List.Remove(category);
+        }
+
+        public void RemoveAt(int index)
+        {
+            string item = List[index];
+            base.Remove(item);
+        }
+
+        public void SortCaseInsensitive() => List.Sort(StringComparer.OrdinalIgnoreCase);
     }
 
-    internal sealed class CatAndTagsList : List<CatAndTags>
+    public sealed class FMCategoriesCollection : Dictionary<string, FMTagsCollection>
     {
-        internal CatAndTagsList() { }
+        public readonly List<string> List;
 
-        internal CatAndTagsList(int capacity) : base(capacity) { }
+        public FMCategoriesCollection() : base(StringComparer.OrdinalIgnoreCase)
+        {
+            List = new List<string>();
+        }
 
-        internal void DeepCopyTo(CatAndTagsList dest)
+        public FMCategoriesCollection(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
+        {
+            List = new List<string>(capacity);
+        }
+
+        public new void Add(string category, FMTagsCollection tags)
+        {
+            if (!base.ContainsKey(category))
+            {
+                base[category] = tags;
+                List.Add(category);
+            }
+        }
+
+        public new bool Remove(string category)
+        {
+            List.Remove(category);
+            return base.Remove(category);
+        }
+
+        public bool RemoveAt(int index)
+        {
+            string item = List[index];
+            return base.Remove(item);
+        }
+
+        public new void Clear()
+        {
+            base.Clear();
+            List.Clear();
+        }
+
+        public void DeepCopyTo(FMCategoriesCollection dest)
         {
             dest.Clear();
-
-            if (Count == 0) return;
-
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < List.Count; i++)
             {
-                CatAndTags thisI = this[i];
-                var item = new CatAndTags(thisI.Category, thisI.Tags.Count);
-                for (int j = 0; j < thisI.Tags.Count; j++) item.Tags.Add(thisI.Tags[j]);
-                dest.Add(item);
+                string category = List[i];
+                FMTagsCollection srcTags = base[category];
+                var destTags = new FMTagsCollection(srcTags.Count);
+                for (int j = 0; j < srcTags.Count; j++)
+                {
+                    destTags.Add(srcTags.List[j]);
+                }
+                dest.Add(category, destTags);
             }
         }
 
         internal void SortAndMoveMiscToEnd()
         {
-            if (Count == 0) return;
+            if (List.Count == 0) return;
 
-            Sort(Comparers.Category);
-            foreach (CatAndTags item in this) item.Tags.Sort(StringComparer.OrdinalIgnoreCase);
+            List.Sort(StringComparer.OrdinalIgnoreCase);
 
-            if (this[Count - 1].Category == "misc") return;
-
-            for (int i = 0; i < Count; i++)
+            foreach (var item in this)
             {
-                CatAndTags item = this[i];
-                if (this[i].Category == "misc")
+                item.Value.SortCaseInsensitive();
+            }
+
+            if (List[List.Count - 1] == "misc") return;
+
+            for (int i = 0; i < List.Count; i++)
+            {
+                string item = List[i];
+                if (List[i] == "misc")
                 {
-                    Remove(item);
-                    Add(item);
+                    List.Remove(item);
+                    List.Add(item);
                     return;
                 }
             }
@@ -75,9 +134,9 @@ namespace AngelLoader.DataClasses
         private static readonly KeyValuePair<string, string[]>[]
         _presetTags =
         {
-            new("author", Array.Empty<string>()),
-            new("contest", Array.Empty<string>()),
-            new("genre", new[]
+            new KeyValuePair<string, string[]>("author", Array.Empty<string>()),
+            new KeyValuePair<string, string[]>("contest", Array.Empty<string>()),
+            new KeyValuePair<string, string[]>("genre", new[]
             {
                 "action",
                 "crime",
@@ -85,7 +144,7 @@ namespace AngelLoader.DataClasses
                 "mystery",
                 "puzzle"
             }),
-            new("language", new[]
+            new KeyValuePair<string, string[]>("language", new[]
             {
                 "English",
                 "Czech",
@@ -99,8 +158,8 @@ namespace AngelLoader.DataClasses
                 "Russian",
                 "Spanish"
             }),
-            new("series", Array.Empty<string>()),
-            new("misc", new[]
+            new KeyValuePair<string, string[]>("series", Array.Empty<string>()),
+            new KeyValuePair<string, string[]>("misc", new[]
             {
                 "campaign",
                 "demo",
@@ -116,23 +175,24 @@ namespace AngelLoader.DataClasses
         internal static readonly int Count = _presetTags.Length;
 
         /// <summary>
-        /// Deep-copies the set of preset tags to a <see cref="CatAndTagsList"/>.
+        /// Deep-copies the set of preset tags to a <see cref="FMCategoriesCollection"/>.
         /// </summary>
-        /// <param name="dest">The <see cref="CatAndTagsList"/> to copy the preset tags to.</param>
-        internal static void DeepCopyTo(CatAndTagsList dest)
+        /// <param name="dest">The <see cref="FMCategoriesCollection"/> to copy the preset tags to.</param>
+        internal static void DeepCopyTo(FMCategoriesCollection dest)
         {
             dest.Clear();
 
             for (int i = 0; i < Count; i++)
             {
                 var pt = _presetTags[i];
-                var item = new CatAndTags(pt.Key, pt.Value.Length);
+                string category = pt.Key;
+                var tags = new FMTagsCollection(pt.Value.Length);
                 for (int j = 0; j < pt.Value.Length; j++)
                 {
-                    item.Tags.Add(pt.Value[j]);
+                    tags.Add(pt.Value[j]);
                 }
 
-                dest.Add(item);
+                dest.Add(category, tags);
             }
         }
     }

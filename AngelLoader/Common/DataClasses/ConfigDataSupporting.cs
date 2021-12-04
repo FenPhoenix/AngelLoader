@@ -325,9 +325,9 @@ namespace AngelLoader.DataClasses
 
     internal sealed class TagsFilter
     {
-        internal readonly CatAndTagsList AndTags = new CatAndTagsList();
-        internal readonly CatAndTagsList OrTags = new CatAndTagsList();
-        internal readonly CatAndTagsList NotTags = new CatAndTagsList();
+        internal readonly FMCategoriesCollection AndTags = new FMCategoriesCollection();
+        internal readonly FMCategoriesCollection OrTags = new FMCategoriesCollection();
+        internal readonly FMCategoriesCollection NotTags = new FMCategoriesCollection();
 
         internal void Clear()
         {
