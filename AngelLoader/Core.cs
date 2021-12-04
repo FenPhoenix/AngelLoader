@@ -820,9 +820,9 @@ namespace AngelLoader
                 viewFilter.Tags.OrTags.Count > 0 ||
                 viewFilter.Tags.NotTags.Count > 0)
             {
-                CatAndTagsList andTags = viewFilter.Tags.AndTags;
-                CatAndTagsList orTags = viewFilter.Tags.OrTags;
-                CatAndTagsList notTags = viewFilter.Tags.NotTags;
+                SOD2 andTags = viewFilter.Tags.AndTags;
+                SOD2 orTags = viewFilter.Tags.OrTags;
+                SOD2 notTags = viewFilter.Tags.NotTags;
 
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {

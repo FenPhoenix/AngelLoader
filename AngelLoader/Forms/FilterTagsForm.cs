@@ -10,11 +10,11 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : DarkFormBase
     {
-        private readonly CatAndTagsList _sourceTags;
+        private readonly SOD2 _sourceTags;
 
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
-        internal FilterTagsForm(CatAndTagsList sourceTags, TagsFilter tagsFilter)
+        internal FilterTagsForm(SOD2 sourceTags, TagsFilter tagsFilter)
         {
 #if DEBUG
             InitializeComponent();
@@ -22,7 +22,7 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
-            _sourceTags = new CatAndTagsList(sourceTags.Count);
+            _sourceTags = new SOD2(sourceTags.Count);
 
             sourceTags.DeepCopyTo(_sourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);
@@ -36,11 +36,11 @@ namespace AngelLoader.Forms
             tv.BeginUpdate();
             _sourceTags.SortAndMoveMiscToEnd();
 
-            foreach (CatAndTags catAndTags in _sourceTags)
+            foreach (var catAndTags in _sourceTags)
             {
-                tv.Nodes.Add(catAndTags.Category);
+                tv.Nodes.Add(catAndTags.Key);
                 var last = tv.Nodes[tv.Nodes.Count - 1];
-                foreach (string tag in catAndTags.Tags) last.Nodes.Add(tag);
+                foreach (string tag in catAndTags.Value) last.Nodes.Add(tag);
             }
 
             tv.ExpandAll();
@@ -140,7 +140,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void FillTreeView(CatAndTagsList tags)
+        private void FillTreeView(SOD2 tags)
         {
             var tv =
                 tags == TagsFilter.AndTags ? AndTreeView :
@@ -149,11 +149,11 @@ namespace AngelLoader.Forms
 
             tv.SuspendDrawing();
             tv.Nodes.Clear();
-            foreach (CatAndTags catAndTags in tags)
+            foreach (var catAndTags in tags)
             {
-                tv.Nodes.Add(catAndTags.Category);
+                tv.Nodes.Add(catAndTags.Key);
                 var last = tv.Nodes[tv.Nodes.Count - 1];
-                foreach (string tag in catAndTags.Tags) last.Nodes.Add(tag);
+                foreach (string tag in catAndTags.Value) last.Nodes.Add(tag);
             }
 
             tv.ExpandAll();
@@ -168,7 +168,7 @@ namespace AngelLoader.Forms
 
             if (o.SelectedNode == null) return;
 
-            CatAndTagsList filteredTags =
+            SOD2 filteredTags =
                 sender == AndButton ? TagsFilter.AndTags :
                 sender == OrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -177,30 +177,51 @@ namespace AngelLoader.Forms
             bool isCategory = o.SelectedNode.Parent == null;
             string cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent!.Text;
 
-            CatAndTags? match = null;
-            for (int i = 0; i < filteredTags.Count; i++)
+            //CatAndTags? match = null;
+            //for (int i = 0; i < filteredTags.Count; i++)
+            //{
+            //    if (filteredTags[i].Category == cat) match = filteredTags[i];
+            //}
+            //if (match == null)
+            //{
+            //    filteredTags.Add(new CatAndTags(cat));
+            //    if (!isCategory)
+            //    {
+            //        CatAndTags last = filteredTags[filteredTags.Count - 1];
+            //        last.Tags.Add(o.SelectedNode.Text);
+            //    }
+            //}
+            //else
+            //{
+            //    if (isCategory)
+            //    {
+            //        match.Tags.Clear();
+            //    }
+            //    else
+            //    {
+            //        string tag = o.SelectedNode.Text;
+            //        if (!match.Tags.ContainsI(tag)) match.Tags.Add(tag);
+            //    }
+            //}
+
+            if (filteredTags.TryGetValue(cat, out SOH2 tags))
             {
-                if (filteredTags[i].Category == cat) match = filteredTags[i];
-            }
-            if (match == null)
-            {
-                filteredTags.Add(new CatAndTags(cat));
-                if (!isCategory)
+                if (isCategory)
                 {
-                    CatAndTags last = filteredTags[filteredTags.Count - 1];
-                    last.Tags.Add(o.SelectedNode.Text);
+                    tags.Clear();
+                }
+                else
+                {
+                    tags.Add(o.SelectedNode.Text);
                 }
             }
             else
             {
-                if (isCategory)
+                var item = new SOH2();
+                filteredTags.Add(cat, item);
+                if (!isCategory)
                 {
-                    match.Tags.Clear();
-                }
-                else
-                {
-                    string tag = o.SelectedNode.Text;
-                    if (!match.Tags.ContainsI(tag)) match.Tags.Add(tag);
+                    item.Add(o.SelectedNode.Text);
                 }
             }
 
@@ -209,7 +230,7 @@ namespace AngelLoader.Forms
 
         private void RemoveSelectedButtons_Click(object sender, EventArgs e)
         {
-            CatAndTagsList tags =
+            SOD2 tags =
                 sender == RemoveSelectedAndButton ? TagsFilter.AndTags :
                 sender == RemoveSelectedOrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -224,18 +245,30 @@ namespace AngelLoader.Forms
             // Parent node (category)
             if (tv.SelectedNode.Parent == null)
             {
-                CatAndTags? cat = tags.Find(x => x.Category == tv.SelectedNode.Text);
-                if (cat != null) tags.Remove(cat);
+                //CatAndTags? cat = tags.Find(x => x.Category == tv.SelectedNode.Text);
+                //if (cat != null) tags.Remove(cat);
+                tags.Remove(tv.SelectedNode.Text);
             }
             // Child node (tag)
             else
             {
-                CatAndTags? cat = tags.Find(x => x.Category == tv.SelectedNode.Parent.Text);
-                string? tag = cat?.Tags.Find(x => x == tv.SelectedNode.Text);
-                if (tag != null)
+                //CatAndTags? cat = tags.Find(x => x.Category == tv.SelectedNode.Parent.Text);
+                //string? tag = cat?.Tags.Find(x => x == tv.SelectedNode.Text);
+                //if (tag != null)
+                //{
+                //    cat!.Tags.Remove(tag);
+                //    if (cat.Tags.Count == 0) tags.Remove(cat);
+                //}
+
+                string cat = tv.SelectedNode.Parent.Text;
+
+                if (tags.TryGetValue(cat, out SOH2 tagsList))
                 {
-                    cat!.Tags.Remove(tag);
-                    if (cat.Tags.Count == 0) tags.Remove(cat);
+                    tagsList.Remove(tv.SelectedNode.Text);
+                    if (tagsList.Count == 0)
+                    {
+                        tags.Remove(cat);
+                    }
                 }
             }
 
@@ -244,7 +277,7 @@ namespace AngelLoader.Forms
 
         private void RemoveAllButtons_Click(object sender, EventArgs e)
         {
-            CatAndTagsList tags =
+            SOD2 tags =
                 sender == RemoveAllAndButton ? TagsFilter.AndTags :
                 sender == RemoveAllOrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -278,26 +311,33 @@ namespace AngelLoader.Forms
 
             for (int t = 0; t < 3; t++)
             {
-                CatAndTagsList filteredTags = t switch
+                SOD2 filteredTags = t switch
                 {
                     0 => TagsFilter.AndTags,
                     1 => TagsFilter.OrTags,
                     _ => TagsFilter.NotTags
                 };
 
-                CatAndTags? match = null;
-                for (int i = 0; i < filteredTags.Count; i++)
+                //CatAndTags? match = null;
+                //for (int i = 0; i < filteredTags.Count; i++)
+                //{
+                //    if (filteredTags[i].Category == cat) match = filteredTags[i];
+                //}
+                //if (match != null)
+                //{
+                //    if (isCategory || match.Tags.ContainsI(o.SelectedNode.Text) ||
+                //        (match.Category == o.SelectedNode.Parent!.Text && match.Tags.Count == 0))
+                //    {
+                //        tagInAny = true;
+                //        break;
+                //    }
+                //}
+
+                if (filteredTags.TryGetValue(cat, out SOH2 tagsList) &&
+                    (isCategory || tagsList.Contains(o.SelectedNode.Text) ||
+                     (cat == o.SelectedNode.Parent!.Text && tagsList.Count == 0)))
                 {
-                    if (filteredTags[i].Category == cat) match = filteredTags[i];
-                }
-                if (match != null)
-                {
-                    if (isCategory || match.Tags.ContainsI(o.SelectedNode.Text) ||
-                        (match.Category == o.SelectedNode.Parent!.Text && match.Tags.Count == 0))
-                    {
-                        tagInAny = true;
-                        break;
-                    }
+                    tagInAny = true;
                 }
             }
 

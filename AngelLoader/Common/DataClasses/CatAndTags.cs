@@ -5,7 +5,8 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses
 {
-    internal sealed class CatAndTags
+    /*
+    internal sealed class CatAndTags_
     {
         internal readonly string Category;
         internal readonly Misc.SortableOrderedHashSet<string> Tags;
@@ -43,7 +44,7 @@ namespace AngelLoader.DataClasses
         }
     }
 
-    internal sealed class CatAndTagsList : List<CatAndTags>
+    internal sealed class CatAndTagsList_ : List<CatAndTags>
     {
         internal CatAndTagsList() { }
 
@@ -85,6 +86,7 @@ namespace AngelLoader.DataClasses
             }
         }
     }
+    */
 
     // We lock the preset tags in a private array inside a static class whose only public method is a deep-copier.
     // That way we have a strong guarantee of immutability of the original set. These things will not be messed
@@ -138,23 +140,24 @@ namespace AngelLoader.DataClasses
         internal static readonly int Count = _presetTags.Length;
 
         /// <summary>
-        /// Deep-copies the set of preset tags to a <see cref="CatAndTagsList"/>.
+        /// Deep-copies the set of preset tags to a <see cref="SOD2"/>.
         /// </summary>
-        /// <param name="dest">The <see cref="CatAndTagsList"/> to copy the preset tags to.</param>
-        internal static void DeepCopyTo(CatAndTagsList dest)
+        /// <param name="dest">The <see cref="SOD2"/> to copy the preset tags to.</param>
+        internal static void DeepCopyTo(SOD2 dest)
         {
             dest.Clear();
 
             for (int i = 0; i < Count; i++)
             {
                 var pt = _presetTags[i];
-                var item = new CatAndTags(pt.Key, pt.Value.Length);
+                string category = pt.Key;
+                var tags = new SOH2(pt.Value.Length);
                 for (int j = 0; j < pt.Value.Length; j++)
                 {
-                    item.Tags.Add(pt.Value[j]);
+                    tags.Add(pt.Value[j]);
                 }
 
-                dest.Add(item);
+                dest[category] = tags;
             }
         }
     }

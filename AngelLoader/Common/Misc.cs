@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 
@@ -93,6 +94,134 @@ namespace AngelLoader
 
         #endregion
 
+        public class SOH2 : HashSet<string>
+        {
+            private readonly List<string> _list;
+
+            public SOH2() : base(StringComparer.OrdinalIgnoreCase)
+            {
+                _list = new List<string>();
+            }
+
+            public SOH2(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
+            {
+                _list = new List<string>(capacity);
+            }
+
+            public new void Add(string tag)
+            {
+                if (base.Add(tag))
+                {
+                    _list.Add(tag.ToLowerInvariant());
+                }
+            }
+
+            public new void Remove(string category)
+            {
+                base.Remove(category);
+                _list.Remove(category.ToLowerInvariant());
+            }
+
+            public void RemoveAt(int index)
+            {
+                string item = _list[index];
+                base.Remove(item);
+            }
+
+            public string this[int index] => _list[index];
+
+            public void SortCaseInsensitive()
+            {
+                _list.Sort(StringComparer.OrdinalIgnoreCase);
+            }
+        }
+
+        public class SOD2 : Dictionary<string, SOH2>
+        {
+            private readonly List<string> _list;
+
+            public SOD2() : base(StringComparer.OrdinalIgnoreCase)
+            {
+                _list = new List<string>();
+            }
+
+            public SOD2(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
+            {
+                _list = new List<string>(capacity);
+            }
+
+            public new void Add(string category, SOH2 tags)
+            {
+                if (!base.ContainsKey(category))
+                {
+                    base[category] = tags;
+                    _list.Add(category.ToLowerInvariant());
+                }
+            }
+
+            public new bool Remove(string category)
+            {
+                _list.Remove(category.ToLowerInvariant());
+                return base.Remove(category);
+            }
+
+            public bool RemoveAt(int index)
+            {
+                string item = _list[index];
+                return base.Remove(item);
+            }
+
+            public string this[int index] => _list[index];
+
+            public new void Clear()
+            {
+                base.Clear();
+                _list.Clear();
+            }
+
+            public void DeepCopyTo(SOD2 dest)
+            {
+                dest.Clear();
+                for (int i = 0; i < _list.Count; i++)
+                {
+                    string category = _list[i];
+                    SOH2 srcTags = base[category];
+                    var destTags = new SOH2(srcTags.Count);
+                    for (int j = 0; j < srcTags.Count; j++)
+                    {
+                        destTags.Add(srcTags[j]);
+                    }
+                    dest.Add(category, destTags);
+                }
+            }
+
+            internal void SortAndMoveMiscToEnd()
+            {
+                if (Count == 0) return;
+
+                _list.Sort(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var item in this)
+                {
+                    item.Value.SortCaseInsensitive();
+                }
+
+                if (_list[Count - 1] == "misc") return;
+
+                for (int i = 0; i < Count; i++)
+                {
+                    string item = _list[i];
+                    if (_list[i] == "misc")
+                    {
+                        _list.Remove(item);
+                        _list.Add(item);
+                        return;
+                    }
+                }
+            }
+        }
+
+        /*
         public class SortableOrderedDictionary<TKey, TValue> : IEnumerable<TKey>
         {
             private readonly Dictionary<TKey, TValue> _dict;
@@ -217,6 +346,7 @@ namespace AngelLoader
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
+        */
 
         internal static readonly string[] ValidDateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
 
@@ -275,7 +405,7 @@ namespace AngelLoader
         internal static LText_Class LText = new LText_Class();
 
         // Preset tags will be deep copied to this list later
-        internal static readonly CatAndTagsList GlobalTags = new CatAndTagsList(PresetTags.Count);
+        internal static readonly SOD2 GlobalTags = new SOD2(PresetTags.Count);
 
         #region FM lists
 
