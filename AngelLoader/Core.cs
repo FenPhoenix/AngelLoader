@@ -820,9 +820,9 @@ namespace AngelLoader
                 viewFilter.Tags.OrTags.Count > 0 ||
                 viewFilter.Tags.NotTags.Count > 0)
             {
-                DictList andTags = viewFilter.Tags.AndTags;
-                DictList orTags = viewFilter.Tags.OrTags;
-                DictList notTags = viewFilter.Tags.NotTags;
+                FMCategoriesCollection andTags = viewFilter.Tags.AndTags;
+                FMCategoriesCollection orTags = viewFilter.Tags.OrTags;
+                FMCategoriesCollection notTags = viewFilter.Tags.NotTags;
 
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
@@ -846,14 +846,7 @@ namespace AngelLoader
                         bool andPass = true;
                         foreach (var andTag in andTags)
                         {
-                            //CatAndTags? match = fm.Tags.Find(x => x.Category == andTag.Category);
-                            //if (match == null)
-                            //{
-                            //    andPass = false;
-                            //    break;
-                            //}
-
-                            if (!fm.Tags.TryGetValue(andTag.Key, out HashSetList match))
+                            if (!fm.Tags.TryGetValue(andTag.Key, out FMTagsCollection match))
                             {
                                 andPass = false;
                                 break;
@@ -861,15 +854,6 @@ namespace AngelLoader
 
                             if (andTag.Value.Count > 0)
                             {
-                                //foreach (string andTagTag in andTag.Tags)
-                                //{
-                                //    if (match.Tags.Find(x => x == andTagTag) == null)
-                                //    {
-                                //        andPass = false;
-                                //        break;
-                                //    }
-                                //}
-
                                 foreach (string andTagTag in andTag.Value)
                                 {
                                     if (!match.Contains(andTagTag))
@@ -900,10 +884,7 @@ namespace AngelLoader
                         bool orPass = false;
                         foreach (var orTag in orTags)
                         {
-                            //CatAndTags? match = fm.Tags.Find(x => x.Category == orTag.Category);
-                            //if (match == null) continue;
-
-                            if (!fm.Tags.TryGetValue(orTag.Key, out HashSetList match))
+                            if (!fm.Tags.TryGetValue(orTag.Key, out FMTagsCollection match))
                             {
                                 continue;
                             }
@@ -912,12 +893,6 @@ namespace AngelLoader
                             {
                                 foreach (string orTagTag in orTag.Value)
                                 {
-                                    //if (match.Tags.Find(x => x == orTagTag) != null)
-                                    //{
-                                    //    orPass = true;
-                                    //    break;
-                                    //}
-
                                     if (match.Contains(orTagTag))
                                     {
                                         orPass = true;
@@ -950,10 +925,7 @@ namespace AngelLoader
                         bool notPass = true;
                         foreach (var notTag in notTags)
                         {
-                            //CatAndTags? match = fm.Tags.Find(x => x.Category == notTag.Category);
-                            //if (match == null) continue;
-
-                            if (!fm.Tags.TryGetValue(notTag.Key, out HashSetList match))
+                            if (!fm.Tags.TryGetValue(notTag.Key, out FMTagsCollection match))
                             {
                                 continue;
                             }
@@ -968,12 +940,6 @@ namespace AngelLoader
                             {
                                 foreach (string notTagTag in notTag.Value)
                                 {
-                                    //if (match.Tags.Find(x => x == notTagTag) != null)
-                                    //{
-                                    //    notPass = false;
-                                    //    break;
-                                    //}
-
                                     if (match.Contains(notTagTag))
                                     {
                                         notPass = false;

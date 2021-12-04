@@ -10,11 +10,11 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : DarkFormBase
     {
-        private readonly DictList _sourceTags;
+        private readonly FMCategoriesCollection _sourceTags;
 
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
-        internal FilterTagsForm(DictList sourceTags, TagsFilter tagsFilter)
+        internal FilterTagsForm(FMCategoriesCollection sourceTags, TagsFilter tagsFilter)
         {
 #if DEBUG
             InitializeComponent();
@@ -22,7 +22,7 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
-            _sourceTags = new DictList(sourceTags.Count);
+            _sourceTags = new FMCategoriesCollection(sourceTags.Count);
 
             sourceTags.DeepCopyTo(_sourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);
@@ -142,7 +142,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void FillTreeView(DictList tags)
+        private void FillTreeView(FMCategoriesCollection tags)
         {
             var tv =
                 tags == TagsFilter.AndTags ? AndTreeView :
@@ -170,7 +170,7 @@ namespace AngelLoader.Forms
 
             if (o.SelectedNode == null) return;
 
-            DictList filteredTags =
+            FMCategoriesCollection filteredTags =
                 sender == AndButton ? TagsFilter.AndTags :
                 sender == OrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -179,34 +179,7 @@ namespace AngelLoader.Forms
             bool isCategory = o.SelectedNode.Parent == null;
             string cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent!.Text;
 
-            //CatAndTags? match = null;
-            //for (int i = 0; i < filteredTags.Count; i++)
-            //{
-            //    if (filteredTags[i].Category == cat) match = filteredTags[i];
-            //}
-            //if (match == null)
-            //{
-            //    filteredTags.Add(new CatAndTags(cat));
-            //    if (!isCategory)
-            //    {
-            //        CatAndTags last = filteredTags[filteredTags.Count - 1];
-            //        last.Tags.Add(o.SelectedNode.Text);
-            //    }
-            //}
-            //else
-            //{
-            //    if (isCategory)
-            //    {
-            //        match.Tags.Clear();
-            //    }
-            //    else
-            //    {
-            //        string tag = o.SelectedNode.Text;
-            //        if (!match.Tags.ContainsI(tag)) match.Tags.Add(tag);
-            //    }
-            //}
-
-            if (filteredTags.TryGetValue(cat, out HashSetList tags))
+            if (filteredTags.TryGetValue(cat, out FMTagsCollection tags))
             {
                 if (isCategory)
                 {
@@ -219,7 +192,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                var item = new HashSetList();
+                var item = new FMTagsCollection();
                 filteredTags.Add(cat, item);
                 if (!isCategory)
                 {
@@ -232,7 +205,7 @@ namespace AngelLoader.Forms
 
         private void RemoveSelectedButtons_Click(object sender, EventArgs e)
         {
-            DictList tags =
+            FMCategoriesCollection tags =
                 sender == RemoveSelectedAndButton ? TagsFilter.AndTags :
                 sender == RemoveSelectedOrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -247,24 +220,14 @@ namespace AngelLoader.Forms
             // Parent node (category)
             if (tv.SelectedNode.Parent == null)
             {
-                //CatAndTags? cat = tags.Find(x => x.Category == tv.SelectedNode.Text);
-                //if (cat != null) tags.Remove(cat);
                 tags.Remove(tv.SelectedNode.Text);
             }
             // Child node (tag)
             else
             {
-                //CatAndTags? cat = tags.Find(x => x.Category == tv.SelectedNode.Parent.Text);
-                //string? tag = cat?.Tags.Find(x => x == tv.SelectedNode.Text);
-                //if (tag != null)
-                //{
-                //    cat!.Tags.Remove(tag);
-                //    if (cat.Tags.Count == 0) tags.Remove(cat);
-                //}
-
                 string cat = tv.SelectedNode.Parent.Text;
 
-                if (tags.TryGetValue(cat, out HashSetList tagsList))
+                if (tags.TryGetValue(cat, out FMTagsCollection tagsList))
                 {
                     tagsList.Remove(tv.SelectedNode.Text);
                     if (tagsList.Count == 0)
@@ -279,7 +242,7 @@ namespace AngelLoader.Forms
 
         private void RemoveAllButtons_Click(object sender, EventArgs e)
         {
-            DictList tags =
+            FMCategoriesCollection tags =
                 sender == RemoveAllAndButton ? TagsFilter.AndTags :
                 sender == RemoveAllOrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -313,29 +276,14 @@ namespace AngelLoader.Forms
 
             for (int t = 0; t < 3; t++)
             {
-                DictList filteredTags = t switch
+                FMCategoriesCollection filteredTags = t switch
                 {
                     0 => TagsFilter.AndTags,
                     1 => TagsFilter.OrTags,
                     _ => TagsFilter.NotTags
                 };
 
-                //CatAndTags? match = null;
-                //for (int i = 0; i < filteredTags.Count; i++)
-                //{
-                //    if (filteredTags[i].Category == cat) match = filteredTags[i];
-                //}
-                //if (match != null)
-                //{
-                //    if (isCategory || match.Tags.ContainsI(o.SelectedNode.Text) ||
-                //        (match.Category == o.SelectedNode.Parent!.Text && match.Tags.Count == 0))
-                //    {
-                //        tagInAny = true;
-                //        break;
-                //    }
-                //}
-
-                if (filteredTags.TryGetValue(cat, out HashSetList tagsList) &&
+                if (filteredTags.TryGetValue(cat, out FMTagsCollection tagsList) &&
                     (isCategory || tagsList.Contains(o.SelectedNode.Text) ||
                      (cat == o.SelectedNode.Parent!.Text && tagsList.Count == 0)))
                 {

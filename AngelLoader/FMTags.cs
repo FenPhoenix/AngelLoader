@@ -39,13 +39,6 @@ namespace AngelLoader
                 bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
-                //CatAndTags? cat = fm.Tags.Find(x => x.Category == catText);
-                //if (cat != null)
-                //{
-                //    fm.Tags.Remove(cat);
-                //    UpdateFMTagsString(fm);
-                //}
-
                 if (fm.Tags.ContainsKey(catText))
                 {
                     fm.Tags.Remove(catText);
@@ -58,16 +51,7 @@ namespace AngelLoader
                 bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
-                //CatAndTags? cat = fm.Tags.Find(x => x.Category == catText);
-                //string? tag = cat?.Tags.Find(x => x == tagText);
-                //if (tag != null)
-                //{
-                //    cat!.Tags.Remove(tag);
-                //    if (cat.Tags.Count == 0) fm.Tags.Remove(cat);
-                //    UpdateFMTagsString(fm);
-                //}
-
-                if (fm.Tags.TryGetValue(catText, out HashSetList tagsList) &&
+                if (fm.Tags.TryGetValue(catText, out FMTagsCollection tagsList) &&
                     tagsList.Contains(tagText))
                 {
                     tagsList.Remove(tagText);
@@ -186,7 +170,7 @@ namespace AngelLoader
         // OrderedDictionary doesn't seem to have a sort method either?
         // Can't use SortedDictionary either because we need to put misc at the end!
         // Can we make a custom ordered dictionary?
-        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, DictList existingFMTags, bool addToGlobalList = true)
+        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, FMCategoriesCollection existingFMTags, bool addToGlobalList = true)
         {
             if (tagsToAdd.IsEmpty()) return;
 
@@ -216,13 +200,13 @@ namespace AngelLoader
 
                 #region FM tags
 
-                if (existingFMTags.TryGetValue(cat, out HashSetList tagsList))
+                if (existingFMTags.TryGetValue(cat, out FMTagsCollection tagsList))
                 {
                     tagsList.Add(tag);
                 }
                 else
                 {
-                    var newTagsList = new HashSetList();
+                    var newTagsList = new FMTagsCollection();
                     existingFMTags.Add(cat, newTagsList);
                     newTagsList.Add(tag);
                 }
@@ -233,13 +217,13 @@ namespace AngelLoader
 
                 #region Global tags
 
-                if (GlobalTags.TryGetValue(cat, out HashSetList globalTagsList))
+                if (GlobalTags.TryGetValue(cat, out FMTagsCollection globalTagsList))
                 {
                     globalTagsList.Add(tag);
                 }
                 else
                 {
-                    var newGlobalTagsList = new HashSetList();
+                    var newGlobalTagsList = new FMTagsCollection();
                     GlobalTags.Add(cat, newGlobalTagsList);
                     newGlobalTagsList.Add(tag);
                 }

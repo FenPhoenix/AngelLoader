@@ -299,7 +299,7 @@ namespace AngelLoader
             return ret;
         }
 
-        private static void ReadTags(DictList tags, string val)
+        private static void ReadTags(FMCategoriesCollection tags, string val)
         {
             if (val.IsWhiteSpace()) return;
 
@@ -323,32 +323,13 @@ namespace AngelLoader
                     tag = item.Trim();
                 }
 
-                //CatAndTags? match = null;
-                //for (int i = 0; i < tagsList.Count; i++)
-                //{
-                //    if (tagsList[i].Category == cat)
-                //    {
-                //        match = tagsList[i];
-                //        break;
-                //    }
-                //}
-                //if (match == null)
-                //{
-                //    tagsList.Add(new CatAndTags(cat));
-                //    if (!tag.IsEmpty()) tagsList[tagsList.Count - 1].Tags.Add(tag);
-                //}
-                //else
-                //{
-                //    if (!tag.IsEmpty() && !match.Tags.ContainsI(tag)) match.Tags.Add(tag);
-                //}
-
-                if (tags.TryGetValue(cat, out HashSetList tagsList))
+                if (tags.TryGetValue(cat, out FMTagsCollection tagsList))
                 {
                     if (!tag.IsEmpty()) tagsList.Add(tag);
                 }
                 else
                 {
-                    var newTagsList = new HashSetList();
+                    var newTagsList = new FMTagsCollection();
                     tags.Add(cat, newTagsList);
                     if (!tag.IsEmpty()) newTagsList.Add(tag);
                 }
@@ -415,7 +396,7 @@ namespace AngelLoader
             ? ""
             : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X");
 
-        private static string TagsToString(DictList tagsList)
+        private static string TagsToString(FMCategoriesCollection tagsList)
         {
             var intermediateTagsList = new List<string>();
             foreach (var catAndTags in tagsList)

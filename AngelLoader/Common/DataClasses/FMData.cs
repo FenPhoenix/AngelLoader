@@ -115,7 +115,7 @@ namespace AngelLoader.DataClasses
         internal string SelectedLang = "";
 
         [FenGenIgnore]
-        internal readonly DictList Tags = new DictList();
+        internal readonly FMCategoriesCollection Tags = new FMCategoriesCollection();
         internal string TagsString = "";
     }
 }

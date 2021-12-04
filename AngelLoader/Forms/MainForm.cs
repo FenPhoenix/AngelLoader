@@ -4845,7 +4845,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void DisplayFMTags(DictList fmTags)
+        private void DisplayFMTags(FMCategoriesCollection fmTags)
         {
             var tv = TagsTreeView;
 
@@ -4860,7 +4860,7 @@ namespace AngelLoader.Forms
 
                 foreach (string category in fmTags.List)
                 {
-                    HashSetList tags = fmTags[category];
+                    FMTagsCollection tags = fmTags[category];
 
                     var last = new TreeNode(category);
                     tv.Nodes.Add(last);

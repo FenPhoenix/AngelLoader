@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
-using JetBrains.Annotations;
-using static AngelLoader.GameSupport;
 
 namespace AngelLoader
 {
@@ -95,126 +89,6 @@ namespace AngelLoader
 
         #endregion
 
-        public sealed class HashSetList : HashSet<string>
-        {
-            public readonly List<string> List;
-
-            public HashSetList() : base(StringComparer.OrdinalIgnoreCase)
-            {
-                List = new List<string>();
-            }
-
-            public HashSetList(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
-            {
-                List = new List<string>(capacity);
-            }
-
-            public new void Add(string tag)
-            {
-                if (base.Add(tag))
-                {
-                    List.Add(tag);
-                }
-            }
-
-            public new void Remove(string category)
-            {
-                base.Remove(category);
-                List.Remove(category);
-            }
-
-            public void RemoveAt(int index)
-            {
-                string item = List[index];
-                base.Remove(item);
-            }
-
-            public void SortCaseInsensitive() => List.Sort(StringComparer.OrdinalIgnoreCase);
-        }
-
-        public sealed class DictList : Dictionary<string, HashSetList>
-        {
-            public readonly List<string> List;
-
-            public DictList() : base(StringComparer.OrdinalIgnoreCase)
-            {
-                List = new List<string>();
-            }
-
-            public DictList(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
-            {
-                List = new List<string>(capacity);
-            }
-
-            public new void Add(string category, HashSetList tags)
-            {
-                if (!base.ContainsKey(category))
-                {
-                    base[category] = tags;
-                    List.Add(category);
-                }
-            }
-
-            public new bool Remove(string category)
-            {
-                List.Remove(category);
-                return base.Remove(category);
-            }
-
-            public bool RemoveAt(int index)
-            {
-                string item = List[index];
-                return base.Remove(item);
-            }
-
-            public new void Clear()
-            {
-                base.Clear();
-                List.Clear();
-            }
-
-            public void DeepCopyTo(DictList dest)
-            {
-                dest.Clear();
-                for (int i = 0; i < List.Count; i++)
-                {
-                    string category = List[i];
-                    HashSetList srcTags = base[category];
-                    var destTags = new HashSetList(srcTags.Count);
-                    for (int j = 0; j < srcTags.Count; j++)
-                    {
-                        destTags.Add(srcTags.List[j]);
-                    }
-                    dest.Add(category, destTags);
-                }
-            }
-
-            internal void SortAndMoveMiscToEnd()
-            {
-                if (List.Count == 0) return;
-
-                List.Sort(StringComparer.OrdinalIgnoreCase);
-
-                foreach (var item in this)
-                {
-                    item.Value.SortCaseInsensitive();
-                }
-
-                if (List[List.Count - 1] == "misc") return;
-
-                for (int i = 0; i < List.Count; i++)
-                {
-                    string item = List[i];
-                    if (List[i] == "misc")
-                    {
-                        List.Remove(item);
-                        List.Add(item);
-                        return;
-                    }
-                }
-            }
-        }
-
         internal static readonly string[] ValidDateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
 
         internal static class Defaults
@@ -272,7 +146,7 @@ namespace AngelLoader
         internal static LText_Class LText = new LText_Class();
 
         // Preset tags will be deep copied to this list later
-        internal static readonly DictList GlobalTags = new DictList(PresetTags.Count);
+        internal static readonly FMCategoriesCollection GlobalTags = new FMCategoriesCollection(PresetTags.Count);
 
         #region FM lists
 
