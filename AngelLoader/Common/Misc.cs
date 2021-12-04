@@ -197,7 +197,7 @@ namespace AngelLoader
 
             internal void SortAndMoveMiscToEnd()
             {
-                if (Count == 0) return;
+                if (_list.Count == 0) return;
 
                 _list.Sort(StringComparer.OrdinalIgnoreCase);
 
@@ -206,9 +206,9 @@ namespace AngelLoader
                     item.Value.SortCaseInsensitive();
                 }
 
-                if (_list[Count - 1] == "misc") return;
+                if (_list[_list.Count - 1] == "misc") return;
 
-                for (int i = 0; i < Count; i++)
+                for (int i = 0; i < _list.Count; i++)
                 {
                     string item = _list[i];
                     if (_list[i] == "misc")
