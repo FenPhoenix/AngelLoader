@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace AngelLoader.DataClasses
@@ -40,54 +41,82 @@ namespace AngelLoader.DataClasses
         public void SortCaseInsensitive() => List.Sort(StringComparer.OrdinalIgnoreCase);
     }
 
-    public sealed class FMCategoriesCollection : Dictionary<string, FMTagsCollection>
+    public readonly struct CatAndTagsList
     {
-        public readonly List<string> List;
+        public readonly string Category;
+        public readonly FMTagsCollection Tags;
 
-        public FMCategoriesCollection() : base(StringComparer.OrdinalIgnoreCase)
+        public CatAndTagsList(string category, FMTagsCollection tags)
         {
-            List = new List<string>();
+            Category = category;
+            Tags = tags;
+        }
+    }
+
+    public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
+    {
+        private readonly Dictionary<string, FMTagsCollection> _dict;
+        private readonly List<string> _list;
+
+        public FMCategoriesCollection()
+        {
+            _list = new List<string>();
+            _dict = new Dictionary<string, FMTagsCollection>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public FMCategoriesCollection(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
+        public FMCategoriesCollection(int capacity)
         {
-            List = new List<string>(capacity);
+            _list = new List<string>(capacity);
+            _dict = new Dictionary<string, FMTagsCollection>(capacity, StringComparer.OrdinalIgnoreCase);
         }
 
-        public new void Add(string category, FMTagsCollection tags)
+        public int Count => _list.Count;
+
+        public void Add(string category, FMTagsCollection tags)
         {
-            if (!base.ContainsKey(category))
+            if (!_dict.ContainsKey(category))
             {
-                base[category] = tags;
-                List.Add(category);
+                _dict[category] = tags;
+                _list.Add(category);
             }
         }
 
-        public new bool Remove(string category)
+        public bool TryGetValue(string key, out FMTagsCollection value)
         {
-            List.Remove(category);
-            return base.Remove(category);
+            return _dict.TryGetValue(key, out value);
+        }
+
+        public bool ContainsKey(string key)
+        {
+            return _dict.ContainsKey(key);
+        }
+
+        public bool Remove(string category)
+        {
+            _list.Remove(category);
+            return _dict.Remove(category);
         }
 
         public bool RemoveAt(int index)
         {
-            string item = List[index];
-            return base.Remove(item);
+            string item = _list[index];
+            _list.RemoveAt(index);
+            return _dict.Remove(item);
         }
 
-        public new void Clear()
+        public void Clear()
         {
-            base.Clear();
-            List.Clear();
+            _dict.Clear();
+            _list.Clear();
         }
 
         public void DeepCopyTo(FMCategoriesCollection dest)
         {
             dest.Clear();
-            for (int i = 0; i < List.Count; i++)
+            for (int i = 0; i < _list.Count; i++)
             {
-                string category = List[i];
-                FMTagsCollection srcTags = base[category];
+                string category = _list[i];
+                FMTagsCollection srcTags = _dict[category];
                 var destTags = new FMTagsCollection(srcTags.Count);
                 for (int j = 0; j < srcTags.Count; j++)
                 {
@@ -99,28 +128,40 @@ namespace AngelLoader.DataClasses
 
         internal void SortAndMoveMiscToEnd()
         {
-            if (List.Count == 0) return;
+            if (_list.Count == 0) return;
 
-            List.Sort(StringComparer.OrdinalIgnoreCase);
+            _list.Sort(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var item in this)
+            foreach (var item in _dict)
             {
                 item.Value.SortCaseInsensitive();
             }
 
-            if (List[List.Count - 1] == "misc") return;
+            if (_list[_list.Count - 1] == "misc") return;
 
-            for (int i = 0; i < List.Count; i++)
+            for (int i = 0; i < _list.Count; i++)
             {
-                string item = List[i];
-                if (List[i] == "misc")
+                string item = _list[i];
+                if (_list[i] == "misc")
                 {
-                    List.Remove(item);
-                    List.Add(item);
+                    _list.Remove(item);
+                    _list.Add(item);
                     return;
                 }
             }
         }
+
+        public CatAndTagsList this[int index] => new CatAndTagsList(_list[index], _dict[_list[index]]);
+
+        public IEnumerator<CatAndTagsList> GetEnumerator()
+        {
+            foreach (string item in _list)
+            {
+                yield return new CatAndTagsList(item, _dict[item]);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     // We lock the preset tags in a private array inside a static class whose only public method is a deep-copier.

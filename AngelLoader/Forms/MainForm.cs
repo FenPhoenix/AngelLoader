@@ -2941,24 +2941,22 @@ namespace AngelLoader.Forms
             AddTagLLMenu.Menu.Items.Clear();
 
             var addTagMenuItems = new List<ToolStripItem>(GlobalTags.Count);
-            foreach (string category in GlobalTags.List)
+            foreach (CatAndTagsList item in GlobalTags)
             {
-                FMTagsCollection tags = GlobalTags[category];
-
-                if (tags.Count == 0)
+                if (item.Tags.Count == 0)
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(category + ":") { Tag = LazyLoaded.True };
+                    var catItem = new ToolStripMenuItemWithBackingText(item.Category + ":") { Tag = LazyLoaded.True };
                     catItem.Click += AddTagMenuEmptyItem_Click;
                     addTagMenuItems.Add(catItem);
                 }
                 else
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(category) { Tag = LazyLoaded.True };
+                    var catItem = new ToolStripMenuItemWithBackingText(item.Category) { Tag = LazyLoaded.True };
                     addTagMenuItems.Add(catItem);
 
                     var last = addTagMenuItems[addTagMenuItems.Count - 1];
 
-                    if (category != "misc")
+                    if (item.Category != "misc")
                     {
                         var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory) { Tag = LazyLoaded.True };
                         customItem.Click += AddTagMenuCustomItem_Click;
@@ -2966,11 +2964,11 @@ namespace AngelLoader.Forms
                         ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator { Tag = LazyLoaded.True });
                     }
 
-                    foreach (string tag in tags.List)
+                    foreach (string tag in item.Tags.List)
                     {
                         var tagItem = new ToolStripMenuItemWithBackingText(tag) { Tag = LazyLoaded.True };
 
-                        tagItem.Click += category == "misc"
+                        tagItem.Click += item.Category == "misc"
                             ? AddTagMenuMiscItem_Click
                             : AddTagMenuItem_Click;
 

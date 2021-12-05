@@ -90,35 +90,35 @@ namespace AngelLoader
             var list = new List<string>();
             foreach (var gCat in GlobalTags)
             {
-                if (gCat.Key.ContainsI(text.First))
+                if (gCat.Category.ContainsI(text.First))
                 {
-                    if (gCat.Value.Count == 0)
+                    if (gCat.Tags.Count == 0)
                     {
-                        if (gCat.Key != "misc") list.Add(gCat.Key + ":");
+                        if (gCat.Category != "misc") list.Add(gCat.Category + ":");
                     }
                     else
                     {
-                        foreach (var gTag in gCat.Value)
+                        foreach (var gTag in gCat.Tags)
                         {
                             if (!text.Second.IsWhiteSpace() && !gTag.ContainsI(text.Second)) continue;
-                            if (gCat.Key == "misc")
+                            if (gCat.Category == "misc")
                             {
-                                if (text.Second.IsWhiteSpace() && !gCat.Key.ContainsI(text.First))
+                                if (text.Second.IsWhiteSpace() && !gCat.Category.ContainsI(text.First))
                                 {
                                     list.Add(gTag);
                                 }
                             }
                             else
                             {
-                                list.Add(gCat.Key + ": " + gTag);
+                                list.Add(gCat.Category + ": " + gTag);
                             }
                         }
                     }
                 }
                 // if, not else if - we want to display found tags both categorized and uncategorized
-                if (gCat.Key == "misc")
+                if (gCat.Category == "misc")
                 {
-                    foreach (var gTag in gCat.Value)
+                    foreach (var gTag in gCat.Tags)
                     {
                         if (gTag.ContainsI(searchText)) list.Add(gTag);
                     }
@@ -140,15 +140,15 @@ namespace AngelLoader
             var intermediateList = new List<string>();
             foreach (var item in fm.Tags)
             {
-                if (item.Value.Count == 0)
+                if (item.Tags.Count == 0)
                 {
-                    intermediateList.Add(item.Key);
+                    intermediateList.Add(item.Category);
                 }
                 else
                 {
-                    foreach (string tag in item.Value)
+                    foreach (string tag in item.Tags)
                     {
-                        intermediateList.Add(item.Key + ":" + tag);
+                        intermediateList.Add(item.Category + ":" + tag);
                     }
                 }
             }

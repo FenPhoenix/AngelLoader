@@ -147,12 +147,8 @@ namespace AngelLoader.Forms
 
             tv.SuspendDrawing();
             tv.Nodes.Clear();
-            foreach (var catAndTags in tags)
-            {
-                tv.Nodes.Add(catAndTags.Key);
-                var last = tv.Nodes[tv.Nodes.Count - 1];
-                foreach (string tag in catAndTags.Value) last.Nodes.Add(tag);
-            }
+
+            ControlUtils.FillTreeViewFromTags_Sorted(tv, tags);
 
             tv.ExpandAll();
             tv.ResumeDrawing();

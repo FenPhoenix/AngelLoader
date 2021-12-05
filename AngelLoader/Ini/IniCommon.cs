@@ -401,14 +401,14 @@ namespace AngelLoader
             var intermediateTagsList = new List<string>();
             foreach (var catAndTags in tagsList)
             {
-                if (catAndTags.Value.Count == 0)
+                if (catAndTags.Tags.Count == 0)
                 {
-                    intermediateTagsList.Add(catAndTags.Key + ":");
+                    intermediateTagsList.Add(catAndTags.Category + ":");
                 }
                 else
                 {
-                    string catC = catAndTags.Key + ":";
-                    foreach (string tag in catAndTags.Value)
+                    string catC = catAndTags.Category + ":";
+                    foreach (string tag in catAndTags.Tags)
                     {
                         intermediateTagsList.Add(catC + tag);
                     }

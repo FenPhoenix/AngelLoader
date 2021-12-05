@@ -846,15 +846,15 @@ namespace AngelLoader
                         bool andPass = true;
                         foreach (var andTag in andTags)
                         {
-                            if (!fm.Tags.TryGetValue(andTag.Key, out FMTagsCollection match))
+                            if (!fm.Tags.TryGetValue(andTag.Category, out FMTagsCollection match))
                             {
                                 andPass = false;
                                 break;
                             }
 
-                            if (andTag.Value.Count > 0)
+                            if (andTag.Tags.Count > 0)
                             {
-                                foreach (string andTagTag in andTag.Value)
+                                foreach (string andTagTag in andTag.Tags)
                                 {
                                     if (!match.Contains(andTagTag))
                                     {
@@ -884,14 +884,14 @@ namespace AngelLoader
                         bool orPass = false;
                         foreach (var orTag in orTags)
                         {
-                            if (!fm.Tags.TryGetValue(orTag.Key, out FMTagsCollection match))
+                            if (!fm.Tags.TryGetValue(orTag.Category, out FMTagsCollection match))
                             {
                                 continue;
                             }
 
-                            if (orTag.Value.Count > 0)
+                            if (orTag.Tags.Count > 0)
                             {
-                                foreach (string orTagTag in orTag.Value)
+                                foreach (string orTagTag in orTag.Tags)
                                 {
                                     if (match.Contains(orTagTag))
                                     {
@@ -925,20 +925,20 @@ namespace AngelLoader
                         bool notPass = true;
                         foreach (var notTag in notTags)
                         {
-                            if (!fm.Tags.TryGetValue(notTag.Key, out FMTagsCollection match))
+                            if (!fm.Tags.TryGetValue(notTag.Category, out FMTagsCollection match))
                             {
                                 continue;
                             }
 
-                            if (notTag.Value.Count == 0)
+                            if (notTag.Tags.Count == 0)
                             {
                                 notPass = false;
                                 continue;
                             }
 
-                            if (notTag.Value.Count > 0)
+                            if (notTag.Tags.Count > 0)
                             {
-                                foreach (string notTagTag in notTag.Value)
+                                foreach (string notTagTag in notTag.Tags)
                                 {
                                     if (match.Contains(notTagTag))
                                     {
