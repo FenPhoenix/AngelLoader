@@ -2964,7 +2964,7 @@ namespace AngelLoader.Forms
                         ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator { Tag = LazyLoaded.True });
                     }
 
-                    foreach (string tag in item.Tags.List)
+                    foreach (string tag in item.Tags)
                     {
                         var tagItem = new ToolStripMenuItemWithBackingText(tag) { Tag = LazyLoaded.True };
 

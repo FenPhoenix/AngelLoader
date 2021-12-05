@@ -663,7 +663,7 @@ namespace AngelLoader.Forms
             foreach (CatAndTagsList item in categories)
             {
                 var last = new TreeNode(item.Category);
-                foreach (string tag in item.Tags.List) last.Nodes.Add(tag);
+                foreach (string tag in item.Tags) last.Nodes.Add(tag);
                 tv.Nodes.Add(last);
             }
         }

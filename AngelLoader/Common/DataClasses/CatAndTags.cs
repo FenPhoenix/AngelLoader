@@ -4,41 +4,67 @@ using System.Collections.Generic;
 
 namespace AngelLoader.DataClasses
 {
-    public sealed class FMTagsCollection : HashSet<string>
+    public sealed class FMTagsCollection : IEnumerable<string>
     {
-        public readonly List<string> List;
+        private readonly List<string> _list;
+        private readonly HashSet<string> _hashSet;
 
-        public FMTagsCollection() : base(StringComparer.OrdinalIgnoreCase)
+        public FMTagsCollection()
         {
-            List = new List<string>();
+            _list = new List<string>();
+            _hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public FMTagsCollection(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
+        public FMTagsCollection(int capacity)
         {
-            List = new List<string>(capacity);
+            _list = new List<string>(capacity);
+            _hashSet = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
         }
 
-        public new void Add(string tag)
+        public int Count => _list.Count;
+
+        public void Clear()
         {
-            if (base.Add(tag))
+            _hashSet.Clear();
+            _list.Clear();
+        }
+
+        public bool Contains(string item) => _hashSet.Contains(item);
+
+        public void Add(string tag)
+        {
+            if (_hashSet.Add(tag))
             {
-                List.Add(tag);
+                _list.Add(tag);
             }
         }
 
-        public new void Remove(string category)
+        public void Remove(string category)
         {
-            base.Remove(category);
-            List.Remove(category);
+            _hashSet.Remove(category);
+            _list.Remove(category);
         }
 
         public void RemoveAt(int index)
         {
-            string item = List[index];
-            base.Remove(item);
+            string item = _list[index];
+            _list.RemoveAt(index);
+            _hashSet.Remove(item);
         }
 
-        public void SortCaseInsensitive() => List.Sort(StringComparer.OrdinalIgnoreCase);
+        public string this[int index] => _list[index];
+
+        public void SortCaseInsensitive() => _list.Sort(StringComparer.OrdinalIgnoreCase);
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            foreach (string item in _list)
+            {
+                yield return item;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     public readonly struct CatAndTagsList
@@ -120,7 +146,7 @@ namespace AngelLoader.DataClasses
                 var destTags = new FMTagsCollection(srcTags.Count);
                 for (int j = 0; j < srcTags.Count; j++)
                 {
-                    destTags.Add(srcTags.List[j]);
+                    destTags.Add(srcTags[j]);
                 }
                 dest.Add(category, destTags);
             }
