@@ -271,17 +271,5 @@ namespace AngelLoader
 
             return new ZipArchive(File.OpenRead(fileName), ZipArchiveMode.Read, leaveOpen: false, enc);
         }
-
-        internal static void SetFontStyle(this Control control, FontStyle fontStyle)
-        {
-            Font f = control.Font;
-            control.Font = new Font(
-                f.FontFamily,
-                f.Size,
-                fontStyle,
-                f.Unit,
-                f.GdiCharSet,
-                f.GdiVerticalFont);
-        }
     }
 }

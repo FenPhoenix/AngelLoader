@@ -643,5 +643,31 @@ namespace AngelLoader.Forms
         }
 
         internal static Font GetMicrosoftSansSerifDefault() => new("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+
+        internal static void SetFontStyle(this Control control, FontStyle fontStyle)
+        {
+            Font f = control.Font;
+            control.Font = new Font(
+                f.FontFamily,
+                f.Size,
+                fontStyle,
+                f.Unit,
+                f.GdiCharSet,
+                f.GdiVerticalFont);
+        }
+
+        internal static void FillTreeViewFromTags_Sorted(TreeView tv, FMCategoriesCollection cats)
+        {
+            cats.SortAndMoveMiscToEnd();
+
+            foreach (string category in cats.List)
+            {
+                FMTagsCollection tags = cats[category];
+
+                var last = new TreeNode(category);
+                foreach (string tag in tags.List) last.Nodes.Add(tag);
+                tv.Nodes.Add(last);
+            }
+        }
     }
 }

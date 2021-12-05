@@ -2943,7 +2943,7 @@ namespace AngelLoader.Forms
             var addTagMenuItems = new List<ToolStripItem>(GlobalTags.Count);
             foreach (string category in GlobalTags.List)
             {
-                var tags = GlobalTags[category];
+                FMTagsCollection tags = GlobalTags[category];
 
                 if (tags.Count == 0)
                 {
@@ -2970,14 +2970,9 @@ namespace AngelLoader.Forms
                     {
                         var tagItem = new ToolStripMenuItemWithBackingText(tag) { Tag = LazyLoaded.True };
 
-                        if (category == "misc")
-                        {
-                            tagItem.Click += AddTagMenuMiscItem_Click;
-                        }
-                        else
-                        {
-                            tagItem.Click += AddTagMenuItem_Click;
-                        }
+                        tagItem.Click += category == "misc"
+                            ? AddTagMenuMiscItem_Click
+                            : AddTagMenuItem_Click;
 
                         ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(tagItem);
                     }
@@ -4856,19 +4851,7 @@ namespace AngelLoader.Forms
 
                 if (fmTags.Count == 0) return;
 
-                fmTags.SortAndMoveMiscToEnd();
-
-                foreach (string category in fmTags.List)
-                {
-                    FMTagsCollection tags = fmTags[category];
-
-                    var last = new TreeNode(category);
-                    tv.Nodes.Add(last);
-                    foreach (string tag in tags.List)
-                    {
-                        last.Nodes.Add(tag);
-                    }
-                }
+                ControlUtils.FillTreeViewFromTags_Sorted(tv, fmTags);
 
                 tv.ExpandAll();
             }

@@ -32,23 +32,19 @@ namespace AngelLoader.Forms
             Localize();
 
             var tv = OriginTreeView;
-
-            tv.BeginUpdate();
-            _sourceTags.SortAndMoveMiscToEnd();
-
-            foreach (string category in _sourceTags.List)
+            try
             {
-                var tags = _sourceTags[category];
+                tv.BeginUpdate();
 
-                var last = new TreeNode(category);
-                tv.Nodes.Add(last);
-                foreach (string tag in tags.List) last.Nodes.Add(tag);
+                ControlUtils.FillTreeViewFromTags_Sorted(tv, _sourceTags);
+
+                tv.ExpandAll();
+                tv.SelectedNode = tv.Nodes[0];
             }
-
-            tv.ExpandAll();
-            tv.SelectedNode = tv.Nodes[0];
-
-            tv.EndUpdate();
+            finally
+            {
+                tv.EndUpdate();
+            }
 
             if (TagsFilter.AndTags.Count > 0) FillTreeView(TagsFilter.AndTags);
             if (TagsFilter.OrTags.Count > 0) FillTreeView(TagsFilter.OrTags);
