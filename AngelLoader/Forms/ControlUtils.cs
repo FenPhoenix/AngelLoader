@@ -656,15 +656,15 @@ namespace AngelLoader.Forms
                 f.GdiVerticalFont);
         }
 
-        internal static void FillTreeViewFromTags_Sorted(TreeView tv, FMCategoriesCollection categories)
+        internal static void FillTreeViewFromTags_Sorted(TreeView treeView, FMCategoriesCollection categories)
         {
             categories.SortAndMoveMiscToEnd();
 
             foreach (CatAndTagsList item in categories)
             {
-                var last = new TreeNode(item.Category);
-                foreach (string tag in item.Tags) last.Nodes.Add(tag);
-                tv.Nodes.Add(last);
+                var categoryNode = new TreeNode(item.Category);
+                foreach (string tag in item.Tags) categoryNode.Nodes.Add(tag);
+                treeView.Nodes.Add(categoryNode);
             }
         }
     }
