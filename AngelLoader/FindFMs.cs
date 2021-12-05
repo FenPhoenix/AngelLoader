@@ -244,6 +244,7 @@ namespace AngelLoader
 
         #region Set names
 
+        // @BigO(FindFMs.SetArchiveNames())
         private static void SetArchiveNames(string[] fmArchives)
         {
             // Attempt to set archive names for newly found installed FMs (best effort search)
@@ -265,6 +266,9 @@ namespace AngelLoader
                     // Skip the expensive archive name search if we're marked as having no archive
                     if (!fm.NoArchive)
                     {
+                        // @BigO(FindFMs.SetArchiveNames()/GetArchiveNamesFromInstalledDir():
+                        // This one potentially does multiple searches through large lists for archive / inst /
+                        // inst-truncated / etc. and we're in a loop here already.
                         archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives);
                     }
                     if (archiveName.IsEmpty()) continue;
@@ -295,6 +299,7 @@ namespace AngelLoader
             }
         }
 
+        // @BigO(FindFMs.SetInstalledNames())
         private static void SetInstalledNames()
         {
             // Fill in empty installed dir names, making sure to check for and handle truncated name collisions
@@ -335,6 +340,7 @@ namespace AngelLoader
 
         #region Merge
 
+        // @BigO(FindFMs.MergeNewArchiveFMs())
         private static void MergeNewArchiveFMs(string[] fmArchives, DateTime[] dateTimes)
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
@@ -409,6 +415,7 @@ namespace AngelLoader
 
         // This takes an explicit initCount because we call this once per game, and we don't want to grow our
         // initCount with every call (we can keep it the initial size and still have this work, so it's faster)
+        // @BigO(FindFMs.MergeNewInstalledFMs())
         private static void MergeNewInstalledFMs(List<FanMission> installedList, List<DateTime> dateTimes, int initCount)
         {
             bool[] checkedArray = new bool[initCount];
