@@ -10,8 +10,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : DarkFormBase
     {
-        private readonly FMCategoriesCollection _sourceTags;
-
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
         internal FilterTagsForm(FMCategoriesCollection sourceTags, TagsFilter tagsFilter)
@@ -22,9 +20,6 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
-            _sourceTags = new FMCategoriesCollection(sourceTags.Count);
-
-            sourceTags.DeepCopyTo(_sourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);
 
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
@@ -36,7 +31,7 @@ namespace AngelLoader.Forms
             {
                 tv.BeginUpdate();
 
-                ControlUtils.FillTreeViewFromTags_Sorted(tv, _sourceTags);
+                ControlUtils.FillTreeViewFromTags_Sorted(tv, sourceTags);
 
                 tv.ExpandAll();
                 tv.SelectedNode = tv.Nodes[0];
