@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using static AL_Common.Common;
 
 namespace AngelLoader.DataClasses
 {
     public sealed class FMTagsCollection : IEnumerable<string>
     {
         private readonly List<string> _list;
-        private readonly HashSet<string> _hashSet;
+        private readonly HashSetI _hashSet;
 
         public FMTagsCollection()
         {
             _list = new List<string>();
-            _hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            _hashSet = new HashSetI();
         }
 
         public FMTagsCollection(int capacity)
         {
             _list = new List<string>(capacity);
-            _hashSet = new HashSet<string>(capacity, StringComparer.OrdinalIgnoreCase);
+            _hashSet = new HashSetI(capacity);
         }
 
         public int Count => _list.Count;
@@ -81,19 +82,19 @@ namespace AngelLoader.DataClasses
 
     public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
     {
-        private readonly Dictionary<string, FMTagsCollection> _dict;
+        private readonly DictionaryI<FMTagsCollection> _dict;
         private readonly List<string> _list;
 
         public FMCategoriesCollection()
         {
             _list = new List<string>();
-            _dict = new Dictionary<string, FMTagsCollection>(StringComparer.OrdinalIgnoreCase);
+            _dict = new DictionaryI<FMTagsCollection>();
         }
 
         public FMCategoriesCollection(int capacity)
         {
             _list = new List<string>(capacity);
-            _dict = new Dictionary<string, FMTagsCollection>(capacity, StringComparer.OrdinalIgnoreCase);
+            _dict = new DictionaryI<FMTagsCollection>(capacity);
         }
 
         public int Count => _list.Count;

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using AngelLoader.WinAPI;
+using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -130,7 +130,7 @@ namespace AngelLoader
 
             #region Get archives from disk
 
-            var fmArchivesAndDatesDict = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+            var fmArchivesAndDatesDict = new DictionaryI<DateTime>();
 
             var archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
@@ -571,7 +571,7 @@ namespace AngelLoader
             List<List<string>> perGameInstalledFMDirsList,
             List<int> fmsViewListUnscanned)
         {
-            var fmArchivesDict = new Dictionary<string, bool>(fmArchives.Length, StringComparer.OrdinalIgnoreCase);
+            var fmArchivesDict = new DictionaryI<bool>(fmArchives.Length);
             for (int i = 0; i < fmArchives.Length; i++)
             {
                 fmArchivesDict.Add(fmArchives[i], false);

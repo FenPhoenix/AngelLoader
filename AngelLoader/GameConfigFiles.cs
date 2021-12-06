@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
+using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -1045,13 +1045,13 @@ namespace AngelLoader
             {
                 return lastIndex > -1
                     ? lines[lastIndex].Substring(pathKey.Length).Trim()
-                        .Split(Common.CA_Plus, StringSplitOptions.RemoveEmptyEntries)
+                        .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
                         .Distinct(StringComparer.OrdinalIgnoreCase).ToList()
                     : new List<string>();
             }
 
             // Keeps the item in the hash set and removes it from the list if there are duplicates
-            static void DeDupe(HashSet<string> hashSet, List<string> list)
+            static void DeDupe(HashSetI hashSet, List<string> list)
             {
                 for (int i = 0; i < list.Count; i++)
                 {
@@ -1068,8 +1068,8 @@ namespace AngelLoader
             var mpModPaths = GetModPaths(lines, mpModPathLastIndex, mp_mod_path);
             var mpUberModPaths = GetModPaths(lines, mpUberModPathLastIndex, mp_u_mod_path);
 
-            var modPathsHash = modPaths.ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var uberModPathsHash = uberModPaths.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var modPathsHash = modPaths.ToHashSetI();
+            var uberModPathsHash = uberModPaths.ToHashSetI();
 
             DeDupe(uberModPathsHash, mpUberModPaths);
             DeDupe(uberModPathsHash, modPaths);

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
 using SevenZip;
+using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -36,10 +35,9 @@ namespace AngelLoader
             "spanish"     // es
         };
 
-        // IMPORTANT: This must be instantiated with the StringComparer.OrdinalIgnoreCase comparer. Don't remove.
-        private static Dictionary<string, string>? _langCodes;
-        internal static Dictionary<string, string>
-        LangCodes => _langCodes ??= new Dictionary<string, string>(11, StringComparer.OrdinalIgnoreCase)
+        private static DictionaryI<string>? _langCodes;
+        internal static DictionaryI<string>
+        LangCodes => _langCodes ??= new DictionaryI<string>(11)
         {
             { "english", "en" },
             { "czech", "cz" },
@@ -54,10 +52,9 @@ namespace AngelLoader
             { "spanish", "es" }
         };
 
-        // IMPORTANT: This must be instantiated with the StringComparer.OrdinalIgnoreCase comparer. Don't remove.
-        private static Dictionary<string, string>? _altLangCodes;
-        internal static Dictionary<string, string>
-        AltLangCodes => _altLangCodes ??= new Dictionary<string, string>(2, StringComparer.OrdinalIgnoreCase)
+        private static DictionaryI<string>? _altLangCodes;
+        internal static DictionaryI<string>
+        AltLangCodes => _altLangCodes ??= new DictionaryI<string>(2)
         {
             { "en", "eng" },
             { "ja", "jp" }
@@ -65,9 +62,8 @@ namespace AngelLoader
 
         // For manual selection of language for playing an FM
         // Immediate use, so don't bother lazy-loading
-        // IMPORTANT: This must be instantiated with the StringComparer.OrdinalIgnoreCase comparer. Don't remove.
-        internal static readonly Dictionary<string, string>
-        Translated = new Dictionary<string, string>(11, StringComparer.OrdinalIgnoreCase)
+        internal static readonly DictionaryI<string>
+        Translated = new DictionaryI<string>(11)
         {
             { "english", "English" },
             { "czech", "Čeština" },
@@ -90,7 +86,7 @@ namespace AngelLoader
         {
             var ret = new List<string>();
 
-            var langsHash = langs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var langsHash = langs.ToHashSetI();
 
             // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
             // (matching FMSel behavior)

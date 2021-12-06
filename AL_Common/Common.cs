@@ -41,6 +41,32 @@ namespace AL_Common
             }
         }
 
+        /// <summary>
+        /// HashSet&lt;<see langword="string"/>&gt; that uses <see cref="StringComparer.OrdinalIgnoreCase"/> for equality comparison.
+        /// </summary>
+        public class HashSetI : HashSet<string>
+        {
+            public HashSetI() : base(StringComparer.OrdinalIgnoreCase) { }
+
+            public HashSetI(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase) { }
+
+            public HashSetI(IEnumerable<string> collection) : base(collection, StringComparer.OrdinalIgnoreCase) { }
+        }
+
+        /// <summary>
+        /// Dictionary&lt;<see langword="string"/>, TValue&gt; that uses <see cref="StringComparer.OrdinalIgnoreCase"/> for equality comparison.
+        /// Since the key type will always be <see langword="string"/>, only the value type is specifiable.
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        public class DictionaryI<TValue> : Dictionary<string, TValue>
+        {
+            public DictionaryI() : base(StringComparer.OrdinalIgnoreCase) { }
+
+            public DictionaryI(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase) { }
+
+            public DictionaryI(IDictionary<string, TValue> collection) : base(collection, StringComparer.OrdinalIgnoreCase) { }
+        }
+
         #region Preset char arrays
 
         public static readonly byte[] RTFHeaderBytes =
@@ -716,6 +742,8 @@ namespace AL_Common
 
         #endregion
 
+        #region Dispose and clear
+
         public static void DisposeAndClear<T>(this T[] array) where T : IDisposable?
         {
             for (int i = 0; i < array.Length; i++) array[i]?.Dispose();
@@ -725,6 +753,10 @@ namespace AL_Common
         {
             for (int i = start; i < end; i++) array[i]?.Dispose();
         }
+
+        #endregion
+
+        public static HashSetI ToHashSetI(this IEnumerable<string> source) => new HashSetI(source);
 
         #endregion
 

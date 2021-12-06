@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using AL_Common;
+using static AL_Common.Common;
 
 namespace FMScanner
 {
@@ -94,7 +94,7 @@ namespace FMScanner
         private readonly string[] FMFiles_TitlesStrLocations = new string[24];
 
         // Used for SS2 fingerprinting for the game type scan fallback
-        private readonly HashSet<string> FMFiles_SS2MisFiles;
+        private readonly HashSetI FMFiles_SS2MisFiles;
 
         #endregion
 
@@ -209,7 +209,7 @@ namespace FMScanner
 
         private readonly string[] Languages_FS_Lang_FS;
         private readonly string[] Languages_FS_Lang_Language_FS;
-        private readonly Dictionary<string, string> LanguagesC;
+        private readonly DictionaryI<string> LanguagesC;
 
         #endregion
 

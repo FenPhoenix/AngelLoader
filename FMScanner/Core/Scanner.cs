@@ -205,10 +205,10 @@ namespace FMScanner
             int langsCount = Languages.Length;
             Languages_FS_Lang_FS = new string[langsCount];
             Languages_FS_Lang_Language_FS = new string[langsCount];
-            LanguagesC = new Dictionary<string, string>(langsCount);
+            LanguagesC = new DictionaryI<string>(langsCount);
             EnglishOnly = new List<string> { Languages[0] };
 
-            FMFiles_SS2MisFiles = new HashSet<string>(23, StringComparer.OrdinalIgnoreCase);
+            FMFiles_SS2MisFiles = new HashSetI(23);
 
             #region FMFiles_TitlesStrLocations
 
@@ -3657,7 +3657,7 @@ namespace FMScanner
             // can still at least have an accurate detection while I work on a new version that takes the new
             // MAPPARAM location into account.
 
-            static bool SS2MisFilesPresent(List<NameAndIndex> misFiles, HashSet<string> ss2MisFiles)
+            static bool SS2MisFilesPresent(List<NameAndIndex> misFiles, HashSetI ss2MisFiles)
             {
                 for (int mfI = 0; mfI < misFiles.Count; mfI++)
                 {

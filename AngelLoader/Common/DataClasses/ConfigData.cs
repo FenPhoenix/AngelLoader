@@ -297,7 +297,7 @@ namespace AngelLoader.DataClasses
         internal string Language = "English";
 
         // Session-only; don't write out
-        internal readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>();
+        internal readonly DictionaryI<string> LanguageNames = new DictionaryI<string>();
 
         #endregion
 

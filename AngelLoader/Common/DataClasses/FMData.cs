@@ -2,10 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using AL_Common;
+using static AL_Common.Common;
 using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
-using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses
 {
@@ -59,7 +58,7 @@ namespace AngelLoader.DataClasses
         internal string SelectedReadme { get => _selectedReadme; set => _selectedReadme = value.ToBackSlashes(); }
 
         [FenGenIgnore]
-        internal readonly Dictionary<string, int> ReadmeCodePages = new Dictionary<string, int>();
+        internal readonly DictionaryI<int> ReadmeCodePages = new DictionaryI<int>();
         [FenGenIniName("ReadmeEncoding")]
         [FenGenListType("MultipleLines")]
         internal readonly List<string> ReadmeAndCodePageEntries = new List<string>();

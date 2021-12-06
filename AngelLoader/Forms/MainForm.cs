@@ -3041,7 +3041,7 @@ namespace AngelLoader.Forms
                 dmlFiles.AddRange(d.FileNames);
             }
 
-            var itemsHashSet = PatchDMLsListBox.ItemsAsStrings.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var itemsHashSet = PatchDMLsListBox.ItemsAsStrings.ToHashSetI();
 
             PatchDMLsListBox.BeginUpdate();
             foreach (string f in dmlFiles)
@@ -3095,7 +3095,7 @@ namespace AngelLoader.Forms
 
             string[] disabledMods = FMsDGV.GetSelectedFM().DisabledMods.Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries);
 
-            var modNames = new Dictionary<string, int>(ModsCheckList.CheckItems.Length, StringComparer.OrdinalIgnoreCase);
+            var modNames = new DictionaryI<int>(ModsCheckList.CheckItems.Length);
 
             for (int i = 0; i < ModsCheckList.CheckItems.Length; i++)
             {
@@ -4521,7 +4521,7 @@ namespace AngelLoader.Forms
                         {
                             var disabledModsList = fm.DisabledMods
                                 .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
-                                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                                .ToHashSetI();
 
                             bool allDisabled = fm.DisableAllMods;
 

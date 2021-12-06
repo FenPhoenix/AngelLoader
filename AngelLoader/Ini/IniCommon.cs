@@ -27,7 +27,7 @@ namespace AngelLoader
 
         // This kinda belongs in LanguageIni.cs, but it's separated to prevent it from being removed when that
         // file is re-generated. I could make it so it doesn't get removed, but meh.
-        internal static void AddLanguageFromFile(string file, Dictionary<string, string> langDict)
+        internal static void AddLanguageFromFile(string file, DictionaryI<string> langDict)
         {
             StreamReader? sr = null;
             try
