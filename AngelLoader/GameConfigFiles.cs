@@ -1068,8 +1068,8 @@ namespace AngelLoader
             var mpModPaths = GetModPaths(lines, mpModPathLastIndex, mp_mod_path);
             var mpUberModPaths = GetModPaths(lines, mpUberModPathLastIndex, mp_u_mod_path);
 
-            var modPathsHash = modPaths.ToHashSet();
-            var uberModPathsHash = uberModPaths.ToHashSet();
+            var modPathsHash = modPaths.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var uberModPathsHash = uberModPaths.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             DeDupe(uberModPathsHash, mpUberModPaths);
             DeDupe(uberModPathsHash, modPaths);
