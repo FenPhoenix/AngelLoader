@@ -768,7 +768,7 @@ namespace FMScanner
             // titles in that case, but we shouldn't actually set the title in the return object because the
             // caller didn't request it.
             bool scanTitleForAuthorPurposesOnly = false;
-            if (_scanOptions.ScanAuthor && !_scanOptions.ScanTitle)
+            if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !_scanOptions.ScanTitle)
             {
                 _scanOptions.ScanTitle = true;
                 scanTitleForAuthorPurposesOnly = true;
@@ -906,10 +906,9 @@ namespace FMScanner
                 // If we're Thief 3, we just skip figuring this out - I don't know how to detect if a T3 mission
                 // is a campaign, and I'm not even sure any T3 campaigns have been released (not counting ones
                 // that are just a series of separate FMs, of course).
-                // TODO: @SS2: Force SS2 to single mission for now
-                // Until I can figure out how to detect which .mis files are used without there being an actual
-                // list...
-                fmData.Type = fmIsSS2 || usedMisFiles.Count <= 1 ? FMType.FanMission : FMType.Campaign;
+                // SS2 doesn't have any text files that specify which missions are "used" or not, so let's just
+                // simply use the raw .mis count (which for SS2 will be the same as the used .mis count)
+                fmData.Type = usedMisFiles.Count <= 1 ? FMType.FanMission : FMType.Campaign;
 
                 #region Check info files
 
@@ -926,7 +925,10 @@ namespace FMScanner
                         {
                             var (title, author, version, releaseDate) = ReadFMInfoXml(f);
                             if (_scanOptions.ScanTitle) SetOrAddTitle(title);
-                            if (_scanOptions.ScanAuthor) fmData.Author = author;
+                            if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
+                            {
+                                fmData.Author = author;
+                            }
 #if FMScanner_FullCode
                             if (_scanOptions.ScanVersion) fmData.Version = version;
 #endif
@@ -945,7 +947,10 @@ namespace FMScanner
                         {
                             var (title, author, description, lastUpdateDate, tags) = ReadFMIni(f);
                             if (_scanOptions.ScanTitle) SetOrAddTitle(title);
-                            if (_scanOptions.ScanAuthor && !author.IsEmpty()) fmData.Author = author;
+                            if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
+                            {
+                                fmData.Author = author;
+                            }
 #if FMScanner_FullCode
                             if (_scanOptions.ScanDescription) fmData.Description = description;
 #endif
@@ -955,7 +960,7 @@ namespace FMScanner
                         }
                     }
                 }
-                if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor)
+                if (_scanOptions.ScanTitle || _scanOptions.ScanTags || _scanOptions.ScanAuthor)
                 {
                     // SS2 file
                     // TODO: If we wanted to be sticklers, we could skip this for non-SS2 FMs
@@ -966,7 +971,10 @@ namespace FMScanner
                         {
                             var (title, author) = ReadModIni(f);
                             if (_scanOptions.ScanTitle) SetOrAddTitle(title);
-                            if (_scanOptions.ScanAuthor && !author.IsEmpty()) fmData.Author = author;
+                            if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
+                            {
+                                fmData.Author = author;
+                            }
                             break;
                         }
                     }
@@ -1132,9 +1140,11 @@ namespace FMScanner
                 {
                     int ai = fmData.Author.IndexOf(' ');
                     if (ai == -1) ai = fmData.Author.IndexOf('-');
-                    if (ai == -1) ai = fmData.Author.Length - 1;
+                    if (ai == -1) ai = fmData.Author.Length;
                     string anonAuthor = fmData.Author.Substring(0, ai);
-                    if (anonAuthor.EqualsI("Anon") || anonAuthor.EqualsI("Withheld") ||
+                    if (anonAuthor.EqualsI("Anon") ||
+                        anonAuthor.EqualsI("Withheld") ||
+                        anonAuthor.EqualsI("Unknown") ||
                         anonAuthor.SimilarityTo("Anonymous", OrdinalIgnoreCase) > 0.75)
                     {
                         SetMiscTag(fmData, "unknown author");
@@ -1886,7 +1896,7 @@ namespace FMScanner
                 if (xTitle.Count > 0) title = xTitle[0]?.InnerText ?? "";
             }
 
-            if (_scanOptions.ScanAuthor)
+            if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
             {
                 var xAuthor = fmInfoXml.GetElementsByTagName("author");
                 if (xAuthor.Count > 0) author = xAuthor[0]?.InnerText ?? "";
@@ -2031,7 +2041,7 @@ namespace FMScanner
 
             #region Get author from tags
 
-            if (_scanOptions.ScanAuthor && !fmIni.Tags.IsEmpty())
+            if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !fmIni.Tags.IsEmpty())
             {
                 string[] tagsArray = fmIni.Tags.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
 
