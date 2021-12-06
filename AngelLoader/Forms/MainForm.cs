@@ -2214,9 +2214,6 @@ namespace AngelLoader.Forms
 
                 // Don't keep selection for title/author, cause you want to end up on the FM you typed as soon as
                 // possible
-                // @vNext: By not keeping selection, we land on index 0 always, but that might be a pinned FM.
-                // But if we tell it to land on the first one past the pinned set, what if our mission is _in_
-                // the pinned set? Should we land on it then?
                 bool keepSel = sender != FilterShowRecentAtTopButton && !senderIsTextBox;
                 await SortAndSetFilter(
                     keepSelection: keepSel,
@@ -3031,6 +3028,7 @@ namespace AngelLoader.Forms
             lb.RemoveAndSelectNearest();
         }
 
+        // @VBL
         private void PatchAddDMLButton_Click(object sender, EventArgs e)
         {
             var dmlFiles = new List<string>();
@@ -3042,6 +3040,9 @@ namespace AngelLoader.Forms
                 if (d.ShowDialogDark() != DialogResult.OK || d.FileNames.Length == 0) return;
                 dmlFiles.AddRange(d.FileNames);
             }
+
+            var itemsHashSet = PatchDMLsListBox.ItemsAsStrings.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
             PatchDMLsListBox.BeginUpdate();
             foreach (string f in dmlFiles)
             {
@@ -3051,7 +3052,7 @@ namespace AngelLoader.Forms
                 if (!success) return;
 
                 string dmlFileName = Path.GetFileName(f);
-                if (!PatchDMLsListBox.ItemsAsStrings.ContainsI(dmlFileName))
+                if (!itemsHashSet.Contains(dmlFileName))
                 {
                     PatchDMLsListBox.Items.Add(dmlFileName);
                 }
@@ -3085,6 +3086,7 @@ namespace AngelLoader.Forms
             ModsDisabledModsTextBoxCommit();
         }
 
+        // @VBL
         private void ModsDisabledModsTextBoxCommit()
         {
             if (EventsDisabled) return;
