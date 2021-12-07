@@ -1374,6 +1374,69 @@ namespace AngelLoader
             return safeReadme;
         }
 
+        internal static void LoadReadme(FanMission fm)
+        {
+            try
+            {
+                (string path, ReadmeType fileType) = Core.GetReadmeFileAndType(fm);
+                #region Debug
+
+                // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
+                // due to performance concerns.
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+                View.SetDebug1Text(int.TryParse(View.GetDebug1Text(), out int result) ? (result + 1).ToString() : "1");
+#endif
+
+                #endregion
+
+                if (fileType == ReadmeType.HTML)
+                {
+                    View.SetReadmeState(ReadmeState.HTML);
+                }
+                else
+                {
+                    bool isRealPlainText = fileType == ReadmeType.PlainText && !path.ExtIsWri();
+                    View.SetReadmeState(isRealPlainText ? ReadmeState.PlainText : ReadmeState.OtherSupported);
+
+                    Encoding? encoding = null;
+                    if (isRealPlainText &&
+                        fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
+                    {
+                        try
+                        {
+                            encoding = Encoding.GetEncoding(codePage);
+                        }
+                        catch
+                        {
+                            encoding = null;
+                        }
+                    }
+
+                    Encoding? newEncoding = View.LoadReadmeContent(path, fileType, encoding);
+
+                    Encoding? finalEncoding = newEncoding ?? encoding;
+
+                    // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
+                    // every time until the user explicitly requests something different.
+                    if (isRealPlainText && newEncoding?.CodePage > 0)
+                    {
+                        UpdateFMReadmeCodePages(fm, newEncoding.CodePage);
+                    }
+
+                    if (isRealPlainText && finalEncoding != null)
+                    {
+                        View.SetSelectedEncoding(finalEncoding);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Readme load failed.", ex);
+                View.SetReadmeState(ReadmeState.LoadError);
+                View.SetReadmeText(LText.ReadmeArea.UnableToLoadReadme);
+            }
+        }
+
         #endregion
 
         #region Open / run

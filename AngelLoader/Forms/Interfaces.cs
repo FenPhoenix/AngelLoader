@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -197,6 +198,18 @@ namespace AngelLoader.Forms
         void RefreshSelectedFM(bool rowOnly = false);
 
         void RefreshFMsListKeepSelection();
+
+        #endregion
+
+        #region Readme
+
+        void SetReadmeState(ReadmeState state);
+
+        Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding);
+
+        void SetReadmeText(string text);
+
+        void SetSelectedEncoding(Encoding encoding);
 
         #endregion
 

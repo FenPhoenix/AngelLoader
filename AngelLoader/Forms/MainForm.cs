@@ -3929,7 +3929,7 @@ namespace AngelLoader.Forms
                 ChooseReadmeComboBox.Hide();
             }
 
-            LoadReadme(fm);
+            Core.LoadReadme(fm);
         }
 
         private void ChooseReadmeComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -3938,7 +3938,7 @@ namespace AngelLoader.Forms
 
             var fm = FMsDGV.GetSelectedFM();
             fm.SelectedReadme = ChooseReadmeComboBox.SelectedBackingItem();
-            LoadReadme(fm);
+            Core.LoadReadme(fm);
         }
 
         private void ChooseReadmeComboBox_DropDownClosed(object sender, EventArgs e)
@@ -4672,7 +4672,7 @@ namespace AngelLoader.Forms
 
             ChooseReadmeLLPanel.ShowPanel(false);
 
-            LoadReadme(fm);
+            Core.LoadReadme(fm);
 
             #endregion
         }
@@ -4740,78 +4740,41 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void LoadReadme(FanMission fm)
+        public void SetReadmeState(ReadmeState state)
         {
-            try
+            switch (state)
             {
-                (string path, ReadmeType fileType) = Core.GetReadmeFileAndType(fm);
-                #region Debug
-
-                // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
-                // due to performance concerns.
-#if DEBUG || (Release_Testing && !RT_StartupOnly)
-                DebugLabel.Text = int.TryParse(DebugLabel.Text, out int result) ? (result + 1).ToString() : "1";
-#endif
-
-                #endregion
-
-                if (fileType == ReadmeType.HTML)
-                {
+                case ReadmeState.HTML:
                     ViewHTMLReadmeLLButton.Show(this);
                     SetReadmeVisible(false);
                     ReadmeEncodingButton.Enabled = false;
                     // In case the cursor is over the scroll bar area
                     if (CursorOverReadmeArea()) ShowReadmeControls(true);
-                }
-                else
-                {
+                    break;
+                case ReadmeState.PlainText:
+                case ReadmeState.OtherSupported:
                     SetReadmeVisible(true);
                     ViewHTMLReadmeLLButton.Hide();
-
-                    bool isRealPlainText = fileType == ReadmeType.PlainText && !path.ExtIsWri();
-
-                    ReadmeEncodingButton.Enabled = isRealPlainText;
-
-                    Encoding? encoding = null;
-                    if (isRealPlainText &&
-                        fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
-                    {
-                        try
-                        {
-                            encoding = Encoding.GetEncoding(codePage);
-                        }
-                        catch
-                        {
-                            encoding = null;
-                        }
-                    }
-
-                    Encoding? newEncoding = ReadmeRichTextBox.LoadContent(path, fileType, encoding);
-
-                    Encoding? finalEncoding = newEncoding ?? encoding;
-
-                    // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
-                    // every time until the user explicitly requests something different.
-                    if (isRealPlainText && newEncoding?.CodePage > 0)
-                    {
-                        Core.UpdateFMReadmeCodePages(fm, newEncoding.CodePage);
-                    }
-
-                    if (isRealPlainText && finalEncoding != null)
-                    {
-                        EncodingsLLMenu.SetEncodingMenuItemChecked(finalEncoding);
-                    }
-                }
+                    ReadmeEncodingButton.Enabled = state == ReadmeState.PlainText;
+                    break;
+                case ReadmeState.LoadError:
+                    ViewHTMLReadmeLLButton.Hide();
+                    SetReadmeVisible(true);
+                    ReadmeEncodingButton.Enabled = false;
+                    break;
             }
-            catch (Exception ex)
-            {
-                Log("Readme load failed.", ex);
+        }
 
-                ViewHTMLReadmeLLButton.Hide();
-                SetReadmeVisible(true);
-                ReadmeEncodingButton.Enabled = false;
-                ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
-            }
+        public Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding)
+        {
+            return ReadmeRichTextBox.LoadContent(path, fileType, encoding);
+        }
+
+        public void SetReadmeText(string text) => ReadmeRichTextBox.SetText(text);
+
+        public void SetSelectedEncoding(Encoding encoding)
+        {
+            EncodingsLLMenu.SetEncodingMenuItemChecked(encoding);
         }
 
         private void FillAltTitlesMenu(List<string> fmAltTitles)

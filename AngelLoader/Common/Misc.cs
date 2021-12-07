@@ -46,7 +46,9 @@ namespace AngelLoader
 
         public enum Direction { Left, Right, Up, Down }
 
-        internal enum ReadmeType { PlainText, RichText, HTML, GLML }
+        public enum ReadmeType { PlainText, RichText, HTML, GLML }
+
+        public enum ReadmeState { HTML, PlainText, OtherSupported, LoadError }
 
         internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }
 
