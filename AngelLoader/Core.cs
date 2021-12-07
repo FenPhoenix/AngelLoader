@@ -1727,6 +1727,28 @@ namespace AngelLoader
             }
         }
 
+        internal static async Task ScanAllFMs()
+        {
+            if (FMsViewList.Count == 0) return;
+
+            FMScanner.ScanOptions? scanOptions = null;
+            bool noneSelected;
+            using (var f = new ScanAllFMsForm())
+            {
+                if (f.ShowDialogDark() != DialogResult.OK) return;
+                noneSelected = f.NoneSelected;
+                if (!noneSelected) scanOptions = f.ScanOptions;
+            }
+
+            if (noneSelected)
+            {
+                Dialogs.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
+                return;
+            }
+
+            if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await View.SortAndSetFilter(forceDisplayFM: true);
+        }
+
         #region Shutdown
 
         internal static void UpdateConfig(

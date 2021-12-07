@@ -55,7 +55,6 @@ using AngelLoader.WinAPI;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
-using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -1708,27 +1707,7 @@ namespace AngelLoader.Forms
 
         private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
 
-        internal async void ScanAllFMsMenuItem_Click(object sender, EventArgs e)
-        {
-            if (FMsViewList.Count == 0) return;
-
-            FMScanner.ScanOptions? scanOptions = null;
-            bool noneSelected;
-            using (var f = new ScanAllFMsForm())
-            {
-                if (f.ShowDialogDark() != DialogResult.OK) return;
-                noneSelected = f.NoneSelected;
-                if (!noneSelected) scanOptions = f.ScanOptions;
-            }
-
-            if (noneSelected)
-            {
-                Dialogs.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
-                return;
-            }
-
-            if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await SortAndSetFilter(forceDisplayFM: true);
-        }
+        internal async void ScanAllFMsMenuItem_Click(object sender, EventArgs e) => await Core.ScanAllFMs();
 
         #endregion
 
@@ -2921,6 +2900,7 @@ namespace AngelLoader.Forms
             FMTags.AddTagOperation(FMsDGV.GetSelectedFM(), AddTagTextBox.Text);
         }
 
+        // @VBL (AddTagFromListButton_Click - lots of menu items and event hookups)
         private void AddTagFromListButton_Click(object sender, EventArgs e)
         {
             GlobalTags.SortAndMoveMiscToEnd();
@@ -3354,6 +3334,7 @@ namespace AngelLoader.Forms
             }
         }
 
+        // @VBL
         internal async Task PinOrUnpinFM()
         {
             if (!FMsDGV.RowSelected()) return;
@@ -4101,6 +4082,7 @@ namespace AngelLoader.Forms
 
         #region Right side
 
+        // @VBL
         internal async void Settings_Click(object sender, EventArgs e)
         {
             var ret = Core.OpenSettings();
@@ -4548,6 +4530,7 @@ namespace AngelLoader.Forms
             DisplayFMTags(fm.Tags);
         }
 
+        // @VBL
         private async Task DisplaySelectedFM(bool refreshCache = false, ISplashScreen_Safe? splashScreen = null)
         {
             FanMission fm = FMsDGV.GetSelectedFM();
@@ -4649,6 +4632,7 @@ namespace AngelLoader.Forms
             #endregion
         }
 
+        // @VBL
         private void ScanAndFillLanguagesBox(FanMission fm, bool forceScan = false, bool disableEvents = true)
         {
             using (disableEvents ? new DisableEvents(this) : null)
