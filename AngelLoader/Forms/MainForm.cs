@@ -2878,31 +2878,26 @@ namespace AngelLoader.Forms
             if (tb.Text.Length > 0) tb.SelectionStart = tb.Text.Length;
         }
 
+        public bool FMSelected() => FMsDGV.RowSelected();
+
+        public FanMission? GetSelectedFM() => FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
+
+        public (string Category, string Tag)
+        SelectedCategoryAndTag()
+        {
+            TreeNode selNode = TagsTreeView.SelectedNode;
+            TreeNode parent;
+
+            return selNode == null
+                ? ("", "")
+                : (parent = selNode.Parent) == null
+                ? (selNode.Text, "")
+                : (parent.Text, selNode.Text);
+        }
+
         private void RemoveTagButton_Click(object sender, EventArgs e)
         {
-            if (!FMsDGV.RowSelected() || TagsTreeView.SelectedNode == null) return;
-
-            var fm = FMsDGV.GetSelectedFM();
-
-            string catText, tagText;
-            bool isCategory;
-            if (TagsTreeView.SelectedNode.Parent != null)
-            {
-                isCategory = false;
-                catText = TagsTreeView.SelectedNode.Parent.Text;
-                tagText = TagsTreeView.SelectedNode.Text;
-            }
-            else
-            {
-                isCategory = true;
-                catText = TagsTreeView.SelectedNode.Text;
-                tagText = "";
-            }
-
-            bool success = FMTags.RemoveTagFromFM(fm, catText, tagText, isCategory);
-            if (!success) return;
-
-            DisplayFMTags(fm.Tags);
+            FMTags.RemoveTagOperation();
         }
 
         internal void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
@@ -4784,7 +4779,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void DisplayFMTags(FMCategoriesCollection fmTags)
+        public void DisplayFMTags(FMCategoriesCollection fmTags)
         {
             var tv = TagsTreeView;
 

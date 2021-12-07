@@ -27,7 +27,23 @@ namespace AngelLoader
             }
         }
 
-        internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
+        internal static void RemoveTagOperation()
+        {
+            var fm = Core.View.GetSelectedFM();
+            if (fm == null) return;
+
+            (string catText, string tagText) = Core.View.SelectedCategoryAndTag();
+            if (catText.IsEmpty() && tagText.IsEmpty()) return;
+
+            bool isCategory = tagText.IsEmpty();
+            bool success = RemoveTagFromFM(fm, catText, tagText, isCategory);
+            if (success)
+            {
+                Core.View.DisplayFMTags(fm.Tags);
+            }
+        }
+
+        private static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
         {
             if ((isCategory && catText.IsWhiteSpace()) || (!isCategory && tagText.IsWhiteSpace())) return false;
 

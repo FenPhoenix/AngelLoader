@@ -224,8 +224,14 @@ namespace AngelLoader.Forms
         SelectedFM? GetSelectedFMPosInfo();
 
         void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
+
 #if !ReleaseBeta && !ReleasePublic
         void UpdateGameScreenShotModes();
 #endif
+
+        bool FMSelected();
+        FanMission? GetSelectedFM();
+        (string Category, string Tag) SelectedCategoryAndTag();
+        void DisplayFMTags(FMCategoriesCollection fmTags);
     }
 }
