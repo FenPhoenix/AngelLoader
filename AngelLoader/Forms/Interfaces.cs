@@ -209,6 +209,8 @@ namespace AngelLoader.Forms
 
         void SetReadmeText(string text);
 
+        Encoding? ChangeReadmeEncoding(Encoding? encoding);
+
         void SetSelectedEncoding(Encoding encoding);
 
         #endregion

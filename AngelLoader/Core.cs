@@ -1442,6 +1442,35 @@ namespace AngelLoader
             }
         }
 
+        internal static void ChangeEncodingForFMSelectedReadme(FanMission fm, int codePage)
+        {
+            if (codePage == -1)
+            {
+                Encoding? enc = View.ChangeReadmeEncoding(null);
+                if (enc != null)
+                {
+                    UpdateFMReadmeCodePages(fm, enc.CodePage);
+                    View.SetSelectedEncoding(enc);
+                }
+            }
+            else
+            {
+                Encoding enc;
+                try
+                {
+                    enc = Encoding.GetEncoding(codePage);
+                }
+                catch
+                {
+                    return;
+                }
+
+                View.SetSelectedEncoding(enc);
+                View.ChangeReadmeEncoding(enc);
+                UpdateFMReadmeCodePages(fm, enc.CodePage);
+            }
+        }
+
         #endregion
 
         #region Open / run
@@ -1688,7 +1717,7 @@ namespace AngelLoader
             return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
         }
 
-        internal static void UpdateFMReadmeCodePages(FanMission fm, int codePage)
+        private static void UpdateFMReadmeCodePages(FanMission fm, int codePage)
         {
             fm.ReadmeCodePages[fm.SelectedReadme] = codePage;
             fm.ReadmeAndCodePageEntries.Clear();

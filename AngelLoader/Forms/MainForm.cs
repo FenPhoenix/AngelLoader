@@ -3952,32 +3952,7 @@ namespace AngelLoader.Forms
         {
             if (sender is not ToolStripMenuItemWithBackingField<int> menuItem) return;
 
-            if (menuItem.Field == -1)
-            {
-                Encoding? enc = ReadmeRichTextBox.ChangeEncoding(null);
-                if (enc != null)
-                {
-                    Core.UpdateFMReadmeCodePages(FMsDGV.GetSelectedFM(), enc.CodePage);
-                    EncodingsLLMenu.SetEncodingMenuItemChecked(enc);
-                }
-            }
-            else
-            {
-                Encoding enc;
-                try
-                {
-                    enc = Encoding.GetEncoding(menuItem.Field);
-                }
-                catch
-                {
-                    return;
-                }
-
-                menuItem.Checked = true;
-
-                ReadmeRichTextBox.ChangeEncoding(enc);
-                Core.UpdateFMReadmeCodePages(FMsDGV.GetSelectedFM(), enc.CodePage);
-            }
+            Core.ChangeEncodingForFMSelectedReadme(FMsDGV.GetSelectedFM(), menuItem.Field);
         }
 
         // Allows the readme controls to hide when the mouse moves directly from the readme area onto another
@@ -3996,6 +3971,11 @@ namespace AngelLoader.Forms
         {
             EncodingsLLMenu.Construct(this);
             ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
+        }
+
+        public Encoding? ChangeReadmeEncoding(Encoding? encoding)
+        {
+            return ReadmeRichTextBox.ChangeEncoding(encoding);
         }
 
         private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
