@@ -6,15 +6,17 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using AL_Common;
+using AngelLoader.Forms.CustomControls;
 using static AL_Common.Common;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader
 {
-    internal sealed partial class RichTextBoxCustom
+    internal static class GLMLConversion
     {
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         [SuppressMessage("ReSharper", "CommentTypo")]
-        private string GLMLToRTF(byte[] glmlBytes)
+        internal static string GLMLToRTF(byte[] glmlBytes, bool darkModeEnabled)
         {
             // IMPORTANT: Use Encoding.UTF8 because anything else will break the character encoding!
             string glml = Encoding.UTF8.GetString(glmlBytes);
@@ -22,10 +24,10 @@ namespace AngelLoader.Forms.CustomControls
             static string AddColorToTable(string table, Color color) => table + @"\red" + color.R + @"\green" + color.G + @"\blue" + color.B + ";";
 
             string colorTable = @"{\colortbl ";
-            colorTable = _darkModeEnabled
+            colorTable = darkModeEnabled
                 ? AddColorToTable(colorTable, DarkColors.Fen_DarkForeground)
                 : colorTable + ";";
-            colorTable += _darkModeEnabled
+            colorTable += darkModeEnabled
                 ? @"\red222\green73\blue64;"
                 : @"\red255\green0\blue0;";
             colorTable += "}";
@@ -74,7 +76,7 @@ namespace AngelLoader.Forms.CustomControls
                 "11520000000049454E44AE426082" +
                 horizontalLine_Footer;
 
-            string horizontalLine = _darkModeEnabled ? horizontalLine_DarkMode : horizontalLine_LightMode;
+            string horizontalLine = darkModeEnabled ? horizontalLine_DarkMode : horizontalLine_LightMode;
 
             #endregion
 
@@ -332,10 +334,10 @@ namespace AngelLoader.Forms.CustomControls
 
             #endregion
 
-            if (_darkModeEnabled)
+            if (darkModeEnabled)
             {
                 // Background code at the end again, cause why not, it works
-                sb.Append(CreateBGColorRTFCode(DarkColors.Fen_DarkBackground));
+                sb.Append(RtfTheming.CreateBGColorRTFCode(DarkColors.Fen_DarkBackground));
             }
 
             sb.Append('}');

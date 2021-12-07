@@ -461,62 +461,6 @@ namespace AngelLoader.Forms.CustomControls
         instances of "\shppict" and "\nonshppict" with dummy strings. This fixes the problem. Hooray. Now get off
         my lawn.
         */
-        private static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
-        {
-            byte firstByte = pattern[0];
-            int index = Array.IndexOf(input, firstByte);
-            int pLen = pattern.Length;
-
-            while (index > -1)
-            {
-                for (int i = 0; i < pLen; i++)
-                {
-                    if (index + i >= input.Length) return;
-                    if (pattern[i] != input[index + i])
-                    {
-                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return;
-                        break;
-                    }
-
-                    if (i == pLen - 1)
-                    {
-                        for (int j = index, ri = 0; j < index + pLen; j++, ri++)
-                        {
-                            input[j] = replacePattern[ri];
-                        }
-                    }
-                }
-            }
-        }
-
-        // List version
-        private static void ReplaceByteSequence(List<byte> input, byte[] pattern, byte[] replacePattern)
-        {
-            byte firstByte = pattern[0];
-            int index = input.IndexOf(firstByte);
-            int pLen = pattern.Length;
-
-            while (index > -1)
-            {
-                for (int i = 0; i < pLen; i++)
-                {
-                    if (index + i >= input.Count) return;
-                    if (pattern[i] != input[index + i])
-                    {
-                        if ((index = input.IndexOf(firstByte, index + i)) == -1) return;
-                        break;
-                    }
-
-                    if (i == pLen - 1)
-                    {
-                        for (int j = index, ri = 0; j < index + pLen; j++, ri++)
-                        {
-                            input[j] = replacePattern[ri];
-                        }
-                    }
-                }
-            }
-        }
 
         #endregion
 

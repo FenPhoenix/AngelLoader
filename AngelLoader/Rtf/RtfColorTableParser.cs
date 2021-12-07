@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader
 {
     // @DarkModeNote(RtfColorTableParser):
     // We use a full parser here because rather than simply replacing all byte sequences with another, here we

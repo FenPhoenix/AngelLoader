@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using AngelLoader.WinAPI;
 using JetBrains.Annotations;
+using static AL_Common.Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
