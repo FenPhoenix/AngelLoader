@@ -10,6 +10,20 @@ namespace AngelLoader
 {
     internal static class FMTags
     {
+        #region Add tag
+
+        internal static void AddTagOperation(FanMission fm, string catAndTag)
+        {
+            if (!catAndTag.CharCountIsAtLeast(':', 2) && !catAndTag.IsWhiteSpace())
+            {
+                AddTagToFM(fm, catAndTag);
+                Ini.WriteFullFMDataIni();
+                Core.View.DisplayFMTags(fm.Tags);
+            }
+
+            Core.View.ClearTagsSearchBox();
+        }
+
         internal static void AddTagToFM(FanMission fm, string catAndTag, bool rebuildGlobalTags = true)
         {
             AddTagsToFMAndGlobalList(catAndTag, fm.Tags, addToGlobalList: false);
@@ -17,15 +31,9 @@ namespace AngelLoader
             if (rebuildGlobalTags) RebuildGlobalTags();
         }
 
-        internal static void RebuildGlobalTags()
-        {
-            PresetTags.DeepCopyTo(GlobalTags);
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                FanMission fm = FMsViewList[i];
-                AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
-            }
-        }
+        #endregion
+
+        #region Remove tag
 
         internal static void RemoveTagOperation()
         {
@@ -81,6 +89,18 @@ namespace AngelLoader
             Ini.WriteFullFMDataIni();
 
             return true;
+        }
+
+        #endregion
+
+        internal static void RebuildGlobalTags()
+        {
+            PresetTags.DeepCopyTo(GlobalTags);
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                FanMission fm = FMsViewList[i];
+                AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
+            }
         }
 
         internal static List<string> GetMatchingTagsList(string searchText)

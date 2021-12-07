@@ -2858,7 +2858,7 @@ namespace AngelLoader.Forms
                     break;
                 case Keys.Enter:
                     string catAndTag = box.SelectedIndex == -1 ? AddTagTextBox.Text : box.SelectedItem;
-                    AddTagOperation(FMsDGV.GetSelectedFM(), catAndTag);
+                    FMTags.AddTagOperation(FMsDGV.GetSelectedFM(), catAndTag);
                     break;
                 default:
                     if (sender == AddTagLLDropDown.ListBox) AddTagTextBox.Focus();
@@ -2906,24 +2906,20 @@ namespace AngelLoader.Forms
 
             if (AddTagLLDropDown.ListBox.SelectedIndex > -1)
             {
-                AddTagOperation(FMsDGV.GetSelectedFM(), AddTagLLDropDown.ListBox.SelectedItem);
+                FMTags.AddTagOperation(FMsDGV.GetSelectedFM(), AddTagLLDropDown.ListBox.SelectedItem);
             }
         }
 
-        private void AddTagOperation(FanMission fm, string catAndTag)
+        public void ClearTagsSearchBox()
         {
-            if (!catAndTag.CharCountIsAtLeast(':', 2) && !catAndTag.IsWhiteSpace())
-            {
-                FMTags.AddTagToFM(fm, catAndTag);
-                Ini.WriteFullFMDataIni();
-                DisplayFMTags(fm.Tags);
-            }
-
             AddTagTextBox.Clear();
             AddTagLLDropDown.HideAndClear();
         }
 
-        private void AddTagButton_Click(object sender, EventArgs e) => AddTagOperation(FMsDGV.GetSelectedFM(), AddTagTextBox.Text);
+        private void AddTagButton_Click(object sender, EventArgs e)
+        {
+            FMTags.AddTagOperation(FMsDGV.GetSelectedFM(), AddTagTextBox.Text);
+        }
 
         private void AddTagFromListButton_Click(object sender, EventArgs e)
         {
@@ -2982,7 +2978,7 @@ namespace AngelLoader.Forms
             var cat = (ToolStripMenuItemWithBackingText?)item.OwnerItem;
             if (cat == null) return;
 
-            AddTagOperation(FMsDGV.GetSelectedFM(), cat.BackingText + ": " + item.BackingText);
+            FMTags.AddTagOperation(FMsDGV.GetSelectedFM(), cat.BackingText + ": " + item.BackingText);
         }
 
         private void AddTagMenuCustomItem_Click(object sender, EventArgs e)

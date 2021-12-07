@@ -233,5 +233,6 @@ namespace AngelLoader.Forms
         FanMission? GetSelectedFM();
         (string Category, string Tag) SelectedCategoryAndTag();
         void DisplayFMTags(FMCategoriesCollection fmTags);
+        void ClearTagsSearchBox();
     }
 }
