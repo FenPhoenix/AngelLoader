@@ -1169,13 +1169,19 @@ namespace AngelLoader
                 ? Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
 
-        internal static (string ReadmePath, ReadmeType ReadmeType)
+        private static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
         {
             string readmeOnDisk = GetReadmeFileFullPath(fm);
 
             if (fm.SelectedReadme.ExtIsHtml()) return (readmeOnDisk, ReadmeType.HTML);
             if (fm.SelectedReadme.ExtIsGlml()) return (readmeOnDisk, ReadmeType.GLML);
+
+            if (fm.SelectedReadme.ExtIsWri() &&
+                WriConversion.IsWriFile(readmeOnDisk))
+            {
+                return (readmeOnDisk, ReadmeType.Wri);
+            }
 
             int headerLen = RTFHeaderBytes.Length;
 
@@ -1395,11 +1401,10 @@ namespace AngelLoader
                 }
                 else
                 {
-                    bool isRealPlainText = fileType == ReadmeType.PlainText && !path.ExtIsWri();
-                    View.SetReadmeState(isRealPlainText ? ReadmeState.PlainText : ReadmeState.OtherSupported);
+                    View.SetReadmeState(fileType == ReadmeType.PlainText ? ReadmeState.PlainText : ReadmeState.OtherSupported);
 
                     Encoding? encoding = null;
-                    if (isRealPlainText &&
+                    if (fileType == ReadmeType.PlainText &&
                         fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
                     {
                         try
@@ -1418,12 +1423,12 @@ namespace AngelLoader
 
                     // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
                     // every time until the user explicitly requests something different.
-                    if (isRealPlainText && newEncoding?.CodePage > 0)
+                    if (fileType == ReadmeType.PlainText && newEncoding?.CodePage > 0)
                     {
                         UpdateFMReadmeCodePages(fm, newEncoding.CodePage);
                     }
 
-                    if (isRealPlainText && finalEncoding != null)
+                    if (fileType == ReadmeType.PlainText && finalEncoding != null)
                     {
                         View.SetSelectedEncoding(finalEncoding);
                     }

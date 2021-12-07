@@ -35,7 +35,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             _currentReadmeType = readmeType;
 
-            if (readmeType == ReadmeType.PlainText)
+            if (readmeType is ReadmeType.PlainText or ReadmeType.Wri)
             {
                 (BackColor, ForeColor) = _darkModeEnabled
                     ? (DarkColors.Fen_DarkBackground, DarkColors.Fen_DarkForeground)
