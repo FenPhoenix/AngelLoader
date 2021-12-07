@@ -65,6 +65,11 @@ namespace AngelLoader.Forms.CustomControls
         private byte[] _currentReadmeBytes = Array.Empty<byte>();
 
         private ReadmeType _currentReadmeType = ReadmeType.PlainText;
+        // NOTE(Wri file type/encoding):
+        // Normally we could just check the readme type and say if it's plaintext then we can change encoding,
+        // otherwise not. But, if it's plaintext it could also be .wri and then we don't want to allow encoding
+        // changes. Since we don't have a separate Wri type and we just check for .wri files by extension where
+        // needed, we need this separate bool. Maybe we should just treat Wri as a first-class readme type?
         private bool _currentReadmeSupportsEncodingChange;
 
         #endregion
