@@ -72,8 +72,14 @@ namespace AngelLoader
         {
             try
             {
-                using var ms = new MemoryStream(bytes);
-                (bool success, uint plainTextStart, uint plainTextEnd) = ReadWriFileHeader(ms);
+                bool success;
+                uint plainTextStart, plainTextEnd;
+
+                using (var ms = new MemoryStream(bytes))
+                {
+                    (success, plainTextStart, plainTextEnd) = ReadWriFileHeader(ms);
+                }
+
                 if (success)
                 {
                     // Lucrative Opportunity is Windows-1252 encoded, so just go ahead and assume that
