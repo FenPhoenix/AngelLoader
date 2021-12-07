@@ -99,7 +99,7 @@ namespace AngelLoader
             ColorTranslator.ToWin32(color) +
             "}}}}}";
 
-        internal static byte[] CreateBGColorRTFCode_Bytes(Color color)
+        private static byte[] CreateBGColorRTFCode_Bytes(Color color)
         {
             var first = Encoding.ASCII.GetBytes(@"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv ");
             var colorStr = Encoding.ASCII.GetBytes(ColorTranslator.ToWin32(color).ToString());
@@ -113,7 +113,7 @@ namespace AngelLoader
             return ret;
         }
 
-        internal static List<byte> CreateColorTableRTFBytes(List<Color> colorTable)
+        private static List<byte> CreateColorTableRTFBytes(List<Color> colorTable)
         {
             #region Local functions
 
