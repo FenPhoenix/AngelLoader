@@ -2953,7 +2953,7 @@ namespace AngelLoader.Forms
 
                     var last = addTagMenuItems[addTagMenuItems.Count - 1];
 
-                    if (item.Category != "misc")
+                    if (item.Category != PresetTags.MiscCategory)
                     {
                         var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory) { Tag = LazyLoaded.True };
                         customItem.Click += AddTagMenuCustomItem_Click;
@@ -2965,7 +2965,7 @@ namespace AngelLoader.Forms
                     {
                         var tagItem = new ToolStripMenuItemWithBackingText(tag) { Tag = LazyLoaded.True };
 
-                        tagItem.Click += item.Category == "misc"
+                        tagItem.Click += item.Category == PresetTags.MiscCategory
                             ? AddTagMenuMiscItem_Click
                             : AddTagMenuItem_Click;
 
@@ -3118,6 +3118,7 @@ namespace AngelLoader.Forms
             Ini.WriteFullFMDataIni();
         }
 
+        // @VBL
         private void ModsCheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
             if (EventsDisabled) return;

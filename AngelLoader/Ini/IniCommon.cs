@@ -319,7 +319,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    cat = "misc";
+                    cat = PresetTags.MiscCategory;
                     tag = item.Trim();
                 }
 

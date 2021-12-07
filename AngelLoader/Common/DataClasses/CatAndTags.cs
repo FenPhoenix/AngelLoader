@@ -164,12 +164,12 @@ namespace AngelLoader.DataClasses
                 item.Value.SortCaseInsensitive();
             }
 
-            if (_list[_list.Count - 1] == "misc") return;
+            if (_list[_list.Count - 1] == PresetTags.MiscCategory) return;
 
             for (int i = 0; i < _list.Count; i++)
             {
                 string item = _list[i];
-                if (_list[i] == "misc")
+                if (_list[i] == PresetTags.MiscCategory)
                 {
                     _list.Remove(item);
                     _list.Add(item);
@@ -196,15 +196,17 @@ namespace AngelLoader.DataClasses
     // with, ever.
     internal static class PresetTags
     {
+        internal const string MiscCategory = "misc";
+
         #region Preset tags array
 
         // These are the FMSel preset tags. Conforming to standards here.
         private static readonly KeyValuePair<string, string[]>[]
         _presetTags =
         {
-            new KeyValuePair<string, string[]>("author", Array.Empty<string>()),
-            new KeyValuePair<string, string[]>("contest", Array.Empty<string>()),
-            new KeyValuePair<string, string[]>("genre", new[]
+            new("author", Array.Empty<string>()),
+            new("contest", Array.Empty<string>()),
+            new("genre", new[]
             {
                 "action",
                 "crime",
@@ -212,7 +214,7 @@ namespace AngelLoader.DataClasses
                 "mystery",
                 "puzzle"
             }),
-            new KeyValuePair<string, string[]>("language", new[]
+            new("language", new[]
             {
                 "English",
                 "Czech",
@@ -226,8 +228,8 @@ namespace AngelLoader.DataClasses
                 "Russian",
                 "Spanish"
             }),
-            new KeyValuePair<string, string[]>("series", Array.Empty<string>()),
-            new KeyValuePair<string, string[]>("misc", new[]
+            new("series", Array.Empty<string>()),
+            new(MiscCategory, new[]
             {
                 "campaign",
                 "demo",

@@ -94,14 +94,14 @@ namespace AngelLoader
                 {
                     if (gCat.Tags.Count == 0)
                     {
-                        if (gCat.Category != "misc") list.Add(gCat.Category + ":");
+                        if (gCat.Category != PresetTags.MiscCategory) list.Add(gCat.Category + ":");
                     }
                     else
                     {
                         foreach (var gTag in gCat.Tags)
                         {
                             if (!text.Second.IsWhiteSpace() && !gTag.ContainsI(text.Second)) continue;
-                            if (gCat.Category == "misc")
+                            if (gCat.Category == PresetTags.MiscCategory)
                             {
                                 if (text.Second.IsWhiteSpace() && !gCat.Category.ContainsI(text.First))
                                 {
@@ -116,7 +116,7 @@ namespace AngelLoader
                     }
                 }
                 // if, not else if - we want to display found tags both categorized and uncategorized
-                if (gCat.Category == "misc")
+                if (gCat.Category == PresetTags.MiscCategory)
                 {
                     foreach (var gTag in gCat.Tags)
                     {
@@ -188,7 +188,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    cat = "misc";
+                    cat = PresetTags.MiscCategory;
                     tag = item.Trim();
                 }
 
