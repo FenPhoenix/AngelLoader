@@ -4968,42 +4968,43 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
+        private (bool Success, string[] DroppedItems)
+        CheckDragDrop(DragEventArgs e)
         {
-            if (!EverythingPanel.Enabled ||
-                !e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (EverythingPanel.Enabled &&
+                e.Data.GetDataPresent(DataFormats.FileDrop) &&
+                e.Data.GetData(DataFormats.FileDrop) is string[] droppedItems)
             {
-                e.Effect = DragDropEffects.None;
-                return;
+                return (true, droppedItems);
             }
 
-            object? data = e.Data.GetData(DataFormats.FileDrop);
-            if (data is not string[] droppedItems) return;
+            e.Effect = DragDropEffects.None;
+            return (false, Array.Empty<string>());
+        }
 
-            int validItems = 0;
+        private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
+        {
+            (bool success, string[] droppedItems) = CheckDragDrop(e);
+            if (!success) return;
 
-            for (int i = 0; i < droppedItems.Length; i++)
+            bool atLeastOneValidItem = false;
+
+            foreach (string di in droppedItems)
             {
-                var di = droppedItems[i];
                 if (!di.IsEmpty() && di.ExtIsArchive())
                 {
-                    validItems++;
+                    atLeastOneValidItem = true;
+                    break;
                 }
             }
 
-            e.Effect = validItems > 0 ? DragDropEffects.Copy : DragDropEffects.None;
+            e.Effect = atLeastOneValidItem ? DragDropEffects.Copy : DragDropEffects.None;
         }
 
         private async void EverythingPanel_DragDrop(object sender, DragEventArgs e)
         {
-            if (!EverythingPanel.Enabled)
-            {
-                e.Effect = DragDropEffects.None;
-                return;
-            }
-
-            object? data = e.Data.GetData(DataFormats.FileDrop);
-            if (data is not string[] droppedItems) return;
+            (bool success, string[] droppedItems) = CheckDragDrop(e);
+            if (!success) return;
 
             try
             {
