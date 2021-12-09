@@ -112,6 +112,7 @@ namespace AngelLoader.Forms
         #region Lazy-loaded controls
 
         private readonly ExitLLButton ExitLLButton;
+        private readonly TopRightLLMenu TopRightLLMenu;
 
         #endregion
 
@@ -448,6 +449,7 @@ namespace AngelLoader.Forms
             #region Lazy-loaded controls
 
             ExitLLButton = new ExitLLButton(this);
+            TopRightLLMenu = new TopRightLLMenu(this);
 
             #endregion
 
@@ -3174,7 +3176,6 @@ namespace AngelLoader.Forms
 
         private void TopRightMenuButton_Click(object sender, EventArgs e)
         {
-            TopRightLLMenu.Construct(this, components);
             ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
         }
 
