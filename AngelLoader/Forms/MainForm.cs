@@ -118,6 +118,7 @@ namespace AngelLoader.Forms
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
         private readonly AddTagLLDropDown AddTagLLDropDown;
         private readonly AddTagLLMenu AddTagLLMenu;
+        private readonly AltTitlesLLMenu AltTitlesLLMenu;
 
         #endregion
 
@@ -460,6 +461,7 @@ namespace AngelLoader.Forms
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this);
             AddTagLLDropDown = new AddTagLLDropDown(this);
             AddTagLLMenu = new AddTagLLMenu(this);
+            AltTitlesLLMenu = new AltTitlesLLMenu(this);
 
             #endregion
 
@@ -2664,7 +2666,6 @@ namespace AngelLoader.Forms
 
         private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
         {
-            AltTitlesLLMenu.Construct(components);
             FillAltTitlesMenu(FMsDGV.GetSelectedFM().AltTitles);
             ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesArrowButton, MenuPos.BottomLeft);
         }
@@ -4755,8 +4756,6 @@ namespace AngelLoader.Forms
 
         private void FillAltTitlesMenu(List<string> fmAltTitles)
         {
-            if (!AltTitlesLLMenu.Constructed) return;
-
             AltTitlesLLMenu.ClearItems();
 
             if (fmAltTitles.Count == 0)
