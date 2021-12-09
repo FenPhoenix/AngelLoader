@@ -127,6 +127,7 @@ namespace AngelLoader.Forms
         private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
         private readonly Lazy_ToolStripLabels Lazy_ToolStripLabels;
         private readonly InstallUninstallFMLLButton InstallUninstallFMLLButton;
+        private readonly FMsDGV_FM_LLMenu FMsDGV_FM_LLMenu;
 
         #endregion
 
@@ -478,6 +479,7 @@ namespace AngelLoader.Forms
             FMsDGV_ColumnHeaderLLMenu = new FMsDGV_ColumnHeaderLLMenu(this);
             Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this);
             InstallUninstallFMLLButton = new InstallUninstallFMLLButton(this);
+            FMsDGV_FM_LLMenu = new FMsDGV_FM_LLMenu(this);
 
             #endregion
 
@@ -2780,7 +2782,7 @@ namespace AngelLoader.Forms
 
         private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(FMsDGV_FM_LLMenu.GetFinishedOnMenu(this), EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
+            ShowMenu(FMsDGV_FM_LLMenu.GetFinishedOnMenu(), EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
         }
 
         private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
@@ -3698,7 +3700,7 @@ namespace AngelLoader.Forms
             }
             else if (ht.Type == DataGridViewHitTestType.Cell && ht.ColumnIndex > -1 && ht.RowIndex > -1)
             {
-                FMsDGV.SetContextMenuToFM();
+                FMsDGV.ContextMenuStrip = FMsDGV_FM_LLMenu.Menu;
                 FMsDGV.Rows[ht.RowIndex].Selected = true;
                 // We don't need to call SelectProperly() here because the mousedown will select it properly
             }
@@ -3771,7 +3773,7 @@ namespace AngelLoader.Forms
             // This is in here because it doesn't really work right if we put it in MainForm_KeyDown anyway
             if (e.KeyCode == Keys.Apps)
             {
-                FMsDGV.SetContextMenuToFM();
+                FMsDGV.ContextMenuStrip = FMsDGV_FM_LLMenu.Menu;
             }
         }
 

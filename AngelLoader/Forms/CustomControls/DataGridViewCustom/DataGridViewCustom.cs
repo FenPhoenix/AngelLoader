@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
-using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -184,16 +183,6 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         /// <returns></returns>
         internal bool RowSelected() => SelectedRows.Count > 0;
-
-        #region Set context menu
-
-        internal void SetContextMenuToFM()
-        {
-            FMsDGV_FM_LLMenu.Construct(_owner);
-            ContextMenuStrip = FMsDGV_FM_LLMenu.FMContextMenu;
-        }
-
-        #endregion
 
         #region Get and set columns
 
