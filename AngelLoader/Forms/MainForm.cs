@@ -114,6 +114,7 @@ namespace AngelLoader.Forms
         private readonly ExitLLButton ExitLLButton;
         private readonly TopRightLLMenu TopRightLLMenu;
         private readonly MainLLMenu MainLLMenu;
+        private readonly EncodingsLLMenu EncodingsLLMenu;
 
         #endregion
 
@@ -452,6 +453,7 @@ namespace AngelLoader.Forms
             ExitLLButton = new ExitLLButton(this);
             TopRightLLMenu = new TopRightLLMenu(this);
             MainLLMenu = new MainLLMenu(this);
+            EncodingsLLMenu = new EncodingsLLMenu(this);
 
             #endregion
 
@@ -3957,7 +3959,6 @@ namespace AngelLoader.Forms
 
         private void ReadmeEncodingButton_Click(object sender, EventArgs e)
         {
-            EncodingsLLMenu.Construct(this);
             ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
         }
 

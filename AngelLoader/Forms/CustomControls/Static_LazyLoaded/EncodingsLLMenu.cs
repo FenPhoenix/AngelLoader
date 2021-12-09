@@ -7,48 +7,50 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
-    internal static class EncodingsLLMenu
+    internal sealed class EncodingsLLMenu : IEventDisabler
     {
         #region Private fields
 
-        private static bool _constructed;
+        public bool EventsDisabled { get; set; }
 
-        private static MainForm _owner = null!;
+        private bool _constructed;
+
+        private readonly MainForm _owner;
 
         #region Backing fields
 
-        private static int _codePage;
+        private int _codePage;
 
-        private static ToolStripMenuItemCustom? AutodetectMenuItem;
-        private static ToolStripMenuItemCustom? ArabicMenu;
-        private static ToolStripMenuItemCustom? BalticMenu;
-        private static ToolStripMenuItemCustom? CentralEuropeanMenu;
-        private static ToolStripMenuItemCustom? ChineseMenu;
-        private static ToolStripMenuItemCustom? CyrillicMenu;
-        private static ToolStripMenuItemCustom? EasternEuropeanMenu;
-        private static ToolStripMenuItemCustom? GreekMenu;
-        private static ToolStripMenuItemCustom? HebrewMenu;
-        private static ToolStripMenuItemCustom? JapaneseMenu;
-        private static ToolStripMenuItemCustom? KoreanMenu;
-        private static ToolStripMenuItemCustom? LatinMenu;
-        private static ToolStripMenuItemCustom? NorthernEuropeanMenu;
-        private static ToolStripMenuItemCustom? TaiwanMenu;
-        private static ToolStripMenuItemCustom? ThaiMenu;
-        private static ToolStripMenuItemCustom? TurkishMenu;
-        private static ToolStripMenuItemCustom? UnitedStatesMenu;
-        private static ToolStripMenuItemCustom? VietnameseMenu;
-        private static ToolStripMenuItemCustom? WesternEuropeanMenu;
-        private static ToolStripMenuItemCustom? OtherMenu;
-
-        #endregion
-
-        private static readonly Dictionary<int, ToolStripMenuItemWithBackingField<int>> _menuItemsDict = new();
+        private ToolStripMenuItemCustom? AutodetectMenuItem;
+        private ToolStripMenuItemCustom? ArabicMenu;
+        private ToolStripMenuItemCustom? BalticMenu;
+        private ToolStripMenuItemCustom? CentralEuropeanMenu;
+        private ToolStripMenuItemCustom? ChineseMenu;
+        private ToolStripMenuItemCustom? CyrillicMenu;
+        private ToolStripMenuItemCustom? EasternEuropeanMenu;
+        private ToolStripMenuItemCustom? GreekMenu;
+        private ToolStripMenuItemCustom? HebrewMenu;
+        private ToolStripMenuItemCustom? JapaneseMenu;
+        private ToolStripMenuItemCustom? KoreanMenu;
+        private ToolStripMenuItemCustom? LatinMenu;
+        private ToolStripMenuItemCustom? NorthernEuropeanMenu;
+        private ToolStripMenuItemCustom? TaiwanMenu;
+        private ToolStripMenuItemCustom? ThaiMenu;
+        private ToolStripMenuItemCustom? TurkishMenu;
+        private ToolStripMenuItemCustom? UnitedStatesMenu;
+        private ToolStripMenuItemCustom? VietnameseMenu;
+        private ToolStripMenuItemCustom? WesternEuropeanMenu;
+        private ToolStripMenuItemCustom? OtherMenu;
 
         #endregion
 
-        private static bool _darkModeEnabled;
+        private readonly Dictionary<int, ToolStripMenuItemWithBackingField<int>> _menuItemsDict = new();
+
+        #endregion
+
+        private bool _darkModeEnabled;
         [PublicAPI]
-        public static bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -57,47 +59,64 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 _darkModeEnabled = value;
                 if (!_constructed) return;
 
-                Menu.DarkModeEnabled = _darkModeEnabled;
+                _menu.DarkModeEnabled = _darkModeEnabled;
             }
         }
 
-        private static void MenuItems_CheckedChanged(object sender, EventArgs e)
+        internal EncodingsLLMenu(MainForm owner) => _owner = owner;
+
+        private void MenuItems_CheckedChanged(object sender, EventArgs e)
         {
-            if (sender is not ToolStripMenuItemWithBackingField<int> menuItem) return;
-            if (!menuItem.Checked) return;
+            if (EventsDisabled) return;
+            if (sender is not ToolStripMenuItemCustom { Checked: true } senderItem) return;
 
-            foreach (var item in _menuItemsDict)
+            using (new DisableEvents(this))
             {
-                var curMenuItem = item.Value;
-
-                if (!curMenuItem.CheckOnClick) continue;
-
-                if (curMenuItem != menuItem)
+                foreach (ToolStripItem item in _menu.Items)
                 {
-                    curMenuItem.Checked = false;
+                    if (item is ToolStripMenuItemCustom menuItem && menuItem != senderItem)
+                    {
+                        menuItem.Checked = false;
+
+                        foreach (ToolStripItem dropDownItem in menuItem.DropDownItems)
+                        {
+                            if (dropDownItem is ToolStripMenuItemCustom dropDownMenuItem && dropDownItem != senderItem)
+                            {
+                                dropDownMenuItem.Checked = false;
+                            }
+                        }
+                    }
                 }
-                else
+
+                senderItem.Checked = true;
+                if (senderItem.OwnerItem is ToolStripMenuItemCustom { HasDropDownItems: true } ownerItem)
                 {
-                    if (!curMenuItem.Checked) curMenuItem.Checked = true;
+                    ownerItem.Checked = true;
                 }
             }
         }
 
         #region Public methods
 
-        internal static DarkContextMenu Menu = null!;
+        private DarkContextMenu _menu = null!;
+        internal DarkContextMenu Menu
+        {
+            get
+            {
+                Construct();
+                return _menu;
+            }
+        }
 
-        internal static void Construct(MainForm owner)
+        private void Construct()
         {
             if (_constructed) return;
 
-            _owner = owner;
-
-            Menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
 
             #region Item init
 
-            Menu.Items.AddRange(new ToolStripItem[]
+            _menu.Items.AddRange(new ToolStripItem[]
             {
                 AutodetectMenuItem = new ToolStripMenuItemWithBackingField<int>(-1) { Tag = LoadType.Lazy },
                 new ToolStripSeparator { Tag = LoadType.Lazy },
@@ -109,7 +128,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 new ToolStripSeparator { Tag = LoadType.Lazy }
             });
 
-            Menu.Items.AddRange(new ToolStripItem[]
+            _menu.Items.AddRange(new ToolStripItem[]
             {
                 ArabicMenu = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 BalticMenu = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
@@ -344,7 +363,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #endregion
 
-            static void InitItem(ToolStripItem item)
+            void InitItem(ToolStripItem item)
             {
                 if (item is ToolStripMenuItemWithBackingField<int> encItem)
                 {
@@ -354,13 +373,17 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                         var enc = Encoding.GetEncoding(encItem.Field);
                         encItem.Text = enc.EncodingName + " (" + enc.CodePage + ")";
                         encItem.CheckOnClick = true;
-                        encItem.CheckedChanged += MenuItems_CheckedChanged;
                     }
+                    encItem.CheckedChanged += MenuItems_CheckedChanged;
                     encItem.Click += _owner.ReadmeEncodingMenuItems_Click;
+                }
+                else if (item is ToolStripMenuItemCustom baseItem)
+                {
+                    baseItem.CheckedChanged += MenuItems_CheckedChanged;
                 }
             }
 
-            foreach (ToolStripItem baseItem in Menu.Items)
+            foreach (ToolStripItem baseItem in _menu.Items)
             {
                 InitItem(baseItem);
                 if (baseItem is ToolStripMenuItem baseMenuItem && baseMenuItem.DropDownItems.Count > 0)
@@ -382,7 +405,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Localize();
         }
 
-        internal static void SetEncodingMenuItemChecked(Encoding encoding)
+        internal void SetEncodingMenuItemChecked(Encoding encoding)
         {
             if (_constructed && _menuItemsDict.TryGetValue(encoding.CodePage, out var menuItem))
             {
@@ -394,7 +417,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        internal static void Localize()
+        internal void Localize()
         {
             if (!_constructed) return;
 
