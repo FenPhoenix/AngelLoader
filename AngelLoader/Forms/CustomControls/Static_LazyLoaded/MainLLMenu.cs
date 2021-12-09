@@ -65,7 +65,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 GameVersionsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy},
 #if false
-                GlobalFMStatsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True}
+                GlobalFMStatsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy}
 #endif
                 new ToolStripSeparator { Tag = LoadType.Lazy },
                 ImportMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
