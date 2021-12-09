@@ -117,6 +117,7 @@ namespace AngelLoader.Forms
         private readonly EncodingsLLMenu EncodingsLLMenu;
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
         private readonly AddTagLLDropDown AddTagLLDropDown;
+        private readonly AddTagLLMenu AddTagLLMenu;
 
         #endregion
 
@@ -458,6 +459,7 @@ namespace AngelLoader.Forms
             EncodingsLLMenu = new EncodingsLLMenu(this);
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this);
             AddTagLLDropDown = new AddTagLLDropDown(this);
+            AddTagLLMenu = new AddTagLLMenu(this);
 
             #endregion
 
@@ -2926,7 +2928,6 @@ namespace AngelLoader.Forms
         {
             GlobalTags.SortAndMoveMiscToEnd();
 
-            AddTagLLMenu.Construct(this, components);
             AddTagLLMenu.Menu.Items.Clear();
 
             var addTagMenuItems = new List<ToolStripItem>(GlobalTags.Count);
