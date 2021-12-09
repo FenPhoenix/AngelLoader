@@ -124,6 +124,7 @@ namespace AngelLoader.Forms
         private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
         private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
         private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
+        private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
 
         #endregion
 
@@ -472,6 +473,7 @@ namespace AngelLoader.Forms
             PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this);
             ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this);
             Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this);
+            FMsDGV_ColumnHeaderLLMenu = new FMsDGV_ColumnHeaderLLMenu(this);
 
             #endregion
 
@@ -734,7 +736,7 @@ namespace AngelLoader.Forms
 
             UpdateRatingListsAndColumn(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel, startup: true);
 
-            FMsDGV.SetColumnData(Config.Columns);
+            FMsDGV.SetColumnData(FMsDGV_ColumnHeaderLLMenu, Config.Columns);
 
             #endregion
 
@@ -3688,7 +3690,7 @@ namespace AngelLoader.Forms
 
             if (ht.Type is DataGridViewHitTestType.ColumnHeader or DataGridViewHitTestType.None)
             {
-                FMsDGV.SetContextMenuToColumnHeader();
+                FMsDGV.ContextMenuStrip = FMsDGV_ColumnHeaderLLMenu.Menu;
             }
             else if (ht.Type == DataGridViewHitTestType.Cell && ht.ColumnIndex > -1 && ht.RowIndex > -1)
             {
@@ -3698,7 +3700,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                FMsDGV.SetContextMenuToNone();
+                FMsDGV.ContextMenuStrip = null;
             }
 
             #endregion
@@ -3857,7 +3859,7 @@ namespace AngelLoader.Forms
 
             if (!startup)
             {
-                FMsDGV.SetColumnData(FMsDGV.GetColumnData());
+                FMsDGV.SetColumnData(FMsDGV_ColumnHeaderLLMenu, FMsDGV.GetColumnData());
                 RefreshFMsListKeepSelection();
             }
 

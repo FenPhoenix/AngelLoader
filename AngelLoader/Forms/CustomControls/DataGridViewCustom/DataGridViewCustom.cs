@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -186,14 +187,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Set context menu
 
-        internal void SetContextMenuToNone() => ContextMenuStrip = null;
-
-        internal void SetContextMenuToColumnHeader()
-        {
-            FMsDGV_ColumnHeaderLLMenu.Construct(_owner);
-            ContextMenuStrip = FMsDGV_ColumnHeaderLLMenu.GetContextMenu();
-        }
-
         internal void SetContextMenuToFM()
         {
             FMsDGV_FM_LLMenu.Construct(_owner);
@@ -222,7 +215,7 @@ namespace AngelLoader.Forms.CustomControls
             return columns.OrderBy(x => x.Id).ToList();
         }
 
-        internal void SetColumnData(List<ColumnData> columnDataList)
+        internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, List<ColumnData> columnDataList)
         {
             if (columnDataList.Count == 0) return;
 
@@ -252,7 +245,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
                 MakeColumnVisible(col, colData.Visible);
 
-                FMsDGV_ColumnHeaderLLMenu.SetColumnChecked((int)colData.Id, colData.Visible);
+                menu.SetColumnChecked((int)colData.Id, colData.Visible);
             }
         }
 

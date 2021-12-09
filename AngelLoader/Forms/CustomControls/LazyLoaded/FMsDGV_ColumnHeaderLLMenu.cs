@@ -5,49 +5,59 @@ using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal static class FMsDGV_ColumnHeaderLLMenu
+    internal sealed class FMsDGV_ColumnHeaderLLMenu
     {
         #region Control backing fields
 
-        private static bool _constructed;
-        private static readonly bool[] _columnCheckedStates = InitializedArray(ColumnsCount, true);
+        private bool _constructed;
+        private readonly bool[] _columnCheckedStates = InitializedArray(ColumnsCount, true);
 
         #endregion
 
-        private static MainForm _owner = null!;
+        private readonly MainForm _owner;
 
         private enum ColumnProperties { Visible, DisplayIndex, Width }
 
         #region Menu item fields
 
-        private static DarkContextMenu? Menu;
+        private DarkContextMenu _menu = null!;
+        internal DarkContextMenu Menu
+        {
+            get
+            {
+                Construct();
+                return _menu;
+            }
+        }
 
-        private static ToolStripMenuItemCustom? ResetColumnVisibilityMenuItem;
-        private static ToolStripMenuItemCustom? ResetAllColumnWidthsMenuItem;
-        private static ToolStripMenuItemCustom? ResetColumnPositionsMenuItem;
+        private ToolStripMenuItemCustom ResetColumnVisibilityMenuItem = null!;
+        private ToolStripMenuItemCustom ResetAllColumnWidthsMenuItem = null!;
+        private ToolStripMenuItemCustom ResetColumnPositionsMenuItem = null!;
 
-        private static ToolStripMenuItemCustom[]? ColumnHeaderCheckBoxMenuItems;
-        private static ToolStripMenuItemCustom? ShowGameMenuItem;
-        private static ToolStripMenuItemCustom? ShowInstalledMenuItem;
-        private static ToolStripMenuItemCustom? ShowTitleMenuItem;
-        private static ToolStripMenuItemCustom? ShowArchiveMenuItem;
-        private static ToolStripMenuItemCustom? ShowAuthorMenuItem;
-        private static ToolStripMenuItemCustom? ShowSizeMenuItem;
-        private static ToolStripMenuItemCustom? ShowRatingMenuItem;
-        private static ToolStripMenuItemCustom? ShowFinishedMenuItem;
-        private static ToolStripMenuItemCustom? ShowReleaseDateMenuItem;
-        private static ToolStripMenuItemCustom? ShowLastPlayedMenuItem;
-        private static ToolStripMenuItemCustom? ShowDateAddedMenuItem;
-        private static ToolStripMenuItemCustom? ShowDisabledModsMenuItem;
-        private static ToolStripMenuItemCustom? ShowCommentMenuItem;
+        private ToolStripMenuItemCustom[] ColumnHeaderCheckBoxMenuItems = null!;
+        private ToolStripMenuItemCustom ShowGameMenuItem = null!;
+        private ToolStripMenuItemCustom ShowInstalledMenuItem = null!;
+        private ToolStripMenuItemCustom ShowTitleMenuItem = null!;
+        private ToolStripMenuItemCustom ShowArchiveMenuItem = null!;
+        private ToolStripMenuItemCustom ShowAuthorMenuItem = null!;
+        private ToolStripMenuItemCustom ShowSizeMenuItem = null!;
+        private ToolStripMenuItemCustom ShowRatingMenuItem = null!;
+        private ToolStripMenuItemCustom ShowFinishedMenuItem = null!;
+        private ToolStripMenuItemCustom ShowReleaseDateMenuItem = null!;
+        private ToolStripMenuItemCustom ShowLastPlayedMenuItem = null!;
+        private ToolStripMenuItemCustom ShowDateAddedMenuItem = null!;
+        private ToolStripMenuItemCustom ShowDisabledModsMenuItem = null!;
+        private ToolStripMenuItemCustom ShowCommentMenuItem = null!;
 
         #endregion
 
+        internal FMsDGV_ColumnHeaderLLMenu(MainForm owner) => _owner = owner;
+
         #region Private methods
 
-        private static void ResetPropertyOnAllColumns(ColumnProperties property)
+        private void ResetPropertyOnAllColumns(ColumnProperties property)
         {
             for (int i = 0; i < _owner.FMsDGV.Columns.Count; i++)
             {
@@ -75,13 +85,13 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #region Private event handlers
 
-        private static void ResetColumnVisibilityMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Visible);
+        private void ResetColumnVisibilityMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Visible);
 
-        private static void ResetColumnPositionsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.DisplayIndex);
+        private void ResetColumnPositionsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.DisplayIndex);
 
-        private static void ResetAllColumnWidthsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Width);
+        private void ResetAllColumnWidthsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Width);
 
-        private static void CheckBoxMenuItems_Click(object sender, EventArgs e)
+        private void CheckBoxMenuItems_Click(object sender, EventArgs e)
         {
             var s = (ToolStripMenuItemCustom)sender;
             _owner.FMsDGV.MakeColumnVisible(_owner.FMsDGV.Columns[(int)s.Tag], s.Checked);
@@ -90,9 +100,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         #endregion
 
-        private static bool _darkModeEnabled;
+        private bool _darkModeEnabled;
         [PublicAPI]
-        public static bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -101,31 +111,27 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 _darkModeEnabled = value;
                 if (!_constructed) return;
 
-                Menu!.DarkModeEnabled = _darkModeEnabled;
+                _menu.DarkModeEnabled = _darkModeEnabled;
             }
         }
 
         #region Public methods
 
-        internal static ContextMenuStrip? GetContextMenu() => Menu;
+        internal bool Visible => _constructed && _menu.Visible;
 
-        internal static bool Visible => _constructed && Menu!.Visible;
-
-        internal static void Construct(MainForm owner)
+        private void Construct()
         {
             if (_constructed) return;
 
-            _owner = owner;
-
             #region Instantiation
 
-            Menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
 
             #endregion
 
             #region Add items to menu and hookup events
 
-            Menu.Items.AddRange(new ToolStripItem[]
+            _menu.Items.AddRange(new ToolStripItem[]
             {
                     ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom{ Tag = LoadType.Lazy },
                     ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
@@ -164,7 +170,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             foreach (var item in ColumnHeaderCheckBoxMenuItems)
             {
-                Menu.Items.Add(item);
+                _menu.Items.Add(item);
                 item.Click += CheckBoxMenuItems_Click;
             }
 
@@ -174,41 +180,41 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #endregion
 
-            Menu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
+            _menu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
 
             _constructed = true;
 
             Localize();
         }
 
-        internal static void Localize()
+        internal void Localize()
         {
             if (!_constructed) return;
 
-            ResetColumnVisibilityMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible;
-            ResetAllColumnWidthsMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
-            ResetColumnPositionsMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions;
+            ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible;
+            ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
+            ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions;
 
-            ShowGameMenuItem!.Text = LText.FMsList.GameColumn;
-            ShowInstalledMenuItem!.Text = LText.FMsList.InstalledColumn;
-            ShowTitleMenuItem!.Text = LText.FMsList.TitleColumn;
-            ShowArchiveMenuItem!.Text = LText.FMsList.ArchiveColumn;
-            ShowAuthorMenuItem!.Text = LText.FMsList.AuthorColumn;
-            ShowSizeMenuItem!.Text = LText.FMsList.SizeColumn;
-            ShowRatingMenuItem!.Text = LText.FMsList.RatingColumn;
-            ShowFinishedMenuItem!.Text = LText.FMsList.FinishedColumn;
-            ShowReleaseDateMenuItem!.Text = LText.FMsList.ReleaseDateColumn;
-            ShowLastPlayedMenuItem!.Text = LText.FMsList.LastPlayedColumn;
-            ShowDateAddedMenuItem!.Text = LText.FMsList.DateAddedColumn;
-            ShowDisabledModsMenuItem!.Text = LText.FMsList.DisabledModsColumn;
-            ShowCommentMenuItem!.Text = LText.FMsList.CommentColumn;
+            ShowGameMenuItem.Text = LText.FMsList.GameColumn;
+            ShowInstalledMenuItem.Text = LText.FMsList.InstalledColumn;
+            ShowTitleMenuItem.Text = LText.FMsList.TitleColumn;
+            ShowArchiveMenuItem.Text = LText.FMsList.ArchiveColumn;
+            ShowAuthorMenuItem.Text = LText.FMsList.AuthorColumn;
+            ShowSizeMenuItem.Text = LText.FMsList.SizeColumn;
+            ShowRatingMenuItem.Text = LText.FMsList.RatingColumn;
+            ShowFinishedMenuItem.Text = LText.FMsList.FinishedColumn;
+            ShowReleaseDateMenuItem.Text = LText.FMsList.ReleaseDateColumn;
+            ShowLastPlayedMenuItem.Text = LText.FMsList.LastPlayedColumn;
+            ShowDateAddedMenuItem.Text = LText.FMsList.DateAddedColumn;
+            ShowDisabledModsMenuItem.Text = LText.FMsList.DisabledModsColumn;
+            ShowCommentMenuItem.Text = LText.FMsList.CommentColumn;
         }
 
-        internal static void SetColumnChecked(int index, bool enabled)
+        internal void SetColumnChecked(int index, bool enabled)
         {
             if (_constructed)
             {
-                ColumnHeaderCheckBoxMenuItems![index].Checked = enabled;
+                ColumnHeaderCheckBoxMenuItems[index].Checked = enabled;
             }
             else
             {
