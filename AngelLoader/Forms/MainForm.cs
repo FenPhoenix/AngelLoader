@@ -115,6 +115,7 @@ namespace AngelLoader.Forms
         private readonly TopRightLLMenu TopRightLLMenu;
         private readonly MainLLMenu MainLLMenu;
         private readonly EncodingsLLMenu EncodingsLLMenu;
+        private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
 
         #endregion
 
@@ -454,6 +455,7 @@ namespace AngelLoader.Forms
             TopRightLLMenu = new TopRightLLMenu(this);
             MainLLMenu = new MainLLMenu(this);
             EncodingsLLMenu = new EncodingsLLMenu(this);
+            ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this);
 
             #endregion
 
@@ -3901,7 +3903,7 @@ namespace AngelLoader.Forms
 
             if (fm.SelectedReadme.ExtIsHtml())
             {
-                ViewHTMLReadmeLLButton.Show(this);
+                ViewHTMLReadmeLLButton.Show();
             }
             else
             {
@@ -4717,7 +4719,7 @@ namespace AngelLoader.Forms
             switch (state)
             {
                 case ReadmeState.HTML:
-                    ViewHTMLReadmeLLButton.Show(this);
+                    ViewHTMLReadmeLLButton.Show();
                     SetReadmeVisible(false);
                     ReadmeEncodingButton.Enabled = false;
                     // In case the cursor is over the scroll bar area

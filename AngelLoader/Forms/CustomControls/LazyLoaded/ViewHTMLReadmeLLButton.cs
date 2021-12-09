@@ -3,16 +3,18 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal static class ViewHTMLReadmeLLButton
+    internal sealed class ViewHTMLReadmeLLButton
     {
-        private static bool _constructed;
-        private static DarkButton Button = null!;
+        private bool _constructed;
+        private DarkButton Button = null!;
 
-        private static bool _darkModeEnabled;
+        private readonly MainForm _owner;
+
+        private bool _darkModeEnabled;
         [PublicAPI]
-        internal static bool DarkModeEnabled
+        internal bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -25,28 +27,30 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        internal static void Localize()
+        internal ViewHTMLReadmeLLButton(MainForm owner) => _owner = owner;
+
+        internal void Localize()
         {
             if (_constructed) Button.Text = LText.ReadmeArea.ViewHTMLReadme;
         }
 
-        internal static void Center(Control parent)
+        internal void Center(Control parent)
         {
             if (_constructed) Button.CenterHV(parent);
         }
 
-        internal static bool Visible => _constructed && Button.Visible;
+        internal bool Visible => _constructed && Button.Visible;
 
-        internal static void Hide()
+        internal void Hide()
         {
             if (_constructed) Button.Hide();
         }
 
-        internal static void Show(MainForm owner)
+        internal void Show()
         {
             if (!_constructed)
             {
-                var container = owner.MainSplitContainer.Panel2;
+                var container = _owner.MainSplitContainer.Panel2;
 
                 Button = new DarkButton { Tag = LoadType.Lazy };
                 container.Controls.Add(Button);
@@ -60,8 +64,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 Button.TabIndex = 49;
                 Button.UseVisualStyleBackColor = true;
                 Button.Visible = false;
-                Button.Click += owner.ViewHTMLReadmeButton_Click;
-                Button.MouseLeave += owner.ReadmeArea_MouseLeave;
+                Button.Click += _owner.ViewHTMLReadmeButton_Click;
+                Button.MouseLeave += _owner.ReadmeArea_MouseLeave;
 
                 _constructed = true;
 
