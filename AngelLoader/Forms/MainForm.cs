@@ -120,6 +120,7 @@ namespace AngelLoader.Forms
         private readonly AddTagLLMenu AddTagLLMenu;
         private readonly AltTitlesLLMenu AltTitlesLLMenu;
         private readonly FilterControlsLLMenu FilterControlsLLMenu;
+        private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
 
         #endregion
 
@@ -464,6 +465,7 @@ namespace AngelLoader.Forms
             AddTagLLMenu = new AddTagLLMenu(this);
             AltTitlesLLMenu = new AltTitlesLLMenu(this);
             FilterControlsLLMenu = new FilterControlsLLMenu(this);
+            GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this);
 
             #endregion
 
@@ -2369,7 +2371,6 @@ namespace AngelLoader.Forms
 
         private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
         {
-            GameFilterControlsLLMenu.Construct(this, components);
             ShowMenu(GameFilterControlsLLMenu.Menu,
                 GameFilterControlsShowHideButtonToolStrip,
                 MenuPos.RightDown,

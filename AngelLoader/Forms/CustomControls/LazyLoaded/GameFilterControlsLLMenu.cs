@@ -1,25 +1,32 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Linq;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal static class GameFilterControlsLLMenu
+    internal sealed class GameFilterControlsLLMenu
     {
-        private static bool _constructed;
-        private static readonly bool[] _checkedStates = InitializedArray(SupportedGameCount, true);
+        private bool _constructed;
+        private readonly bool[] _checkedStates = InitializedArray(SupportedGameCount, true);
 
-        private static MainForm _owner = null!;
+        private readonly MainForm _owner;
 
-        internal static DarkContextMenu Menu = null!;
+        private DarkContextMenu _menu = null!;
+        internal DarkContextMenu Menu
+        {
+            get
+            {
+                Construct();
+                return _menu;
+            }
+        }
 
-        private static bool _darkModeEnabled;
+        private bool _darkModeEnabled;
         [PublicAPI]
-        public static bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -28,17 +35,17 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 _darkModeEnabled = value;
                 if (!_constructed) return;
 
-                Menu.DarkModeEnabled = _darkModeEnabled;
+                _menu.DarkModeEnabled = _darkModeEnabled;
             }
         }
 
-        internal static void Construct(MainForm form, IContainer components)
+        internal GameFilterControlsLLMenu(MainForm owner) => _owner = owner;
+
+        private void Construct()
         {
             if (_constructed) return;
 
-            _owner = form;
-
-            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
@@ -50,33 +57,33 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 };
                 item.Click += _owner.GameFilterControlsMenuItems_Click;
 
-                Menu.Items.Add(item);
+                _menu.Items.Add(item);
             }
 
-            Menu.SetPreventCloseOnClickItems(Menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
+            _menu.SetPreventCloseOnClickItems(_menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
 
             _constructed = true;
 
             Localize();
         }
 
-        internal static void Localize()
+        internal void Localize()
         {
             if (!_constructed) return;
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                Menu.Items[i].Text = GetLocalizedGameName((GameIndex)i);
+                _menu.Items[i].Text = GetLocalizedGameName((GameIndex)i);
             }
         }
 
-        internal static void SetCheckedStates(bool[] states)
+        internal void SetCheckedStates(bool[] states)
         {
             if (_constructed)
             {
-                for (int i = 0; i < Menu.Items.Count; i++)
+                for (int i = 0; i < _menu.Items.Count; i++)
                 {
-                    ((ToolStripMenuItemCustom)Menu.Items[i]).Checked = states[i];
+                    ((ToolStripMenuItemCustom)_menu.Items[i]).Checked = states[i];
                 }
             }
             else
@@ -85,15 +92,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        internal static bool[] GetCheckedStates()
+        internal bool[] GetCheckedStates()
         {
             bool[] ret = new bool[SupportedGameCount];
 
             if (_constructed)
             {
-                for (int i = 0; i < Menu.Items.Count; i++)
+                for (int i = 0; i < _menu.Items.Count; i++)
                 {
-                    ret[i] = ((ToolStripMenuItemCustom)Menu.Items[i]).Checked;
+                    ret[i] = ((ToolStripMenuItemCustom)_menu.Items[i]).Checked;
                 }
             }
             else
