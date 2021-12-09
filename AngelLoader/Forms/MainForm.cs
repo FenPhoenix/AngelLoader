@@ -113,6 +113,7 @@ namespace AngelLoader.Forms
 
         private readonly ExitLLButton ExitLLButton;
         private readonly TopRightLLMenu TopRightLLMenu;
+        private readonly MainLLMenu MainLLMenu;
 
         #endregion
 
@@ -450,6 +451,7 @@ namespace AngelLoader.Forms
 
             ExitLLButton = new ExitLLButton(this);
             TopRightLLMenu = new TopRightLLMenu(this);
+            MainLLMenu = new MainLLMenu(this);
 
             #endregion
 
@@ -1716,7 +1718,6 @@ namespace AngelLoader.Forms
 
         private void MainMenuButton_Click(object sender, EventArgs e)
         {
-            MainLLMenu.Construct(this, components);
             ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: 0, yOffset: 2);
         }
 

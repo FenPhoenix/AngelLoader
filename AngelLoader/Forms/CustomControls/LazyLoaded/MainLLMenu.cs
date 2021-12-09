@@ -1,49 +1,60 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal static class MainLLMenu
+    internal sealed class MainLLMenu
     {
         #region Backing fields
 
-        private static bool _constructed;
-        private static bool _scanAllFMsMenuItemEnabled;
+        private bool _constructed;
+        private bool _scanAllFMsMenuItemEnabled;
 
         #endregion
+
+        private readonly MainForm _owner;
+
+        internal MainLLMenu(MainForm owner) => _owner = owner;
 
         #region Menu items
 
-        internal static DarkContextMenu Menu = null!;
-        private static ToolStripMenuItemCustom GameVersionsMenuItem = null!;
+        private DarkContextMenu _menu = null!;
+        internal DarkContextMenu Menu
+        {
+            get
+            {
+                Construct();
+                return _menu;
+            }
+        }
+        private ToolStripMenuItemCustom GameVersionsMenuItem = null!;
 #if false
-        private static ToolStripMenuItemCustom GlobalFMStatsMenuItem = null!;
+        private  ToolStripMenuItemCustom GlobalFMStatsMenuItem = null!;
 #endif
-        private static ToolStripMenuItemCustom ImportMenuItem = null!;
-        private static ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
-        private static ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
+        private ToolStripMenuItemCustom ImportMenuItem = null!;
+        private ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
+        private ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
         [UsedImplicitly]
         // It's an implicit "else" case, but let's keep it just for consistency
 #pragma warning disable IDE0052 // Remove unread private members
-        private static ToolStripMenuItemCustom ImportFromNewDarkLoaderMenuItem = null!;
+        private ToolStripMenuItemCustom ImportFromNewDarkLoaderMenuItem = null!;
 #pragma warning restore IDE0052 // Remove unread private members
 
-        private static ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
+        private ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
 
-        private static ToolStripMenuItemCustom SettingsMenuItem = null!;
+        private ToolStripMenuItemCustom SettingsMenuItem = null!;
 
-        private static ToolStripMenuItemCustom ViewHelpFileMenuItem = null!;
-        private static ToolStripMenuItemCustom AboutMenuItem = null!;
-        private static ToolStripMenuItemCustom ExitMenuItem = null!;
+        private ToolStripMenuItemCustom ViewHelpFileMenuItem = null!;
+        private ToolStripMenuItemCustom AboutMenuItem = null!;
+        private ToolStripMenuItemCustom ExitMenuItem = null!;
 
         #endregion
 
-        private static bool _darkModeEnabled;
+        private bool _darkModeEnabled;
         [PublicAPI]
-        public static bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -52,16 +63,16 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 _darkModeEnabled = value;
                 if (!_constructed) return;
 
-                Menu.DarkModeEnabled = _darkModeEnabled;
+                _menu.DarkModeEnabled = _darkModeEnabled;
             }
         }
 
-        internal static void Construct(MainForm form, IContainer components)
+        private void Construct()
         {
             if (_constructed) return;
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components);
-            Menu.Items.AddRange(new ToolStripItem[]
+            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents());
+            _menu.Items.AddRange(new ToolStripItem[]
             {
                 GameVersionsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy},
 #if false
@@ -97,18 +108,18 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 item.Click += ImportMenuItems_Click;
             }
-            ScanAllFMsMenuItem.Click += form.ScanAllFMsMenuItem_Click;
-            SettingsMenuItem.Click += form.Settings_Click;
+            ScanAllFMsMenuItem.Click += _owner.ScanAllFMsMenuItem_Click;
+            SettingsMenuItem.Click += _owner.Settings_Click;
             ViewHelpFileMenuItem.Click += ViewHelpFileMenuItemClick;
             AboutMenuItem.Click += AboutMenuItemClick;
-            ExitMenuItem.Click += (_, _) => form.Close();
+            ExitMenuItem.Click += (_, _) => _owner.Close();
 
             _constructed = true;
 
             Localize();
         }
 
-        internal static void Localize()
+        internal void Localize()
         {
             if (!_constructed) return;
 
@@ -124,9 +135,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             ExitMenuItem.Text = LText.Global.Exit;
         }
 
-        internal static bool Visible => _constructed && Menu.Visible;
+        internal bool Visible => _constructed && _menu.Visible;
 
-        internal static bool ScanAllFMsMenuItemEnabled
+        internal bool ScanAllFMsMenuItemEnabled
         {
             get => _constructed && ScanAllFMsMenuItem.Enabled;
             set
@@ -142,13 +153,13 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        private static void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
+        private void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new GameVersionsForm();
             f.ShowDialogDark();
         }
 
-        private static async void ImportMenuItems_Click(object sender, EventArgs e)
+        private async void ImportMenuItems_Click(object sender, EventArgs e)
         {
             ImportType importType =
                 sender == ImportFromDarkLoaderMenuItem
@@ -161,16 +172,16 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         }
 
 #if false
-        private static void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
+        private  void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new GlobalFMStatsForm();
             f.ShowDialogDark();
         }
 #endif
 
-        private static void ViewHelpFileMenuItemClick(object sender, EventArgs e) => Core.OpenHelpFile();
+        private void ViewHelpFileMenuItemClick(object sender, EventArgs e) => Core.OpenHelpFile();
 
-        private static void AboutMenuItemClick(object sender, EventArgs e)
+        private void AboutMenuItemClick(object sender, EventArgs e)
         {
             using var f = new AboutForm();
             f.ShowDialogDark();
