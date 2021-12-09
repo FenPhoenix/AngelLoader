@@ -119,6 +119,7 @@ namespace AngelLoader.Forms
         private readonly AddTagLLDropDown AddTagLLDropDown;
         private readonly AddTagLLMenu AddTagLLMenu;
         private readonly AltTitlesLLMenu AltTitlesLLMenu;
+        private readonly FilterControlsLLMenu FilterControlsLLMenu;
 
         #endregion
 
@@ -462,6 +463,7 @@ namespace AngelLoader.Forms
             AddTagLLDropDown = new AddTagLLDropDown(this);
             AddTagLLMenu = new AddTagLLMenu(this);
             AltTitlesLLMenu = new AltTitlesLLMenu(this);
+            FilterControlsLLMenu = new FilterControlsLLMenu(this);
 
             #endregion
 
@@ -2439,7 +2441,6 @@ namespace AngelLoader.Forms
 
         private void FilterControlsShowHideButton_Click(object sender, EventArgs e)
         {
-            FilterControlsLLMenu.Construct(this, components);
             ShowMenu(FilterControlsLLMenu.Menu,
                 FilterIconButtonsToolStrip,
                 MenuPos.RightDown,
