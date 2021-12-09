@@ -33,7 +33,7 @@ namespace AngelLoader.Forms.CustomControls
         #region Sort
 
         internal Column CurrentSortedColumn;
-        internal SortOrder CurrentSortDirection = SortOrder.None;
+        internal SortDirection CurrentSortDirection = SortDirection.Ascending;
 
         #endregion
 
@@ -586,10 +586,9 @@ namespace AngelLoader.Forms.CustomControls
                     ).Width;
 
                     if (e.ColumnIndex == (int)CurrentSortedColumn &&
-                        textLength < e.CellBounds.Width - 24 &&
-                        CurrentSortDirection != SortOrder.None)
+                        textLength < e.CellBounds.Width - 24)
                     {
-                        var direction = CurrentSortDirection == SortOrder.Ascending
+                        var direction = CurrentSortDirection == SortDirection.Ascending
                             ? Direction.Up
                             : Direction.Down;
 

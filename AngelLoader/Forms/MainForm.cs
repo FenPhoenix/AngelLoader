@@ -2594,14 +2594,10 @@ namespace AngelLoader.Forms
                         {
                             if (fromColumnClick)
                             {
-                                if (FMsDGV.CurrentSortDirection == SortOrder.Ascending)
-                                {
-                                    FMsDGV.FirstDisplayedScrollingRowIndex = row.ClampToZero();
-                                }
-                                else if (FMsDGV.CurrentSortDirection == SortOrder.Descending)
-                                {
-                                    FMsDGV.FirstDisplayedScrollingRowIndex = (row - FMsDGV.DisplayedRowCount(true)).ClampToZero();
-                                }
+                                FMsDGV.FirstDisplayedScrollingRowIndex =
+                                    FMsDGV.CurrentSortDirection == SortDirection.Ascending
+                                        ? row.ClampToZero()
+                                        : (row - FMsDGV.DisplayedRowCount(true)).ClampToZero();
                             }
                             else
                             {
@@ -3399,9 +3395,9 @@ namespace AngelLoader.Forms
 
         public Column GetCurrentSortedColumnIndex() => FMsDGV.CurrentSortedColumn;
 
-        public SortOrder GetCurrentSortDirection() => FMsDGV.CurrentSortDirection;
+        public SortDirection GetCurrentSortDirection() => FMsDGV.CurrentSortDirection;
 
-        private void SortFMsDGV(Column column, SortOrder sortDirection)
+        private void SortFMsDGV(Column column, SortDirection sortDirection)
         {
             FMsDGV.CurrentSortedColumn = column;
             FMsDGV.CurrentSortDirection = sortDirection;
@@ -3412,9 +3408,12 @@ namespace AngelLoader.Forms
             for (int i = 0; i < FMsDGV.Columns.Count; i++)
             {
                 DataGridViewColumn c = FMsDGV.Columns[i];
-                if (i == intCol && c.HeaderCell.SortGlyphDirection != FMsDGV.CurrentSortDirection)
+                if (i == intCol)
                 {
-                    c.HeaderCell.SortGlyphDirection = FMsDGV.CurrentSortDirection;
+                    c.HeaderCell.SortGlyphDirection =
+                        FMsDGV.CurrentSortDirection == SortDirection.Ascending
+                            ? SortOrder.Ascending
+                            : SortOrder.Descending;
                 }
                 else if (i != intCol && c.HeaderCell.SortGlyphDirection != SortOrder.None)
                 {
@@ -3669,9 +3668,9 @@ namespace AngelLoader.Forms
             SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
             var newSortDirection =
-                e.ColumnIndex == (int)FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortOrder.Ascending
-                    ? SortOrder.Descending
-                    : SortOrder.Ascending;
+                e.ColumnIndex == (int)FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortDirection.Ascending
+                    ? SortDirection.Descending
+                    : SortDirection.Ascending;
 
             SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
 
@@ -3859,7 +3858,10 @@ namespace AngelLoader.Forms
                 }
                 if (FMsDGV.CurrentSortedColumn == Column.Rating)
                 {
-                    FMsDGV.Columns[(int)Column.Rating].HeaderCell.SortGlyphDirection = FMsDGV.CurrentSortDirection;
+                    FMsDGV.Columns[(int)Column.Rating].HeaderCell.SortGlyphDirection =
+                        FMsDGV.CurrentSortDirection == SortDirection.Ascending
+                            ? SortOrder.Ascending
+                            : SortOrder.Descending;
                 }
             }
 

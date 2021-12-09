@@ -107,7 +107,7 @@ namespace AngelLoader.Forms
 
         Column GetCurrentSortedColumnIndex();
 
-        SortOrder GetCurrentSortDirection();
+        SortDirection GetCurrentSortDirection();
 
         #endregion
 

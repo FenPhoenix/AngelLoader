@@ -584,7 +584,7 @@ namespace AngelLoader
             }
         }
 
-        internal static void SortFMsViewList(Column column, SortOrder sortDirection)
+        internal static void SortFMsViewList(Column column, SortDirection sortDirection)
         {
             var comparer = column switch
             {
@@ -606,7 +606,7 @@ namespace AngelLoader
 
             AssertR(comparer != null, nameof(comparer) + "==null: column not being handled");
 
-            comparer!.SortOrder = sortDirection;
+            comparer!.SortDirection = sortDirection;
 
             FMsViewList.Sort(comparer);
 
@@ -635,7 +635,7 @@ namespace AngelLoader
                     }
                 }
 
-                Comparers.FMDateAdded.SortOrder = SortOrder.Ascending;
+                Comparers.FMDateAdded.SortDirection = SortDirection.Ascending;
                 tempFMs.Sort(Comparers.FMDateAdded);
 
                 for (int i = 0; i < tempFMs.Count; i++)
@@ -1758,7 +1758,7 @@ namespace AngelLoader
             float topSplitterPercent,
             List<ColumnData> columns,
             Column sortedColumn,
-            SortOrder sortDirection,
+            SortDirection sortDirection,
             float fmsListFontSizeInPoints,
             Filter filter,
             bool[] gameFilterControlVisibilities,

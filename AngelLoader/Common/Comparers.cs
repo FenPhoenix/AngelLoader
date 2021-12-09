@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -71,7 +70,7 @@ namespace AngelLoader
 
         internal interface IDirectionalSortFMComparer : IComparer<FanMission>
         {
-            SortOrder SortOrder { set; }
+            SortDirection SortDirection { set; }
         }
 
         #region FM list sorting
@@ -142,18 +141,18 @@ namespace AngelLoader
 
         internal sealed class FMTitleComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
                 int ret = TitleCompare(x, y);
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMGameComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -163,13 +162,13 @@ namespace AngelLoader
                     y.Game == Game.Null ? 1 :
                     x.Game < y.Game ? -1 : 1;
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMInstalledComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -178,13 +177,13 @@ namespace AngelLoader
                     // Installed goes on top, non-installed (blank icon) goes on bottom
                     x.Installed && !y.Installed ? -1 : 1;
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMArchiveComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -193,13 +192,13 @@ namespace AngelLoader
                     y.Archive.IsEmpty() ? 1 :
                     string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMAuthorComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -209,13 +208,13 @@ namespace AngelLoader
                     y.Author.IsEmpty() ? 1 :
                     string.Compare(x.Author, y.Author, StringComparison.InvariantCultureIgnoreCase);
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMSizeComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -225,13 +224,13 @@ namespace AngelLoader
                     y.SizeBytes == 0 ? 1 :
                     x.SizeBytes < y.SizeBytes ? -1 : 1;
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMRatingComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -240,7 +239,7 @@ namespace AngelLoader
 #if false
             if (false)
             {
-                int one = _sortOrder == SortOrder.Ascending ? 1 : -1;
+                int one = SortDirection == SortDirection.Ascending ? 1 : -1;
 
                 ret =
                     x.Rating == y.Rating ? TitleCompare(x, y) :
@@ -258,13 +257,13 @@ namespace AngelLoader
                         x.Rating < y.Rating ? -1 : 1;
                 }
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMFinishedComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -293,13 +292,13 @@ namespace AngelLoader
                         x.FinishedOn < y.FinishedOn ? -1 : 1;
                 }
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMReleaseDateComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -325,13 +324,13 @@ namespace AngelLoader
                     ret = cmp == 0 ? TitleCompare(x, y) : cmp;
                 }
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMLastPlayedComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -356,13 +355,13 @@ namespace AngelLoader
                     ret = cmp == 0 ? TitleCompare(x, y) : cmp;
                 }
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMDateAddedComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -386,13 +385,13 @@ namespace AngelLoader
                     ret = cmp == 0 ? TitleCompare(x, y) : cmp;
                 }
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMDisabledModsComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -405,13 +404,13 @@ namespace AngelLoader
                     y.DisabledMods.IsEmpty() ? -1 :
                     string.Compare(x.DisabledMods, y.DisabledMods, StringComparison.InvariantCultureIgnoreCase);
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 
         internal sealed class FMCommentComparer : IDirectionalSortFMComparer
         {
-            public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
 
             public int Compare(FanMission x, FanMission y)
             {
@@ -422,7 +421,7 @@ namespace AngelLoader
                     y.CommentSingleLine.IsEmpty() ? -1 :
                     string.Compare(x.CommentSingleLine, y.CommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
 
-                return SortOrder == SortOrder.Ascending ? ret : -ret;
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
         }
 

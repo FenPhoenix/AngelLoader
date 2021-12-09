@@ -264,7 +264,7 @@ namespace AngelLoader.DataClasses
 
         internal readonly List<ColumnData> Columns = new List<ColumnData>(ColumnsCount);
         internal Column SortedColumn = Column.Title;
-        internal SortOrder SortDirection = SortOrder.Ascending;
+        internal SortDirection SortDirection = SortDirection.Ascending;
 
         private float _fmsListFontSizeInPoints = Defaults.FMsListFontSizeInPoints;
         internal float FMsListFontSizeInPoints

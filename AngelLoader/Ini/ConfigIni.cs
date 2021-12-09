@@ -272,11 +272,11 @@ namespace AngelLoader
                 {
                     if (val.EqualsI("Ascending"))
                     {
-                        config.SortDirection = SortOrder.Ascending;
+                        config.SortDirection = SortDirection.Ascending;
                     }
                     else if (val.EqualsI("Descending"))
                     {
-                        config.SortDirection = SortOrder.Descending;
+                        config.SortDirection = SortDirection.Descending;
                     }
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("SortedColumn="))

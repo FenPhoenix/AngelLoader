@@ -20,6 +20,12 @@ namespace AngelLoader
 
         #region Enums and enum-like
 
+        public enum SortDirection
+        {
+            Ascending,
+            Descending
+        }
+
         public enum Zoom { In, Out, Reset }
 
         // Public for param accessibility reasons or whatever
