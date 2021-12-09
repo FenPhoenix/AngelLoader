@@ -116,6 +116,7 @@ namespace AngelLoader.Forms
         private readonly MainLLMenu MainLLMenu;
         private readonly EncodingsLLMenu EncodingsLLMenu;
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
+        private readonly AddTagLLDropDown AddTagLLDropDown;
 
         #endregion
 
@@ -456,6 +457,7 @@ namespace AngelLoader.Forms
             MainLLMenu = new MainLLMenu(this);
             EncodingsLLMenu = new EncodingsLLMenu(this);
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this);
+            AddTagLLDropDown = new AddTagLLDropDown(this);
 
             #endregion
 
@@ -2825,14 +2827,13 @@ namespace AngelLoader.Forms
             }
             else
             {
-                AddTagLLDropDown.SetItemsAndShow(this, list);
+                AddTagLLDropDown.SetItemsAndShow(list);
             }
         }
 
         internal void AddTagTextBoxOrListBox_KeyDown(object sender, KeyEventArgs e)
         {
-            AddTagLLDropDown.Construct(this);
-            var box = AddTagLLDropDown.ListBox;
+            DarkListBox box = AddTagLLDropDown.ListBox;
 
             switch (e.KeyCode)
             {
@@ -2860,7 +2861,7 @@ namespace AngelLoader.Forms
                     FMTags.AddTagOperation(FMsDGV.GetSelectedFM(), catAndTag);
                     break;
                 default:
-                    if (sender == AddTagLLDropDown.ListBox) AddTagTextBox.Focus();
+                    if (sender == box) AddTagTextBox.Focus();
                     break;
             }
         }
