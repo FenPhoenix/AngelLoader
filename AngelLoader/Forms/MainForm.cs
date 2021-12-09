@@ -4135,12 +4135,14 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(false);
             FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(false);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(true);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(sayInstall: true);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(false);
+
+            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(sayPin: true);
 
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(false);
 
-            FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(false);
+            FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: false);
             FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(false);
             FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(false);
 
