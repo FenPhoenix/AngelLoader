@@ -111,23 +111,23 @@ namespace AngelLoader.Forms
 
         #region Lazy-loaded controls
 
-        private readonly ExitLLButton ExitLLButton;
-        private readonly TopRightLLMenu TopRightLLMenu;
-        private readonly MainLLMenu MainLLMenu;
-        private readonly EncodingsLLMenu EncodingsLLMenu;
-        private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
         private readonly AddTagLLDropDown AddTagLLDropDown;
         private readonly AddTagLLMenu AddTagLLMenu;
         private readonly AltTitlesLLMenu AltTitlesLLMenu;
-        private readonly FilterControlsLLMenu FilterControlsLLMenu;
-        private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
-        private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
         private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
-        private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
+        private readonly EncodingsLLMenu EncodingsLLMenu;
+        private readonly ExitLLButton ExitLLButton;
+        private readonly FilterControlsLLMenu FilterControlsLLMenu;
         private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
-        private readonly Lazy_ToolStripLabels Lazy_ToolStripLabels;
-        private readonly InstallUninstallFMLLButton InstallUninstallFMLLButton;
         private readonly FMsDGV_FM_LLMenu FMsDGV_FM_LLMenu;
+        private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
+        private readonly InstallUninstallFMLLButton InstallUninstallFMLLButton;
+        private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
+        private readonly Lazy_ToolStripLabels Lazy_ToolStripLabels;
+        private readonly MainLLMenu MainLLMenu;
+        private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
+        private readonly TopRightLLMenu TopRightLLMenu;
+        private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
 
         #endregion
 
@@ -463,23 +463,23 @@ namespace AngelLoader.Forms
 
             #region Lazy-loaded controls
 
-            ExitLLButton = new ExitLLButton(this);
-            TopRightLLMenu = new TopRightLLMenu(this);
-            MainLLMenu = new MainLLMenu(this);
-            EncodingsLLMenu = new EncodingsLLMenu(this);
-            ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this);
             AddTagLLDropDown = new AddTagLLDropDown(this);
             AddTagLLMenu = new AddTagLLMenu(this);
             AltTitlesLLMenu = new AltTitlesLLMenu(this);
-            FilterControlsLLMenu = new FilterControlsLLMenu(this);
-            GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this);
-            PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this);
             ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this);
-            Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this);
+            EncodingsLLMenu = new EncodingsLLMenu(this);
+            ExitLLButton = new ExitLLButton(this);
+            FilterControlsLLMenu = new FilterControlsLLMenu(this);
             FMsDGV_ColumnHeaderLLMenu = new FMsDGV_ColumnHeaderLLMenu(this);
-            Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this);
-            InstallUninstallFMLLButton = new InstallUninstallFMLLButton(this);
             FMsDGV_FM_LLMenu = new FMsDGV_FM_LLMenu(this);
+            GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this);
+            InstallUninstallFMLLButton = new InstallUninstallFMLLButton(this);
+            Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this);
+            Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this);
+            MainLLMenu = new MainLLMenu(this);
+            PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this);
+            TopRightLLMenu = new TopRightLLMenu(this);
+            ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this);
 
             #endregion
 
