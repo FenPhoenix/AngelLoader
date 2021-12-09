@@ -106,8 +106,6 @@ namespace AngelLoader.Forms
             // even if we DID want to do more reflection crap!)
             ErrorIconPictureBox.Image = Images.RedExclamationMarkCircle;
 
-            if (_startup) Win32ThemeHooks.InstallHooks();
-
             _selfTheme = config.VisualTheme;
 
             _startup = startup;
