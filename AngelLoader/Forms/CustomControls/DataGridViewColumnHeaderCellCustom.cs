@@ -44,6 +44,23 @@ namespace AngelLoader.Forms.CustomControls
             DataGridViewAdvancedBorderStyle advancedBorderStyle,
             DataGridViewPaintParts paintParts)
         {
+            void CallBase(bool disableReflection = false)
+            {
+                if (disableReflection) _reflectionSupported = false;
+                base.Paint(
+                    graphics,
+                    clipBounds,
+                    cellBounds,
+                    rowIndex,
+                    dataGridViewElementState,
+                    value,
+                    formattedValue,
+                    errorText,
+                    cellStyle,
+                    advancedBorderStyle,
+                    paintParts);
+            }
+
             // Hack to force selected column headers NOT to be highlighted. We're in full-row select mode, so
             // highlighting makes no sense and is visually distracting. The DataGridView code is LUDICROUSLY
             // resilient against any attempt to make it stop the highlighting. It has an IsHighlighted() method
@@ -57,7 +74,7 @@ namespace AngelLoader.Forms.CustomControls
             // So, instead, we just toggle the underlying field of one of the properties it checks (SelectionMode)
             // while we paint. Thus we force the accursed thing to not paint itself blue. FINALLY.
             // NOTE: In dark mode we don't have to do this because we're already custom drawing the headers then.
-            if (rowIndex == -1 && !DarkModeEnabled)
+            if (rowIndex == -1 && !DarkModeEnabled && _reflectionSupported != false)
             {
                 // Do this here because DataGridView will still be null in the ctor. We only do it once app-wide
                 // anyway (static) so it's fine.
@@ -69,52 +86,62 @@ namespace AngelLoader.Forms.CustomControls
                         if (selectionModeField == null ||
                             selectionModeField.GetValue(DataGridView) is not DataGridViewSelectionMode)
                         {
-                            _reflectionSupported = false;
+                            CallBase(disableReflection: true);
                             return;
                         }
-
-                        _reflectionSupported = true;
+                        else
+                        {
+                            _reflectionSupported = true;
+                        }
                     }
                     catch
                     {
-                        _reflectionSupported = false;
+                        CallBase(disableReflection: true);
+                        return;
                     }
                 }
 
-                DataGridViewSelectionMode? oldSelectionMode = null;
-                bool success = true;
+                if (selectionModeField == null)
+                {
+                    CallBase(disableReflection: true);
+                    return;
+                }
+
+                DataGridViewSelectionMode oldSelectionMode;
                 try
                 {
-                    oldSelectionMode = (DataGridViewSelectionMode)selectionModeField!.GetValue(DataGridView);
+                    oldSelectionMode = (DataGridViewSelectionMode)selectionModeField.GetValue(DataGridView);
                     selectionModeField.SetValue(DataGridView, DataGridViewSelectionMode.CellSelect);
                 }
                 catch
                 {
-                    success = false;
+                    // Force correct selection mode back in this case, because our temp set could have failed
+                    DataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    CallBase(disableReflection: true);
+                    return;
                 }
 
                 try
                 {
-                    base.Paint(graphics, clipBounds, cellBounds, rowIndex, dataGridViewElementState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
+                    CallBase();
                 }
                 finally
                 {
-                    if (success && oldSelectionMode != null)
+                    try
                     {
-                        try
-                        {
-                            selectionModeField!.SetValue(DataGridView, oldSelectionMode);
-                        }
-                        catch
-                        {
-                            // ignore
-                        }
+                        selectionModeField.SetValue(DataGridView, oldSelectionMode);
+                    }
+                    catch
+                    {
+                        // Ditto
+                        DataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                        _reflectionSupported = false;
                     }
                 }
             }
             else
             {
-                base.Paint(graphics, clipBounds, cellBounds, rowIndex, dataGridViewElementState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
+                CallBase();
             }
         }
     }
