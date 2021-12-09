@@ -43,15 +43,15 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LoadType.Lazy };
 
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                Thief1MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief1_16, Tag = LazyLoaded.True },
-                Thief2MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16, Tag = LazyLoaded.True },
-                Thief2MPMenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16, Tag = LazyLoaded.True },
-                Thief3MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief3_16, Tag = LazyLoaded.True },
-                SS2MenuItem = new ToolStripMenuItemCustom { Image = Images.Shock2_16, Tag = LazyLoaded.True }
+                Thief1MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief1_16, Tag = LoadType.Lazy },
+                Thief2MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16, Tag = LoadType.Lazy },
+                Thief2MPMenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16, Tag = LoadType.Lazy },
+                Thief3MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief3_16, Tag = LoadType.Lazy },
+                SS2MenuItem = new ToolStripMenuItemCustom { Image = Images.Shock2_16, Tag = LoadType.Lazy }
             });
 
             foreach (ToolStripMenuItemCustom item in Menu.Items)

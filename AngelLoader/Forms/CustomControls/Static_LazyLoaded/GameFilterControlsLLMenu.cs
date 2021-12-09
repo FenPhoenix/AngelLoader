@@ -38,7 +38,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             _owner = form;
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LoadType.Lazy };
 
             for (int i = 0; i < SupportedGameCount; i++)
             {

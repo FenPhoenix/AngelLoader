@@ -30,7 +30,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (_constructed) return;
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LoadType.Lazy };
             Menu.Closed += form.AddTagMenu_Closed;
 
             _constructed = true;

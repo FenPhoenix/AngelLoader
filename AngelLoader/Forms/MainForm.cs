@@ -50,7 +50,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
-using AngelLoader.Forms.CustomControls.Dynamic_LazyLoaded;
+using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.WinAPI;
 using static AL_Common.Common;
@@ -2926,28 +2926,28 @@ namespace AngelLoader.Forms
             {
                 if (item.Tags.Count == 0)
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(item.Category + ":") { Tag = LazyLoaded.True };
+                    var catItem = new ToolStripMenuItemWithBackingText(item.Category + ":") { Tag = LoadType.Lazy };
                     catItem.Click += AddTagMenuEmptyItem_Click;
                     addTagMenuItems.Add(catItem);
                 }
                 else
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(item.Category) { Tag = LazyLoaded.True };
+                    var catItem = new ToolStripMenuItemWithBackingText(item.Category) { Tag = LoadType.Lazy };
                     addTagMenuItems.Add(catItem);
 
                     var last = addTagMenuItems[addTagMenuItems.Count - 1];
 
                     if (item.Category != PresetTags.MiscCategory)
                     {
-                        var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory) { Tag = LazyLoaded.True };
+                        var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory) { Tag = LoadType.Lazy };
                         customItem.Click += AddTagMenuCustomItem_Click;
                         ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(customItem);
-                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator { Tag = LazyLoaded.True });
+                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator { Tag = LoadType.Lazy });
                     }
 
                     foreach (string tag in item.Tags)
                     {
-                        var tagItem = new ToolStripMenuItemWithBackingText(tag) { Tag = LazyLoaded.True };
+                        var tagItem = new ToolStripMenuItemWithBackingText(tag) { Tag = LoadType.Lazy };
 
                         tagItem.Click += item.Category == PresetTags.MiscCategory
                             ? AddTagMenuMiscItem_Click

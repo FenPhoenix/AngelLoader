@@ -50,7 +50,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             if (!_constructed[li])
             {
-                _labels[li] = new ToolStripLabel { Tag = LazyLoaded.True };
+                _labels[li] = new ToolStripLabel { Tag = LoadType.Lazy };
                 var _label = _labels[li];
 
                 var container = owner.FilterIconButtonsToolStrip;

@@ -52,19 +52,19 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             // TODO: Component LazyLoaded tags are ignored because only Controls are checked in the dictionary filler.
             // Also, they get stomped on below anyway with the indexes.
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LoadType.Lazy };
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                TitleMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                AuthorMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                ReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                LastPlayedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                TagsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                FinishedStateMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                RatingMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                ShowUnsupportedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                ShowUnavailableFMsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True }
+                TitleMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                AuthorMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                ReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                LastPlayedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                TagsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                FinishedStateMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                RatingMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                ShowUnsupportedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                ShowUnavailableFMsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy }
             });
 
             for (int i = 0; i < Menu.Items.Count; i++)

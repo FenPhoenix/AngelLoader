@@ -119,7 +119,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation
 
-            Menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LazyLoaded.True };
+            Menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
 
             #endregion
 
@@ -127,29 +127,29 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                    ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom{ Tag = LazyLoaded.True },
-                    ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    new ToolStripSeparator { Tag = LazyLoaded.True }
+                    ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom{ Tag = LoadType.Lazy },
+                    ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    new ToolStripSeparator { Tag = LoadType.Lazy }
             });
 
             #region Fill ColumnHeaderCheckBoxMenuItems array
 
             ColumnHeaderCheckBoxMenuItems = new[]
             {
-                    ShowGameMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowInstalledMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowTitleMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowArchiveMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowAuthorMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowSizeMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowRatingMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowFinishedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowLastPlayedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowDateAddedMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowDisabledModsMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                    ShowCommentMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True }
+                    ShowGameMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowInstalledMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowTitleMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowArchiveMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowAuthorMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowSizeMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowRatingMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowFinishedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowLastPlayedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowDateAddedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowDisabledModsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                    ShowCommentMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy }
                 };
 
             for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)

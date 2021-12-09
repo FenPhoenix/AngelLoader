@@ -44,7 +44,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             for (int i = 0; i < toolStripItems.Length; i++)
             {
-                toolStripItems[i].Tag = LazyLoaded.True;
+                toolStripItems[i].Tag = LoadType.Lazy;
             }
 
             Items.AddRange(toolStripItems);

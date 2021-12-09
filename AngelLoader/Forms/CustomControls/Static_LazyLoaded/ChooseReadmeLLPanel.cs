@@ -40,7 +40,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             OKButton = new DarkButton
             {
-                Tag = LazyLoaded.True,
+                Tag = LoadType.Lazy,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right,
                 AutoSize = true,
                 Margin = new Padding(0),
@@ -55,7 +55,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             OKButtonFLP = new FlowLayoutPanel
             {
-                Tag = LazyLoaded.True,
+                Tag = LoadType.Lazy,
                 FlowDirection = FlowDirection.RightToLeft,
                 Location = new Point(1, 134),
                 Size = new Size(320, 24),
@@ -66,7 +66,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             ListBox = new DarkListBoxWithBackingItems
             {
-                Tag = LazyLoaded.True,
+                Tag = LoadType.Lazy,
                 MultiSelect = false,
                 Size = new Size(320, 134),
                 TabIndex = 47,
@@ -75,7 +75,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             Panel = new Panel
             {
-                Tag = LazyLoaded.True,
+                Tag = LoadType.Lazy,
                 Anchor = AnchorStyles.None,
                 TabIndex = 46,
                 Visible = false,

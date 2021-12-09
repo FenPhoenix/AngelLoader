@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.Dynamic_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
     internal sealed class ExitLLButton
     {
@@ -44,7 +44,7 @@ namespace AngelLoader.Forms.CustomControls.Dynamic_LazyLoaded
                 {
                     var container = _owner.BottomRightButtonsFLP;
 
-                    Button = new DarkButton { Tag = LazyLoaded.True };
+                    Button = new DarkButton { Tag = LoadType.Lazy };
 
                     container.Controls.Add(Button);
                     container.Controls.SetChildIndex(Button, 0);

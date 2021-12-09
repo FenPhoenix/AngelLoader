@@ -32,7 +32,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (Constructed) return;
 
-            ListBox = new DarkListBox { Tag = LazyLoaded.True };
+            ListBox = new DarkListBox { Tag = LoadType.Lazy };
             owner.EverythingPanel.Controls.Add(ListBox);
             ListBox.DarkModeEnabled = _darkModeEnabled;
             ListBox.Scrollable = true;

@@ -40,7 +40,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             // Otherwise, it's impossible that this would work, because we construct but only explicitly call
             // Show() in OpenSettings()...
             // 2020-12-30: No, it's because we call Localize() and that calls Show().
-            Button = new DarkButton { Visible = false, Tag = LazyLoaded.True };
+            Button = new DarkButton { Visible = false, Tag = LoadType.Lazy };
 
             container.Controls.Add(Button);
             container.Controls.SetChildIndex(Button, 2);

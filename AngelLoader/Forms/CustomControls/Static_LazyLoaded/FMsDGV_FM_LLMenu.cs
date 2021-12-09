@@ -186,8 +186,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation
 
-            FMContextMenu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LazyLoaded.True };
-            FinishedOnMenu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LazyLoaded.True };
+            FMContextMenu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            FinishedOnMenu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
 
             #endregion
 
@@ -195,46 +195,46 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             FMContextMenu.Items.AddRange(new ToolStripItem[]
             {
-                PlayFMMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                PlayFMInMPMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                InstallUninstallMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                new ToolStripSeparator { Tag = LazyLoaded.True },
-                PinToTopMenuItem= new ToolStripMenuItemCustom{ Tag = LazyLoaded.True },
-                new ToolStripSeparator { Tag = LazyLoaded.True },
-                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16, Tag = LazyLoaded.True },
-                OpenInDromEdSep = new ToolStripSeparator { Tag = LazyLoaded.True },
-                OpenInDromEdMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                OpenFMFolderSep = new ToolStripSeparator { Tag = LazyLoaded.True },
-                OpenFMFolderMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                new ToolStripSeparator { Tag = LazyLoaded.True },
-                ScanFMMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                ConvertAudioMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                new ToolStripSeparator { Tag = LazyLoaded.True },
-                RatingMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                FinishedOnMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True },
-                new ToolStripSeparator { Tag = LazyLoaded.True },
-                WebSearchMenuItem = new ToolStripMenuItemCustom { Tag = LazyLoaded.True }
+                PlayFMMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                PlayFMInMPMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                InstallUninstallMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                new ToolStripSeparator { Tag = LoadType.Lazy },
+                PinToTopMenuItem= new ToolStripMenuItemCustom{ Tag = LoadType.Lazy },
+                new ToolStripSeparator { Tag = LoadType.Lazy },
+                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16, Tag = LoadType.Lazy },
+                OpenInDromEdSep = new ToolStripSeparator { Tag = LoadType.Lazy },
+                OpenInDromEdMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                OpenFMFolderSep = new ToolStripSeparator { Tag = LoadType.Lazy },
+                OpenFMFolderMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                new ToolStripSeparator { Tag = LoadType.Lazy },
+                ScanFMMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                ConvertAudioMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                new ToolStripSeparator { Tag = LoadType.Lazy },
+                RatingMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                FinishedOnMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                new ToolStripSeparator { Tag = LoadType.Lazy },
+                WebSearchMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy }
             });
 
             ConvertAudioMenuItem.DropDownItems.AddRange(new ToolStripItem[]
             {
-                ConvertWAVsTo16BitMenuItem = new ToolStripMenuItemCustom{ Tag = LazyLoaded.True },
-                ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom{ Tag = LazyLoaded.True }
+                ConvertWAVsTo16BitMenuItem = new ToolStripMenuItemCustom{ Tag = LoadType.Lazy },
+                ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom{ Tag = LoadType.Lazy }
             });
 
-            RatingMenuItem.DropDownItems.Add(RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LazyLoaded.True });
+            RatingMenuItem.DropDownItems.Add(RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy });
             for (int i = 0; i < 11; i++)
             {
-                RatingMenuItem.DropDownItems.Add(new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LazyLoaded.True });
+                RatingMenuItem.DropDownItems.Add(new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy });
             }
 
             FinishedOnMenu.Items.AddRange(new ToolStripItem[]
             {
-                FinishedOnNormalMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LazyLoaded.True },
-                FinishedOnHardMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LazyLoaded.True },
-                FinishedOnExpertMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LazyLoaded.True },
-                FinishedOnExtremeMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LazyLoaded.True },
-                FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LazyLoaded.True }
+                FinishedOnNormalMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
+                FinishedOnHardMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
+                FinishedOnExpertMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
+                FinishedOnExtremeMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
+                FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy }
             });
 
             FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItemCustom>().ToArray());

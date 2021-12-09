@@ -36,14 +36,14 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation and hookup events
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LazyLoaded.True };
+            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LoadType.Lazy };
 
             // Can't use InitializedArray() because them neu wants the array to be of a base type even though the
             // items will be of a derived type, to avoid the stupid covariance warning
             var menuItems = new ToolStripItem[TopRightTabsData.Count];
             for (int i = 0; i < menuItems.Length; i++)
             {
-                menuItems[i] = new ToolStripMenuItemCustom { Tag = LazyLoaded.True };
+                menuItems[i] = new ToolStripMenuItemCustom { Tag = LoadType.Lazy };
             }
 
             Menu.Items.AddRange(menuItems);

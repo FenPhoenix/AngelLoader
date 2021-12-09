@@ -136,7 +136,7 @@ namespace AngelLoader.Forms
         {
             const int maxStackCount = 100;
 
-            if (control.Tag is not LazyLoaded.True)
+            if (control.Tag is not LoadType.Lazy)
             {
                 ControlOriginalColors? origColors = control is IDarkable
                     ? null

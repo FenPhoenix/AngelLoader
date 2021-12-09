@@ -32,7 +32,7 @@ namespace AngelLoader.Forms
         {
             if (_progressBoxConstructed) return;
 
-            ProgressBox = new ProgressPanel { Tag = LazyLoaded.True, Visible = false };
+            ProgressBox = new ProgressPanel { Tag = LoadType.Lazy, Visible = false };
             Controls.Add(ProgressBox);
             ProgressBox.InjectOwner(this);
             ProgressBox.Localize();

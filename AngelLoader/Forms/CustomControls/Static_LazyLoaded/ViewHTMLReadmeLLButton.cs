@@ -48,7 +48,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 var container = owner.MainSplitContainer.Panel2;
 
-                Button = new DarkButton { Tag = LazyLoaded.True };
+                Button = new DarkButton { Tag = LoadType.Lazy };
                 container.Controls.Add(Button);
                 Button.Anchor = AnchorStyles.None;
                 Button.AutoSize = true;
