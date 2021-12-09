@@ -125,6 +125,7 @@ namespace AngelLoader.Forms
         private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
         private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
         private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
+        private readonly Lazy_ToolStripLabels Lazy_ToolStripLabels;
 
         #endregion
 
@@ -474,6 +475,7 @@ namespace AngelLoader.Forms
             ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this);
             Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this);
             FMsDGV_ColumnHeaderLLMenu = new FMsDGV_ColumnHeaderLLMenu(this);
+            Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this);
 
             #endregion
 
@@ -2172,7 +2174,7 @@ namespace AngelLoader.Forms
                     string from = fromDate == null ? "" : fromDate.Value.ToShortDateString();
                     string to = toDate == null ? "" : toDate.Value.ToShortDateString();
 
-                    Lazy_ToolStripLabels.Show(this,
+                    Lazy_ToolStripLabels.Show(
                         lastPlayed
                             ? Lazy_ToolStripLabel.FilterByLastPlayed
                             : Lazy_ToolStripLabel.FilterByReleaseDate, from + " - " + to);
@@ -3882,7 +3884,7 @@ namespace AngelLoader.Forms
                     string from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(curCulture);
                     string to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(curCulture);
 
-                    Lazy_ToolStripLabels.Show(this, Lazy_ToolStripLabel.FilterByRating, from + " - " + to);
+                    Lazy_ToolStripLabels.Show(Lazy_ToolStripLabel.FilterByRating, from + " - " + to);
                 }
                 else
                 {
