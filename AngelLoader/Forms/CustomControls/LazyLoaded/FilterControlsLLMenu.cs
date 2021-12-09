@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
     internal sealed class FilterControlsLLMenu
     {
