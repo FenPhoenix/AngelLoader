@@ -121,6 +121,7 @@ namespace AngelLoader.Forms
         private readonly AltTitlesLLMenu AltTitlesLLMenu;
         private readonly FilterControlsLLMenu FilterControlsLLMenu;
         private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
+        private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
 
         #endregion
 
@@ -466,6 +467,7 @@ namespace AngelLoader.Forms
             AltTitlesLLMenu = new AltTitlesLLMenu(this);
             FilterControlsLLMenu = new FilterControlsLLMenu(this);
             GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this);
+            PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this);
 
             #endregion
 
@@ -4067,7 +4069,7 @@ namespace AngelLoader.Forms
         // Just gonna have to leave this part as-is.
         private void PlayOriginalGameButton_Click(object sender, EventArgs e)
         {
-            PlayOriginalGameLLMenu.Construct(this, components);
+            PlayOriginalGameLLMenu.Construct();
 
             PlayOriginalGameLLMenu.Thief1MenuItem.Enabled = !Config.GetGameExe(Thief1).IsEmpty();
             PlayOriginalGameLLMenu.Thief2MenuItem.Enabled = !Config.GetGameExe(Thief2).IsEmpty();

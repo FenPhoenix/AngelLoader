@@ -1,26 +1,37 @@
-﻿using System.ComponentModel;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
     // @GENGAMES (Play original game menu): Begin
-    internal static class PlayOriginalGameLLMenu
+    internal sealed class PlayOriginalGameLLMenu
     {
-        private static bool _constructed;
+        private bool _constructed;
 
-        internal static DarkContextMenu Menu = null!;
+        private readonly MainForm _owner;
 
-        internal static ToolStripMenuItemCustom Thief1MenuItem = null!;
-        internal static ToolStripMenuItemCustom Thief2MenuItem = null!;
-        internal static ToolStripMenuItemCustom Thief2MPMenuItem = null!;
-        internal static ToolStripMenuItemCustom Thief3MenuItem = null!;
-        internal static ToolStripMenuItemCustom SS2MenuItem = null!;
+        private DarkContextMenu _menu = null!;
+        internal DarkContextMenu Menu
+        {
+            get
+            {
+                Construct();
+                return _menu;
+            }
+        }
 
-        private static bool _darkModeEnabled;
+        internal PlayOriginalGameLLMenu(MainForm owner) => _owner = owner;
+
+        internal ToolStripMenuItemCustom Thief1MenuItem = null!;
+        internal ToolStripMenuItemCustom Thief2MenuItem = null!;
+        internal ToolStripMenuItemCustom Thief2MPMenuItem = null!;
+        internal ToolStripMenuItemCustom Thief3MenuItem = null!;
+        internal ToolStripMenuItemCustom SS2MenuItem = null!;
+
+        private bool _darkModeEnabled;
         [PublicAPI]
-        internal static bool DarkModeEnabled
+        internal bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -29,7 +40,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 _darkModeEnabled = value;
                 if (!_constructed) return;
 
-                Menu.DarkModeEnabled = _darkModeEnabled;
+                _menu.DarkModeEnabled = _darkModeEnabled;
 
                 Thief1MenuItem.Image = Images.Thief1_16;
                 Thief2MenuItem.Image = Images.Thief2_16;
@@ -39,13 +50,13 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        internal static void Construct(MainForm form, IContainer components)
+        internal void Construct()
         {
             if (_constructed) return;
 
-            Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
 
-            Menu.Items.AddRange(new ToolStripItem[]
+            _menu.Items.AddRange(new ToolStripItem[]
             {
                 Thief1MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief1_16, Tag = LoadType.Lazy },
                 Thief2MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16, Tag = LoadType.Lazy },
@@ -54,9 +65,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 SS2MenuItem = new ToolStripMenuItemCustom { Image = Images.Shock2_16, Tag = LoadType.Lazy }
             });
 
-            foreach (ToolStripMenuItemCustom item in Menu.Items)
+            foreach (ToolStripMenuItemCustom item in _menu.Items)
             {
-                item.Click += form.PlayOriginalGameMenuItem_Click;
+                item.Click += _owner.PlayOriginalGameMenuItem_Click;
             }
 
             _constructed = true;
@@ -64,7 +75,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Localize();
         }
 
-        internal static void Localize()
+        internal void Localize()
         {
             if (!_constructed) return;
 
