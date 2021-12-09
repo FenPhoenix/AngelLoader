@@ -803,7 +803,7 @@ namespace AngelLoader
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
                     if (GameIsKnownAndSupported(fm.Game) &&
-                        (Config.GameOrganization == GameOrganization.ByTab || !fm.MarkedRecent) &&
+                        (Config.GameOrganization == GameOrganization.ByTab || (!fm.MarkedRecent && !fm.Pinned)) &&
                         !viewFilter.Games.HasFlagFast(fm.Game))
                     {
                         filterShownIndexList.RemoveAt(i);
