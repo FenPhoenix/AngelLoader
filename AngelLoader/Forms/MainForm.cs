@@ -123,6 +123,7 @@ namespace AngelLoader.Forms
         private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
         private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
         private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
+        private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
 
         #endregion
 
@@ -470,6 +471,7 @@ namespace AngelLoader.Forms
             GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this);
             PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this);
             ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this);
+            Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this);
 
             #endregion
 
@@ -3228,7 +3230,7 @@ namespace AngelLoader.Forms
 
         public void ShowFMsListZoomButtons(bool visible)
         {
-            Lazy_FMsListZoomButtons.SetVisible(this, visible);
+            Lazy_FMsListZoomButtons.SetVisible(visible);
             SetFilterBarWidth();
         }
 
