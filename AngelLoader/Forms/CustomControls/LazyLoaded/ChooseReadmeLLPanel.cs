@@ -3,21 +3,23 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal static class ChooseReadmeLLPanel
+    internal sealed class ChooseReadmeLLPanel
     {
-        private static bool _constructed;
+        private bool _constructed;
 
-        private static Panel Panel = null!;
-        internal static DarkListBoxWithBackingItems ListBox = null!;
+        private readonly MainForm _owner;
 
-        private static FlowLayoutPanel OKButtonFLP = null!;
-        private static DarkButton OKButton = null!;
+        private Panel Panel = null!;
+        internal DarkListBoxWithBackingItems ListBox = null!;
 
-        private static bool _darkModeEnabled;
+        private FlowLayoutPanel OKButtonFLP = null!;
+        private DarkButton OKButton = null!;
+
+        private bool _darkModeEnabled;
         [PublicAPI]
-        internal static bool DarkModeEnabled
+        internal bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -34,7 +36,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        internal static void Construct(MainForm form, Control container)
+        internal ChooseReadmeLLPanel(MainForm owner) => _owner = owner;
+
+        internal void Construct(Control container)
         {
             if (_constructed) return;
 
@@ -51,7 +55,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 UseVisualStyleBackColor = true,
                 DarkModeEnabled = _darkModeEnabled
             };
-            OKButton.Click += form.ChooseReadmeButton_Click;
+            OKButton.Click += _owner.ChooseReadmeButton_Click;
 
             OKButtonFLP = new FlowLayoutPanel
             {
@@ -85,20 +89,20 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Panel.Controls.Add(ListBox);
             Panel.Controls.Add(OKButtonFLP);
 
-            Panel.CenterHV(container);
             container.Controls.Add(Panel);
+            Panel.CenterHV(container);
 
             _constructed = true;
 
             Localize();
         }
 
-        internal static void Localize()
+        internal void Localize()
         {
             if (_constructed) OKButton.Text = LText.Global.OK;
         }
 
-        internal static void ShowPanel(bool value)
+        internal void ShowPanel(bool value)
         {
             if (_constructed) Panel.Visible = value;
         }

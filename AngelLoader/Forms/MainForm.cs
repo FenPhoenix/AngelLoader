@@ -122,6 +122,7 @@ namespace AngelLoader.Forms
         private readonly FilterControlsLLMenu FilterControlsLLMenu;
         private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
         private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
+        private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
 
         #endregion
 
@@ -468,6 +469,7 @@ namespace AngelLoader.Forms
             FilterControlsLLMenu = new FilterControlsLLMenu(this);
             GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this);
             PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this);
+            ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this);
 
             #endregion
 
@@ -4627,7 +4629,7 @@ namespace AngelLoader.Forms
                         SetReadmeVisible(false);
                         ViewHTMLReadmeLLButton.Hide();
 
-                        ChooseReadmeLLPanel.Construct(this, MainSplitContainer.Panel2);
+                        ChooseReadmeLLPanel.Construct(MainSplitContainer.Panel2);
 
                         ChooseReadmeLLPanel.ListBox.BeginUpdate();
                         ChooseReadmeLLPanel.ListBox.ClearFullItems();
