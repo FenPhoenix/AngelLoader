@@ -872,12 +872,26 @@ namespace AngelLoader.Forms
 #endif
         }
 
+        private static FormWindowState WindowStateToFormWindowState(WindowState windowState) => windowState switch
+        {
+            Misc.WindowState.Normal => FormWindowState.Normal,
+            Misc.WindowState.Minimized => FormWindowState.Minimized,
+            _ => FormWindowState.Maximized
+        };
+
+        private static WindowState FormWindowStateToWindowState(FormWindowState formWindowState) => formWindowState switch
+        {
+            FormWindowState.Normal => Misc.WindowState.Normal,
+            FormWindowState.Minimized => Misc.WindowState.Minimized,
+            _ => Misc.WindowState.Maximized
+        };
+
         private void SetWindowStateAndSize()
         {
             // Size MUST come first, otherwise it doesn't take (and then you have to put it in _Load, where it
             // can potentially be seen being changed)
             Size = Config.MainWindowSize;
-            WindowState = Config.MainWindowState;
+            WindowState = WindowStateToFormWindowState(Config.MainWindowState);
 
             const int minVisible = 200;
 
@@ -895,7 +909,7 @@ namespace AngelLoader.Forms
 
             Location = new Point(loc.X, loc.Y);
 
-            _nominalWindowState = Config.MainWindowState;
+            _nominalWindowState = WindowStateToFormWindowState(Config.MainWindowState);
             _nominalWindowSize = Config.MainWindowSize;
             _nominalWindowLocation = new Point(loc.X, loc.Y);
         }
@@ -1685,7 +1699,7 @@ namespace AngelLoader.Forms
             #endregion
 
             Core.UpdateConfig(
-                _nominalWindowState,
+                FormWindowStateToWindowState(_nominalWindowState),
                 _nominalWindowSize,
                 _nominalWindowLocation,
                 mainSplitterPercent,

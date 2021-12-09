@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -511,11 +510,11 @@ namespace AngelLoader
 
                 else if (lineTS.StartsWithFast_NoNullChecks("MainWindowState="))
                 {
-                    var field = typeof(FormWindowState).GetField(val, _bFlagsEnum);
+                    var field = typeof(WindowState).GetField(val, _bFlagsEnum);
                     if (field != null)
                     {
-                        var windowState = (FormWindowState)field.GetValue(null);
-                        if (windowState != FormWindowState.Minimized)
+                        var windowState = (WindowState)field.GetValue(null);
+                        if (windowState != WindowState.Minimized)
                         {
                             config.MainWindowState = windowState;
                         }

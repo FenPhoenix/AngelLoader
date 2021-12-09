@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -319,8 +318,8 @@ namespace AngelLoader.DataClasses
 
         #region Main window state
 
-        private FormWindowState _mainWindowState = FormWindowState.Maximized;
-        internal FormWindowState MainWindowState { get => _mainWindowState; set => _mainWindowState = value == FormWindowState.Minimized ? FormWindowState.Maximized : value; }
+        private WindowState _mainWindowState = WindowState.Maximized;
+        internal WindowState MainWindowState { get => _mainWindowState; set => _mainWindowState = value == WindowState.Minimized ? WindowState.Maximized : value; }
         internal Size MainWindowSize = new Size(Defaults.MainWindowWidth, Defaults.MainWindowHeight);
         internal Point MainWindowLocation = new Point(Defaults.MainWindowX, Defaults.MainWindowY);
 

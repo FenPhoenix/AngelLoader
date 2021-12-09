@@ -1751,7 +1751,7 @@ namespace AngelLoader
         #region Shutdown
 
         internal static void UpdateConfig(
-            FormWindowState mainWindowState,
+            WindowState mainWindowState,
             Size mainWindowSize,
             Point mainWindowLocation,
             float mainSplitterPercent,

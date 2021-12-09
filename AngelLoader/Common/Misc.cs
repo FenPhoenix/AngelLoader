@@ -26,6 +26,13 @@ namespace AngelLoader
             Descending
         }
 
+        public enum WindowState
+        {
+            Normal,
+            Minimized,
+            Maximized
+        }
+
         public enum Zoom { In, Out, Reset }
 
         // Public for param accessibility reasons or whatever
