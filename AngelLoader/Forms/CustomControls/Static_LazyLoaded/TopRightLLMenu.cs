@@ -38,7 +38,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             Menu = new DarkContextMenu(_darkModeEnabled, components) { Tag = LoadType.Lazy };
 
-            // Can't use InitializedArray() because them neu wants the array to be of a base type even though the
+            // Can't use InitializedArray() because the menu wants the array to be of a base type even though the
             // items will be of a derived type, to avoid the stupid covariance warning
             var menuItems = new ToolStripItem[TopRightTabsData.Count];
             for (int i = 0; i < menuItems.Length; i++)
