@@ -101,11 +101,6 @@ namespace AngelLoader.Forms
 
             if (startup) Win32ThemeHooks.InstallHooks();
 
-            // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
-            // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
-            // even if we DID want to do more reflection crap!)
-            ErrorIconPictureBox.Image = Images.RedExclamationMarkCircle;
-
             _selfTheme = config.VisualTheme;
 
             _startup = startup;
@@ -586,6 +581,9 @@ namespace AngelLoader.Forms
                 {
                     ShowPathError(ErrorableTextBoxes[i], PathErrorIsSet(ErrorableTextBoxes[i]));
                 }
+                // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
+                // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
+                // even if we DID want to do more reflection crap!)
                 ErrorIconPictureBox.Image = Images.RedExclamationMarkCircle;
             }
             finally
