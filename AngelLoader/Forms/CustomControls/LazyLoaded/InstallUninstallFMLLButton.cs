@@ -5,19 +5,21 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
-    internal static class InstallUninstallFMLLButton
+    internal sealed class InstallUninstallFMLLButton
     {
-        internal static bool Constructed { get; private set; }
+        private readonly MainForm _owner;
 
-        private static bool _enabled;
+        internal bool Constructed { get; private set; }
 
-        internal static bool SayInstallState { get; private set; }
+        private bool _enabled;
 
-        internal static DarkButton Button = null!;
+        internal bool SayInstallState { get; private set; }
 
-        private static bool _darkModeEnabled;
+        internal DarkButton Button = null!;
+
+        private bool _darkModeEnabled;
         [PublicAPI]
-        public static bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -30,11 +32,13 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        internal static void Construct(MainForm owner)
+        internal InstallUninstallFMLLButton(MainForm owner) => _owner = owner;
+
+        internal void Construct()
         {
             if (Constructed) return;
 
-            var container = owner.BottomLeftButtonsFLP;
+            var container = _owner.BottomLeftButtonsFLP;
 
             // This Visible = false must be being ignored?
             // Otherwise, it's impossible that this would work, because we construct but only explicitly call
@@ -53,8 +57,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Button.MinimumSize = new Size(0, 36);
             Button.TabIndex = 58;
             Button.UseVisualStyleBackColor = true;
-            Button.Click += owner.InstallUninstall_Play_Buttons_Click;
-            Button.PaintCustom += owner.InstallUninstall_Play_Buttons_Paint;
+            Button.Click += _owner.InstallUninstall_Play_Buttons_Click;
+            Button.PaintCustom += _owner.InstallUninstall_Play_Buttons_Paint;
 
             Button.Enabled = _enabled;
             SetSayInstallState(SayInstallState);
@@ -62,7 +66,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Constructed = true;
         }
 
-        internal static void Localize(bool startup)
+        internal void Localize(bool startup)
         {
             if (!Constructed) return;
 
@@ -93,26 +97,26 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             #endregion
         }
 
-        internal static void SetSayInstall(bool value)
+        internal void SetSayInstall(bool value)
         {
             if (Constructed) SetSayInstallState(value);
             SayInstallState = value;
         }
 
-        internal static void SetEnabled(bool value)
+        internal void SetEnabled(bool value)
         {
             if (Constructed) Button.Enabled = value;
             _enabled = value;
         }
 
-        internal static void Show() => Button.Show();
+        internal void Show() => Button.Show();
 
-        internal static void Hide()
+        internal void Hide()
         {
             if (Constructed) Button.Hide();
         }
 
-        private static void SetSayInstallState(bool value)
+        private void SetSayInstallState(bool value)
         {
             // Special-cased; don't autosize this one
             Button.Text = value ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;

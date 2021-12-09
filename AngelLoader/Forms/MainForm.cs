@@ -126,6 +126,7 @@ namespace AngelLoader.Forms
         private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
         private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
         private readonly Lazy_ToolStripLabels Lazy_ToolStripLabels;
+        private readonly InstallUninstallFMLLButton InstallUninstallFMLLButton;
 
         #endregion
 
@@ -476,6 +477,7 @@ namespace AngelLoader.Forms
             Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this);
             FMsDGV_ColumnHeaderLLMenu = new FMsDGV_ColumnHeaderLLMenu(this);
             Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this);
+            InstallUninstallFMLLButton = new InstallUninstallFMLLButton(this);
 
             #endregion
 
@@ -805,7 +807,7 @@ namespace AngelLoader.Forms
             // This button is a weird special case (see its class) so we just construct it here and it will be
             // shown when localized.
             // TODO (inst/uninst button): We might be able to wrangle this into something cleaner nonetheless.
-            if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct(this);
+            if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct();
             if (!Config.HideExitButton) ExitLLButton.SetVisible(true);
 
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
@@ -4047,7 +4049,7 @@ namespace AngelLoader.Forms
             {
                 if (!InstallUninstallFMLLButton.Constructed)
                 {
-                    InstallUninstallFMLLButton.Construct(this);
+                    InstallUninstallFMLLButton.Construct();
                     InstallUninstallFMLLButton.Localize(false);
                 }
                 InstallUninstallFMLLButton.Show();
