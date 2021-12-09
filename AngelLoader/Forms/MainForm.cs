@@ -50,6 +50,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
+using AngelLoader.Forms.CustomControls.Dynamic_LazyLoaded;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.WinAPI;
 using static AL_Common.Common;
@@ -105,6 +106,12 @@ namespace AngelLoader.Forms
 
         private TransparentPanel? ViewBlockingPanel;
         private bool _viewBlocked;
+
+        #endregion
+
+        #region Lazy-loaded controls
+
+        private readonly ExitLLButton ExitLLButton;
 
         #endregion
 
@@ -438,6 +445,12 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            #region Lazy-loaded controls
+
+            ExitLLButton = new ExitLLButton(this);
+
+            #endregion
+
             NativeHooks.InstallHooks();
 
             #region Manual control init
@@ -765,7 +778,7 @@ namespace AngelLoader.Forms
             // shown when localized.
             // TODO (inst/uninst button): We might be able to wrangle this into something cleaner nonetheless.
             if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct(this);
-            if (!Config.HideExitButton) ExitLLButton.SetVisible(this, true);
+            if (!Config.HideExitButton) ExitLLButton.SetVisible(true);
 
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
             if (Config.TopRightPanelCollapsed)
@@ -4095,7 +4108,7 @@ namespace AngelLoader.Forms
             if (ret.SortAndSetFilter) await SortAndSetFilter(keepSelection: ret.KeepSel, forceDisplayFM: true);
         }
 
-        public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(this, enabled);
+        public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
 
         #endregion
 

@@ -3,17 +3,19 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.Dynamic_LazyLoaded
 {
-    internal static class ExitLLButton
+    internal sealed class ExitLLButton
     {
-        private static bool _constructed;
+        private bool _constructed;
 
-        private static DarkButton Button = null!;
+        private readonly MainForm _owner;
 
-        private static bool _darkModeEnabled;
+        private DarkButton Button = null!;
+
+        private bool _darkModeEnabled;
         [PublicAPI]
-        public static bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -26,19 +28,21 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             }
         }
 
-        internal static void Localize()
+        internal ExitLLButton(MainForm owner) => _owner = owner;
+
+        internal void Localize()
         {
             if (!_constructed) return;
             Button.Text = LText.Global.Exit;
         }
 
-        internal static void SetVisible(MainForm owner, bool enabled)
+        internal void SetVisible(bool enabled)
         {
             if (enabled)
             {
                 if (!_constructed)
                 {
-                    var container = owner.BottomRightButtonsFLP;
+                    var container = _owner.BottomRightButtonsFLP;
 
                     Button = new DarkButton { Tag = LazyLoaded.True };
 
@@ -51,7 +55,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                     Button.MinimumSize = new Size(36, 36);
                     Button.TabIndex = 63;
                     Button.UseVisualStyleBackColor = true;
-                    Button.Click += (_, _) => owner.Close();
+                    Button.Click += (_, _) => _owner.Close();
 
                     _constructed = true;
 
