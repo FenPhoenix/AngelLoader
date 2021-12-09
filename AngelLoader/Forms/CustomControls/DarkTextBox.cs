@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using AngelLoader.WinAPI;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -172,9 +172,9 @@ namespace AngelLoader.Forms.CustomControls
             // textboxes when we're disabled)
             if (m.Msg != Native.WM_ENABLE || m.WParam.ToInt32() != 0)
             {
-                NativeHooks.SysColorOverride = NativeHooks.Override.Full;
+                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
                 base.WndProc(ref m);
-                NativeHooks.SysColorOverride = NativeHooks.Override.None;
+                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
             }
 
             if (m.Msg == Native.WM_PAINT)

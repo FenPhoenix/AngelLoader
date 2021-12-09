@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
-using static AngelLoader.WinAPI.Native;
+using static AngelLoader.NativeCommon;
 
 namespace AngelLoader
 {

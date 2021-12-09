@@ -52,7 +52,7 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
-using AngelLoader.WinAPI;
+using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
@@ -208,14 +208,14 @@ namespace AngelLoader.Forms
         {
             // A second instance has been started and told us to show ourselves, so do it here (nicer UX).
             // This has to be in WndProc, not PreFilterMessage(). Shrug.
-            if (m.Msg == Native.WM_SHOWFIRSTINSTANCE)
+            if (m.Msg == NativeCommon.WM_SHOWFIRSTINSTANCE)
             {
                 if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
                 Activate();
             }
             else if (m.Msg == Native.WM_THEMECHANGED)
             {
-                NativeHooks.ReloadTheme();
+                Win32ThemeHooks.ReloadTheme();
             }
             base.WndProc(ref m);
         }
@@ -483,7 +483,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            NativeHooks.InstallHooks();
+            Win32ThemeHooks.InstallHooks();
 
             #region Manual control init
 

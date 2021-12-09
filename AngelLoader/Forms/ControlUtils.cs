@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
-using AngelLoader.WinAPI;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -409,7 +409,7 @@ namespace AngelLoader.Forms
         /// <returns></returns>
         internal static DialogResult ShowDialogDark(this CommonDialog dialog)
         {
-            using (Config.DarkMode ? new NativeHooks.DialogScope() : null)
+            using (Config.DarkMode ? new Win32ThemeHooks.DialogScope() : null)
             {
                 return dialog.ShowDialog();
             }

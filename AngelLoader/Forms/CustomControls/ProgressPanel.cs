@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.WinAPI.Taskbar;
+using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 

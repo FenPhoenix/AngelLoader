@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace AngelLoader.WinAPI.Dialogs
+namespace AngelLoader.Forms.WinFormsNative.Dialogs
 {
     // Prevents the file from opening in design view when there's nothing to design
     [System.ComponentModel.DesignerCategory("")]

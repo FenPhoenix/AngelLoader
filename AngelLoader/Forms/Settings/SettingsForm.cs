@@ -16,8 +16,8 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
-using AngelLoader.WinAPI;
-using AngelLoader.WinAPI.Dialogs;
+using AngelLoader.Forms.WinFormsNative;
+using AngelLoader.Forms.WinFormsNative.Dialogs;
 using static AL_Common.Common;
 using static AngelLoader.Forms.Interfaces;
 using static AngelLoader.GameSupport;
@@ -85,7 +85,7 @@ namespace AngelLoader.Forms
         {
             if (_startup && m.Msg == Native.WM_THEMECHANGED)
             {
-                NativeHooks.ReloadTheme();
+                Win32ThemeHooks.ReloadTheme();
             }
             base.WndProc(ref m);
         }
@@ -99,14 +99,14 @@ namespace AngelLoader.Forms
             InitializeComponentSlim();
 #endif
 
-            if (startup) NativeHooks.InstallHooks();
+            if (startup) Win32ThemeHooks.InstallHooks();
 
             // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
             // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
             // even if we DID want to do more reflection crap!)
             ErrorIconPictureBox.Image = Images.RedExclamationMarkCircle;
 
-            if (_startup) NativeHooks.InstallHooks();
+            if (_startup) Win32ThemeHooks.InstallHooks();
 
             _selfTheme = config.VisualTheme;
 

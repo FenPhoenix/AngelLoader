@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
-using AngelLoader.WinAPI;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -403,9 +403,9 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_ENABLE:
                     if (_darkModeEnabled && m.WParam == IntPtr.Zero)
                     {
-                        NativeHooks.SysColorOverride = NativeHooks.Override.Full;
+                        Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
                         base.WndProc(ref m);
-                        NativeHooks.SysColorOverride = NativeHooks.Override.None;
+                        Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
                     }
                     else
                     {

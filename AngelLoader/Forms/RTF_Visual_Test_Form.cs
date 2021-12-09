@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.WinAPI;
+using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AngelLoader.Misc;
 
@@ -49,6 +49,7 @@ namespace AngelLoader.Forms
         [DllImport("user32", CharSet = CharSet.Unicode)]
         private static extern int RegisterWindowMessage(string message);
 
+        private const int HWND_BROADCAST = 0xffff;
         private static readonly int WM_CHANGECOMBOBOXSELECTEDINDEX = RegisterWindowMessage(nameof(WM_CHANGECOMBOBOXSELECTEDINDEX) + "|" + AppGuid);
         private static readonly int WM_CHANGERICHTEXTBOXSCROLLINFO = RegisterWindowMessage(nameof(WM_CHANGERICHTEXTBOXSCROLLINFO) + "|" + AppGuid);
 
@@ -100,7 +101,7 @@ namespace AngelLoader.Forms
 
             if (Config.VisualTheme == VisualTheme.Dark)
             {
-                NativeHooks.InstallHooks();
+                Win32ThemeHooks.InstallHooks();
                 SetVisualTheme(VisualTheme.Dark);
             }
 
@@ -133,7 +134,7 @@ namespace AngelLoader.Forms
 
             if (_broadcastEnabled)
             {
-                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
+                Native.PostMessage((IntPtr)HWND_BROADCAST, WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
             }
         }
 
@@ -168,7 +169,7 @@ namespace AngelLoader.Forms
             if (_broadcastEnabled)
             {
                 var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
-                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
+                Native.PostMessage((IntPtr)HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
             }
         }
 

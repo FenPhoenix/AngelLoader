@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using AngelLoader.DataClasses;
-using AngelLoader.WinAPI;
 using SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;

@@ -5,8 +5,8 @@ using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.WinFormsNative;
 using AngelLoader.Properties;
-using AngelLoader.WinAPI;
 
 namespace AngelLoader.Forms
 {

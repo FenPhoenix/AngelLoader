@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using AngelLoader.WinAPI;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.ThemeRenderers

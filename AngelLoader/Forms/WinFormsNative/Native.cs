@@ -4,12 +4,10 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 using JetBrains.Annotations;
-using Microsoft.Win32.SafeHandles;
 
-namespace AngelLoader.WinAPI
+namespace AngelLoader.Forms.WinFormsNative
 {
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "CommentTypo")]
@@ -64,18 +62,6 @@ namespace AngelLoader.WinAPI
 
         [DllImport("user32.dll")]
         internal static extern void SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
-
-        #endregion
-
-        #region Show first instance
-
-        internal const int HWND_BROADCAST = 0xffff;
-
-        // Second-instance telling first instance to show itself junk
-        public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Misc.AppGuid);
-
-        [DllImport("user32", CharSet = CharSet.Unicode)]
-        private static extern int RegisterWindowMessage(string message);
 
         #endregion
 
@@ -389,18 +375,6 @@ namespace AngelLoader.WinAPI
         internal const int VK_RIGHT = 0x27;
         internal const int VK_DOWN = 0x28;
         */
-
-        #endregion
-
-        #region Process
-
-        internal const uint QUERY_LIMITED_INFORMATION = 0x00001000;
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        internal static extern bool QueryFullProcessImageName([In] SafeProcessHandle hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
-
-        [DllImport("kernel32.dll")]
-        internal static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
         #endregion
 

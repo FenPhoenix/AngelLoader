@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using AngelLoader.Forms;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.ThemeRenderers;
 using EasyHook;
 using ScrollBarRenderer = AngelLoader.Forms.ThemeRenderers.ScrollBarRenderer;
 
-namespace AngelLoader.WinAPI
+namespace AngelLoader.Forms.WinFormsNative
 {
-    internal static class NativeHooks
+    internal static class Win32ThemeHooks
     {
         #region Private fields
 

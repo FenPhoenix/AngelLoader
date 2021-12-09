@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-namespace AngelLoader.WinAPI.Taskbar
+namespace AngelLoader.Forms.WinFormsNative.Taskbar
 {
     internal enum TaskbarStates
     {

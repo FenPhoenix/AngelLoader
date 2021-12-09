@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
-using AngelLoader.WinAPI;
+using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -38,9 +37,9 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_PAINT:
                     if (_darkModeEnabled)
                     {
-                        NativeHooks.SysColorOverride = NativeHooks.Override.RichText;
+                        Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.RichText;
                         base.WndProc(ref m);
-                        NativeHooks.SysColorOverride = NativeHooks.Override.None;
+                        Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
                     }
                     else
                     {

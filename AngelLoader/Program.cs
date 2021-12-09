@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AngelLoader.WinAPI;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
@@ -29,7 +28,7 @@ namespace AngelLoader
             {
                 // Tell first instance to show itself
                 // Must use PostMessage because SendMessage blocks forever at least on my new Win10 machine(?!)
-                Native.PostMessage((IntPtr)Native.HWND_BROADCAST, Native.WM_SHOWFIRSTINSTANCE, IntPtr.Zero, IntPtr.Zero);
+                NativeCommon.PostMessage((IntPtr)NativeCommon.HWND_BROADCAST, NativeCommon.WM_SHOWFIRSTINSTANCE, IntPtr.Zero, IntPtr.Zero);
                 // If it fails, oh well, then it's just the old behavior where the window doesn't activate but
                 // it's still a single instance. Good enough.
                 return;

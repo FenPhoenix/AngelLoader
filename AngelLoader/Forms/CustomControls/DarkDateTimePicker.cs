@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using AngelLoader.WinAPI;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -139,9 +139,9 @@ namespace AngelLoader.Forms.CustomControls
                 // We have to override global colors for this, and we have no proper way to only override them
                 // for this one control specifically, so this is the best we can do. This prevents the colors
                 // from being changed for other controls (stock MessageBoxes, for one).
-                NativeHooks.SysColorOverride = NativeHooks.Override.Full;
+                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
                 base.WndProc(ref m);
-                NativeHooks.SysColorOverride = NativeHooks.Override.None;
+                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
                 PaintCustom();
             }
             else if (m.Msg == Native.WM_NCPAINT)

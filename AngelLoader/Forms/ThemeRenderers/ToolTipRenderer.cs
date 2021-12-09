@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using AngelLoader.Forms.CustomControls;
-using AngelLoader.WinAPI;
+using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms.ThemeRenderers
 {

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
-namespace AngelLoader.WinAPI.Dialogs
+namespace AngelLoader.Forms.WinFormsNative.Dialogs
 {
     #region CoClass stuff
 

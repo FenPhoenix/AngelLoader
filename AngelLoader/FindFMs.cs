@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
-using AngelLoader.WinAPI;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;

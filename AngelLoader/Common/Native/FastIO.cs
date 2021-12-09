@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
-using static AL_Common.FastIO_Native;
 using static AL_Common.Common;
+using static AL_Common.FastIO_Native;
 
-namespace AngelLoader.WinAPI
+namespace AngelLoader
 {
     internal static class FastIO
     {
