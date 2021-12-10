@@ -139,7 +139,7 @@ namespace AngelLoader.Forms
 
         #region Filter
 
-        Task SortAndSetFilter(SelectedFM? selFM = null, bool forceDisplayFM = false, bool keepSelection = false,
+        Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false, bool keepSelection = false,
                               bool gameTabSwitch = false, bool landImmediate = false);
 
         Filter GetFilter();
@@ -234,5 +234,9 @@ namespace AngelLoader.Forms
         (string Category, string Tag) SelectedCategoryAndTag();
         void DisplayFMTags(FMCategoriesCollection fmTags);
         void ClearTagsSearchBox();
+        void SetPinnedMenuState(bool pinned);
+        int GetRowCount();
+        int GetSelectedRowIndex();
+        SelectedFM? GetFMPosInfoFromIndex(int index);
     }
 }

@@ -3246,7 +3246,16 @@ namespace AngelLoader.Forms
 
         #region FMs list
 
+        public int GetSelectedRowIndex() => FMsDGV.RowSelected() ? FMsDGV.SelectedRows[0].Index : -1;
+
+        public SelectedFM? GetFMPosInfoFromIndex(int index) =>
+            FMsDGV.RowCount == 0 || index < 0 || index >= FMsDGV.RowCount
+                ? null
+                : FMsDGV.GetFMPosInfoFromIndex(index);
+
         public SelectedFM? GetSelectedFMPosInfo() => FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
+
+        public int GetRowCount() => FMsDGV.RowCount;
 
         public void SetRowCount(int count) => FMsDGV.RowCount = count;
 
@@ -3386,27 +3395,9 @@ namespace AngelLoader.Forms
             }
         }
 
-        // @VBL
-        internal async Task PinOrUnpinFM()
+        public void SetPinnedMenuState(bool pinned)
         {
-            if (!FMsDGV.RowSelected()) return;
-
-            var fm = FMsDGV.GetSelectedFM();
-            fm.Pinned = !fm.Pinned;
-
-            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
-
-            SelectedFM? selFM;
-            if (fm.Pinned || FMsDGV.RowCount == 1)
-            {
-                selFM = null;
-            }
-            else
-            {
-                int index = FMsDGV.SelectedRows[0].Index;
-                selFM = FMsDGV.GetFMPosInfoFromIndex(index == FMsDGV.RowCount - 1 ? index - 1 : index + 1);
-            }
-            await SortAndSetFilter(keepSelection: fm.Pinned, selectedFM: selFM);
+            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!pinned);
         }
 
         #region FMs list sorting

@@ -655,7 +655,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == PinToTopMenuItem)
             {
-                await _owner.PinOrUnpinFM();
+                await Core.PinOrUnpinFM();
             }
         }
 

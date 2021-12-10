@@ -1748,6 +1748,30 @@ namespace AngelLoader
             if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await View.SortAndSetFilter(forceDisplayFM: true);
         }
 
+        internal static async Task PinOrUnpinFM()
+        {
+            var fm = View.GetSelectedFM();
+            if (fm == null) return;
+
+            fm.Pinned = !fm.Pinned;
+
+            View.SetPinnedMenuState(fm.Pinned);
+
+            int rowCount = View.GetRowCount();
+
+            SelectedFM? selFM;
+            if (fm.Pinned || rowCount == 1)
+            {
+                selFM = null;
+            }
+            else
+            {
+                int index = View.GetSelectedRowIndex();
+                selFM = View.GetFMPosInfoFromIndex(index == rowCount - 1 ? index - 1 : index + 1);
+            }
+            await View.SortAndSetFilter(keepSelection: fm.Pinned, selectedFM: selFM);
+        }
+
         #region Shutdown
 
         internal static void UpdateConfig(
