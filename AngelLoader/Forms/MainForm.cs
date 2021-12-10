@@ -3106,7 +3106,9 @@ namespace AngelLoader.Forms
             ModsDisabledModsTextBoxCommit();
         }
 
-        // @VBL
+        // @VBL(ModsDisabledModsTextBoxCommit()): But actually maybe not?
+        // This looks business-logic-ish, but really it's kind of a UI detail still? Directly updating a list of
+        // checkboxes from a textbox. Meh.
         private void ModsDisabledModsTextBoxCommit()
         {
             if (EventsDisabled) return;
@@ -3165,6 +3167,8 @@ namespace AngelLoader.Forms
 
             fm.DisabledMods = ModsDisabledModsTextBox.Text;
             RefreshSelectedFM(rowOnly: true);
+
+            Ini.WriteFullFMDataIni();
         }
 
         private void ModsShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
