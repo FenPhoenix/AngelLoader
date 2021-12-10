@@ -4130,18 +4130,7 @@ namespace AngelLoader.Forms
 
         #region Right side
 
-        // @VBL
-        internal async void Settings_Click(object sender, EventArgs e)
-        {
-            var ret = Core.OpenSettings();
-            if (ret.Canceled) return;
-
-            if (ret.FMsViewListUnscanned?.Count > 0) await FMScan.ScanNewFMs(ret.FMsViewListUnscanned);
-            // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
-            // If I store the selected FM up above the Find(), I can make the FM not have to reload if
-            // it's still selected
-            if (ret.SortAndSetFilter) await SortAndSetFilter(keepSelection: ret.KeepSel, forceDisplayFM: true);
-        }
+        internal async void Settings_Click(object sender, EventArgs e) => await Core.OpenSettings();
 
         public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
 

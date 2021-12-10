@@ -204,7 +204,7 @@ namespace AngelLoader
             else
             {
                 splashScreen.Hide();
-                if (!OpenSettings(startup: true, cleanStart: cleanStart).Canceled)
+                if (await OpenSettings(startup: true, cleanStart: cleanStart))
                 {
                     splashScreen.Show(Config.VisualTheme);
                     await DoParallelLoad();
@@ -213,8 +213,13 @@ namespace AngelLoader
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        // We return bools signifying which awaitable tasks to run, so we can avoid this method having to be async
-        public static (bool Canceled, List<int>? FMsViewListUnscanned, bool SortAndSetFilter, bool KeepSel)
+        /// <summary>
+        /// Opens the Settings dialog and performs any required changes and updates.
+        /// </summary>
+        /// <param name="startup"></param>
+        /// <param name="cleanStart"></param>
+        /// <returns><see langword="true"/> if changes were accepted, <see langword="false"/> if canceled.</returns>
+        public static async Task<bool>
         OpenSettings(bool startup = false, bool cleanStart = false)
         {
             DialogResult result;
@@ -245,7 +250,7 @@ namespace AngelLoader
                 // Since nothing of consequence has yet happened, it's okay to do the brutal quit
                 // We know the game paths by now, so we can do this
                 if (startup) EnvironmentExitDoShutdownTasks(0);
-                return (true, null, false, false);
+                return false;
             }
 
             #region Set changed bools
@@ -352,7 +357,7 @@ namespace AngelLoader
 
                 Ini.WriteConfigIni();
 
-                return (false, null, false, false);
+                return true;
             }
 
             // From this point on, we're not in startup mode.
@@ -459,25 +464,21 @@ namespace AngelLoader
 
             #region Return bools for appropriate refresh method (if applicable)
 
-            var ret = (Canceled: false, FMsViewListUnscanned: (List<int>?)null, SortAndSetFilter: false, KeepSel: false);
+            bool keepSel = false;
+            bool sortAndSetFilter = false;
 
             if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged ||
                 daysRecentChanged)
             {
                 if (archivePathsChanged || gamePathsChanged)
                 {
-                    if (fmsViewListUnscanned!.Count > 0)
-                    {
-                        ret.FMsViewListUnscanned = fmsViewListUnscanned;
-                    }
-
 #if !ReleaseBeta && !ReleasePublic
                     if (gamePathsChanged) View.UpdateGameScreenShotModes();
 #endif
                 }
 
-                ret.KeepSel = !gameOrganizationChanged;
-                ret.SortAndSetFilter = true;
+                keepSel = !gameOrganizationChanged;
+                sortAndSetFilter = true;
             }
             else if (dateFormatChanged || languageChanged)
             {
@@ -486,7 +487,20 @@ namespace AngelLoader
 
             #endregion
 
-            return ret;
+            if (fmsViewListUnscanned?.Count > 0)
+            {
+                await FMScan.ScanNewFMs(fmsViewListUnscanned);
+            }
+
+            // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
+            // If I store the selected FM up above the Find(), I can make the FM not have to reload if
+            // it's still selected
+            if (sortAndSetFilter)
+            {
+                await View.SortAndSetFilter(keepSelection: keepSel, forceDisplayFM: true);
+            }
+
+            return true;
         }
 
         /// <summary>
