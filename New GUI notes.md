@@ -61,6 +61,7 @@ Pros:
 
 Cons:
 - License is dumb and annoying and I can't include its source without making my code GPL but I can include .dlls without doing so
+- Requires using a proprietary IDE that's like a dozen GB in size and a steep learning curve
 - Bloats up AngelLoader's distribution size
 
 ### Electron with .NET wrapper:
