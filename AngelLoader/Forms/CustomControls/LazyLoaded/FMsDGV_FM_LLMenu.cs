@@ -330,11 +330,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             // Some menu items' text depends on FM state. Because this could be run after startup, we need to
             // make sure those items' text is set correctly.
-            FanMission? selFM = _owner.FMsDGV.SelectedRows.Count > 0 ? _owner.FMsDGV.GetSelectedFM() : null;
-            bool sayInstall = selFM == null || !selFM.Installed;
+            FanMission? selFM = _owner.GetSelectedFMOrNull();
+            bool sayInstall = selFM is not { Installed: true };
             // @GENGAMES - Localize FM context menu - "sayShockEd"
-            bool sayShockEd = selFM != null && selFM.Game == Game.SS2;
-            bool sayPin = selFM == null || !selFM.Pinned;
+            bool sayShockEd = selFM is { Game: Game.SS2 };
+            bool sayPin = selFM is not { Pinned: true };
 
             #endregion
 
@@ -468,9 +468,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 ? LText.FMsList.FMMenu_PinFM
                 : LText.FMsList.FMMenu_UnpinFM;
 
-            PinToTopMenuItem.Image = sayPin
-                ? Images.Pin_16
-                : Images.Unpin_16;
+            PinToTopMenuItem.Image = sayPin ? Images.Pin_16 : Images.Unpin_16;
         }
 
         internal void SetDeleteFMMenuItemEnabled(bool value)

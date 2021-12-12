@@ -72,12 +72,12 @@ namespace AngelLoader
             // Make sure we never delete any paths that are not safely tucked in our temp folder
             string baseTemp = _baseTemp.TrimEnd(CA_BS_FS_Space);
 
+            // @DIRSEP: getting rid of this concat is more trouble than it's worth
+            // This method is called rarely and only once in a row
             bool pathIsInTempDir = path.PathStartsWithI(baseTemp + "\\");
 
             Misc.AssertR(pathIsInTempDir, "Path '" + path + "' is not in temp dir '" + baseTemp + "'");
 
-            // @DIRSEP: getting rid of this concat is more trouble than it's worth
-            // This method is called rarely and only once in a row
             if (!pathIsInTempDir) return;
 
             #endregion

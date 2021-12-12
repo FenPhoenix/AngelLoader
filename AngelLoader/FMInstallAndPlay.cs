@@ -89,6 +89,7 @@ namespace AngelLoader
             {
                 fm.LastPlayed.DateTime = DateTime.Now;
                 Core.View.RefreshSelectedFM();
+                Ini.WriteFullFMDataIni();
             }
         }
 
