@@ -4975,56 +4975,31 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private (bool Success, string[] DroppedItems)
-        CheckDragDrop(DragEventArgs e)
-        {
-            if (EverythingPanel.Enabled &&
-                e.Data.GetDataPresent(DataFormats.FileDrop) &&
-                e.Data.GetData(DataFormats.FileDrop) is string[] droppedItems)
-            {
-                return (true, droppedItems);
-            }
-
-            e.Effect = DragDropEffects.None;
-            return (false, Array.Empty<string>());
-        }
-
         private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
         {
-            (bool success, string[] droppedItems) = CheckDragDrop(e);
-            if (!success) return;
-
-            bool atLeastOneValidItem = false;
-
-            foreach (string di in droppedItems)
+            if (EverythingPanel.Enabled &&
+                e.Data.GetData(DataFormats.FileDrop) is string[] droppedItems &&
+                Core.AtLeastOneDroppedFileValid(droppedItems))
             {
-                if (!di.IsEmpty() && di.ExtIsArchive())
-                {
-                    atLeastOneValidItem = true;
-                    break;
-                }
+                e.Effect = DragDropEffects.Copy;
             }
-
-            e.Effect = atLeastOneValidItem ? DragDropEffects.Copy : DragDropEffects.None;
         }
 
         private async void EverythingPanel_DragDrop(object sender, DragEventArgs e)
         {
-            (bool success, string[] droppedItems) = CheckDragDrop(e);
-            if (!success) return;
-
-            try
+            if (EverythingPanel.Enabled &&
+                e.Data.GetData(DataFormats.FileDrop) is string[] droppedItems &&
+                Core.AtLeastOneDroppedFileValid(droppedItems))
             {
-                EnableEverything(false);
-
-                if (!await FMArchives.Add(this, droppedItems.ToList()))
+                try
                 {
-                    e.Effect = DragDropEffects.None;
+                    EnableEverything(false);
+                    await FMArchives.Add(this, droppedItems.ToList());
                 }
-            }
-            finally
-            {
-                EnableEverything(true);
+                finally
+                {
+                    EnableEverything(true);
+                }
             }
         }
     }

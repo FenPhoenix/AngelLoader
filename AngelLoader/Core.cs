@@ -1786,6 +1786,20 @@ namespace AngelLoader
             await View.SortAndSetFilter(keepSelection: fm.Pinned, selectedFM: selFM);
         }
 
+        internal static bool AtLeastOneDroppedFileValid(string[] droppedItems)
+        {
+            for (int i = 0; i < droppedItems.Length; i++)
+            {
+                string item = droppedItems[i];
+                if (!item.IsEmpty() && item.ExtIsArchive())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         #region Shutdown
 
         internal static void UpdateConfig(
