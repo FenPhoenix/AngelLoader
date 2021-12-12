@@ -2,30 +2,15 @@
 NOTE: Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
 in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
-Images to switch to drawing:
--Install / uninstall
--Green CheckCircle
--Settings (can we do gradients and curved paths?)
--Anything else not listed in "definitely won't draw" is at least a possibility
-
-Images we definitely won't draw (iow that really need to be rasters):
--Thief logos
--Zip logo (Show_Unsupported)
-
 Things to lazy load:
 -Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
  controls on each tab page (in case the tabs are visible but not selected on startup)
 -Game buttons and game tabs (one or the other will be invisible on startup)
--DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
+-PlayOriginalGame controls, one or the other won't be visible
 
 @NET5: Fonts will change and control sizes will all change too.
--We could go through and set font to MS Sans Serif 8.25pt everywhere. This would get us up and running quickly
- with no other changes, but we would have to remember to set it for every single control manually (including
- ones we lazy-load manually - that would preclude us from simply running a loop through all controls on the form
- and setting the font on them all that way!)
--We could bite the bullet and go through the entire UI fixing and adjusting the layout and layout logic (including
- our "75,23" button min sizes etc!). This would give us a nicer font and a UI layout that supports it, but now
- we would have two versions to maintain (old Framework (perf on Windows), new .NET 5 (Wine support on Linux)).
+-.NET 6 seems to have an option to set the font to the old MS Sans Serif 8.25pt app-wide.
+-If converting the whole app to Segoe UI, remember to change all MinimumSize (button min size "75,23" etc.)
 IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
 NOTE(MainForm Designer): The controls move positions because they're accounting for the scroll bar
@@ -64,12 +49,27 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
+        #region Window size/location
+
         private FormWindowState _nominalWindowState;
         private Size _nominalWindowSize;
         private Point _nominalWindowLocation;
 
+        #endregion
+
+        #region FMs list
+
         private float _fmsListDefaultFontSizeInPoints;
         private int _fmsListDefaultRowHeight;
+
+        // Set these beforehand and don't set autosize on any column! Or else it explodes everything because
+        // FMsDGV tries to refresh when it shouldn't and all kinds of crap. Phew.
+        private const int _ratingImageColumnWidth = 73;
+        private const int _finishedColumnWidth = 91;
+
+        #endregion
+
+        #region Control arrays
 
         private readonly TabPage[] _gameTabsInOrder;
         private readonly ToolStripButtonCustom[] _filterByGameButtonsInOrder;
@@ -83,6 +83,10 @@ namespace AngelLoader.Forms
 
         private readonly DarkButton[] _readmeControlButtons;
 
+        #endregion
+
+        #region Enums
+
         private enum KeepSel { False, True, TrueNearest }
 
         private enum ZoomFMsDGVType
@@ -94,10 +98,9 @@ namespace AngelLoader.Forms
             ZoomToHeightOnly
         }
 
-        // Set these beforehand and don't set autosize on any column! Or else it explodes everything because
-        // FMsDGV tries to refresh when it shouldn't and all kinds of crap. Phew.
-        private const int _ratingImageColumnWidth = 73;
-        private const int _finishedColumnWidth = 91;
+        #endregion
+
+        #region Disablers
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -137,7 +140,9 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Non-public-release stuff
+        #endregion
+
+        #region Non-public-release methods
 
 #if !ReleaseBeta && !ReleasePublic
         private void ForceWindowedCheckBox_CheckedChanged(object sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
@@ -471,6 +476,10 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            Win32ThemeHooks.InstallHooks();
+
+            #region Manual control construct + init
+
             #region Lazy-loaded controls
 
             AddTagLLDropDown = new AddTagLLDropDown(this);
@@ -493,10 +502,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            Win32ThemeHooks.InstallHooks();
-
-            #region Manual control construct + init
-
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
             {
@@ -516,10 +521,6 @@ namespace AngelLoader.Forms
             };
 
             #endregion
-
-            MainMenuButton.HideFocusRectangle();
-
-            //Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
             #region Construct + init non-public-release controls
 
@@ -684,6 +685,8 @@ namespace AngelLoader.Forms
             {
                 button.DarkModeBackColor = DarkColors.Fen_DarkBackground;
             }
+
+            MainMenuButton.HideFocusRectangle();
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
@@ -828,6 +831,8 @@ namespace AngelLoader.Forms
                 }
             }
 
+            SetPlayOriginalButtonStyle();
+
             // This button is a weird special case (see its class) so we just construct it here and it will be
             // shown when localized.
             // TODO (inst/uninst button): We might be able to wrangle this into something cleaner nonetheless.
@@ -842,8 +847,6 @@ namespace AngelLoader.Forms
             }
 
             ModsCheckList.Inject(() => ModsShowUberCheckBox.Checked);
-
-            SetPlayOriginalButtonStyle();
 
             #endregion
 
