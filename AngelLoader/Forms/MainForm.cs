@@ -81,6 +81,8 @@ namespace AngelLoader.Forms
 
         private readonly Component[][] _hideableFilterControls;
 
+        private readonly DarkButton[] _readmeControlButtons;
+
         private enum KeepSel { False, True, TrueNearest }
 
         private enum ZoomFMsDGVType
@@ -135,7 +137,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Test / debug
+        #region Non-public-release stuff
 
 #if !ReleaseBeta && !ReleasePublic
         private void ForceWindowedCheckBox_CheckedChanged(object sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
@@ -167,6 +169,10 @@ namespace AngelLoader.Forms
             }
         }
 #endif
+
+        #endregion
+
+        #region Test / debug
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
 
@@ -489,13 +495,7 @@ namespace AngelLoader.Forms
 
             Win32ThemeHooks.InstallHooks();
 
-            #region Manual control init
-
-            ReadmeFullScreenButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
-            ReadmeZoomInButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
-            ReadmeZoomOutButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
-            ReadmeResetZoomButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
-            ReadmeEncodingButton.DarkModeBackColor = DarkColors.Fen_DarkBackground;
+            #region Manual control construct + init
 
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
@@ -521,10 +521,10 @@ namespace AngelLoader.Forms
 
             //Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
-            #region Init non-public-release controls
+            #region Construct + init non-public-release controls
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-            #region Init debug-only controls
+            #region Construct + init debug-only controls
 
             TestButton = new DarkButton();
             Test2Button = new DarkButton();
@@ -669,7 +669,21 @@ namespace AngelLoader.Forms
                 new Component[] { FilterShowRecentAtTopButton }
             };
 
+            _readmeControlButtons = new[]
+            {
+                ReadmeEncodingButton,
+                ReadmeZoomInButton,
+                ReadmeZoomOutButton,
+                ReadmeResetZoomButton,
+                ReadmeFullScreenButton
+            };
+
             #endregion
+
+            foreach (DarkButton button in _readmeControlButtons)
+            {
+                button.DarkModeBackColor = DarkColors.Fen_DarkBackground;
+            }
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
@@ -1570,22 +1584,20 @@ namespace AngelLoader.Forms
         {
             if (front)
             {
-                ReadmeZoomInButton.BringToFront();
-                ReadmeZoomOutButton.BringToFront();
-                ReadmeResetZoomButton.BringToFront();
-                ReadmeFullScreenButton.BringToFront();
                 ChooseReadmeComboBox.BringToFront();
-                ReadmeEncodingButton.BringToFront();
+                foreach (DarkButton button in _readmeControlButtons)
+                {
+                    button.BringToFront();
+                }
             }
             else
             {
-                ReadmeZoomInButton.SendToBack();
-                ReadmeZoomOutButton.SendToBack();
-                ReadmeResetZoomButton.SendToBack();
-                ReadmeFullScreenButton.SendToBack();
                 ChooseReadmeComboBox.SendToBack();
                 ChooseReadmeComboBox.DroppedDown = false;
-                ReadmeEncodingButton.SendToBack();
+                foreach (DarkButton button in _readmeControlButtons)
+                {
+                    button.SendToBack();
+                }
             }
         }
 
@@ -2107,7 +2119,7 @@ namespace AngelLoader.Forms
         private void PositionFilterBarAfterTabs()
         {
             int filterBarAfterTabsX;
-            // In case I decide to allow a variable number of tabs based on which games are defined
+            // This is not allowed to happen with the current system (we prevent the last tab from being closed)
             if (GamesTabControl.TabCount == 0)
             {
                 filterBarAfterTabsX = TopBarXZero();
@@ -4026,21 +4038,20 @@ namespace AngelLoader.Forms
             if (theme == VisualTheme.Dark) return;
 
             Color backColor = enabled ? SystemColors.Window : SystemColors.Control;
-            ReadmeZoomInButton.BackColor = backColor;
-            ReadmeZoomOutButton.BackColor = backColor;
-            ReadmeResetZoomButton.BackColor = backColor;
-            ReadmeFullScreenButton.BackColor = backColor;
-            ReadmeEncodingButton.BackColor = backColor;
+            foreach (DarkButton button in _readmeControlButtons)
+            {
+                button.BackColor = backColor;
+            }
+
         }
 
         private void ShowReadmeControls(bool enabled)
         {
-            ReadmeZoomInButton.Visible = enabled;
-            ReadmeZoomOutButton.Visible = enabled;
-            ReadmeResetZoomButton.Visible = enabled;
-            ReadmeFullScreenButton.Visible = enabled;
             ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
-            ReadmeEncodingButton.Visible = enabled;
+            foreach (DarkButton button in _readmeControlButtons)
+            {
+                button.Visible = enabled;
+            }
         }
 
         internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
