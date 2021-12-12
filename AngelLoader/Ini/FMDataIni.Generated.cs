@@ -15,6 +15,284 @@ namespace AngelLoader
 {
     internal static partial class Ini
     {
+        private static void NoArchive_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.NoArchive = valTrimmed.EqualsTrue();
+        }
+
+        private static void MarkedScanned_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.MarkedScanned = valTrimmed.EqualsTrue();
+        }
+
+        private static void Pinned_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.Pinned = valTrimmed.EqualsTrue();
+        }
+
+        private static void Archive_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.Archive = valTrimmed;
+        }
+
+        private static void InstalledDir_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.InstalledDir = valTrimmed;
+        }
+
+        private static void Title_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.Title = valTrimmed;
+        }
+
+        private static void AltTitles_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            if (!string.IsNullOrEmpty(valTrimmed))
+            {
+                fm.AltTitles.Add(valTrimmed);
+            }
+        }
+
+        private static void Author_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.Author = valTrimmed;
+        }
+
+        private static void Game_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            if (valTrimmed.EqualsI("Thief1"))
+            {
+                fm.Game = Game.Thief1;
+            }
+            else if (valTrimmed.EqualsI("Thief2"))
+            {
+                fm.Game = Game.Thief2;
+            }
+            else if (valTrimmed.EqualsI("Thief3"))
+            {
+                fm.Game = Game.Thief3;
+            }
+            else if (valTrimmed.EqualsI("SS2"))
+            {
+                fm.Game = Game.SS2;
+            }
+            else if (valTrimmed.EqualsI("Unsupported"))
+            {
+                fm.Game = Game.Unsupported;
+            }
+            else
+            {
+                fm.Game = Game.Null;
+            }
+        }
+
+        private static void Installed_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.Installed = valTrimmed.EqualsTrue();
+        }
+
+        private static void NoReadmes_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.NoReadmes = valTrimmed.EqualsTrue();
+        }
+
+        private static void SelectedReadme_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.SelectedReadme = valTrimmed;
+        }
+
+        private static void ReadmeEncoding_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            if (!string.IsNullOrEmpty(valTrimmed))
+            {
+                fm.ReadmeAndCodePageEntries.Add(valTrimmed);
+            }
+        }
+
+        private static void SizeBytes_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            ulong.TryParse(valTrimmed, out ulong result);
+            fm.SizeBytes = result;
+        }
+
+        private static void Rating_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            bool success = int.TryParse(valTrimmed, out int result);
+            fm.Rating = success ? result : -1;
+        }
+
+        private static void ReleaseDate_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.ReleaseDate.UnixDateString = valTrimmed;
+        }
+
+        private static void LastPlayed_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.LastPlayed.UnixDateString = valTrimmed;
+        }
+
+        private static void DateAdded_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            // PERF: Don't convert to local here; do it at display-time
+            fm.DateAdded = ConvertHexUnixDateToDateTime(valTrimmed, convertToLocal: false);
+        }
+
+        private static void FinishedOn_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            uint.TryParse(valTrimmed, out uint result);
+            fm.FinishedOn = result;
+        }
+
+        private static void FinishedOnUnknown_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.FinishedOnUnknown = valTrimmed.EqualsTrue();
+        }
+
+        private static void Comment_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.Comment = valRaw;
+        }
+
+        private static void DisabledMods_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.DisabledMods = valTrimmed;
+        }
+
+        private static void DisableAllMods_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.DisableAllMods = valTrimmed.EqualsTrue();
+        }
+
+        private static void HasResources_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.ResourcesScanned = !valTrimmed.EqualsI("NotScanned");
+            FillFMHasXFields(fm, valTrimmed);
+        }
+
+        private static void HasMap_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Map, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void HasAutomap_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Automap, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void HasScripts_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Scripts, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void HasTextures_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Textures, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void HasSounds_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Sounds, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void HasObjects_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Objects, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void HasCreatures_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Creatures, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void HasMotions_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Motions, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void HasMovies_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Movies, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void HasSubtitles_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            SetFMResource(fm, CustomResources.Subtitles, valTrimmed.EqualsTrue());
+            fm.ResourcesScanned = true;
+        }
+
+        private static void LangsScanned_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.LangsScanned = valTrimmed.EqualsTrue();
+        }
+
+        private static void Langs_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.Langs = valTrimmed;
+        }
+
+        private static void SelectedLang_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.SelectedLang = valTrimmed;
+        }
+
+        private static void TagsString_Set(FanMission fm, string valTrimmed, string valRaw)
+        {
+            fm.TagsString = valTrimmed;
+        }
+
+        private static readonly Dictionary<string, Action<FanMission, string, string>> _actionDict = new()
+        {
+            { "NoArchive", NoArchive_Set },
+            { "MarkedScanned", MarkedScanned_Set },
+            { "Pinned", Pinned_Set },
+            { "Archive", Archive_Set },
+            { "InstalledDir", InstalledDir_Set },
+            { "Title", Title_Set },
+            { "AltTitles", AltTitles_Set },
+            { "Author", Author_Set },
+            { "Game", Game_Set },
+            { "Installed", Installed_Set },
+            { "NoReadmes", NoReadmes_Set },
+            { "SelectedReadme", SelectedReadme_Set },
+            { "ReadmeEncoding", ReadmeEncoding_Set },
+            { "SizeBytes", SizeBytes_Set },
+            { "Rating", Rating_Set },
+            { "ReleaseDate", ReleaseDate_Set },
+            { "LastPlayed", LastPlayed_Set },
+            { "DateAdded", DateAdded_Set },
+            { "FinishedOn", FinishedOn_Set },
+            { "FinishedOnUnknown", FinishedOnUnknown_Set },
+            { "Comment", Comment_Set },
+            { "DisabledMods", DisabledMods_Set },
+            { "DisableAllMods", DisableAllMods_Set },
+            { "HasResources", HasResources_Set },
+
+            { "HasMap", HasMap_Set },
+            { "HasAutomap", HasAutomap_Set },
+            { "HasScripts", HasScripts_Set },
+            { "HasTextures", HasTextures_Set },
+            { "HasSounds", HasSounds_Set },
+            { "HasObjects", HasObjects_Set },
+            { "HasCreatures", HasCreatures_Set },
+            { "HasMotions", HasMotions_Set },
+            { "HasMovies", HasMovies_Set },
+            { "HasSubtitles", HasSubtitles_Set },
+
+            { "LangsScanned", LangsScanned_Set },
+            { "Langs", Langs_Set },
+            { "SelectedLang", SelectedLang_Set },
+            { "TagsString", TagsString_Set },
+        };
+
         // This method was autogenerated for maximum performance at runtime.
         internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)
         {
@@ -27,11 +305,10 @@ namespace AngelLoader
             foreach (string line in iniLines)
             {
                 string lineTS = line.TrimStart();
-                string lineT = lineTS.TrimEnd();
 
-                if (lineT.Length > 0 && lineT[0] == '[')
+                if (lineTS.Length > 0 && lineTS[0] == '[')
                 {
-                    if (lineT.Length >= 4 && lineT[1] == 'F' && lineT[2] == 'M' && lineT[3] == ']')
+                    if (lineTS.Length >= 4 && lineTS[1] == 'F' && lineTS[2] == 'M' && lineTS[3] == ']')
                     {
                         fmsList.Add(new FanMission());
                         if (fmsListIsEmpty) fmsListIsEmpty = false;
@@ -42,251 +319,22 @@ namespace AngelLoader
 
                 if (fmsListIsEmpty) continue;
 
-                bool resourcesFound = false;
-
                 // Comment chars (;) and blank lines will be rejected implicitly.
                 // Since they're rare cases, checking for them would only slow us down.
 
                 FanMission fm = fmsList[fmsList.Count - 1];
 
-                if (lineT.StartsWithFast_NoNullChecks("NoArchive="))
+                int eqIndex = lineTS.IndexOf('=');
+                if (eqIndex > -1)
                 {
-                    string val = lineT.Substring(10);
-                    fm.NoArchive = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("MarkedScanned="))
-                {
-                    string val = lineT.Substring(14);
-                    fm.MarkedScanned = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("Pinned="))
-                {
-                    string val = lineT.Substring(7);
-                    fm.Pinned = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("Archive="))
-                {
-                    string val = lineT.Substring(8);
-                    fm.Archive = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("InstalledDir="))
-                {
-                    string val = lineT.Substring(13);
-                    fm.InstalledDir = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("Title="))
-                {
-                    string val = lineT.Substring(6);
-                    fm.Title = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("AltTitles="))
-                {
-                    string val = lineT.Substring(10);
-                    if (!string.IsNullOrEmpty(val))
+                    string key = lineTS.Substring(0, eqIndex);
+                    string valRaw = lineTS.Substring(eqIndex + 1);
+                    string valTrimmed = valRaw.TrimEnd();
+                    if (_actionDict.TryGetValue(key, out var action))
                     {
-                        fm.AltTitles.Add(val);
+                        action.Invoke(fm, valTrimmed, valRaw);
                     }
                 }
-                else if (lineT.StartsWithFast_NoNullChecks("Author="))
-                {
-                    string val = lineT.Substring(7);
-                    fm.Author = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("Game="))
-                {
-                    string val = lineT.Substring(5);
-                    val = val.Trim();
-                    if (val.EqualsI("Thief1"))
-                    {
-                        fm.Game = Game.Thief1;
-                    }
-                    else if (val.EqualsI("Thief2"))
-                    {
-                        fm.Game = Game.Thief2;
-                    }
-                    else if (val.EqualsI("Thief3"))
-                    {
-                        fm.Game = Game.Thief3;
-                    }
-                    else if (val.EqualsI("SS2"))
-                    {
-                        fm.Game = Game.SS2;
-                    }
-                    else if (val.EqualsI("Unsupported"))
-                    {
-                        fm.Game = Game.Unsupported;
-                    }
-                    else
-                    {
-                        fm.Game = Game.Null;
-                    }
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("Installed="))
-                {
-                    string val = lineT.Substring(10);
-                    fm.Installed = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("NoReadmes="))
-                {
-                    string val = lineT.Substring(10);
-                    fm.NoReadmes = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("SelectedReadme="))
-                {
-                    string val = lineT.Substring(15);
-                    fm.SelectedReadme = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("ReadmeEncoding="))
-                {
-                    string val = lineT.Substring(15);
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        fm.ReadmeAndCodePageEntries.Add(val);
-                    }
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("SizeBytes="))
-                {
-                    string val = lineT.Substring(10);
-                    ulong.TryParse(val, out ulong result);
-                    fm.SizeBytes = result;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("Rating="))
-                {
-                    string val = lineT.Substring(7);
-                    bool success = int.TryParse(val, out int result);
-                    fm.Rating = success ? result : -1;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("ReleaseDate="))
-                {
-                    string val = lineT.Substring(12);
-                    fm.ReleaseDate.UnixDateString = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("LastPlayed="))
-                {
-                    string val = lineT.Substring(11);
-                    fm.LastPlayed.UnixDateString = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("DateAdded="))
-                {
-                    string val = lineT.Substring(10);
-                    // PERF: Don't convert to local here; do it at display-time
-                    fm.DateAdded = ConvertHexUnixDateToDateTime(val, convertToLocal: false);
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("FinishedOn="))
-                {
-                    string val = lineT.Substring(11);
-                    uint.TryParse(val, out uint result);
-                    fm.FinishedOn = result;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("FinishedOnUnknown="))
-                {
-                    string val = lineT.Substring(18);
-                    fm.FinishedOnUnknown = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("Comment="))
-                {
-                    string val = lineTS.Substring(8);
-                    fm.Comment = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("DisabledMods="))
-                {
-                    string val = lineT.Substring(13);
-                    fm.DisabledMods = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("DisableAllMods="))
-                {
-                    string val = lineT.Substring(15);
-                    fm.DisableAllMods = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasResources="))
-                {
-                    string val = lineT.Substring(13);
-                    fm.ResourcesScanned = !val.EqualsI("NotScanned");
-                    FillFMHasXFields(fm, val);
-                }
-                #region Old resource format - backward compatibility, we still have to be able to read it
-                else if (lineT.StartsWithFast_NoNullChecks("HasMap="))
-                {
-                    string val = lineT.Substring(7);
-                    SetFMResource(fm, CustomResources.Map, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasAutomap="))
-                {
-                    string val = lineT.Substring(11);
-                    SetFMResource(fm, CustomResources.Automap, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasScripts="))
-                {
-                    string val = lineT.Substring(11);
-                    SetFMResource(fm, CustomResources.Scripts, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasTextures="))
-                {
-                    string val = lineT.Substring(12);
-                    SetFMResource(fm, CustomResources.Textures, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasSounds="))
-                {
-                    string val = lineT.Substring(10);
-                    SetFMResource(fm, CustomResources.Sounds, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasObjects="))
-                {
-                    string val = lineT.Substring(11);
-                    SetFMResource(fm, CustomResources.Objects, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasCreatures="))
-                {
-                    string val = lineT.Substring(13);
-                    SetFMResource(fm, CustomResources.Creatures, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasMotions="))
-                {
-                    string val = lineT.Substring(11);
-                    SetFMResource(fm, CustomResources.Motions, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasMovies="))
-                {
-                    string val = lineT.Substring(10);
-                    SetFMResource(fm, CustomResources.Movies, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("HasSubtitles="))
-                {
-                    string val = lineT.Substring(13);
-                    SetFMResource(fm, CustomResources.Subtitles, val.EqualsTrue());
-                    resourcesFound = true;
-                }
-                #endregion
-                else if (lineT.StartsWithFast_NoNullChecks("LangsScanned="))
-                {
-                    string val = lineT.Substring(13);
-                    fm.LangsScanned = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("Langs="))
-                {
-                    string val = lineT.Substring(6);
-                    fm.Langs = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("SelectedLang="))
-                {
-                    string val = lineT.Substring(13);
-                    fm.SelectedLang = val;
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("TagsString="))
-                {
-                    string val = lineT.Substring(11);
-                    fm.TagsString = val;
-                }
-                if (resourcesFound) fm.ResourcesScanned = true;
             }
         }
 
