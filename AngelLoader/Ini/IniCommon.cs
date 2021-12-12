@@ -1,4 +1,9 @@
-﻿using System;
+﻿// @BigO(Config and FMData ini readers):
+// The huge if blocks of starts-with calls are a hidden O(n^2) thing. Language reading uses a dictionary lookup
+// which cuts the call count way down. But it only sets raw string values. Can we do something similar with the
+// more complex Config and FMData readers?
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
