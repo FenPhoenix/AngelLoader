@@ -99,6 +99,47 @@ namespace AngelLoader
             }
         }
 
+        internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)
+        {
+            string[] iniLines = File.ReadAllLines(fileName, Encoding.UTF8);
+
+            if (fmsList.Count > 0) fmsList.Clear();
+
+            bool fmsListIsEmpty = true;
+
+            foreach (string line in iniLines)
+            {
+                string lineTS = line.TrimStart();
+
+                if (lineTS.Length > 0 && lineTS[0] == '[')
+                {
+                    if (lineTS.Length >= 4 && lineTS[1] == 'F' && lineTS[2] == 'M' && lineTS[3] == ']')
+                    {
+                        fmsList.Add(new FanMission());
+                        if (fmsListIsEmpty) fmsListIsEmpty = false;
+                    }
+
+                    continue;
+                }
+
+                if (fmsListIsEmpty) continue;
+
+                if (lineTS.Length == 0 || lineTS[0] == ';') continue;
+
+                int eqIndex = lineTS.IndexOf('=');
+                if (eqIndex > -1)
+                {
+                    string key = lineTS.Substring(0, eqIndex);
+                    string valRaw = lineTS.Substring(eqIndex + 1);
+                    string valTrimmed = valRaw.TrimEnd();
+                    if (_actionDict.TryGetValue(key, out var action))
+                    {
+                        action.Invoke(fmsList[fmsList.Count - 1], valTrimmed, valRaw);
+                    }
+                }
+            }
+        }
+
         internal static void WriteConfigIni()
         {
             try

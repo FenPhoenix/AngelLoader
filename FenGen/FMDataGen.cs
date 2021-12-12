@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -72,120 +73,77 @@ namespace FenGen
             "decimal"
         };
 
+        private const string _oldResourceFormatMessage = "Old resource format - backward compatibility, we still have to be able to read it";
+
         private static class CustomCodeBlocks
         {
             internal static readonly string[] LegacyCustomResourceReads =
             {
-                "#region Old resource format - backward compatibility, we still have to be able to read it",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasMap=\"))",
+                "#region " + _oldResourceFormatMessage,
+                "",
+                "private static void HasMap_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(7);",
-                "    SetFMResource(fm, CustomResources.Map, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Map, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasAutomap=\"))",
+                "",
+                "private static void HasAutomap_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(11);",
-                "    SetFMResource(fm, CustomResources.Automap, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Automap, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasScripts=\"))",
+                "",
+                "private static void HasScripts_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(11);",
-                "    SetFMResource(fm, CustomResources.Scripts, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Scripts, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasTextures=\"))",
+                "",
+                "private static void HasTextures_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(12);",
-                "    SetFMResource(fm, CustomResources.Textures, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Textures, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasSounds=\"))",
+                "",
+                "private static void HasSounds_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(10);",
-                "    SetFMResource(fm, CustomResources.Sounds, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Sounds, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasObjects=\"))",
+                "",
+                "private static void HasObjects_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(11);",
-                "    SetFMResource(fm, CustomResources.Objects, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Objects, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasCreatures=\"))",
+                "",
+                "private static void HasCreatures_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(13);",
-                "    SetFMResource(fm, CustomResources.Creatures, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Creatures, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasMotions=\"))",
+                "",
+                "private static void HasMotions_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(11);",
-                "    SetFMResource(fm, CustomResources.Motions, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Motions, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasMovies=\"))",
+                "",
+                "private static void HasMovies_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(10);",
-                "    SetFMResource(fm, CustomResources.Movies, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Movies, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
-                "else if (lineT.StartsWithFast_NoNullChecks(\"HasSubtitles=\"))",
+                "",
+                "private static void HasSubtitles_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
-                "    string val = lineT.Substring(13);",
-                "    SetFMResource(fm, CustomResources.Subtitles, val.EqualsTrue());",
-                "    resourcesFound = true;",
+                "    SetFMResource(fm, CustomResources.Subtitles, valTrimmed.EqualsTrue());",
+                "    fm.ResourcesScanned = true;",
                 "}",
+                "",
                 "#endregion"
             };
-
-            internal static readonly string[] OldDisableAllMods =
-            {
-                "else if (lineT.StartsWithFast_NoNullChecks(\"DisableAllMods=\"))",
-                "{",
-                "   string val = lineT.Substring(15);",
-                "   fm.DisableModsSwitches = val.EqualsTrue() ? DisableModsSwitches.Safe : DisableModsSwitches.None;",
-                "}"
-            };
         }
-
-        private static readonly string[] _readFMDataIniTopLines =
-        {
-            "internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)",
-            "{",
-            "    string[] iniLines = File.ReadAllLines(fileName, Encoding.UTF8);",
-            "",
-            "    if (fmsList.Count > 0) fmsList.Clear();",
-            "",
-            "    bool fmsListIsEmpty = true;",
-            "",
-            "    foreach (string line in iniLines)",
-            "    {",
-            "        string lineTS = line.TrimStart();",
-            "        string lineT = lineTS.TrimEnd();",
-            "",
-            "        if (lineT.Length > 0 && lineT[0] == '[')",
-            "        {",
-            "            if (lineT.Length >= 4 && lineT[1] == 'F' && lineT[2] == 'M' && lineT[3] == ']')",
-            "            {",
-            "                fmsList.Add(new FanMission());",
-            "                if (fmsListIsEmpty) fmsListIsEmpty = false;",
-            "            }",
-            "",
-            "            continue;",
-            "        }",
-            "",
-            "        if (fmsListIsEmpty) continue;",
-            "",
-            "        bool resourcesFound = false;",
-            "",
-            "        // Comment chars (;) and blank lines will be rejected implicitly.",
-            "        // Since they're rare cases, checking for them would only slow us down.",
-            "",
-            "        FanMission fm = fmsList[fmsList.Count - 1];",
-            ""
-        };
 
         private static readonly string[] _writeFMDataIniTopLines =
         {
@@ -284,52 +242,52 @@ namespace FenGen
                                 field.DoNotTrimValue = true;
                                 break;
                             case GenAttributes.FenGenNumericEmpty:
-                            {
-                                CheckParamCount(attr, 1);
+                                {
+                                    CheckParamCount(attr, 1);
 
-                                // Have to do this ridiculous method of getting the value, because if the value is
-                                // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
-                                // number. But ToString() gives us the string version of the entire number. Argh...
-                                string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
-                                long.TryParse(val, out long result);
-                                field.NumericEmpty = result;
-                                break;
-                            }
+                                    // Have to do this ridiculous method of getting the value, because if the value is
+                                    // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
+                                    // number. But ToString() gives us the string version of the entire number. Argh...
+                                    string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
+                                    long.TryParse(val, out long result);
+                                    field.NumericEmpty = result;
+                                    break;
+                                }
                             case GenAttributes.FenGenListType:
-                            {
-                                CheckParamCount(attr, 1);
+                                {
+                                    CheckParamCount(attr, 1);
 
-                                string val = GetStringValue(attr);
+                                    string val = GetStringValue(attr);
 
-                                FieldInfo? enumField = typeof(ListType).GetField(val, _bFlagsEnum);
-                                if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
-                                break;
-                            }
+                                    FieldInfo? enumField = typeof(ListType).GetField(val, _bFlagsEnum);
+                                    if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
+                                    break;
+                                }
                             case GenAttributes.FenGenListDistinctType:
-                            {
-                                CheckParamCount(attr, 1);
+                                {
+                                    CheckParamCount(attr, 1);
 
-                                string val = GetStringValue(attr);
+                                    string val = GetStringValue(attr);
 
-                                FieldInfo? enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
-                                if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
-                                break;
-                            }
+                                    FieldInfo? enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
+                                    if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
+                                    break;
+                                }
                             case GenAttributes.FenGenIniName:
                                 CheckParamCount(attr, 1);
 
                                 field.IniName = GetStringValue(attr);
                                 break;
                             case GenAttributes.FenGenInsertAfter:
-                            {
-                                CheckParamCount(attr, 1);
+                                {
+                                    CheckParamCount(attr, 1);
 
-                                string val = GetStringValue(attr);
+                                    string val = GetStringValue(attr);
 
-                                FieldInfo? enumField = typeof(CustomCodeBlockNames).GetField(val, _bFlagsEnum);
-                                if (enumField != null) field.CodeBlockToInsertAfter = (CustomCodeBlockNames)enumField.GetValue(null);
-                                break;
-                            }
+                                    FieldInfo? enumField = typeof(CustomCodeBlockNames).GetField(val, _bFlagsEnum);
+                                    if (enumField != null) field.CodeBlockToInsertAfter = (CustomCodeBlockNames)enumField.GetValue(null);
+                                    break;
+                                }
                         }
                     }
                 }
@@ -377,10 +335,6 @@ namespace FenGen
 
         private static void WriteReader(CodeWriters.IndentingWriter w, string obj, FieldList fields)
         {
-            w.WL(GenMessages.Method);
-
-            w.WLs(_readFMDataIniTopLines);
-
             static string GetFloatArgsRead(string fieldType) =>
                 fieldType
                     is "float"
@@ -392,20 +346,20 @@ namespace FenGen
                     ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                     : "";
 
+            w.WL("#region Generated code for reader");
+            w.WL();
+
             for (int i = 0; i < fields.Count; i++)
             {
                 Field field = fields[i];
                 string objDotField = obj + "." + field.Name;
 
-                string optElse = i > 0 ? "else " : "";
-
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
-                string lineTrimmedVersion = field.DoNotTrimValue ? "lineTS" : "lineT";
+                string valVar = field.DoNotTrimValue ? "valRaw" : "valTrimmed";
 
-                w.WL(optElse + "if (lineT.StartsWithFast_NoNullChecks(\"" + fieldIniName + "=\"))");
+                w.WL("private static void " + fieldIniName + "_Set(FanMission fm, string valTrimmed, string valRaw)");
                 w.WL("{");
-                w.WL("string val = " + lineTrimmedVersion + ".Substring(" + (fieldIniName.Length + 1) + ");");
 
                 if (field.Type.StartsWith("List<"))
                 {
@@ -414,7 +368,7 @@ namespace FenGen
                     var ldt = field.ListDistinctType;
 
                     string varToAdd = listType == "string" && field.ListType == ListType.MultipleLines
-                        ? "val"
+                        ? "valTrimmed"
                         : "result";
 
                     string ignoreCaseString = ldt == ListDistinctType.CaseInsensitive && listType == "string"
@@ -432,7 +386,7 @@ namespace FenGen
                     {
                         if (field.ListType == ListType.MultipleLines)
                         {
-                            w.WL("if (!string.IsNullOrEmpty(val))");
+                            w.WL("if (!string.IsNullOrEmpty(valTrimmed))");
                             w.WL("{");
                             w.WL(objListSet + "");
                             w.WL("}");
@@ -440,7 +394,7 @@ namespace FenGen
                         else
                         {
                             w.WL(objDotField + ".Clear();");
-                            w.WL("string[] items = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
+                            w.WL("string[] items = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
                             w.WL("for (int a = 0; a < items.Length; a++)");
                             w.WL("{");
                             w.WL("string result = items[a].Trim();");
@@ -457,7 +411,7 @@ namespace FenGen
                             w.WL("{");
                             w.WL(objDotField + " = new List<" + listType + ">();");
                             w.WL("}");
-                            w.WL("bool success = " + listType + ".TryParse(val, " + floatArgs + "out " + listType + " result);");
+                            w.WL("bool success = " + listType + ".TryParse(valTrimmed, " + floatArgs + "out " + listType + " result);");
                             w.WL("if(success)");
                             w.WL("{");
                             w.WL(objListSet + "");
@@ -466,7 +420,7 @@ namespace FenGen
                         else
                         {
                             w.WL(objDotField + ".Clear();");
-                            w.WL("string[] items = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
+                            w.WL("string[] items = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
                             w.WL("for (int a = 0; a < items.Length; a++)");
                             w.WL("{");
                             w.WL("items[a] = items[a].Trim();");
@@ -481,28 +435,28 @@ namespace FenGen
                 }
                 else if (field.Type == "string")
                 {
-                    w.WL(objDotField + " = val;");
+                    w.WL(objDotField + " = " + valVar + ";");
                 }
                 else if (field.Type == "bool")
                 {
-                    w.WL(objDotField + " = val.EqualsTrue();");
+                    w.WL(objDotField + " = valTrimmed.EqualsTrue();");
                 }
                 else if (field.Type == "bool?")
                 {
                     w.WL(objDotField + " =");
-                    w.WL("!string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;");
+                    w.WL("!string.IsNullOrEmpty(valTrimmed) ? valTrimmed.EqualsTrue() : (bool?)null;");
                 }
                 else if (_numericTypes.Contains(field.Type))
                 {
                     string floatArgs = GetFloatArgsRead(field.Type);
                     if (field.NumericEmpty != null && field.NumericEmpty != 0)
                     {
-                        w.WL("bool success = " + field.Type + ".TryParse(val, " + floatArgs + "out " + field.Type + " result);");
+                        w.WL("bool success = " + field.Type + ".TryParse(valTrimmed, " + floatArgs + "out " + field.Type + " result);");
                         w.WL(objDotField + " = success ? result : " + field.NumericEmpty + ";");
                     }
                     else
                     {
-                        w.WL(field.Type + ".TryParse(val, " + floatArgs + "out " + field.Type + " result);");
+                        w.WL(field.Type + ".TryParse(valTrimmed, " + floatArgs + "out " + field.Type + " result);");
                         w.WL(objDotField + " = result;");
                     }
                 }
@@ -511,7 +465,7 @@ namespace FenGen
                 {
                     string floatArgs = GetFloatArgsRead(field.Type);
                     string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
-                    w.WL("bool success = " + ftNonNull + ".TryParse(val, " + floatArgs + "out " + ftNonNull + " result);");
+                    w.WL("bool success = " + ftNonNull + ".TryParse(valTrimmed, " + floatArgs + "out " + ftNonNull + " result);");
                     w.WL("if (success)");
                     w.WL("{");
                     w.WL(objDotField + " = result;");
@@ -523,15 +477,13 @@ namespace FenGen
                 }
                 else if (field.Type == Cache.GamesEnum.Name)
                 {
-                    w.WL("val = val.Trim();");
-
                     var gamesEnum = Cache.GamesEnum;
 
                     for (int gi = 1; gi < gamesEnum.GameEnumNames.Count; gi++)
                     {
                         string ifType = gi > 1 ? "else if" : "if";
                         string gameDotGameType = gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi];
-                        w.WL(ifType + " (val.EqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
+                        w.WL(ifType + " (valTrimmed.EqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
                         w.WL("{");
                         w.WL(objDotField + " = " + gameDotGameType + ";");
                         w.WL("}");
@@ -543,54 +495,74 @@ namespace FenGen
                 }
                 else if (field.Type == "ExpandableDate")
                 {
-                    w.WL(objDotField + ".UnixDateString = val;");
+                    w.WL(objDotField + ".UnixDateString = valTrimmed;");
                 }
                 else if (field.Type == "DateTime?")
                 {
                     w.WL("// PERF: Don't convert to local here; do it at display-time");
-                    w.WL(objDotField + " = ConvertHexUnixDateToDateTime(val, convertToLocal: " +
+                    w.WL(objDotField + " = ConvertHexUnixDateToDateTime(valTrimmed, convertToLocal: " +
                          (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
                 }
                 else if (field.Type == "CustomResources")
                 {
                     // Totally shouldn't be hardcoded...
-                    w.WL(obj + ".ResourcesScanned = !val.EqualsI(\"NotScanned\");");
-                    w.WL("FillFMHasXFields(fm, val);");
+                    w.WL(obj + ".ResourcesScanned = !valTrimmed.EqualsI(\"NotScanned\");");
+                    w.WL("FillFMHasXFields(fm, valTrimmed);");
                 }
                 else if (field.Type == "DisableModsSwitches")
                 {
-                    w.WL("FillDisableModsSwitches(fm, val);");
+                    w.WL("FillDisableModsSwitches(fm, valTrimmed);");
                 }
 
-                // if
-                w.WL("}");
-
-                if (field.CodeBlockToInsertAfter != CustomCodeBlockNames.None)
-                {
-                    switch (field.CodeBlockToInsertAfter)
-                    {
-                        case CustomCodeBlockNames.LegacyCustomResources:
-                            w.WLs(CustomCodeBlocks.LegacyCustomResourceReads);
-                            break;
-                        case CustomCodeBlockNames.OldDisableAllMods:
-                            w.WLs(CustomCodeBlocks.OldDisableAllMods);
-                            break;
-                    }
-                }
+                w.WL("}"); // end of setter method
+                w.WL();
             }
 
-            w.WL("if (resourcesFound) fm.ResourcesScanned = true;");
+            w.WLs(CustomCodeBlocks.LegacyCustomResourceReads);
+            w.WL();
 
-            // for
-            w.WL("}");
+            var dictFields = fields.ToList();
+            dictFields.Add(new Field { Name = "HasMap" });
+            dictFields.Add(new Field { Name = "HasAutomap" });
+            dictFields.Add(new Field { Name = "HasScripts" });
+            dictFields.Add(new Field { Name = "HasTextures" });
+            dictFields.Add(new Field { Name = "HasSounds" });
+            dictFields.Add(new Field { Name = "HasObjects" });
+            dictFields.Add(new Field { Name = "HasCreatures" });
+            dictFields.Add(new Field { Name = "HasMotions" });
+            dictFields.Add(new Field { Name = "HasMovies" });
+            dictFields.Add(new Field { Name = "HasSubtitles" });
 
-            // method ReadFMDataIni
-            w.WL("}");
+            w.WL("private static readonly Dictionary<string, Action<FanMission, string, string>> _actionDict = new()");
+            w.WL("{");
+            for (int i = 0; i < dictFields.Count; i++)
+            {
+                Field field = dictFields[i];
+                string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
+                string comma = i == dictFields.Count - 1 ? "" : ",";
+                w.WL("{ \"" + fieldIniName + "\", " + fieldIniName + "_Set }" + comma);
+
+                if (i < dictFields.Count - 1 && dictFields[i + 1].Name == "HasMap")
+                {
+                    w.WL();
+                    w.WL("#region " + _oldResourceFormatMessage);
+                    w.WL();
+                }
+                else if (i == dictFields.Count - 1)
+                {
+                    w.WL();
+                    w.WL("#endregion");
+                }
+            }
+            w.WL("};");
+            w.WL();
+            w.WL("#endregion");
         }
 
         private static void WriteWriter(CodeWriters.IndentingWriter w, string obj, FieldList fields)
         {
-            w.WL(GenMessages.Method);
+            w.WL("#region Generated code for writer");
+            w.WL();
 
             w.WLs(_writeFMDataIniTopLines);
 
@@ -846,6 +818,8 @@ namespace FenGen
 
             // method WriteFMDataIni
             w.WL("}");
+            w.WL();
+            w.WL("#endregion");
         }
     }
 }

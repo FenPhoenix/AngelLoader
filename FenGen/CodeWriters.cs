@@ -38,7 +38,7 @@ namespace FenGen
                 {
                     _nextIndent++;
                 }
-                else if (strT == "}")
+                else if (strT is "}" or "};")
                 {
                     _nextIndent--;
                     curIndent = _nextIndent;
