@@ -4479,7 +4479,7 @@ namespace AngelLoader.Forms
 
                 EditFMTitleTextBox.Text = fm.Title;
 
-                FillAltTitlesMenu(fm.AltTitles);
+                EditFMAltTitlesArrowButton.Enabled = fm.AltTitles.Count > 0;
 
                 EditFMAuthorTextBox.Text = fm.Author;
 
@@ -4816,11 +4816,7 @@ namespace AngelLoader.Forms
         {
             AltTitlesLLMenu.ClearItems();
 
-            if (fmAltTitles.Count == 0)
-            {
-                EditFMAltTitlesArrowButton.Enabled = false;
-            }
-            else
+            if (fmAltTitles.Count > 0)
             {
                 var altTitlesMenuItems = new List<ToolStripItem>(fmAltTitles.Count);
                 foreach (string altTitle in fmAltTitles)
@@ -4830,7 +4826,7 @@ namespace AngelLoader.Forms
                     altTitlesMenuItems.Add(item);
                 }
 
-                AltTitlesLLMenu.AddRange(altTitlesMenuItems.ToArray());
+                AltTitlesLLMenu.Menu.Items.AddRange(altTitlesMenuItems.ToArray());
 
                 EditFMAltTitlesArrowButton.Enabled = true;
             }
