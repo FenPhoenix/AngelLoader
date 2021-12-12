@@ -12,13 +12,9 @@ namespace AngelLoader
 {
     internal static class FMLanguages
     {
-        #region Public fields
-
-        internal const string DefaultLangKey = "default";
-
         // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
         // Immediate use, so don't bother lazy-loading
-        internal static readonly string[]
+        private static readonly string[]
         Supported =
         {
             "english",    // en, eng (must be first)
@@ -33,6 +29,17 @@ namespace AngelLoader
             "russian",    // ru
             "spanish"     // es
         };
+
+        private static readonly HashSetI SupportedHash;
+
+        static FMLanguages()
+        {
+            SupportedHash = Supported.ToHashSetI();
+        }
+
+        #region Public fields
+
+        internal const string DefaultLangKey = "default";
 
         private static DictionaryI<string>? _langCodes;
         internal static DictionaryI<string>
@@ -81,15 +88,13 @@ namespace AngelLoader
 
         #region Methods
 
-        internal static List<string> SortLangsToSpec(List<string> langs)
+        internal static List<string> SortLangsToSpec(HashSetI langsHash)
         {
             var ret = new List<string>();
 
-            var langsHash = langs.ToHashSetI();
-
             // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
             // (matching FMSel behavior)
-            if (langs.Count > 0)
+            if (langsHash.Count > 0)
             {
                 for (int i = 0; i < Supported.Length; i++)
                 {
@@ -195,7 +200,7 @@ namespace AngelLoader
 
             if (langs.Count > 0)
             {
-                langs = SortLangsToSpec(langs);
+                langs = SortLangsToSpec(langs.ToHashSetI());
                 fm.Langs = string.Join(",", langs);
             }
 
@@ -233,13 +238,13 @@ namespace AngelLoader
 
             #endregion
 
-            var langsFoundList = new List<string>(Supported.Length);
+            var langsFoundList = new HashSetI(Supported.Length);
 
             while (searchList.Count > 0)
             {
                 string bdPath = searchList[searchList.Count - 1];
                 searchList.RemoveAt(searchList.Count - 1);
-                bool englishFound = FastIO.SearchDirForLanguages(bdPath, searchList, langsFoundList, earlyOutOnEnglish);
+                bool englishFound = FastIO.SearchDirForLanguages(SupportedHash, bdPath, searchList, langsFoundList, earlyOutOnEnglish);
                 // Matching FMSel behavior: early-out on English
                 if (earlyOutOnEnglish && englishFound) return new List<string> { "English" };
             }

@@ -247,15 +247,17 @@ namespace AngelLoader
         /// <summary>
         /// Helper for finding language-named subdirectories in an installed FM directory.
         /// </summary>
+        /// <param name="supportedHash"></param>
         /// <param name="path"></param>
         /// <param name="searchList"></param>
         /// <param name="retList"></param>
         /// <param name="earlyOutOnEnglish"></param>
         /// <returns><see langword="true"/> if English was found and we quit the search early</returns>
         internal static bool SearchDirForLanguages(
+            HashSetI supportedHash,
             string path,
             List<string> searchList,
-            List<string> retList,
+            HashSetI retList,
             bool earlyOutOnEnglish)
         {
             path = NormalizeAndCheckPath(path, pathIsKnownValid: true);
@@ -277,11 +279,11 @@ namespace AngelLoader
                     (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT &&
                     findData.cFileName != "." && findData.cFileName != "..")
                 {
-                    if (FMLanguages.Supported.ContainsI(findData.cFileName))
+                    if (supportedHash.Contains(findData.cFileName))
                     {
                         // Add lang dir to found langs list, but not to search list - don't search within lang
                         // dirs (matching FMSel behavior)
-                        if (!retList.ContainsI(findData.cFileName)) retList.Add(findData.cFileName);
+                        retList.Add(findData.cFileName);
                         // Matching FMSel behavior: early-out on English
                         if (earlyOutOnEnglish && findData.cFileName.EqualsI("english")) return true;
                     }

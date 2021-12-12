@@ -4734,7 +4734,7 @@ namespace AngelLoader.Forms
                 if (doScan) FMLanguages.FillFMSupportedLangs(fm);
 
                 var langs = fm.Langs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
-                var sortedLangs = doScan ? langs : FMLanguages.SortLangsToSpec(langs);
+                var sortedLangs = doScan ? langs : FMLanguages.SortLangsToSpec(langs.ToHashSetI());
                 fm.Langs = "";
                 for (int i = 0; i < sortedLangs.Count; i++)
                 {
