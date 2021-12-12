@@ -1764,7 +1764,7 @@ namespace AngelLoader
 
         internal static async Task PinOrUnpinFM()
         {
-            var fm = View.GetSelectedFM();
+            var fm = View.GetSelectedFMOrNull();
             if (fm == null) return;
 
             fm.Pinned = !fm.Pinned;
@@ -1802,7 +1802,7 @@ namespace AngelLoader
 
         internal static void UpdateFMComment()
         {
-            FanMission? fm = View.GetSelectedFM();
+            FanMission? fm = View.GetSelectedFMOrNull();
             if (fm == null) return;
 
             string commentText = View.GetFMCommentText();

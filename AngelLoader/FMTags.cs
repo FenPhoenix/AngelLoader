@@ -37,7 +37,7 @@ namespace AngelLoader
 
         internal static void RemoveTagOperation()
         {
-            var fm = Core.View.GetSelectedFM();
+            var fm = Core.View.GetSelectedFMOrNull();
             if (fm == null) return;
 
             (string catText, string tagText) = Core.View.SelectedCategoryAndTag();

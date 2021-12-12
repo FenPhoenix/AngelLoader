@@ -700,8 +700,6 @@ namespace AngelLoader.Forms
             Text = "AngelLoader " + Application.ProductVersion;
 #endif
 
-            FMsDGV.InjectOwner(this);
-
             #region Set up form and control state
 
             // Set here in init method so as to avoid the changes being visible.
@@ -750,6 +748,8 @@ namespace AngelLoader.Forms
             #endregion
 
             #region FMs DataGridView
+
+            FMsDGV.InjectOwner(this);
 
             _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
@@ -810,9 +810,13 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            #region Pseudofilters
+
             FilterShowUnsupportedButton.Checked = Config.ShowUnsupported;
             FilterShowUnavailableButton.Checked = Config.ShowUnavailableFMs;
             FilterShowRecentAtTopButton.Checked = Config.ShowRecentAtTop;
+
+            #endregion
 
             // EnsureValidity() guarantees selected tab will not be invisible
             for (int i = 0; i < TopRightTabsData.Count; i++)
@@ -1224,7 +1228,7 @@ namespace AngelLoader.Forms
         {
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
-            FanMission? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
+            FanMission? selFM = GetSelectedFMOrNull();
 
             try
             {
@@ -1320,19 +1324,9 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                PlayOriginalGameLLMenu.Localize();
-                MainToolTip.SetToolTip(PlayOriginalT1Button, LText.PlayOriginalGameMenu.Thief1_PlayOriginal);
-                MainToolTip.SetToolTip(PlayOriginalT2Button, LText.PlayOriginalGameMenu.Thief2_PlayOriginal);
-                MainToolTip.SetToolTip(PlayOriginalT3Button, LText.PlayOriginalGameMenu.Thief3_PlayOriginal);
-                MainToolTip.SetToolTip(PlayOriginalSS2Button, LText.PlayOriginalGameMenu.SS2_PlayOriginal);
-
                 #region Top-right tabs area
 
-                #region Show/hide tabs menu
-
                 TopRightLLMenu.Localize();
-
-                #endregion
 
                 #region Statistics tab
 
@@ -1456,9 +1450,15 @@ namespace AngelLoader.Forms
 
                 PlayFMButton.Text = LText.MainButtons.PlayFM;
 
+                PlayOriginalGameButton.Text = LText.MainButtons.PlayOriginalGame;
+                PlayOriginalGameLLMenu.Localize();
+                MainToolTip.SetToolTip(PlayOriginalT1Button, LText.PlayOriginalGameMenu.Thief1_PlayOriginal);
+                MainToolTip.SetToolTip(PlayOriginalT2Button, LText.PlayOriginalGameMenu.Thief2_PlayOriginal);
+                MainToolTip.SetToolTip(PlayOriginalT3Button, LText.PlayOriginalGameMenu.Thief3_PlayOriginal);
+                MainToolTip.SetToolTip(PlayOriginalSS2Button, LText.PlayOriginalGameMenu.SS2_PlayOriginal);
+
                 InstallUninstallFMLLButton.Localize(startup);
 
-                PlayOriginalGameButton.Text = LText.MainButtons.PlayOriginalGame;
                 WebSearchButton.Text = LText.MainButtons.WebSearch;
 
                 SettingsButton.Text = LText.MainButtons.Settings;
@@ -2920,7 +2920,7 @@ namespace AngelLoader.Forms
 
         public bool FMSelected() => FMsDGV.RowSelected();
 
-        public FanMission? GetSelectedFM() => FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
+        public FanMission? GetSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
 
         public (string Category, string Tag)
         SelectedCategoryAndTag()
@@ -3457,7 +3457,7 @@ namespace AngelLoader.Forms
         {
             bool selFMWasPassedIn = selectedFM != null;
 
-            FanMission? oldSelectedFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
+            FanMission? oldSelectedFM = GetSelectedFMOrNull();
 
             selectedFM ??= keepSelection && !gameTabSwitch && FMsDGV.RowSelected()
                 ? FMsDGV.GetSelectedFMPosInfo()
