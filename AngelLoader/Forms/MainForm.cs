@@ -2815,23 +2815,12 @@ namespace AngelLoader.Forms
 
         #region Comment tab
 
+        public string GetFMCommentText() => CommentTextBox.Text;
+
         private void CommentTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-
-            if (!FMsDGV.RowSelected()) return;
-
-            var fm = FMsDGV.GetSelectedFM();
-
-            // Converting a multiline comment to single line:
-            // DarkLoader copies up to the first linebreak or the 40 char mark, whichever comes first.
-            // I'm doing the same, but bumping the cutoff point to 100 chars, which is still plenty fast.
-            // fm.Comment.ToEscapes() is unbounded, but I measure tenths to hundredths of a millisecond even for
-            // 25,000+ character strings with nothing but slashes and linebreaks in them.
-            fm.Comment = CommentTextBox.Text.ToRNEscapes();
-            fm.CommentSingleLine = CommentTextBox.Text.ToSingleLineComment(100);
-
-            RefreshSelectedFM(rowOnly: true);
+            Core.UpdateFMComment();
         }
 
         private void CommentTextBox_Leave(object sender, EventArgs e)

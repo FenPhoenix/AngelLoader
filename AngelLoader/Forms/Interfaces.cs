@@ -238,5 +238,6 @@ namespace AngelLoader.Forms
         int GetRowCount();
         int GetSelectedRowIndex();
         SelectedFM? GetFMPosInfoFromIndex(int index);
+        string GetFMCommentText();
     }
 }
