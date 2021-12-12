@@ -172,7 +172,7 @@ namespace AngelLoader
             if (!GameIsDark(fm.Game)) return;
 
             string fmInstPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
-            var langs = new List<string>();
+            List<string> langs;
             if (FMIsReallyInstalled(fm))
             {
                 try
@@ -183,6 +183,8 @@ namespace AngelLoader
                 {
                     Log("Exception trying to detect language folders in installed dir for fm '" +
                         fm.Archive + "' (inst dir '" + fm.InstalledDir + "')", ex);
+                    fm.LangsScanned = false;
+                    return;
                 }
             }
             else
@@ -195,6 +197,8 @@ namespace AngelLoader
                 {
                     Log("Exception trying to detect language folders in archive for fm '" +
                         fm.Archive + "' (inst dir '" + fm.InstalledDir + "')", ex);
+                    fm.LangsScanned = false;
+                    return;
                 }
             }
 
