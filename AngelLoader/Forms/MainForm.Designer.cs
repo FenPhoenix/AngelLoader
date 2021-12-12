@@ -55,7 +55,12 @@ namespace AngelLoader.Forms
             this.SettingsButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.BottomLeftButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.PlayOriginalFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayOriginalGameButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.PlayOriginalT1Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.PlayOriginalT2Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.PlayOriginalT3Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.PlayOriginalSS2Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.WebSearchButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
@@ -186,6 +191,7 @@ namespace AngelLoader.Forms
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
+            this.PlayOriginalFLP.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
@@ -267,11 +273,11 @@ namespace AngelLoader.Forms
             this.BottomLeftButtonsFLP.AutoSize = true;
             this.BottomLeftButtonsFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BottomLeftButtonsFLP.Controls.Add(this.PlayFMButton);
-            this.BottomLeftButtonsFLP.Controls.Add(this.PlayOriginalGameButton);
+            this.BottomLeftButtonsFLP.Controls.Add(this.PlayOriginalFLP);
             this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftButtonsFLP.Name = "BottomLeftButtonsFLP";
-            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(384, 42);
+            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(531, 42);
             this.BottomLeftButtonsFLP.TabIndex = 36;
             this.BottomLeftButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftButtonsFLP_Paint);
             // 
@@ -290,27 +296,88 @@ namespace AngelLoader.Forms
             this.PlayFMButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayFMButton_Paint);
             this.PlayFMButton.Click += new System.EventHandler(this.InstallUninstall_Play_Buttons_Click);
             // 
+            // PlayOriginalFLP
+            // 
+            this.PlayOriginalFLP.AutoSize = true;
+            this.PlayOriginalFLP.Controls.Add(this.PlayOriginalGameButton);
+            this.PlayOriginalFLP.Controls.Add(this.PlayOriginalT1Button);
+            this.PlayOriginalFLP.Controls.Add(this.PlayOriginalT2Button);
+            this.PlayOriginalFLP.Controls.Add(this.PlayOriginalT3Button);
+            this.PlayOriginalFLP.Controls.Add(this.PlayOriginalSS2Button);
+            this.PlayOriginalFLP.Location = new System.Drawing.Point(100, 3);
+            this.PlayOriginalFLP.Name = "PlayOriginalFLP";
+            this.PlayOriginalFLP.Size = new System.Drawing.Size(294, 36);
+            this.PlayOriginalFLP.TabIndex = 57;
+            // 
             // PlayOriginalGameButton
             // 
             this.PlayOriginalGameButton.AutoSize = true;
             this.PlayOriginalGameButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PlayOriginalGameButton.Location = new System.Drawing.Point(100, 3);
-            this.PlayOriginalGameButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+            this.PlayOriginalGameButton.Location = new System.Drawing.Point(0, 0);
+            this.PlayOriginalGameButton.Margin = new System.Windows.Forms.Padding(0);
             this.PlayOriginalGameButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
             this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
             this.PlayOriginalGameButton.Size = new System.Drawing.Size(150, 36);
-            this.PlayOriginalGameButton.TabIndex = 57;
+            this.PlayOriginalGameButton.TabIndex = 0;
             this.PlayOriginalGameButton.Text = "Play original game...";
             this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
             this.PlayOriginalGameButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGameButton_Paint);
             this.PlayOriginalGameButton.Click += new System.EventHandler(this.PlayOriginalGameButton_Click);
             // 
+            // PlayOriginalT1Button
+            // 
+            this.PlayOriginalT1Button.Location = new System.Drawing.Point(150, 0);
+            this.PlayOriginalT1Button.Margin = new System.Windows.Forms.Padding(0);
+            this.PlayOriginalT1Button.MinimumSize = new System.Drawing.Size(36, 36);
+            this.PlayOriginalT1Button.Name = "PlayOriginalT1Button";
+            this.PlayOriginalT1Button.Size = new System.Drawing.Size(36, 36);
+            this.PlayOriginalT1Button.TabIndex = 1;
+            this.PlayOriginalT1Button.UseVisualStyleBackColor = true;
+            this.PlayOriginalT1Button.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGamesButtons_Paint);
+            this.PlayOriginalT1Button.Click += new System.EventHandler(this.PlayOriginalGameButtons_Click);
+            // 
+            // PlayOriginalT2Button
+            // 
+            this.PlayOriginalT2Button.Location = new System.Drawing.Point(186, 0);
+            this.PlayOriginalT2Button.Margin = new System.Windows.Forms.Padding(0);
+            this.PlayOriginalT2Button.MinimumSize = new System.Drawing.Size(36, 36);
+            this.PlayOriginalT2Button.Name = "PlayOriginalT2Button";
+            this.PlayOriginalT2Button.Size = new System.Drawing.Size(36, 36);
+            this.PlayOriginalT2Button.TabIndex = 2;
+            this.PlayOriginalT2Button.UseVisualStyleBackColor = true;
+            this.PlayOriginalT2Button.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGamesButtons_Paint);
+            this.PlayOriginalT2Button.Click += new System.EventHandler(this.PlayOriginalGameButtons_Click);
+            // 
+            // PlayOriginalT3Button
+            // 
+            this.PlayOriginalT3Button.Location = new System.Drawing.Point(222, 0);
+            this.PlayOriginalT3Button.Margin = new System.Windows.Forms.Padding(0);
+            this.PlayOriginalT3Button.MinimumSize = new System.Drawing.Size(36, 36);
+            this.PlayOriginalT3Button.Name = "PlayOriginalT3Button";
+            this.PlayOriginalT3Button.Size = new System.Drawing.Size(36, 36);
+            this.PlayOriginalT3Button.TabIndex = 3;
+            this.PlayOriginalT3Button.UseVisualStyleBackColor = true;
+            this.PlayOriginalT3Button.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGamesButtons_Paint);
+            this.PlayOriginalT3Button.Click += new System.EventHandler(this.PlayOriginalGameButtons_Click);
+            // 
+            // PlayOriginalSS2Button
+            // 
+            this.PlayOriginalSS2Button.Location = new System.Drawing.Point(258, 0);
+            this.PlayOriginalSS2Button.Margin = new System.Windows.Forms.Padding(0);
+            this.PlayOriginalSS2Button.MinimumSize = new System.Drawing.Size(36, 36);
+            this.PlayOriginalSS2Button.Name = "PlayOriginalSS2Button";
+            this.PlayOriginalSS2Button.Size = new System.Drawing.Size(36, 36);
+            this.PlayOriginalSS2Button.TabIndex = 4;
+            this.PlayOriginalSS2Button.UseVisualStyleBackColor = true;
+            this.PlayOriginalSS2Button.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGamesButtons_Paint);
+            this.PlayOriginalSS2Button.Click += new System.EventHandler(this.PlayOriginalGameButtons_Click);
+            // 
             // WebSearchButton
             // 
             this.WebSearchButton.AutoSize = true;
             this.WebSearchButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.WebSearchButton.Location = new System.Drawing.Point(265, 3);
+            this.WebSearchButton.Location = new System.Drawing.Point(412, 3);
             this.WebSearchButton.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
             this.WebSearchButton.MinimumSize = new System.Drawing.Size(116, 36);
             this.WebSearchButton.Name = "WebSearchButton";
@@ -1819,9 +1886,8 @@ namespace AngelLoader.Forms
             this.ModsDisabledModsTextBox.Name = "ModsDisabledModsTextBox";
             this.ModsDisabledModsTextBox.Size = new System.Drawing.Size(512, 20);
             this.ModsDisabledModsTextBox.TabIndex = 3;
-            //ModsDisabledModsTextBox.KeyDown += ModsDisabledModsTextBox_KeyDown;
-            this.ModsDisabledModsTextBox.KeyDown += new KeyEventHandler(this.ModsDisabledModsTextBox_KeyDown);
             this.ModsDisabledModsTextBox.TextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
+            this.ModsDisabledModsTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModsDisabledModsTextBox_KeyDown);
             this.ModsDisabledModsTextBox.Leave += new System.EventHandler(this.ModsDisabledModsTextBox_Leave);
             // 
             // ModsDisabledModsLabel
@@ -1996,6 +2062,8 @@ namespace AngelLoader.Forms
             this.BottomRightButtonsFLP.PerformLayout();
             this.BottomLeftButtonsFLP.ResumeLayout(false);
             this.BottomLeftButtonsFLP.PerformLayout();
+            this.PlayOriginalFLP.ResumeLayout(false);
+            this.PlayOriginalFLP.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
@@ -2198,5 +2266,10 @@ namespace AngelLoader.Forms
         internal CustomControls.DarkCheckBox ModsShowUberCheckBox;
         internal CustomControls.DarkLabel ModsHeaderLabel;
         internal System.Windows.Forms.Panel ModsAutoScrollDummyPanel;
+        internal FlowLayoutPanel PlayOriginalFLP;
+        internal CustomControls.DarkButton PlayOriginalT1Button;
+        internal CustomControls.DarkButton PlayOriginalT2Button;
+        internal CustomControls.DarkButton PlayOriginalT3Button;
+        internal CustomControls.DarkButton PlayOriginalSS2Button;
     }
 }

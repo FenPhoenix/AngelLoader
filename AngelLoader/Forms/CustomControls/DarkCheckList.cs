@@ -9,6 +9,8 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
     {
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
 
         #region Private fields

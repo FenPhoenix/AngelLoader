@@ -97,7 +97,11 @@ namespace AngelLoader.Forms
         private const int _ratingImageColumnWidth = 73;
         private const int _finishedColumnWidth = 91;
 
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool KeyPressesDisabled { get; set; }
 
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
@@ -821,6 +825,8 @@ namespace AngelLoader.Forms
 
             ModsCheckList.Inject(() => ModsShowUberCheckBox.Checked);
 
+            SetPlayOriginalButtonStyle();
+
             #endregion
 
             // Set these here because they depend on the splitter positions
@@ -1301,6 +1307,10 @@ namespace AngelLoader.Forms
                 #endregion
 
                 PlayOriginalGameLLMenu.Localize();
+                MainToolTip.SetToolTip(PlayOriginalT1Button, LText.PlayOriginalGameMenu.Thief1_PlayOriginal);
+                MainToolTip.SetToolTip(PlayOriginalT2Button, LText.PlayOriginalGameMenu.Thief2_PlayOriginal);
+                MainToolTip.SetToolTip(PlayOriginalT3Button, LText.PlayOriginalGameMenu.Thief3_PlayOriginal);
+                MainToolTip.SetToolTip(PlayOriginalSS2Button, LText.PlayOriginalGameMenu.SS2_PlayOriginal);
 
                 #region Top-right tabs area
 
@@ -4087,6 +4097,26 @@ namespace AngelLoader.Forms
 
         #region Play original game
 
+        private void SetPlayOriginalButtonStyle()
+        {
+            if (Config.PlayOriginalSeparateButtons)
+            {
+                PlayOriginalGameButton.Hide();
+                PlayOriginalT1Button.Show();
+                PlayOriginalT2Button.Show();
+                PlayOriginalT3Button.Show();
+                PlayOriginalSS2Button.Show();
+            }
+            else
+            {
+                PlayOriginalGameButton.Show();
+                PlayOriginalT1Button.Hide();
+                PlayOriginalT2Button.Hide();
+                PlayOriginalT3Button.Hide();
+                PlayOriginalSS2Button.Hide();
+            }
+        }
+
         // @GENGAMES (Play original game menu event handlers): Begin
         // Because of the T2MP menu item breaking up the middle there, we can't array/index these menu items.
         // Just gonna have to leave this part as-is.
@@ -4106,18 +4136,28 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
-            var item = (ToolStripMenuItemCustom)sender;
-
             GameIndex game =
-                item == PlayOriginalGameLLMenu.Thief1MenuItem ? Thief1 :
-                item == PlayOriginalGameLLMenu.Thief2MenuItem || item == PlayOriginalGameLLMenu.Thief2MPMenuItem ? Thief2 :
-                item == PlayOriginalGameLLMenu.Thief3MenuItem ? Thief3 :
+                sender == PlayOriginalGameLLMenu.Thief1MenuItem ? Thief1 :
+                sender == PlayOriginalGameLLMenu.Thief2MenuItem || sender == PlayOriginalGameLLMenu.Thief2MPMenuItem ? Thief2 :
+                sender == PlayOriginalGameLLMenu.Thief3MenuItem ? Thief3 :
                 SS2;
 
-            bool playMP = item == PlayOriginalGameLLMenu.Thief2MPMenuItem;
+            bool playMP = sender == PlayOriginalGameLLMenu.Thief2MPMenuItem;
 
             FMInstallAndPlay.PlayOriginalGame(game, playMP);
         }
+
+        private void PlayOriginalGameButtons_Click(object sender, EventArgs e)
+        {
+            GameIndex gameIndex =
+                sender == PlayOriginalT1Button ? Thief1 :
+                sender == PlayOriginalT2Button ? Thief2 :
+                sender == PlayOriginalT3Button ? Thief3 :
+                SS2;
+
+            FMInstallAndPlay.PlayOriginalGame(gameIndex);
+        }
+
         // @GENGAMES (Play original game menu event handlers): End
 
         #endregion
@@ -4876,6 +4916,17 @@ namespace AngelLoader.Forms
         private void PlayFMButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayFMButton(PlayFMButton, e);
 
         private void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayOriginalButton(PlayOriginalGameButton, e);
+
+        private void PlayOriginalGamesButtons_Paint(object sender, PaintEventArgs e)
+        {
+            Bitmap image =
+                sender == PlayOriginalT1Button ? Images.Thief1_21 :
+                sender == PlayOriginalT2Button ? Images.Thief2_21 :
+                sender == PlayOriginalT3Button ? Images.Thief3_21 :
+                Images.Shock2_21;
+
+            Images.PaintBitmapButton((Button)sender, e, image, x: 8);
+        }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void InstallUninstall_Play_Buttons_Paint(object sender, PaintEventArgs e)

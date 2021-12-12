@@ -513,6 +513,10 @@ namespace AngelLoader.DataClasses
         internal sealed class PlayOriginalGameMenu_Class
         {
             internal readonly string Thief2_Multiplayer = "Thief 2 (multiplayer)";
+            internal readonly string Thief1_PlayOriginal = "Play Thief 1 with no FM";
+            internal readonly string Thief2_PlayOriginal = "Play Thief 2 with no FM";
+            internal readonly string Thief3_PlayOriginal = "Play Thief 3 with no FM";
+            internal readonly string SS2_PlayOriginal = "Play System Shock 2 with no FM";
         }
 
         internal sealed class MainButtons_Class

@@ -33,7 +33,12 @@ namespace AngelLoader.Forms
             SettingsButton = new DarkButton();
             BottomLeftButtonsFLP = new FlowLayoutPanel();
             PlayFMButton = new DarkButton();
+            PlayOriginalFLP = new FlowLayoutPanel();
             PlayOriginalGameButton = new DarkButton();
+            PlayOriginalT1Button = new DarkButton();
+            PlayOriginalT2Button = new DarkButton();
+            PlayOriginalT3Button = new DarkButton();
+            PlayOriginalSS2Button = new DarkButton();
             WebSearchButton = new DarkButton();
             EverythingPanel = new Panel();
             MainSplitContainer = new DarkSplitContainerCustom();
@@ -164,6 +169,7 @@ namespace AngelLoader.Forms
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
+            PlayOriginalFLP.SuspendLayout();
             EverythingPanel.SuspendLayout();
             MainSplitContainer.BeginInit();
             MainSplitContainer.Panel1.SuspendLayout();
@@ -234,7 +240,7 @@ namespace AngelLoader.Forms
             BottomLeftButtonsFLP.AutoSize = true;
             BottomLeftButtonsFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BottomLeftButtonsFLP.Controls.Add(PlayFMButton);
-            BottomLeftButtonsFLP.Controls.Add(PlayOriginalGameButton);
+            BottomLeftButtonsFLP.Controls.Add(PlayOriginalFLP);
             BottomLeftButtonsFLP.Controls.Add(WebSearchButton);
             BottomLeftButtonsFLP.Location = new Point(2, 0);
             BottomLeftButtonsFLP.TabIndex = 36;
@@ -251,17 +257,67 @@ namespace AngelLoader.Forms
             PlayFMButton.PaintCustom += PlayFMButton_Paint;
             PlayFMButton.Click += InstallUninstall_Play_Buttons_Click;
             // 
+            // PlayOriginalFLP
+            // 
+            PlayOriginalFLP.AutoSize = true;
+            PlayOriginalFLP.Controls.Add(PlayOriginalGameButton);
+            PlayOriginalFLP.Controls.Add(PlayOriginalT1Button);
+            PlayOriginalFLP.Controls.Add(PlayOriginalT2Button);
+            PlayOriginalFLP.Controls.Add(PlayOriginalT3Button);
+            PlayOriginalFLP.Controls.Add(PlayOriginalSS2Button);
+            PlayOriginalFLP.TabIndex = 58;
+            // 
             // PlayOriginalGameButton
             // 
             PlayOriginalGameButton.AutoSize = true;
             PlayOriginalGameButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            PlayOriginalGameButton.Margin = new Padding(3, 3, 0, 3);
+            PlayOriginalGameButton.Margin = new Padding(0);
             PlayOriginalGameButton.MinimumSize = new Size(0, 36);
             PlayOriginalGameButton.Padding = new Padding(33, 0, 6, 0);
-            PlayOriginalGameButton.TabIndex = 57;
+            PlayOriginalGameButton.TabIndex = 0;
             PlayOriginalGameButton.UseVisualStyleBackColor = true;
             PlayOriginalGameButton.PaintCustom += PlayOriginalGameButton_Paint;
             PlayOriginalGameButton.Click += PlayOriginalGameButton_Click;
+            // 
+            // PlayOriginalT1Button
+            // 
+            PlayOriginalT1Button.Margin = new Padding(0);
+            PlayOriginalT1Button.MinimumSize = new Size(36, 36);
+            PlayOriginalT1Button.Size = new Size(36, 36);
+            PlayOriginalT1Button.TabIndex = 1;
+            PlayOriginalT1Button.UseVisualStyleBackColor = true;
+            PlayOriginalT1Button.PaintCustom += PlayOriginalGamesButtons_Paint;
+            PlayOriginalT1Button.Click += PlayOriginalGameButtons_Click;
+            // 
+            // PlayOriginalT2Button
+            // 
+            PlayOriginalT2Button.Margin = new Padding(0);
+            PlayOriginalT2Button.MinimumSize = new Size(36, 36);
+            PlayOriginalT2Button.Size = new Size(36, 36);
+            PlayOriginalT2Button.TabIndex = 2;
+            PlayOriginalT2Button.UseVisualStyleBackColor = true;
+            PlayOriginalT2Button.PaintCustom += PlayOriginalGamesButtons_Paint;
+            PlayOriginalT2Button.Click += PlayOriginalGameButtons_Click;
+            // 
+            // PlayOriginalT3Button
+            // 
+            PlayOriginalT3Button.Margin = new Padding(0);
+            PlayOriginalT3Button.MinimumSize = new Size(36, 36);
+            PlayOriginalT3Button.Size = new Size(36, 36);
+            PlayOriginalT3Button.TabIndex = 3;
+            PlayOriginalT3Button.UseVisualStyleBackColor = true;
+            PlayOriginalT3Button.PaintCustom += PlayOriginalGamesButtons_Paint;
+            PlayOriginalT3Button.Click += PlayOriginalGameButtons_Click;
+            // 
+            // PlayOriginalSS2Button
+            // 
+            PlayOriginalSS2Button.Margin = new Padding(0);
+            PlayOriginalSS2Button.MinimumSize = new Size(36, 36);
+            PlayOriginalSS2Button.Size = new Size(36, 36);
+            PlayOriginalSS2Button.TabIndex = 4;
+            PlayOriginalSS2Button.UseVisualStyleBackColor = true;
+            PlayOriginalSS2Button.PaintCustom += PlayOriginalGamesButtons_Paint;
+            PlayOriginalSS2Button.Click += PlayOriginalGameButtons_Click;
             // 
             // WebSearchButton
             // 
@@ -1565,6 +1621,8 @@ namespace AngelLoader.Forms
             BottomRightButtonsFLP.PerformLayout();
             BottomLeftButtonsFLP.ResumeLayout(false);
             BottomLeftButtonsFLP.PerformLayout();
+            PlayOriginalFLP.ResumeLayout(false);
+            PlayOriginalFLP.PerformLayout();
             EverythingPanel.ResumeLayout(false);
             MainSplitContainer.Panel1.ResumeLayout(false);
             MainSplitContainer.Panel2.ResumeLayout(false);

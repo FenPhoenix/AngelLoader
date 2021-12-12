@@ -408,6 +408,8 @@ namespace AngelLoader.DataClasses
 
         internal bool EnableCharacterDetailFix = true;
 
+        internal bool PlayOriginalSeparateButtons = true;
+
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed;
