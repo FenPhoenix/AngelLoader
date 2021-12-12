@@ -14,6 +14,8 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
+    // @BigO(Config reader): This also has the huge if block, let's dictionary-ize this too
+
     // NOTE: This file should have had sections from the start, but now that it got released without, we can't
     // really change it without breaking compatibility. Oh well.
 

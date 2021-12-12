@@ -17,6 +17,9 @@ namespace AngelLoader
     {
         #region Generated code for reader
 
+        // This nonsense is to allow for keys to be looked up in a dictionary rather than running ten thousand
+        // if statements on every line.
+
         private static void NoArchive_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.NoArchive = valTrimmed.EqualsTrue();

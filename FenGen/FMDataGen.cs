@@ -348,6 +348,9 @@ namespace FenGen
 
             w.WL("#region Generated code for reader");
             w.WL();
+            w.WL("// This nonsense is to allow for keys to be looked up in a dictionary rather than running ten thousand");
+            w.WL("// if statements on every line.");
+            w.WL();
 
             for (int i = 0; i < fields.Count; i++)
             {
