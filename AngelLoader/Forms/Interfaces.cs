@@ -242,5 +242,6 @@ namespace AngelLoader.Forms
         void ClearLanguagesList();
         void AddLanguageToList(string backingItem, string item);
         string? SetSelectedLanguage(string language);
+        string? GetSelectedLanguage();
     }
 }

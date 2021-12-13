@@ -1851,7 +1851,15 @@ namespace AngelLoader
             }
 
             fm.SelectedLang = View.SetSelectedLanguage(fm.SelectedLang) ?? FMLanguages.DefaultLangKey;
+        }
 
+        internal static void UpdateFMSelectedLanguage()
+        {
+            FanMission? fm = View.GetSelectedFMOrNull();
+            if (fm == null) return;
+
+            fm.SelectedLang = View.GetSelectedLanguage() ?? FMLanguages.DefaultLangKey;
+            Ini.WriteFullFMDataIni();
         }
 
         #region Shutdown

@@ -2807,12 +2807,8 @@ namespace AngelLoader.Forms
 
         private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (EventsDisabled || !FMsDGV.RowSelected()) return;
-
-            FMsDGV.GetSelectedFM().SelectedLang = EditFMLanguageComboBox.SelectedIndex > -1
-                ? EditFMLanguageComboBox.SelectedBackingItem()
-                : FMLanguages.DefaultLangKey;
-            Ini.WriteFullFMDataIni();
+            if (EventsDisabled) return;
+            Core.UpdateFMSelectedLanguage();
         }
 
         private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
@@ -4725,6 +4721,11 @@ namespace AngelLoader.Forms
         public void AddLanguageToList(string backingItem, string item)
         {
             EditFMLanguageComboBox.AddFullItem(backingItem, item);
+        }
+
+        public string? GetSelectedLanguage()
+        {
+            return EditFMLanguageComboBox.SelectedIndex == -1 ? null : EditFMLanguageComboBox.SelectedBackingItem();
         }
 
         /// <summary>
