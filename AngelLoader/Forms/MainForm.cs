@@ -2822,7 +2822,10 @@ namespace AngelLoader.Forms
 
         private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
         {
-            ScanAndFillLanguagesBox(FMsDGV.GetSelectedFM(), forceScan: true);
+            using (new DisableEvents(this))
+            {
+                Core.ScanAndFillLanguagesList(forceScan: true);
+            }
             Ini.WriteFullFMDataIni();
         }
 
@@ -4496,7 +4499,7 @@ namespace AngelLoader.Forms
 
                 UpdateRatingMenus(fm.Rating, disableEvents: false);
 
-                ScanAndFillLanguagesBox(fm, disableEvents: false);
+                Core.ScanAndFillLanguagesList(forceScan: false);
 
                 #endregion
 
@@ -4714,56 +4717,32 @@ namespace AngelLoader.Forms
             #endregion
         }
 
-        // @VBL
-        private void ScanAndFillLanguagesBox(FanMission fm, bool forceScan = false, bool disableEvents = true)
+        public void ClearLanguagesList()
         {
-            using (disableEvents ? new DisableEvents(this) : null)
+            EditFMLanguageComboBox.ClearFullItems();
+        }
+
+        public void AddLanguageToList(string backingItem, string item)
+        {
+            EditFMLanguageComboBox.AddFullItem(backingItem, item);
+        }
+
+        /// <summary>
+        /// Sets the selected item in the language list.
+        /// </summary>
+        /// <param name="language"></param>
+        /// <returns>The selected backing string, or null if a match was not found.</returns>
+        public string? SetSelectedLanguage(string language)
+        {
+            if (EditFMLanguageComboBox.Items.Count == 0)
             {
-                EditFMLanguageComboBox.ClearFullItems();
-                EditFMLanguageComboBox.AddFullItem(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
-
-                if (!GameIsDark(fm.Game))
-                {
-                    EditFMLanguageComboBox.SelectedIndex = 0;
-                    fm.SelectedLang = FMLanguages.DefaultLangKey;
-                    return;
-                }
-
-                bool doScan = forceScan || !fm.LangsScanned;
-
-                if (doScan) FMLanguages.FillFMSupportedLangs(fm);
-
-                var langs = fm.Langs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
-                var sortedLangs = doScan ? langs : FMLanguages.SortLangsToSpec(langs.ToHashSetI());
-                fm.Langs = "";
-                for (int i = 0; i < sortedLangs.Count; i++)
-                {
-                    string langLower = sortedLangs[i].ToLowerInvariant();
-                    EditFMLanguageComboBox.AddFullItem(langLower, FMLanguages.Translated[langLower]);
-
-                    // Rewrite the FM's lang string for cleanliness, in case it contains unsupported langs or
-                    // other nonsense
-                    if (!langLower.EqualsI(FMLanguages.DefaultLangKey))
-                    {
-                        if (!fm.Langs.IsEmpty()) fm.Langs += ",";
-                        fm.Langs += langLower;
-                    }
-                }
-
-                if (fm.SelectedLang.EqualsI(FMLanguages.DefaultLangKey))
-                {
-                    EditFMLanguageComboBox.SelectedIndex = 0;
-                    fm.SelectedLang = FMLanguages.DefaultLangKey;
-                }
-                else
-                {
-                    int index = EditFMLanguageComboBox.BackingItems.FindIndex(x => x.EqualsI(fm.SelectedLang));
-                    EditFMLanguageComboBox.SelectedIndex = index == -1 ? 0 : index;
-
-                    fm.SelectedLang = EditFMLanguageComboBox.SelectedIndex > -1
-                        ? EditFMLanguageComboBox.SelectedBackingItem()
-                        : FMLanguages.DefaultLangKey;
-                }
+                return null;
+            }
+            else
+            {
+                int index = EditFMLanguageComboBox.BackingItems.FindIndex(x => x.EqualsI(language));
+                EditFMLanguageComboBox.SelectedIndex = index == -1 ? 0 : index;
+                return EditFMLanguageComboBox.SelectedBackingItem();
             }
         }
 

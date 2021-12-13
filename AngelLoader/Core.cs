@@ -1818,6 +1818,42 @@ namespace AngelLoader
             View.RefreshSelectedFM(rowOnly: true);
         }
 
+        internal static void ScanAndFillLanguagesList(bool forceScan)
+        {
+            FanMission? fm = View.GetSelectedFMOrNull();
+            if (fm == null) return;
+
+            View.ClearLanguagesList();
+            View.AddLanguageToList(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
+
+            if (GameIsDark(fm.Game))
+            {
+                bool doScan = forceScan || !fm.LangsScanned;
+
+                if (doScan) FMLanguages.FillFMSupportedLangs(fm);
+
+                var langs = fm.Langs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var sortedLangs = doScan ? langs : FMLanguages.SortLangsToSpec(langs.ToHashSetI());
+                fm.Langs = "";
+                for (int i = 0; i < sortedLangs.Count; i++)
+                {
+                    string langLower = sortedLangs[i].ToLowerInvariant();
+                    View.AddLanguageToList(langLower, FMLanguages.Translated[langLower]);
+
+                    // Rewrite the FM's lang string for cleanliness, in case it contains unsupported langs or
+                    // other nonsense
+                    if (!langLower.EqualsI(FMLanguages.DefaultLangKey))
+                    {
+                        if (!fm.Langs.IsEmpty()) fm.Langs += ",";
+                        fm.Langs += langLower;
+                    }
+                }
+            }
+
+            fm.SelectedLang = View.SetSelectedLanguage(fm.SelectedLang) ?? FMLanguages.DefaultLangKey;
+
+        }
+
         #region Shutdown
 
         internal static void UpdateConfig(

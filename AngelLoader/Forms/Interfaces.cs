@@ -239,5 +239,8 @@ namespace AngelLoader.Forms
         int GetSelectedRowIndex();
         SelectedFM? GetFMPosInfoFromIndex(int index);
         string GetFMCommentText();
+        void ClearLanguagesList();
+        void AddLanguageToList(string backingItem, string item);
+        string? SetSelectedLanguage(string language);
     }
 }

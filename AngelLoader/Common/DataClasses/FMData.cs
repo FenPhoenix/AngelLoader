@@ -111,7 +111,13 @@ namespace AngelLoader.DataClasses
 
         internal bool LangsScanned;
         internal string Langs = "";
-        internal string SelectedLang = "";
+        [FenGenIgnore]
+        private string _selectedLang = "";
+        internal string SelectedLang
+        {
+            get => _selectedLang;
+            set => _selectedLang = value.ToLowerInvariant();
+        }
 
         [FenGenIgnore]
         internal readonly FMCategoriesCollection Tags = new FMCategoriesCollection();
