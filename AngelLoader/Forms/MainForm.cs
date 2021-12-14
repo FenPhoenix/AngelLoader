@@ -36,7 +36,6 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
-using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
