@@ -20,37 +20,37 @@ namespace AngelLoader
         // This nonsense is to allow for keys to be looked up in a dictionary rather than running ten thousand
         // if statements on every line.
 
-        private static void NoArchive_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_NoArchive_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.NoArchive = valTrimmed.EqualsTrue();
         }
 
-        private static void MarkedScanned_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_MarkedScanned_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.MarkedScanned = valTrimmed.EqualsTrue();
         }
 
-        private static void Pinned_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_Pinned_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.Pinned = valTrimmed.EqualsTrue();
         }
 
-        private static void Archive_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_Archive_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.Archive = valTrimmed;
         }
 
-        private static void InstalledDir_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_InstalledDir_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.InstalledDir = valTrimmed;
         }
 
-        private static void Title_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_Title_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.Title = valTrimmed;
         }
 
-        private static void AltTitles_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_AltTitles_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             if (!string.IsNullOrEmpty(valTrimmed))
             {
@@ -58,12 +58,12 @@ namespace AngelLoader
             }
         }
 
-        private static void Author_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_Author_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.Author = valTrimmed;
         }
 
-        private static void Game_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_Game_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             if (valTrimmed.EqualsI("Thief1"))
             {
@@ -91,22 +91,22 @@ namespace AngelLoader
             }
         }
 
-        private static void Installed_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_Installed_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.Installed = valTrimmed.EqualsTrue();
         }
 
-        private static void NoReadmes_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_NoReadmes_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.NoReadmes = valTrimmed.EqualsTrue();
         }
 
-        private static void SelectedReadme_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_SelectedReadme_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.SelectedReadme = valTrimmed;
         }
 
-        private static void ReadmeEncoding_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_ReadmeEncoding_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             if (!string.IsNullOrEmpty(valTrimmed))
             {
@@ -114,143 +114,143 @@ namespace AngelLoader
             }
         }
 
-        private static void SizeBytes_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_SizeBytes_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             ulong.TryParse(valTrimmed, out ulong result);
             fm.SizeBytes = result;
         }
 
-        private static void Rating_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_Rating_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             bool success = int.TryParse(valTrimmed, out int result);
             fm.Rating = success ? result : -1;
         }
 
-        private static void ReleaseDate_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_ReleaseDate_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.ReleaseDate.UnixDateString = valTrimmed;
         }
 
-        private static void LastPlayed_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_LastPlayed_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.LastPlayed.UnixDateString = valTrimmed;
         }
 
-        private static void DateAdded_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_DateAdded_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             // PERF: Don't convert to local here; do it at display-time
             fm.DateAdded = ConvertHexUnixDateToDateTime(valTrimmed, convertToLocal: false);
         }
 
-        private static void FinishedOn_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_FinishedOn_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             uint.TryParse(valTrimmed, out uint result);
             fm.FinishedOn = result;
         }
 
-        private static void FinishedOnUnknown_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_FinishedOnUnknown_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.FinishedOnUnknown = valTrimmed.EqualsTrue();
         }
 
-        private static void Comment_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_Comment_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.Comment = valRaw;
         }
 
-        private static void DisabledMods_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_DisabledMods_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.DisabledMods = valTrimmed;
         }
 
-        private static void DisableAllMods_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_DisableAllMods_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.DisableAllMods = valTrimmed.EqualsTrue();
         }
 
-        private static void HasResources_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasResources_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.ResourcesScanned = !valTrimmed.EqualsI("NotScanned");
             FillFMHasXFields(fm, valTrimmed);
         }
 
-        private static void LangsScanned_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_LangsScanned_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.LangsScanned = valTrimmed.EqualsTrue();
         }
 
-        private static void Langs_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_Langs_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.Langs = valTrimmed;
         }
 
-        private static void SelectedLang_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_SelectedLang_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.SelectedLang = valTrimmed;
         }
 
-        private static void TagsString_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_TagsString_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             fm.TagsString = valTrimmed;
         }
 
         #region Old resource format - backward compatibility, we still have to be able to read it
 
-        private static void HasMap_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasMap_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Map, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
         }
 
-        private static void HasAutomap_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasAutomap_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Automap, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
         }
 
-        private static void HasScripts_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasScripts_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Scripts, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
         }
 
-        private static void HasTextures_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasTextures_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Textures, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
         }
 
-        private static void HasSounds_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasSounds_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Sounds, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
         }
 
-        private static void HasObjects_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasObjects_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Objects, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
         }
 
-        private static void HasCreatures_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasCreatures_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Creatures, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
         }
 
-        private static void HasMotions_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasMotions_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Motions, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
         }
 
-        private static void HasMovies_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasMovies_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Movies, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
         }
 
-        private static void HasSubtitles_Set(FanMission fm, string valTrimmed, string valRaw)
+        private static void FMData_HasSubtitles_Set(FanMission fm, string valTrimmed, string valRaw)
         {
             SetFMResource(fm, CustomResources.Subtitles, valTrimmed.EqualsTrue());
             fm.ResourcesScanned = true;
@@ -258,49 +258,49 @@ namespace AngelLoader
 
         #endregion
 
-        private static readonly Dictionary<string, Action<FanMission, string, string>> _actionDict = new()
+        private static readonly Dictionary<string, Action<FanMission, string, string>> _actionDict_FMData = new()
         {
-            { "NoArchive", NoArchive_Set },
-            { "MarkedScanned", MarkedScanned_Set },
-            { "Pinned", Pinned_Set },
-            { "Archive", Archive_Set },
-            { "InstalledDir", InstalledDir_Set },
-            { "Title", Title_Set },
-            { "AltTitles", AltTitles_Set },
-            { "Author", Author_Set },
-            { "Game", Game_Set },
-            { "Installed", Installed_Set },
-            { "NoReadmes", NoReadmes_Set },
-            { "SelectedReadme", SelectedReadme_Set },
-            { "ReadmeEncoding", ReadmeEncoding_Set },
-            { "SizeBytes", SizeBytes_Set },
-            { "Rating", Rating_Set },
-            { "ReleaseDate", ReleaseDate_Set },
-            { "LastPlayed", LastPlayed_Set },
-            { "DateAdded", DateAdded_Set },
-            { "FinishedOn", FinishedOn_Set },
-            { "FinishedOnUnknown", FinishedOnUnknown_Set },
-            { "Comment", Comment_Set },
-            { "DisabledMods", DisabledMods_Set },
-            { "DisableAllMods", DisableAllMods_Set },
-            { "HasResources", HasResources_Set },
-            { "LangsScanned", LangsScanned_Set },
-            { "Langs", Langs_Set },
-            { "SelectedLang", SelectedLang_Set },
-            { "TagsString", TagsString_Set },
+            { "NoArchive", FMData_NoArchive_Set },
+            { "MarkedScanned", FMData_MarkedScanned_Set },
+            { "Pinned", FMData_Pinned_Set },
+            { "Archive", FMData_Archive_Set },
+            { "InstalledDir", FMData_InstalledDir_Set },
+            { "Title", FMData_Title_Set },
+            { "AltTitles", FMData_AltTitles_Set },
+            { "Author", FMData_Author_Set },
+            { "Game", FMData_Game_Set },
+            { "Installed", FMData_Installed_Set },
+            { "NoReadmes", FMData_NoReadmes_Set },
+            { "SelectedReadme", FMData_SelectedReadme_Set },
+            { "ReadmeEncoding", FMData_ReadmeEncoding_Set },
+            { "SizeBytes", FMData_SizeBytes_Set },
+            { "Rating", FMData_Rating_Set },
+            { "ReleaseDate", FMData_ReleaseDate_Set },
+            { "LastPlayed", FMData_LastPlayed_Set },
+            { "DateAdded", FMData_DateAdded_Set },
+            { "FinishedOn", FMData_FinishedOn_Set },
+            { "FinishedOnUnknown", FMData_FinishedOnUnknown_Set },
+            { "Comment", FMData_Comment_Set },
+            { "DisabledMods", FMData_DisabledMods_Set },
+            { "DisableAllMods", FMData_DisableAllMods_Set },
+            { "HasResources", FMData_HasResources_Set },
+            { "LangsScanned", FMData_LangsScanned_Set },
+            { "Langs", FMData_Langs_Set },
+            { "SelectedLang", FMData_SelectedLang_Set },
+            { "TagsString", FMData_TagsString_Set },
 
             #region Old resource format - backward compatibility, we still have to be able to read it
 
-            { "HasMap", HasMap_Set },
-            { "HasAutomap", HasAutomap_Set },
-            { "HasScripts", HasScripts_Set },
-            { "HasTextures", HasTextures_Set },
-            { "HasSounds", HasSounds_Set },
-            { "HasObjects", HasObjects_Set },
-            { "HasCreatures", HasCreatures_Set },
-            { "HasMotions", HasMotions_Set },
-            { "HasMovies", HasMovies_Set },
-            { "HasSubtitles", HasSubtitles_Set }
+            { "HasMap", FMData_HasMap_Set },
+            { "HasAutomap", FMData_HasAutomap_Set },
+            { "HasScripts", FMData_HasScripts_Set },
+            { "HasTextures", FMData_HasTextures_Set },
+            { "HasSounds", FMData_HasSounds_Set },
+            { "HasObjects", FMData_HasObjects_Set },
+            { "HasCreatures", FMData_HasCreatures_Set },
+            { "HasMotions", FMData_HasMotions_Set },
+            { "HasMovies", FMData_HasMovies_Set },
+            { "HasSubtitles", FMData_HasSubtitles_Set }
 
             #endregion
         };

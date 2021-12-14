@@ -94,6 +94,33 @@ namespace AngelLoader
             }
         }
 
+        internal static void ReadConfigIni(string path, ConfigData config)
+        {
+            string[] iniLines = File.ReadAllLines(path);
+
+            for (int li = 0; li < iniLines.Length; li++)
+            {
+                string lineTS = iniLines[li].TrimStart();
+
+                if (lineTS.Length == 0 || lineTS[0] == ';') continue;
+
+                int eqIndex = lineTS.IndexOf('=');
+                if (eqIndex > -1)
+                {
+                    string key = lineTS.Substring(0, eqIndex);
+                    string valRaw = lineTS.Substring(eqIndex + 1);
+                    string valTrimmed = valRaw.Trim();
+                    if (_actionDict_Config.TryGetValue(key, out var action))
+                    {
+                        action.Invoke(config, key, valTrimmed, valRaw);
+                    }
+                }
+            }
+
+            // Vital, don't remove!
+            FinalizeConfig(config);
+        }
+
         internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)
         {
             string[] iniLines = File.ReadAllLines(fileName, Encoding.UTF8);
@@ -126,8 +153,8 @@ namespace AngelLoader
                 {
                     string key = lineTS.Substring(0, eqIndex);
                     string valRaw = lineTS.Substring(eqIndex + 1);
-                    string valTrimmed = valRaw.TrimEnd();
-                    if (_actionDict.TryGetValue(key, out var action))
+                    string valTrimmed = valRaw.Trim();
+                    if (_actionDict_FMData.TryGetValue(key, out var action))
                     {
                         action.Invoke(fmsList[fmsList.Count - 1], valTrimmed, valRaw);
                     }
@@ -338,6 +365,15 @@ namespace AngelLoader
             }
 
             return ret;
+        }
+
+        private static void AddColumn(ConfigData config, string valTrimmed, Column columnType)
+        {
+            ColumnData? col = ConvertStringToColumnData(valTrimmed);
+            if (col == null) return;
+
+            col.Id = columnType;
+            if (!ContainsColWithId(config, col)) config.Columns.Add(col);
         }
 
         private static void ReadTags(FMCategoriesCollection tags, string val)

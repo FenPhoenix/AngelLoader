@@ -81,61 +81,61 @@ namespace FenGen
             {
                 "#region " + _oldResourceFormatMessage,
                 "",
-                "private static void HasMap_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasMap_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Map, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
                 "}",
                 "",
-                "private static void HasAutomap_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasAutomap_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Automap, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
                 "}",
                 "",
-                "private static void HasScripts_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasScripts_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Scripts, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
                 "}",
                 "",
-                "private static void HasTextures_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasTextures_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Textures, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
                 "}",
                 "",
-                "private static void HasSounds_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasSounds_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Sounds, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
                 "}",
                 "",
-                "private static void HasObjects_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasObjects_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Objects, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
                 "}",
                 "",
-                "private static void HasCreatures_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasCreatures_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Creatures, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
                 "}",
                 "",
-                "private static void HasMotions_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasMotions_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Motions, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
                 "}",
                 "",
-                "private static void HasMovies_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasMovies_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Movies, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
                 "}",
                 "",
-                "private static void HasSubtitles_Set(FanMission fm, string valTrimmed, string valRaw)",
+                "private static void FMData_HasSubtitles_Set(FanMission fm, string valTrimmed, string valRaw)",
                 "{",
                 "    SetFMResource(fm, CustomResources.Subtitles, valTrimmed.EqualsTrue());",
                 "    fm.ResourcesScanned = true;",
@@ -361,7 +361,7 @@ namespace FenGen
 
                 string valVar = field.DoNotTrimValue ? "valRaw" : "valTrimmed";
 
-                w.WL("private static void " + fieldIniName + "_Set(FanMission fm, string valTrimmed, string valRaw)");
+                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission fm, string valTrimmed, string valRaw)");
                 w.WL("{");
 
                 if (field.Type.StartsWith("List<"))
@@ -536,14 +536,14 @@ namespace FenGen
             dictFields.Add(new Field { Name = "HasMovies" });
             dictFields.Add(new Field { Name = "HasSubtitles" });
 
-            w.WL("private static readonly Dictionary<string, Action<FanMission, string, string>> _actionDict = new()");
+            w.WL("private static readonly Dictionary<string, Action<FanMission, string, string>> _actionDict_FMData = new()");
             w.WL("{");
             for (int i = 0; i < dictFields.Count; i++)
             {
                 Field field = dictFields[i];
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
                 string comma = i == dictFields.Count - 1 ? "" : ",";
-                w.WL("{ \"" + fieldIniName + "\", " + fieldIniName + "_Set }" + comma);
+                w.WL("{ \"" + fieldIniName + "\", FMData_" + fieldIniName + "_Set }" + comma);
 
                 if (i < dictFields.Count - 1 && dictFields[i + 1].Name == "HasMap")
                 {
