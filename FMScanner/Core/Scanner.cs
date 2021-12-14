@@ -3721,7 +3721,7 @@ namespace FMScanner
 
             // Anything lower than 1.19 is OldDark; and cut it off at 2.0 to prevent that durn old time-travelling
             // Zealot's Hollow from claiming it was made with "NewDark Version 2.1"
-            return float.TryParse(ndv, out float ndvF) && ndvF >= 1.19 && ndvF < 2.0 ? ndv : "";
+            return Float_TryParseInv(ndv, out float ndvF) && ndvF >= 1.19 && ndvF < 2.0 ? ndv : "";
         }
 #endif
 
