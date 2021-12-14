@@ -273,13 +273,10 @@ namespace AngelLoader
 
                 else if (lineTS.StartsWithFast_NoNullChecks("SortDirection="))
                 {
-                    if (val.EqualsI("Ascending"))
+                    var field = typeof(SortDirection).GetField(val, _bFlagsEnum);
+                    if (field != null)
                     {
-                        config.SortDirection = SortDirection.Ascending;
-                    }
-                    else if (val.EqualsI("Descending"))
-                    {
-                        config.SortDirection = SortDirection.Descending;
+                        config.SortDirection = (SortDirection)field.GetValue(null);
                     }
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("SortedColumn="))
