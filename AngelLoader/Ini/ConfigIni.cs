@@ -34,6 +34,7 @@ namespace AngelLoader
         {
             string[] iniLines = File.ReadAllLines(path);
 
+#if false
             for (int i = 0; i < iniLines.Length; i++)
             {
                 string lt = iniLines[i].Trim();
@@ -46,6 +47,7 @@ namespace AngelLoader
                     }
                 }
             }
+#endif
 
             for (int li = 0; li < iniLines.Length; li++)
             {
