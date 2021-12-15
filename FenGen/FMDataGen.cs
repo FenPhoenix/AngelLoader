@@ -58,7 +58,7 @@ namespace FenGen
             OldDisableAllMods
         }
 
-        private static readonly string[] _numericTypes =
+        private static readonly HashSet<string> _numericTypes = new()
         {
             "byte",
             "sbyte",
