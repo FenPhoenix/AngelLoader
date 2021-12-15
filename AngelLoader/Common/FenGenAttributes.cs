@@ -21,6 +21,26 @@ namespace AngelLoader
         // -Conditionals are literals instead of a constant, because a constant would add something to the exe
         //  but we don't want anything extra at all.
 
+        #region Config
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Method)]
+        internal sealed class FenGen_ConfigReadAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Method)]
+        internal sealed class FenGen_Config_GameFieldAttribute : Attribute
+        {
+            /// <summary>
+            /// Specifies that this is a per-game getter/setter.
+            /// </summary>
+            /// <param name="iniName">If in ini it's "T1UseSteam" then this would be "UseSteam"</param>
+            /// <param name="suffix">If true, it will be like "UseSteamT1", otherwise "T1UseSteam"</param>
+            internal FenGen_Config_GameFieldAttribute(string iniName, bool suffix = false) { }
+        }
+
+        #endregion
+
         #region Serialization
 
         [Conditional("compile_FenGen_attributes")]
@@ -38,7 +58,7 @@ namespace AngelLoader
         /// The generator will ignore this field or property and will not generate any code from it.
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Method)]
         internal sealed class FenGenIgnoreAttribute : Attribute { }
 
         /// <summary>
