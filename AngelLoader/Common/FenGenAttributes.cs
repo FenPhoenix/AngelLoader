@@ -29,14 +29,26 @@ namespace AngelLoader
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Method)]
-        internal sealed class FenGen_Config_GameFieldAttribute : Attribute
+        internal sealed class FenGen_Config_PerGameGetterAttribute : Attribute
         {
             /// <summary>
-            /// Specifies that this is a per-game getter/setter.
+            /// Specifies that this is a per-game getter.
             /// </summary>
             /// <param name="iniName">If in ini it's "T1UseSteam" then this would be "UseSteam"</param>
             /// <param name="suffix">If true, it will be like "UseSteamT1", otherwise "T1UseSteam"</param>
-            internal FenGen_Config_GameFieldAttribute(string iniName, bool suffix = false) { }
+            internal FenGen_Config_PerGameGetterAttribute(string iniName, bool suffix = false) { }
+        }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Method)]
+        internal sealed class FenGen_Config_PerGameSetterAttribute : Attribute
+        {
+            /// <summary>
+            /// Specifies that this is a per-game setter.
+            /// </summary>
+            /// <param name="iniName">If in ini it's "T1UseSteam" then this would be "UseSteam"</param>
+            /// <param name="suffix">If true, it will be like "UseSteamT1", otherwise "T1UseSteam"</param>
+            internal FenGen_Config_PerGameSetterAttribute(string iniName, bool suffix = false) { }
         }
 
         #endregion

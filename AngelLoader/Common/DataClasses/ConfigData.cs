@@ -102,6 +102,7 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         internal readonly string[] GameExes;
 
+        [FenGen_Config_PerGameGetter("Exe")]
         internal string GetGameExe(GameIndex index) => GameExes[(uint)index];
 
         /// <summary>
@@ -112,6 +113,7 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         internal string GetGameExeUnsafe(Game game) => GameExes[(uint)GameToGameIndex(game)];
 
+        [FenGen_Config_PerGameSetter("Exe")]
         internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
 
         #endregion
@@ -232,8 +234,10 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         private readonly bool[] UseSteamSwitches;
 
+        [FenGen_Config_PerGameGetter("UseSteam")]
         internal bool GetUseSteamSwitch(GameIndex index) => UseSteamSwitches[(uint)index];
 
+        [FenGen_Config_PerGameSetter("UseSteam")]
         internal void SetUseSteamSwitch(GameIndex index, bool value) => UseSteamSwitches[(uint)index] = value;
 
         #endregion
@@ -314,6 +318,7 @@ namespace AngelLoader.DataClasses
         }
 
         internal bool EnableArticles = true;
+        [FenGenListType("CommaSeparated")]
         internal readonly List<string> Articles = new List<string> { "a", "an", "the" };
         internal bool MoveArticlesToEnd = true;
 
