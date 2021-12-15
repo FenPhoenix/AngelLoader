@@ -136,13 +136,6 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
 
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal sealed class FenGenInsertAfterAttribute : Attribute
-        {
-            internal FenGenInsertAfterAttribute(string value) { }
-        }
-
         #endregion
 
         #region Localizable text

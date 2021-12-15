@@ -24,7 +24,6 @@ namespace FenGen
             internal long? NumericEmpty;
             internal bool DoNotTrimValue;
             internal bool DoNotConvertDateTimeToLocal;
-            internal CustomCodeBlockNames CodeBlockToInsertAfter = CustomCodeBlockNames.None;
             internal bool DoNotWrite;
         }
 
@@ -278,16 +277,6 @@ namespace FenGen
 
                                 field.IniName = GetStringValue(attr);
                                 break;
-                            case GenAttributes.FenGenInsertAfter:
-                                {
-                                    CheckParamCount(attr, 1);
-
-                                    string val = GetStringValue(attr);
-
-                                    FieldInfo? enumField = typeof(CustomCodeBlockNames).GetField(val, _bFlagsEnum);
-                                    if (enumField != null) field.CodeBlockToInsertAfter = (CustomCodeBlockNames)enumField.GetValue(null);
-                                    break;
-                                }
                         }
                     }
                 }

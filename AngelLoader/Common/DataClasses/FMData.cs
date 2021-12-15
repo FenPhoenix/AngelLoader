@@ -106,7 +106,6 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         internal bool ResourcesScanned;
         [FenGenIniName("HasResources")]
-        [FenGenInsertAfter("LegacyCustomResources")]
         internal CustomResources Resources = CustomResources.None;
 
         internal bool LangsScanned;
