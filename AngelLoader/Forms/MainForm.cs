@@ -4102,6 +4102,8 @@ namespace AngelLoader.Forms
 
         #region Play original game
 
+        // @GENGAMES (Play original game controls): Begin
+
         private void SetPlayOriginalButtonStyle()
         {
             if (Config.PlayOriginalSeparateButtons)
@@ -4124,7 +4126,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        // @GENGAMES (Play original game menu event handlers): Begin
         // Because of the T2MP menu item breaking up the middle there, we can't array/index these menu items.
         // Just gonna have to leave this part as-is.
         private void PlayOriginalGameButton_Click(object sender, EventArgs e)
@@ -4175,7 +4176,7 @@ namespace AngelLoader.Forms
             FMInstallAndPlay.PlayOriginalGame(Thief2, playMP: true);
         }
 
-        // @GENGAMES (Play original game menu event handlers): End
+        // @GENGAMES (Play original game controls): End
 
         #endregion
 
