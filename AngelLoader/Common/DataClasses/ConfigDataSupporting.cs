@@ -105,7 +105,7 @@ namespace AngelLoader.DataClasses
             #region Fallback if multiple tabs have the same display index
 
             var displayIndexesSet = new HashSet<int>();
-            for (int i = 0; i < Tabs.Length; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (!displayIndexesSet.Add(Tabs[i].DisplayIndex))
                 {
