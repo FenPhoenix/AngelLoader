@@ -112,7 +112,7 @@ namespace AngelLoader
                     string valTrimmed = valRaw.Trim();
                     if (_actionDict_Config.TryGetValue(key, out var action))
                     {
-                        action.Invoke(config, key, valTrimmed, valRaw);
+                        action.Invoke(config, valTrimmed, valRaw);
                     }
                 }
             }
