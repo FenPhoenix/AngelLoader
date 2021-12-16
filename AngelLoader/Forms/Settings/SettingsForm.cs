@@ -7,8 +7,6 @@
 // UPDATE 2021-04-27: We have severe flickering issues with the TreeView. Reverting to old style for now.
 
 using System;
-using System.Collections;
-using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -274,18 +272,17 @@ namespace AngelLoader.Forms
 
             #region Load languages
 
-            var tempLangDict = new OrderedDictionary();
-
-            foreach (var item in config.LanguageNames) tempLangDict[item.Key] = item.Value;
-
             const string engLang = "English";
 
-            if (tempLangDict.Contains(engLang)) tempLangDict.Remove(engLang);
-            tempLangDict.Insert(0, engLang, engLang);
+            var langsList = config.LanguageNames.ToList().OrderBy(x => x.Key);
 
-            foreach (DictionaryEntry item in tempLangDict)
+            LangComboBox.AddFullItem(engLang, engLang);
+            foreach (var item in langsList)
             {
-                LangComboBox.AddFullItem(item.Key.ToString(), item.Value.ToString());
+                if (!item.Key.EqualsI(engLang))
+                {
+                    LangComboBox.AddFullItem(item.Key, item.Value);
+                }
             }
 
             LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language)
