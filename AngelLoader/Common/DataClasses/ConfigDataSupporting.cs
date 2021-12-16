@@ -105,6 +105,7 @@ namespace AngelLoader.DataClasses
 
             int[] set = InitializedArray(Count, -1);
 
+            // @BigO(TopRightTabsData.EnsureValidity())
             for (int i = 0; i < Tabs.Length; i++)
             {
                 for (int j = 0; j < set.Length; j++)
@@ -119,7 +120,7 @@ namespace AngelLoader.DataClasses
                 set[i] = Tabs[i].DisplayIndex;
             }
 
-            breakout:
+        breakout:
 
             #endregion
 

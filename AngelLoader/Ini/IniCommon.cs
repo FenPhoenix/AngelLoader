@@ -312,6 +312,7 @@ namespace AngelLoader
 
             static bool ContainsColWithId(ConfigData config, ColumnData col)
             {
+                // @BigO(ContainsColWithId)
                 foreach (ColumnData x in config.Columns) if (x.Id == col.Id) return true;
                 return false;
             }
