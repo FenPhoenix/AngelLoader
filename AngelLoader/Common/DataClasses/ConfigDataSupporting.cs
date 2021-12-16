@@ -1,6 +1,7 @@
 ﻿#define FenGen_TypeSource
 
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -103,24 +104,15 @@ namespace AngelLoader.DataClasses
         {
             #region Fallback if multiple tabs have the same display index
 
-            int[] set = InitializedArray(Count, -1);
-
-            // @BigO(TopRightTabsData.EnsureValidity())
+            var displayIndexesSet = new HashSet<int>();
             for (int i = 0; i < Tabs.Length; i++)
             {
-                for (int j = 0; j < set.Length; j++)
+                if (!displayIndexesSet.Add(Tabs[i].DisplayIndex))
                 {
-                    if (set[j] == Tabs[i].DisplayIndex)
-                    {
-                        ResetAllDisplayIndexes();
-                        goto breakout;
-                    }
+                    ResetAllDisplayIndexes();
+                    break;
                 }
-
-                set[i] = Tabs[i].DisplayIndex;
             }
-
-        breakout:
 
             #endregion
 
