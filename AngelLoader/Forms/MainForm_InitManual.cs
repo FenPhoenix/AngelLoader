@@ -37,6 +37,7 @@ namespace AngelLoader.Forms
             PlayOriginalGameButton = new DarkButton();
             PlayOriginalT1Button = new DarkButton();
             PlayOriginalT2Button = new DarkButton();
+            PlayOriginalT2MPButton = new DarkArrowButton();
             PlayOriginalT3Button = new DarkButton();
             PlayOriginalSS2Button = new DarkButton();
             WebSearchButton = new DarkButton();
@@ -263,6 +264,7 @@ namespace AngelLoader.Forms
             PlayOriginalFLP.Controls.Add(PlayOriginalGameButton);
             PlayOriginalFLP.Controls.Add(PlayOriginalT1Button);
             PlayOriginalFLP.Controls.Add(PlayOriginalT2Button);
+            PlayOriginalFLP.Controls.Add(PlayOriginalT2MPButton);
             PlayOriginalFLP.Controls.Add(PlayOriginalT3Button);
             PlayOriginalFLP.Controls.Add(PlayOriginalSS2Button);
             PlayOriginalFLP.TabIndex = 58;
@@ -299,12 +301,21 @@ namespace AngelLoader.Forms
             PlayOriginalT2Button.PaintCustom += PlayOriginalGamesButtons_Paint;
             PlayOriginalT2Button.Click += PlayOriginalGameButtons_Click;
             // 
+            // PlayOriginalT2MPButton
+            // 
+            PlayOriginalT2MPButton.ArrowDirection = Direction.Up;
+            PlayOriginalT2MPButton.Margin = new Padding(0);
+            PlayOriginalT2MPButton.Size = new Size(16, 36);
+            PlayOriginalT2MPButton.TabIndex = 3;
+            PlayOriginalT2MPButton.UseVisualStyleBackColor = true;
+            PlayOriginalT2MPButton.Click += PlayOriginalT2MPButton_Click;
+            // 
             // PlayOriginalT3Button
             // 
             PlayOriginalT3Button.Margin = new Padding(0);
             PlayOriginalT3Button.MinimumSize = new Size(36, 36);
             PlayOriginalT3Button.Size = new Size(36, 36);
-            PlayOriginalT3Button.TabIndex = 3;
+            PlayOriginalT3Button.TabIndex = 4;
             PlayOriginalT3Button.UseVisualStyleBackColor = true;
             PlayOriginalT3Button.PaintCustom += PlayOriginalGamesButtons_Paint;
             PlayOriginalT3Button.Click += PlayOriginalGameButtons_Click;
@@ -314,7 +325,7 @@ namespace AngelLoader.Forms
             PlayOriginalSS2Button.Margin = new Padding(0);
             PlayOriginalSS2Button.MinimumSize = new Size(36, 36);
             PlayOriginalSS2Button.Size = new Size(36, 36);
-            PlayOriginalSS2Button.TabIndex = 4;
+            PlayOriginalSS2Button.TabIndex = 5;
             PlayOriginalSS2Button.UseVisualStyleBackColor = true;
             PlayOriginalSS2Button.PaintCustom += PlayOriginalGamesButtons_Paint;
             PlayOriginalSS2Button.Click += PlayOriginalGameButtons_Click;

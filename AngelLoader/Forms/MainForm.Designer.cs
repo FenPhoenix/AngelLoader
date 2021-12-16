@@ -59,6 +59,7 @@ namespace AngelLoader.Forms
             this.PlayOriginalGameButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PlayOriginalT1Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PlayOriginalT2Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.PlayOriginalT2MPButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.PlayOriginalT3Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PlayOriginalSS2Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.WebSearchButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -277,7 +278,7 @@ namespace AngelLoader.Forms
             this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftButtonsFLP.Name = "BottomLeftButtonsFLP";
-            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(531, 42);
+            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(547, 42);
             this.BottomLeftButtonsFLP.TabIndex = 36;
             this.BottomLeftButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftButtonsFLP_Paint);
             // 
@@ -302,11 +303,12 @@ namespace AngelLoader.Forms
             this.PlayOriginalFLP.Controls.Add(this.PlayOriginalGameButton);
             this.PlayOriginalFLP.Controls.Add(this.PlayOriginalT1Button);
             this.PlayOriginalFLP.Controls.Add(this.PlayOriginalT2Button);
+            this.PlayOriginalFLP.Controls.Add(this.PlayOriginalT2MPButton);
             this.PlayOriginalFLP.Controls.Add(this.PlayOriginalT3Button);
             this.PlayOriginalFLP.Controls.Add(this.PlayOriginalSS2Button);
             this.PlayOriginalFLP.Location = new System.Drawing.Point(100, 3);
             this.PlayOriginalFLP.Name = "PlayOriginalFLP";
-            this.PlayOriginalFLP.Size = new System.Drawing.Size(294, 36);
+            this.PlayOriginalFLP.Size = new System.Drawing.Size(310, 36);
             this.PlayOriginalFLP.TabIndex = 57;
             // 
             // PlayOriginalGameButton
@@ -349,26 +351,37 @@ namespace AngelLoader.Forms
             this.PlayOriginalT2Button.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGamesButtons_Paint);
             this.PlayOriginalT2Button.Click += new System.EventHandler(this.PlayOriginalGameButtons_Click);
             // 
+            // PlayOriginalT2MPButton
+            // 
+            this.PlayOriginalT2MPButton.ArrowDirection = AngelLoader.Misc.Direction.Up;
+            this.PlayOriginalT2MPButton.Location = new System.Drawing.Point(222, 0);
+            this.PlayOriginalT2MPButton.Margin = new System.Windows.Forms.Padding(0);
+            this.PlayOriginalT2MPButton.Name = "PlayOriginalT2MPButton";
+            this.PlayOriginalT2MPButton.Size = new System.Drawing.Size(16, 36);
+            this.PlayOriginalT2MPButton.TabIndex = 3;
+            this.PlayOriginalT2MPButton.UseVisualStyleBackColor = true;
+            this.PlayOriginalT2MPButton.Click += new System.EventHandler(this.PlayOriginalT2MPButton_Click);
+            // 
             // PlayOriginalT3Button
             // 
-            this.PlayOriginalT3Button.Location = new System.Drawing.Point(222, 0);
+            this.PlayOriginalT3Button.Location = new System.Drawing.Point(238, 0);
             this.PlayOriginalT3Button.Margin = new System.Windows.Forms.Padding(0);
             this.PlayOriginalT3Button.MinimumSize = new System.Drawing.Size(36, 36);
             this.PlayOriginalT3Button.Name = "PlayOriginalT3Button";
             this.PlayOriginalT3Button.Size = new System.Drawing.Size(36, 36);
-            this.PlayOriginalT3Button.TabIndex = 3;
+            this.PlayOriginalT3Button.TabIndex = 4;
             this.PlayOriginalT3Button.UseVisualStyleBackColor = true;
             this.PlayOriginalT3Button.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGamesButtons_Paint);
             this.PlayOriginalT3Button.Click += new System.EventHandler(this.PlayOriginalGameButtons_Click);
             // 
             // PlayOriginalSS2Button
             // 
-            this.PlayOriginalSS2Button.Location = new System.Drawing.Point(258, 0);
+            this.PlayOriginalSS2Button.Location = new System.Drawing.Point(274, 0);
             this.PlayOriginalSS2Button.Margin = new System.Windows.Forms.Padding(0);
             this.PlayOriginalSS2Button.MinimumSize = new System.Drawing.Size(36, 36);
             this.PlayOriginalSS2Button.Name = "PlayOriginalSS2Button";
             this.PlayOriginalSS2Button.Size = new System.Drawing.Size(36, 36);
-            this.PlayOriginalSS2Button.TabIndex = 4;
+            this.PlayOriginalSS2Button.TabIndex = 5;
             this.PlayOriginalSS2Button.UseVisualStyleBackColor = true;
             this.PlayOriginalSS2Button.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayOriginalGamesButtons_Paint);
             this.PlayOriginalSS2Button.Click += new System.EventHandler(this.PlayOriginalGameButtons_Click);
@@ -377,7 +390,7 @@ namespace AngelLoader.Forms
             // 
             this.WebSearchButton.AutoSize = true;
             this.WebSearchButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.WebSearchButton.Location = new System.Drawing.Point(412, 3);
+            this.WebSearchButton.Location = new System.Drawing.Point(428, 3);
             this.WebSearchButton.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
             this.WebSearchButton.MinimumSize = new System.Drawing.Size(116, 36);
             this.WebSearchButton.Name = "WebSearchButton";
@@ -514,8 +527,8 @@ namespace AngelLoader.Forms
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -689,7 +702,7 @@ namespace AngelLoader.Forms
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -710,7 +723,7 @@ namespace AngelLoader.Forms
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -1844,7 +1857,7 @@ namespace AngelLoader.Forms
             // 
             // ModsResetFLP
             // 
-            this.ModsResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.ModsResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ModsResetFLP.Controls.Add(this.ModsResetButton);
             this.ModsResetFLP.Controls.Add(this.ModsShowUberCheckBox);
@@ -1880,7 +1893,7 @@ namespace AngelLoader.Forms
             // 
             // ModsDisabledModsTextBox
             // 
-            this.ModsDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.ModsDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ModsDisabledModsTextBox.Location = new System.Drawing.Point(8, 256);
             this.ModsDisabledModsTextBox.Name = "ModsDisabledModsTextBox";
@@ -1902,8 +1915,8 @@ namespace AngelLoader.Forms
             // 
             // ModsCheckList
             // 
-            this.ModsCheckList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.ModsCheckList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ModsCheckList.AutoScroll = true;
             this.ModsCheckList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -2271,5 +2284,6 @@ namespace AngelLoader.Forms
         internal CustomControls.DarkButton PlayOriginalT2Button;
         internal CustomControls.DarkButton PlayOriginalT3Button;
         internal CustomControls.DarkButton PlayOriginalSS2Button;
+        internal CustomControls.DarkArrowButton PlayOriginalT2MPButton;
     }
 }

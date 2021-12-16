@@ -472,9 +472,13 @@ namespace AngelLoader
             {
                 if (archivePathsChanged || gamePathsChanged)
                 {
+                    if (gamePathsChanged)
+                    {
+                        View.SetT2MultiplayerState();
 #if !ReleaseBeta && !ReleasePublic
-                    if (gamePathsChanged) View.UpdateGameScreenShotModes();
+                        View.UpdateGameScreenShotModes();
 #endif
+                    }
                 }
 
                 keepSel = !gameOrganizationChanged;

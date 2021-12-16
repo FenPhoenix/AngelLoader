@@ -134,6 +134,7 @@ namespace AngelLoader.Forms
         private readonly Lazy_ToolStripLabels Lazy_ToolStripLabels;
         private readonly MainLLMenu MainLLMenu;
         private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
+        private readonly PlayOriginalT2InMultiplayerLLMenu PlayOriginalT2InMultiplayerLLMenu;
         private readonly TopRightLLMenu TopRightLLMenu;
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
 
@@ -496,6 +497,7 @@ namespace AngelLoader.Forms
             Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this);
             MainLLMenu = new MainLLMenu(this);
             PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this);
+            PlayOriginalT2InMultiplayerLLMenu = new PlayOriginalT2InMultiplayerLLMenu(this);
             TopRightLLMenu = new TopRightLLMenu(this);
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this);
 
@@ -1454,6 +1456,7 @@ namespace AngelLoader.Forms
 
                 PlayOriginalGameButton.Text = LText.MainButtons.PlayOriginalGame;
                 PlayOriginalGameLLMenu.Localize();
+                PlayOriginalT2InMultiplayerLLMenu.Localize();
                 MainToolTip.SetToolTip(PlayOriginalT1Button, LText.PlayOriginalGameMenu.Thief1_PlayOriginal);
                 MainToolTip.SetToolTip(PlayOriginalT2Button, LText.PlayOriginalGameMenu.Thief2_PlayOriginal);
                 MainToolTip.SetToolTip(PlayOriginalT3Button, LText.PlayOriginalGameMenu.Thief3_PlayOriginal);
@@ -1533,6 +1536,7 @@ namespace AngelLoader.Forms
                     GameFilterControlsLLMenu.DarkModeEnabled = darkMode;
                     FilterControlsLLMenu.DarkModeEnabled = darkMode;
                     PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
+                    PlayOriginalT2InMultiplayerLLMenu.DarkModeEnabled = darkMode;
                     InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
                     ExitLLButton.DarkModeEnabled = darkMode;
                     ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
@@ -4105,6 +4109,7 @@ namespace AngelLoader.Forms
                 PlayOriginalGameButton.Hide();
                 PlayOriginalT1Button.Show();
                 PlayOriginalT2Button.Show();
+                PlayOriginalT2MPButton.Visible = Config.T2MPDetected;
                 PlayOriginalT3Button.Show();
                 PlayOriginalSS2Button.Show();
             }
@@ -4113,6 +4118,7 @@ namespace AngelLoader.Forms
                 PlayOriginalGameButton.Show();
                 PlayOriginalT1Button.Hide();
                 PlayOriginalT2Button.Hide();
+                PlayOriginalT2MPButton.Hide();
                 PlayOriginalT3Button.Hide();
                 PlayOriginalSS2Button.Hide();
             }
@@ -4157,6 +4163,16 @@ namespace AngelLoader.Forms
                 SS2;
 
             FMInstallAndPlay.PlayOriginalGame(gameIndex);
+        }
+
+        private void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
+        {
+            ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu, PlayOriginalT2MPButton, MenuPos.TopRight);
+        }
+
+        internal void PlayT2InMultiplayerMenuItem_Click(object sender, EventArgs e)
+        {
+            FMInstallAndPlay.PlayOriginalGame(Thief2, playMP: true);
         }
 
         // @GENGAMES (Play original game menu event handlers): End
@@ -4725,6 +4741,11 @@ namespace AngelLoader.Forms
         public string? GetSelectedLanguage()
         {
             return EditFMLanguageComboBox.SelectedIndex == -1 ? null : EditFMLanguageComboBox.SelectedBackingItem();
+        }
+
+        public void SetT2MultiplayerState()
+        {
+            PlayOriginalT2MPButton.Visible = Config.PlayOriginalSeparateButtons && Config.T2MPDetected;
         }
 
         /// <summary>
