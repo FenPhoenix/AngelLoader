@@ -27,6 +27,9 @@ namespace AngelLoader
     // separator is culture-dependent, and it could end up as ',' when we expect '.'. And then we could end up
     // with "5.001" being "5,001", and now we're in for a bad time.
 
+    // TODO(Config ini reader) - Idea: chop the first 2/3 chars off keys and see if they're T1/T2/T3/SS2, then key on the non-prefixed version
+    // Then we cut down massively on the repetition, and the setter can do another lookup by being passed the prefix
+
     internal static partial class Ini
     {
         #region Config reader setters
