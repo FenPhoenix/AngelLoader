@@ -386,21 +386,21 @@ namespace AngelLoader.DataClasses
 
     internal sealed class GameTabsState
     {
-        internal GameTabsState() => InitializeArrays(SupportedGameCount, out SelectedFMs, out Filters);
+        internal GameTabsState() => InitializeArrays(SupportedGameCount, out _selectedFMs, out _filters);
 
         #region Selected FMs
 
-        private readonly SelectedFM[] SelectedFMs;
+        private readonly SelectedFM[] _selectedFMs;
 
-        internal SelectedFM GetSelectedFM(GameIndex index) => SelectedFMs[(uint)index];
+        internal SelectedFM GetSelectedFM(GameIndex index) => _selectedFMs[(uint)index];
 
         #endregion
 
         #region Filters
 
-        private readonly Filter[] Filters;
+        private readonly Filter[] _filters;
 
-        internal Filter GetFilter(GameIndex index) => Filters[(uint)index];
+        internal Filter GetFilter(GameIndex index) => _filters[(uint)index];
 
         #endregion
 
@@ -410,19 +410,19 @@ namespace AngelLoader.DataClasses
         {
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                SelectedFMs[i].DeepCopyTo(dest.SelectedFMs[i]);
-                Filters[i].DeepCopyTo(dest.Filters[i]);
+                _selectedFMs[i].DeepCopyTo(dest._selectedFMs[i]);
+                _filters[i].DeepCopyTo(dest._filters[i]);
             }
         }
 
         internal void ClearAllSelectedFMs()
         {
-            for (int i = 0; i < SupportedGameCount; i++) SelectedFMs[i].Clear();
+            for (int i = 0; i < SupportedGameCount; i++) _selectedFMs[i].Clear();
         }
 
         internal void ClearAllFilters()
         {
-            for (int i = 0; i < SupportedGameCount; i++) Filters[i].ClearAll();
+            for (int i = 0; i < SupportedGameCount; i++) _filters[i].ClearAll();
         }
     }
 
