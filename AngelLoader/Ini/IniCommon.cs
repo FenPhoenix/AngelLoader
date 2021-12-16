@@ -94,33 +94,6 @@ namespace AngelLoader
             }
         }
 
-        internal static void ReadConfigIni(string path, ConfigData config)
-        {
-            string[] iniLines = File.ReadAllLines(path);
-
-            for (int li = 0; li < iniLines.Length; li++)
-            {
-                string lineTS = iniLines[li].TrimStart();
-
-                if (lineTS.Length == 0 || lineTS[0] == ';') continue;
-
-                int eqIndex = lineTS.IndexOf('=');
-                if (eqIndex > -1)
-                {
-                    string key = lineTS.Substring(0, eqIndex);
-                    string valRaw = lineTS.Substring(eqIndex + 1);
-                    string valTrimmed = valRaw.Trim();
-                    if (_actionDict_Config.TryGetValue(key, out var action))
-                    {
-                        action.Invoke(config, valTrimmed, valRaw);
-                    }
-                }
-            }
-
-            // Vital, don't remove!
-            FinalizeConfig(config);
-        }
-
         internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)
         {
             string[] iniLines = File.ReadAllLines(fileName, Encoding.UTF8);
@@ -188,7 +161,7 @@ namespace AngelLoader
 
         #region Helpers
 
-        #region FM custom resource work
+        #region FMData
 
         private static void FillFMHasXFields(FanMission fm, string fieldsString)
         {
@@ -323,52 +296,66 @@ namespace AngelLoader
 
         #region Config
 
-        private static bool ContainsColWithId(ConfigData config, ColumnData col)
+        private static SelectedFM GetSelectedFM(ConfigData config, GameIndex gameIndex, bool getGlobalSelectedFM)
         {
-            foreach (ColumnData x in config.Columns) if (x.Id == col.Id) return true;
-            return false;
+            return getGlobalSelectedFM ? config.SelFM : config.GameTabsState.GetSelectedFM(gameIndex);
         }
 
-        private static ColumnData? ConvertStringToColumnData(string str)
+        private static Filter GetFilter(ConfigData config, GameIndex gameIndex, bool getGlobalFilter)
         {
-            str = str.Trim().Trim(CA_Comma);
-
-            // DisplayIndex,Width,Visible
-            // 0,100,True
-
-            if (!str.Contains(',')) return null;
-
-            string[] cProps = str.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
-            if (cProps.Length == 0) return null;
-
-            var ret = new ColumnData();
-            for (int i = 0; i < cProps.Length; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        if (int.TryParse(cProps[i], out int di))
-                        {
-                            ret.DisplayIndex = di;
-                        }
-                        break;
-                    case 1:
-                        if (int.TryParse(cProps[i], out int width))
-                        {
-                            ret.Width = width > Defaults.MinColumnWidth ? width : Defaults.MinColumnWidth;
-                        }
-                        break;
-                    case 2:
-                        ret.Visible = cProps[i].EqualsTrue();
-                        break;
-                }
-            }
-
-            return ret;
+            return getGlobalFilter ? config.Filter : config.GameTabsState.GetFilter(gameIndex);
         }
 
         private static void AddColumn(ConfigData config, string valTrimmed, Column columnType)
         {
+            #region Local functions
+
+            static bool ContainsColWithId(ConfigData config, ColumnData col)
+            {
+                foreach (ColumnData x in config.Columns) if (x.Id == col.Id) return true;
+                return false;
+            }
+
+            static ColumnData? ConvertStringToColumnData(string str)
+            {
+                str = str.Trim().Trim(CA_Comma);
+
+                // DisplayIndex,Width,Visible
+                // 0,100,True
+
+                if (!str.Contains(',')) return null;
+
+                string[] cProps = str.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+                if (cProps.Length == 0) return null;
+
+                var ret = new ColumnData();
+                for (int i = 0; i < cProps.Length; i++)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            if (int.TryParse(cProps[i], out int di))
+                            {
+                                ret.DisplayIndex = di;
+                            }
+                            break;
+                        case 1:
+                            if (int.TryParse(cProps[i], out int width))
+                            {
+                                ret.Width = width > Defaults.MinColumnWidth ? width : Defaults.MinColumnWidth;
+                            }
+                            break;
+                        case 2:
+                            ret.Visible = cProps[i].EqualsTrue();
+                            break;
+                    }
+                }
+
+                return ret;
+            }
+
+            #endregion
+
             ColumnData? col = ConvertStringToColumnData(valTrimmed);
             if (col == null) return;
 
@@ -586,34 +573,6 @@ namespace AngelLoader
             }
 
             #endregion
-        }
-
-        /// <summary>
-        /// If <paramref name="line"/> starts with any game prefix + <paramref name="keyWithEquals"/>,
-        /// returns <see langword="true"/> and <paramref name="gameIndex"/> will be the matching game. Otherwise,
-        /// returns <see langword="false"/> and <paramref name="gameIndex"/> will be 0.
-        /// For example, if <paramref name="line"/> is "T2Exe=C:\Thief2\Thief2.exe" and <paramref name="keyWithEquals"/>
-        /// is "Exe=", then <paramref name="gameIndex"/> will be <see langword="GameIndex.Thief2"/>.
-        /// </summary>
-        /// <param name="line"></param>
-        /// <param name="keyWithEquals"></param>
-        /// <param name="gameIndex"></param>
-        /// <returns><see langword="true"/> if <paramref name="line"/> starts with any game prefix +
-        /// <paramref name="keyWithEquals"/>, otherwise <see langword="false"/>.</returns>
-        private static bool IsGamePrefixedLine(string line, string keyWithEquals, out GameIndex gameIndex)
-        {
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameIndex gi = (GameIndex)i;
-                if (line.StartsWithFast_NoNullChecks(GetGamePrefix(gi) + keyWithEquals))
-                {
-                    gameIndex = gi;
-                    return true;
-                }
-            }
-
-            gameIndex = 0;
-            return false;
         }
 
         #endregion

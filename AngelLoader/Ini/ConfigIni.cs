@@ -15,9 +15,10 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    // IMPORTANT: Possible BUG:
-    // Autogenerate the config reader dict/action methods, no matter what it takes! With the flattened version,
-    // it's way too easy to have a bug in one of the per-game things, or per-whatever things.
+    // NOTE: We still don't generate this, because complication yadda yadda.
+    // But we use a game prefix detector that brings back the per-game automation at runtime, but way faster
+    // than before. So we're only a little slower than full code generation, but way less error-prone than fully
+    // manually written per-game duplicated code.
 
     // NOTE: This file should have had sections from the start, but now that it got released without, we can't
     // really change it without breaking compatibility. Oh well.
@@ -27,16 +28,13 @@ namespace AngelLoader
     // separator is culture-dependent, and it could end up as ',' when we expect '.'. And then we could end up
     // with "5.001" being "5,001", and now we're in for a bad time.
 
-    // TODO(Config ini reader) - Idea: chop the first 2/3 chars off keys and see if they're T1/T2/T3/SS2, then key on the non-prefixed version
-    // Then we cut down massively on the repetition, and the setter can do another lookup by being passed the prefix
-
     internal static partial class Ini
     {
         #region Config reader setters
 
         #region Settings window state
 
-        private static void Config_SettingsTab_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SettingsTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(SettingsTab).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -45,7 +43,7 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_SettingsWindowSize_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SettingsWindowSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (!valTrimmed.Contains(',')) return;
 
@@ -59,7 +57,7 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_SettingsWindowSplitterDistance_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SettingsWindowSplitterDistance_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
@@ -67,7 +65,7 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_SettingsPathsVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SettingsPathsVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
@@ -75,7 +73,7 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_SettingsAppearanceVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SettingsAppearanceVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
@@ -83,7 +81,7 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_SettingsOtherVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SettingsOtherVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
@@ -93,32 +91,32 @@ namespace AngelLoader
 
         #endregion
 
-        private static void Config_LaunchGamesWithSteam_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_LaunchGamesWithSteam_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.LaunchGamesWithSteam = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_SteamExe_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SteamExe_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.SteamExe = valTrimmed;
         }
 
-        private static void Config_FMsBackupPath_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FMsBackupPath_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FMsBackupPath = valTrimmed;
         }
 
-        private static void Config_FMArchivePath_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FMArchivePath_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FMArchivePaths.Add(valTrimmed);
         }
 
-        private static void Config_FMArchivePathsIncludeSubfolders_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FMArchivePathsIncludeSubfolders_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FMArchivePathsIncludeSubfolders = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_GameOrganization_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_GameOrganization_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(GameOrganization).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -127,29 +125,29 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_UseShortGameTabNames_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_UseShortGameTabNames_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.UseShortGameTabNames = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_EnableArticles_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_EnableArticles_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.EnableArticles = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_Articles_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_Articles_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             string[] articles = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
             for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
             config.Articles.ClearAndAdd(articles.Distinct(StringComparer.OrdinalIgnoreCase));
         }
 
-        private static void Config_MoveArticlesToEnd_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_MoveArticlesToEnd_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.MoveArticlesToEnd = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_RatingDisplayStyle_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_RatingDisplayStyle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(RatingDisplayStyle).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -158,14 +156,14 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_RatingUseStars_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_RatingUseStars_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.RatingUseStars = valTrimmed.EqualsTrue();
         }
 
         #region Date format
 
-        private static void Config_DateFormat_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_DateFormat_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(DateFormat).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -174,44 +172,44 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_DateCustomFormat1_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_DateCustomFormat1_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.DateCustomFormat1 = valRaw;
         }
 
-        private static void Config_DateCustomSeparator1_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_DateCustomSeparator1_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.DateCustomSeparator1 = valRaw;
         }
 
-        private static void Config_DateCustomFormat2_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_DateCustomFormat2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.DateCustomFormat2 = valRaw;
         }
 
-        private static void Config_DateCustomSeparator2_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_DateCustomSeparator2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.DateCustomSeparator2 = valRaw;
         }
 
-        private static void Config_DateCustomFormat3_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_DateCustomFormat3_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.DateCustomFormat3 = valRaw;
         }
 
-        private static void Config_DateCustomSeparator3_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_DateCustomSeparator3_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.DateCustomSeparator3 = valRaw;
         }
 
-        private static void Config_DateCustomFormat4_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_DateCustomFormat4_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.DateCustomFormat4 = valRaw;
         }
 
         #endregion
 
-        private static void Config_DaysRecent_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_DaysRecent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (UInt_TryParseInv(valTrimmed, out uint result))
             {
@@ -219,37 +217,37 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_ConvertWAVsTo16BitOnInstall_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ConvertWAVsTo16BitOnInstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.ConvertWAVsTo16BitOnInstall = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_ConvertOGGsToWAVsOnInstall_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ConvertOGGsToWAVsOnInstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.ConvertOGGsToWAVsOnInstall = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_HideUninstallButton_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_HideUninstallButton_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.HideUninstallButton = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_HideFMListZoomButtons_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_HideFMListZoomButtons_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.HideFMListZoomButtons = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_HideExitButton_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_HideExitButton_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.HideExitButton = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_ConfirmUninstall_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ConfirmUninstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.ConfirmUninstall = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_BackupFMData_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_BackupFMData_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(BackupFMData).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -258,27 +256,27 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_BackupAlwaysAsk_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_BackupAlwaysAsk_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.BackupAlwaysAsk = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_Language_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_Language_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.Language = valTrimmed;
         }
 
-        private static void Config_WebSearchUrl_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_WebSearchUrl_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.WebSearchUrl = valRaw;
         }
 
-        private static void Config_ConfirmPlayOnDCOrEnter_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ConfirmPlayOnDCOrEnter_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.ConfirmPlayOnDCOrEnter = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_VisualTheme_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_VisualTheme_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(VisualTheme).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -289,52 +287,52 @@ namespace AngelLoader
 
         #region Filter visibilities
 
-        private static void Config_FilterVisibleTitle_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleTitle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.Title] = valTrimmed.EqualsTrue();
         }
-        private static void Config_FilterVisibleAuthor_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleAuthor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.Author] = valTrimmed.EqualsTrue();
         }
-        private static void Config_FilterVisibleReleaseDate_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleReleaseDate_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.ReleaseDate] = valTrimmed.EqualsTrue();
         }
-        private static void Config_FilterVisibleLastPlayed_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleLastPlayed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.LastPlayed] = valTrimmed.EqualsTrue();
         }
-        private static void Config_FilterVisibleTags_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleTags_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.Tags] = valTrimmed.EqualsTrue();
         }
-        private static void Config_FilterVisibleFinishedState_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleFinishedState_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.FinishedState] = valTrimmed.EqualsTrue();
         }
-        private static void Config_FilterVisibleRating_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleRating_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.Rating] = valTrimmed.EqualsTrue();
         }
-        private static void Config_FilterVisibleShowUnsupported_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleShowUnsupported_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.ShowUnsupported] = valTrimmed.EqualsTrue();
         }
-        private static void Config_FilterVisibleShowUnavailable_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleShowUnavailable_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.ShowUnavailable] = valTrimmed.EqualsTrue();
         }
-        private static void Config_FilterVisibleShowRecentAtTop_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterVisibleShowRecentAtTop_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.FilterControlVisibilities[(int)HideableFilterControls.ShowRecentAtTop] = valTrimmed.EqualsTrue();
         }
 
         #endregion
 
-        #region Global filter values
+        #region Filter values
 
-        private static void Config_FilterGames_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterGames_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             string[] iniGames = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < iniGames.Length; i++)
@@ -362,420 +360,127 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_FilterTitle_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterTitle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.Filter.Title = valRaw;
+            GetFilter(config, inGameIndex, ignoreGameIndex).Title = valRaw;
         }
 
-        private static void Config_FilterAuthor_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterAuthor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.Filter.Author = valRaw;
+            GetFilter(config, inGameIndex, ignoreGameIndex).Author = valRaw;
         }
 
-        private static void Config_FilterReleaseDateFrom_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterReleaseDateFrom_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.Filter.ReleaseDateFrom = ConvertHexUnixDateToDateTime(valTrimmed);
+            GetFilter(config, inGameIndex, ignoreGameIndex).ReleaseDateFrom = ConvertHexUnixDateToDateTime(valTrimmed);
         }
 
-        private static void Config_FilterReleaseDateTo_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterReleaseDateTo_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.Filter.ReleaseDateTo = ConvertHexUnixDateToDateTime(valTrimmed);
+            GetFilter(config, inGameIndex, ignoreGameIndex).ReleaseDateTo = ConvertHexUnixDateToDateTime(valTrimmed);
         }
 
-        private static void Config_FilterLastPlayedFrom_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterLastPlayedFrom_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.Filter.LastPlayedFrom = ConvertHexUnixDateToDateTime(valTrimmed);
+            GetFilter(config, inGameIndex, ignoreGameIndex).LastPlayedFrom = ConvertHexUnixDateToDateTime(valTrimmed);
         }
 
-        private static void Config_FilterLastPlayedTo_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterLastPlayedTo_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.Filter.LastPlayedTo = ConvertHexUnixDateToDateTime(valTrimmed);
+            GetFilter(config, inGameIndex, ignoreGameIndex).LastPlayedTo = ConvertHexUnixDateToDateTime(valTrimmed);
         }
 
-        private static void Config_FilterFinishedStates_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterFinishedStates_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            ReadFinishedStates(config.Filter, valTrimmed);
+            ReadFinishedStates(GetFilter(config, inGameIndex, ignoreGameIndex), valTrimmed);
         }
 
-        private static void Config_FilterRatingFrom_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterRatingFrom_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
-                config.Filter.RatingFrom = result;
+                GetFilter(config, inGameIndex, ignoreGameIndex).RatingFrom = result;
             }
         }
 
-        private static void Config_FilterRatingTo_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterRatingTo_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
-                config.Filter.RatingTo = result;
+                GetFilter(config, inGameIndex, ignoreGameIndex).RatingTo = result;
             }
         }
 
-        private static void Config_FilterTagsAnd_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterTagsAnd_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            ReadTags(config.Filter.Tags.AndTags, valRaw);
+            ReadTags(GetFilter(config, inGameIndex, ignoreGameIndex).Tags.AndTags, valRaw);
         }
 
-        private static void Config_FilterTagsOr_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterTagsOr_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            ReadTags(config.Filter.Tags.OrTags, valRaw);
+            ReadTags(GetFilter(config, inGameIndex, ignoreGameIndex).Tags.OrTags, valRaw);
         }
 
-        private static void Config_FilterTagsNot_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FilterTagsNot_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            ReadTags(config.Filter.Tags.NotTags, valRaw);
+            ReadTags(GetFilter(config, inGameIndex, ignoreGameIndex).Tags.NotTags, valRaw);
         }
 
         #endregion
 
         #region Per-game fields
 
-        // @GENGAMES (ConfigIni field setters) - Begin
-
-        private static void Config_T1Exe_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_Exe_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.SetGameExe(Thief1, valTrimmed);
-        }
-        private static void Config_T2Exe_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.SetGameExe(Thief2, valTrimmed);
-        }
-        private static void Config_T3Exe_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.SetGameExe(Thief3, valTrimmed);
-        }
-        private static void Config_SS2Exe_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.SetGameExe(SS2, valTrimmed);
+            config.SetGameExe(inGameIndex, valTrimmed);
         }
 
-        private static void Config_T1UseSteam_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_UseSteam_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.SetUseSteamSwitch(Thief1, valTrimmed.EqualsTrue());
-        }
-        private static void Config_T2UseSteam_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.SetUseSteamSwitch(Thief2, valTrimmed.EqualsTrue());
-        }
-        private static void Config_T3UseSteam_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.SetUseSteamSwitch(Thief3, valTrimmed.EqualsTrue());
-        }
-        private static void Config_SS2UseSteam_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.SetUseSteamSwitch(SS2, valTrimmed.EqualsTrue());
+            config.SetUseSteamSwitch(inGameIndex, valTrimmed.EqualsTrue());
         }
 
-        private static void Config_GameFilterVisibleT1_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_GameFilterVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            config.GameFilterControlVisibilities[(int)inGameIndex] = valTrimmed.EqualsTrue();
+        }
+
+        // @GENGAMES (ConfigIni backward-compatible game filter visibility setters) - Begin
+
+        private static void Config_GameFilterVisibleT1_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.GameFilterControlVisibilities[(int)Thief1] = valTrimmed.EqualsTrue();
         }
-        private static void Config_GameFilterVisibleT2_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_GameFilterVisibleT2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.GameFilterControlVisibilities[(int)Thief2] = valTrimmed.EqualsTrue();
         }
-        private static void Config_GameFilterVisibleT3_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_GameFilterVisibleT3_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.GameFilterControlVisibilities[(int)Thief3] = valTrimmed.EqualsTrue();
         }
-        private static void Config_GameFilterVisibleSS2_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_GameFilterVisibleSS2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.GameFilterControlVisibilities[(int)SS2] = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_T1FilterTitle_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief1).Title = valRaw;
-        }
-        private static void Config_T2FilterTitle_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief2).Title = valRaw;
-        }
-        private static void Config_T3FilterTitle_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief3).Title = valRaw;
-        }
-        private static void Config_SS2FilterTitle_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(SS2).Title = valRaw;
-        }
-
-        private static void Config_T1FilterAuthor_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief1).Author = valRaw;
-        }
-        private static void Config_T2FilterAuthor_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief2).Author = valRaw;
-        }
-        private static void Config_T3FilterAuthor_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief3).Author = valRaw;
-        }
-        private static void Config_SS2FilterAuthor_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(SS2).Author = valRaw;
-        }
-
-        private static void Config_T1FilterReleaseDateFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief1).ReleaseDateFrom = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_T2FilterReleaseDateFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief2).ReleaseDateFrom = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_T3FilterReleaseDateFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief3).ReleaseDateFrom = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_SS2FilterReleaseDateFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(SS2).ReleaseDateFrom = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-
-        private static void Config_T1FilterReleaseDateTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief1).ReleaseDateTo = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_T2FilterReleaseDateTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief2).ReleaseDateTo = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_T3FilterReleaseDateTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief3).ReleaseDateTo = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_SS2FilterReleaseDateTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(SS2).ReleaseDateTo = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-
-        private static void Config_T1FilterLastPlayedFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief1).LastPlayedFrom = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_T2FilterLastPlayedFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief2).LastPlayedFrom = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_T3FilterLastPlayedFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief3).LastPlayedFrom = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_SS2FilterLastPlayedFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(SS2).LastPlayedFrom = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-
-        private static void Config_T1FilterLastPlayedTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief1).LastPlayedTo = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_T2FilterLastPlayedTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief2).LastPlayedTo = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_T3FilterLastPlayedTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(Thief3).LastPlayedTo = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-        private static void Config_SS2FilterLastPlayedTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetFilter(SS2).LastPlayedTo = ConvertHexUnixDateToDateTime(valTrimmed);
-        }
-
-        private static void Config_T1FilterFinishedStates_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadFinishedStates(config.GameTabsState.GetFilter(Thief1), valTrimmed);
-        }
-        private static void Config_T2FilterFinishedStates_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadFinishedStates(config.GameTabsState.GetFilter(Thief2), valTrimmed);
-        }
-        private static void Config_T3FilterFinishedStates_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadFinishedStates(config.GameTabsState.GetFilter(Thief3), valTrimmed);
-        }
-        private static void Config_SS2FilterFinishedStates_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadFinishedStates(config.GameTabsState.GetFilter(SS2), valTrimmed);
-        }
-
-        private static void Config_T1FilterRatingFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetFilter(Thief1).RatingFrom = result;
-            }
-        }
-        private static void Config_T2FilterRatingFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetFilter(Thief2).RatingFrom = result;
-            }
-        }
-        private static void Config_T3FilterRatingFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetFilter(Thief3).RatingFrom = result;
-            }
-        }
-        private static void Config_SS2FilterRatingFrom_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetFilter(SS2).RatingFrom = result;
-            }
-        }
-
-        private static void Config_T1FilterRatingTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetFilter(Thief1).RatingTo = result;
-            }
-        }
-        private static void Config_T2FilterRatingTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetFilter(Thief2).RatingTo = result;
-            }
-        }
-        private static void Config_T3FilterRatingTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetFilter(Thief3).RatingTo = result;
-            }
-        }
-        private static void Config_SS2FilterRatingTo_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetFilter(SS2).RatingTo = result;
-            }
-        }
-
-        private static void Config_T1FilterTagsAnd_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(Thief1).Tags.AndTags, valRaw);
-        }
-        private static void Config_T2FilterTagsAnd_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(Thief2).Tags.AndTags, valRaw);
-        }
-        private static void Config_T3FilterTagsAnd_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(Thief3).Tags.AndTags, valRaw);
-        }
-        private static void Config_SS2FilterTagsAnd_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(SS2).Tags.AndTags, valRaw);
-        }
-
-        private static void Config_T1FilterTagsOr_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(Thief1).Tags.OrTags, valRaw);
-        }
-        private static void Config_T2FilterTagsOr_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(Thief2).Tags.OrTags, valRaw);
-        }
-        private static void Config_T3FilterTagsOr_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(Thief3).Tags.OrTags, valRaw);
-        }
-        private static void Config_SS2FilterTagsOr_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(SS2).Tags.OrTags, valRaw);
-        }
-
-        private static void Config_T1FilterTagsNot_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(Thief1).Tags.NotTags, valRaw);
-        }
-        private static void Config_T2FilterTagsNot_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(Thief2).Tags.NotTags, valRaw);
-        }
-        private static void Config_T3FilterTagsNot_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(Thief3).Tags.NotTags, valRaw);
-        }
-        private static void Config_SS2FilterTagsNot_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            ReadTags(config.GameTabsState.GetFilter(SS2).Tags.NotTags, valRaw);
-        }
-
-        private static void Config_T1SelFMInstDir_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetSelectedFM(Thief1).InstalledName = valRaw;
-        }
-        private static void Config_T2SelFMInstDir_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetSelectedFM(Thief2).InstalledName = valRaw;
-        }
-        private static void Config_T3SelFMInstDir_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetSelectedFM(Thief3).InstalledName = valRaw;
-        }
-        private static void Config_SS2SelFMInstDir_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            config.GameTabsState.GetSelectedFM(SS2).InstalledName = valRaw;
-        }
-
-        private static void Config_T1SelFMIndexFromTop_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetSelectedFM(Thief1).IndexFromTop = result;
-            }
-        }
-        private static void Config_T2SelFMIndexFromTop_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetSelectedFM(Thief2).IndexFromTop = result;
-            }
-        }
-        private static void Config_T3SelFMIndexFromTop_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetSelectedFM(Thief3).IndexFromTop = result;
-            }
-        }
-        private static void Config_SS2SelFMIndexFromTop_Set(ConfigData config, string valTrimmed, string valRaw)
-        {
-            if (Int_TryParseInv(valTrimmed, out int result))
-            {
-                config.GameTabsState.GetSelectedFM(SS2).IndexFromTop = result;
-            }
-        }
-
-        // @GENGAMES (ConfigIni field setters) - End
+        // @GENGAMES (ConfigIni backward-compatible game filter visibility setters) - End
 
         #endregion
 
-        private static void Config_ShowRecentAtTop_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ShowRecentAtTop_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.ShowRecentAtTop = valTrimmed.EqualsTrue();
         }
-        private static void Config_ShowUnsupported_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ShowUnsupported_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.ShowUnsupported = valTrimmed.EqualsTrue();
         }
-        private static void Config_ShowUnavailableFMs_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ShowUnavailableFMs_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.ShowUnavailableFMs = valTrimmed.EqualsTrue();
         }
-        private static void Config_FMsListFontSizeInPoints_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_FMsListFontSizeInPoints_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Float_TryParseInv(valTrimmed, out float result))
             {
@@ -783,7 +488,7 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_SortedColumn_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SortedColumn_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(Column).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -791,7 +496,7 @@ namespace AngelLoader
                 config.SortedColumn = (Column)field.GetValue(null);
             }
         }
-        private static void Config_SortDirection_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SortDirection_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(SortDirection).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -802,74 +507,74 @@ namespace AngelLoader
 
         #region Columns
 
-        private static void Config_ColumnGame_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnGame_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Game);
         }
-        private static void Config_ColumnInstalled_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnInstalled_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Installed);
         }
-        private static void Config_ColumnTitle_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnTitle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Title);
         }
-        private static void Config_ColumnArchive_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnArchive_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Archive);
         }
-        private static void Config_ColumnAuthor_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnAuthor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Author);
         }
-        private static void Config_ColumnSize_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Size);
         }
-        private static void Config_ColumnRating_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnRating_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Rating);
         }
-        private static void Config_ColumnFinished_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnFinished_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Finished);
         }
-        private static void Config_ColumnReleaseDate_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnReleaseDate_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.ReleaseDate);
         }
-        private static void Config_ColumnLastPlayed_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnLastPlayed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.LastPlayed);
         }
-        private static void Config_ColumnDateAdded_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnDateAdded_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.DateAdded);
         }
-        private static void Config_ColumnDisabledMods_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnDisabledMods_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.DisabledMods);
         }
-        private static void Config_ColumnComment_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ColumnComment_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Comment);
         }
 
         #endregion
 
-        private static void Config_SelFMInstDir_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SelFMInstDir_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.SelFM.InstalledName = valTrimmed;
+            GetSelectedFM(config, inGameIndex, ignoreGameIndex).InstalledName = valTrimmed;
         }
-        private static void Config_SelFMIndexFromTop_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_SelFMIndexFromTop_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
-                config.SelFM.IndexFromTop = result;
+                GetSelectedFM(config, inGameIndex, ignoreGameIndex).IndexFromTop = result;
             }
         }
 
-        private static void Config_MainWindowState_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_MainWindowState_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(WindowState).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -881,7 +586,7 @@ namespace AngelLoader
                 }
             }
         }
-        private static void Config_MainWindowSize_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_MainWindowSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (!valTrimmed.Contains(',')) return;
 
@@ -894,7 +599,7 @@ namespace AngelLoader
                 config.MainWindowSize = new Size(width, height);
             }
         }
-        private static void Config_MainWindowLocation_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_MainWindowLocation_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (!valTrimmed.Contains(',')) return;
 
@@ -908,25 +613,25 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_MainSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_MainSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Float_TryParseInv(valTrimmed, out float result))
             {
                 config.MainSplitterPercent = result;
             }
         }
-        private static void Config_TopSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_TopSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Float_TryParseInv(valTrimmed, out float result))
             {
                 config.TopSplitterPercent = result;
             }
         }
-        private static void Config_TopRightPanelCollapsed_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_TopRightPanelCollapsed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.TopRightPanelCollapsed = valTrimmed.EqualsTrue();
         }
-        private static void Config_GameTab_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_GameTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             bool found = false;
             for (int i = 0; i < SupportedGameCount; i++)
@@ -945,7 +650,7 @@ namespace AngelLoader
 
         #region Top-right tabs
 
-        private static void Config_TopRightTab_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_TopRightTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             var field = typeof(TopRightTab).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
@@ -954,87 +659,87 @@ namespace AngelLoader
             }
         }
 
-        private static void Config_StatsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_StatsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             Int_TryParseInv(valTrimmed, out int result);
             config.TopRightTabsData.StatsTab.DisplayIndex = result;
         }
-        private static void Config_StatsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_StatsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.TopRightTabsData.StatsTab.Visible = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_EditFMTabPosition_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_EditFMTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             Int_TryParseInv(valTrimmed, out int result);
             config.TopRightTabsData.EditFMTab.DisplayIndex = result;
         }
-        private static void Config_EditFMTabVisible_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_EditFMTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.TopRightTabsData.EditFMTab.Visible = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_CommentTabPosition_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_CommentTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             Int_TryParseInv(valTrimmed, out int result);
             config.TopRightTabsData.CommentTab.DisplayIndex = result;
         }
-        private static void Config_CommentTabVisible_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_CommentTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.TopRightTabsData.CommentTab.Visible = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_TagsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_TagsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             Int_TryParseInv(valTrimmed, out int result);
             config.TopRightTabsData.TagsTab.DisplayIndex = result;
         }
-        private static void Config_TagsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_TagsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.TopRightTabsData.TagsTab.Visible = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_PatchTabPosition_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_PatchTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             Int_TryParseInv(valTrimmed, out int result);
             config.TopRightTabsData.PatchTab.DisplayIndex = result;
         }
-        private static void Config_PatchTabVisible_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_PatchTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.TopRightTabsData.PatchTab.Visible = valTrimmed.EqualsTrue();
         }
 
-        private static void Config_ModsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ModsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             Int_TryParseInv(valTrimmed, out int result);
             config.TopRightTabsData.ModsTab.DisplayIndex = result;
         }
-        private static void Config_ModsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ModsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.TopRightTabsData.ModsTab.Visible = valTrimmed.EqualsTrue();
         }
 
         #endregion
 
-        private static void Config_ReadmeZoomFactor_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ReadmeZoomFactor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             if (Float_TryParseInv(valTrimmed, out float result))
             {
                 config.ReadmeZoomFactor = result;
             }
         }
-        private static void Config_ReadmeUseFixedWidthFont_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_ReadmeUseFixedWidthFont_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.ReadmeUseFixedWidthFont = valTrimmed.EqualsTrue();
         }
-        private static void Config_EnableCharacterDetailFix_Set(ConfigData config, string valTrimmed, string valRaw)
+        private static void Config_EnableCharacterDetailFix_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.EnableCharacterDetailFix = valTrimmed.EqualsTrue();
         }
 
         #endregion
 
-        private static readonly Dictionary<string, Action<ConfigData, string, string>> _actionDict_Config = new()
+        private static readonly Dictionary<string, Action<ConfigData, string, string, GameIndex, bool>> _actionDict_Config = new()
         {
             #region Settings window state
 
@@ -1102,7 +807,7 @@ namespace AngelLoader
 
             #endregion
 
-            #region Global filter values
+            #region Filter values
 
             { "FilterGames", Config_FilterGames_Set },
             { "FilterTitle", Config_FilterTitle_Set },
@@ -1122,94 +827,14 @@ namespace AngelLoader
 
             #region Per-game fields
 
-            // @GENGAMES (ConfigIni key dictionary) - Begin
+            { "Exe", Config_Exe_Set },
 
-            { "T1Exe", Config_T1Exe_Set },
-            { "T2Exe", Config_T2Exe_Set },
-            { "T3Exe", Config_T3Exe_Set },
-            { "SS2Exe", Config_SS2Exe_Set },
+            { "UseSteam", Config_UseSteam_Set },
 
-            { "T1UseSteam", Config_T1UseSteam_Set },
-            { "T2UseSteam", Config_T2UseSteam_Set },
-            { "T3UseSteam", Config_T3UseSteam_Set },
-            { "SS2UseSteam", Config_SS2UseSteam_Set },
+            { "GameFilterVisible", Config_GameFilterVisible_Set },
 
-            { "GameFilterVisibleT1", Config_GameFilterVisibleT1_Set },
-            { "GameFilterVisibleT2", Config_GameFilterVisibleT2_Set },
-            { "GameFilterVisibleT3", Config_GameFilterVisibleT3_Set },
-            { "GameFilterVisibleSS2", Config_GameFilterVisibleSS2_Set },
-
-            { "T1FilterTitle", Config_T1FilterTitle_Set },
-            { "T2FilterTitle", Config_T2FilterTitle_Set },
-            { "T3FilterTitle", Config_T3FilterTitle_Set },
-            { "SS2FilterTitle", Config_SS2FilterTitle_Set },
-
-            { "T1FilterAuthor", Config_T1FilterAuthor_Set },
-            { "T2FilterAuthor", Config_T2FilterAuthor_Set },
-            { "T3FilterAuthor", Config_T3FilterAuthor_Set },
-            { "SS2FilterAuthor", Config_SS2FilterAuthor_Set },
-
-            { "T1FilterReleaseDateFrom", Config_T1FilterReleaseDateFrom_Set },
-            { "T2FilterReleaseDateFrom", Config_T2FilterReleaseDateFrom_Set },
-            { "T3FilterReleaseDateFrom", Config_T3FilterReleaseDateFrom_Set },
-            { "SS2FilterReleaseDateFrom", Config_SS2FilterReleaseDateFrom_Set },
-
-            { "T1FilterReleaseDateTo", Config_T1FilterReleaseDateTo_Set },
-            { "T2FilterReleaseDateTo", Config_T2FilterReleaseDateTo_Set },
-            { "T3FilterReleaseDateTo", Config_T3FilterReleaseDateTo_Set },
-            { "SS2FilterReleaseDateTo", Config_SS2FilterReleaseDateTo_Set },
-
-            { "T1FilterLastPlayedFrom", Config_T1FilterLastPlayedFrom_Set },
-            { "T2FilterLastPlayedFrom", Config_T2FilterLastPlayedFrom_Set },
-            { "T3FilterLastPlayedFrom", Config_T3FilterLastPlayedFrom_Set },
-            { "SS2FilterLastPlayedFrom", Config_SS2FilterLastPlayedFrom_Set },
-
-            { "T1FilterLastPlayedTo", Config_T1FilterLastPlayedTo_Set },
-            { "T2FilterLastPlayedTo", Config_T2FilterLastPlayedTo_Set },
-            { "T3FilterLastPlayedTo", Config_T3FilterLastPlayedTo_Set },
-            { "SS2FilterLastPlayedTo", Config_SS2FilterLastPlayedTo_Set },
-
-            { "T1FilterFinishedStates", Config_T1FilterFinishedStates_Set },
-            { "T2FilterFinishedStates", Config_T2FilterFinishedStates_Set },
-            { "T3FilterFinishedStates", Config_T3FilterFinishedStates_Set },
-            { "SS2FilterFinishedStates", Config_SS2FilterFinishedStates_Set },
-
-            { "T1FilterRatingFrom", Config_T1FilterRatingFrom_Set },
-            { "T2FilterRatingFrom", Config_T2FilterRatingFrom_Set },
-            { "T3FilterRatingFrom", Config_T3FilterRatingFrom_Set },
-            { "SS2FilterRatingFrom", Config_SS2FilterRatingFrom_Set },
-
-            { "T1FilterRatingTo", Config_T1FilterRatingTo_Set },
-            { "T2FilterRatingTo", Config_T2FilterRatingTo_Set },
-            { "T3FilterRatingTo", Config_T3FilterRatingTo_Set },
-            { "SS2FilterRatingTo", Config_SS2FilterRatingTo_Set },
-
-            { "T1FilterTagsAnd", Config_T1FilterTagsAnd_Set },
-            { "T2FilterTagsAnd", Config_T2FilterTagsAnd_Set },
-            { "T3FilterTagsAnd", Config_T3FilterTagsAnd_Set },
-            { "SS2FilterTagsAnd", Config_SS2FilterTagsAnd_Set },
-
-            { "T1FilterTagsOr", Config_T1FilterTagsOr_Set },
-            { "T2FilterTagsOr", Config_T2FilterTagsOr_Set },
-            { "T3FilterTagsOr", Config_T3FilterTagsOr_Set },
-            { "SS2FilterTagsOr", Config_SS2FilterTagsOr_Set },
-
-            { "T1FilterTagsNot", Config_T1FilterTagsNot_Set },
-            { "T2FilterTagsNot", Config_T2FilterTagsNot_Set },
-            { "T3FilterTagsNot", Config_T3FilterTagsNot_Set },
-            { "SS2FilterTagsNot", Config_SS2FilterTagsNot_Set },
-
-            { "T1SelFMInstDir", Config_T1SelFMInstDir_Set },
-            { "T2SelFMInstDir", Config_T2SelFMInstDir_Set },
-            { "T3SelFMInstDir", Config_T3SelFMInstDir_Set },
-            { "SS2SelFMInstDir", Config_SS2SelFMInstDir_Set },
-
-            { "T1SelFMIndexFromTop", Config_T1SelFMIndexFromTop_Set },
-            { "T2SelFMIndexFromTop", Config_T2SelFMIndexFromTop_Set },
-            { "T3SelFMIndexFromTop", Config_T3SelFMIndexFromTop_Set },
-            { "SS2SelFMIndexFromTop", Config_SS2SelFMIndexFromTop_Set },
-
-            // @GENGAMES (ConfigIni key dictionary) - End
+            { "SelFMInstDir", Config_SelFMInstDir_Set },
+            { "SelFMIndexFromTop", Config_SelFMIndexFromTop_Set },
 
             #endregion
 
@@ -1238,9 +863,6 @@ namespace AngelLoader
             { "ColumnComment", Config_ColumnComment_Set },
 
             #endregion
-
-            { "SelFMInstDir", Config_SelFMInstDir_Set },
-            { "SelFMIndexFromTop", Config_SelFMIndexFromTop_Set },
 
             { "MainWindowState", Config_MainWindowState_Set },
             { "MainWindowSize", Config_MainWindowSize_Set },
@@ -1278,7 +900,96 @@ namespace AngelLoader
             { "ReadmeZoomFactor", Config_ReadmeZoomFactor_Set },
             { "ReadmeUseFixedWidthFont", Config_ReadmeUseFixedWidthFont_Set },
             { "EnableCharacterDetailFix", Config_EnableCharacterDetailFix_Set },
+
+            #region Backward compatibility
+
+            // I put the game type as the suffix rather than the prefix on these for some reason, and then put
+            // them in the next public release. So now I have to support reading them suffixed. But let's just
+            // write them out prefixed from now on to nip this inconsistency in the bud. That way we don't have
+            // to add suffix support to our prefix detector and slow it down with a weird edge case.
+            // NOTE that even if we add more games, we don't have to - and shouldn't - add them here.
+            // Because the old app versions that need these won't support the new games anyway, and the new app
+            // versions that support the new games will also have the new prefixed format in the config.
+            // Or else they'll be reading from an old config that won't have data for the new game(s) anyway.
+
+            { "GameFilterVisibleT1", Config_GameFilterVisibleT1_Set },
+            { "GameFilterVisibleT2", Config_GameFilterVisibleT2_Set },
+            { "GameFilterVisibleT3", Config_GameFilterVisibleT3_Set },
+            { "GameFilterVisibleSS2", Config_GameFilterVisibleSS2_Set }
+
+            #endregion
         };
+
+        internal static void ReadConfigIni(string path, ConfigData config)
+        {
+            string[] iniLines = File.ReadAllLines(path);
+
+            for (int li = 0; li < iniLines.Length; li++)
+            {
+                string lineTS = iniLines[li].TrimStart();
+
+                if (lineTS.Length == 0 || lineTS[0] == ';') continue;
+
+                int eqIndex = lineTS.IndexOf('=');
+                if (eqIndex > -1)
+                {
+                    string key = lineTS.Substring(0, eqIndex);
+                    string valRaw = lineTS.Substring(eqIndex + 1);
+                    string valTrimmed = valRaw.Trim();
+
+                    // @GENGAMES (ConfigIni prefix detector) - Begin
+
+                    // _Extremely_ stupid, but prevents having to run a starts-with check n times per line,
+                    // which is the kind of thing we were trying to get rid of in the first place.
+                    // Char checks so as to avoid the yet another allocation of substring-ing the prefix itself
+                    // and checking it that way.
+
+                    GameIndex gameIndex = GameIndex.Thief1;
+                    bool ignoreGameIndex = true;
+
+                    if (key.Length > 2)
+                    {
+                        if (key[0] == 'T')
+                        {
+                            switch (key[1])
+                            {
+                                case '1':
+                                    gameIndex = GameIndex.Thief1;
+                                    ignoreGameIndex = false;
+                                    key = key.Substring(2);
+                                    break;
+                                case '2':
+                                    gameIndex = GameIndex.Thief2;
+                                    ignoreGameIndex = false;
+                                    key = key.Substring(2);
+                                    break;
+                                case '3':
+                                    gameIndex = GameIndex.Thief3;
+                                    ignoreGameIndex = false;
+                                    key = key.Substring(2);
+                                    break;
+                            }
+                        }
+                        else if (key.Length > 3 && key[0] == 'S' && key[1] == 'S' && key[2] == '2')
+                        {
+                            gameIndex = GameIndex.SS2;
+                            ignoreGameIndex = false;
+                            key = key.Substring(3);
+                        }
+                    }
+
+                    // @GENGAMES (ConfigIni prefix detector) - End
+
+                    if (_actionDict_Config.TryGetValue(key, out var action))
+                    {
+                        action.Invoke(config, valTrimmed, valRaw, gameIndex, ignoreGameIndex);
+                    }
+                }
+            }
+
+            // Vital, don't remove!
+            FinalizeConfig(config);
+        }
 
         // This is faster with reflection removed.
         private static void WriteConfigIniInternal(ConfigData config, string fileName)
@@ -1383,7 +1094,7 @@ namespace AngelLoader
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                sb.Append("GameFilterVisible").Append(GetGamePrefix((GameIndex)i)).Append('=').AppendLine(config.GameFilterControlVisibilities[i].ToString());
+                sb.Append(GetGamePrefix((GameIndex)i)).Append("GameFilterVisible").Append('=').AppendLine(config.GameFilterControlVisibilities[i].ToString());
             }
 
             for (int i = 0; i < HideableFilterControlsCount; i++)
