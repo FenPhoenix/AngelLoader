@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -162,25 +163,12 @@ namespace FenGen
         {
             FieldList fields = ReadSourceFields(sourceFile);
 
-            // Always do an atomic read operation, because we may want to open the same file for other purposes
-            // in the middle of it (we had an access exception before)
-            string[] lines = File.ReadAllLines(destFile);
+            string codeBlock = GetCodeBlock(destFile, GenAttributes.FenGenFMDataDestClass);
 
-            var destTopLines = new List<string>();
+            var w = new CodeWriters.IndentingWriter(startingIndent: 1);
 
-            int openBraces = 0;
-            foreach (string line in lines)
-            {
-                string lineT = line.Trim();
-
-                if (lineT.Length > 0 && lineT[0] == '{') openBraces++;
-                destTopLines.Add(line);
-                if (openBraces == 2) break;
-            }
-
-            var w = new CodeWriters.IndentingWriter();
-
-            w.WLs(destTopLines.ToArray());
+            w.AppendRawString(codeBlock);
+            w.WL("{");
 
             const string obj = "fm";
 

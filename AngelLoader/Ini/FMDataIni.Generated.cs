@@ -8,11 +8,13 @@ using System.IO;
 using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
+using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
+    [FenGenFMDataDestClass]
     internal static partial class Ini
     {
         #region Generated code for reader

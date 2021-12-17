@@ -53,6 +53,7 @@ namespace FenGen
         #region Serialization
 
         internal const string FenGenFMDataSourceClass = nameof(FenGenFMDataSourceClass);
+        internal const string FenGenFMDataDestClass = nameof(FenGenFMDataDestClass);
         internal const string FenGenIgnore = nameof(FenGenIgnore);
         internal const string FenGenDoNotWrite = nameof(FenGenDoNotWrite);
         internal const string FenGenIniName = nameof(FenGenIniName);

@@ -67,6 +67,14 @@ namespace AngelLoader
         }
 
         /// <summary>
+        /// This attribute should be placed on the FMData ini read/write class. Only one instance of this
+        /// attribute should be used, or else FenGen will throw an error.
+        /// </summary>
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Class)]
+        internal sealed class FenGenFMDataDestClassAttribute : Attribute { }
+
+        /// <summary>
         /// The generator will ignore this field or property and will not generate any code from it.
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
