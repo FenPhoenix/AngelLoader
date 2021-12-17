@@ -222,11 +222,11 @@ namespace AngelLoader.Forms.CustomControls
             // Right:
             // Column[10].DisplayIndex = 0; Column[3].DisplayIndex = 1; etc.
 
-            columnDataList = columnDataList.OrderBy(x => x.DisplayIndex).ToList();
+            var columnDataListSorted = columnDataList.OrderBy(x => x.DisplayIndex).ToList();
 
             #endregion
 
-            foreach (ColumnData colData in columnDataList)
+            foreach (ColumnData colData in columnDataListSorted)
             {
                 DataGridViewColumn col = Columns[(int)colData.Id];
 
