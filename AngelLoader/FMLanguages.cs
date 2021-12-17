@@ -90,7 +90,7 @@ namespace AngelLoader
 
         internal static List<string> SortLangsToSpec(HashSetI langsHash)
         {
-            var ret = new List<string>();
+            var ret = new List<string>(Supported.Length);
 
             // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
             // (matching FMSel behavior)
@@ -267,7 +267,7 @@ namespace AngelLoader
             string archivePath = FMArchives.FindFirstMatch(archiveName);
             if (archivePath.IsEmpty()) return failed;
 
-            var ret = new List<string>();
+            var ret = new List<string>(Supported.Length);
 
             bool[] FoundLangInArchive = new bool[Supported.Length];
             // Pre-concat each string only once for perf

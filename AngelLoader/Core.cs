@@ -1311,7 +1311,7 @@ namespace AngelLoader
                 bool altLangCodeExists = FMLanguages.AltLangCodes.TryGetValue(langCode, out string altLangCode);
                 altLangCode ??= "";
 
-                var safeReadmes = new List<string>();
+                var safeReadmes = new List<string>(readmeFiles.Count);
                 foreach (string rf in readmeFiles)
                 {
                     string fn_orig = Path.GetFileNameWithoutExtension(rf);

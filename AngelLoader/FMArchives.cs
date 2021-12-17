@@ -23,6 +23,7 @@ namespace AngelLoader
         /// <returns></returns>
         internal static List<string> GetFMArchivePaths()
         {
+            // Always return a COPY of the paths list, so the caller can modify it safely if it wants
             var paths = new List<string>();
             foreach (string path in Config.FMArchivePaths)
             {
@@ -85,9 +86,11 @@ namespace AngelLoader
         {
             if (fmArchive.IsEmpty()) return new List<string>();
 
-            var list = new List<string>();
+            var archivePaths = GetFMArchivePaths();
 
-            foreach (string path in GetFMArchivePaths())
+            var list = new List<string>(archivePaths.Count);
+
+            foreach (string path in archivePaths)
             {
                 if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
                 {

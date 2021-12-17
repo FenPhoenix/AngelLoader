@@ -92,7 +92,7 @@ namespace AngelLoader
 
                 _scanCts = new CancellationTokenSource();
 
-                var fms = new List<FMScanner.FMToScan>();
+                var fms = new List<FMScanner.FMToScan>(fmsToScan.Count);
 
                 // Get archive paths list only once and cache it - in case of "include subfolders" being true,
                 // cause then it will hit the actual disk rather than just going through a list of paths in
@@ -335,7 +335,7 @@ namespace AngelLoader
         {
             AssertR(fmsViewListUnscanned.Count > 0, nameof(fmsViewListUnscanned) + ".Count was 0");
 
-            var fmsToScan = new List<FanMission>();
+            var fmsToScan = new List<FanMission>(fmsViewListUnscanned.Count);
 
             // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
             // (not FMsViewList)
