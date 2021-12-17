@@ -832,7 +832,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            SetPlayOriginalButtonStyle();
+            SetPlayOriginalGameControlsState();
 
             // This button is a weird special case (see its class) so we just construct it here and it will be
             // shown when localized.
@@ -4104,25 +4104,34 @@ namespace AngelLoader.Forms
 
         // @GENGAMES (Play original game controls): Begin
 
-        private void SetPlayOriginalButtonStyle()
+        public void SetPlayOriginalGameControlsState()
         {
-            if (Config.PlayOriginalSeparateButtons)
+            try
             {
-                PlayOriginalGameButton.Hide();
-                PlayOriginalT1Button.Show();
-                PlayOriginalT2Button.Show();
-                PlayOriginalT2MPButton.Visible = Config.T2MPDetected;
-                PlayOriginalT3Button.Show();
-                PlayOriginalSS2Button.Show();
+                BottomPanel.SuspendDrawing();
+
+                if (Config.PlayOriginalSeparateButtons)
+                {
+                    PlayOriginalGameButton.Hide();
+                    PlayOriginalT1Button.Visible = !Config.GetGameExe(Thief1).IsEmpty();
+                    PlayOriginalT2Button.Visible = !Config.GetGameExe(Thief2).IsEmpty();
+                    PlayOriginalT2MPButton.Visible = !Config.GetGameExe(Thief2).IsEmpty() && Config.T2MPDetected;
+                    PlayOriginalT3Button.Visible = !Config.GetGameExe(Thief3).IsEmpty();
+                    PlayOriginalSS2Button.Visible = !Config.GetGameExe(SS2).IsEmpty();
+                }
+                else
+                {
+                    PlayOriginalGameButton.Show();
+                    PlayOriginalT1Button.Hide();
+                    PlayOriginalT2Button.Hide();
+                    PlayOriginalT2MPButton.Hide();
+                    PlayOriginalT3Button.Hide();
+                    PlayOriginalSS2Button.Hide();
+                }
             }
-            else
+            finally
             {
-                PlayOriginalGameButton.Show();
-                PlayOriginalT1Button.Hide();
-                PlayOriginalT2Button.Hide();
-                PlayOriginalT2MPButton.Hide();
-                PlayOriginalT3Button.Hide();
-                PlayOriginalSS2Button.Hide();
+                BottomPanel.ResumeDrawing();
             }
         }
 
@@ -4742,11 +4751,6 @@ namespace AngelLoader.Forms
         public string? GetSelectedLanguage()
         {
             return EditFMLanguageComboBox.SelectedIndex == -1 ? null : EditFMLanguageComboBox.SelectedBackingItem();
-        }
-
-        public void SetT2MultiplayerState()
-        {
-            PlayOriginalT2MPButton.Visible = Config.PlayOriginalSeparateButtons && Config.T2MPDetected;
         }
 
         /// <summary>

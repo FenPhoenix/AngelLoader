@@ -267,6 +267,7 @@ namespace AngelLoader.Forms
             PlayOriginalFLP.Controls.Add(PlayOriginalT2MPButton);
             PlayOriginalFLP.Controls.Add(PlayOriginalT3Button);
             PlayOriginalFLP.Controls.Add(PlayOriginalSS2Button);
+            PlayOriginalFLP.Margin = new Padding(3, 3, 0, 3);
             PlayOriginalFLP.TabIndex = 58;
             // 
             // PlayOriginalGameButton

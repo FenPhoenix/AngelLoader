@@ -243,6 +243,6 @@ namespace AngelLoader.Forms
         void AddLanguageToList(string backingItem, string item);
         string? SetSelectedLanguage(string language);
         string? GetSelectedLanguage();
-        void SetT2MultiplayerState();
+        void SetPlayOriginalGameControlsState();
     }
 }

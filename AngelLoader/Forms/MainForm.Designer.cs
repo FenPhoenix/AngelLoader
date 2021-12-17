@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-
-namespace AngelLoader.Forms
+﻿namespace AngelLoader.Forms
 {
     /*
     // 
@@ -307,6 +305,7 @@ namespace AngelLoader.Forms
             this.PlayOriginalFLP.Controls.Add(this.PlayOriginalT3Button);
             this.PlayOriginalFLP.Controls.Add(this.PlayOriginalSS2Button);
             this.PlayOriginalFLP.Location = new System.Drawing.Point(100, 3);
+            this.PlayOriginalFLP.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.PlayOriginalFLP.Name = "PlayOriginalFLP";
             this.PlayOriginalFLP.Size = new System.Drawing.Size(310, 36);
             this.PlayOriginalFLP.TabIndex = 57;
@@ -527,8 +526,8 @@ namespace AngelLoader.Forms
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -702,7 +701,7 @@ namespace AngelLoader.Forms
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -723,7 +722,7 @@ namespace AngelLoader.Forms
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -1857,7 +1856,7 @@ namespace AngelLoader.Forms
             // 
             // ModsResetFLP
             // 
-            this.ModsResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.ModsResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ModsResetFLP.Controls.Add(this.ModsResetButton);
             this.ModsResetFLP.Controls.Add(this.ModsShowUberCheckBox);
@@ -1893,7 +1892,7 @@ namespace AngelLoader.Forms
             // 
             // ModsDisabledModsTextBox
             // 
-            this.ModsDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.ModsDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ModsDisabledModsTextBox.Location = new System.Drawing.Point(8, 256);
             this.ModsDisabledModsTextBox.Name = "ModsDisabledModsTextBox";
@@ -1915,8 +1914,8 @@ namespace AngelLoader.Forms
             // 
             // ModsCheckList
             // 
-            this.ModsCheckList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.ModsCheckList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ModsCheckList.AutoScroll = true;
             this.ModsCheckList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -2279,7 +2278,7 @@ namespace AngelLoader.Forms
         internal CustomControls.DarkCheckBox ModsShowUberCheckBox;
         internal CustomControls.DarkLabel ModsHeaderLabel;
         internal System.Windows.Forms.Panel ModsAutoScrollDummyPanel;
-        internal FlowLayoutPanel PlayOriginalFLP;
+        internal System.Windows.Forms.FlowLayoutPanel PlayOriginalFLP;
         internal CustomControls.DarkButton PlayOriginalT1Button;
         internal CustomControls.DarkButton PlayOriginalT2Button;
         internal CustomControls.DarkButton PlayOriginalT3Button;
