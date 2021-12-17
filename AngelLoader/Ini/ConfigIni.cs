@@ -45,13 +45,7 @@ namespace AngelLoader
 
         private static void Config_SettingsWindowSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            if (!valTrimmed.Contains(',')) return;
-
-            string[] values = valTrimmed.Split(CA_Comma);
-            bool widthExists = Int_TryParseInv(values[0].Trim(), out int width);
-            bool heightExists = Int_TryParseInv(values[1].Trim(), out int height);
-
-            if (widthExists && heightExists)
+            if (TryParseIntPair(valTrimmed, out int width, out int height))
             {
                 config.SettingsWindowSize = new Size(width, height);
             }
@@ -588,26 +582,14 @@ namespace AngelLoader
         }
         private static void Config_MainWindowSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            if (!valTrimmed.Contains(',')) return;
-
-            string[] values = valTrimmed.Split(CA_Comma);
-            bool widthExists = Int_TryParseInv(values[0].Trim(), out int width);
-            bool heightExists = Int_TryParseInv(values[1].Trim(), out int height);
-
-            if (widthExists && heightExists)
+            if (TryParseIntPair(valTrimmed, out int width, out int height))
             {
                 config.MainWindowSize = new Size(width, height);
             }
         }
         private static void Config_MainWindowLocation_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            if (!valTrimmed.Contains(',')) return;
-
-            string[] values = valTrimmed.Split(CA_Comma);
-            bool xExists = Int_TryParseInv(values[0].Trim(), out int x);
-            bool yExists = Int_TryParseInv(values[1].Trim(), out int y);
-
-            if (xExists && yExists)
+            if (TryParseIntPair(valTrimmed, out int x, out int y))
             {
                 config.MainWindowLocation = new Point(x, y);
             }

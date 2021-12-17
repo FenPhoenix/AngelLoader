@@ -296,6 +296,22 @@ namespace AngelLoader
 
         #region Config
 
+        private static bool TryParseIntPair(string valTrimmed, out int first, out int second)
+        {
+            if (!valTrimmed.Contains(','))
+            {
+                first = 0;
+                second = 0;
+                return false;
+            }
+
+            string[] values = valTrimmed.Split(CA_Comma);
+            bool firstExists = Int_TryParseInv(values[0].Trim(), out first);
+            bool secondExists = Int_TryParseInv(values[1].Trim(), out second);
+
+            return firstExists && secondExists;
+        }
+
         private static SelectedFM GetSelectedFM(ConfigData config, GameIndex gameIndex, bool getGlobalSelectedFM)
         {
             return getGlobalSelectedFM ? config.SelFM : config.GameTabsState.GetSelectedFM(gameIndex);
