@@ -331,25 +331,11 @@ namespace AngelLoader
             string[] iniGames = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < iniGames.Length; i++)
             {
-                iniGames[i] = iniGames[i].Trim();
-            }
-            iniGames = iniGames.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-
-            string?[] gameNames = new string?[SupportedGameCount];
-
-            // @BigO (but doesn't matter except for OCD)
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameIndex gameIndex = (GameIndex)i;
-                for (int j = 0; j < iniGames.Length; j++)
+                string iniGame = iniGames[i].Trim();
+                var field = typeof(Game).GetField(iniGame, _bFlagsEnum);
+                if (field != null)
                 {
-                    string game = iniGames[j];
-                    // Stupid micro-optimization
-                    if (game == (gameNames[i] ??= gameIndex.ToString()))
-                    {
-                        config.Filter.Games |= GameIndexToGame(gameIndex);
-                        break;
-                    }
+                    config.Filter.Games |= (Game)field.GetValue(null);
                 }
             }
         }
@@ -611,19 +597,11 @@ namespace AngelLoader
         }
         private static void Config_GameTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            bool found = false;
-            for (int i = 0; i < SupportedGameCount; i++)
+            var field = typeof(GameIndex).GetField(valTrimmed, _bFlagsEnum);
+            if (field != null)
             {
-                GameIndex gameIndex = (GameIndex)i;
-                if (valTrimmed == gameIndex.ToString())
-                {
-                    config.GameTab = gameIndex;
-                    found = true;
-                    break;
-                }
+                config.GameTab = (GameIndex)field.GetValue(null);
             }
-            // matching previous behavior
-            if (!found) config.GameTab = Thief1;
         }
 
         #region Top-right tabs
