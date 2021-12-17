@@ -392,17 +392,17 @@ namespace AngelLoader
 
         private static void Config_FilterTagsAnd_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            ReadTags(GetFilter(config, inGameIndex, ignoreGameIndex).Tags.AndTags, valRaw);
+            ReadFilterTags(valRaw, GetFilter(config, inGameIndex, ignoreGameIndex).Tags.AndTags);
         }
 
         private static void Config_FilterTagsOr_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            ReadTags(GetFilter(config, inGameIndex, ignoreGameIndex).Tags.OrTags, valRaw);
+            ReadFilterTags(valRaw, GetFilter(config, inGameIndex, ignoreGameIndex).Tags.OrTags);
         }
 
         private static void Config_FilterTagsNot_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            ReadTags(GetFilter(config, inGameIndex, ignoreGameIndex).Tags.NotTags, valRaw);
+            ReadFilterTags(valRaw, GetFilter(config, inGameIndex, ignoreGameIndex).Tags.NotTags);
         }
 
         #endregion

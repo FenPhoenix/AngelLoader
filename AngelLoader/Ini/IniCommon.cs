@@ -352,39 +352,32 @@ namespace AngelLoader
             }
         }
 
-        private static void ReadTags(FMCategoriesCollection tags, string val)
+        private static void ReadFilterTags(string tagsToAdd, FMCategoriesCollection existingTags)
         {
-            if (val.IsWhiteSpace()) return;
+            if (tagsToAdd.IsWhiteSpace()) return;
 
-            string[] tagsArray = val.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
+            // We need slightly different logic for this vs. the FM tag adder, to wit, we support tags of the
+            // form "category:" (with no tags list). This is because we allow filtering by entire category,
+            // whereas we don't allow FMs to have categories with no tags in them.
 
-            foreach (string item in tagsArray)
+            string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < tagsArray.Length; i++)
             {
-                string cat, tag;
-                int colonCount = item.CountCharsUpToAmount(':', 2);
-                if (colonCount > 1) continue;
-                if (colonCount == 1)
+                if (!FMTags.TryGetCatAndTag(tagsArray[i], out string cat, out string tag) ||
+                    cat.IsEmpty())
                 {
-                    int index = item.IndexOf(':');
-                    cat = item.Substring(0, index).Trim().ToLowerInvariant();
-                    tag = item.Substring(index + 1).Trim();
-                    if (cat.IsEmpty()) continue;
-                }
-                else
-                {
-                    cat = PresetTags.MiscCategory;
-                    tag = item.Trim();
+                    continue;
                 }
 
-                if (tags.TryGetValue(cat, out FMTagsCollection tagsList))
+                if (existingTags.TryGetValue(cat, out FMTagsCollection tagsList))
                 {
                     if (!tag.IsEmpty()) tagsList.Add(tag);
                 }
                 else
                 {
                     var newTagsList = new FMTagsCollection();
-                    tags.Add(cat, newTagsList);
                     if (!tag.IsEmpty()) newTagsList.Add(tag);
+                    existingTags.Add(cat, newTagsList);
                 }
             }
         }
@@ -451,24 +444,7 @@ namespace AngelLoader
 
         private static string TagsToString(FMCategoriesCollection tagsList)
         {
-            var intermediateTagsList = new List<string>();
-            foreach (var catAndTags in tagsList)
-            {
-                if (catAndTags.Tags.Count == 0)
-                {
-                    intermediateTagsList.Add(catAndTags.Category + ":");
-                }
-                else
-                {
-                    string catC = catAndTags.Category + ":";
-                    foreach (string tag in catAndTags.Tags)
-                    {
-                        intermediateTagsList.Add(catC + tag);
-                    }
-                }
-            }
-
-            return string.Join(",", intermediateTagsList);
+            return FMTags.TagsToString(tagsList, writeEmptyCategories: true);
         }
 
         /// <summary>

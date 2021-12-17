@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using static AL_Common.Common;
@@ -166,6 +165,27 @@ namespace AngelLoader
             return list;
         }
 
+        internal static string TagsToString(FMCategoriesCollection tagsList, bool writeEmptyCategories)
+        {
+            var intermediateTagsList = new List<string>();
+            foreach (CatAndTagsList item in tagsList)
+            {
+                if (item.Tags.Count == 0 && writeEmptyCategories)
+                {
+                    intermediateTagsList.Add(item.Category + ":");
+                }
+                else
+                {
+                    foreach (string tag in item.Tags)
+                    {
+                        intermediateTagsList.Add(item.Category + ":" + tag);
+                    }
+                }
+            }
+
+            return string.Join(",", intermediateTagsList);
+        }
+
         // Update fm.TagsString here. We keep TagsString around because when we're reading, writing, and merging
         // FMs, we don't want to spend time converting back and forth. So Tags is session-only, and only gets
         // filled out for FMs that will be displayed. TagsString is the one that gets saved and loaded, and must
@@ -173,59 +193,46 @@ namespace AngelLoader
         // so we can see and follow the logic.
         private static void UpdateFMTagsString(FanMission fm)
         {
-            var intermediateList = new List<string>();
-            foreach (var item in fm.Tags)
-            {
-                if (item.Tags.Count == 0)
-                {
-                    intermediateList.Add(item.Category);
-                }
-                else
-                {
-                    foreach (string tag in item.Tags)
-                    {
-                        intermediateList.Add(item.Category + ":" + tag);
-                    }
-                }
-            }
-
-            var sb = new StringBuilder();
-            for (int i = 0; i < intermediateList.Count; i++)
-            {
-                if (i > 0) sb.Append(',');
-                sb.Append(intermediateList[i]);
-            }
-
-            fm.TagsString = sb.ToString();
+            fm.TagsString = TagsToString(fm.Tags, writeEmptyCategories: false);
         }
 
-        // Very awkward procedure that accesses global state in the name of only doing one iteration
-        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, FMCategoriesCollection existingFMTags, bool addToGlobalList = true)
+        internal static bool TryGetCatAndTag(string item, out string cat, out string tag)
         {
-            if (tagsToAdd.IsEmpty()) return;
-
-            string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (string item in tagsArray)
+            switch (item.CountCharsUpToAmount(':', 2))
             {
-                string cat, tag;
-
-                int colonCount = item.CountCharsUpToAmount(':', 2);
-
-                // No way josé
-                if (colonCount > 1) continue;
-
-                if (colonCount == 1)
-                {
+                case > 1:
+                    cat = "";
+                    tag = "";
+                    return false;
+                case 1:
                     int index = item.IndexOf(':');
                     cat = item.Substring(0, index).Trim().ToLowerInvariant();
                     tag = item.Substring(index + 1).Trim();
-                    if (cat.IsEmpty() || tag.IsEmpty()) continue;
-                }
-                else
-                {
+                    break;
+                default:
                     cat = PresetTags.MiscCategory;
                     tag = item.Trim();
+                    break;
+            }
+
+            return true;
+        }
+
+        // Very awkward procedure that accesses global state in the name of only doing one iteration
+        internal static void AddTagsToFMAndGlobalList(
+            string tagsToAdd,
+            FMCategoriesCollection existingFMTags,
+            bool addToGlobalList = true)
+        {
+            if (tagsToAdd.IsWhiteSpace()) return;
+
+            string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < tagsArray.Length; i++)
+            {
+                if (!TryGetCatAndTag(tagsArray[i], out string cat, out string tag) ||
+                    cat.IsEmpty() || tag.IsEmpty())
+                {
+                    continue;
                 }
 
                 #region FM tags
@@ -236,9 +243,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    var newTagsList = new FMTagsCollection();
-                    existingFMTags.Add(cat, newTagsList);
-                    newTagsList.Add(tag);
+                    existingFMTags.Add(cat, new FMTagsCollection { tag });
                 }
 
                 #endregion
@@ -253,9 +258,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    var newGlobalTagsList = new FMTagsCollection();
-                    GlobalTags.Add(cat, newGlobalTagsList);
-                    newGlobalTagsList.Add(tag);
+                    GlobalTags.Add(cat, new FMTagsCollection { tag });
                 }
 
                 #endregion
