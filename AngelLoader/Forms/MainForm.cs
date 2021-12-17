@@ -4110,6 +4110,9 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
+                    // Check the backing data states rather than the controls' Visible properties, because those
+                    // will be false if they're _physically_ not shown, even if the _logical_ state is set to
+                    // "Visible = true"
                     if (!Config.GetGameExe((GameIndex)i).IsEmpty())
                     {
                         return true;
