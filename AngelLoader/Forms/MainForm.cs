@@ -4106,6 +4106,23 @@ namespace AngelLoader.Forms
 
         public void SetPlayOriginalGameControlsState()
         {
+            static bool AnyControlVisible()
+            {
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    if (!Config.GetGameExe((GameIndex)i).IsEmpty())
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            // We hide the separate-buttons flow layout panel when empty, because although its _interior_ has
+            // zero width when empty, it has outside margin spacing that we want to get rid of when we're not
+            // showing it.
+
             try
             {
                 BottomPanel.SuspendDrawing();
@@ -4115,9 +4132,11 @@ namespace AngelLoader.Forms
                     PlayOriginalGameButton.Hide();
                     PlayOriginalT1Button.Visible = !Config.GetGameExe(Thief1).IsEmpty();
                     PlayOriginalT2Button.Visible = !Config.GetGameExe(Thief2).IsEmpty();
-                    PlayOriginalT2MPButton.Visible = !Config.GetGameExe(Thief2).IsEmpty() && Config.T2MPDetected;
+                    PlayOriginalT2MPButton.Visible = Config.T2MPDetected;
                     PlayOriginalT3Button.Visible = !Config.GetGameExe(Thief3).IsEmpty();
                     PlayOriginalSS2Button.Visible = !Config.GetGameExe(SS2).IsEmpty();
+
+                    PlayOriginalFLP.Visible = AnyControlVisible();
                 }
                 else
                 {
@@ -4127,6 +4146,8 @@ namespace AngelLoader.Forms
                     PlayOriginalT2MPButton.Hide();
                     PlayOriginalT3Button.Hide();
                     PlayOriginalSS2Button.Hide();
+
+                    PlayOriginalFLP.Show();
                 }
             }
             finally

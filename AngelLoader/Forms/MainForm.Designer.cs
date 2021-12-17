@@ -285,6 +285,7 @@
             this.PlayFMButton.AutoSize = true;
             this.PlayFMButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PlayFMButton.Location = new System.Drawing.Point(3, 3);
+            this.PlayFMButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.PlayFMButton.MinimumSize = new System.Drawing.Size(91, 36);
             this.PlayFMButton.Name = "PlayFMButton";
             this.PlayFMButton.Padding = new System.Windows.Forms.Padding(28, 0, 6, 0);
@@ -305,7 +306,7 @@
             this.PlayOriginalFLP.Controls.Add(this.PlayOriginalT3Button);
             this.PlayOriginalFLP.Controls.Add(this.PlayOriginalSS2Button);
             this.PlayOriginalFLP.Location = new System.Drawing.Point(100, 3);
-            this.PlayOriginalFLP.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+            this.PlayOriginalFLP.Margin = new System.Windows.Forms.Padding(6, 3, 0, 3);
             this.PlayOriginalFLP.Name = "PlayOriginalFLP";
             this.PlayOriginalFLP.Size = new System.Drawing.Size(310, 36);
             this.PlayOriginalFLP.TabIndex = 57;

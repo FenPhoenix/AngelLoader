@@ -251,6 +251,7 @@ namespace AngelLoader.Forms
             // 
             PlayFMButton.AutoSize = true;
             PlayFMButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            PlayFMButton.Margin = new Padding(3, 3, 0, 3);
             PlayFMButton.MinimumSize = new Size(91, 36);
             PlayFMButton.Padding = new Padding(28, 0, 6, 0);
             PlayFMButton.TabIndex = 56;
@@ -267,7 +268,7 @@ namespace AngelLoader.Forms
             PlayOriginalFLP.Controls.Add(PlayOriginalT2MPButton);
             PlayOriginalFLP.Controls.Add(PlayOriginalT3Button);
             PlayOriginalFLP.Controls.Add(PlayOriginalSS2Button);
-            PlayOriginalFLP.Margin = new Padding(3, 3, 0, 3);
+            PlayOriginalFLP.Margin = new Padding(6, 3, 0, 3);
             PlayOriginalFLP.TabIndex = 58;
             // 
             // PlayOriginalGameButton
