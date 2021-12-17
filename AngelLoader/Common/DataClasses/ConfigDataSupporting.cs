@@ -222,8 +222,8 @@ namespace AngelLoader.DataClasses
 
         private void ClearLastPlayed()
         {
-            _lastPlayedFrom = null;
-            _lastPlayedTo = null;
+            LastPlayedFrom = null;
+            LastPlayedTo = null;
         }
 
         private void ClearFinished() => Finished = FinishedState.Null;
@@ -240,8 +240,10 @@ namespace AngelLoader.DataClasses
             RatingFrom = Math.Min(from, to);
             RatingTo = Math.Max(from, to);
         }
+
         private int _ratingFrom = -1;
         internal int RatingFrom { get => _ratingFrom; set => _ratingFrom = value.Clamp(-1, 10); }
+
         private int _ratingTo = 10;
         internal int RatingTo { get => _ratingTo; set => _ratingTo = value.Clamp(-1, 10); }
 
@@ -286,18 +288,8 @@ namespace AngelLoader.DataClasses
 
         #region Last played
 
-        private DateTime? _lastPlayedFrom;
-        internal DateTime? LastPlayedFrom
-        {
-            get => _lastPlayedFrom;
-            set => _lastPlayedFrom = value?.Clamp(DateTime.MinValue, DateTime.MaxValue);
-        }
-        private DateTime? _lastPlayedTo;
-        internal DateTime? LastPlayedTo
-        {
-            get => _lastPlayedTo;
-            set => _lastPlayedTo = value?.Clamp(DateTime.MinValue, DateTime.MaxValue);
-        }
+        internal DateTime? LastPlayedFrom;
+        internal DateTime? LastPlayedTo;
 
         #endregion
 
