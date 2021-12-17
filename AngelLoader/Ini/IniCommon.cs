@@ -308,60 +308,32 @@ namespace AngelLoader
 
         private static void AddColumn(ConfigData config, string valTrimmed, Column columnType)
         {
-            #region Local functions
+            // DisplayIndex,Width,Visible
+            // 0,100,True
 
-            static bool ContainsColWithId(ConfigData config, ColumnData col)
+            string value = valTrimmed.Trim(CA_Comma);
+            string[] cProps;
+            if (value.Contains(',') &&
+                (cProps = value.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)).Length > 0)
             {
-                // @BigO(ContainsColWithId)
-                foreach (ColumnData x in config.Columns) if (x.Id == col.Id) return true;
-                return false;
-            }
-
-            static ColumnData? ConvertStringToColumnData(string str)
-            {
-                str = str.Trim().Trim(CA_Comma);
-
-                // DisplayIndex,Width,Visible
-                // 0,100,True
-
-                if (!str.Contains(',')) return null;
-
-                string[] cProps = str.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
-                if (cProps.Length == 0) return null;
-
-                var ret = new ColumnData();
+                var col = new ColumnData { Id = columnType };
                 for (int i = 0; i < cProps.Length; i++)
                 {
                     switch (i)
                     {
-                        case 0:
-                            if (int.TryParse(cProps[i], out int di))
-                            {
-                                ret.DisplayIndex = di;
-                            }
+                        case 0 when int.TryParse(cProps[i], out int di):
+                            col.DisplayIndex = di;
                             break;
-                        case 1:
-                            if (int.TryParse(cProps[i], out int width))
-                            {
-                                ret.Width = width > Defaults.MinColumnWidth ? width : Defaults.MinColumnWidth;
-                            }
+                        case 1 when int.TryParse(cProps[i], out int width):
+                            col.Width = width;
                             break;
                         case 2:
-                            ret.Visible = cProps[i].EqualsTrue();
+                            col.Visible = cProps[i].EqualsTrue();
                             break;
                     }
                 }
-
-                return ret;
+                config.Columns[(int)col.Id] = col;
             }
-
-            #endregion
-
-            ColumnData? col = ConvertStringToColumnData(valTrimmed);
-            if (col == null) return;
-
-            col.Id = columnType;
-            if (!ContainsColWithId(config, col)) config.Columns.Add(col);
         }
 
         private static void ReadTags(FMCategoriesCollection tags, string val)

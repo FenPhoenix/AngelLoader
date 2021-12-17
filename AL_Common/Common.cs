@@ -221,7 +221,7 @@ namespace AL_Common
         #region Clamping
 
         /// <summary>
-        /// Clamps a number to between min and max.
+        /// Clamps a number to between <paramref name="min"/> and <paramref name="max"/>.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="min"></param>
@@ -239,6 +239,14 @@ namespace AL_Common
         public static int ClampToZero(this int value) => Math.Max(value, 0);
 
         public static float ClampZeroToOne(this float value) => value.Clamp(0, 1.0f);
+
+        /// <summary>
+        /// Clamps a number to <paramref name="min"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="min"></param>
+        /// <returns></returns>
+        public static T ClampToMin<T>(this T value, T min) where T : IComparable<T> => value.CompareTo(min) < 0 ? min : value;
 
         #endregion
 

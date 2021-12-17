@@ -1874,7 +1874,7 @@ namespace AngelLoader
             Point mainWindowLocation,
             float mainSplitterPercent,
             float topSplitterPercent,
-            List<ColumnData> columns,
+            ColumnData[] columns,
             Column sortedColumn,
             SortDirection sortDirection,
             float fmsListFontSizeInPoints,
@@ -1900,7 +1900,7 @@ namespace AngelLoader
 
             #region FMs list
 
-            Config.Columns.ClearAndAdd(columns);
+            Array.Copy(columns, Config.Columns, ColumnsCount);
 
             Config.SortedColumn = sortedColumn;
             Config.SortDirection = sortDirection;

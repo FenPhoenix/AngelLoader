@@ -186,27 +186,28 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Get and set columns
 
-        internal List<ColumnData> GetColumnData()
+        internal ColumnData[] GetColumnData()
         {
-            var columns = new List<ColumnData>(Columns.Count);
+            var columns = new ColumnData[Columns.Count];
 
-            foreach (DataGridViewColumn col in Columns)
+            for (int i = 0; i < Columns.Count; i++)
             {
-                columns.Add(new ColumnData
+                DataGridViewColumn col = Columns[i];
+                columns[i] = new ColumnData
                 {
                     Id = (Column)col.Index,
                     DisplayIndex = col.DisplayIndex,
                     Visible = col.Visible,
                     Width = col.Width
-                });
+                };
             }
 
-            return columns.OrderBy(x => x.Id).ToList();
+            return columns.OrderBy(x => x.Id).ToArray();
         }
 
-        internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, List<ColumnData> columnDataList)
+        internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, ColumnData[] columnDataList)
         {
-            if (columnDataList.Count == 0) return;
+            if (columnDataList.Length == 0) return;
 
             #region Important
 
@@ -222,7 +223,7 @@ namespace AngelLoader.Forms.CustomControls
             // Right:
             // Column[10].DisplayIndex = 0; Column[3].DisplayIndex = 1; etc.
 
-            var columnDataListSorted = columnDataList.OrderBy(x => x.DisplayIndex).ToList();
+            var columnDataListSorted = columnDataList.OrderBy(x => x.DisplayIndex).ToArray();
 
             #endregion
 

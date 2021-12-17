@@ -14,8 +14,12 @@ namespace AngelLoader.DataClasses
     internal sealed class ColumnData
     {
         internal Column Id;
+
         internal int DisplayIndex = -1;
-        internal int Width = Defaults.ColumnWidth;
+
+        private int _width = Defaults.ColumnWidth;
+        internal int Width { get => _width; set => _width = value.ClampToMin(Defaults.MinColumnWidth); }
+
         internal bool Visible = true;
     }
 
