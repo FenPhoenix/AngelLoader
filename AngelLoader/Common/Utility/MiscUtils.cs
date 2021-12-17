@@ -9,7 +9,6 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
-using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
 using static AngelLoader.NativeCommon;
 
@@ -168,8 +167,8 @@ namespace AngelLoader
             string T2MPExe()
             {
                 if (!t2MPExe.IsEmpty()) return t2MPExe;
-                if (Config.GetGameExe(Thief2).IsEmpty()) return "";
-                string t2Path = Config.GetGamePath(Thief2);
+                if (Config.GetGameExe(GameIndex.Thief2).IsEmpty()) return "";
+                string t2Path = Config.GetGamePath(GameIndex.Thief2);
                 return t2MPExe = t2Path.IsEmpty() ? "" : Path.Combine(t2Path, Paths.T2MPExe);
             }
 

@@ -39,7 +39,6 @@ using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
-using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -150,21 +149,21 @@ namespace AngelLoader.Forms
         private void T1ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            GameConfigFiles.SetScreenShotMode(Thief1, T1ScreenShotModeCheckBox.Checked);
+            GameConfigFiles.SetScreenShotMode(GameIndex.Thief1, T1ScreenShotModeCheckBox.Checked);
         }
 
         private void T2ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            GameConfigFiles.SetScreenShotMode(Thief2, T2ScreenShotModeCheckBox.Checked);
+            GameConfigFiles.SetScreenShotMode(GameIndex.Thief2, T2ScreenShotModeCheckBox.Checked);
         }
 
         public void UpdateGameScreenShotModes()
         {
             using (new DisableEvents(this))
             {
-                bool? t1 = GameConfigFiles.GetScreenShotMode(Thief1);
-                bool? t2 = GameConfigFiles.GetScreenShotMode(Thief2);
+                bool? t1 = GameConfigFiles.GetScreenShotMode(GameIndex.Thief1);
+                bool? t2 = GameConfigFiles.GetScreenShotMode(GameIndex.Thief2);
 
                 T1ScreenShotModeCheckBox.Visible = t1 != null;
                 T2ScreenShotModeCheckBox.Visible = t2 != null;
@@ -1680,7 +1679,7 @@ namespace AngelLoader.Forms
 
         private void UpdateConfig()
         {
-            GameIndex gameTab = Thief1;
+            GameIndex gameTab = GameIndex.Thief1;
             if (Config.GameOrganization == GameOrganization.ByTab)
             {
                 SaveCurrentTabSelectedFM(GamesTabControl.SelectedTab);
@@ -1913,7 +1912,7 @@ namespace AngelLoader.Forms
 
             if (GamesTabControl.SelectedTab == null)
             {
-                Config.GameTab = Thief1;
+                Config.GameTab = GameIndex.Thief1;
                 return;
             }
 
@@ -4047,7 +4046,6 @@ namespace AngelLoader.Forms
             {
                 button.BackColor = backColor;
             }
-
         }
 
         private void ShowReadmeControls(bool enabled)
@@ -4133,11 +4131,11 @@ namespace AngelLoader.Forms
                 if (Config.PlayOriginalSeparateButtons)
                 {
                     PlayOriginalGameButton.Hide();
-                    PlayOriginalT1Button.Visible = !Config.GetGameExe(Thief1).IsEmpty();
-                    PlayOriginalT2Button.Visible = !Config.GetGameExe(Thief2).IsEmpty();
+                    PlayOriginalT1Button.Visible = !Config.GetGameExe(GameIndex.Thief1).IsEmpty();
+                    PlayOriginalT2Button.Visible = !Config.GetGameExe(GameIndex.Thief2).IsEmpty();
                     PlayOriginalT2MPButton.Visible = Config.T2MPDetected;
-                    PlayOriginalT3Button.Visible = !Config.GetGameExe(Thief3).IsEmpty();
-                    PlayOriginalSS2Button.Visible = !Config.GetGameExe(SS2).IsEmpty();
+                    PlayOriginalT3Button.Visible = !Config.GetGameExe(GameIndex.Thief3).IsEmpty();
+                    PlayOriginalSS2Button.Visible = !Config.GetGameExe(GameIndex.SS2).IsEmpty();
 
                     PlayOriginalFLP.Visible = AnyControlVisible();
                 }
@@ -4165,11 +4163,11 @@ namespace AngelLoader.Forms
         {
             PlayOriginalGameLLMenu.Construct();
 
-            PlayOriginalGameLLMenu.Thief1MenuItem.Enabled = !Config.GetGameExe(Thief1).IsEmpty();
-            PlayOriginalGameLLMenu.Thief2MenuItem.Enabled = !Config.GetGameExe(Thief2).IsEmpty();
+            PlayOriginalGameLLMenu.Thief1MenuItem.Enabled = !Config.GetGameExe(GameIndex.Thief1).IsEmpty();
+            PlayOriginalGameLLMenu.Thief2MenuItem.Enabled = !Config.GetGameExe(GameIndex.Thief2).IsEmpty();
             PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
-            PlayOriginalGameLLMenu.Thief3MenuItem.Enabled = !Config.GetGameExe(Thief3).IsEmpty();
-            PlayOriginalGameLLMenu.SS2MenuItem.Enabled = !Config.GetGameExe(SS2).IsEmpty();
+            PlayOriginalGameLLMenu.Thief3MenuItem.Enabled = !Config.GetGameExe(GameIndex.Thief3).IsEmpty();
+            PlayOriginalGameLLMenu.SS2MenuItem.Enabled = !Config.GetGameExe(GameIndex.SS2).IsEmpty();
 
             ShowMenu(PlayOriginalGameLLMenu.Menu, PlayOriginalGameButton, MenuPos.TopRight);
         }
@@ -4178,10 +4176,10 @@ namespace AngelLoader.Forms
         internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
             GameIndex game =
-                sender == PlayOriginalGameLLMenu.Thief1MenuItem ? Thief1 :
-                sender == PlayOriginalGameLLMenu.Thief2MenuItem || sender == PlayOriginalGameLLMenu.Thief2MPMenuItem ? Thief2 :
-                sender == PlayOriginalGameLLMenu.Thief3MenuItem ? Thief3 :
-                SS2;
+                sender == PlayOriginalGameLLMenu.Thief1MenuItem ? GameIndex.Thief1 :
+                sender == PlayOriginalGameLLMenu.Thief2MenuItem || sender == PlayOriginalGameLLMenu.Thief2MPMenuItem ? GameIndex.Thief2 :
+                sender == PlayOriginalGameLLMenu.Thief3MenuItem ? GameIndex.Thief3 :
+                GameIndex.SS2;
 
             bool playMP = sender == PlayOriginalGameLLMenu.Thief2MPMenuItem;
 
@@ -4191,10 +4189,10 @@ namespace AngelLoader.Forms
         private void PlayOriginalGameButtons_Click(object sender, EventArgs e)
         {
             GameIndex gameIndex =
-                sender == PlayOriginalT1Button ? Thief1 :
-                sender == PlayOriginalT2Button ? Thief2 :
-                sender == PlayOriginalT3Button ? Thief3 :
-                SS2;
+                sender == PlayOriginalT1Button ? GameIndex.Thief1 :
+                sender == PlayOriginalT2Button ? GameIndex.Thief2 :
+                sender == PlayOriginalT3Button ? GameIndex.Thief3 :
+                GameIndex.SS2;
 
             FMInstallAndPlay.PlayOriginalGame(gameIndex);
         }
@@ -4206,7 +4204,7 @@ namespace AngelLoader.Forms
 
         internal void PlayT2InMultiplayerMenuItem_Click(object sender, EventArgs e)
         {
-            FMInstallAndPlay.PlayOriginalGame(Thief2, playMP: true);
+            FMInstallAndPlay.PlayOriginalGame(GameIndex.Thief2, playMP: true);
         }
 
         // @GENGAMES (Play original game controls): End

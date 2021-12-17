@@ -9,7 +9,6 @@ using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
-using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -777,10 +776,10 @@ namespace AngelLoader.Forms
         {
             // @GENGAMES (Game icons for FMs list): Begin
             // We would prefer to put these in an array, but see Images class for why we can't really do that
-            GameIcons[(int)Thief1] = Thief1_21_DGV;
-            GameIcons[(int)Thief2] = Thief2_21;
-            GameIcons[(int)Thief3] = Thief3_21;
-            GameIcons[(int)SS2] = Shock2_21;
+            GameIcons[(int)GameIndex.Thief1] = Thief1_21_DGV;
+            GameIcons[(int)GameIndex.Thief2] = Thief2_21;
+            GameIcons[(int)GameIndex.Thief3] = Thief3_21;
+            GameIcons[(int)GameIndex.SS2] = Shock2_21;
             // @GENGAMES (Game icons for FMs list): End
 
             LoadRatingImages();

@@ -10,7 +10,6 @@ using System.Text;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
-using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Misc;
 
 namespace AngelLoader
@@ -429,19 +428,19 @@ namespace AngelLoader
 
         private static void Config_GameFilterVisibleT1_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.GameFilterControlVisibilities[(int)Thief1] = valTrimmed.EqualsTrue();
+            config.GameFilterControlVisibilities[(int)GameIndex.Thief1] = valTrimmed.EqualsTrue();
         }
         private static void Config_GameFilterVisibleT2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.GameFilterControlVisibilities[(int)Thief2] = valTrimmed.EqualsTrue();
+            config.GameFilterControlVisibilities[(int)GameIndex.Thief2] = valTrimmed.EqualsTrue();
         }
         private static void Config_GameFilterVisibleT3_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.GameFilterControlVisibilities[(int)Thief3] = valTrimmed.EqualsTrue();
+            config.GameFilterControlVisibilities[(int)GameIndex.Thief3] = valTrimmed.EqualsTrue();
         }
         private static void Config_GameFilterVisibleSS2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
-            config.GameFilterControlVisibilities[(int)SS2] = valTrimmed.EqualsTrue();
+            config.GameFilterControlVisibilities[(int)GameIndex.SS2] = valTrimmed.EqualsTrue();
         }
 
         // @GENGAMES (ConfigIni backward-compatible game filter visibility setters) - End

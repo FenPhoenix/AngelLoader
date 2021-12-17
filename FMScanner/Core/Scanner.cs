@@ -3929,7 +3929,6 @@ namespace FMScanner
                 return false;
             }
 
-
             if (!checkForAmbiguity || !canBeAmbiguous)
             {
                 isAmbiguous = false;

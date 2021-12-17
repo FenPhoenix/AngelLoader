@@ -20,7 +20,6 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
-using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
@@ -167,7 +166,10 @@ namespace AngelLoader
                 if (gameExeExists[i])
                 {
                     SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
-                    if (gameIndex is Thief1 or Thief2) GameConfigFiles.FixCharacterDetailLine(Config.GetGamePath(gameIndex));
+                    if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2)
+                    {
+                        GameConfigFiles.FixCharacterDetailLine(Config.GetGamePath(gameIndex));
+                    }
                 }
             }
 
@@ -439,7 +441,7 @@ namespace AngelLoader
                 // Clear everything to defaults so we don't have any leftover state screwing things all up
                 Config.ClearAllSelectedFMs();
                 Config.ClearAllFilters();
-                Config.GameTab = Thief1;
+                Config.GameTab = GameIndex.Thief1;
                 View.ClearUIAndCurrentInternalFilter();
                 if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
             }
@@ -559,7 +561,10 @@ namespace AngelLoader
                     }
                 }
 
-                if (gameIndex == Thief2) Config.T2MPDetected = gameExeSpecified && !Config.GetT2MultiplayerExe_FromDisk().IsEmpty();
+                if (gameIndex == GameIndex.Thief2)
+                {
+                    Config.T2MPDetected = gameExeSpecified && !Config.GetT2MultiplayerExe_FromDisk().IsEmpty();
+                }
             }
             else
             {
@@ -568,31 +573,31 @@ namespace AngelLoader
                     var t3Data = GameConfigFiles.GetInfoFromSneakyOptionsIni();
                     if (t3Data.Error == Error.None)
                     {
-                        Config.SetFMInstallPath(Thief3, t3Data.FMInstallPath);
+                        Config.SetFMInstallPath(GameIndex.Thief3, t3Data.FMInstallPath);
                         Config.T3UseCentralSaves = t3Data.UseCentralSaves;
                     }
                     else
                     {
-                        Config.SetFMInstallPath(Thief3, "");
+                        Config.SetFMInstallPath(GameIndex.Thief3, "");
                     }
                     // Do this even if there was an error, because we could still have a valid selector line
                     if (storeConfigInfo)
                     {
-                        Config.GetStartupFMSelectorLines(Thief3).Clear();
+                        Config.GetStartupFMSelectorLines(GameIndex.Thief3).Clear();
                         if (!t3Data.PrevFMSelectorValue.IsEmpty())
                         {
-                            Config.GetStartupFMSelectorLines(Thief3).Add(t3Data.PrevFMSelectorValue);
+                            Config.GetStartupFMSelectorLines(GameIndex.Thief3).Add(t3Data.PrevFMSelectorValue);
                         }
-                        Config.SetStartupAlwaysStartSelector(Thief3, t3Data.AlwaysShowLoader);
+                        Config.SetStartupAlwaysStartSelector(GameIndex.Thief3, t3Data.AlwaysShowLoader);
                     }
                 }
                 else
                 {
-                    Config.SetFMInstallPath(Thief3, "");
+                    Config.SetFMInstallPath(GameIndex.Thief3, "");
                     if (storeConfigInfo)
                     {
-                        Config.GetStartupFMSelectorLines(Thief3).Clear();
-                        Config.SetStartupAlwaysStartSelector(Thief3, false);
+                        Config.GetStartupFMSelectorLines(GameIndex.Thief3).Clear();
+                        Config.SetStartupAlwaysStartSelector(GameIndex.Thief3, false);
                     }
                     Config.T3UseCentralSaves = false;
                 }
@@ -1712,7 +1717,7 @@ namespace AngelLoader
             else
             {
                 // TODO: If Sneaky.dll not found, just use the version from specified exe and don't say "Sneaky Upgrade" before it
-                if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(Thief3), Paths.SneakyDll, out exeToSearch))
+                if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(GameIndex.Thief3), Paths.SneakyDll, out exeToSearch))
                 {
                     return (Error.SneakyDllNotFound, "");
                 }
@@ -1936,7 +1941,7 @@ namespace AngelLoader
                 case GameOrganization.OneList:
                     Config.ClearAllSelectedFMs();
                     selectedFM.DeepCopyTo(Config.SelFM);
-                    Config.GameTab = Thief1;
+                    Config.GameTab = GameIndex.Thief1;
                     break;
 
                 case GameOrganization.ByTab:
