@@ -208,8 +208,10 @@ namespace AngelLoader.Forms.WinFormsNative
 
             public void Dispose()
             {
-                ControlUtils.RecreateAllToolTipHandles();
                 _disableHookedTheming = false;
+                // Do this AFTER re-enabling hooked theming,otherwise it doesn't take and we end up with
+                // dark-on-dark tooltips
+                ControlUtils.RecreateAllToolTipHandles();
                 var handles = Native.GetProcessWindowHandles();
                 foreach (IntPtr handle in handles)
                 {
