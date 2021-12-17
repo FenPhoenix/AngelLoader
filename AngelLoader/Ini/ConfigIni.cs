@@ -573,11 +573,7 @@ namespace AngelLoader
             var field = typeof(WindowState).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
-                var windowState = (WindowState)field.GetValue(null);
-                if (windowState != WindowState.Minimized)
-                {
-                    config.MainWindowState = windowState;
-                }
+                config.MainWindowState = (WindowState)field.GetValue(null);
             }
         }
         private static void Config_MainWindowSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
