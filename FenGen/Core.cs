@@ -1,6 +1,44 @@
 ﻿// FenGen - Fen's code generator for AngelLoader
 // Not perfect by any means, and still with lots of hardcoded stuff that shouldn't be, but it gets the job done.
 
+#region Snarky explanation on why we don't the official Source Generators feature
+/*
+Yes, I know they have official Source Generators now. And using them, we could avoid the awkward requirement to
+rebuild the entire solution to get this generator to do its work 100% correctly.
+But, these Source Generators don't fit our needs.
+
+To wit:
+
+-They don't let us modify the project file, which we do in here in order to get rid of unused .resx files from
+ the build. I mean that's understandable enough, the project file isn't "source code" really, and in an ideal
+ world we wouldn't have to do the stupid hack of writing .resx excludes into the project file if WinForms would
+ let us tell it to do so in a nicer way, so okay, but still we gotta do it.
+
+-They inject code directly into the compiler rather than writing out a file and THEN compiling. Now technically,
+ they do write out code to a "file" that gets generated and put into
+ [main project]/Dependencies/Analyzers/[codegen project]/[generated file].
+ This is extremely obscure and annoying to access, but the bigger problem is that currently (2021/12/18) this
+ file does not actually get updated when the code generator changes until you restart Visual Studio. The actual
+ generated code still gets updated and injected into the compiler fine, but the visible file does not update
+ until you restart Visual Studio. This is a ridiculous deal-breaker and makes debugging totally untenable.
+
+-One thing we could do is to generate the code, and write it out to an actual code file in the regular project
+ structure AND THEN ALSO inject it into the compiler in the normal way. That way, we would end up with an exact
+ copy of the generated code in a regular file that anyone could easily find and look at.
+ However, this post (https://github.com/dotnet/roslyn/issues/49249#issuecomment-809807528) claims the following:
+ "Source generators must not perform file I/O, either directly (e.g. File.Read) or indirectly (e.g. through git).
+ If your generator has any I/O, the resulting behavior is undefined."
+ It seems there may possibly be a way to tell it to put the generated file on disk alongside your project, but
+ still trying to dig up a conclusive answer and/or explanation of how to do it.
+
+Anyway, the whole thing is an exasperating - but unsurprising - mess, and as it almost always is, it's better,
+simpler and easier to just write my own generator as an executable that runs prior to the main app build. That
+way I know I control everything and can do what I want with no interference from people who think they know best.
+
+So no complaining. This is my generator. Good day.
+*/
+#endregion
+
 //#define PROFILING
 
 using System;
