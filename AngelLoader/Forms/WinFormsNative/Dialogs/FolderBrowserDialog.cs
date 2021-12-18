@@ -66,6 +66,7 @@ namespace AngelLoader.Forms.WinFormsNative.Dialogs
                 HResult result = dialog.Show(hwndOwner);
                 if (result != HResult.Ok)
                 {
+                    // ReSharper disable once ConvertIfStatementToReturnStatement
                     if (result == HResult.Canceled)
                     {
                         return false;

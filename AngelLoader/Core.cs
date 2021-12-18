@@ -1403,7 +1403,7 @@ namespace AngelLoader
         {
             try
             {
-                (string path, ReadmeType fileType) = Core.GetReadmeFileAndType(fm);
+                (string path, ReadmeType fileType) = GetReadmeFileAndType(fm);
                 #region Debug
 
                 // Tells me whether a readme got reloaded more than once, which should never be allowed to happen

@@ -136,25 +136,23 @@ namespace AngelLoader
 
             bool redDesaturated = false;
 
-            // Blue range
-            if (lch.h is >= -1.901099f and <= -1.448842f)
+            switch (lch.h)
             {
-                lch = new LCh(lch.L.Clamp(0.7f, 1.0f), lch.C, lch.h);
-            }
-            // Green range
-            else if (lch.h is >= 2.382358f and <= 2.880215f)
-            {
-                lch = new LCh(lch.L.Clamp(0.7f, 1.0f), lch.C, lch.h);
-            }
-            // Red range
-            else if (lch.h is >= -0.1025453f and <= 0.8673203f)
-            {
-                lch = new LCh(lch.L.Clamp(0.6f, 1.0f), lch.C, lch.h);
-                if (lch.L is >= 0.5f and <= 0.7f)
-                {
-                    lch = new LCh(lch.L, (lch.C - 0.025f).Clamp(0, 1.0f), lch.h);
-                    redDesaturated = true;
-                }
+                // Blue range
+                case >= -1.901099f and <= -1.448842f:
+                // Green range
+                case >= 2.382358f and <= 2.880215f:
+                    lch = new LCh(lch.L.Clamp(0.7f, 1.0f), lch.C, lch.h);
+                    break;
+                // Red range
+                case >= -0.1025453f and <= 0.8673203f:
+                    lch = new LCh(lch.L.Clamp(0.6f, 1.0f), lch.C, lch.h);
+                    if (lch.L is >= 0.5f and <= 0.7f)
+                    {
+                        lch = new LCh(lch.L, (lch.C - 0.025f).Clamp(0, 1.0f), lch.h);
+                        redDesaturated = true;
+                    }
+                    break;
             }
 
             #endregion

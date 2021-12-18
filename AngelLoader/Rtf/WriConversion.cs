@@ -50,13 +50,14 @@ namespace AngelLoader
             if (br.ReadUInt16() != 0) return fail; // Reserved 3
             if (br.ReadUInt16() != 0) return fail; // Reserved 4
             uint fcMac = br.ReadUInt32();
-            br.ReadUInt16(); // pnPara
-            br.ReadUInt16(); // pnFntb
-            br.ReadUInt16(); // pnSep
-            br.ReadUInt16(); // pnSetb
-            br.ReadUInt16(); // pnPgtb
-            br.ReadUInt16(); // pnFfntb
-            br.BaseStream.Position += 66; // szSsht (not used)
+            br.BaseStream.Position +=
+                16 + // pnPara
+                16 + // pnFntb
+                16 + // pnSep
+                16 + // pnSetb
+                16 + // pnPgtb
+                16 + // pnFfntb
+                66;  // szSsht (not used)
             if (br.ReadUInt16() == 0) return fail; // pnMac: 0 means Word file, not Write file
 
             // Headers are always 128 bytes long I think?!

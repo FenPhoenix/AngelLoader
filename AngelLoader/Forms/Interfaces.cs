@@ -229,7 +229,6 @@ namespace AngelLoader.Forms
         void UpdateGameScreenShotModes();
 #endif
 
-        bool FMSelected();
         FanMission? GetSelectedFMOrNull();
         (string Category, string Tag) SelectedCategoryAndTag();
         void DisplayFMTags(FMCategoriesCollection fmTags);

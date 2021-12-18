@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
+// ReSharper disable ArrangeTrailingCommaInMultilineLists
 
 namespace AngelLoader.Forms.WinFormsNative.Dialogs
 {

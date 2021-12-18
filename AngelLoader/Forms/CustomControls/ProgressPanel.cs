@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Forms.WinFormsNative.Taskbar;
@@ -213,6 +214,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void ProgressCancelButton_Click(object sender, EventArgs e) => Cancel();
 
+        [SuppressMessage("ReSharper", "SwitchStatementMissingSomeEnumCasesNoDefault")]
         private void Cancel()
         {
             switch (_progressTask)

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms.CustomControls
 {
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class DarkColors
     {
         #region Fen

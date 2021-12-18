@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AngelLoader.DataClasses;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal class PlayOriginalT2InMultiplayerLLMenu
+    internal sealed class PlayOriginalT2InMultiplayerLLMenu
     {
         private bool _constructed;
 

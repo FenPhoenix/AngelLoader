@@ -26,11 +26,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private DarkCheckBox[] _checkBoxes = Array.Empty<DarkCheckBox>();
 
-        private enum IsCaution
-        {
-            Yes,
-            No
-        }
+        private enum ItemType { Caution }
 
         #endregion
 
@@ -205,7 +201,7 @@ namespace AngelLoader.Forms.CustomControls
                 };
                 if (item.Caution)
                 {
-                    cb.Tag = IsCaution.Yes;
+                    cb.Tag = ItemType.Caution;
                     cb.Visible = _predicate?.Invoke() ?? true;
                     cb.SetFontStyle(FontStyle.Italic);
                     cb.BackColor = Color.MistyRose;
@@ -223,7 +219,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 _cautionLabel = new DarkLabel
                 {
-                    Tag = IsCaution.Yes,
+                    Tag = ItemType.Caution,
                     Visible = _predicate?.Invoke() ?? true,
                     AutoSize = true,
                     ForeColor = Color.Maroon,
@@ -236,7 +232,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 _cautionPanel = new DrawnPanel
                 {
-                    Tag = IsCaution.Yes,
+                    Tag = ItemType.Caution,
                     Visible = _predicate?.Invoke() ?? true,
                     Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right,
                     DrawnBackColor = Color.MistyRose,
@@ -267,7 +263,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             foreach (Control c in base.Controls)
             {
-                if (c.Tag is IsCaution.Yes)
+                if (c.Tag is ItemType.Caution)
                 {
                     c.Visible = show;
                 }

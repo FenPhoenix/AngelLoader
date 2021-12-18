@@ -110,8 +110,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             ScanAllFMsMenuItem.Click += _owner.ScanAllFMsMenuItem_Click;
             SettingsMenuItem.Click += _owner.Settings_Click;
-            ViewHelpFileMenuItem.Click += ViewHelpFileMenuItemClick;
-            AboutMenuItem.Click += AboutMenuItemClick;
+            ViewHelpFileMenuItem.Click += ViewHelpFileMenuItem_Click;
+            AboutMenuItem.Click += AboutMenuItem_Click;
             ExitMenuItem.Click += (_, _) => _owner.Close();
 
             _constructed = true;
@@ -137,18 +137,16 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal bool Visible => _constructed && _menu.Visible;
 
-        internal bool ScanAllFMsMenuItemEnabled
+        internal void SetScanAllFMsMenuItemEnabled(bool enabled)
         {
-            get => _constructed && ScanAllFMsMenuItem.Enabled;
-            set
             {
                 if (_constructed)
                 {
-                    ScanAllFMsMenuItem.Enabled = value;
+                    ScanAllFMsMenuItem.Enabled = enabled;
                 }
                 else
                 {
-                    _scanAllFMsMenuItemEnabled = value;
+                    _scanAllFMsMenuItemEnabled = enabled;
                 }
             }
         }
@@ -172,16 +170,16 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         }
 
 #if false
-        private  void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
+        private void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new GlobalFMStatsForm();
             f.ShowDialogDark();
         }
 #endif
 
-        private void ViewHelpFileMenuItemClick(object sender, EventArgs e) => Core.OpenHelpFile();
+        private void ViewHelpFileMenuItem_Click(object sender, EventArgs e) => Core.OpenHelpFile();
 
-        private void AboutMenuItemClick(object sender, EventArgs e)
+        private void AboutMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new AboutForm();
             f.ShowDialogDark();

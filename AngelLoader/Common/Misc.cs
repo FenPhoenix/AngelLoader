@@ -10,9 +10,9 @@ namespace AngelLoader
         // ReSharper disable once ConvertToConstant.Global
         internal static readonly string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
 
-        internal const int AppConfigVersion = 1;
+        //internal const int AppConfigVersion = 1;
         // Commented so that old versions of AngelLoader will ignore it
-        internal const string ConfigVersionHeader = ";@Version:";
+        //internal const string ConfigVersionHeader = ";@Version:";
 
         internal static readonly int ColumnsCount = Enum.GetValues(typeof(Column)).Length;
         internal static readonly int HideableFilterControlsCount = Enum.GetValues(typeof(HideableFilterControls)).Length;

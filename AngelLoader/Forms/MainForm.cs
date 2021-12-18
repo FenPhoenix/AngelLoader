@@ -2922,8 +2922,6 @@ namespace AngelLoader.Forms
             if (tb.Text.Length > 0) tb.SelectionStart = tb.Text.Length;
         }
 
-        public bool FMSelected() => FMsDGV.RowSelected();
-
         public FanMission? GetSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
 
         public (string Category, string Tag)
@@ -4234,7 +4232,7 @@ namespace AngelLoader.Forms
         {
             #region Menus
 
-            MainLLMenu.ScanAllFMsMenuItemEnabled = FMsViewList.Count > 0;
+            MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(false);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(false);
@@ -4412,7 +4410,7 @@ namespace AngelLoader.Forms
             #region Toggles
 
             // We should never get here when FMsList.Count == 0, but hey
-            MainLLMenu.ScanAllFMsMenuItemEnabled = FMsViewList.Count > 0;
+            MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
             FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
             // FinishedOnUnknownMenuItem text stays the same

@@ -46,12 +46,14 @@ namespace AngelLoader.DataClasses
             _list.Remove(category);
         }
 
+#if false
         public void RemoveAt(int index)
         {
             string item = _list[index];
             _list.RemoveAt(index);
             _hashSet.Remove(item);
         }
+#endif
 
         public string this[int index] => _list[index];
 
@@ -124,12 +126,14 @@ namespace AngelLoader.DataClasses
             return _dict.Remove(category);
         }
 
+#if false
         public bool RemoveAt(int index)
         {
             string item = _list[index];
             _list.RemoveAt(index);
             return _dict.Remove(item);
         }
+#endif
 
         public void Clear()
         {
@@ -178,7 +182,9 @@ namespace AngelLoader.DataClasses
             }
         }
 
+#if false
         public CatAndTagsList this[int index] => new CatAndTagsList(_list[index], _dict[_list[index]]);
+#endif
 
         public IEnumerator<CatAndTagsList> GetEnumerator()
         {

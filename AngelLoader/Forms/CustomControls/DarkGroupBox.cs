@@ -55,6 +55,7 @@ namespace AngelLoader.Forms.CustomControls
 
         // Overriding is allowed, but if we do that then it breaks and doesn't show text unless it actually has
         // an ampersand for some goddamn reason we don't know why so just do new. Blah.
+        [PublicAPI]
         public new string Text
         {
             get => _rawText;

@@ -131,27 +131,27 @@ namespace AngelLoader.Forms.CustomControls
                 return;
             }
 
-            // @DarkModeNote(DateTimePicker): Still flickers the classic border somewhat on move/resize
-            // Not the end of the world, but if we find a quick way to fix it, we should do it. Otherwise, we'll
-            // just call it done.
-            if (m.Msg == Native.WM_PAINT)
+            switch (m.Msg)
             {
-                // We have to override global colors for this, and we have no proper way to only override them
-                // for this one control specifically, so this is the best we can do. This prevents the colors
-                // from being changed for other controls (stock MessageBoxes, for one).
-                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
-                base.WndProc(ref m);
-                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
-                PaintCustom();
-            }
-            else if (m.Msg == Native.WM_NCPAINT)
-            {
-                // Attempt to reduce flicker (only reduces the chance very slightly)
-                PaintCustom();
-            }
-            else
-            {
-                base.WndProc(ref m);
+                // @DarkModeNote(DateTimePicker): Still flickers the classic border somewhat on move/resize
+                // Not the end of the world, but if we find a quick way to fix it, we should do it. Otherwise,
+                // we'll just call it done.
+                case Native.WM_PAINT:
+                    // We have to override global colors for this, and we have no proper way to only override them
+                    // for this one control specifically, so this is the best we can do. This prevents the colors
+                    // from being changed for other controls (stock MessageBoxes, for one).
+                    Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
+                    base.WndProc(ref m);
+                    Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
+                    PaintCustom();
+                    break;
+                case Native.WM_NCPAINT:
+                    // Attempt to reduce flicker (only reduces the chance very slightly)
+                    PaintCustom();
+                    break;
+                default:
+                    base.WndProc(ref m);
+                    break;
             }
         }
     }

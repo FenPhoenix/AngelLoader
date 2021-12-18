@@ -1,8 +1,14 @@
-﻿using System;
+﻿//#define DRAW_BORDER
+
+#if DRAW_BORDER
+using System;
+#endif
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+#if DRAW_BORDER
 using AngelLoader.Forms.WinFormsNative;
+#endif
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -104,6 +110,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+#if DRAW_BORDER
         private void DrawBorder(IntPtr hWnd)
         {
             // This draws a buggy extra border an item-height high at the bottom if we collapse an item.
@@ -116,7 +123,9 @@ namespace AngelLoader.Forms.CustomControls
             gc.G.DrawRectangle(DarkColors.LighterBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
             gc.G.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
         }
+#endif
 
+#if DRAW_BORDER
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
@@ -134,5 +143,6 @@ namespace AngelLoader.Forms.CustomControls
                     break;
             }
         }
+#endif
     }
 }
