@@ -4796,15 +4796,15 @@ namespace AngelLoader.Forms
 
             if (fmAltTitles.Count > 0)
             {
-                var altTitlesMenuItems = new List<ToolStripItem>(fmAltTitles.Count);
-                foreach (string altTitle in fmAltTitles)
+                var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
+                for (int i = 0; i < fmAltTitles.Count; i++)
                 {
-                    var item = new ToolStripMenuItemCustom(altTitle);
+                    var item = new ToolStripMenuItemCustom(fmAltTitles[i]);
                     item.Click += EditFMAltTitlesMenuItems_Click;
-                    altTitlesMenuItems.Add(item);
+                    altTitlesMenuItems[i] = item;
                 }
 
-                AltTitlesLLMenu.Menu.Items.AddRange(altTitlesMenuItems.ToArray());
+                AltTitlesLLMenu.Menu.Items.AddRange(altTitlesMenuItems);
 
                 EditFMAltTitlesArrowButton.Enabled = true;
             }
