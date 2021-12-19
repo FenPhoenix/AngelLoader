@@ -66,7 +66,7 @@ namespace AngelLoader
         // can even write the .wri format, but still).
         public enum ReadmeType { PlainText, RichText, HTML, GLML, Wri }
 
-        public enum ReadmeState { HTML, PlainText, OtherSupported, LoadError }
+        public enum ReadmeState { HTML, PlainText, OtherSupported, LoadError, InitialReadmeChooser }
 
         internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }
 

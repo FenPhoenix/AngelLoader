@@ -887,7 +887,7 @@ namespace AngelLoader.Forms
             Core.SetFilter();
             if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
             {
-                await DisplaySelectedFM(splashScreen: splashScreen);
+                await Core.DisplayFM(splashScreen: splashScreen);
             }
 
             FMsDGV.Focus();
@@ -2697,7 +2697,7 @@ namespace AngelLoader.Forms
             if (sender == EditFMScanForReadmesButton)
             {
                 Ini.WriteFullFMDataIni();
-                await DisplaySelectedFM(refreshCache: true);
+                await Core.DisplayFM(refreshCache: true);
             }
             else
             {
@@ -3538,7 +3538,7 @@ namespace AngelLoader.Forms
                     // Fix: when resetting release date filter the readme wouldn't load for the selected FM
                     oldSelectedFM == null)
                 {
-                    await DisplaySelectedFM();
+                    await Core.DisplayFM();
                 }
             }
         }
@@ -3702,7 +3702,7 @@ namespace AngelLoader.Forms
                 if (selFM != null && FMsDGV.RowSelected() &&
                     selFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir)
                 {
-                    await DisplaySelectedFM();
+                    await Core.DisplayFM();
                 }
             }
         }
@@ -3755,7 +3755,7 @@ namespace AngelLoader.Forms
                     _fmsListOneTimeHackRefreshDone = true;
                 }
 
-                await DisplaySelectedFM();
+                await Core.DisplayFM();
             }
         }
 
@@ -3955,7 +3955,7 @@ namespace AngelLoader.Forms
 
             if (ChooseReadmeLLPanel.ListBox.Items.Count > 1)
             {
-                ReadmeComboBoxFillAndSelect(ChooseReadmeLLPanel.ListBox.BackingItems, fm.SelectedReadme);
+                ReadmeListFillAndSelect(ChooseReadmeLLPanel.ListBox.BackingItems, fm.SelectedReadme);
                 ShowReadmeControls(CursorOverReadmeArea());
             }
             else
@@ -4402,7 +4402,7 @@ namespace AngelLoader.Forms
         }
 
         // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
-        private void UpdateAllFMUIDataExceptReadme(FanMission fm)
+        public void UpdateAllFMUIDataExceptReadme(FanMission fm)
         {
             bool fmIsT3 = fm.Game == Game.Thief3;
             bool fmIsSS2 = fm.Game == Game.SS2;
@@ -4656,106 +4656,12 @@ namespace AngelLoader.Forms
             DisplayFMTags(fm.Tags);
         }
 
-        // @VBL
-        private async Task DisplaySelectedFM(bool refreshCache = false, ISplashScreen_Safe? splashScreen = null)
+        public void ClearReadmesList()
         {
-            FanMission fm = FMsDGV.GetSelectedFM();
-
-            if (FMNeedsScan(fm))
+            using (new DisableEvents(this))
             {
-                using (new DisableKeyPresses(this))
-                {
-                    splashScreen?.Hide();
-                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
-                    {
-                        RefreshSelectedFM(rowOnly: true);
-                    }
-                }
+                ChooseReadmeComboBox.ClearFullItems();
             }
-
-            UpdateAllFMUIDataExceptReadme(fm);
-
-            var cacheData = await FMCache.GetCacheableData(fm, refreshCache, splashScreen);
-
-            #region Readme
-
-            var readmeFiles = cacheData.Readmes;
-            readmeFiles.Sort();
-
-            if (!readmeFiles.PathContainsI(fm.SelectedReadme)) fm.SelectedReadme = "";
-
-            using (new DisableEvents(this)) ChooseReadmeComboBox.ClearFullItems();
-
-            if (!fm.SelectedReadme.IsEmpty())
-            {
-                if (readmeFiles.Count > 1)
-                {
-                    ReadmeComboBoxFillAndSelect(readmeFiles, fm.SelectedReadme);
-                }
-                else
-                {
-                    ChooseReadmeComboBox.Hide();
-                }
-            }
-            else // if fm.SelectedReadme is empty
-            {
-                if (readmeFiles.Count == 0)
-                {
-                    ReadmeRichTextBox.SetText(LText.ReadmeArea.NoReadmeFound);
-
-                    ChooseReadmeLLPanel.ShowPanel(false);
-                    ChooseReadmeComboBox.Hide();
-                    ViewHTMLReadmeLLButton.Hide();
-                    SetReadmeVisible(true);
-                    ReadmeEncodingButton.Enabled = false;
-
-                    return;
-                }
-                else if (readmeFiles.Count > 1)
-                {
-                    string safeReadme = Core.DetectSafeReadme(readmeFiles, fm.Title);
-
-                    if (!safeReadme.IsEmpty())
-                    {
-                        fm.SelectedReadme = safeReadme;
-                        // @DIRSEP: Pass only fm.SelectedReadme, otherwise we might end up with un-normalized dirseps
-                        ReadmeComboBoxFillAndSelect(readmeFiles, fm.SelectedReadme);
-                    }
-                    else
-                    {
-                        SetReadmeVisible(false);
-                        ViewHTMLReadmeLLButton.Hide();
-
-                        ChooseReadmeLLPanel.Construct(MainSplitContainer.Panel2);
-
-                        ChooseReadmeLLPanel.ListBox.BeginUpdate();
-                        ChooseReadmeLLPanel.ListBox.ClearFullItems();
-                        foreach (string f in readmeFiles)
-                        {
-                            ChooseReadmeLLPanel.ListBox.AddFullItem(f, f.GetFileNameFast());
-                        }
-                        ChooseReadmeLLPanel.ListBox.EndUpdate();
-
-                        ShowReadmeControls(false);
-
-                        ChooseReadmeLLPanel.ShowPanel(true);
-
-                        return;
-                    }
-                }
-                else if (readmeFiles.Count == 1)
-                {
-                    fm.SelectedReadme = readmeFiles[0];
-
-                    ChooseReadmeComboBox.Hide();
-                }
-            }
-
-            ChooseReadmeLLPanel.ShowPanel(false);
-
-            Core.LoadReadme(fm);
-
-            #endregion
         }
 
         public void ClearLanguagesList()
@@ -4792,18 +4698,21 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void ReadmeComboBoxFillAndSelect(List<string> readmeFiles, string readme)
+        public void ReadmeListFillAndSelect(List<string> readmeFiles, string readme)
         {
             using (new DisableEvents(this))
             {
                 // @DIRSEP: To backslashes for each file, to prevent selection misses.
                 // I thought I accounted for this with backslashing the selected readme, but they all need to be.
-                foreach (string f in readmeFiles) ChooseReadmeComboBox.AddFullItem(f.ToBackSlashes(), f.GetFileNameFast());
+                foreach (string f in readmeFiles)
+                {
+                    ChooseReadmeComboBox.AddFullItem(f.ToBackSlashes(), f.GetFileNameFast());
+                }
                 ChooseReadmeComboBox.SelectBackingIndexOf(readme);
             }
         }
 
-        public void SetReadmeState(ReadmeState state)
+        public void SetReadmeState(ReadmeState state, List<string>? readmeFilesForChooser = null)
         {
             switch (state)
             {
@@ -4821,12 +4730,35 @@ namespace AngelLoader.Forms
                     ReadmeEncodingButton.Enabled = state == ReadmeState.PlainText;
                     break;
                 case ReadmeState.LoadError:
+                    ChooseReadmeLLPanel.ShowPanel(false);
+                    ChooseReadmeComboBox.Hide();
                     ViewHTMLReadmeLLButton.Hide();
                     SetReadmeVisible(true);
                     ReadmeEncodingButton.Enabled = false;
                     break;
+                case ReadmeState.InitialReadmeChooser:
+                    SetReadmeVisible(false);
+                    ViewHTMLReadmeLLButton.Hide();
+                    ChooseReadmeLLPanel.Construct(MainSplitContainer.Panel2);
+                    if (readmeFilesForChooser != null)
+                    {
+                        ChooseReadmeLLPanel.ListBox.BeginUpdate();
+                        ChooseReadmeLLPanel.ListBox.ClearFullItems();
+                        foreach (string f in readmeFilesForChooser)
+                        {
+                            ChooseReadmeLLPanel.ListBox.AddFullItem(f.ToBackSlashes(), f.GetFileNameFast());
+                        }
+                        ChooseReadmeLLPanel.ListBox.EndUpdate();
+                    }
+                    ShowReadmeControls(false);
+                    ChooseReadmeLLPanel.ShowPanel(true);
+                    break;
             }
         }
+
+        public void ShowReadmeChooser(bool visible) => ChooseReadmeComboBox.Visible = visible;
+
+        public void ShowInitialReadmeChooser(bool visible) => ChooseReadmeLLPanel.ShowPanel(visible);
 
         public Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding)
         {

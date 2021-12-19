@@ -203,7 +203,7 @@ namespace AngelLoader.Forms
 
         #region Readme
 
-        void SetReadmeState(ReadmeState state);
+        void SetReadmeState(ReadmeState state, List<string>? readmeFilesForChooser = null);
 
         Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding);
 
@@ -243,5 +243,10 @@ namespace AngelLoader.Forms
         string? SetSelectedLanguage(string language);
         string? GetSelectedLanguage();
         void SetPlayOriginalGameControlsState();
+        void ClearReadmesList();
+        void UpdateAllFMUIDataExceptReadme(FanMission fm);
+        void ReadmeListFillAndSelect(List<string> readmeFiles, string readme);
+        void ShowReadmeChooser(bool visible);
+        void ShowInitialReadmeChooser(bool visible);
     }
 }

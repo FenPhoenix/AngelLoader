@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
+using AngelLoader.Forms.CustomControls.LazyLoaded;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
@@ -1866,6 +1867,84 @@ namespace AngelLoader
 
             fm.SelectedLang = View.GetSelectedLanguage() ?? FMLanguages.DefaultLangKey;
             Ini.WriteFullFMDataIni();
+        }
+
+        internal static async Task DisplayFM(bool refreshCache = false, ISplashScreen_Safe? splashScreen = null)
+        {
+            FanMission? fm = View.GetSelectedFMOrNull();
+            AssertR(fm != null, nameof(Core) + "." + nameof(DisplayFM) + ": " + nameof(fm) + " == null");
+            if (fm == null) return;
+
+            if (FMNeedsScan(fm))
+            {
+                using (new DisableKeyPresses(View))
+                {
+                    splashScreen?.Hide();
+                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
+                    {
+                        View.RefreshSelectedFM(rowOnly: true);
+                    }
+                }
+            }
+
+            View.UpdateAllFMUIDataExceptReadme(fm);
+
+            var cacheData = await FMCache.GetCacheableData(fm, refreshCache, splashScreen);
+
+            #region Readme
+
+            var readmeFiles = cacheData.Readmes;
+            readmeFiles.Sort();
+
+            if (!readmeFiles.PathContainsI(fm.SelectedReadme)) fm.SelectedReadme = "";
+
+            View.ClearReadmesList();
+
+            if (!fm.SelectedReadme.IsEmpty())
+            {
+                if (readmeFiles.Count > 1)
+                {
+                    View.ReadmeListFillAndSelect(readmeFiles, fm.SelectedReadme);
+                }
+                else
+                {
+                    View.ShowReadmeChooser(false);
+                }
+            }
+            else // if fm.SelectedReadme is empty
+            {
+                switch (readmeFiles.Count)
+                {
+                    case 0:
+                        View.SetReadmeState(ReadmeState.LoadError);
+                        View.SetReadmeText(LText.ReadmeArea.NoReadmeFound);
+                        return;
+                    case > 1:
+                        string safeReadme = DetectSafeReadme(readmeFiles, fm.Title);
+                        if (!safeReadme.IsEmpty())
+                        {
+                            fm.SelectedReadme = safeReadme;
+                            // @DIRSEP: Pass only fm.SelectedReadme, otherwise we might end up with un-normalized dirseps
+                            View.ReadmeListFillAndSelect(readmeFiles, fm.SelectedReadme);
+                        }
+                        else
+                        {
+                            View.SetReadmeState(ReadmeState.InitialReadmeChooser, readmeFiles);
+                            return;
+                        }
+                        break;
+                    case 1:
+                        fm.SelectedReadme = readmeFiles[0];
+                        View.ShowReadmeChooser(false);
+                        break;
+                }
+            }
+
+            View.ShowInitialReadmeChooser(false);
+
+            LoadReadme(fm);
+
+            #endregion
         }
 
         #region Shutdown
