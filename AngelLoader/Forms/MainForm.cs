@@ -2946,10 +2946,7 @@ namespace AngelLoader.Forms
                 : (parent.Text, selNode.Text);
         }
 
-        private void RemoveTagButton_Click(object sender, EventArgs e)
-        {
-            FMTags.RemoveTagOperation();
-        }
+        private void RemoveTagButton_Click(object sender, EventArgs e) => FMTags.RemoveTagOperation();
 
         internal void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
         {
@@ -4565,6 +4562,7 @@ namespace AngelLoader.Forms
                 #region Tags tab
 
                 AddTagTextBox.Text = "";
+                DisplayFMTags(fm.Tags);
 
                 #endregion
 
@@ -4663,9 +4661,6 @@ namespace AngelLoader.Forms
 
                 #endregion
             }
-
-            // TODO: Is this outside the disable events block for a reason? Do we need events to fire here?
-            DisplayFMTags(fm.Tags);
         }
 
         public void ClearReadmesList()
@@ -4676,15 +4671,9 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void ClearLanguagesList()
-        {
-            EditFMLanguageComboBox.ClearFullItems();
-        }
+        public void ClearLanguagesList() => EditFMLanguageComboBox.ClearFullItems();
 
-        public void AddLanguageToList(string backingItem, string item)
-        {
-            EditFMLanguageComboBox.AddFullItem(backingItem, item);
-        }
+        public void AddLanguageToList(string backingItem, string item) => EditFMLanguageComboBox.AddFullItem(backingItem, item);
 
         public string? GetSelectedLanguage()
         {
@@ -4799,10 +4788,7 @@ namespace AngelLoader.Forms
 
         public void SetReadmeText(string text) => ReadmeRichTextBox.SetText(text);
 
-        public void SetSelectedEncoding(Encoding encoding)
-        {
-            EncodingsLLMenu.SetEncodingMenuItemChecked(encoding);
-        }
+        public void SetSelectedEncoding(Encoding encoding) => EncodingsLLMenu.SetEncodingMenuItemChecked(encoding);
 
         private void FillAltTitlesMenu(List<string> fmAltTitles)
         {
@@ -4826,22 +4812,20 @@ namespace AngelLoader.Forms
 
         public void DisplayFMTags(FMCategoriesCollection fmTags)
         {
-            var tv = TagsTreeView;
-
             try
             {
-                tv.SuspendDrawing();
-                tv.Nodes.Clear();
+                TagsTreeView.SuspendDrawing();
+                TagsTreeView.Nodes.Clear();
 
                 if (fmTags.Count == 0) return;
 
-                ControlUtils.FillTreeViewFromTags_Sorted(tv, fmTags);
+                ControlUtils.FillTreeViewFromTags_Sorted(TagsTreeView, fmTags);
 
-                tv.ExpandAll();
+                TagsTreeView.ExpandAll();
             }
             finally
             {
-                tv.ResumeDrawing();
+                TagsTreeView.ResumeDrawing();
             }
         }
 
