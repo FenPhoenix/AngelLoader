@@ -14,13 +14,13 @@ namespace AngelLoader.Forms.CustomControls
         private DarkControlState _buttonState = DarkControlState.Normal;
 
         // No TextAlign property, so leave constant
+        // NOTE: The Win10 classic-mode combobox doesn't use EndEllipses, it just cuts right off.
+        // Good or bad, that's the stock behavior, so let's match it.
         private const TextFormatFlags _textFormat =
             TextFormatFlags.Default |
             TextFormatFlags.VerticalCenter |
-            TextFormatFlags.EndEllipsis |
             TextFormatFlags.NoPrefix |
-            TextFormatFlags.SingleLine |
-            TextFormatFlags.NoClipping;
+            TextFormatFlags.SingleLine;
 
         private Bitmap? _buffer;
 
@@ -288,11 +288,11 @@ namespace AngelLoader.Forms.CustomControls
 
             var text = SelectedItem != null ? SelectedItem.ToString() : Text;
 
-            const int padding = 2;
+            const int padding = 1;
 
             var textRect = new Rectangle(rect.Left + padding,
                 rect.Top + padding,
-                rect.Width - arrowWidth - (_padding / 2) - (padding * 2),
+                rect.Width - (arrowWidth + 4) - (_padding / 2) - (padding * 2),
                 rect.Height - (padding * 2));
 
             // Explicitly set the fill color so that the antialiasing/ClearType looks right
@@ -347,7 +347,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 var text = Items[e.Index].ToString();
 
-                const int padding = 2;
+                const int padding = -1;
 
                 var textRect = new Rectangle(rect.Left + padding,
                     rect.Top + padding,
