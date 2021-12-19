@@ -4661,7 +4661,7 @@ namespace AngelLoader.Forms
         {
             FanMission fm = FMsDGV.GetSelectedFM();
 
-            if (fm.Game == Game.Null || (GameIsKnownAndSupported(fm.Game) && !fm.MarkedScanned))
+            if (FMNeedsScan(fm))
             {
                 using (new DisableKeyPresses(this))
                 {
