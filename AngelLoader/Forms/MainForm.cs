@@ -3960,7 +3960,10 @@ namespace AngelLoader.Forms
             }
             else
             {
-                using (new DisableEvents(this)) ChooseReadmeComboBox.ClearFullItems();
+                using (new DisableEvents(this))
+                {
+                    ChooseReadmeComboBox.ClearFullItems();
+                }
                 ChooseReadmeComboBox.Hide();
             }
 
@@ -4702,18 +4705,16 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                // @DIRSEP: To backslashes for each file, to prevent selection misses.
-                // I thought I accounted for this with backslashing the selected readme, but they all need to be.
-                foreach (string f in readmeFiles)
-                {
-                    ChooseReadmeComboBox.AddFullItem(f.ToBackSlashes(), f.GetFileNameFast());
-                }
+                FillReadmeList(readmeFiles);
                 ChooseReadmeComboBox.SelectBackingIndexOf(readme);
             }
         }
 
         public void SetReadmeState(ReadmeState state, List<string>? readmeFilesForChooser = null)
         {
+            AssertR(state != ReadmeState.InitialReadmeChooser || readmeFilesForChooser != null,
+                "tried to set readme state to " + nameof(ReadmeState.InitialReadmeChooser) + " but provided a null readme list");
+
             switch (state)
             {
                 case ReadmeState.HTML:
@@ -4736,23 +4737,45 @@ namespace AngelLoader.Forms
                     SetReadmeVisible(true);
                     ReadmeEncodingButton.Enabled = false;
                     break;
-                case ReadmeState.InitialReadmeChooser:
+                case ReadmeState.InitialReadmeChooser when readmeFilesForChooser != null:
                     SetReadmeVisible(false);
                     ViewHTMLReadmeLLButton.Hide();
-                    ChooseReadmeLLPanel.Construct(MainSplitContainer.Panel2);
-                    if (readmeFilesForChooser != null)
-                    {
-                        ChooseReadmeLLPanel.ListBox.BeginUpdate();
-                        ChooseReadmeLLPanel.ListBox.ClearFullItems();
-                        foreach (string f in readmeFilesForChooser)
-                        {
-                            ChooseReadmeLLPanel.ListBox.AddFullItem(f.ToBackSlashes(), f.GetFileNameFast());
-                        }
-                        ChooseReadmeLLPanel.ListBox.EndUpdate();
-                    }
+                    FillReadmeList(readmeFilesForChooser, initialChooser: true);
                     ShowReadmeControls(false);
                     ChooseReadmeLLPanel.ShowPanel(true);
                     break;
+            }
+        }
+
+        private void FillReadmeList(List<string> readmes, bool initialChooser = false)
+        {
+            try
+            {
+                IListControlWithBackingItems readmeListControl;
+                if (initialChooser)
+                {
+                    ChooseReadmeLLPanel.ListBox.BeginUpdate();
+                    ChooseReadmeLLPanel.ListBox.ClearFullItems();
+                    readmeListControl = ChooseReadmeLLPanel.ListBox;
+                }
+                else
+                {
+                    readmeListControl = ChooseReadmeComboBox;
+                }
+
+                foreach (string f in readmes)
+                {
+                    // @DIRSEP: To backslashes for each file, to prevent selection misses.
+                    // I thought I accounted for this with backslashing the selected readme, but they all need to be.
+                    readmeListControl.AddFullItem(f.ToBackSlashes(), f.GetFileNameFast());
+                }
+            }
+            finally
+            {
+                if (initialChooser)
+                {
+                    ChooseReadmeLLPanel.ListBox.EndUpdate();
+                }
             }
         }
 

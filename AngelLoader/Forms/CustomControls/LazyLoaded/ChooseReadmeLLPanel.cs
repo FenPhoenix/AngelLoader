@@ -12,7 +12,16 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private readonly MainForm _owner;
 
         private Panel Panel = null!;
-        internal DarkListBoxWithBackingItems ListBox = null!;
+
+        private DarkListBoxWithBackingItems _listBox = null!;
+        internal DarkListBoxWithBackingItems ListBox
+        {
+            get
+            {
+                Construct();
+                return _listBox;
+            }
+        }
 
         private FlowLayoutPanel OKButtonFLP = null!;
         private DarkButton OKButton = null!;
@@ -30,7 +39,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 if (!_constructed) return;
 
                 Panel.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
-                ListBox.DarkModeEnabled = _darkModeEnabled;
+                _listBox.DarkModeEnabled = _darkModeEnabled;
                 OKButtonFLP.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
                 OKButton.DarkModeEnabled = _darkModeEnabled;
             }
@@ -38,9 +47,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal ChooseReadmeLLPanel(MainForm owner) => _owner = owner;
 
-        internal void Construct(Control container)
+        private void Construct()
         {
             if (_constructed) return;
+
+            Control container = _owner.MainSplitContainer.Panel2;
 
             OKButton = new DarkButton
             {
@@ -68,7 +79,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             };
             OKButtonFLP.Controls.Add(OKButton);
 
-            ListBox = new DarkListBoxWithBackingItems
+            _listBox = new DarkListBoxWithBackingItems
             {
                 Tag = LoadType.Lazy,
                 MultiSelect = false,
@@ -86,7 +97,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 Size = new Size(324, 161),
                 BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
             };
-            Panel.Controls.Add(ListBox);
+            Panel.Controls.Add(_listBox);
             Panel.Controls.Add(OKButtonFLP);
 
             container.Controls.Add(Panel);
@@ -104,7 +115,18 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal void ShowPanel(bool value)
         {
-            if (_constructed) Panel.Visible = value;
+            if (value)
+            {
+                Construct();
+                Panel.Show();
+            }
+            else
+            {
+                if (_constructed)
+                {
+                    Panel.Hide();
+                }
+            }
         }
     }
 }

@@ -90,6 +90,15 @@ namespace AngelLoader.Forms
         void Hide();
     }
 
+    public interface IListControlWithBackingItems
+    {
+        void AddFullItem(string backingItem, string item);
+        void ClearFullItems();
+        int BackingIndexOf(string item);
+        string SelectedBackingItem();
+        void SelectBackingIndexOf(string item);
+    }
+
     internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IMessageFilter
     {
         #region Progress box
