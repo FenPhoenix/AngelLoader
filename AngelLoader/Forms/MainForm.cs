@@ -868,9 +868,13 @@ namespace AngelLoader.Forms
 #endif
         }
 
+        private ISplashScreen_Safe? _splashScreen;
+
         // This one can't be multithreaded because it depends on the FMs list
         public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen)
         {
+            _splashScreen = splashScreen;
+
             if (Visible) return;
 
             // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
@@ -880,14 +884,13 @@ namespace AngelLoader.Forms
             if (fmsViewListUnscanned?.Count > 0)
             {
                 Show();
-                splashScreen.Hide();
                 await FMScan.ScanNewFMs(fmsViewListUnscanned);
             }
 
             Core.SetFilter();
             if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
             {
-                await Core.DisplayFM(splashScreen: splashScreen);
+                await Core.DisplayFM();
             }
 
             FMsDGV.Focus();
@@ -939,6 +942,12 @@ namespace AngelLoader.Forms
             _nominalWindowState = WindowStateToFormWindowState(Config.MainWindowState);
             _nominalWindowSize = Config.MainWindowSize;
             _nominalWindowLocation = new Point(loc.X, loc.Y);
+        }
+
+        private new void Show()
+        {
+            base.Show();
+            _splashScreen?.Hide();
         }
 
         public void ShowOnly()

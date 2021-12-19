@@ -54,7 +54,7 @@ namespace AngelLoader
 
         // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
         // a button, so don't worry about it
-        internal static async Task<CacheData> GetCacheableData(FanMission fm, bool refreshCache, ISplashScreen_Safe? splashScreen = null)
+        internal static async Task<CacheData> GetCacheableData(FanMission fm, bool refreshCache)
         {
             #region Local functions
 
@@ -186,7 +186,7 @@ namespace AngelLoader
                     }
                     else
                     {
-                        await Task.Run(() => SevenZipExtract(fmArchivePath, fmCachePath, readmes, splashScreen));
+                        await Task.Run(() => SevenZipExtract(fmArchivePath, fmCachePath, readmes));
                     }
 
                     fm.NoReadmes = readmes.Count == 0;
@@ -341,7 +341,7 @@ namespace AngelLoader
             }
         }
 
-        private static void SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes, ISplashScreen_Safe? splashScreen)
+        private static void SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
         {
             var fileNamesList = new List<string>();
             try
@@ -350,7 +350,6 @@ namespace AngelLoader
                 Core.View.InvokeSync(new Action(() =>
                 {
                     Core.View.ShowOnly();
-                    splashScreen?.Hide();
                 }));
 
                 // Block the view immediately after starting another thread, because otherwise we could end

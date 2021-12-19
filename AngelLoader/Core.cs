@@ -1869,17 +1869,16 @@ namespace AngelLoader
             Ini.WriteFullFMDataIni();
         }
 
-        internal static async Task DisplayFM(bool refreshCache = false, ISplashScreen_Safe? splashScreen = null)
+        internal static async Task DisplayFM(bool refreshCache = false)
         {
             FanMission? fm = View.GetSelectedFMOrNull();
-            AssertR(fm != null, nameof(Core) + "." + nameof(DisplayFM) + ": " + nameof(fm) + " == null");
+            AssertR(fm != null, nameof(fm) + " == null");
             if (fm == null) return;
 
             if (FMNeedsScan(fm))
             {
                 using (new DisableKeyPresses(View))
                 {
-                    splashScreen?.Hide();
                     if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
                     {
                         View.RefreshSelectedFM(rowOnly: true);
@@ -1889,7 +1888,7 @@ namespace AngelLoader
 
             View.UpdateAllFMUIDataExceptReadme(fm);
 
-            var cacheData = await FMCache.GetCacheableData(fm, refreshCache, splashScreen);
+            var cacheData = await FMCache.GetCacheableData(fm, refreshCache);
 
             #region Readme
 
