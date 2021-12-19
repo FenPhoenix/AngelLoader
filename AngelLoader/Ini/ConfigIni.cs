@@ -692,6 +692,11 @@ namespace AngelLoader
             config.EnableCharacterDetailFix = valTrimmed.EqualsTrue();
         }
 
+        private static void Config_PlayOriginalSeparateButtons_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            config.PlayOriginalSeparateButtons = valTrimmed.EqualsTrue();
+        }
+
         #endregion
 
         private static readonly Dictionary<string, Action<ConfigData, string, string, GameIndex, bool>> _actionDict_Config = new()
@@ -855,6 +860,8 @@ namespace AngelLoader
             { "ReadmeZoomFactor", Config_ReadmeZoomFactor_Set },
             { "ReadmeUseFixedWidthFont", Config_ReadmeUseFixedWidthFont_Set },
             { "EnableCharacterDetailFix", Config_EnableCharacterDetailFix_Set },
+
+            { "PlayOriginalSeparateButtons", Config_PlayOriginalSeparateButtons_Set },
 
             #region Backward compatibility
 
@@ -1153,6 +1160,7 @@ namespace AngelLoader
             #endregion
 
             sb.Append("EnableCharacterDetailFix=").Append(config.EnableCharacterDetailFix).AppendLine();
+            sb.Append("PlayOriginalSeparateButtons=").Append(config.PlayOriginalSeparateButtons).AppendLine();
 
             using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
             sw.Write(sb.ToString());
