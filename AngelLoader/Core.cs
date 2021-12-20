@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
-using AngelLoader.Forms.CustomControls.LazyLoaded;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;

@@ -55,7 +55,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     Button.MinimumSize = new Size(36, 36);
                     Button.TabIndex = 63;
                     Button.UseVisualStyleBackColor = true;
-                    Button.Click += (_, _) => _owner.Close();
+                    Button.Click += _owner.Exit_Click;
 
                     _constructed = true;
 

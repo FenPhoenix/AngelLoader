@@ -111,7 +111,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             SettingsMenuItem.Click += _owner.Settings_Click;
             ViewHelpFileMenuItem.Click += _owner.ViewHelpFileMenuItem_Click;
             AboutMenuItem.Click += _owner.AboutMenuItem_Click;
-            ExitMenuItem.Click += _owner.ExitMenuItem_Click;
+            ExitMenuItem.Click += _owner.Exit_Click;
 
             _constructed = true;
 

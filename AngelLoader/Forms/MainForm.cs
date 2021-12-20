@@ -1844,7 +1844,7 @@ namespace AngelLoader.Forms
             f.ShowDialogDark();
         }
 
-        internal void ExitMenuItem_Click(object sender, EventArgs e) => Close();
+        internal void Exit_Click(object sender, EventArgs e) => Close();
 
         #endregion
 
