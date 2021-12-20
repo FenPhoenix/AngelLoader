@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -34,12 +33,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private  ToolStripMenuItemCustom GlobalFMStatsMenuItem = null!;
 #endif
         private ToolStripMenuItemCustom ImportMenuItem = null!;
-        private ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
-        private ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
+        internal ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
+        internal ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
         [UsedImplicitly]
         // It's an implicit "else" case, but let's keep it just for consistency
 #pragma warning disable IDE0052 // Remove unread private members
-        private ToolStripMenuItemCustom ImportFromNewDarkLoaderMenuItem = null!;
+        internal ToolStripMenuItemCustom ImportFromNewDarkLoaderMenuItem = null!;
 #pragma warning restore IDE0052 // Remove unread private members
 
         private ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
@@ -100,19 +99,19 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             ScanAllFMsMenuItem.Enabled = _scanAllFMsMenuItemEnabled;
 
-            GameVersionsMenuItem.Click += MainMenu_GameVersionsMenuItem_Click;
+            GameVersionsMenuItem.Click += _owner.MainMenu_GameVersionsMenuItem_Click;
 #if false
-            GlobalFMStatsMenuItem.Click += form.GlobalFMStatsMenuItem_Click;
+            GlobalFMStatsMenuItem.Click += _owner.GlobalFMStatsMenuItem_Click;
 #endif
             foreach (ToolStripMenuItemCustom item in ImportMenuItem.DropDown.Items)
             {
-                item.Click += ImportMenuItems_Click;
+                item.Click += _owner.ImportMenuItems_Click;
             }
             ScanAllFMsMenuItem.Click += _owner.ScanAllFMsMenuItem_Click;
             SettingsMenuItem.Click += _owner.Settings_Click;
-            ViewHelpFileMenuItem.Click += ViewHelpFileMenuItem_Click;
-            AboutMenuItem.Click += AboutMenuItem_Click;
-            ExitMenuItem.Click += (_, _) => _owner.Close();
+            ViewHelpFileMenuItem.Click += _owner.ViewHelpFileMenuItem_Click;
+            AboutMenuItem.Click += _owner.AboutMenuItem_Click;
+            ExitMenuItem.Click += _owner.ExitMenuItem_Click;
 
             _constructed = true;
 
@@ -139,50 +138,14 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal void SetScanAllFMsMenuItemEnabled(bool enabled)
         {
+            if (_constructed)
             {
-                if (_constructed)
-                {
-                    ScanAllFMsMenuItem.Enabled = enabled;
-                }
-                else
-                {
-                    _scanAllFMsMenuItemEnabled = enabled;
-                }
+                ScanAllFMsMenuItem.Enabled = enabled;
             }
-        }
-
-        private void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
-        {
-            using var f = new GameVersionsForm();
-            f.ShowDialogDark();
-        }
-
-        private async void ImportMenuItems_Click(object sender, EventArgs e)
-        {
-            ImportType importType =
-                sender == ImportFromDarkLoaderMenuItem
-                ? ImportType.DarkLoader
-                : sender == ImportFromFMSelMenuItem
-                ? ImportType.FMSel
-                : ImportType.NewDarkLoader;
-
-            await Import.ImportFrom(importType);
-        }
-
-#if false
-        private void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
-        {
-            using var f = new GlobalFMStatsForm();
-            f.ShowDialogDark();
-        }
-#endif
-
-        private void ViewHelpFileMenuItem_Click(object sender, EventArgs e) => Core.OpenHelpFile();
-
-        private void AboutMenuItem_Click(object sender, EventArgs e)
-        {
-            using var f = new AboutForm();
-            f.ShowDialogDark();
+            else
+            {
+                _scanAllFMsMenuItemEnabled = enabled;
+            }
         }
     }
 }

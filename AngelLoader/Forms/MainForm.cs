@@ -1068,10 +1068,11 @@ namespace AngelLoader.Forms
 
             if (e.KeyCode == Keys.Enter)
             {
-                if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported(FMsDGV.GetSelectedFM().Game))
+                FanMission fm;
+                if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported((fm = FMsDGV.GetSelectedFM()).Game))
                 {
                     e.SuppressKeyPress = true;
-                    await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), askConfIfRequired: true);
+                    await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
                 }
             }
             else if (e.KeyCode == Keys.Delete)
@@ -1794,6 +1795,8 @@ namespace AngelLoader.Forms
 
         #region Main menu
 
+        #region Menu button
+
         private void MainMenuButton_Click(object sender, EventArgs e)
         {
             ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: 0, yOffset: 2);
@@ -1801,7 +1804,49 @@ namespace AngelLoader.Forms
 
         private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
 
+        #endregion
+
+        #region Menu items
+
+        internal void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
+        {
+            using var f = new GameVersionsForm();
+            f.ShowDialogDark();
+        }
+
+        internal async void ImportMenuItems_Click(object sender, EventArgs e)
+        {
+            ImportType importType =
+                  sender == MainLLMenu.ImportFromDarkLoaderMenuItem
+                ? ImportType.DarkLoader
+                : sender == MainLLMenu.ImportFromFMSelMenuItem
+                ? ImportType.FMSel
+                : ImportType.NewDarkLoader;
+
+            await Import.ImportFrom(importType);
+        }
+
         internal async void ScanAllFMsMenuItem_Click(object sender, EventArgs e) => await Core.ScanAllFMs();
+
+#if false
+        internal void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
+        {
+            using var f = new GlobalFMStatsForm();
+            f.ShowDialogDark();
+        }
+#endif
+
+        internal void ViewHelpFileMenuItem_Click(object sender, EventArgs e) => Core.OpenHelpFile();
+
+        internal void AboutMenuItem_Click(object sender, EventArgs e)
+        {
+            using var f = new AboutForm();
+            f.ShowDialogDark();
+        }
+
+        internal void ExitMenuItem_Click(object sender, EventArgs e) => Close();
+
+        #endregion
 
         #endregion
 
@@ -2700,6 +2745,7 @@ namespace AngelLoader.Forms
 
         #region Top-right area
 
+        // @VBL (technically)
         // Hook them all up to one event handler to avoid extraneous async/awaits
         private async void FieldScanButtons_Click(object sender, EventArgs e)
         {
@@ -2921,14 +2967,17 @@ namespace AngelLoader.Forms
 
         internal void AddTagListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var lb = AddTagLLDropDown.ListBox;
-            if (lb.SelectedIndex == -1) return;
+            if (AddTagLLDropDown.ListBox.SelectedIndex == -1) return;
 
-            var tb = AddTagTextBox;
+            using (new DisableEvents(this))
+            {
+                AddTagTextBox.Text = AddTagLLDropDown.ListBox.SelectedItem;
+            }
 
-            using (new DisableEvents(this)) tb.Text = lb.SelectedItem;
-
-            if (tb.Text.Length > 0) tb.SelectionStart = tb.Text.Length;
+            if (AddTagTextBox.Text.Length > 0)
+            {
+                AddTagTextBox.SelectionStart = AddTagTextBox.Text.Length;
+            }
         }
 
         public FanMission? GetSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
@@ -3058,13 +3107,12 @@ namespace AngelLoader.Forms
 
         private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
         {
-            var lb = PatchDMLsListBox;
-            if (lb.SelectedIndex == -1) return;
+            if (PatchDMLsListBox.SelectedIndex == -1) return;
 
-            bool success = Core.RemoveDML(FMsDGV.GetSelectedFM(), lb.SelectedItem);
+            bool success = Core.RemoveDML(FMsDGV.GetSelectedFM(), PatchDMLsListBox.SelectedItem);
             if (!success) return;
 
-            lb.RemoveAndSelectNearest();
+            PatchDMLsListBox.RemoveAndSelectNearest();
         }
 
         // @VBL
