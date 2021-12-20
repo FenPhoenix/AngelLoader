@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -93,25 +92,10 @@ namespace AngelLoader
 
         #endregion
 
-        // Cheap, cheesy, effective
-        internal static string CreateBGColorRTFCode(Color color) =>
-            @"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv " +
-            ColorTranslator.ToWin32(color) +
-            "}}}}}";
-
-        private static byte[] CreateBGColorRTFCode_Bytes(Color color)
-        {
-            var first = Encoding.ASCII.GetBytes(@"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv ");
-            var colorStr = Encoding.ASCII.GetBytes(ColorTranslator.ToWin32(color).ToString());
-            var last = Encoding.ASCII.GetBytes("}}}}}");
-
-            var ret = new byte[first.Length + colorStr.Length + last.Length];
-            Array.Copy(first, 0, ret, 0, first.Length);
-            Array.Copy(colorStr, 0, ret, first.Length, colorStr.Length);
-            Array.Copy(last, 0, ret, first.Length + colorStr.Length, last.Length);
-
-            return ret;
-        }
+        internal static readonly string RTF_DarkBackgroundString = @"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv "
+                                                        + ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground)
+                                                        + "}}}}}";
+        private static readonly byte[] RTF_DarkBackgroundBytes = Encoding.ASCII.GetBytes(RTF_DarkBackgroundString);
 
         private static List<byte> CreateColorTableRTFBytes(List<Color> colorTable)
         {
@@ -237,9 +221,7 @@ namespace AngelLoader
             #endregion
 
             // Insert our dark background definition at the end, so we override any other backgrounds that may be set.
-            darkModeBytes.InsertRange(
-                darkModeBytes.LastIndexOf((byte)'}'),
-                CreateBGColorRTFCode_Bytes(DarkColors.Fen_DarkBackground));
+            darkModeBytes.InsertRange(darkModeBytes.LastIndexOf((byte)'}'), RTF_DarkBackgroundBytes);
 
             // Keep this for debug...
             //File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes.ToArray());

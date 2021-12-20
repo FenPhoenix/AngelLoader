@@ -337,7 +337,7 @@ namespace AngelLoader
             if (darkModeEnabled)
             {
                 // Background code at the end again, cause why not, it works
-                sb.Append(RtfTheming.CreateBGColorRTFCode(DarkColors.Fen_DarkBackground));
+                sb.Append(RtfTheming.RTF_DarkBackgroundString);
             }
 
             sb.Append('}');
