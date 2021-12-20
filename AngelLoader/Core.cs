@@ -2073,13 +2073,15 @@ namespace AngelLoader
 
                 if (enable)
                 {
+                    string appPathAndExe = Path.Combine(Paths.Startup, "AngelLoader.exe");
+
                     RegistryKey? alKey = null;
                     try
                     {
                         alKey = CreateSubKey(alKeyPath);
                         if (alKey == null ||
                             !SetValue(alKey, "", "AngelLoader TEST") ||
-                            !SetValue(alKey, "Icon", @"C:\AngelLoader\AngelLoader.exe"))
+                            !SetValue(alKey, "Icon", appPathAndExe))
                         {
                             return Cleanup();
                         }
@@ -2094,7 +2096,7 @@ namespace AngelLoader
                     {
                         cmdKey = CreateSubKey(alKeyPath + @"\command");
                         if (cmdKey == null ||
-                            !SetValue(cmdKey, "", "\"C:\\AngelLoader\\AngelLoader.exe\" \"%1\""))
+                            !SetValue(cmdKey, "", "\"" + appPathAndExe + "\" -add_fm_archive \"%1\""))
                         {
                             return Cleanup();
                         }
