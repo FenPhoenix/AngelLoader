@@ -14,12 +14,36 @@ namespace AngelLoader
 
         #region Startup path
 
-#if Release_Testing
-        internal const string Startup = @"C:\AngelLoader_dev_3053BA21";
-#elif Release
-        internal static readonly string Startup = System.Windows.Forms.Application.StartupPath;
+#if DEBUG || Release_Testing
+        private static string? _startup;
+        internal static string Startup
+        {
+            get
+            {
+                if (_startup.IsEmpty())
+                {
+                    try
+                    {
+                        // I like to dev with my normal copy of AngelLoader in C:\AngelLoader (because it has all
+                        // my data there), hence I want it running from there when I debug and run from the IDE.
+                        // But we don't want other people to have that hardcoded path in here, because if they
+                        // have a non-dev AL install in C:\AngelLoader then it will very probably get messed with
+                        // if they run or compile the code. So only do the hardcoded path if my personal environment
+                        // var is set. Obviously don't add this var yourself.
+                        string? val = Environment.GetEnvironmentVariable("AL_FEN_PERSONAL_DEV_3053BA21", EnvironmentVariableTarget.Machine);
+                        _startup = val?.EqualsTrue() == true ? @"C:\AngelLoader" : System.Windows.Forms.Application.StartupPath;
+                    }
+                    catch
+                    {
+                        _startup = System.Windows.Forms.Application.StartupPath;
+                    }
+                }
+
+                return _startup;
+            }
+        }
 #else
-        internal const string Startup = @"C:\AngelLoader_dev_3053BA21";
+        internal static readonly string Startup = System.Windows.Forms.Application.StartupPath;
 #endif
 
         #endregion

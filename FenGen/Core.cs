@@ -334,9 +334,30 @@ namespace FenGen
             }
             if (LangTaskActive())
             {
+                string GetTestLangPath()
+                {
+                    {
+                        try
+                        {
+                            // Only generate the test lang file into what may be a production folder on my own
+                            // machine, not everyone else's
+                            string? val = Environment.GetEnvironmentVariable(
+                                "AL_FEN_PERSONAL_DEV_3053BA21",
+                                EnvironmentVariableTarget.Machine);
+                            return val?.EqualsTrue() == true
+                                ? @"C:\AngelLoader\Data\Languages\TestLang.ini"
+                                : "";
+                        }
+                        catch
+                        {
+                            return "";
+                        }
+                    }
+                }
+
                 string englishIni = Path.Combine(ALProjectPath, @"Languages\English.ini");
                 string testLangIni = GenTaskActive(GenType.LanguageAndAlsoCreateTestIni)
-                    ? @"C:\AngelLoader_dev_3053BA21\Data\Languages\TestLang.ini"
+                    ? GetTestLangPath()
                     : "";
                 Language.Generate(
                     taggedFilesDict![GenFileTags.LocalizationSource],

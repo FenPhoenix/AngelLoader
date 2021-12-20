@@ -277,7 +277,11 @@ namespace FenGen
             #endregion
 
             WriteIniFile(langIniFile, sections);
-            if (!testLangIniFile.IsEmpty()) WriteIniFile(testLangIniFile, sections, test: true);
+            if (!testLangIniFile.IsEmpty())
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(testLangIniFile)!);
+                WriteIniFile(testLangIniFile, sections, test: true);
+            }
         }
 
         private static void WriteIniFile(string langIniFile, List<IniSection> sections, bool test = false)
