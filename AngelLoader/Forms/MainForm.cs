@@ -130,6 +130,7 @@ namespace AngelLoader.Forms
         private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
         private readonly InstallUninstallFMLLButton InstallUninstallFMLLButton;
         private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
+        private readonly Lazy_PlayOriginalControls Lazy_PlayOriginalControls;
         private readonly Lazy_ToolStripLabels Lazy_ToolStripLabels;
         private readonly MainLLMenu MainLLMenu;
         private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
@@ -493,6 +494,7 @@ namespace AngelLoader.Forms
             GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this);
             InstallUninstallFMLLButton = new InstallUninstallFMLLButton(this);
             Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this);
+            Lazy_PlayOriginalControls = new Lazy_PlayOriginalControls(this);
             Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this);
             MainLLMenu = new MainLLMenu(this);
             PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this);
@@ -1463,13 +1465,10 @@ namespace AngelLoader.Forms
 
                 PlayFMButton.Text = LText.MainButtons.PlayFM;
 
-                PlayOriginalGameButton.Text = LText.MainButtons.PlayOriginalGame;
+                Lazy_PlayOriginalControls.LocalizeSingle();
+                Lazy_PlayOriginalControls.LocalizeMulti();
                 PlayOriginalGameLLMenu.Localize();
                 PlayOriginalT2InMultiplayerLLMenu.Localize();
-                MainToolTip.SetToolTip(PlayOriginalT1Button, LText.PlayOriginalGameMenu.Thief1_PlayOriginal);
-                MainToolTip.SetToolTip(PlayOriginalT2Button, LText.PlayOriginalGameMenu.Thief2_PlayOriginal);
-                MainToolTip.SetToolTip(PlayOriginalT3Button, LText.PlayOriginalGameMenu.Thief3_PlayOriginal);
-                MainToolTip.SetToolTip(PlayOriginalSS2Button, LText.PlayOriginalGameMenu.SS2_PlayOriginal);
 
                 InstallUninstallFMLLButton.Localize(startup);
 
@@ -1554,6 +1553,7 @@ namespace AngelLoader.Forms
                     ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
                     EncodingsLLMenu.DarkModeEnabled = darkMode;
                     Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
+                    Lazy_PlayOriginalControls.DarkModeEnabled = darkMode;
                 }
 
                 FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
@@ -4185,24 +4185,12 @@ namespace AngelLoader.Forms
 
                 if (Config.PlayOriginalSeparateButtons)
                 {
-                    PlayOriginalGameButton.Hide();
-                    PlayOriginalT1Button.Visible = !Config.GetGameExe(GameIndex.Thief1).IsEmpty();
-                    PlayOriginalT2Button.Visible = !Config.GetGameExe(GameIndex.Thief2).IsEmpty();
-                    PlayOriginalT2MPButton.Visible = Config.T2MPDetected;
-                    PlayOriginalT3Button.Visible = !Config.GetGameExe(GameIndex.Thief3).IsEmpty();
-                    PlayOriginalSS2Button.Visible = !Config.GetGameExe(GameIndex.SS2).IsEmpty();
-
+                    Lazy_PlayOriginalControls.SetMode(singleButton: false);
                     PlayOriginalFLP.Visible = AnyControlVisible();
                 }
                 else
                 {
-                    PlayOriginalGameButton.Show();
-                    PlayOriginalT1Button.Hide();
-                    PlayOriginalT2Button.Hide();
-                    PlayOriginalT2MPButton.Hide();
-                    PlayOriginalT3Button.Hide();
-                    PlayOriginalSS2Button.Hide();
-
+                    Lazy_PlayOriginalControls.SetMode(singleButton: true);
                     PlayOriginalFLP.Show();
                 }
             }
@@ -4214,7 +4202,7 @@ namespace AngelLoader.Forms
 
         // Because of the T2MP menu item breaking up the middle there, we can't array/index these menu items.
         // Just gonna have to leave this part as-is.
-        private void PlayOriginalGameButton_Click(object sender, EventArgs e)
+        internal void PlayOriginalGameButton_Click(object sender, EventArgs e)
         {
             PlayOriginalGameLLMenu.Construct();
 
@@ -4224,7 +4212,7 @@ namespace AngelLoader.Forms
             PlayOriginalGameLLMenu.Thief3MenuItem.Enabled = !Config.GetGameExe(GameIndex.Thief3).IsEmpty();
             PlayOriginalGameLLMenu.SS2MenuItem.Enabled = !Config.GetGameExe(GameIndex.SS2).IsEmpty();
 
-            ShowMenu(PlayOriginalGameLLMenu.Menu, PlayOriginalGameButton, MenuPos.TopRight);
+            ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
@@ -4241,20 +4229,20 @@ namespace AngelLoader.Forms
             FMInstallAndPlay.PlayOriginalGame(game, playMP);
         }
 
-        private void PlayOriginalGameButtons_Click(object sender, EventArgs e)
+        internal void PlayOriginalGameButtons_Click(object sender, EventArgs e)
         {
             GameIndex gameIndex =
-                sender == PlayOriginalT1Button ? GameIndex.Thief1 :
-                sender == PlayOriginalT2Button ? GameIndex.Thief2 :
-                sender == PlayOriginalT3Button ? GameIndex.Thief3 :
+                sender == Lazy_PlayOriginalControls.T1Button ? GameIndex.Thief1 :
+                sender == Lazy_PlayOriginalControls.T2Button ? GameIndex.Thief2 :
+                sender == Lazy_PlayOriginalControls.T3Button ? GameIndex.Thief3 :
                 GameIndex.SS2;
 
             FMInstallAndPlay.PlayOriginalGame(gameIndex);
         }
 
-        private void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
+        internal void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu, PlayOriginalT2MPButton, MenuPos.TopRight);
+            ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu, Lazy_PlayOriginalControls.T2MPMenuButton, MenuPos.TopRight);
         }
 
         internal void PlayT2InMultiplayerMenuItem_Click(object sender, EventArgs e)
@@ -4935,14 +4923,14 @@ namespace AngelLoader.Forms
 
         private void PlayFMButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayFMButton(PlayFMButton, e);
 
-        private void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayOriginalButton(PlayOriginalGameButton, e);
+        internal void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayOriginalButton(Lazy_PlayOriginalControls.ButtonSingle, e);
 
-        private void PlayOriginalGamesButtons_Paint(object sender, PaintEventArgs e)
+        internal void PlayOriginalGamesButtons_Paint(object sender, PaintEventArgs e)
         {
             Bitmap image =
-                sender == PlayOriginalT1Button ? Images.Thief1_21 :
-                sender == PlayOriginalT2Button ? Images.Thief2_21 :
-                sender == PlayOriginalT3Button ? Images.Thief3_21 :
+                sender == Lazy_PlayOriginalControls.T1Button ? Images.Thief1_21 :
+                sender == Lazy_PlayOriginalControls.T2Button ? Images.Thief2_21 :
+                sender == Lazy_PlayOriginalControls.T3Button ? Images.Thief3_21 :
                 Images.Shock2_21;
 
             Images.PaintBitmapButton((Button)sender, e, image, x: 8);
