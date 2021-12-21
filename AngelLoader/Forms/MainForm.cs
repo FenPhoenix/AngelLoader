@@ -6,7 +6,6 @@ Things to lazy load:
 -Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
  controls on each tab page (in case the tabs are visible but not selected on startup)
 -Game buttons and game tabs (one or the other will be invisible on startup)
--PlayOriginalGame controls, one or the other won't be visible
 
 @NET5: Fonts will change and control sizes will all change too.
 -.NET 6 seems to have an option to set the font to the old MS Sans Serif 8.25pt app-wide.
