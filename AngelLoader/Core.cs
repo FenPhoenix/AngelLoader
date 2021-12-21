@@ -1950,12 +1950,23 @@ namespace AngelLoader
         /*
         TODO(AddUsToWindowsContextMenu):
         -Decide if we want options for "Play with AL", "Install with AL", "Add to list" etc.
-        -Finally deal with the hack of having the build script copy to "C:\AngelLoader[some guid]" because we're
-         going to need to write out our startup app path to the registry.
         -Test with non-admin, and on Win7.
         -Do we want to always write our stuff to the registry (either add or remove our menu items) on startup?
          Or only on settings change?
-        -Get rid of temporary strings and put real paths in here.
+        -Finalize strings (ie. "AngelLoader TEST")
+        
+        Issues:
+        -With our simple registry-based approach, we can't tell Windows to batch multiple files and send them all
+         at once. We get one copy of the app started for each file.
+         We would need a shell extension for that, and we would want to write it native for perf and lightness
+         (official word is that .NET-based shell extensions are not recommended).
+         Also shell extensions apparently get perma-loaded by Windows and therefore presumably couldn't be over-
+         written(?) So extracting new versions to AL's dir would produce an error for the shell extension file?
+         Maybe you're supposed to put it in some central location. Don't know. Not looked into it that much yet.
+
+        -We can't pass strings with our current PostMessage-based first-instance notification system.
+         We would have to move to some kind of pipe-based system, or else we just use this as an excuse to move
+         off of framework and onto .NET 6+, which has a multi-instance communication system built right in.
         */
         internal static bool AddUsToWindowsContextMenu(bool enable)
         {
