@@ -1097,6 +1097,11 @@ namespace FMScanner
                     {
                         fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
                     }
+
+                    if (fmData.Author.StartsWithI("By "))
+                    {
+                        fmData.Author = fmData.Author.Substring(2).Trim();
+                    }
                 }
             }
 

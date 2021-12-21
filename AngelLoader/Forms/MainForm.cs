@@ -199,22 +199,6 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-            var conv = new FMScanner.RtfToTextConverter();
-            using (var fs = File.OpenRead(
-                       @"C:\AngelLoader\Data\FMsCache\JackInTheBox-OfftoMilhornManor\Dokument.rtf"))
-            {
-                (bool success, string text) = conv.Convert(fs, fs.Length);
-                if (success)
-                {
-                    File.WriteAllText(@"C:\rtf_otmm_text.txt", text);
-                }
-            }
-
-            using var rtfBox = new RichTextBox();
-            using var fs2 =
-                File.OpenRead(@"C:\AngelLoader\Data\FMsCache\JackInTheBox-OfftoMilhornManor\Dokument.rtf");
-            rtfBox.LoadFile(fs2, RichTextBoxStreamType.RichText);
-            File.WriteAllText(@"C:\rtf_otmm_rtfBox_text.txt", rtfBox.Text);
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
