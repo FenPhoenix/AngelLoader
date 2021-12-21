@@ -503,6 +503,21 @@ namespace AngelLoader.Forms
 
         #region Image properties
 
+        private static readonly Dictionary<Image, Image> _disabledImages = new(25);
+        internal static Image GetDisabledImage(Image image)
+        {
+            if (_disabledImages.TryGetValue(image, out Image result))
+            {
+                return result;
+            }
+            else
+            {
+                Image disabledImage = ToolStripRenderer.CreateDisabledImage(image);
+                _disabledImages[image] = disabledImage;
+                return disabledImage;
+            }
+        }
+
         #region Games
 
         // @GENGAMES (Images): Begin
@@ -624,6 +639,7 @@ namespace AngelLoader.Forms
                 ? _charEncLetter_Dark ??= Resources.CharacterEncodingLetter_Dark
                 : _charEncLetter ??= Resources.CharacterEncodingLetter;
 
+        // Don't use the auto-disabled-colored-image dictionary for this, because we have a custom disabled image
         private static Image? _charEncLetter_Disabled;
         private static Image? _charEncLetter_Disabled_Dark;
         private static Image CharEncLetter_Disabled =>
@@ -638,14 +654,8 @@ namespace AngelLoader.Forms
         private static Image? _install_24;
         public static Image Install_24 => _install_24 ??= Resources.Install_24;
 
-        private static Image? _install_24_Disabled;
-        public static Image Install_24_Disabled => _install_24_Disabled ??= ToolStripRenderer.CreateDisabledImage(Install_24);
-
         private static Image? _uninstall_24;
         public static Image Uninstall_24 => _uninstall_24 ??= Resources.Uninstall_24;
-
-        private static Image? _uninstall_24_Disabled;
-        public static Image Uninstall_24_Disabled => _uninstall_24_Disabled ??= ToolStripRenderer.CreateDisabledImage(Uninstall_24);
 
         #endregion
 
@@ -653,9 +663,6 @@ namespace AngelLoader.Forms
 
         private static Image? _settings;
         public static Image Settings => _settings ??= Resources.Settings_24;
-
-        private static Image? _settings_Disabled;
-        public static Image Settings_Disabled => _settings_Disabled ??= ToolStripRenderer.CreateDisabledImage(Settings);
 
         #endregion
 

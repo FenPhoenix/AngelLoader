@@ -4926,13 +4926,15 @@ namespace AngelLoader.Forms
 
         internal void PlayOriginalGamesButtons_Paint(object sender, PaintEventArgs e)
         {
-            Bitmap image =
-                sender == Lazy_PlayOriginalControls.T1Button ? Images.Thief1_21 :
-                sender == Lazy_PlayOriginalControls.T2Button ? Images.Thief2_21 :
-                sender == Lazy_PlayOriginalControls.T3Button ? Images.Thief3_21 :
-                Images.Shock2_21;
+            DarkButton button = (DarkButton)sender;
 
-            Images.PaintBitmapButton((Button)sender, e, image, x: 8);
+            Image image =
+                button == Lazy_PlayOriginalControls.T1Button ? button.Enabled ? Images.Thief1_21 : Images.GetDisabledImage(Images.Thief1_21)
+              : button == Lazy_PlayOriginalControls.T2Button ? button.Enabled ? Images.Thief2_21 : Images.GetDisabledImage(Images.Thief2_21)
+              : button == Lazy_PlayOriginalControls.T3Button ? button.Enabled ? Images.Thief3_21 : Images.GetDisabledImage(Images.Thief3_21)
+              : button.Enabled ? Images.Shock2_21 : Images.GetDisabledImage(Images.Shock2_21);
+
+            Images.PaintBitmapButton(button, e, image, x: 8);
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
@@ -4945,15 +4947,15 @@ namespace AngelLoader.Forms
                 button,
                 e,
                 InstallUninstallFMLLButton.SayInstallState
-                    ? enabled ? Images.Install_24 : Images.Install_24_Disabled
-                    : enabled ? Images.Uninstall_24 : Images.Uninstall_24_Disabled,
+                    ? enabled ? Images.Install_24 : Images.GetDisabledImage(Images.Install_24)
+                    : enabled ? Images.Uninstall_24 : Images.GetDisabledImage(Images.Uninstall_24),
                 10);
         }
 
         private void SettingsButton_Paint(object sender, PaintEventArgs e) => Images.PaintBitmapButton(
             SettingsButton,
             e,
-            SettingsButton.Enabled ? Images.Settings : Images.Settings_Disabled,
+            SettingsButton.Enabled ? Images.Settings : Images.GetDisabledImage(Images.Settings),
             x: 10);
 
         private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlusButton(PatchAddDMLButton, e);
