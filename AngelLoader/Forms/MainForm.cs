@@ -199,12 +199,10 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-            Core.AddUsToWindowsContextMenu(true);
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
         {
-            Core.AddUsToWindowsContextMenu(false);
         }
 
 #endif
