@@ -856,7 +856,7 @@ namespace FMScanner
 
             void SetOrAddTitle(string value)
             {
-                value = CleanupTitle(value);
+                value = CleanupTitle(value).Trim();
 
                 if (value.IsEmpty()) return;
 
@@ -1063,6 +1063,10 @@ namespace FMScanner
                 {
                     fmData.Title = finalTitle;
                     fmData.AlternateTitles = altTitles.ToArray();
+                    for (int i = 0; i < fmData.AlternateTitles.Length; i++)
+                    {
+                        fmData.AlternateTitles[i] = fmData.AlternateTitles[i].Trim();
+                    }
                 }
                 else
                 {
@@ -1086,7 +1090,7 @@ namespace FMScanner
 
                     string author = GetValueFromReadme(SpecialLogic.Author, titles, SA_AuthorDetect);
 
-                    fmData.Author = CleanupValue(author);
+                    fmData.Author = CleanupValue(author).Trim();
                 }
 
                 if (!fmData.Author.IsEmpty())
@@ -2964,7 +2968,7 @@ namespace FMScanner
                 }
             }
 
-            return CleanupValue(value);
+            return CleanupValue(value).Trim();
         }
 
         #endregion

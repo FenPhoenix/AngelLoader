@@ -202,9 +202,15 @@ namespace FMScanner
     {
         public string ArchiveName = "";
         public ulong? Size;
-        public string Title = "";
+
+        private string _title = "";
+        public string Title { get => _title; set => _title = value.Trim(); }
+
         public string[] AlternateTitles = Array.Empty<string>();
-        public string Author = "";
+
+        private string _author = "";
+        public string Author { get => _author; set => _author = value.Trim(); }
+
         public FMType Type;
 #if FMScanner_FullCode
         public string[] IncludedMissions = Array.Empty<string>();
