@@ -159,31 +159,12 @@ namespace AngelLoader
         internal static string GetLocalizedGameName(Game game)
         {
             AssertR(game != Game.Null && game != Game.Unsupported, nameof(game) + " was out of range: " + game);
-
-            return game switch
-            {
-                Game.Thief1 => LText.Global.Thief1,
-                Game.Thief2 => LText.Global.Thief2,
-                Game.Thief3 => LText.Global.Thief3,
-                _ => LText.Global.SystemShock2
-            };
+            return Ini.GetGameTitle(GameToGameIndex(game));
         }
 
-        internal static string GetShortLocalizedGameName(GameIndex gameIndex) => gameIndex switch
-        {
-            GameIndex.Thief1 => LText.Global.Thief1_Short,
-            GameIndex.Thief2 => LText.Global.Thief2_Short,
-            GameIndex.Thief3 => LText.Global.Thief3_Short,
-            _ => LText.Global.SystemShock2_Short
-        };
+        internal static string GetShortLocalizedGameName(GameIndex gameIndex) => Ini.GetGameTitleShort(gameIndex);
 
-        internal static string GetLocalizedGameNameColon(GameIndex gameIndex) => gameIndex switch
-        {
-            GameIndex.Thief1 => LText.Global.Thief1_Colon,
-            GameIndex.Thief2 => LText.Global.Thief2_Colon,
-            GameIndex.Thief3 => LText.Global.Thief3_Colon,
-            _ => LText.Global.SystemShock2_Colon
-        };
+        internal static string GetLocalizedGameNameColon(GameIndex gameIndex) => Ini.GetGameTitleColon(gameIndex);
 
         #endregion
 
