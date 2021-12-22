@@ -109,6 +109,7 @@ namespace FenGen
         internal const string FenGenLocalizationDestClass = nameof(FenGenLocalizationDestClass);
         internal const string FenGenComment = nameof(FenGenComment);
         internal const string FenGenBlankLine = nameof(FenGenBlankLine);
+        internal const string FenGenGameSet = nameof(FenGenGameSet);
 
         #endregion
 

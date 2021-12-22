@@ -513,6 +513,7 @@ namespace AngelLoader.DataClasses
             internal readonly string UnableToLoadReadme = "Unable to load this readme.";
         }
 
+        // @GENGAMES(LText/PlayOriginalGameMenu_Class) - Begin
         internal sealed class PlayOriginalGameMenu_Class
         {
             internal readonly string Thief2_Multiplayer = "Thief 2 (multiplayer)";
@@ -522,6 +523,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Thief3_PlayOriginal = "Play Thief 3 with no FM";
             internal readonly string SystemShock2_PlayOriginal = "Play System Shock 2 with no FM";
         }
+        // @GENGAMES(LText/PlayOriginalGameMenu_Class) - End
 
         internal sealed class MainButtons_Class
         {

@@ -17,6 +17,9 @@ namespace FenGen
                 return ret;
             }
 
+            internal void IncrementIndent() => _nextIndent++;
+            internal void DecrementIndent() => _nextIndent--;
+
             internal IndentingWriter(int startingIndent = 0)
             {
                 _nextIndent = startingIndent;
