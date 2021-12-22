@@ -134,7 +134,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _owner.MainToolTip.SetToolTip(GetGameButton(GameIndex.Thief1), LText.PlayOriginalGameMenu.Thief1_PlayOriginal);
             _owner.MainToolTip.SetToolTip(GetGameButton(GameIndex.Thief2), LText.PlayOriginalGameMenu.Thief2_PlayOriginal);
             _owner.MainToolTip.SetToolTip(GetGameButton(GameIndex.Thief3), LText.PlayOriginalGameMenu.Thief3_PlayOriginal);
-            _owner.MainToolTip.SetToolTip(GetGameButton(GameIndex.SS2), LText.PlayOriginalGameMenu.SS2_PlayOriginal);
+            _owner.MainToolTip.SetToolTip(GetGameButton(GameIndex.SS2), LText.PlayOriginalGameMenu.SystemShock2_PlayOriginal);
         }
 
         internal void SetMode(bool singleButton)

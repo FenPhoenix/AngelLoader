@@ -187,6 +187,16 @@ namespace AngelLoader
             internal FenGenBlankLineAttribute(int numberOfBlankLines) { }
         }
 
+        /// <summary>
+        /// Notates that the next n entries are per-game fields, where n is the number of entries in the <see cref="GameSupport.GameIndex"/> enum.
+        /// </summary>
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal sealed class FenGenGameSetAttribute : Attribute
+        {
+            internal FenGenGameSetAttribute(string getterName) { }
+        }
+
         #endregion
 
         #region Game support
