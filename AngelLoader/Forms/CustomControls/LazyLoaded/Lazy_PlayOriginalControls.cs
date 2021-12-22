@@ -16,13 +16,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private readonly MainForm _owner;
 
         internal DarkButton ButtonSingle = null!;
-        internal DarkButton T1Button = null!;
-        internal DarkButton T2Button = null!;
+
+        private readonly DarkButton[] GameButtons = new DarkButton[SupportedGameCount];
+
+        private DarkButton GetGameButton(GameIndex gameIndex) => GameButtons[(int)gameIndex];
+
         internal DarkArrowButton T2MPMenuButton = null!;
-        internal DarkButton T3Button = null!;
-        // Implicit in an if-else chain
-        // ReSharper disable once MemberCanBePrivate.Global
-        internal DarkButton SS2Button = null!;
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -40,11 +39,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 }
                 if (_constructedMulti)
                 {
-                    T1Button.DarkModeEnabled = value;
-                    T2Button.DarkModeEnabled = value;
+                    for (int i = 0; i < SupportedGameCount; i++)
+                    {
+                        GameButtons[i].DarkModeEnabled = value;
+                    }
                     T2MPMenuButton.DarkModeEnabled = value;
-                    T3Button.DarkModeEnabled = value;
-                    SS2Button.DarkModeEnabled = value;
                 }
             }
         }
@@ -79,29 +78,29 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructedMulti) return;
 
-            T1Button = new DarkButton { Tag = LoadType.Lazy };
-            T2Button = new DarkButton { Tag = LoadType.Lazy };
+            for (int i = 0, tabIndex = 1; i < SupportedGameCount; i++)
+            {
+                var gameButton = new DarkButton
+                {
+                    GameIndex = (GameIndex)i,
+                    Margin = new Padding(0),
+                    MinimumSize = new Size(36, 36),
+                    Size = new Size(36, 36),
+                    TabIndex = tabIndex,
+                    Tag = LoadType.Lazy,
+                    UseVisualStyleBackColor = true,
+                    DarkModeEnabled = _darkModeEnabled
+                };
+
+                GameButtons[i] = gameButton;
+
+                gameButton.PaintCustom += _owner.PlayOriginalGamesButtons_Paint;
+                gameButton.Click += _owner.PlayOriginalGameButtons_Click;
+
+                tabIndex += i == (int)GameIndex.Thief2 ? 2 : 1;
+            }
+
             T2MPMenuButton = new DarkArrowButton { Tag = LoadType.Lazy };
-            T3Button = new DarkButton { Tag = LoadType.Lazy };
-            SS2Button = new DarkButton { Tag = LoadType.Lazy };
-
-            T1Button.Margin = new Padding(0);
-            T1Button.MinimumSize = new Size(36, 36);
-            T1Button.Size = new Size(36, 36);
-            T1Button.TabIndex = 1;
-            T1Button.UseVisualStyleBackColor = true;
-            T1Button.DarkModeEnabled = _darkModeEnabled;
-            T1Button.PaintCustom += _owner.PlayOriginalGamesButtons_Paint;
-            T1Button.Click += _owner.PlayOriginalGameButtons_Click;
-
-            T2Button.Margin = new Padding(0);
-            T2Button.MinimumSize = new Size(36, 36);
-            T2Button.Size = new Size(36, 36);
-            T2Button.TabIndex = 2;
-            T2Button.UseVisualStyleBackColor = true;
-            T2Button.DarkModeEnabled = _darkModeEnabled;
-            T2Button.PaintCustom += _owner.PlayOriginalGamesButtons_Paint;
-            T2Button.Click += _owner.PlayOriginalGameButtons_Click;
 
             T2MPMenuButton.ArrowDirection = Direction.Up;
             T2MPMenuButton.Margin = new Padding(0);
@@ -111,29 +110,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             T2MPMenuButton.DarkModeEnabled = _darkModeEnabled;
             T2MPMenuButton.Click += _owner.PlayOriginalT2MPButton_Click;
 
-            T3Button.Margin = new Padding(0);
-            T3Button.MinimumSize = new Size(36, 36);
-            T3Button.Size = new Size(36, 36);
-            T3Button.TabIndex = 4;
-            T3Button.UseVisualStyleBackColor = true;
-            T3Button.DarkModeEnabled = _darkModeEnabled;
-            T3Button.PaintCustom += _owner.PlayOriginalGamesButtons_Paint;
-            T3Button.Click += _owner.PlayOriginalGameButtons_Click;
-
-            SS2Button.Margin = new Padding(0);
-            SS2Button.MinimumSize = new Size(36, 36);
-            SS2Button.Size = new Size(36, 36);
-            SS2Button.TabIndex = 5;
-            SS2Button.UseVisualStyleBackColor = true;
-            SS2Button.DarkModeEnabled = _darkModeEnabled;
-            SS2Button.PaintCustom += _owner.PlayOriginalGamesButtons_Paint;
-            SS2Button.Click += _owner.PlayOriginalGameButtons_Click;
-
-            _owner.PlayOriginalFLP.Controls.Add(T1Button);
-            _owner.PlayOriginalFLP.Controls.Add(T2Button);
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                _owner.PlayOriginalFLP.Controls.Add(GameButtons[i]);
+            }
             _owner.PlayOriginalFLP.Controls.Add(T2MPMenuButton);
-            _owner.PlayOriginalFLP.Controls.Add(T3Button);
-            _owner.PlayOriginalFLP.Controls.Add(SS2Button);
+            _owner.PlayOriginalFLP.Controls.SetChildIndex(T2MPMenuButton, 2);
 
             _constructedMulti = true;
 
@@ -149,10 +131,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         internal void LocalizeMulti()
         {
             if (!_constructedMulti) return;
-            _owner.MainToolTip.SetToolTip(T1Button, LText.PlayOriginalGameMenu.Thief1_PlayOriginal);
-            _owner.MainToolTip.SetToolTip(T2Button, LText.PlayOriginalGameMenu.Thief2_PlayOriginal);
-            _owner.MainToolTip.SetToolTip(T3Button, LText.PlayOriginalGameMenu.Thief3_PlayOriginal);
-            _owner.MainToolTip.SetToolTip(SS2Button, LText.PlayOriginalGameMenu.SS2_PlayOriginal);
+            _owner.MainToolTip.SetToolTip(GetGameButton(GameIndex.Thief1), LText.PlayOriginalGameMenu.Thief1_PlayOriginal);
+            _owner.MainToolTip.SetToolTip(GetGameButton(GameIndex.Thief2), LText.PlayOriginalGameMenu.Thief2_PlayOriginal);
+            _owner.MainToolTip.SetToolTip(GetGameButton(GameIndex.Thief3), LText.PlayOriginalGameMenu.Thief3_PlayOriginal);
+            _owner.MainToolTip.SetToolTip(GetGameButton(GameIndex.SS2), LText.PlayOriginalGameMenu.SS2_PlayOriginal);
         }
 
         internal void SetMode(bool singleButton)
@@ -164,21 +146,22 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                 if (_constructedMulti)
                 {
-                    T1Button.Hide();
-                    T2Button.Hide();
+                    for (int i = 0; i < SupportedGameCount; i++)
+                    {
+                        GameButtons[i].Hide();
+                    }
                     T2MPMenuButton.Hide();
-                    T3Button.Hide();
-                    SS2Button.Hide();
                 }
             }
             else
             {
                 ConstructMulti();
-                T1Button.Visible = !Config.GetGameExe(GameIndex.Thief1).IsEmpty();
-                T2Button.Visible = !Config.GetGameExe(GameIndex.Thief2).IsEmpty();
+
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameButtons[i].Visible = !Config.GetGameExe((GameIndex)i).IsEmpty();
+                }
                 T2MPMenuButton.Visible = Config.T2MPDetected;
-                T3Button.Visible = !Config.GetGameExe(GameIndex.Thief3).IsEmpty();
-                SS2Button.Visible = !Config.GetGameExe(GameIndex.SS2).IsEmpty();
 
                 if (_constructedSingle)
                 {

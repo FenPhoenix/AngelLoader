@@ -4230,13 +4230,7 @@ namespace AngelLoader.Forms
 
         internal void PlayOriginalGameButtons_Click(object sender, EventArgs e)
         {
-            GameIndex gameIndex =
-                sender == Lazy_PlayOriginalControls.T1Button ? GameIndex.Thief1 :
-                sender == Lazy_PlayOriginalControls.T2Button ? GameIndex.Thief2 :
-                sender == Lazy_PlayOriginalControls.T3Button ? GameIndex.Thief3 :
-                GameIndex.SS2;
-
-            FMInstallAndPlay.PlayOriginalGame(gameIndex);
+            FMInstallAndPlay.PlayOriginalGame(((DarkButton)sender).GameIndex);
         }
 
         internal void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
@@ -4929,9 +4923,9 @@ namespace AngelLoader.Forms
             DarkButton button = (DarkButton)sender;
 
             Image image =
-                button == Lazy_PlayOriginalControls.T1Button ? button.Enabled ? Images.Thief1_21 : Images.GetDisabledImage(Images.Thief1_21)
-              : button == Lazy_PlayOriginalControls.T2Button ? button.Enabled ? Images.Thief2_21 : Images.GetDisabledImage(Images.Thief2_21)
-              : button == Lazy_PlayOriginalControls.T3Button ? button.Enabled ? Images.Thief3_21 : Images.GetDisabledImage(Images.Thief3_21)
+                button.GameIndex == GameIndex.Thief1 ? button.Enabled ? Images.Thief1_21 : Images.GetDisabledImage(Images.Thief1_21)
+              : button.GameIndex == GameIndex.Thief2 ? button.Enabled ? Images.Thief2_21 : Images.GetDisabledImage(Images.Thief2_21)
+              : button.GameIndex == GameIndex.Thief3 ? button.Enabled ? Images.Thief3_21 : Images.GetDisabledImage(Images.Thief3_21)
               : button.Enabled ? Images.Shock2_21 : Images.GetDisabledImage(Images.Shock2_21);
 
             Images.PaintBitmapButton(button, e, image, x: 8);
