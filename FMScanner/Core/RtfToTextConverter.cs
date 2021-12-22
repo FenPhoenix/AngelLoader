@@ -44,10 +44,6 @@ Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
 
-BUG: We don't handle tables at all. This results in a misdetected author in Off to Milhorn Manor (2021).
-Quick hack: make "\cell" be " " and "\row" be "\r\n\" ?
-Have to regen the perfect-hash dictionary.
-
 Perf: (RtfToTextConverter)
 -We could collapse fonts if we find multiple ones with the same name and charset but different numbers.
  I mean it looks like we're plenty fast and memory-reasonable without doing so, but you know, idea.
