@@ -12,7 +12,7 @@ namespace AL_Common
     {
 #if SYMBOL_PERFECT_HASH_GEN
         // This is the original "canonical" list, generate the perfect has from this
-        private readonly List<Symbol> _symbolList = new()
+        private readonly Symbol[] _symbolList =
         {
         #region Code pages / charsets / fonts
 
@@ -154,20 +154,27 @@ namespace AL_Common
         /*
         Generate with gperf 3.1. It's GNU so they're way into their source code with no binaries ever, but binaries
         can be found on Chocolatey at least. Slightly inconvenient but oh well.
+
+        Make sure the above array has only ONE LINE per entry! The generator code in here just does a cheap line-
+        by-line search through the array code, no parsing or anything. So it won't work if an entry is broken up
+        over multiple lines.
         
         Instructions for semi-automatic perfect hash function regeneration (for updates requiring such):
 
-        1. Call ConvertSymbolListToGPerfFormat() with a filename, call it gperfFormatFile. It writes out the list
-           above in gperf format to the file.
+        1. Call ConvertSymbolListToGPerfFormat() with a filename, call it gperfFormatFile. It writes out the
+           symbols array above in gperf format to the file. Actually it only really writes out the keys and then
+           a dummy value, because rather than trying to pass the "(int)DestinationType.Whatever" stuff round-trip
+           through gperf, we're just going to use the keys to index back into the above table at a later stage to
+           get back all the table information (each line as a raw string).
         2. Run command: gperf --output-file=[gperf output file] -t [gperfFormatFile]
            gperf will write out the generated code to [gperf output file].
-        3. Copy the contents of the list above (just the body, not the header or closing brace) to a file. Call
-           it symbolsCodeFile.
+        3. Copy the contents of the symbols array above (just the body, not the header or closing brace) to a file.
+           Call it symbolsCodeFile.
         4. Copy the contents of the gperf-generated table (again, just the body) to another file. Call it inputFile.
         5. Call ConvertGPerfOutputToCSharp() with inputFile, symbolsCodeFile, and another outputFile to write the
-           final generated C# list-body code to.
-        6. Copy the C# list-body code out of the file and paste it into the symbols list in the main file,
-           overwriting the previous list body.
+           final generated C# symbols array-body code to.
+        6. Copy the C# symbols array-body code out of the file and paste it into the symbols array in the main
+           file, overwriting the previous symbols array body.
         7. Port over the rest of the relevant code in the gperf output file (if necessary - some of it may not
            have changed).
         8. Done!
@@ -179,7 +186,7 @@ namespace AL_Common
             outLines.Add("struct Symbol { char *name; int dummy; };");
             outLines.Add("%%");
 
-            for (int i = 0; i < _symbolList.Count; i++)
+            for (int i = 0; i < _symbolList.Length; i++)
             {
                 var symbol = _symbolList[i];
                 outLines.Add(symbol.Keyword + ", 0");
@@ -189,8 +196,20 @@ namespace AL_Common
 
         public void ConvertGPerfOutputToCSharp(string inputFile, string outputFile, string symbolsCodeFile)
         {
+            int FindIndexOfValueInSymbolList(string value)
+            {
+                for (int i = 0; i < _symbolList.Length; i++)
+                {
+                    if (_symbolList[i].Keyword == value)
+                    {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+
             string[] codeLines = File.ReadAllLines(symbolsCodeFile);
-            string[] symbolLines = new string[_symbolList.Count];
+            string[] symbolLines = new string[_symbolList.Length];
             for (int i = 0, j = 0; i < codeLines.Length; i++)
             {
                 string codeLine = codeLines[i].Trim();
@@ -199,19 +218,6 @@ namespace AL_Common
                     symbolLines[j] = codeLine;
                     j++;
                 }
-            }
-
-            int FindIndexOfValueInSymbolList(string value)
-            {
-                for (int i = 0; i < _symbolList.Count; i++)
-                {
-                    Symbol symbol = _symbolList[i];
-                    if (symbol.Keyword == value)
-                    {
-                        return i;
-                    }
-                }
-                return -1;
             }
 
             string[] lines = File.ReadAllLines(inputFile);
