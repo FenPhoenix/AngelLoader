@@ -35,7 +35,6 @@ namespace AngelLoader
 
         public enum Zoom { In, Out, Reset }
 
-        // Public for param accessibility reasons or whatever
         public enum ProgressTask
         {
             FMScan,
@@ -49,7 +48,6 @@ namespace AngelLoader
             DeleteFMArchive
         }
 
-        // Has to be public so it can be passed to a public constructor on a form
         public enum ImportType
         {
             DarkLoader,
@@ -127,6 +125,7 @@ namespace AngelLoader
             internal const float TopSplitterPercent = 0.741f;
             internal const float MainSplitterPercent = 0.4425f;
 
+            // @NET5: Remember to change this to match the new font
             internal const float FMsListFontSizeInPoints = 8.25f;
 
             #endregion

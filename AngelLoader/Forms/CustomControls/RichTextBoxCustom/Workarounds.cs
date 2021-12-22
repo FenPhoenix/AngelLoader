@@ -97,11 +97,10 @@ namespace AngelLoader.Forms.CustomControls
         Any subsequent de-focus and refocus will not cause this behavior, even if the cursor is still at the top,
         until the next content load.
         This auto-scroll-to-the-top behavior doesn't align with any events, and in fact seems to just happen in
-        the background as soon as it feels like it and as soon as the executing thread has a slot for it. Hence
-        this filthy hack where we keep track of the scroll position, and then on focus we do a brief async delay
-        to let the auto-scroll happen, then set correct scroll position again.
-        I don't like the "wait-and-hope" method at all, but hey... worst case, the auto-top-scroll will still
-        happen, and that's no worse than it was before.
+        the background as soon as it feels like it. Hence this filthy hack where we keep track of the scroll
+        position, and then on focus we do a brief async delay to let the auto-scroll happen, then set correct
+        scroll position again. I don't like the "wait-and-hope" method at all, but hey... worst case, the auto-
+        top-scroll will still happen, and that's no worse than it was before.
         */
         private void Workarounds_OnVScroll()
         {

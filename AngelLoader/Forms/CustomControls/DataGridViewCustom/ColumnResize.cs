@@ -78,7 +78,8 @@ namespace AngelLoader.Forms.CustomControls
             if (e.Button == MouseButtons.Left && Cursor.Current == Cursors.SizeWE)
             {
                 var ht = HitTest(e.X, e.Y);
-                var typeInternal = ht.GetType().GetField("typeInternal", BindingFlags.NonPublic | BindingFlags.Instance);
+                // @NET5: This will be "_typeInternal" on post-Framework versions
+                var typeInternal = typeof(HitTestInfo).GetField("typeInternal", BindingFlags.NonPublic | BindingFlags.Instance);
 
                 #region Reflection error check and fallback
 

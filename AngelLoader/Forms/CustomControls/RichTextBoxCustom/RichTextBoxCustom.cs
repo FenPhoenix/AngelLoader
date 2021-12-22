@@ -134,7 +134,7 @@ namespace AngelLoader.Forms.CustomControls
             this.ResumeDrawing();
         }
 
-        private Encoding? ChangeEncodingInternal(MemoryStream ms, Encoding? encoding, bool suspendResume = true)
+        private Encoding? ChangeEncodingInternal(Encoding? encoding, bool suspendResume = true)
         {
             Encoding? retEncoding = null;
 
@@ -147,6 +147,8 @@ namespace AngelLoader.Forms.CustomControls
                     SaveZoom();
                     this.SuspendDrawing();
                 }
+
+                using var ms = new MemoryStream(_currentReadmeBytes);
 
                 if (encoding == null)
                 {
@@ -321,9 +323,7 @@ namespace AngelLoader.Forms.CustomControls
                             _currentReadmeSupportsEncodingChange = true;
                             _currentReadmeBytes = bytes ?? File.ReadAllBytes(path);
 
-                            using var ms = new MemoryStream(_currentReadmeBytes);
-
-                            retEncoding = ChangeEncodingInternal(ms, encoding, suspendResume: false);
+                            retEncoding = ChangeEncodingInternal(encoding, suspendResume: false);
                         }
 
                         if (fileType == ReadmeType.Wri)
@@ -366,8 +366,7 @@ namespace AngelLoader.Forms.CustomControls
         internal Encoding? ChangeEncoding(Encoding? encoding)
         {
             if (!_currentReadmeSupportsEncodingChange) return null;
-            using var ms = new MemoryStream(_currentReadmeBytes);
-            return ChangeEncodingInternal(ms, encoding);
+            return ChangeEncodingInternal(encoding);
         }
 
         #endregion

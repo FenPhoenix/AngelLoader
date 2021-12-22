@@ -97,9 +97,6 @@ namespace AngelLoader
             // need to translate to negative values and multiple \uN words or anything like that. It just works
             // as it is now.
 
-            // Dunno if this would be considered a "good parser", but it's 20x faster than the regex method and
-            // just as accurate, so hey.
-
             // If we have a \qc (center-align) tag active, we can't put a \ql (left-align) tag on the same line
             // after it or it will retroactively apply itself to the line. Because obviously you can't just have
             // a simple pair of tags that just do what they're told.
@@ -111,6 +108,8 @@ namespace AngelLoader
                 if (c == '[')
                 {
                     // In the unlikely event that a tag is escaped, just ignore it
+                    // Note: this isn't foolproof, you COULD technically have like \\\\[tag] and be escaped, but...
+                    // Really, if a file does that then it brings it on itself. Meh.
                     if ((i == 1 && glml[i - 1] == '\\') ||
                         (i > 1 && glml[i - 1] == '\\' && glml[i - 2] != '\\'))
                     {
