@@ -134,7 +134,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                _owner.MainToolTip.SetToolTip(GameButtons[i],Ini.GetGamePlayOriginalText((GameIndex)i));
+                _owner.MainToolTip.SetToolTip(GameButtons[i], Ini.GetGamePlayOriginalText((GameIndex)i));
             }
         }
 
