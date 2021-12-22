@@ -203,7 +203,7 @@ namespace AL_Common
         protected sealed class SymbolDict
         {
             /* ANSI-C code produced by gperf version 3.1 */
-            /* Command-line: gperf -t 'C:\\keywords.txt'  */
+            /* Command-line: gperf --output-file='C:\\gperf_out.txt' -t 'C:\\gperf_in.txt'  */
             /* Computed positions: -k'1-3,$' */
 
             // Then ported to C# semi-manually. Woe.

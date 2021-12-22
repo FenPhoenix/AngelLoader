@@ -14,7 +14,7 @@ namespace AL_Common
         // This is the original "canonical" list, generate the perfect has from this
         private readonly List<Symbol> _symbolList = new()
         {
-            #region Code pages / charsets / fonts
+        #region Code pages / charsets / fonts
 
             // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
             // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
@@ -36,28 +36,28 @@ namespace AL_Common
             new Symbol("fcharset", -1, false, KeywordType.Special, (int)SpecialType.Charset),
             new Symbol("cpg", -1, false, KeywordType.Special, (int)SpecialType.CodePage),
 
-            #endregion
+        #endregion
 
-            #region Encoded characters
+        #region Encoded characters
 
             new Symbol("uc", 1, false, KeywordType.Property, (int)Property.UnicodeCharSkipCount),
             new Symbol("'", 0, false, KeywordType.Special, (int)SpecialType.HexEncodedChar),
             new Symbol("u", 0, false, KeywordType.Special, (int)SpecialType.UnicodeChar),
 
-            #endregion
+        #endregion
 
             // \v to make all plain text hidden (not output to the conversion stream)}, \v0 to make it shown again
             new Symbol("v", 1, false, KeywordType.Property, (int)Property.Hidden),
 
-            #region Newlines
+        #region Newlines
 
             new Symbol("par", 0, false, KeywordType.Character, '\n'),
             new Symbol("line", 0, false, KeywordType.Character, '\n'),
             new Symbol("softline", 0, false, KeywordType.Character, '\n'),
 
-            #endregion
+        #endregion
 
-            #region Control words that map to a single character
+        #region Control words that map to a single character
 
             new Symbol("tab", 0, false, KeywordType.Character, '\t'),
 
@@ -77,7 +77,7 @@ namespace AL_Common
             new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
             new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
 
-            #endregion
+        #endregion
 
             new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.Bin),
             new Symbol("*", 0, false, KeywordType.Special, (int)SpecialType.SkipDest),
@@ -90,15 +90,15 @@ namespace AL_Common
             new Symbol("ds", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
             new Symbol("ts", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
 
-            #region Custom skip-destinations
+        #region Custom skip-destinations
 
             // Ignore list item bullets and numeric prefixes etc. We don't need them.
             new Symbol("listtext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
             new Symbol("pntext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
 
-            #endregion
+        #endregion
 
-            #region Required skip-destinations
+        #region Required skip-destinations
 
             new Symbol("author", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
             new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
@@ -133,25 +133,47 @@ namespace AL_Common
             new Symbol("txe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
             new Symbol("xe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
 
-            #region Quick table hacks
+        #region Quick table hacks
 
             new Symbol("row", 0, false, KeywordType.Character, '\n'),
             new Symbol("cell", 0, false, KeywordType.Character, ' '),
 
-            #endregion
+        #endregion
 
-            #endregion
+        #endregion
 
-            #region RTF reserved character escapes
+        #region RTF reserved character escapes
 
             new Symbol("{", 0, false, KeywordType.Character, '{'),
             new Symbol("}", 0, false, KeywordType.Character, '}'),
             new Symbol("\\", 0, false, KeywordType.Character, '\\'),
 
-            #endregion
+        #endregion
         };
 
-        public void ConvertSymbolListToGPerfFormat(string outputFile)
+        /*
+        Generate with gperf 3.1. It's GNU so they're way into their source code with no binaries ever, but binaries
+        can be found on Chocolatey at least. Slightly inconvenient but oh well.
+        
+        Instructions for semi-automatic perfect hash function regeneration (for updates requiring such):
+
+        1. Call ConvertSymbolListToGPerfFormat() with a filename, call it gperfFormatFile. It writes out the list
+           above in gperf format to the file.
+        2. Run command: gperf --output-file=[gperf output file] -t [gperfFormatFile]
+           gperf will write out the generated code to [gperf output file].
+        3. Copy the contents of the list above (just the body, not the header or closing brace) to a file. Call
+           it symbolsCodeFile.
+        4. Copy the contents of the gperf-generated table (again, just the body) to another file. Call it inputFile.
+        5. Call ConvertGPerfOutputToCSharp() with inputFile, symbolsCodeFile, and another outputFile to write the
+           final generated C# list-body code to.
+        6. Copy the C# list-body code out of the file and paste it into the symbols list in the main file,
+           overwriting the previous list body.
+        7. Port over the rest of the relevant code in the gperf output file (if necessary - some of it may not
+           have changed).
+        8. Done!
+        */
+
+        public void ConvertSymbolListToGPerfFormat(string gperfFormatFile)
         {
             var outLines = new List<string>();
             outLines.Add("struct Symbol { char *name; int dummy; };");
@@ -162,7 +184,7 @@ namespace AL_Common
                 var symbol = _symbolList[i];
                 outLines.Add(symbol.Keyword + ", 0");
             }
-            File.WriteAllLines(outputFile, outLines);
+            File.WriteAllLines(gperfFormatFile, outLines);
         }
 
         public void ConvertGPerfOutputToCSharp(string inputFile, string outputFile, string symbolsCodeFile)
