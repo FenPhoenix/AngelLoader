@@ -50,13 +50,14 @@ namespace AngelLoader
             if (br.ReadUInt16() != 0) return fail; // Reserved 3
             if (br.ReadUInt16() != 0) return fail; // Reserved 4
             uint fcMac = br.ReadUInt32();
+            // 2 bytes = 1 word = 16 bits (equivalent to ReadUInt16())
             br.BaseStream.Position +=
-                16 + // pnPara
-                16 + // pnFntb
-                16 + // pnSep
-                16 + // pnSetb
-                16 + // pnPgtb
-                16 + // pnFfntb
+                2 + // pnPara
+                2 + // pnFntb
+                2 + // pnSep
+                2 + // pnSetb
+                2 + // pnPgtb
+                2 + // pnFfntb
                 66;  // szSsht (not used)
             if (br.ReadUInt16() == 0) return fail; // pnMac: 0 means Word file, not Write file
 
