@@ -14,7 +14,7 @@ namespace AL_Common
         // This is the original "canonical" list, generate the perfect has from this
         private readonly Symbol[] _symbolList =
         {
-        #region Code pages / charsets / fonts
+            #region Code pages / charsets / fonts
 
             // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
             // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
@@ -36,28 +36,28 @@ namespace AL_Common
             new Symbol("fcharset", -1, false, KeywordType.Special, (int)SpecialType.Charset),
             new Symbol("cpg", -1, false, KeywordType.Special, (int)SpecialType.CodePage),
 
-        #endregion
+            #endregion
 
-        #region Encoded characters
+            #region Encoded characters
 
             new Symbol("uc", 1, false, KeywordType.Property, (int)Property.UnicodeCharSkipCount),
             new Symbol("'", 0, false, KeywordType.Special, (int)SpecialType.HexEncodedChar),
             new Symbol("u", 0, false, KeywordType.Special, (int)SpecialType.UnicodeChar),
 
-        #endregion
+            #endregion
 
             // \v to make all plain text hidden (not output to the conversion stream)}, \v0 to make it shown again
             new Symbol("v", 1, false, KeywordType.Property, (int)Property.Hidden),
 
-        #region Newlines
+            #region Newlines
 
             new Symbol("par", 0, false, KeywordType.Character, '\n'),
             new Symbol("line", 0, false, KeywordType.Character, '\n'),
             new Symbol("softline", 0, false, KeywordType.Character, '\n'),
 
-        #endregion
+            #endregion
 
-        #region Control words that map to a single character
+            #region Control words that map to a single character
 
             new Symbol("tab", 0, false, KeywordType.Character, '\t'),
 
@@ -77,7 +77,7 @@ namespace AL_Common
             new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
             new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
 
-        #endregion
+            #endregion
 
             new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.Bin),
             new Symbol("*", 0, false, KeywordType.Special, (int)SpecialType.SkipDest),
@@ -90,15 +90,15 @@ namespace AL_Common
             new Symbol("ds", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
             new Symbol("ts", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
 
-        #region Custom skip-destinations
+            #region Custom skip-destinations
 
             // Ignore list item bullets and numeric prefixes etc. We don't need them.
             new Symbol("listtext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
             new Symbol("pntext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
 
-        #endregion
+            #endregion
 
-        #region Required skip-destinations
+            #region Required skip-destinations
 
             new Symbol("author", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
             new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
@@ -133,22 +133,22 @@ namespace AL_Common
             new Symbol("txe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
             new Symbol("xe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
 
-        #region Quick table hacks
+            #region Quick table hacks
 
             new Symbol("row", 0, false, KeywordType.Character, '\n'),
             new Symbol("cell", 0, false, KeywordType.Character, ' '),
 
-        #endregion
+            #endregion
 
-        #endregion
+            #endregion
 
-        #region RTF reserved character escapes
+            #region RTF reserved character escapes
 
             new Symbol("{", 0, false, KeywordType.Character, '{'),
             new Symbol("}", 0, false, KeywordType.Character, '}'),
             new Symbol("\\", 0, false, KeywordType.Character, '\\'),
 
-        #endregion
+            #endregion
         };
 
         /*
