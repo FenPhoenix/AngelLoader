@@ -59,9 +59,11 @@ namespace FenGen
     internal sealed class GameSourceEnum
     {
         internal string Name = "";
+        internal string GameIndexName = "";
         internal readonly List<string> GameEnumNames = new List<string>();
         internal readonly List<string> GameIndexEnumNames = new List<string>();
         internal readonly List<string> GamePrefixes = new List<string>();
+        internal readonly List<string> SteamIds = new List<string>();
     }
 
     // TODO: Nasty global state that's really just here to avoid over-parameterization.
@@ -118,7 +120,8 @@ namespace FenGen
 
         internal const string FenGenGameEnum = nameof(FenGenGameEnum);
         internal const string FenGenNotAGameType = nameof(FenGenNotAGameType);
-        internal const string FenGenGamePrefixes = nameof(FenGenGamePrefixes);
+        internal const string FenGenGameSupportMainGenDestClass = nameof(FenGenGameSupportMainGenDestClass);
+        internal const string FenGenGame = nameof(FenGenGame);
 
         #endregion
 
@@ -187,6 +190,7 @@ namespace FenGen
             internal const string FMDataDest = "FenGen_FMDataDest";
             internal const string DesignerSource = "FenGen_DesignerSource";
             internal const string BuildDate = "FenGen_BuildDateDest";
+            internal const string GameSupportMainGenDest = "FenGen_GameSupportMainGenDest";
             internal const string LocalizedGameNameGetterDest = "FenGen_LocalizedGameNameGetterDest";
         }
 
@@ -251,7 +255,8 @@ namespace FenGen
                 GetArg(GenType.ExcludeResx),
                 //GetArg(GenType.RestoreResx),
                 GetArg(GenType.AddBuildDate),
-                GetArg(GenType.GenSlimDesignerFiles)
+                GetArg(GenType.GenSlimDesignerFiles),
+                GetArg(GenType.GameSupport)
             };
 #else
             string[] args = Environment.GetCommandLineArgs();
@@ -294,10 +299,17 @@ namespace FenGen
 
             bool forceFindRequiredFiles = false;
             var genFileTags = new List<string>();
-            bool gameSupportRequested = GenTaskActive(GenType.FMData) || GenTaskActive(GenType.GameSupport);
+            bool gameSupportRequested = GenTaskActive(GenType.FMData) ||
+                                        GenTaskActive(GenType.GameSupport) ||
+                                        LangTaskActive();
             if (gameSupportRequested)
             {
                 genFileTags.Add(GenFileTags.GameSupport);
+            }
+            // Only do this if we're writing out game support stuff proper, not just reading them
+            if (GenTaskActive(GenType.GameSupport))
+            {
+                genFileTags.Add(GenFileTags.GameSupportMainGenDest);
             }
             if (GenTaskActive(GenType.FMData))
             {
@@ -371,7 +383,7 @@ namespace FenGen
             }
             if (GenTaskActive(GenType.GameSupport))
             {
-                Games.Generate();
+                Games.Generate(taggedFilesDict![GenFileTags.GameSupportMainGenDest]);
             }
             if (GenTaskActive(GenType.ExcludeResx))
             {

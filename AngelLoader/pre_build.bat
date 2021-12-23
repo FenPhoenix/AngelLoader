@@ -14,10 +14,7 @@ rem ---
 rem batch file hell #21354: vars with spaces in the value must be entirely in quotes
 set "FenGen=%SolutionDir%FenGen\bin\Release\net472\FenGen.exe"
 
-rem set fenGenArgs=-fmdata -language_t -add_build_date
-rem set fenGenArgs=-fmdata -language_t -enable_lang_reflection_style_gen -add_build_date
-set fenGenArgs=-fmdata -language_t -enable_lang_reflection_style_gen -add_build_date -gen_slim_designer_files
-rem set fenGenArgs=-language_t -enable_lang_reflection_style_gen -add_build_date -gen_slim_designer_files
+set fenGenArgs=-fmdata -language_t -enable_lang_reflection_style_gen -add_build_date -gen_slim_designer_files -game_support
 
 %FenGen% %fenGenArgs%
 rem ---

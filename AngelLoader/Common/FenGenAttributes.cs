@@ -174,8 +174,22 @@ namespace AngelLoader
         #region Game support
 
         [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Class)]
+        internal sealed class FenGenGameSupportMainGenDestClassAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Enum)]
-        internal sealed class FenGenGameEnumAttribute : Attribute { }
+        internal sealed class FenGenGameEnumAttribute : Attribute
+        {
+            internal FenGenGameEnumAttribute(string gameIndexEnumName) { }
+        }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field)]
+        internal sealed class FenGenGameAttribute : Attribute
+        {
+            internal FenGenGameAttribute(string prefix, string steamId) { }
+        }
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field)]

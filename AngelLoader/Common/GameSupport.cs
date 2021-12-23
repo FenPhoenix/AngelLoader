@@ -18,94 +18,32 @@ namespace AngelLoader
         #region Game enums
 
         // This is flags so we can combine its values for filtering by multiple games.
-        [Flags, FenGenGameEnum]
-        internal enum Game : uint
+        [Flags, FenGenGameEnum(gameIndexEnumName: "GameIndex")]
+        public enum Game : uint
         {
             [FenGenNotAGameType]
             Null = 0,
 
             // Known/supported games
+            // IMPORTANT: Prefixes are used in Config.ini, so they must remain the same for compatibility.
+            // Don't change the existing values, only add new ones!
+            // Obviously the steam ids must remain the same as well.
+            [FenGenGame(prefix: "T1", steamId: "211600")]
             Thief1 = 1,
+            [FenGenGame(prefix: "T2", steamId: "211740")]
             Thief2 = 2,
+            [FenGenGame(prefix: "T3", steamId: "6980")]
             Thief3 = 4,
+            [FenGenGame(prefix: "SS2", steamId: "238210")]
             SS2 = 8,
 
             [FenGenNotAGameType]
             Unsupported = 16
         }
 
-        // This is sequential so we can use it as an indexer into any same-ordered array. That way, we can avoid
-        // having to specify games individually everywhere throughout the code, and instead just do a loop and
-        // have it all done implicitly wherever it needs to be done.
-        public enum GameIndex : uint
-        {
-            Thief1,
-            Thief2,
-            Thief3,
-            SS2
-        }
-
         #endregion
-
-        #region Per-game constants
-
-        // IMPORTANT: These are used in Config.ini, so they must remain the same for compatibility.
-        // Don't change the existing values, only add new ones!
-        private static readonly string[]
-        _gamePrefixes =
-        {
-            "T1",
-            "T2",
-            "T3",
-            "SS2"
-        };
-
-        private static readonly string[]
-        _steamAppIds =
-        {
-            "211600", // Thief Gold
-            "211740", // Thief 2
-            "6980",   // Thief 3
-            "238210"  // SS2
-        };
-
-        #endregion
-
-        internal static string GetGamePrefix(GameIndex index) => _gamePrefixes[(int)index];
-
-        internal static string GetGameSteamId(GameIndex index) => _steamAppIds[(int)index];
 
         #region Conversion
-
-        /// <summary>
-        /// Converts a Game to a GameIndex. *Narrowing conversion, so make sure the game has been checked for convertibility first!
-        /// </summary>
-        /// <param name="game"></param>
-        internal static GameIndex GameToGameIndex(Game game)
-        {
-            AssertR(game != Game.Null && game != Game.Unsupported, nameof(game) + " was out of range: " + game);
-
-            return game switch
-            {
-                Game.Thief1 => GameIndex.Thief1,
-                Game.Thief2 => GameIndex.Thief2,
-                Game.Thief3 => GameIndex.Thief3,
-                _ => GameIndex.SS2
-            };
-        }
-
-        /// <summary>
-        /// Converts a GameIndex to a Game. Widening conversion, so it will always succeed.
-        /// </summary>
-        /// <param name="gameIndex"></param>
-        /// <returns></returns>
-        internal static Game GameIndexToGame(GameIndex gameIndex) => gameIndex switch
-        {
-            GameIndex.Thief1 => Game.Thief1,
-            GameIndex.Thief2 => Game.Thief2,
-            GameIndex.Thief3 => Game.Thief3,
-            _ => Game.SS2
-        };
 
         // Do a hard convert at the API boundary, even though these now match the ordering
         // NOTE: One is flags and the other isn't, so remember that if you ever want to array-ize this!
