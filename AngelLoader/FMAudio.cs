@@ -239,8 +239,10 @@ namespace AngelLoader
         {
             if (!fm.Installed || !GameIsDark(fm.Game)) return false;
 
-            string gameExe = Config.GetGameExeUnsafe(fm.Game);
-            string gameName = GetLocalizedGameName(fm.Game);
+            GameIndex gameIndex = GameToGameIndex(fm.Game);
+
+            string gameExe = Config.GetGameExe(gameIndex);
+            string gameName = GetLocalizedGameName(gameIndex);
             if (GameIsRunning(gameExe))
             {
                 Dialogs.ShowAlert(

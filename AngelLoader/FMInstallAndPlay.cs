@@ -51,7 +51,9 @@ namespace AngelLoader
                 return;
             }
 
-            if (playMP && fm.Game != Game.Thief2)
+            GameIndex gameIndex = GameToGameIndex(fm.Game);
+
+            if (playMP && gameIndex != GameIndex.Thief2)
             {
                 Log("playMP was true, but fm.Game was not Thief 2.\r\n" +
                     "fm: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
@@ -77,7 +79,7 @@ namespace AngelLoader
 
             if (!fm.Installed && !await InstallFM(fm)) return;
 
-            if (playMP && fm.Game == Game.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
+            if (playMP && gameIndex == GameIndex.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
                 Log("Thief2MP.exe not found in Thief 2 game directory.\r\n" +
                     "Thief 2 game directory: " + Config.GetGamePath(GameIndex.Thief2));
@@ -131,21 +133,21 @@ namespace AngelLoader
                 return false;
             }
 
-            var game = GameToGameIndex(fm.Game);
+            GameIndex gameIndex = GameToGameIndex(fm.Game);
 
             (bool success, string gameExe, string gamePath) =
-                CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: false, playMP);
+                CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
             if (!success) return false;
 
             // Always do this for robustness, see below
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            if (game is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
-            SetUsAsSelector(game, gamePath, PlaySource.FM);
+            if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
+            SetUsAsSelector(gameIndex, gamePath, PlaySource.FM);
 
             string steamArgs = "";
-            string workingPath = Config.GetGamePath(game);
-            var sv = GetSteamValues(game, playMP);
+            string workingPath = Config.GetGamePath(gameIndex);
+            var sv = GetSteamValues(gameIndex, playMP);
             if (sv.Success) (_, gameExe, workingPath, steamArgs) = sv;
 
             // 2019-10-31: Always use the stub now, in prep for matching FMSel's language stuff
@@ -513,6 +515,8 @@ namespace AngelLoader
                 return false;
             }
 
+            GameIndex gameIndex = GameToGameIndex(fm.Game);
+
             string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
 
             if (fmArchivePath.IsEmpty())
@@ -524,8 +528,8 @@ namespace AngelLoader
                 return false;
             }
 
-            string gameExe = Config.GetGameExeUnsafe(fm.Game);
-            string gameName = GetLocalizedGameName(fm.Game);
+            string gameExe = Config.GetGameExe(gameIndex);
+            string gameName = GetLocalizedGameName(gameIndex);
             if (!File.Exists(gameExe))
             {
                 Log("Game executable not found.\r\n" +
@@ -535,7 +539,7 @@ namespace AngelLoader
                 return false;
             }
 
-            string instBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+            string instBasePath = Config.GetFMInstallPath(gameIndex);
 
             if (!Directory.Exists(instBasePath))
             {
@@ -604,7 +608,7 @@ namespace AngelLoader
             }
 
             // Only Dark engine games need audio conversion
-            if (GameIsDark(fm.Game))
+            if (GameIsDark(gameIndex))
             {
                 try
                 {
@@ -780,6 +784,8 @@ namespace AngelLoader
         {
             if (!fm.Installed || !GameIsKnownAndSupported(fm.Game)) return false;
 
+            GameIndex gameIndex = GameToGameIndex(fm.Game);
+
             if (Config.ConfirmUninstall)
             {
                 (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
@@ -795,8 +801,8 @@ namespace AngelLoader
                 Config.ConfirmUninstall = !dontAskAgain;
             }
 
-            string gameExe = Config.GetGameExeUnsafe(fm.Game);
-            string gameName = GetLocalizedGameName(fm.Game);
+            string gameExe = Config.GetGameExe(gameIndex);
+            string gameName = GetLocalizedGameName(gameIndex);
             if (GameIsRunning(gameExe))
             {
                 Dialogs.ShowAlert(
@@ -809,7 +815,7 @@ namespace AngelLoader
 
             try
             {
-                string fmInstalledPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
+                string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
 
                 bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)
@@ -908,7 +914,7 @@ namespace AngelLoader
                 // just read in the truncated names and treat them as normal for compatibility purposes. But
                 // if we've just uninstalled the mission, then we can safely convert InstalledDir back to full
                 // un-truncated form for future use.
-                if (fm.Game == Game.Thief3 && !fm.Archive.IsEmpty())
+                if (gameIndex == GameIndex.Thief3 && !fm.Archive.IsEmpty())
                 {
                     fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
                 }

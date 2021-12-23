@@ -92,12 +92,6 @@ namespace AngelLoader
             };
         }
 
-        internal static string GetLocalizedGameName(Game game)
-        {
-            AssertR(game != Game.Null && game != Game.Unsupported, nameof(game) + " was out of range: " + game);
-            return GetLocalizedGameName(GameToGameIndex(game));
-        }
-
         #endregion
 
         #region Game type checks
