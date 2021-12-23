@@ -52,11 +52,11 @@ namespace AngelLoader
 
         private static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
         {
-            if ((isCategory && catText.IsWhiteSpace()) || (!isCategory && tagText.IsWhiteSpace())) return false;
-
             // Parent node (category)
             if (isCategory)
             {
+                if (catText.IsWhiteSpace()) return false;
+
                 // TODO: These messageboxes are annoying, but they prevent accidental deletion.
                 // Figure out something better.
                 bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
@@ -71,6 +71,8 @@ namespace AngelLoader
             // Child node (tag)
             else
             {
+                if (tagText.IsWhiteSpace()) return false;
+
                 bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 

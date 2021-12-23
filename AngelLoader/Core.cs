@@ -1230,7 +1230,7 @@ namespace AngelLoader
         /// <param name="readmeFiles"></param>
         /// <param name="fmTitle"></param>
         /// <returns></returns>
-        internal static string DetectSafeReadme(List<string> readmeFiles, string fmTitle)
+        private static string DetectSafeReadme(List<string> readmeFiles, string fmTitle)
         {
             // Since an FM's readmes are very few in number, we can afford to be all kinds of lazy and slow here
 

@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using static AL_Common.Common;
-using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -45,33 +44,26 @@ namespace AngelLoader.DataClasses
             }
         }
 
-        [FenGenIgnore]
-        internal int Version = 1;
+        //internal int Version = 1;
 
         #region Saved-on-startup loader config values
 
         #region fm_selector lines
 
-        [FenGenIgnore]
         private readonly List<string>[] StartupFMSelectorLines;
 
-        [FenGenIgnore]
         internal List<string> GetStartupFMSelectorLines(GameIndex index) => StartupFMSelectorLines[(uint)index];
 
-        [FenGenIgnore]
         internal void SetStartupFMSelectorLines(GameIndex index, List<string> value) => StartupFMSelectorLines[(uint)index] = value;
 
         #endregion
 
         #region "Always start selector" values
 
-        [FenGenIgnore]
         private readonly bool[] StartupAlwaysStartSelector;
 
-        [FenGenIgnore]
         internal bool GetStartupAlwaysStartSelector(GameIndex index) => StartupAlwaysStartSelector[(uint)index];
 
-        [FenGenIgnore]
         internal void SetStartupAlwaysStartSelector(GameIndex index, bool value) => StartupAlwaysStartSelector[(uint)index] = value;
 
         #endregion
@@ -99,10 +91,8 @@ namespace AngelLoader.DataClasses
 
         #region Game exes
 
-        [FenGenIgnore]
         internal readonly string[] GameExes;
 
-        [FenGen_Config_PerGameGetter("Exe")]
         internal string GetGameExe(GameIndex index) => GameExes[(uint)index];
 
         /// <summary>
@@ -110,23 +100,18 @@ namespace AngelLoader.DataClasses
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        [FenGenIgnore]
         internal string GetGameExeUnsafe(Game game) => GameExes[(uint)GameToGameIndex(game)];
 
-        [FenGen_Config_PerGameSetter("Exe")]
         internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
 
         #endregion
 
         #region Game exe paths
 
-        [FenGenIgnore]
         private readonly string[] GamePaths;
 
-        [FenGenIgnore]
         internal string GetGamePath(GameIndex index) => GamePaths[(uint)index];
 
-        [FenGenIgnore]
         internal void SetGamePath(GameIndex index, string value) => GamePaths[(uint)index] = value;
 
         #endregion
@@ -155,7 +140,6 @@ namespace AngelLoader.DataClasses
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        [FenGenIgnore]
         internal string GetEditorExe_FromDisk(GameIndex game)
         {
             string gamePath;
@@ -172,7 +156,6 @@ namespace AngelLoader.DataClasses
         /// specified Thief 2 executable. Otherwise, returns the empty string.
         /// </summary>
         /// <returns></returns>
-        [FenGenIgnore]
         internal string GetT2MultiplayerExe_FromDisk()
         {
             string gamePath = GetGamePath(GameIndex.Thief2);
@@ -185,10 +168,8 @@ namespace AngelLoader.DataClasses
 
         #region FM install paths
 
-        [FenGenIgnore]
         private readonly string[] FMInstallPaths;
 
-        [FenGenIgnore]
         internal string GetFMInstallPath(GameIndex index) => FMInstallPaths[(uint)index];
 
         /// <summary>
@@ -196,10 +177,8 @@ namespace AngelLoader.DataClasses
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        [FenGenIgnore]
         internal string GetFMInstallPathUnsafe(Game game) => FMInstallPaths[(uint)GameToGameIndex(game)];
 
-        [FenGenIgnore]
         internal void SetFMInstallPath(GameIndex index, string value) => FMInstallPaths[(uint)index] = value;
 
         #endregion
@@ -208,7 +187,6 @@ namespace AngelLoader.DataClasses
 
         // Session-only; don't write these out
 
-        [FenGenIgnore]
         private readonly bool[] GameEditorDetected;
 
         /// <summary>
@@ -216,10 +194,8 @@ namespace AngelLoader.DataClasses
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        [FenGenIgnore]
         internal bool GetGameEditorDetectedUnsafe(Game game) => GameEditorDetected[(uint)GameToGameIndex(game)];
 
-        [FenGenIgnore]
         internal void SetGameEditorDetected(GameIndex index, bool value) => GameEditorDetected[(uint)index] = value;
 
         #endregion
@@ -231,13 +207,10 @@ namespace AngelLoader.DataClasses
 
         internal string SteamExe = "";
 
-        [FenGenIgnore]
         private readonly bool[] UseSteamSwitches;
 
-        [FenGen_Config_PerGameGetter("UseSteam")]
         internal bool GetUseSteamSwitch(GameIndex index) => UseSteamSwitches[(uint)index];
 
-        [FenGen_Config_PerGameSetter("UseSteam")]
         internal void SetUseSteamSwitch(GameIndex index, bool value) => UseSteamSwitches[(uint)index] = value;
 
         #endregion
@@ -245,10 +218,8 @@ namespace AngelLoader.DataClasses
         // @GENGAMES (ConfigData - Miscellaneous game-specific stuff): Begin
 
         // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)
-        [FenGenIgnore]
         internal bool T2MPDetected;
 
-        [FenGenIgnore]
         internal bool T3UseCentralSaves;
 
         // @GENGAMES (ConfigData - Miscellaneous game-specific stuff): End
@@ -257,14 +228,12 @@ namespace AngelLoader.DataClasses
 
         #region Selected FMs
 
-        [FenGenIgnore]
         internal void ClearAllSelectedFMs()
         {
             SelFM.Clear();
             GameTabsState.ClearAllSelectedFMs();
         }
 
-        [FenGenIgnore]
         internal void ClearAllFilters()
         {
             Filter.ClearAll();
@@ -296,7 +265,6 @@ namespace AngelLoader.DataClasses
         internal Column SortedColumn = Column.Title;
         internal SortDirection SortDirection = SortDirection.Ascending;
 
-        [FenGenIgnore]
         private float _fmsListFontSizeInPoints = Defaults.FMsListFontSizeInPoints;
         internal float FMsListFontSizeInPoints
         {
@@ -318,7 +286,6 @@ namespace AngelLoader.DataClasses
         }
 
         internal bool EnableArticles = true;
-        [FenGenListType("CommaSeparated")]
         internal readonly List<string> Articles = new List<string> { "a", "an", "the" };
         internal bool MoveArticlesToEnd = true;
 
@@ -329,7 +296,6 @@ namespace AngelLoader.DataClasses
         internal string Language = "English";
 
         // Session-only; don't write out
-        [FenGenIgnore]
         internal readonly DictionaryI<string> LanguageNames = new DictionaryI<string>();
 
         #endregion
@@ -352,17 +318,14 @@ namespace AngelLoader.DataClasses
 
         #region Main window state
 
-        [FenGenIgnore]
         private WindowState _mainWindowState = WindowState.Maximized;
         internal WindowState MainWindowState { get => _mainWindowState; set => _mainWindowState = value == WindowState.Minimized ? WindowState.Maximized : value; }
         internal Size MainWindowSize = new Size(Defaults.MainWindowWidth, Defaults.MainWindowHeight);
         internal Point MainWindowLocation = new Point(Defaults.MainWindowX, Defaults.MainWindowY);
 
-        [FenGenIgnore]
         private float _mainSplitterPercent = Defaults.MainSplitterPercent;
         internal float MainSplitterPercent { get => _mainSplitterPercent; set => _mainSplitterPercent = value.ClampZeroToOne(); }
 
-        [FenGenIgnore]
         private float _topSplitterPercent = Defaults.TopSplitterPercent;
         internal float TopSplitterPercent { get => _topSplitterPercent; set => _topSplitterPercent = value.ClampZeroToOne(); }
 
@@ -385,7 +348,6 @@ namespace AngelLoader.DataClasses
 
         #region Readme box
 
-        [FenGenIgnore]
         private float _readmeZoomFactor = 1;
         internal float ReadmeZoomFactor { get => _readmeZoomFactor; set => _readmeZoomFactor = value.ClampToRichTextBoxZoomMinMax(); }
         internal bool ReadmeUseFixedWidthFont = true;
@@ -431,14 +393,12 @@ namespace AngelLoader.DataClasses
 
         #region Recent FMs
 
-        [FenGenIgnore]
         private uint _daysRecent = Defaults.DaysRecent;
         internal uint DaysRecent { get => _daysRecent; set => _daysRecent = value.Clamp((uint)0, Defaults.MaxDaysRecent); }
         internal bool ShowRecentAtTop;
 
         #endregion
 
-        [FenGenIgnore]
         internal bool DarkMode => VisualTheme == VisualTheme.Dark;
 
         internal VisualTheme VisualTheme = VisualTheme.Classic;
@@ -448,12 +408,10 @@ namespace AngelLoader.DataClasses
 
         internal bool EnableCharacterDetailFix = true;
 
-        [FenGenIgnore]
         internal bool PlayOriginalSeparateButtons = true;
 
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
-        [FenGenIgnore]
         internal bool ForceWindowed;
         //internal bool CheckForUpdatesOnStartup = true;
 #endif

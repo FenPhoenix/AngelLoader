@@ -527,7 +527,6 @@ namespace AngelLoader.Forms
 
         #region Games
 
-
         #region Per-game image getters
 
         [PublicAPI]

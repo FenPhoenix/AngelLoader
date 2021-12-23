@@ -365,8 +365,7 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         internal Encoding? ChangeEncoding(Encoding? encoding)
         {
-            if (!_currentReadmeSupportsEncodingChange) return null;
-            return ChangeEncodingInternal(encoding);
+            return _currentReadmeSupportsEncodingChange ? ChangeEncodingInternal(encoding) : null;
         }
 
         #endregion

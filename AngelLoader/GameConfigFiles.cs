@@ -361,13 +361,7 @@ namespace AngelLoader
                     if (lt.StartsWithI(key_character_detail))
                     {
                         string val = lt.Substring(key_character_detail.Length).Trim();
-                        if (removeAll)
-                        {
-                            lines.RemoveAt(i);
-                            i--;
-                            linesModified = true;
-                        }
-                        else if (val == "0")
+                        if (removeAll || val == "0")
                         {
                             lines.RemoveAt(i);
                             i--;
