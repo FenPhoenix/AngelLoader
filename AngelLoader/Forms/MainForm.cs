@@ -4452,13 +4452,14 @@ namespace AngelLoader.Forms
             // FinishedOnUnknownMenuItem text stays the same
 
             bool gameIsSupported = GameIsKnownAndSupported(fm.Game);
+            bool gameIsSupportedAndAvailable = gameIsSupported && !fm.MarkedUnavailable;
 
-            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
+            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(gameIsSupportedAndAvailable);
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!fm.MarkedUnavailable);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(gameIsSupported && !fm.MarkedUnavailable);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(gameIsSupportedAndAvailable);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
@@ -4475,10 +4476,10 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(GameIsDark(fm.Game) && fm.Installed && !fm.MarkedUnavailable);
 
-            InstallUninstallFMLLButton.SetEnabled(gameIsSupported && !fm.MarkedUnavailable);
+            InstallUninstallFMLLButton.SetEnabled(gameIsSupportedAndAvailable);
             InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
-            PlayFMButton.Enabled = gameIsSupported && !fm.MarkedUnavailable;
+            PlayFMButton.Enabled = gameIsSupportedAndAvailable;
 
             WebSearchButton.Enabled = true;
 
@@ -4614,6 +4615,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                // @VBL
                 #region Mods tab
 
                 ModsDisabledModsTextBox.Text = fm.DisabledMods;
