@@ -495,11 +495,10 @@ namespace AngelLoader
                 await FMScan.ScanNewFMs(fmsViewListUnscanned);
             }
 
-            // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
-            // If I store the selected FM up above the Find(), I can make the FM not have to reload if
-            // it's still selected
             if (sortAndSetFilter)
             {
+                // Just always force refresh of FM to make sure whatever we've changed will take.
+                // We don't care about possible unnecessary refreshes because we only happen on settings OK click.
                 await View.SortAndSetFilter(keepSelection: keepSel, forceDisplayFM: true);
             }
 

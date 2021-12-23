@@ -1,4 +1,4 @@
-﻿// TODO: This stub is now ~200k because of statically linking the stuff.
+﻿// NOTE: This stub is now ~200k because of statically linking the stuff.
 // I don't like it, but whatever. It's not really of any consequence, I just like minimalism.
 // I can always come back in here if I ever get more to grips with what I'm doing when it comes to C++ strings
 // and squash this junk down some. Till then, meh.

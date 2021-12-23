@@ -2,7 +2,7 @@
 //#define FMScanner_FullCode
 #define Enable7zReadmeCacheCode
 
-// NULL_TODO (Scanner - Main)
+// NOTE(nullable - Scanner - Main)
 // -Lists are nullable because we want to avoid allocating new Lists all over the place.
 // -Arrays are non-nullable because assigning them Array.Empty<T> is basically free.
 // -Strings are non-nullable because assigning them the empty string "" is basically free.
@@ -1690,7 +1690,7 @@ namespace FMScanner
 
                     if (SS2FingerprintRequiredAndNotDone() || _scanOptions.ScanCustomResources)
                     {
-                        // PERF_TODO: Scanner: Dir: GetDirectories(fm base dir, "*", TopDirectoryOnly)
+                        // NOTE: Scanner: Dir: GetDirectories(fm base dir, "*", TopDirectoryOnly)
                         // I tried getting rid of this GetDirectories call, but it made things more complicated
                         // for SS2 fingerprinting and didn't result in a clear perf win. At least not warm. Meh.
                         var baseDirFolders = new List<string>();
@@ -2473,7 +2473,7 @@ namespace FMScanner
                     if (!ret.IsEmpty()) return ret;
                 }
 
-                // PERF_TODO:
+                // PERF_TODO(Scanner/GetValueFromReadme/GetAuthorFromTitleByAuthorLine() call section):
                 // This is last because it used to have a dynamic and constantly re-instantiated regex in it. I
                 // don't even know why I thought I needed that but it turns out I could just make it static like
                 // the rest, so I did. Re-evaluate this and maybe put it higher?

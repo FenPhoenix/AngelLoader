@@ -169,7 +169,6 @@ namespace AngelLoader
 
         #region FM lists
 
-        // PERF_TODO: Set capacity later when we read FMData.ini and we count the [FM] entries in the file
         internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
         internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
 

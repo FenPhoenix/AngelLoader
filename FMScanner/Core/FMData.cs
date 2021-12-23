@@ -184,7 +184,7 @@ namespace FMScanner
         public string CachePath = "";
     }
 
-    // NULL_TODO (Scanner - FMData)
+    // NOTE(nullable - Scanner - FMData)
     // Fields with types that don't have a simple "unknown" state are nullable to represent "not scanned" or "unknown".
     // Numeric types, bools, DateTime etc.
 

@@ -69,7 +69,7 @@ namespace AL_Common
             new Symbol("enspace", 0, false, KeywordType.Character, ' '),
             new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
             new Symbol("~", 0, false, KeywordType.Character, ' '),
-            // TODO: Maybe just convert these all to ASCII equivalents as well?
+            // NOTE: Maybe just convert these all to ASCII equivalents as well?
             new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
             new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
             new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),

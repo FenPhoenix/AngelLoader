@@ -66,7 +66,7 @@ namespace FenGen
         internal readonly List<string> SteamIds = new List<string>();
     }
 
-    // TODO: Nasty global state that's really just here to avoid over-parameterization.
+    // NOTE: Nasty global state that's really just here to avoid over-parameterization.
     internal static class Cache
     {
         private static string _gameSupportFile = "";
@@ -204,10 +204,8 @@ namespace FenGen
         internal static readonly string ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
         internal static readonly string ALProjectFile = Path.Combine(ALProjectPath, "AngelLoader.csproj");
 
-        // PERF_TODO: Roslyn is so slow it's laughable. It takes 1.5 seconds just to run InitWorkspaceStuff() alone.
+        // Roslyn is so slow it's laughable. It takes 1.5 seconds just to run InitWorkspaceStuff() alone.
         // That's not even counting doing any actual work with it, which adds even more slug time.
-        // Go back to manually doing it all, and just organize AL so the gen can find things without too much
-        // brittleness.
         // -ParseText() seems to have like a 200ms init time the first time you call it. See what I goddamn mean.
 
         internal static void Init()

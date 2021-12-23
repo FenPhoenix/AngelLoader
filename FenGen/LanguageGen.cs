@@ -209,15 +209,6 @@ namespace FenGen
             bool writeReflectionStyle)
         {
             string codeBlock = GetCodeBlock(destFile, GenAttributes.FenGenLocalizationDestClass);
-
-            // TODO: Roslyn-ize this
-            // Requires figuring out the idiotic black magic of how to CONSTRUCT code with Roslyn, but hey...
-
-            // This may look janky and it may be error-prone to write, but at least I know HOW to write the damn
-            // thing. You type out your code. Just right there. There it is. As any half-way sane system would
-            // work. Roslyn? Forget it. Zero documentation and you have to build the Burj Khalifa just to get it
-            // to do anything. And you bang your head against a wall for five hours every time you need to write
-            // the next statement. Forget. It.
             var w = new CodeWriters.IndentingWriter(startingIndent: 1);
 
             w.AppendRawString(codeBlock);

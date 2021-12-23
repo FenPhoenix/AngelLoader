@@ -254,7 +254,7 @@ namespace AL_Common
             // without weird crap tripping us up
 
             // For "emdash", "endash", "lquote", "rquote", "ldblquote", "rdblquote"
-            // TODO: Maybe just convert these all to ASCII equivalents as well?
+            // NOTE: Maybe just convert these all to ASCII equivalents as well?
 
             // For "cs", "ds", "ts"
             // Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.

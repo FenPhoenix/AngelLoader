@@ -357,7 +357,7 @@ namespace AngelLoader
                                     }
                                 }
 
-                                breakout:
+                            breakout:
 
                                 archive += ".zip";
 
@@ -532,7 +532,7 @@ namespace AngelLoader
                 }
             }
 
-            breakout:
+        breakout:
 
             if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace() && ss2Dir.IsWhiteSpace()) return true;
 
@@ -830,8 +830,8 @@ namespace AngelLoader
                           ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
                            importedFM.InstalledDir.EqualsI(mainFM.InstalledDir))) ||
                          (importType == ImportType.NewDarkLoader &&
-                          // TODO: BUG:? Why aren't we checking archive for this?!?!
-                          // TODO: Test this!
+                          // BUG:? Why aren't we checking archive for this?!?!
+                          // Test this!
                           (
                               //(!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
                               importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)
