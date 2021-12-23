@@ -19,8 +19,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private readonly DarkButton[] GameButtons = new DarkButton[SupportedGameCount];
 
-        private DarkButton GetGameButton(GameIndex gameIndex) => GameButtons[(int)gameIndex];
-
         internal DarkArrowButton T2MPMenuButton = null!;
 
         private bool _darkModeEnabled;
@@ -134,7 +132,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                _owner.MainToolTip.SetToolTip(GameButtons[i], Ini.GetGamePlayOriginalText((GameIndex)i));
+                _owner.MainToolTip.SetToolTip(GameButtons[i], GetLocalizedGamePlayOriginalText((GameIndex)i));
             }
         }
 

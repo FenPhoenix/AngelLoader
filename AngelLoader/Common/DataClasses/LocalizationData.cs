@@ -84,19 +84,19 @@ namespace AngelLoader.DataClasses
             internal readonly string GigabyteShort = "GB";
             [FenGenBlankLine]
             // @GENGAMES (Localization - Global): Begin
-            [FenGenGameSet("GetGameTitle")]
+            [FenGenGameSet("GetLocalizedGameName")]
             internal readonly string Thief1 = "Thief 1";
             internal readonly string Thief2 = "Thief 2";
             internal readonly string Thief3 = "Thief 3";
             internal readonly string SystemShock2 = "System Shock 2";
             [FenGenBlankLine]
-            [FenGenGameSet("GetGameTitleShort")]
+            [FenGenGameSet("GetShortLocalizedGameName")]
             internal readonly string Thief1_Short = "T1";
             internal readonly string Thief2_Short = "T2";
             internal readonly string Thief3_Short = "T3";
             internal readonly string SystemShock2_Short = "SS2";
             [FenGenBlankLine]
-            [FenGenGameSet("GetGameTitleColon")]
+            [FenGenGameSet("GetLocalizedGameNameColon")]
             internal readonly string Thief1_Colon = "Thief 1:";
             internal readonly string Thief2_Colon = "Thief 2:";
             internal readonly string Thief3_Colon = "Thief 3:";
@@ -517,7 +517,7 @@ namespace AngelLoader.DataClasses
         internal sealed class PlayOriginalGameMenu_Class
         {
             internal readonly string Thief2_Multiplayer = "Thief 2 (multiplayer)";
-            [FenGenGameSet("GetGamePlayOriginalText")]
+            [FenGenGameSet("GetLocalizedGamePlayOriginalText")]
             internal readonly string Thief1_PlayOriginal = "Play Thief 1 with no FM";
             internal readonly string Thief2_PlayOriginal = "Play Thief 2 with no FM";
             internal readonly string Thief3_PlayOriginal = "Play Thief 3 with no FM";

@@ -8,7 +8,7 @@ using static AngelLoader.Misc;
 namespace AngelLoader
 {
     // @GENGAMES (GameSupport): Begin
-    public static class GameSupport
+    public static partial class GameSupport
     {
         internal static readonly int SupportedGameCount = Enum.GetValues(typeof(GameIndex)).Length;
 
@@ -154,17 +154,11 @@ namespace AngelLoader
             };
         }
 
-        internal static string GetLocalizedGameName(GameIndex gameIndex) => GetLocalizedGameName(GameIndexToGame(gameIndex));
-
         internal static string GetLocalizedGameName(Game game)
         {
             AssertR(game != Game.Null && game != Game.Unsupported, nameof(game) + " was out of range: " + game);
-            return Ini.GetGameTitle(GameToGameIndex(game));
+            return GetLocalizedGameName(GameToGameIndex(game));
         }
-
-        internal static string GetShortLocalizedGameName(GameIndex gameIndex) => Ini.GetGameTitleShort(gameIndex);
-
-        internal static string GetLocalizedGameNameColon(GameIndex gameIndex) => Ini.GetGameTitleColon(gameIndex);
 
         #endregion
 

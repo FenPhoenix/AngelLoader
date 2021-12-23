@@ -148,6 +148,10 @@ namespace AngelLoader
 
         #region Localizable text
 
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Class)]
+        internal sealed class FenGenLocalizedGameNameGetterDestClassAttribute : Attribute { }
+
         /// <summary>
         /// This attribute should be used on the localization class. Only one instance of this attribute should
         /// be used, or else FenGen will throw an error.

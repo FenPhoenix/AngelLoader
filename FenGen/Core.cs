@@ -107,6 +107,7 @@ namespace FenGen
 
         internal const string FenGenLocalizationSourceClass = nameof(FenGenLocalizationSourceClass);
         internal const string FenGenLocalizationDestClass = nameof(FenGenLocalizationDestClass);
+        internal const string FenGenLocalizedGameNameGetterDestClass = nameof(FenGenLocalizedGameNameGetterDestClass);
         internal const string FenGenComment = nameof(FenGenComment);
         internal const string FenGenBlankLine = nameof(FenGenBlankLine);
         internal const string FenGenGameSet = nameof(FenGenGameSet);
@@ -186,6 +187,7 @@ namespace FenGen
             internal const string FMDataDest = "FenGen_FMDataDest";
             internal const string DesignerSource = "FenGen_DesignerSource";
             internal const string BuildDate = "FenGen_BuildDateDest";
+            internal const string LocalizedGameNameGetterDest = "FenGen_LocalizedGameNameGetterDest";
         }
 
         private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
@@ -306,6 +308,7 @@ namespace FenGen
             {
                 genFileTags.Add(GenFileTags.LocalizationSource);
                 genFileTags.Add(GenFileTags.LocalizationDest);
+                genFileTags.Add(GenFileTags.LocalizedGameNameGetterDest);
             }
             if (GenTaskActive(GenType.AddBuildDate) || GenTaskActive(GenType.RemoveBuildDate))
             {
@@ -337,22 +340,20 @@ namespace FenGen
             {
                 string GetTestLangPath()
                 {
+                    try
                     {
-                        try
-                        {
-                            // Only generate the test lang file into what may be a production folder on my own
-                            // machine, not everyone else's
-                            string? val = Environment.GetEnvironmentVariable(
-                                "AL_FEN_PERSONAL_DEV_3053BA21",
-                                EnvironmentVariableTarget.Machine);
-                            return val?.EqualsTrue() == true
-                                ? @"C:\AngelLoader\Data\Languages\TestLang.ini"
-                                : "";
-                        }
-                        catch
-                        {
-                            return "";
-                        }
+                        // Only generate the test lang file into what may be a production folder on my own
+                        // machine, not everyone else's
+                        string? val = Environment.GetEnvironmentVariable(
+                            "AL_FEN_PERSONAL_DEV_3053BA21",
+                            EnvironmentVariableTarget.Machine);
+                        return val?.EqualsTrue() == true
+                            ? @"C:\AngelLoader\Data\Languages\TestLang.ini"
+                            : "";
+                    }
+                    catch
+                    {
+                        return "";
                     }
                 }
 
@@ -361,10 +362,11 @@ namespace FenGen
                     ? GetTestLangPath()
                     : "";
                 Language.Generate(
-                    taggedFilesDict![GenFileTags.LocalizationSource],
-                    taggedFilesDict![GenFileTags.LocalizationDest],
-                    englishIni,
-                    testLangIni,
+                    sourceFile: taggedFilesDict![GenFileTags.LocalizationSource],
+                    destFile: taggedFilesDict![GenFileTags.LocalizationDest],
+                    perGameLangGetterDestFile: taggedFilesDict![GenFileTags.LocalizedGameNameGetterDest],
+                    langIniFile: englishIni,
+                    testLangIniFile: testLangIni,
                     writeReflectionStyle: GenTaskActive(GenType.EnableLangReflectionStyleGen));
             }
             if (GenTaskActive(GenType.GameSupport))
