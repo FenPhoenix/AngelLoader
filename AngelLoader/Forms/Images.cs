@@ -491,12 +491,18 @@ namespace AngelLoader.Forms
         // We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
         // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
         // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
-        internal static readonly Image?[] GameIcons = new Image?[SupportedGameCount];
+        // 2021-12-22:
+        // On Win10, DataGridView scrolling performance is laggy af regardless.
+        // Also, we could just get these images in realtime using the per-game getters now, but I guess we put
+        // the actual bitmaps into an array (updating it only on theme change) and pull from there because it's
+        // the fastest thing to do? Like, getting them in realtime has a lot of checks. Probably doesn't matter.
+        // But anyway.
+        internal static readonly Image?[] FMsList_GameIcons = new Image?[SupportedGameCount];
 
         // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
         private const int _numRatings = 11;
-        internal static readonly Bitmap?[] StarIcons = new Bitmap?[_numRatings];
-        internal static readonly Bitmap?[] FinishedOnIcons = new Bitmap?[16];
+        internal static readonly Bitmap?[] FMsList_StarIcons = new Bitmap?[_numRatings];
+        internal static readonly Bitmap?[] FMsList_FinishedOnIcons = new Bitmap?[16];
 
         private static readonly Bitmap?[] _zoomImages = new Bitmap?[ZoomTypesCount];
 
@@ -543,12 +549,12 @@ namespace AngelLoader.Forms
         public sealed class PerGameImage
         {
             public readonly PerGameSizedImage Primary;
-            public readonly PerGameSizedImage Secondary;
+            public readonly PerGameSizedImage Alternate;
 
-            public PerGameImage(PerGameSizedImage primary, PerGameSizedImage secondary)
+            public PerGameImage(PerGameSizedImage primary, PerGameSizedImage alternate)
             {
                 Primary = primary;
-                Secondary = secondary;
+                Alternate = alternate;
             }
         }
 
@@ -840,11 +846,11 @@ namespace AngelLoader.Forms
 
         #region Methods
 
-        internal static void ReloadImages()
+        internal static void ReloadImageArrays()
         {
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                GameIcons[i] = GetPerGameImage(i).Secondary.Large();
+                FMsList_GameIcons[i] = GetPerGameImage(i).Alternate.Large();
             }
 
             LoadRatingImages();
@@ -853,10 +859,10 @@ namespace AngelLoader.Forms
 
         private static void LoadFinishedOnImages()
         {
-            AssertR(FinishedOnIcons.Length == 16, "bitmaps.Length != 16");
+            AssertR(FMsList_FinishedOnIcons.Length == 16, "bitmaps.Length != 16");
 
-            FinishedOnIcons.DisposeAndClear(1, FinishedOnIcons.Length);
-            FinishedOnIcons[0] = Blank;
+            FMsList_FinishedOnIcons.DisposeAndClear(1, FMsList_FinishedOnIcons.Length);
+            FMsList_FinishedOnIcons[0] = Blank;
 
             Bitmap? _finishedOnNormal_single = null;
             Bitmap? _finishedOnHard_single = null;
@@ -875,7 +881,7 @@ namespace AngelLoader.Forms
 
                 var list = new List<Bitmap>(4);
 
-                for (int ai = 1; ai < FinishedOnIcons.Length; ai++)
+                for (int ai = 1; ai < FMsList_FinishedOnIcons.Length; ai++)
                 {
                     Bitmap canvas = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
                     Difficulty difficulty = (Difficulty)ai;
@@ -903,7 +909,7 @@ namespace AngelLoader.Forms
                         x += subImage.Width;
                     }
 
-                    FinishedOnIcons[ai] = canvas;
+                    FMsList_FinishedOnIcons[ai] = canvas;
                 }
             }
             finally
@@ -917,7 +923,7 @@ namespace AngelLoader.Forms
 
         private static void LoadRatingImages()
         {
-            StarIcons.DisposeAndClear();
+            FMsList_StarIcons.DisposeAndClear();
 
             bool[] bits = new bool[_numRatings];
 
@@ -948,7 +954,7 @@ namespace AngelLoader.Forms
                     }
 
                     bits[bi] = true;
-                    StarIcons[bi] = canvas;
+                    FMsList_StarIcons[bi] = canvas;
                 }
             }
             finally

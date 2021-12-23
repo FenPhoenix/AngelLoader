@@ -1527,7 +1527,7 @@ namespace AngelLoader.Forms
 
                 // Set these first so other controls get the right data when they reference them
                 Images.DarkModeEnabled = darkMode;
-                Images.ReloadImages();
+                Images.ReloadImageArrays();
 
                 if (!startup) ControlUtils.RecreateAllToolTipHandles();
 
@@ -3634,7 +3634,7 @@ namespace AngelLoader.Forms
             {
                 case Column.Game:
                     e.Value =
-                        GameIsKnownAndSupported(fm.Game) ? Images.GameIcons[(int)GameToGameIndex(fm.Game)] :
+                        GameIsKnownAndSupported(fm.Game) ? Images.FMsList_GameIcons[(int)GameToGameIndex(fm.Game)] :
                         fm.Game == Game.Unsupported ? Images.RedQuestionMarkCircle :
                         // Can't say null, or else it sets an ugly red-x image
                         Images.Blank;
@@ -3702,7 +3702,7 @@ namespace AngelLoader.Forms
                     {
                         if (Config.RatingUseStars)
                         {
-                            e.Value = fm.Rating == -1 ? Images.Blank : Images.StarIcons[fm.Rating];
+                            e.Value = fm.Rating == -1 ? Images.Blank : Images.FMsList_StarIcons[fm.Rating];
                         }
                         else
                         {
@@ -3712,7 +3712,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Finished:
-                    e.Value = fm.FinishedOnUnknown ? Images.FinishedOnUnknown : Images.FinishedOnIcons[fm.FinishedOn];
+                    e.Value = fm.FinishedOnUnknown ? Images.FinishedOnUnknown : Images.FMsList_FinishedOnIcons[fm.FinishedOn];
                     break;
 
                 case Column.ReleaseDate:
