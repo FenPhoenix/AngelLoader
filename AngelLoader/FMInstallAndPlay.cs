@@ -510,6 +510,7 @@ namespace AngelLoader
                     "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "FM game was: " + fm.Game);
                 Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
+                return false;
             }
 
             string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
