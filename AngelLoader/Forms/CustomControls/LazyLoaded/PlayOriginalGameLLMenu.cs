@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
@@ -23,11 +24,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal PlayOriginalGameLLMenu(MainForm owner) => _owner = owner;
 
-        internal ToolStripMenuItemCustom Thief1MenuItem = null!;
-        internal ToolStripMenuItemCustom Thief2MenuItem = null!;
         internal ToolStripMenuItemCustom Thief2MPMenuItem = null!;
-        internal ToolStripMenuItemCustom Thief3MenuItem = null!;
-        internal ToolStripMenuItemCustom SS2MenuItem = null!;
+
+        internal ToolStripItem[] GameMenuItems = new ToolStripItem[SupportedGameCount];
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -42,11 +41,15 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                 _menu.DarkModeEnabled = _darkModeEnabled;
 
-                Thief1MenuItem.Image = Images.Thief1_16;
-                Thief2MenuItem.Image = Images.Thief2_16;
-                Thief2MPMenuItem.Image = Images.Thief2_16;
-                Thief3MenuItem.Image = Images.Thief3_16;
-                SS2MenuItem.Image = Images.Shock2_16;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameMenuItems[i].Image =
+                        Images.GetPerGameImage(
+                            (GameIndex)i,
+                            Images.PerGameImageSize.Small,
+                            Images.PerGameImageType.Primary);
+                }
+                Thief2MPMenuItem.Image = Images.GetPerGameImage(GameIndex.Thief2, Images.PerGameImageSize.Small, Images.PerGameImageType.Primary);
             }
         }
 
@@ -56,14 +59,29 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
 
-            _menu.Items.AddRange(new ToolStripItem[]
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                Thief1MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief1_16, Tag = LoadType.Lazy },
-                Thief2MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16, Tag = LoadType.Lazy },
-                Thief2MPMenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16, Tag = LoadType.Lazy },
-                Thief3MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief3_16, Tag = LoadType.Lazy },
-                SS2MenuItem = new ToolStripMenuItemCustom { Image = Images.Shock2_16, Tag = LoadType.Lazy }
-            });
+                GameMenuItems[i] = new ToolStripMenuItemCustom
+                {
+                    GameIndex = (GameIndex)i,
+                    Image =
+                        Images.GetPerGameImage(
+                            (GameIndex)i,
+                            Images.PerGameImageSize.Small,
+                            Images.PerGameImageType.Primary),
+                    Tag = LoadType.Lazy
+                };
+            }
+
+            _menu.Items.AddRange(GameMenuItems);
+
+            Thief2MPMenuItem = new ToolStripMenuItemCustom
+            {
+                GameIndex = GameIndex.Thief2,
+                Image = Images.GetPerGameImage(GameIndex.Thief2, Images.PerGameImageSize.Small, Images.PerGameImageType.Primary),
+                Tag = LoadType.Lazy
+            };
+            _menu.Items.Insert(2, Thief2MPMenuItem);
 
             foreach (ToolStripMenuItemCustom item in _menu.Items)
             {
@@ -79,11 +97,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (!_constructed) return;
 
-            Thief1MenuItem.Text = LText.Global.Thief1;
-            Thief2MenuItem.Text = LText.Global.Thief2;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameMenuItems[i].Text = GameSupport.GetLocalizedGameName((GameIndex)i);
+            }
             Thief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer;
-            Thief3MenuItem.Text = LText.Global.Thief3;
-            SS2MenuItem.Text = LText.Global.SystemShock2;
         }
     }
     // @GENGAMES (Play original game menu): End

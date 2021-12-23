@@ -520,6 +520,64 @@ namespace AngelLoader.Forms
 
         #region Games
 
+        public sealed class PerGameImage
+        {
+            public Func<Image> Primary;
+            public Func<Image> Secondary;
+        }
+
+        public static readonly PerGameImage[] PerGameLargeImageGetters = InitPerGameImageGetters();
+        public static readonly PerGameImage[] PerGameSmallImageGetters = InitPerGameImageGetters(small: true);
+
+        private static PerGameImage[] InitPerGameImageGetters(bool small = false)
+        {
+            var ret = InitializedArray<PerGameImage>(SupportedGameCount);
+
+            //var ret = new PerGameImage[SupportedGameCount];
+
+            ret[(int)GameIndex.Thief1].Primary = small ? Thief1_16 : Thief1_21;
+            ret[(int)GameIndex.Thief1].Secondary = small ? Thief1_16 : Thief1_21_DGV;
+
+            ret[(int)GameIndex.Thief2].Primary = small ? Thief2_16 : Thief2_21;
+            ret[(int)GameIndex.Thief2].Secondary = ret[(int)GameIndex.Thief2].Primary;
+
+            ret[(int)GameIndex.Thief3].Primary = small ? Thief3_16 : Thief3_21;
+            ret[(int)GameIndex.Thief3].Secondary = ret[(int)GameIndex.Thief3].Primary;
+
+            ret[(int)GameIndex.SS2].Primary = small ? Shock2_16 : Shock2_21;
+            ret[(int)GameIndex.SS2].Secondary = ret[(int)GameIndex.SS2].Primary;
+
+            return ret;
+        }
+
+        public enum PerGameImageSize
+        {
+            Large,
+            Small
+        }
+
+        public enum PerGameImageType
+        {
+            Primary,
+            Alternate
+        }
+
+        public static Image GetPerGameImage(GameIndex gameIndex, PerGameImageSize size, PerGameImageType type, bool enabled = true)
+        {
+            if (size == PerGameImageSize.Large)
+            {
+                var pgi = PerGameLargeImageGetters[(int)gameIndex];
+                var image = type == PerGameImageType.Primary ? pgi.Primary.Invoke() : pgi.Secondary.Invoke();
+                return enabled ? image : GetDisabledImage(image);
+            }
+            else
+            {
+                var ret = PerGameSmallImageGetters[(int)gameIndex];
+                var image = type == PerGameImageType.Primary ? ret.Primary.Invoke() : ret.Secondary.Invoke();
+                return enabled ? image : GetDisabledImage(image);
+            }
+        }
+
         // @GENGAMES (Images): Begin
         // Putting these into an array doesn't really gain us anything and loses us robustness, so leave them.
         // We would have to say ResourceManager.GetObject(nameof(gameIndex) + "_16") etc. and that doesn't even
@@ -528,46 +586,46 @@ namespace AngelLoader.Forms
         // want to get rid of individually-specified games.
         private static Bitmap? _thief1_16;
         private static Bitmap? _thief1_16_Dark;
-        public static Bitmap Thief1_16 =>
+        private static Bitmap Thief1_16() =>
             DarkModeEnabled
                 ? _thief1_16_Dark ??= Resources.Thief1_16_Dark
                 : _thief1_16 ??= Resources.Thief1_16;
 
         private static Bitmap? _thief2_16;
-        public static Bitmap Thief2_16 => _thief2_16 ??= Resources.Thief2_16;
+        private static Bitmap Thief2_16() => _thief2_16 ??= Resources.Thief2_16;
 
         private static Bitmap? _thief3_16;
-        public static Bitmap Thief3_16 => _thief3_16 ??= Resources.Thief3_16;
+        private static Bitmap Thief3_16() => _thief3_16 ??= Resources.Thief3_16;
 
         private static Bitmap? _shock2_16;
         private static Bitmap? _shock2_16_Dark;
-        public static Bitmap Shock2_16 =>
+        private static Bitmap Shock2_16() =>
             DarkModeEnabled
                 ? _shock2_16_Dark ??= Resources.Shock2_16_Dark
                 : _shock2_16 ??= Resources.Shock2_16;
 
         private static Bitmap? _thief1_21;
         private static Bitmap? _thief1_21_Dark;
-        public static Bitmap Thief1_21 =>
+        private static Bitmap Thief1_21() =>
             DarkModeEnabled
                 ? _thief1_21_Dark ??= Resources.Thief1_21_Dark
                 : _thief1_21 ??= Resources.Thief1_21;
 
         private static Bitmap? _thief1_21_dark_DarkBG;
-        private static Bitmap Thief1_21_DGV =>
+        private static Bitmap Thief1_21_DGV() =>
             DarkModeEnabled
                 ? _thief1_21_dark_DarkBG ??= Resources.Thief1_21_Dark_DarkBG
                 : _thief1_21 ??= Resources.Thief1_21;
 
         private static Bitmap? _thief2_21;
-        public static Bitmap Thief2_21 => _thief2_21 ??= Resources.Thief2_21;
+        private static Bitmap Thief2_21() => _thief2_21 ??= Resources.Thief2_21;
 
         private static Bitmap? _thief3_21;
-        public static Bitmap Thief3_21 => _thief3_21 ??= Resources.Thief3_21;
+        private static Bitmap Thief3_21() => _thief3_21 ??= Resources.Thief3_21;
 
         private static Bitmap? _shock2_21;
         private static Bitmap? _shock2_21_Dark;
-        public static Bitmap Shock2_21 =>
+        private static Bitmap Shock2_21() =>
             DarkModeEnabled
                 ? _shock2_21_Dark ??= Resources.Shock2_21_Dark
                 : _shock2_21 ??= Resources.Shock2_21;
@@ -783,10 +841,10 @@ namespace AngelLoader.Forms
         {
             // @GENGAMES (Game icons for FMs list): Begin
             // We would prefer to put these in an array, but see Images class for why we can't really do that
-            GameIcons[(int)GameIndex.Thief1] = Thief1_21_DGV;
-            GameIcons[(int)GameIndex.Thief2] = Thief2_21;
-            GameIcons[(int)GameIndex.Thief3] = Thief3_21;
-            GameIcons[(int)GameIndex.SS2] = Shock2_21;
+            GameIcons[(int)GameIndex.Thief1] = Thief1_21_DGV();
+            GameIcons[(int)GameIndex.Thief2] = Thief2_21();
+            GameIcons[(int)GameIndex.Thief3] = Thief3_21();
+            GameIcons[(int)GameIndex.SS2] = Shock2_21();
             // @GENGAMES (Game icons for FMs list): End
 
             LoadRatingImages();

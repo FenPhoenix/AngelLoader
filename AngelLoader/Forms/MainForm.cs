@@ -1567,16 +1567,25 @@ namespace AngelLoader.Forms
                 RefreshFiltersButton.Image = Images.RefreshFilters;
                 ClearFiltersButton.Image = Images.ClearFilters;
 
-                FilterByThief1Button.Image = Images.Thief1_21;
-                FilterByThief2Button.Image = Images.Thief2_21;
-                FilterByThief3Button.Image = Images.Thief3_21;
-                FilterBySS2Button.Image = Images.Shock2_21;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    _filterByGameButtonsInOrder[i].Image =
+                        Images.GetPerGameImage(
+                            (GameIndex)i,
+                            Images.PerGameImageSize.Large,
+                            Images.PerGameImageType.Primary);
+                }
 
-                GamesTabControl.SetImages(
-                    Images.Thief1_16,
-                    Images.Thief2_16,
-                    Images.Thief3_16,
-                    Images.Shock2_16);
+                var gameTabImages = new Image[SupportedGameCount];
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    gameTabImages[i] = Images.GetPerGameImage(
+                        (GameIndex)i,
+                        Images.PerGameImageSize.Small,
+                        Images.PerGameImageType.Primary);
+                }
+
+                GamesTabControl.SetImages(gameTabImages);
 
                 // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
                 // while running(?) meh, whatever.
@@ -4205,11 +4214,11 @@ namespace AngelLoader.Forms
         {
             PlayOriginalGameLLMenu.Construct();
 
-            PlayOriginalGameLLMenu.Thief1MenuItem.Enabled = !Config.GetGameExe(GameIndex.Thief1).IsEmpty();
-            PlayOriginalGameLLMenu.Thief2MenuItem.Enabled = !Config.GetGameExe(GameIndex.Thief2).IsEmpty();
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                PlayOriginalGameLLMenu.GameMenuItems[i].Enabled = !Config.GetGameExe((GameIndex)i).IsEmpty();
+            }
             PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
-            PlayOriginalGameLLMenu.Thief3MenuItem.Enabled = !Config.GetGameExe(GameIndex.Thief3).IsEmpty();
-            PlayOriginalGameLLMenu.SS2MenuItem.Enabled = !Config.GetGameExe(GameIndex.SS2).IsEmpty();
 
             ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
         }
@@ -4217,15 +4226,11 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
-            GameIndex game =
-                sender == PlayOriginalGameLLMenu.Thief1MenuItem ? GameIndex.Thief1 :
-                sender == PlayOriginalGameLLMenu.Thief2MenuItem || sender == PlayOriginalGameLLMenu.Thief2MPMenuItem ? GameIndex.Thief2 :
-                sender == PlayOriginalGameLLMenu.Thief3MenuItem ? GameIndex.Thief3 :
-                GameIndex.SS2;
+            GameIndex gameIndex = ((ToolStripMenuItemCustom)sender).GameIndex;
 
             bool playMP = sender == PlayOriginalGameLLMenu.Thief2MPMenuItem;
 
-            FMInstallAndPlay.PlayOriginalGame(game, playMP);
+            FMInstallAndPlay.PlayOriginalGame(gameIndex, playMP);
         }
 
         internal void PlayOriginalGameButtons_Click(object sender, EventArgs e)
@@ -4922,11 +4927,11 @@ namespace AngelLoader.Forms
         {
             DarkButton button = (DarkButton)sender;
 
-            Image image =
-                button.GameIndex == GameIndex.Thief1 ? button.Enabled ? Images.Thief1_21 : Images.GetDisabledImage(Images.Thief1_21)
-              : button.GameIndex == GameIndex.Thief2 ? button.Enabled ? Images.Thief2_21 : Images.GetDisabledImage(Images.Thief2_21)
-              : button.GameIndex == GameIndex.Thief3 ? button.Enabled ? Images.Thief3_21 : Images.GetDisabledImage(Images.Thief3_21)
-              : button.Enabled ? Images.Shock2_21 : Images.GetDisabledImage(Images.Shock2_21);
+            Image image = Images.GetPerGameImage(
+                button.GameIndex,
+                Images.PerGameImageSize.Large,
+                Images.PerGameImageType.Primary,
+                button.Enabled);
 
             Images.PaintBitmapButton(button, e, image, x: 8);
         }

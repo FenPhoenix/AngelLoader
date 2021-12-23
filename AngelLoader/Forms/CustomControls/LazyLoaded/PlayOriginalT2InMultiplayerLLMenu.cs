@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
@@ -21,7 +22,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 if (!_constructed) return;
 
                 _menu.DarkModeEnabled = _darkModeEnabled;
-                MenuItem.Image = Images.Thief2_16;
+                MenuItem.Image = Images.GetPerGameImage(GameIndex.Thief2, Images.PerGameImageSize.Small, Images.PerGameImageType.Primary);
             }
         }
 
@@ -44,7 +45,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (_constructed) return;
 
             _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
-            MenuItem = new ToolStripMenuItemCustom { Image = Images.Thief2_16, Tag = LoadType.Lazy };
+            MenuItem = new ToolStripMenuItemCustom
+            {
+                GameIndex = GameIndex.Thief2,
+                Image = Images.GetPerGameImage(GameIndex.Thief2, Images.PerGameImageSize.Small, Images.PerGameImageType.Primary),
+                Tag = LoadType.Lazy
+            };
             MenuItem.Click += _owner.PlayT2InMultiplayerMenuItem_Click;
             _menu.Items.Add(MenuItem);
 
