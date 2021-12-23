@@ -1569,20 +1569,13 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    _filterByGameButtonsInOrder[i].Image =
-                        Images.GetPerGameImage(
-                            (GameIndex)i,
-                            Images.PerGameImageSize.Large,
-                            Images.PerGameImageType.Primary);
+                    _filterByGameButtonsInOrder[i].Image = Images.GetPerGameImage(i).Primary.Large();
                 }
 
                 var gameTabImages = new Image[SupportedGameCount];
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    gameTabImages[i] = Images.GetPerGameImage(
-                        (GameIndex)i,
-                        Images.PerGameImageSize.Small,
-                        Images.PerGameImageType.Primary);
+                    gameTabImages[i] = Images.GetPerGameImage(i).Primary.Small();
                 }
 
                 GamesTabControl.SetImages(gameTabImages);
@@ -4927,11 +4920,7 @@ namespace AngelLoader.Forms
         {
             DarkButton button = (DarkButton)sender;
 
-            Image image = Images.GetPerGameImage(
-                button.GameIndex,
-                Images.PerGameImageSize.Large,
-                Images.PerGameImageType.Primary,
-                button.Enabled);
+            Image image = Images.GetPerGameImage(button.GameIndex).Primary.Large(button.Enabled);
 
             Images.PaintBitmapButton(button, e, image, x: 8);
         }

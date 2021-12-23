@@ -7,7 +7,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    // @GENGAMES (Play original game controls - lazy loaded)
+    // @GENGAMES(T2MP) (Play original game controls - lazy loaded)
     internal sealed class Lazy_PlayOriginalControls
     {
         private bool _constructedSingle;

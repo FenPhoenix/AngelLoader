@@ -22,7 +22,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 if (!_constructed) return;
 
                 _menu.DarkModeEnabled = _darkModeEnabled;
-                MenuItem.Image = Images.GetPerGameImage(GameIndex.Thief2, Images.PerGameImageSize.Small, Images.PerGameImageType.Primary);
+                MenuItem.Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small();
             }
         }
 
@@ -48,7 +48,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             MenuItem = new ToolStripMenuItemCustom
             {
                 GameIndex = GameIndex.Thief2,
-                Image = Images.GetPerGameImage(GameIndex.Thief2, Images.PerGameImageSize.Small, Images.PerGameImageType.Primary),
+                Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small(),
                 Tag = LoadType.Lazy
             };
             MenuItem.Click += _owner.PlayT2InMultiplayerMenuItem_Click;

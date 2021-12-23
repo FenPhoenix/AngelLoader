@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    // @GENGAMES (Play original game menu): Begin
+    // @GENGAMES(T2MP) (Play original game menu): Begin
     internal sealed class PlayOriginalGameLLMenu
     {
         private bool _constructed;
@@ -26,7 +26,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal ToolStripMenuItemCustom Thief2MPMenuItem = null!;
 
-        internal ToolStripItem[] GameMenuItems = new ToolStripItem[SupportedGameCount];
+        internal readonly ToolStripItem[] GameMenuItems = new ToolStripItem[SupportedGameCount];
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -43,13 +43,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    GameMenuItems[i].Image =
-                        Images.GetPerGameImage(
-                            (GameIndex)i,
-                            Images.PerGameImageSize.Small,
-                            Images.PerGameImageType.Primary);
+                    GameMenuItems[i].Image = Images.GetPerGameImage(i).Primary.Small();
                 }
-                Thief2MPMenuItem.Image = Images.GetPerGameImage(GameIndex.Thief2, Images.PerGameImageSize.Small, Images.PerGameImageType.Primary);
+                Thief2MPMenuItem.Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small();
             }
         }
 
@@ -64,11 +60,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 GameMenuItems[i] = new ToolStripMenuItemCustom
                 {
                     GameIndex = (GameIndex)i,
-                    Image =
-                        Images.GetPerGameImage(
-                            (GameIndex)i,
-                            Images.PerGameImageSize.Small,
-                            Images.PerGameImageType.Primary),
+                    Image = Images.GetPerGameImage(i).Primary.Small(),
                     Tag = LoadType.Lazy
                 };
             }
@@ -78,7 +70,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             Thief2MPMenuItem = new ToolStripMenuItemCustom
             {
                 GameIndex = GameIndex.Thief2,
-                Image = Images.GetPerGameImage(GameIndex.Thief2, Images.PerGameImageSize.Small, Images.PerGameImageType.Primary),
+                Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small(),
                 Tag = LoadType.Lazy
             };
             _menu.Items.Insert(2, Thief2MPMenuItem);
@@ -104,5 +96,5 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             Thief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer;
         }
     }
-    // @GENGAMES (Play original game menu): End
+    // @GENGAMES(T2MP) (Play original game menu): End
 }

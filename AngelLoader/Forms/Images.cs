@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
+using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -490,7 +491,7 @@ namespace AngelLoader.Forms
         // We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
         // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
         // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
-        internal static readonly Bitmap?[] GameIcons = new Bitmap?[SupportedGameCount];
+        internal static readonly Image?[] GameIcons = new Image?[SupportedGameCount];
 
         // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
         private const int _numRatings = 11;
@@ -520,70 +521,69 @@ namespace AngelLoader.Forms
 
         #region Games
 
-        public sealed class PerGameImage
+
+        #region Per-game image getters
+
+        [PublicAPI]
+        public sealed class PerGameSizedImage
         {
-            public Func<Image> Primary;
-            public Func<Image> Secondary;
+            private readonly Func<Image> _large;
+            private readonly Func<Image> _small;
+            public Image Large(bool enabled = true) => enabled ? _large.Invoke() : GetDisabledImage(_large.Invoke());
+            public Image Small(bool enabled = true) => enabled ? _small.Invoke() : GetDisabledImage(_small.Invoke());
+
+            public PerGameSizedImage(Func<Bitmap> large, Func<Bitmap> small)
+            {
+                _large = large;
+                _small = small;
+            }
         }
 
-        public static readonly PerGameImage[] PerGameLargeImageGetters = InitPerGameImageGetters();
-        public static readonly PerGameImage[] PerGameSmallImageGetters = InitPerGameImageGetters(small: true);
-
-        private static PerGameImage[] InitPerGameImageGetters(bool small = false)
+        [PublicAPI]
+        public sealed class PerGameImage
         {
-            var ret = InitializedArray<PerGameImage>(SupportedGameCount);
+            public readonly PerGameSizedImage Primary;
+            public readonly PerGameSizedImage Secondary;
 
-            //var ret = new PerGameImage[SupportedGameCount];
+            public PerGameImage(PerGameSizedImage primary, PerGameSizedImage secondary)
+            {
+                Primary = primary;
+                Secondary = secondary;
+            }
+        }
 
-            ret[(int)GameIndex.Thief1].Primary = small ? Thief1_16 : Thief1_21;
-            ret[(int)GameIndex.Thief1].Secondary = small ? Thief1_16 : Thief1_21_DGV;
+        private static readonly PerGameImage[] PerGameImageGetters = InitPerGameImageGetters();
 
-            ret[(int)GameIndex.Thief2].Primary = small ? Thief2_16 : Thief2_21;
-            ret[(int)GameIndex.Thief2].Secondary = ret[(int)GameIndex.Thief2].Primary;
+        private static PerGameImage[] InitPerGameImageGetters()
+        {
+            var ret = new PerGameImage[SupportedGameCount];
 
-            ret[(int)GameIndex.Thief3].Primary = small ? Thief3_16 : Thief3_21;
-            ret[(int)GameIndex.Thief3].Secondary = ret[(int)GameIndex.Thief3].Primary;
+            // @GENGAMES (Images.InitPerGameImageGetters()) - Begin
+            var t1Primary = new PerGameSizedImage(large: Thief1_21, small: Thief1_16);
+            var t1Secondary = new PerGameSizedImage(large: Thief1_21_DGV, small: Thief1_16);
 
-            ret[(int)GameIndex.SS2].Primary = small ? Shock2_16 : Shock2_21;
-            ret[(int)GameIndex.SS2].Secondary = ret[(int)GameIndex.SS2].Primary;
+            var t2 = new PerGameSizedImage(large: Thief2_21, small: Thief2_16);
+            var t3 = new PerGameSizedImage(large: Thief3_21, small: Thief3_16);
+            var ss2 = new PerGameSizedImage(large: Shock2_21, small: Shock2_16);
+
+            ret[(int)GameIndex.Thief1] = new PerGameImage(t1Primary, t1Secondary);
+            ret[(int)GameIndex.Thief2] = new PerGameImage(t2, t2);
+            ret[(int)GameIndex.Thief3] = new PerGameImage(t3, t3);
+            ret[(int)GameIndex.SS2] = new PerGameImage(ss2, ss2);
+            // @GENGAMES (Images.InitPerGameImageGetters()) - End
 
             return ret;
         }
 
-        public enum PerGameImageSize
-        {
-            Large,
-            Small
-        }
+        public static PerGameImage GetPerGameImage(int gameIndex) => PerGameImageGetters[gameIndex];
+        public static PerGameImage GetPerGameImage(GameIndex gameIndex) => PerGameImageGetters[(int)gameIndex];
 
-        public enum PerGameImageType
-        {
-            Primary,
-            Alternate
-        }
+        #endregion
 
-        public static Image GetPerGameImage(GameIndex gameIndex, PerGameImageSize size, PerGameImageType type, bool enabled = true)
-        {
-            if (size == PerGameImageSize.Large)
-            {
-                var pgi = PerGameLargeImageGetters[(int)gameIndex];
-                var image = type == PerGameImageType.Primary ? pgi.Primary.Invoke() : pgi.Secondary.Invoke();
-                return enabled ? image : GetDisabledImage(image);
-            }
-            else
-            {
-                var ret = PerGameSmallImageGetters[(int)gameIndex];
-                var image = type == PerGameImageType.Primary ? ret.Primary.Invoke() : ret.Secondary.Invoke();
-                return enabled ? image : GetDisabledImage(image);
-            }
-        }
+        #region Game image properties
 
-        // @GENGAMES (Images): Begin
-        // Putting these into an array doesn't really gain us anything and loses us robustness, so leave them.
-        // We would have to say ResourceManager.GetObject(nameof(gameIndex) + "_16") etc. and that doesn't even
-        // work due to SS2 -> Shock2_16 etc. naming. We'd have to remember to name our resources properly or it
-        // would fail silently, so really it's best to just leave these as hard-converts even though we really
-        // want to get rid of individually-specified games.
+        // @GENGAMES (Images/game image properties): Begin
+
         private static Bitmap? _thief1_16;
         private static Bitmap? _thief1_16_Dark;
         private static Bitmap Thief1_16() =>
@@ -629,7 +629,10 @@ namespace AngelLoader.Forms
             DarkModeEnabled
                 ? _shock2_21_Dark ??= Resources.Shock2_21_Dark
                 : _shock2_21 ??= Resources.Shock2_21;
-        // @GENGAMES (Images): End
+
+        // @GENGAMES (Images/game image properties): End
+
+        #endregion
 
         #endregion
 
@@ -839,13 +842,10 @@ namespace AngelLoader.Forms
 
         internal static void ReloadImages()
         {
-            // @GENGAMES (Game icons for FMs list): Begin
-            // We would prefer to put these in an array, but see Images class for why we can't really do that
-            GameIcons[(int)GameIndex.Thief1] = Thief1_21_DGV();
-            GameIcons[(int)GameIndex.Thief2] = Thief2_21();
-            GameIcons[(int)GameIndex.Thief3] = Thief3_21();
-            GameIcons[(int)GameIndex.SS2] = Shock2_21();
-            // @GENGAMES (Game icons for FMs list): End
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIcons[i] = GetPerGameImage(i).Secondary.Large();
+            }
 
             LoadRatingImages();
             LoadFinishedOnImages();

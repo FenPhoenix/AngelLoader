@@ -424,7 +424,11 @@ namespace AngelLoader
             config.GameFilterControlVisibilities[(int)inGameIndex] = valTrimmed.EqualsTrue();
         }
 
-        // @GENGAMES (ConfigIni backward-compatible game filter visibility setters) - Begin
+        #region Backward-compatible game filter visibility setters
+
+        // We don't need to mark this with a GENGAMES tag or anything, because we never need to touch it again.
+        // Even if we add new games, they don't need to go here, because they'll use the new key name format
+        // (game prefixed instead of suffixed).
 
         private static void Config_GameFilterVisibleT1_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
@@ -443,7 +447,7 @@ namespace AngelLoader
             config.GameFilterControlVisibilities[(int)GameIndex.SS2] = valTrimmed.EqualsTrue();
         }
 
-        // @GENGAMES (ConfigIni backward-compatible game filter visibility setters) - End
+        #endregion
 
         #endregion
 
@@ -995,7 +999,6 @@ namespace AngelLoader
 
             sb.Append("LaunchGamesWithSteam=").Append(config.LaunchGamesWithSteam).AppendLine();
 
-            // @GENGAMES (Config writer - Steam): Begin
             // So far all games are on Steam. If we have one that isn't, we can just add an internal per-game
             // read-only "IsOnSteam" bool and check it before writing/reading this
             for (int i = 0; i < SupportedGameCount; i++)
@@ -1003,7 +1006,6 @@ namespace AngelLoader
                 GameIndex gameIndex = (GameIndex)i;
                 sb.Append(GetGamePrefix(gameIndex)).Append("UseSteam=").Append(config.GetUseSteamSwitch(gameIndex)).AppendLine();
             }
-            // @GENGAMES (Config writer - Steam): End
 
             sb.Append("SteamExe=").AppendLine(config.SteamExe);
 
