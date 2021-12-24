@@ -3131,21 +3131,27 @@ namespace AngelLoader.Forms
 
             var itemsHashSet = PatchDMLsListBox.ItemsAsStrings.ToHashSetI();
 
-            PatchDMLsListBox.BeginUpdate();
-            foreach (string f in dmlFiles)
+            try
             {
-                if (f.IsEmpty()) continue;
-
-                bool success = Core.AddDML(FMsDGV.GetSelectedFM(), f);
-                if (!success) return;
-
-                string dmlFileName = Path.GetFileName(f);
-                if (!itemsHashSet.Contains(dmlFileName))
+                PatchDMLsListBox.BeginUpdate();
+                foreach (string f in dmlFiles)
                 {
-                    PatchDMLsListBox.Items.Add(dmlFileName);
+                    if (f.IsEmpty()) continue;
+
+                    bool success = Core.AddDML(FMsDGV.GetSelectedFM(), f);
+                    if (!success) return;
+
+                    string dmlFileName = Path.GetFileName(f);
+                    if (!itemsHashSet.Contains(dmlFileName))
+                    {
+                        PatchDMLsListBox.Items.Add(dmlFileName);
+                    }
                 }
             }
-            PatchDMLsListBox.EndUpdate();
+            finally
+            {
+                PatchDMLsListBox.EndUpdate();
+            }
         }
 
         private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
