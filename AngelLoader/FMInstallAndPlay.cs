@@ -90,7 +90,7 @@ namespace AngelLoader
             if (PlayFM(fm, playMP))
             {
                 fm.LastPlayed.DateTime = DateTime.Now;
-                Core.View.RefreshSelectedFM();
+                Core.View.RefreshFM(fm);
                 Ini.WriteFullFMDataIni();
             }
         }
@@ -645,8 +645,8 @@ namespace AngelLoader
                 Core.View.HideProgressBox();
             }
 
-            // Not doing RefreshSelectedFM(rowOnly: true) because that wouldn't update the install/uninstall buttons
-            Core.View.RefreshSelectedFM();
+            // Not doing RefreshFM(rowOnly: true) because that wouldn't update the install/uninstall buttons
+            Core.View.RefreshFM(fm);
 
             return true;
         }

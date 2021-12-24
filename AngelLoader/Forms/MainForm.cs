@@ -2628,6 +2628,22 @@ namespace AngelLoader.Forms
             UpdateAllFMUIDataExceptReadme(FMsDGV.GetSelectedFM());
         }
 
+        public void RefreshFM(FanMission fm, bool rowOnly = false)
+        {
+            FanMission? selectedFM = GetSelectedFMOrNull();
+            if (selectedFM == null) return;
+
+            if (selectedFM == fm)
+            {
+                FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
+                if (!rowOnly) UpdateAllFMUIDataExceptReadme(selectedFM);
+            }
+            else
+            {
+                RefreshFMsListKeepSelection();
+            }
+        }
+
         /// <summary>
         /// Returns false if the list is empty and ClearShownData() has been called, otherwise true
         /// </summary>
