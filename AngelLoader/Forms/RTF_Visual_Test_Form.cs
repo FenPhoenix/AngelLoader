@@ -15,6 +15,8 @@ namespace AngelLoader.Forms
 {
     public sealed partial class RTF_Visual_Test_Form : Form
     {
+        private const string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
+
         internal sealed class RTF_Dark_Test_AppContext : ApplicationContext
         {
             internal RTF_Dark_Test_AppContext(bool dark)

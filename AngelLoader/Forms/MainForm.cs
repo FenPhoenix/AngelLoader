@@ -220,14 +220,7 @@ namespace AngelLoader.Forms
 
         protected override void WndProc(ref Message m)
         {
-            // A second instance has been started and told us to show ourselves, so do it here (nicer UX).
-            // This has to be in WndProc, not PreFilterMessage(). Shrug.
-            if (m.Msg == NativeCommon.WM_SHOWFIRSTINSTANCE)
-            {
-                if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
-                Activate();
-            }
-            else if (m.Msg == Native.WM_THEMECHANGED)
+            if (m.Msg == Native.WM_THEMECHANGED)
             {
                 Win32ThemeHooks.ReloadTheme();
             }
@@ -5002,16 +4995,29 @@ namespace AngelLoader.Forms
                 e.Data.GetData(DataFormats.FileDrop) is string[] droppedItems &&
                 Core.AtLeastOneDroppedFileValid(droppedItems))
             {
-                try
-                {
-                    EnableEverything(false);
-                    await FMArchives.Add(this, droppedItems.ToList());
-                }
-                finally
-                {
-                    EnableEverything(true);
-                }
+                await AddFMs(droppedItems);
             }
+        }
+
+        public async Task AddFMs(string[] fmArchiveNames)
+        {
+            if (!EverythingPanel.Enabled) return;
+
+            try
+            {
+                EnableEverything(false);
+                await FMArchives.Add(this, fmArchiveNames.ToList());
+            }
+            finally
+            {
+                EnableEverything(true);
+            }
+        }
+
+        public void ActivateThisInstance()
+        {
+            if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
+            Activate();
         }
     }
 }

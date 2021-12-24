@@ -257,5 +257,7 @@ namespace AngelLoader.Forms
         void ReadmeListFillAndSelect(List<string> readmeFiles, string readme);
         void ShowReadmeChooser(bool visible);
         void ShowInitialReadmeChooser(bool visible);
+        void ActivateThisInstance();
+        Task AddFMs(string[] fmArchiveNames);
     }
 }

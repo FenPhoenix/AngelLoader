@@ -8,6 +8,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -32,7 +33,7 @@ namespace AngelLoader
         // it's null. But if we check it from another thread there'll be a race condition. Figure something out?
         internal static IView View = null!;
 
-        internal static async void Init(Task configTask)
+        internal static async void Init(ReadOnlyCollection<string> args)
         {
             bool openSettings = false;
             // This is if we have no config file; in that case we assume we're starting for the first time ever
@@ -40,56 +41,48 @@ namespace AngelLoader
 
             List<int>? fmsViewListUnscanned = null;
 
+            #region Create required directories
+
             try
             {
-                #region Create required directories
+                Directory.CreateDirectory(Paths.Data);
+                Directory.CreateDirectory(Paths.Languages);
+            }
+            catch (Exception ex)
+            {
+                // ReSharper disable once ConvertToConstant.Local
+                string message = "Failed to create required application directories on startup.";
+                Log(message, ex);
+                // We're not even close to having a theme at this point, so just use regular MessageBox
+                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+            }
 
+            #endregion
+
+            #region Read config file if it exists
+
+            if (File.Exists(Paths.ConfigIni))
+            {
                 try
                 {
-                    Directory.CreateDirectory(Paths.Data);
-                    Directory.CreateDirectory(Paths.Languages);
+                    Ini.ReadConfigIni(Paths.ConfigIni, Config);
                 }
                 catch (Exception ex)
                 {
-                    // ReSharper disable once ConvertToConstant.Local
-                    string message = "Failed to create required application directories on startup.";
+                    string message = Paths.ConfigIni + " exists but there was an error while reading it.";
                     Log(message, ex);
-                    // We're not even close to having a theme at this point, so just use regular MessageBox
-                    MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Environment.Exit(1);
-                }
-
-                #endregion
-
-                #region Read config file if it exists
-
-                if (File.Exists(Paths.ConfigIni))
-                {
-                    try
-                    {
-                        Ini.ReadConfigIni(Paths.ConfigIni, Config);
-                    }
-                    catch (Exception ex)
-                    {
-                        string message = Paths.ConfigIni + " exists but there was an error while reading it.";
-                        Log(message, ex);
-                        openSettings = true;
-                    }
-                }
-                else
-                {
                     openSettings = true;
-                    // We're starting for the first time ever (assumed)
-                    cleanStart = true;
                 }
-
-                #endregion
             }
-            finally
+            else
             {
-                configTask.Wait();
-                configTask.Dispose();
+                openSettings = true;
+                // We're starting for the first time ever (assumed)
+                cleanStart = true;
             }
+
+            #endregion
 
             // We can't show the splash screen until we know our theme, which we have to get from the config
             // file, so we can't show it any earlier than this.
@@ -212,6 +205,8 @@ namespace AngelLoader
                     await DoParallelLoad();
                 }
             }
+
+            await SignalFirstInstance(args);
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
@@ -2057,5 +2052,58 @@ namespace AngelLoader
         }
 
         #endregion
+
+        public static async Task SignalFirstInstance(ReadOnlyCollection<string> args)
+        {
+            Trace.WriteLine("Activated!");
+            Trace.WriteLine("Command line:");
+            foreach (string item in args)
+            {
+                Trace.WriteLine(item);
+            }
+
+            if (View == null!) return;
+
+            View.ActivateThisInstance();
+
+            if (args.Count < 2) return;
+
+            switch (args[0])
+            {
+                case "-adda":
+                    // Add archives to list
+                    string[] fmArchives = new string[args.Count - 1];
+                    for (int i = 1; i < args.Count; i++)
+                    {
+                        fmArchives[i - 1] = args[i];
+                    }
+                    await View.AddFMs(fmArchives);
+                    break;
+                case "-play" when args.Count == 2:
+                    // Add archive, install, and play (single only)
+                    string archive;
+                    try
+                    {
+                        archive = Path.GetFileName(args[1]);
+                    }
+                    catch
+                    {
+                        return;
+                    }
+                    // @CMDLINE: We're now going to have the concept of operating on an FM that may not be the selected one.
+                    // So make sure this works! eg. we refresh the selected FM after playing (to update the last
+                    // played date) etc. We need to account for needing to refresh some other FM (and row-only if
+                    // it's not selected!), or none if the FM is scrolled offscreen or filtered out.
+                    // We should do like: if the FM is selected, run the current logic, but if not, then just
+                    // refresh the FMs list (so list-displayed fields can be updated) and leave it at that.
+                    FanMission? fm = FMsViewList.FirstOrDefault(x => x.Archive.EqualsI(archive));
+                    // @CMDLINE: Hash both files to check if they're really the same. Otherwise add the passed one to the list again.
+                    if (fm != null)
+                    {
+                        await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
+                    }
+                    break;
+            }
+        }
     }
 }
