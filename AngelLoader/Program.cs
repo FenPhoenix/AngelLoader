@@ -83,10 +83,11 @@ namespace AngelLoader
 
             protected override async void OnStartupNextInstance(StartupNextInstanceEventArgs eventArgs)
             {
-                // The official Microsoft example puts the base call line first, I guess I will too?
+                // The official Microsoft example puts the base call line first, so I guess I will too?
                 // https://github.com/microsoft/wpf-samples/tree/main/Application%20Management/SingleInstanceDetection
                 base.OnStartupNextInstance(eventArgs);
-                await Core.SignalFirstInstance(eventArgs.CommandLine);
+                Core.ActivateMainView();
+                await Core.HandleCommandLineArgs(eventArgs.CommandLine);
             }
         }
 

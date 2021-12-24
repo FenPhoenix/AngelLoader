@@ -206,7 +206,7 @@ namespace AngelLoader
                 }
             }
 
-            await SignalFirstInstance(args);
+            await HandleCommandLineArgs(args);
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
@@ -2053,7 +2053,15 @@ namespace AngelLoader
 
         #endregion
 
-        public static async Task SignalFirstInstance(ReadOnlyCollection<string> args)
+        public static void ActivateMainView()
+        {
+            if (View != null!)
+            {
+                View.ActivateThisInstance();
+            }
+        }
+
+        public static async Task HandleCommandLineArgs(ReadOnlyCollection<string> args)
         {
             Trace.WriteLine("Activated!");
             Trace.WriteLine("Command line:");
@@ -2062,11 +2070,7 @@ namespace AngelLoader
                 Trace.WriteLine(item);
             }
 
-            if (View == null!) return;
-
-            View.ActivateThisInstance();
-
-            if (args.Count < 2) return;
+            if (View == null! || args.Count < 2) return;
 
             switch (args[0])
             {
