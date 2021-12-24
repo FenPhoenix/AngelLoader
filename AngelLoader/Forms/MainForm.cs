@@ -4606,17 +4606,23 @@ namespace AngelLoader.Forms
                 {
                     PatchMainPanel.Show();
                     PatchFMNotInstalledLabel.Hide();
-                    PatchDMLsListBox.BeginUpdate();
-                    PatchDMLsListBox.Items.Clear();
-                    (bool success, List<string> dmlFiles) = Core.GetDMLFiles(fm);
-                    if (success)
+                    try
                     {
-                        foreach (string f in dmlFiles)
+                        PatchDMLsListBox.BeginUpdate();
+                        PatchDMLsListBox.Items.Clear();
+                        (bool success, List<string> dmlFiles) = Core.GetDMLFiles(fm);
+                        if (success)
                         {
-                            if (!f.IsEmpty()) PatchDMLsListBox.Items.Add(f);
+                            foreach (string f in dmlFiles)
+                            {
+                                if (!f.IsEmpty()) PatchDMLsListBox.Items.Add(f);
+                            }
                         }
                     }
-                    PatchDMLsListBox.EndUpdate();
+                    finally
+                    {
+                        PatchDMLsListBox.EndUpdate();
+                    }
                 }
 
                 #endregion
