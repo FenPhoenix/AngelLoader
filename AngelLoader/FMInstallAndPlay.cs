@@ -825,7 +825,7 @@ namespace AngelLoader
                     if (yes)
                     {
                         fm.Installed = false;
-                        Core.View.RefreshSelectedFM();
+                        Core.View.RefreshFM(fm);
                     }
                     return true;
                 }
@@ -929,7 +929,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    Core.View.RefreshSelectedFM();
+                    Core.View.RefreshFM(fm);
                 }
             }
             catch (Exception ex)

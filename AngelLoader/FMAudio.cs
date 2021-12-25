@@ -260,7 +260,7 @@ namespace AngelLoader
                 if (yes)
                 {
                     fm.Installed = false;
-                    Core.View.RefreshSelectedFM();
+                    Core.View.RefreshFM(fm);
                 }
 
                 return false;

@@ -206,8 +206,6 @@ namespace AngelLoader.Forms
 
         void RefreshFM(FanMission fm, bool rowOnly = false);
 
-        void RefreshSelectedFM(bool rowOnly = false);
-
         void RefreshFMsListKeepSelection();
 
         #endregion

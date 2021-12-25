@@ -641,9 +641,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == ScanFMMenuItem)
             {
-                if (await FMScan.ScanFMs(new List<FanMission> { _owner.FMsDGV.GetSelectedFM() }, hideBoxIfZip: true))
+                FanMission fm = _owner.FMsDGV.GetSelectedFM();
+                if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
                 {
-                    _owner.RefreshSelectedFM();
+                    _owner.RefreshFM(fm);
                 }
             }
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
@@ -664,8 +665,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 if (RatingMenuItem.DropDownItems[i] == sender)
                 {
                     int rating = i - 1;
-                    _owner.FMsDGV.GetSelectedFM().Rating = rating;
-                    _owner.RefreshSelectedFM(rowOnly: true);
+                    FanMission fm = _owner.FMsDGV.GetSelectedFM();
+                    fm.Rating = rating;
+                    _owner.RefreshFM(fm, rowOnly: true);
                     _owner.UpdateRatingMenus(rating, disableEvents: true);
                     Ini.WriteFullFMDataIni();
                     break;
@@ -714,7 +716,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 }
             }
 
-            _owner.RefreshSelectedFM(rowOnly: true);
+            _owner.RefreshFM(fm, rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 

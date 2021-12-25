@@ -1815,7 +1815,7 @@ namespace AngelLoader
             fm.Comment = commentText.ToRNEscapes();
             fm.CommentSingleLine = commentText.ToSingleLineComment(100);
 
-            View.RefreshSelectedFM(rowOnly: true);
+            View.RefreshFM(fm, rowOnly: true);
         }
 
         internal static void ScanAndFillLanguagesList(bool forceScan)
@@ -1874,7 +1874,7 @@ namespace AngelLoader
                 {
                     if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
                     {
-                        View.RefreshSelectedFM(rowOnly: true);
+                        View.RefreshFM(fm, rowOnly: true);
                     }
                 }
             }

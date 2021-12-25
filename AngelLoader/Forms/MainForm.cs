@@ -2619,15 +2619,6 @@ namespace AngelLoader.Forms
 
         #region Refresh FMs list
 
-        public void RefreshSelectedFM(bool rowOnly = false)
-        {
-            FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
-
-            if (rowOnly) return;
-
-            UpdateAllFMUIDataExceptReadme(FMsDGV.GetSelectedFM());
-        }
-
         public void RefreshFM(FanMission fm, bool rowOnly = false)
         {
             FanMission? selectedFM = GetSelectedFMOrNull();
@@ -2773,9 +2764,10 @@ namespace AngelLoader.Forms
                     //sender == StatsScanCustomResourcesButton
                     FMScanner.ScanOptions.FalseDefault(scanCustomResources: true);
 
-                if (await FMScan.ScanFMs(new List<FanMission> { FMsDGV.GetSelectedFM() }, scanOptions, hideBoxIfZip: true))
+                FanMission fm = FMsDGV.GetSelectedFM();
+                if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
                 {
-                    RefreshSelectedFM();
+                    RefreshFM(fm);
                 }
             }
         }
@@ -2797,8 +2789,9 @@ namespace AngelLoader.Forms
         private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().Title = EditFMTitleTextBox.Text;
-            RefreshSelectedFM(rowOnly: true);
+            FanMission fm = FMsDGV.GetSelectedFM();
+            fm.Title = EditFMTitleTextBox.Text;
+            RefreshFM(fm, rowOnly: true);
         }
 
         private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
@@ -2810,8 +2803,9 @@ namespace AngelLoader.Forms
         private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().Author = EditFMAuthorTextBox.Text;
-            RefreshSelectedFM(rowOnly: true);
+            FanMission fm = FMsDGV.GetSelectedFM();
+            fm.Author = EditFMAuthorTextBox.Text;
+            RefreshFM(fm, rowOnly: true);
         }
 
         private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
@@ -2825,19 +2819,21 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
 
-            FMsDGV.GetSelectedFM().ReleaseDate.DateTime = EditFMReleaseDateCheckBox.Checked
+            FanMission fm = FMsDGV.GetSelectedFM();
+            fm.ReleaseDate.DateTime = EditFMReleaseDateCheckBox.Checked
                 ? EditFMReleaseDateDateTimePicker.Value
                 : null;
 
-            RefreshSelectedFM(rowOnly: true);
+            RefreshFM(fm, rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
         private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().ReleaseDate.DateTime = EditFMReleaseDateDateTimePicker.Value;
-            RefreshSelectedFM(rowOnly: true);
+            FanMission fm = FMsDGV.GetSelectedFM();
+            fm.ReleaseDate.DateTime = EditFMReleaseDateDateTimePicker.Value;
+            RefreshFM(fm, rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
@@ -2846,19 +2842,21 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
 
-            FMsDGV.GetSelectedFM().LastPlayed.DateTime = EditFMLastPlayedCheckBox.Checked
+            FanMission fm = FMsDGV.GetSelectedFM();
+            fm.LastPlayed.DateTime = EditFMLastPlayedCheckBox.Checked
                 ? EditFMLastPlayedDateTimePicker.Value
                 : null;
 
-            RefreshSelectedFM(rowOnly: true);
+            RefreshFM(fm, rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
         private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().LastPlayed.DateTime = EditFMLastPlayedDateTimePicker.Value;
-            RefreshSelectedFM(rowOnly: true);
+            FanMission fm = FMsDGV.GetSelectedFM();
+            fm.LastPlayed.DateTime = EditFMLastPlayedDateTimePicker.Value;
+            RefreshFM(fm, rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
@@ -2866,9 +2864,10 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             int rating = EditFMRatingComboBox.SelectedIndex - 1;
-            FMsDGV.GetSelectedFM().Rating = rating;
+            FanMission fm = FMsDGV.GetSelectedFM();
+            fm.Rating = rating;
             FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
-            RefreshSelectedFM(rowOnly: true);
+            RefreshFM(fm, rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
@@ -3172,8 +3171,9 @@ namespace AngelLoader.Forms
         private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().DisabledMods = ModsDisabledModsTextBox.Text;
-            RefreshSelectedFM(rowOnly: true);
+            FanMission fm = FMsDGV.GetSelectedFM();
+            fm.DisabledMods = ModsDisabledModsTextBox.Text;
+            RefreshFM(fm, rowOnly: true);
         }
 
         private void ModsDisabledModsTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -3249,7 +3249,7 @@ namespace AngelLoader.Forms
             }
 
             fm.DisabledMods = ModsDisabledModsTextBox.Text;
-            RefreshSelectedFM(rowOnly: true);
+            RefreshFM(fm, rowOnly: true);
 
             Ini.WriteFullFMDataIni();
         }
@@ -3277,7 +3277,7 @@ namespace AngelLoader.Forms
                 ModsDisabledModsTextBox.Text = "";
             }
 
-            RefreshSelectedFM(rowOnly: true);
+            RefreshFM(fm, rowOnly: true);
         }
 
         #endregion
