@@ -5015,14 +5015,14 @@ namespace AngelLoader.Forms
             }
         }
 
-        public async Task AddFMs(string[] fmArchiveNames)
+        public async Task<bool> AddFMs(string[] fmArchiveNames)
         {
-            if (!EverythingPanel.Enabled) return;
+            if (!EverythingPanel.Enabled) return false;
 
             try
             {
                 EnableEverything(false);
-                await FMArchives.Add(this, fmArchiveNames.ToList());
+                return await FMArchives.Add(this, fmArchiveNames.ToList());
             }
             finally
             {

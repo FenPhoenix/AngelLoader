@@ -258,6 +258,6 @@ namespace AngelLoader.Forms
         void ShowReadmeChooser(bool visible);
         void ShowInitialReadmeChooser(bool visible);
         void ActivateThisInstance();
-        Task AddFMs(string[] fmArchiveNames);
+        Task<bool> AddFMs(string[] fmArchiveNames);
     }
 }

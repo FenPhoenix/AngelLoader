@@ -2082,6 +2082,7 @@ namespace AngelLoader
 
             switch (args[0])
             {
+#if false
                 case "-adda":
                     // Add archives to list
                     string[] fmArchives = new string[args.Count - 1];
@@ -2091,6 +2092,7 @@ namespace AngelLoader
                     }
                     await View.AddFMs(fmArchives);
                     break;
+#endif
                 case "-play" when args.Count == 2:
                     // Add archive, install, and play (single only)
                     string archive;
@@ -2103,23 +2105,43 @@ namespace AngelLoader
                         return;
                     }
                     /*
-                    @CMDLINE: We're now going to have the concept of operating on an FM that may not be the selected one.
-                    So make sure this works! eg. we refresh the selected FM after playing (to update the last
-                    played date) etc. We need to account for needing to refresh some other FM (and row-only if
-                    it's not selected!), or none if the FM is scrolled offscreen or filtered out.
-                    We should do like: if the FM is selected, run the current logic, but if not, then just
-                    refresh the FMs list (so list-displayed fields can be updated) and leave it at that.
                     @CMDLINE: Situations to handle for playing an FM:
                     -Say our FM is not in the list, so we add it. We auto-scan it, but the user clicks Cancel.
                     Now we don't know what game type it is, so we can't install it.
                     -We add the FM, scan it, and the game type is a game that isn't installed.
                     */
-                    FanMission? fm = FMsViewList.FirstOrDefault(x => x.Archive.EqualsI(archive));
-                    // @CMDLINE: Hash both files to check if they're really the same. Otherwise add the passed one to the list again.
-                    if (fm != null)
+                    static FanMission? GetFMInViewList(string archive)
                     {
-                        await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
+                        return FMsViewList.FirstOrDefault(x => x.Archive.EqualsI(archive) && !x.MarkedUnavailable);
                     }
+
+                    FanMission? fm = GetFMInViewList(archive);
+                    if (fm == null)
+                    {
+                        string archiveInArchiveDir = FMArchives.FindFirstMatch(archive);
+                        if (archiveInArchiveDir.IsEmpty())
+                        {
+                            if (!await View.AddFMs(new[] { archive })) return;
+                            fm = GetFMInViewList(archive);
+                            if (fm == null)
+                            {
+                                Dialogs.ShowError("FM added, but was not in \"available\" subset of view list even after adding and refreshing list from disk.");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            await RefreshFMsListFromDisk();
+                            fm = GetFMInViewList(archive);
+                            if (fm == null)
+                            {
+                                Dialogs.ShowError("FM found on disk, but was not in \"available\" subset of view list even after refreshing list from disk.");
+                                return;
+                            }
+                        }
+                    }
+
+                    await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
                     break;
             }
         }
