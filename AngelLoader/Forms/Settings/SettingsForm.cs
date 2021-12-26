@@ -900,7 +900,7 @@ namespace AngelLoader.Forms
                         // It's actually totally fine that this one is a reference.
                         LText = _inLText;
                         _ownerForm?.Localize();
-                        DesktopMenu.AddUsToWindowsContextMenu(_inShowContextMenuCommands);
+                        Core.AddUsToWindowsContextMenu(_inShowContextMenuCommands);
                         contextMenuSet = true;
                     }
 
@@ -913,7 +913,7 @@ namespace AngelLoader.Forms
                     if (!contextMenuSet &&
                         _inShowContextMenuCommands != OtherPage.ShowCommandsCheckBox.Checked)
                     {
-                        DesktopMenu.AddUsToWindowsContextMenu(_inShowContextMenuCommands);
+                        Core.AddUsToWindowsContextMenu(_inShowContextMenuCommands);
                     }
                 }
 
@@ -1521,7 +1521,7 @@ namespace AngelLoader.Forms
                 Log("Exception in language reading", ex);
             }
 
-            DesktopMenu.AddUsToWindowsContextMenu(OtherPage.ShowCommandsCheckBox.Checked);
+            Core.AddUsToWindowsContextMenu(OtherPage.ShowCommandsCheckBox.Checked);
 
             Localize();
             if (!_startup) _ownerForm?.Localize();
@@ -1529,7 +1529,7 @@ namespace AngelLoader.Forms
 
         private void ShowCommandsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            DesktopMenu.AddUsToWindowsContextMenu(OtherPage.ShowCommandsCheckBox.Checked);
+            Core.AddUsToWindowsContextMenu(OtherPage.ShowCommandsCheckBox.Checked);
         }
 
         #endregion
