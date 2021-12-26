@@ -64,8 +64,20 @@ namespace AngelLoader
 
             if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
             {
+                string message = fm.Installed
+                    ? LText.AlertMessages.Play_ConfirmMessage
+                    : LText.AlertMessages.Play_InstallAndPlayConfirmMessage;
+
+                if (Core.View.GetSelectedFMOrNull() != fm)
+                {
+                    message += "\r\n\r\n" +
+                               fm.Archive + "\r\n" +
+                               fm.Title + "\r\n" +
+                               fm.Author + "\r\n";
+                }
+
                 (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
-                    message: fm.Installed ? LText.AlertMessages.Play_ConfirmMessage : LText.AlertMessages.Play_InstallAndPlayConfirmMessage,
+                    message: message,
                     title: LText.AlertMessages.Confirm,
                     icon: MessageBoxIcon.None,
                     showDontAskAgain: true,
