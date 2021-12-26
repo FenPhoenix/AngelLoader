@@ -701,6 +701,11 @@ namespace AngelLoader
             config.PlayOriginalSeparateButtons = valTrimmed.EqualsTrue();
         }
 
+        private static void Config_ShowOSContextMenuCommands_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            config.ShowOSContextMenuCommands = valTrimmed.EqualsTrue();
+        }
+
         #endregion
 
         private static readonly Dictionary<string, Action<ConfigData, string, string, GameIndex, bool>> _actionDict_Config = new()
@@ -866,6 +871,8 @@ namespace AngelLoader
             { "EnableCharacterDetailFix", Config_EnableCharacterDetailFix_Set },
 
             { "PlayOriginalSeparateButtons", Config_PlayOriginalSeparateButtons_Set },
+
+            { "ShowOSContextMenuCommands", Config_ShowOSContextMenuCommands_Set },
 
             #region Backward compatibility
 
@@ -1163,6 +1170,7 @@ namespace AngelLoader
 
             sb.Append("EnableCharacterDetailFix=").Append(config.EnableCharacterDetailFix).AppendLine();
             sb.Append("PlayOriginalSeparateButtons=").Append(config.PlayOriginalSeparateButtons).AppendLine();
+            sb.Append("ShowOSContextMenuCommands=").Append(config.ShowOSContextMenuCommands).AppendLine();
 
             using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
             sw.Write(sb.ToString());

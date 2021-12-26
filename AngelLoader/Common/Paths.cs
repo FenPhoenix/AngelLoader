@@ -14,6 +14,8 @@ namespace AngelLoader
 
         #region Startup path
 
+        internal const string AppFileName = "AngelLoader.exe";
+
 #if DEBUG || Release_Testing
         private static string? _startup;
         internal static string Startup

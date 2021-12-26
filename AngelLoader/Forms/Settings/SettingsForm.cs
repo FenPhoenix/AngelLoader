@@ -36,6 +36,7 @@ namespace AngelLoader.Forms
         #region Copies of passed-in data
 
         private readonly string _inLanguage;
+        private readonly bool _inShowContextMenuCommands;
         private readonly LText_Class _inLText;
 
         private readonly int _inPathsVScrollPos;
@@ -108,6 +109,7 @@ namespace AngelLoader.Forms
             #region Init copies of passed-in data
 
             _inLanguage = config.Language;
+            _inShowContextMenuCommands = config.ShowOSContextMenuCommands;
             // Even though this looks like it should be a reference and therefore not work for being a separate
             // object, it somehow does, because I guess we new up LText on read and break the reference and then
             // this copy becomes its own copy...? I don't like that I didn't know that...
@@ -442,6 +444,16 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region Show/hide UI elements
+
+                AppearancePage.HideUninstallButtonCheckBox.Checked = config.HideUninstallButton;
+                AppearancePage.HideFMListZoomButtonsCheckBox.Checked = config.HideFMListZoomButtons;
+                AppearancePage.HideExitButtonCheckBox.Checked = config.HideExitButton;
+
+                #endregion
+
+                AppearancePage.ReadmeFixedWidthFontCheckBox.Checked = config.ReadmeUseFixedWidthFont;
+
                 #endregion
 
                 #region Other page
@@ -476,15 +488,7 @@ namespace AngelLoader.Forms
 
                 OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked = config.ConfirmPlayOnDCOrEnter;
 
-                #region Show/hide UI elements
-
-                AppearancePage.HideUninstallButtonCheckBox.Checked = config.HideUninstallButton;
-                AppearancePage.HideFMListZoomButtonsCheckBox.Checked = config.HideFMListZoomButtons;
-                AppearancePage.HideExitButtonCheckBox.Checked = config.HideExitButton;
-
-                #endregion
-
-                AppearancePage.ReadmeFixedWidthFontCheckBox.Checked = config.ReadmeUseFixedWidthFont;
+                OtherPage.ShowCommandsCheckBox.Checked = config.ShowOSContextMenuCommands;
 
                 #endregion
             }
@@ -552,6 +556,7 @@ namespace AngelLoader.Forms
                 AppearancePage.DateSeparator3TextBox.TextChanged += DateCustomValue_Changed;
 
                 OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
+                OtherPage.ShowCommandsCheckBox.CheckedChanged += ShowCommandsCheckBox_CheckedChanged;
             }
 
             #endregion
@@ -763,6 +768,9 @@ namespace AngelLoader.Forms
                     AppearancePage.ReadmeGroupBox.Text = LText.SettingsWindow.Appearance_ReadmeBox;
                     AppearancePage.ReadmeFixedWidthFontCheckBox.Text = LText.SettingsWindow.Appearance_ReadmeUseFixedWidthFont;
 
+                    OtherPage.OSContextMenuGroupBox.Text = LText.SettingsWindow.Other_FileContextMenu;
+                    OtherPage.ShowCommandsCheckBox.Text = LText.SettingsWindow.Other_FileContextMenu_ShowCommands;
+
                     #endregion
                 }
 
@@ -886,17 +894,26 @@ namespace AngelLoader.Forms
             {
                 if (!_startup)
                 {
+                    bool contextMenuSet = false;
                     if (!LangComboBox.SelectedBackingItem().EqualsI(_inLanguage))
                     {
                         // It's actually totally fine that this one is a reference.
                         LText = _inLText;
                         _ownerForm?.Localize();
+                        DesktopMenu.AddUsToWindowsContextMenu(_inShowContextMenuCommands);
+                        contextMenuSet = true;
                     }
 
                     if (_inTheme != _selfTheme)
                     {
                         Config.VisualTheme = _inTheme;
                         _ownerForm?.SetTheme(_inTheme);
+                    }
+
+                    if (!contextMenuSet &&
+                        _inShowContextMenuCommands != OtherPage.ShowCommandsCheckBox.Checked)
+                    {
+                        DesktopMenu.AddUsToWindowsContextMenu(_inShowContextMenuCommands);
                     }
                 }
 
@@ -1022,6 +1039,16 @@ namespace AngelLoader.Forms
 
                 OutConfig.DaysRecent = (uint)AppearancePage.RecentFMsNumericUpDown.Value;
 
+                #region Show/hide UI elements
+
+                OutConfig.HideUninstallButton = AppearancePage.HideUninstallButtonCheckBox.Checked;
+                OutConfig.HideFMListZoomButtons = AppearancePage.HideFMListZoomButtonsCheckBox.Checked;
+                OutConfig.HideExitButton = AppearancePage.HideExitButtonCheckBox.Checked;
+
+                #endregion
+
+                OutConfig.ReadmeUseFixedWidthFont = AppearancePage.ReadmeFixedWidthFontCheckBox.Checked;
+
                 #endregion
 
                 #region Other page
@@ -1051,15 +1078,7 @@ namespace AngelLoader.Forms
 
                 OutConfig.ConfirmPlayOnDCOrEnter = OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked;
 
-                #region Show/hide UI elements
-
-                OutConfig.HideUninstallButton = AppearancePage.HideUninstallButtonCheckBox.Checked;
-                OutConfig.HideFMListZoomButtons = AppearancePage.HideFMListZoomButtonsCheckBox.Checked;
-                OutConfig.HideExitButton = AppearancePage.HideExitButtonCheckBox.Checked;
-
-                #endregion
-
-                OutConfig.ReadmeUseFixedWidthFont = AppearancePage.ReadmeFixedWidthFontCheckBox.Checked;
+                OutConfig.ShowOSContextMenuCommands = OtherPage.ShowCommandsCheckBox.Checked;
 
                 #endregion
             }
@@ -1502,8 +1521,15 @@ namespace AngelLoader.Forms
                 Log("Exception in language reading", ex);
             }
 
+            DesktopMenu.AddUsToWindowsContextMenu(OtherPage.ShowCommandsCheckBox.Checked);
+
             Localize();
             if (!_startup) _ownerForm?.Localize();
+        }
+
+        private void ShowCommandsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            DesktopMenu.AddUsToWindowsContextMenu(OtherPage.ShowCommandsCheckBox.Checked);
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿//#define DESKTOP_MENU
+﻿#define DESKTOP_MENU
 
 #if DESKTOP_MENU
 
@@ -30,10 +30,6 @@ namespace AngelLoader
          Also shell extensions apparently get perma-loaded by Windows and therefore presumably couldn't be over-
          written(?) So extracting new versions to AL's dir would produce an error for the shell extension file?
          Maybe you're supposed to put it in some central location. Don't know. Not looked into it that much yet.
-
-        -We can't pass strings with our current PostMessage-based first-instance notification system.
-         We would have to move to some kind of pipe-based system, or else we just use this as an excuse to move
-         off of framework and onto .NET 6+, which has a multi-instance communication system built right in.
         */
         internal static bool AddUsToWindowsContextMenu(bool enable)
         {
@@ -42,10 +38,10 @@ namespace AngelLoader
                 AssertR(ext.Trim('.') == ext, nameof(ext) + " was passed with a dot prefix or suffix");
 
                 string sfaExtShellPath = @"SOFTWARE\Classes\SystemFileAssociations\." + ext + @"\shell";
-                const string alKeyName = "open_with_angelloader";
+                const string alKeyName = "play_with_angelloader";
                 string alKeyPath = sfaExtShellPath + @"\" + alKeyName;
 
-#region Local functions
+                #region Local functions
 
                 static RegistryKey? CreateSubKey(string path)
                 {
@@ -147,19 +143,27 @@ namespace AngelLoader
 
                 bool Cleanup() => DeleteKey(sfaExtShellPath, alKeyPath, silentCleanupMode: true);
 
-#endregion
+                #endregion
 
                 if (enable)
                 {
-                    string appPathAndExe = Path.Combine(Paths.Startup, "AngelLoader.exe");
+                    string appPathAndExe = Path.Combine(Paths.Startup, Paths.AppFileName);
 
                     RegistryKey? alKey = null;
                     try
                     {
                         alKey = CreateSubKey(alKeyPath);
                         if (alKey == null ||
-                            !SetValue(alKey, "", "AngelLoader TEST") ||
-                            !SetValue(alKey, "Icon", appPathAndExe))
+                            !SetValue(alKey, "", LText.ShellContextMenu.Play) ||
+                            !SetValue(alKey, "Icon", appPathAndExe) ||
+                            // Note: MultiSelectModel is only to do with how many files can be selected and still
+                            // have the context menu option show up. It is NOT, unfortunately, to do with how
+                            // files actually get SENT to the app, which as far as I can tell are always passed
+                            // one at a time, with one new instance per file. Ugh. If we wanted proper multi-file
+                            // batch loading, it looks like it's still shell extension town for us.
+                            // We say "Single" for play for obvious reasons, but if we wanted to add "Add to set"
+                            // later then we would want to support multiple at once, so yeah.
+                            !SetValue(alKey, "MultiSelectModel", "Single"))
                         {
                             return Cleanup();
                         }
@@ -174,7 +178,7 @@ namespace AngelLoader
                     {
                         cmdKey = CreateSubKey(alKeyPath + @"\command");
                         if (cmdKey == null ||
-                            !SetValue(cmdKey, "", "\"" + appPathAndExe + "\" -add_fm_archive \"%1\""))
+                            !SetValue(cmdKey, "", "\"" + appPathAndExe + "\" -play \"%1\""))
                         {
                             return Cleanup();
                         }

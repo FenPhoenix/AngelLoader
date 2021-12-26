@@ -410,6 +410,8 @@ namespace AngelLoader.DataClasses
 
         internal bool PlayOriginalSeparateButtons = true;
 
+        internal bool ShowOSContextMenuCommands = true;
+
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed;

@@ -15,6 +15,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -126,6 +127,8 @@ namespace AngelLoader
                     }
                     Ini.AddLanguageFromFile(f, Config.LanguageNames);
                 }
+
+                DesktopMenu.AddUsToWindowsContextMenu(Config.ShowOSContextMenuCommands);
             }
 
             if (!openSettings)
@@ -412,6 +415,8 @@ namespace AngelLoader
             Config.HideExitButton = outConfig.HideExitButton;
 
             Config.ReadmeUseFixedWidthFont = outConfig.ReadmeUseFixedWidthFont;
+
+            Config.ShowOSContextMenuCommands = outConfig.ShowOSContextMenuCommands;
 
             #endregion
 
@@ -2063,6 +2068,9 @@ namespace AngelLoader
 
         public static async Task HandleCommandLineArgs(ReadOnlyCollection<string> args)
         {
+            using var mutex = new Mutex(true, AppGuid, out bool createdNew);
+            if (!createdNew) return;
+
             Trace.WriteLine("Activated!");
             Trace.WriteLine("Command line:");
             foreach (string item in args)
