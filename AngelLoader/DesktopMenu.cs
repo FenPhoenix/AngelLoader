@@ -15,12 +15,9 @@ namespace AngelLoader
     internal static class DesktopMenu
     {
         /*
-        TODO(AddUsToWindowsContextMenu):
+        @vNext: TODO(AddUsToWindowsContextMenu):
         -Decide if we want options for "Play with AL", "Install with AL", "Add to list" etc.
         -Test with non-admin, and on Win7.
-        -Do we want to always write our stuff to the registry (either add or remove our menu items) on startup?
-         Or only on settings change?
-        -Finalize strings (ie. "AngelLoader TEST")
 
         Issues:
         -With our simple registry-based approach, we can't tell Windows to batch multiple files and send them all

@@ -2066,6 +2066,7 @@ namespace AngelLoader
             }
         }
 
+        // @vNext(HandleCommandLineArgs): Finalize this and take care of any notes and todos
         public static async Task HandleCommandLineArgs(ReadOnlyCollection<string> args)
         {
             using var mutex = new Mutex(true, AppGuid, out bool createdNew);
