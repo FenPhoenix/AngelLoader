@@ -58,7 +58,7 @@ namespace AngelLoader
                 2 + // pnSetb
                 2 + // pnPgtb
                 2 + // pnFfntb
-                66;  // szSsht (not used)
+                66; // szSsht (not used)
             if (br.ReadUInt16() == 0) return fail; // pnMac: 0 means Word file, not Write file
 
             // Headers are always 128 bytes long I think?!

@@ -276,6 +276,10 @@ namespace AL_Common
             // For "fldinst"
             // We need to do stuff with this (SYMBOL instruction)
 
+            // NOTE: This is generated. Values can be modified, but not keys (keys are the first string params).
+            // Also no reordering. Adding, removing, reordering, or modifying keys requires generating a new version.
+            // See RTF_SymbolDictToList_Gen.cs for how to generate a new version (it also contains the original
+            // Symbol list which must be used as the source to generate this one).
             private readonly Symbol?[] _symbolTable =
             {
                 null,

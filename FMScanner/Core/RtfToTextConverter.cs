@@ -1076,8 +1076,6 @@ namespace FMScanner
             if (_hexBuffer.Capacity > ByteSize.MB) _hexBuffer.Capacity = 0;
             if (_unicodeBuffer.Capacity > ByteSize.MB) _unicodeBuffer.Capacity = 0;
             // For the font entries, we can't check a Dictionary's capacity nor set it, so... oh well.
-            // For the scope stack, we can't check its capacity because Stacks don't have a Capacity property(?!?),
-            // but we're guaranteed not to exceed 100 because of a check in the only place where we push to it.
             if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
 
             // This one has the seek-back buffer (a Stack<char>) which is technically eligible for deallocation,

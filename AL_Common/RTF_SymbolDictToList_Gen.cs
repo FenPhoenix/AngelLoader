@@ -11,7 +11,7 @@ namespace AL_Common
     public abstract partial class RTFParserBase
     {
 #if SYMBOL_PERFECT_HASH_GEN
-        // This is the original "canonical" list, generate the perfect has from this
+        // This is the original "canonical" list, generate the perfect hash from this
         private readonly Symbol[] _symbolList =
         {
             #region Code pages / charsets / fonts
