@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AL_Common;
@@ -29,6 +30,10 @@ namespace AngelLoader
         // "The game _can_ play OGG files but it can under some circumstance cause short hiccups, on less powerful
         // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
         // them to WAV files during installation."
+
+        private static readonly byte[] _riff = { (byte)'R', (byte)'I', (byte)'F', (byte)'F' };
+        private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
+        private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
 
         internal static async Task ConvertToWAVs(FanMission fm, AudioConvert type, bool doChecksAndProgressBox)
         {
@@ -59,13 +64,13 @@ namespace AngelLoader
                                 using var fs = File.OpenRead(file);
                                 using var br = new BinaryReader(fs, Encoding.ASCII);
 
-                                string riff = Encoding.ASCII.GetString(br.ReadBytes(4));
-                                if (riff != "RIFF") return -1;
+                                byte[] riff = br.ReadBytes(4);
+                                if (!riff.SequenceEqual(_riff)) return -1;
                                 br.ReadBytes(4);
-                                string wave = Encoding.ASCII.GetString(br.ReadBytes(4));
-                                if (wave != "WAVE") return 0;
-                                string fmt = Encoding.ASCII.GetString(br.ReadBytes(4));
-                                if (fmt != "fmt ") return 0;
+                                byte[] wave = br.ReadBytes(4);
+                                if (!wave.SequenceEqual(_wave)) return 0;
+                                byte[] fmt = br.ReadBytes(4);
+                                if (!fmt.SequenceEqual(_fmt)) return 0;
                                 br.ReadBytes(18);
                                 ushort bits = br.ReadUInt16();
                                 return bits;
