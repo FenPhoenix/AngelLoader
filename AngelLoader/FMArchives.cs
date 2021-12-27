@@ -202,7 +202,9 @@ namespace AngelLoader
             bool success = await Task.Run(() =>
             {
                 string archivesLines = "";
-                for (int i = 0; i < droppedItemsList.Count; i++)
+                bool archivesLinesTruncated = false;
+                const int maxArchivesLines = 15;
+                for (int i = 0, archiveLineCount = 0; i < droppedItemsList.Count; i++)
                 {
                     string di = droppedItemsList[i];
                     if (di.IsEmpty() || !di.ExtIsArchive() ||
@@ -219,9 +221,31 @@ namespace AngelLoader
                         i--;
                         continue;
                     }
+                    else if (PathContainsUnsupportedProgramFilesFolder(di, out string progFilesPath))
+                    {
+                        string message = "This path contains '" + progFilesPath +
+                                         "' which is an unsupported path for 32-bit apps.\r\n\r\n" +
+                                         "The passed path was:\r\n\r\n" +
+                                         di + "\r\n\r\n";
+                        Log(message, stackTrace: true);
+                        Core.View.InvokeSync(() => Dialogs.ShowError(message, owner));
+                        return false;
+                    }
 
-                    if (!archivesLines.IsEmpty()) archivesLines += "\r\n";
-                    archivesLines += di;
+                    if (!archivesLinesTruncated)
+                    {
+                        if (!archivesLines.IsEmpty()) archivesLines += "\r\n";
+                        if (archiveLineCount < maxArchivesLines)
+                        {
+                            archivesLines += di;
+                            archiveLineCount++;
+                        }
+                        else if (archiveLineCount == maxArchivesLines)
+                        {
+                            archivesLines += "[...]";
+                            archivesLinesTruncated = true;
+                        }
+                    }
                 }
 
                 if (droppedItemsList.Count == 0)

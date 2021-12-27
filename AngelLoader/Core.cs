@@ -2100,10 +2100,25 @@ namespace AngelLoader
 #endif
                 case "-play" when args.Count == 2:
                     // Add archive, install, and play (single only)
+                    string fullPath = args[1];
+
+                    if (!fullPath.ExtIsArchive()) return;
+
+                    if (PathContainsUnsupportedProgramFilesFolder(fullPath, out string progFilesPath))
+                    {
+                        string message = "This path contains '" + progFilesPath +
+                                         "' which is an unsupported path for 32-bit apps.\r\n\r\n" +
+                                         "The passed path was:\r\n\r\n" +
+                                         fullPath + "\r\n\r\n";
+                        Log(message, stackTrace: true);
+                        Dialogs.ShowError(message);
+                        return;
+                    }
+
                     string archive;
                     try
                     {
-                        archive = Path.GetFileName(args[1]);
+                        archive = Path.GetFileName(fullPath);
                     }
                     catch
                     {

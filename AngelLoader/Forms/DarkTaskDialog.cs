@@ -131,7 +131,7 @@ namespace AngelLoader.Forms
             {
                 bottomBarContentWidth += VerificationCheckBox.Margin.Horizontal + VerificationCheckBox.Width + 22;
             }
-            int width = Math.Max(bottomBarContentWidth, 350);
+            int width = Math.Max(bottomBarContentWidth, Math.Min(550, MessageLabel.Width + imageMarginX + 7));
             MessageLabel.MaximumSize = new Size((width - imageMarginX) - 7, MessageLabel.MaximumSize.Height);
             int height = MessageLabel.Top + MessageLabel.Height + 15 + BottomFLP.Height;
 

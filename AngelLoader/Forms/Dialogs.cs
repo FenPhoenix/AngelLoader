@@ -94,12 +94,29 @@ namespace AngelLoader.Forms
             return (cancel, dontAskAgain);
         }
 
+        public static void ShowError(string message, IWin32Window owner, bool showScannerLogFile = false)
+        {
+            ShowError_Internal(message, owner, showScannerLogFile);
+        }
+
         public static void ShowError(string message, bool showScannerLogFile = false)
+        {
+            ShowError_Internal(message, null, showScannerLogFile);
+        }
+
+        private static void ShowError_Internal(string message, IWin32Window? owner, bool showScannerLogFile)
         {
             string logFile = showScannerLogFile ? Paths.ScannerLogFile : Paths.LogFile;
 
             using var d = new DarkErrorDialog(message, logFile);
-            d.ShowDialogDark();
+            if (owner != null)
+            {
+                d.ShowDialogDark(owner);
+            }
+            else
+            {
+                d.ShowDialogDark();
+            }
         }
 
         public static void ShowAlert(string message, string title, MessageBoxIcon icon = MessageBoxIcon.Warning)
