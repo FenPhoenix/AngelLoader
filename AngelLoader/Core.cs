@@ -2173,12 +2173,18 @@ namespace AngelLoader
 
         Issues:
         -With our simple registry-based approach, we can't tell Windows to batch multiple files and send them all
-        at once. We get one copy of the app started for each file.
-        We would need a shell extension for that, and we would want to write it native for perf and lightness
-        (official word is that .NET-based shell extensions are not recommended).
-        Also shell extensions apparently get perma-loaded by Windows and therefore presumably couldn't be over-
-        written(?) So extracting new versions to AL's dir would produce an error for the shell extension file?
-        Maybe you're supposed to put it in some central location. Don't know. Not looked into it that much yet.
+         at once. We get one copy of the app started for each file.
+         We would need a shell extension for that, and we would want to write it native for perf and lightness
+         (official word is that .NET-based shell extensions are not recommended).
+         Also shell extensions apparently get perma-loaded by Windows and therefore presumably couldn't be over-
+         written(?) So extracting new versions to AL's dir would produce an error for the shell extension file?
+         Maybe you're supposed to put it in some central location. Don't know. Not looked into it that much yet.
+        -If the user deletes AL from disk, the menu options will remain unless they were to first open the app
+         and turn them off, THEN delete the app. That's not such a nice result. If the user wanted them gone they'd
+         have to put AL back in a folder, go give it its required settings and then turn the menu commands off.
+         If we were an installable app with an uninstaller, we could just remove the menu commands within the
+         uninstaller. But maybe we shouldn't do this in our current state...? Should we disable this altogether
+         or make it be off by default with a message about this quirk and users can still turn it on if they want?
         */
         internal static bool AddUsToWindowsContextMenu(bool enable)
         {
