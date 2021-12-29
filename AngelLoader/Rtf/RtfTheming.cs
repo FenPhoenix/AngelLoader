@@ -109,8 +109,11 @@ namespace AngelLoader
             {
                 byte[] ret = new byte[number <= 9 ? 1 : number <= 99 ? 2 : 3];
 
-                string numStr = number.ToString();
-                for (int i = 0; i < numStr.Length; i++) ret[i] = (byte)numStr[i];
+                for (int i = ret.Length - 1; i >= 0; i--)
+                {
+                    ret[i] = (byte)((number % 10) + '0');
+                    number /= 10;
+                }
 
                 return ret;
             }
