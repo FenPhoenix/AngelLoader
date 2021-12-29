@@ -9,16 +9,11 @@ namespace FenGen
     {
         internal static void Generate(string destFile, bool remove = false)
         {
-            string codeBlock = GetCodeBlock(destFile, GenAttributes.FenGenBuildDateDestClass);
+            var w = GetWriterForClass(destFile, GenAttributes.FenGenBuildDateDestClass);
 
-            var w = new CodeWriters.IndentingWriter(startingIndent: 1);
-
-            w.AppendRawString(codeBlock);
-            w.WL("{");
             string date = remove ? "" : DateTime.UtcNow.ToString("yyyyMMddHHmmss", DateTimeFormatInfo.InvariantInfo);
             w.WL("internal const string BuildDate = \"" + date + "\";");
-            w.WL("}");
-            w.WL("}");
+            w.CloseClassAndNamespace();
 
             File.WriteAllText(destFile, w.ToString());
         }

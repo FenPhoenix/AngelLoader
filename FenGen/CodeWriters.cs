@@ -1,12 +1,15 @@
 ﻿using System.Text;
+using JetBrains.Annotations;
 
 namespace FenGen
 {
     internal static class CodeWriters
     {
+        [PublicAPI]
         internal sealed class IndentingWriter
         {
             private int _nextIndent;
+            private bool _fileScopedNamespace;
             private readonly StringBuilder _sb;
 
             private static string Indent(int num)
@@ -20,11 +23,18 @@ namespace FenGen
             internal void IncrementIndent() => _nextIndent++;
             internal void DecrementIndent() => _nextIndent--;
 
-            internal IndentingWriter(int startingIndent = 0)
+            internal IndentingWriter(int startingIndent, bool fileScopedNamespace)
             {
                 _nextIndent = startingIndent;
+                _fileScopedNamespace = fileScopedNamespace;
                 _sb = new StringBuilder();
             }
+
+            internal IndentingWriter(int startingIndent) : this(startingIndent, false) { }
+
+            internal IndentingWriter(bool fileScopedNamespace) : this(0, fileScopedNamespace) { }
+
+            internal IndentingWriter() : this(0, false) { }
 
             private bool _inSwitchStatement;
             private bool _inFirstCaseStatement;
@@ -87,6 +97,15 @@ namespace FenGen
             internal void WLs(string[] lines)
             {
                 for (int i = 0; i < lines.Length; i++) WL(lines[i]);
+            }
+
+            internal void CloseClassAndNamespace()
+            {
+                WL("}");
+                if (!_fileScopedNamespace)
+                {
+                    WL("}");
+                }
             }
 
             public override string ToString() => _sb.ToString();

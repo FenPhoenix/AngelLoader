@@ -70,12 +70,7 @@ namespace FenGen
         {
             FieldList fields = ReadSourceFields(sourceFile);
 
-            string codeBlock = GetCodeBlock(destFile, GenAttributes.FenGenFMDataDestClass);
-
-            var w = new CodeWriters.IndentingWriter(startingIndent: 1);
-
-            w.AppendRawString(codeBlock);
-            w.WL("{");
+            var w = GetWriterForClass(destFile, GenAttributes.FenGenFMDataDestClass);
 
             const string obj = "fm";
 
@@ -85,11 +80,7 @@ namespace FenGen
 
             WriteWriter(w, obj, fields);
 
-            // class
-            w.WL("}");
-
-            // namespace
-            w.WL("}");
+            w.CloseClassAndNamespace();
 
             File.WriteAllText(destFile, w.ToString());
         }

@@ -23,11 +23,27 @@ namespace FenGen
 
         #region Common gen utils
 
-        [PublicAPI]
-        internal static string GetCodeBlock(string file, string genAttr)
+        private static (string CodeBlock, bool FileScopedNamespace) GetCodeBlock(string file, string genAttr)
         {
             string code = File.ReadAllText(file);
             SyntaxTree tree = ParseTextFast(code);
+
+            bool fileScopedNamespace = false;
+
+            var nodes = tree.GetCompilationUnitRoot().DescendantNodesAndSelf();
+            foreach (SyntaxNode n in nodes)
+            {
+                if (n is NamespaceDeclarationSyntax)
+                {
+                    fileScopedNamespace = false;
+                    break;
+                }
+                else if (n is FileScopedNamespaceDeclarationSyntax)
+                {
+                    fileScopedNamespace = true;
+                    break;
+                }
+            }
 
             var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, genAttr);
             var iniClass = (ClassDeclarationSyntax)member;
@@ -35,9 +51,20 @@ namespace FenGen
             string iniClassString = iniClass.ToString();
             string classDeclLine = iniClassString.Substring(0, iniClassString.IndexOf('{'));
 
-            return code
+            code = code
                 .Substring(0, iniClass.GetLocation().SourceSpan.Start + classDeclLine.Length)
                 .TrimEnd() + "\r\n";
+
+            return (code, fileScopedNamespace);
+        }
+
+        internal static CodeWriters.IndentingWriter GetWriterForClass(string destFile, string classAttribute)
+        {
+            (string codeBlock, bool fileScopedNamespace) = GetCodeBlock(destFile, classAttribute);
+            var w = new CodeWriters.IndentingWriter(startingIndent: fileScopedNamespace ? 0 : 1, fileScopedNamespace);
+            w.AppendRawString(codeBlock);
+            w.WL("{");
+            return w;
         }
 
         [PublicAPI]

@@ -208,11 +208,7 @@ namespace FenGen
             string destFile,
             bool writeReflectionStyle)
         {
-            string codeBlock = GetCodeBlock(destFile, GenAttributes.FenGenLocalizationDestClass);
-            var w = new CodeWriters.IndentingWriter(startingIndent: 1);
-
-            w.AppendRawString(codeBlock);
-            w.WL("{");
+            var w = GetWriterForClass(destFile, GenAttributes.FenGenLocalizationDestClass);
 
             w.WL(GenMessages.Method);
             w.WL("[MustUseReturnValue]");
@@ -301,8 +297,7 @@ namespace FenGen
             w.WL();
             w.WL("return ret;");
             w.WL("}");
-            w.WL("}");
-            w.WL("}");
+            w.CloseClassAndNamespace();
 
             File.WriteAllText(destFile, w.ToString());
         }
@@ -312,12 +307,7 @@ namespace FenGen
             Dictionary<string, (string Field, string Section)[]> perGameSets
             )
         {
-            string codeBlock = GetCodeBlock(destFile, GenAttributes.FenGenLocalizedGameNameGetterDestClass);
-
-            var w = new CodeWriters.IndentingWriter(startingIndent: 1);
-
-            w.AppendRawString(codeBlock);
-            w.WL("{");
+            var w = GetWriterForClass(destFile, GenAttributes.FenGenLocalizedGameNameGetterDestClass);
 
             if (perGameSets.Count != 0)
             {
@@ -350,8 +340,7 @@ namespace FenGen
 
                 w.WL("#endregion");
             }
-            w.WL("}");
-            w.WL("}");
+            w.CloseClassAndNamespace();
 
             File.WriteAllText(destFile, w.ToString());
         }
