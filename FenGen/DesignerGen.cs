@@ -664,9 +664,9 @@ namespace FenGen
                     // We might be multiple lines so just write each out individually, so we're affected by the
                     // writer's formatting
 
-                    string finalLine = (!node.OverrideLine.IsEmpty()
+                    string finalLine = !node.OverrideLine.IsEmpty()
                         ? node.OverrideLine
-                        : node.Node.ToFullString().TrimEnd('\r', '\n'));
+                        : node.Node.ToFullString().TrimEnd('\r', '\n');
 
                     string[] finalLineSplit = finalLine.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                     for (int i = 0; i < finalLineSplit.Length; i++)
