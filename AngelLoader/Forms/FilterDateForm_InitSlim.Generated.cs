@@ -45,7 +45,7 @@
             // 
             // ResetButton
             // 
-            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ResetButton.Location = new System.Drawing.Point(7, 88);
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -68,7 +68,7 @@
             // 
             // FromDateTimePicker
             // 
-            this.FromDateTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FromDateTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FromDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.FromDateTimePicker.Location = new System.Drawing.Point(28, 24);
@@ -78,7 +78,7 @@
             // 
             // ToDateTimePicker
             // 
-            this.ToDateTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ToDateTimePicker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ToDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.ToDateTimePicker.Location = new System.Drawing.Point(28, 64);

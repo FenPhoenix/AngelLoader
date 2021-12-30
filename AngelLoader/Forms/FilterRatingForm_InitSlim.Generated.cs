@@ -30,7 +30,7 @@
             // 
             // FromComboBox
             // 
-            this.FromComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FromComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FromComboBox.FormattingEnabled = true;
             this.FromComboBox.Location = new System.Drawing.Point(8, 24);
@@ -40,7 +40,7 @@
             // 
             // ToComboBox
             // 
-            this.ToComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ToComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ToComboBox.FormattingEnabled = true;
             this.ToComboBox.Location = new System.Drawing.Point(8, 64);
@@ -73,7 +73,7 @@
             // 
             // ResetButton
             // 
-            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ResetButton.Location = new System.Drawing.Point(7, 88);
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);

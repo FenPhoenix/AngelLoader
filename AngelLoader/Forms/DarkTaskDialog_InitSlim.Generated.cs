@@ -27,7 +27,7 @@
             // 
             // BottomFLP
             // 
-            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.BottomFLP.BackColor = System.Drawing.SystemColors.Control;
             this.BottomFLP.Controls.Add(this.Cancel_Button);

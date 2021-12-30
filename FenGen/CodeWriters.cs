@@ -46,7 +46,8 @@ namespace FenGen
                 // TODO: switch statement handler doesn't handle nested curly brace blocks
                 int curIndent = _nextIndent;
 
-                string strT = str.Trim();
+                string strT = str.TrimStart();
+                if (!strT.StartsWith("//")) strT = strT.TrimEnd();
                 if (strT == "{")
                 {
                     _nextIndent++;

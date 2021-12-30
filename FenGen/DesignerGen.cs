@@ -139,7 +139,10 @@ namespace FenGen
             SyntaxTree tree = ParseTextFast(code);
 
             NamespaceDeclarationSyntax? namespaceDeclaration = null;
+            FileScopedNamespaceDeclarationSyntax? fileScopedNamespaceDeclaration = null;
             ClassDeclarationSyntax? formClass = null;
+
+            bool fileScopedNamespace = false;
 
             #region Find namespace and form class declarations
 
@@ -148,6 +151,12 @@ namespace FenGen
                 if (node is NamespaceDeclarationSyntax nds)
                 {
                     namespaceDeclaration = nds;
+                    fileScopedNamespace = false;
+                }
+                else if (node is FileScopedNamespaceDeclarationSyntax fsnds)
+                {
+                    fileScopedNamespaceDeclaration = fsnds;
+                    fileScopedNamespace = true;
                 }
                 else if (node is ClassDeclarationSyntax cds)
                 {
@@ -156,13 +165,16 @@ namespace FenGen
                 }
             }
 
-            if (namespaceDeclaration == null)
+            if (namespaceDeclaration == null && fileScopedNamespaceDeclaration == null)
             {
-                ThrowErrorAndTerminate("Namespace declaration not found in:\r\n" + designerFile);
+                ThrowErrorAndTerminate("Namespace declaration (either normal or file-scoped) not found in:\r\n" + designerFile);
                 return;
             }
 
-            var namespaceDeclarationLineSpan = namespaceDeclaration.GetLocation().GetLineSpan();
+            var namespaceDeclarationLineSpan =
+                namespaceDeclaration != null
+                    ? namespaceDeclaration.GetLocation().GetLineSpan()
+                    : fileScopedNamespaceDeclaration!.GetLocation().GetLineSpan();
             int namespaceDeclarationStartLine = namespaceDeclarationLineSpan.StartLinePosition.Line;
 
             if (formClass == null)
@@ -622,7 +634,7 @@ namespace FenGen
 
             // TODO: Auto-gen the ifdeffed method call switch
 
-            var finalDestLines = new List<string>();
+            var w = new CodeWriters.IndentingWriter(fileScopedNamespace ? 0 : 1, fileScopedNamespace);
 
             #region Create final destination file lines
 
@@ -630,38 +642,46 @@ namespace FenGen
             // throw us an exception for not being in a .Designer.cs file
             for (int i = namespaceDeclarationStartLine; i <= formClassStartLine; i++)
             {
-                finalDestLines.Add(sourceLines[i]);
+                w.AppendRawString(sourceLines[i] + "\r\n");
             }
-            finalDestLines.Add("    {");
-            finalDestLines.Add("        /// <summary>");
-            finalDestLines.Add("        /// Custom generated component initializer with cruft removed.");
-            finalDestLines.Add("        /// </summary>");
-            finalDestLines.Add("        private void InitializeComponentSlim()");
-            finalDestLines.Add("        {");
+            w.WL("{");
+            w.WL("/// <summary>");
+            w.WL("/// Custom generated component initializer with cruft removed.");
+            w.WL("/// </summary>");
+            w.WL("private void InitializeComponentSlim()");
+            w.WL("{");
             foreach (NodeCustom node in destNodes)
             {
                 if (node.IgnoreExceptForComments)
                 {
                     foreach (string line in node.Comments)
                     {
-                        finalDestLines.Add("            " + line);
+                        w.WL(line);
                     }
                 }
                 else
                 {
-                    finalDestLines.Add(!node.OverrideLine.IsEmpty()
+                    // We might be multiple lines so just write each out individually, so we're affected by the
+                    // writer's formatting
+
+                    string finalLine = (!node.OverrideLine.IsEmpty()
                         ? node.OverrideLine
                         : node.Node.ToFullString().TrimEnd('\r', '\n'));
+
+                    string[] finalLineSplit = finalLine.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    for (int i = 0; i < finalLineSplit.Length; i++)
+                    {
+                        w.WL(finalLineSplit[i]);
+                    }
                 }
             }
-            finalDestLines.Add("        }");
-            finalDestLines.Add("    }");
-            finalDestLines.Add("}");
+            w.WL("}");
+            w.CloseClassAndNamespace();
 
             #endregion
 
             // UTF8 with BOM or else Visual Studio complains about "different" encoding
-            File.WriteAllLines(destFile, finalDestLines, Encoding.UTF8);
+            File.WriteAllText(destFile, w.ToString(), Encoding.UTF8);
 
             #region Add ifdefs around original InitializeComponent() method
 

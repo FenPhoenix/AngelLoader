@@ -50,7 +50,7 @@
             // 
             // OSContextMenuGroupBox
             // 
-            this.OSContextMenuGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.OSContextMenuGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OSContextMenuGroupBox.Controls.Add(this.ShowCommandsCheckBox);
             this.OSContextMenuGroupBox.Location = new System.Drawing.Point(8, 448);
@@ -69,7 +69,7 @@
             // 
             // PlayFMOnDCOrEnterGroupBox
             // 
-            this.PlayFMOnDCOrEnterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.PlayFMOnDCOrEnterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
             this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 384);
@@ -88,7 +88,7 @@
             // 
             // WebSearchGroupBox
             // 
-            this.WebSearchGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.WebSearchGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlResetButton);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchTitleExplanationLabel);
@@ -117,7 +117,7 @@
             // 
             // WebSearchUrlTextBox
             // 
-            this.WebSearchUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.WebSearchUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.WebSearchUrlTextBox.Location = new System.Drawing.Point(16, 48);
             this.WebSearchUrlTextBox.Size = new System.Drawing.Size(376, 20);
@@ -125,7 +125,7 @@
             // 
             // WebSearchUrlLabel
             // 
-            this.WebSearchUrlLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.WebSearchUrlLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.WebSearchUrlLabel.Location = new System.Drawing.Point(16, 16);
             this.WebSearchUrlLabel.Size = new System.Drawing.Size(400, 32);
@@ -134,7 +134,7 @@
             // 
             // UninstallingFMsGroupBox
             // 
-            this.UninstallingFMsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.UninstallingFMsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.UninstallingFMsGroupBox.Controls.Add(this.ConfirmUninstallCheckBox);
             this.UninstallingFMsGroupBox.Controls.Add(this.WhatToBackUpLabel);
@@ -187,7 +187,7 @@
             // 
             // FMFileConversionGroupBox
             // 
-            this.FMFileConversionGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FMFileConversionGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMFileConversionGroupBox.Controls.Add(this.ConvertOGGsToWAVsOnInstallCheckBox);
             this.FMFileConversionGroupBox.Controls.Add(this.ConvertWAVsTo16BitOnInstallCheckBox);
@@ -199,7 +199,7 @@
             // 
             // ConvertOGGsToWAVsOnInstallCheckBox
             // 
-            this.ConvertOGGsToWAVsOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ConvertOGGsToWAVsOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ConvertOGGsToWAVsOnInstallCheckBox.Location = new System.Drawing.Point(16, 44);
             this.ConvertOGGsToWAVsOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
@@ -208,7 +208,7 @@
             // 
             // ConvertWAVsTo16BitOnInstallCheckBox
             // 
-            this.ConvertWAVsTo16BitOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ConvertWAVsTo16BitOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ConvertWAVsTo16BitOnInstallCheckBox.Checked = true;
             this.ConvertWAVsTo16BitOnInstallCheckBox.Location = new System.Drawing.Point(16, 16);
