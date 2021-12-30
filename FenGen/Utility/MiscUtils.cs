@@ -23,7 +23,8 @@ namespace FenGen
 
         #region Common gen utils
 
-        private static (string CodeBlock, bool FileScopedNamespace) GetCodeBlock(string file, string genAttr)
+        private static (string CodeBlock, bool FileScopedNamespace)
+        GetCodeBlock(string file, string genAttr)
         {
             string code = File.ReadAllText(file);
             SyntaxTree tree = ParseTextFast(code);
@@ -33,14 +34,9 @@ namespace FenGen
             var nodes = tree.GetCompilationUnitRoot().DescendantNodesAndSelf();
             foreach (SyntaxNode n in nodes)
             {
-                if (n is NamespaceDeclarationSyntax)
+                if (n is BaseNamespaceDeclarationSyntax)
                 {
-                    fileScopedNamespace = false;
-                    break;
-                }
-                else if (n is FileScopedNamespaceDeclarationSyntax)
-                {
-                    fileScopedNamespace = true;
+                    fileScopedNamespace = n is FileScopedNamespaceDeclarationSyntax;
                     break;
                 }
             }

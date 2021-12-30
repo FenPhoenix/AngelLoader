@@ -138,8 +138,7 @@ namespace FenGen
 
             SyntaxTree tree = ParseTextFast(code);
 
-            NamespaceDeclarationSyntax? namespaceDeclaration = null;
-            FileScopedNamespaceDeclarationSyntax? fileScopedNamespaceDeclaration = null;
+            BaseNamespaceDeclarationSyntax? namespaceDeclaration = null;
             ClassDeclarationSyntax? formClass = null;
 
             bool fileScopedNamespace = false;
@@ -148,15 +147,10 @@ namespace FenGen
 
             foreach (SyntaxNode node in tree.GetRoot().DescendantNodes())
             {
-                if (node is NamespaceDeclarationSyntax nds)
+                if (node is BaseNamespaceDeclarationSyntax nds)
                 {
                     namespaceDeclaration = nds;
-                    fileScopedNamespace = false;
-                }
-                else if (node is FileScopedNamespaceDeclarationSyntax fsnds)
-                {
-                    fileScopedNamespaceDeclaration = fsnds;
-                    fileScopedNamespace = true;
+                    fileScopedNamespace = node is FileScopedNamespaceDeclarationSyntax;
                 }
                 else if (node is ClassDeclarationSyntax cds)
                 {
@@ -165,16 +159,13 @@ namespace FenGen
                 }
             }
 
-            if (namespaceDeclaration == null && fileScopedNamespaceDeclaration == null)
+            if (namespaceDeclaration == null)
             {
                 ThrowErrorAndTerminate("Namespace declaration (either normal or file-scoped) not found in:\r\n" + designerFile);
                 return;
             }
 
-            var namespaceDeclarationLineSpan =
-                namespaceDeclaration != null
-                    ? namespaceDeclaration.GetLocation().GetLineSpan()
-                    : fileScopedNamespaceDeclaration!.GetLocation().GetLineSpan();
+            var namespaceDeclarationLineSpan = namespaceDeclaration.GetLocation().GetLineSpan();
             int namespaceDeclarationStartLine = namespaceDeclarationLineSpan.StartLinePosition.Line;
 
             if (formClass == null)
