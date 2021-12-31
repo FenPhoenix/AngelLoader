@@ -113,7 +113,7 @@ namespace AngelLoader
 
                 int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
 
-                for (int i = digits - 1; i >= 0; i--)
+                for (int i = 0; i < digits; i++)
                 {
                     _colorNumberBytes.Insert(0, (byte)((number % 10) + '0'));
                     number /= 10;
