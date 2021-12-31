@@ -408,6 +408,7 @@ namespace AngelLoader.DataClasses
 
         internal bool EnableCharacterDetailFix = true;
 
+        // @vNext: Make "PlayOriginalSeparateButtons" a Settings window settable option
         internal bool PlayOriginalSeparateButtons = true;
 
         internal bool ShowOSContextMenuCommands = true;
