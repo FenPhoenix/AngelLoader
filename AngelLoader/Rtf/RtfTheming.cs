@@ -109,6 +109,8 @@ namespace AngelLoader
 
             static List<byte> ByteToASCIICharBytes(byte number)
             {
+                // Use global 3-byte list and do allocation-less clears and inserts, otherwise we would allocate
+                // a new byte array EVERY time through here (which is a lot)
                 _colorNumberBytes.Clear();
 
                 int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
@@ -174,6 +176,9 @@ namespace AngelLoader
 
         internal static byte[] GetDarkModeRTFBytes(byte[] currentReadmeBytes)
         {
+            // Avoid allocations as much as possible here, because glibly converting back and forth between lists
+            // and arrays for our readme bytes is going to blow out memory.
+
             var parser = new RtfColorTableParser();
             (bool success, List<Color> colorTable, _, int _) = parser.GetColorTable(currentReadmeBytes);
 
@@ -183,20 +188,8 @@ namespace AngelLoader
 
             if (success)
             {
-                #region Write new color table
-
                 colorEntriesBytesList = CreateColorTableRTFBytes(colorTable).ToArray();
-
-                // Fortunately, only the first color table is used, so we can just stick ourselves right at the
-                // start and not even have to awkwardly delete the old color table.
-                // Now watch Windows get an update that breaks that.
-                // @DarkModeNote: We could add code to delete the old color table at some point.
-                // This would make us some amount slower, and it's not necessary currently, so let's just not do
-                // it for now.
-
                 colorTableEntryLength = colorEntriesBytesList.Length;
-
-                #endregion
             }
 
             var darkModeBytes = new byte[currentReadmeBytes.Length + colorTableEntryLength + RTF_DarkBackgroundBytes.Length];
@@ -214,6 +207,12 @@ namespace AngelLoader
             );
 
             // Copy color table
+            // Fortunately, only the first color table is used, so we can just stick ourselves right at the start
+            // and not even have to awkwardly delete the old color table.
+            // Now watch Windows get an update that breaks that.
+            // @DarkModeNote: We could add code to delete the old color table at some point.
+            // This would make us some amount slower, and it's not necessary currently, so let's just not do it
+            // for now.
             for (int i = 0; i < colorEntriesBytesList.Length; i++)
             {
                 darkModeBytes[firstIndexPastHeader + i] = colorEntriesBytesList[i];
