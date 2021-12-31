@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using AngelLoader.Forms.CustomControls;
 using static AL_Common.Common;
@@ -170,23 +170,18 @@ namespace AngelLoader
 
         internal static byte[] GetDarkModeRTFBytes(byte[] currentReadmeBytes)
         {
-            var darkModeBytes = currentReadmeBytes.ToList();
-
-            // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts
-            // where the background stays the old color but turns to our new color when portions of the readme
-            // get painted (see Thork).
-            // NOTE: Thork's readme is actually just weirdly broken, the background is sometimes yellow but paints
-            // over with white even on classic mode. So oh well.
-            ReplaceByteSequence(darkModeBytes, _background, _backgroundBlanked);
-
             var parser = new RtfColorTableParser();
-            (bool success, List<Color> colorTable, _, int _) = parser.GetColorTable(darkModeBytes);
+            (bool success, List<Color> colorTable, _, int _) = parser.GetColorTable(currentReadmeBytes);
+
+            int colorTableEntryLength = 0;
+
+            byte[] colorEntriesBytesList = Array.Empty<byte>();
 
             if (success)
             {
                 #region Write new color table
 
-                List<byte> colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
+                colorEntriesBytesList = CreateColorTableRTFBytes(colorTable).ToArray();
 
                 // Fortunately, only the first color table is used, so we can just stick ourselves right at the
                 // start and not even have to awkwardly delete the old color table.
@@ -194,10 +189,54 @@ namespace AngelLoader
                 // @DarkModeNote: We could add code to delete the old color table at some point.
                 // This would make us some amount slower, and it's not necessary currently, so let's just not do
                 // it for now.
-                darkModeBytes.InsertRange(FindIndexOfByteSequence(darkModeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length, colorEntriesBytesList);
+
+                colorTableEntryLength = colorEntriesBytesList.Length;
 
                 #endregion
             }
+
+            var darkModeBytes = new byte[currentReadmeBytes.Length + colorTableEntryLength + RTF_DarkBackgroundBytes.Length];
+
+            int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
+            int headerIndex = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
+
+            Array.Copy(
+                currentReadmeBytes,
+                0,
+                darkModeBytes,
+                0,
+                headerIndex
+            );
+
+            for (int i = 0; i < colorEntriesBytesList.Length; i++)
+            {
+                darkModeBytes[headerIndex + i] = colorEntriesBytesList[i];
+            }
+
+            Array.Copy(
+                currentReadmeBytes,
+                headerIndex,
+                darkModeBytes,
+                headerIndex + colorTableEntryLength,
+                lastClosingBraceIndex - (headerIndex - 1)
+            );
+
+            // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts
+            // where the background stays the old color but turns to our new color when portions of the readme
+            // get painted (see Thork).
+            // NOTE: Thork's readme is actually just weirdly broken, the background is sometimes yellow but paints
+            // over with white even on classic mode. So oh well.
+            // NOTE: Do this BEFORE putting the dark background control word in, or else it will be overwritten too!
+            ReplaceByteSequence(darkModeBytes, _background, _backgroundBlanked);
+
+            // Insert our dark background definition at the end, so we override any other backgrounds that may be set.
+            Array.Copy(
+                RTF_DarkBackgroundBytes,
+                0,
+                darkModeBytes,
+                colorTableEntryLength + lastClosingBraceIndex,
+                RTF_DarkBackgroundBytes.Length
+            );
 
             #region Issues/quirks/etc.
 
@@ -223,13 +262,10 @@ namespace AngelLoader
 
             #endregion
 
-            // Insert our dark background definition at the end, so we override any other backgrounds that may be set.
-            darkModeBytes.InsertRange(darkModeBytes.LastIndexOf((byte)'}'), RTF_DarkBackgroundBytes);
-
             // Keep this for debug...
-            //File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes.ToArray());
+            //File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes);
 
-            return darkModeBytes.ToArray();
+            return darkModeBytes;
         }
     }
 }

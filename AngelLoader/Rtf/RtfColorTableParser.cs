@@ -19,17 +19,17 @@ namespace AngelLoader
     {
         #region Private fields
 
-        private List<byte> _stream = null!;
+        private byte[] _stream = null!;
 
         #endregion
 
         #region Stream
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ResetStream(List<byte> stream)
+        private void ResetStream(byte[] stream)
         {
             _stream = stream;
-            base.ResetStreamBase(stream.Count);
+            base.ResetStreamBase(stream.Length);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,7 +51,7 @@ namespace AngelLoader
 
         [PublicAPI]
         public (bool Success, List<Color> ColorTable, int ColorTableStartIndex, int ColorTableEndIndex)
-        GetColorTable(List<byte> stream)
+        GetColorTable(byte[] stream)
         {
             Reset(stream);
 
@@ -72,7 +72,7 @@ namespace AngelLoader
 
         #endregion
 
-        private void Reset(List<byte> stream)
+        private void Reset(byte[] stream)
         {
             base.ResetBase();
 

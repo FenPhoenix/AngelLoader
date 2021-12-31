@@ -829,6 +829,33 @@ namespace AL_Common
 
         #endregion
 
+        // Array version
+        public static int FindIndexOfByteSequence(byte[] input, byte[] pattern, int start = 0)
+        {
+            byte firstByte = pattern[0];
+            int index = Array.IndexOf(input, firstByte, start);
+
+            while (index > -1)
+            {
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    if (index + i >= input.Length) return -1;
+                    if (pattern[i] != input[index + i])
+                    {
+                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return -1;
+                        break;
+                    }
+
+                    if (i == pattern.Length - 1) return index;
+                }
+            }
+
+            return -1;
+        }
+
+#if false
+
+        // List version
         public static int FindIndexOfByteSequence(List<byte> input, byte[] pattern, int start = 0)
         {
             byte firstByte = pattern[0];
@@ -852,6 +879,9 @@ namespace AL_Common
             return -1;
         }
 
+#endif
+
+        // Array version
         public static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
         {
             byte firstByte = pattern[0];
@@ -879,6 +909,8 @@ namespace AL_Common
                 }
             }
         }
+
+#if false
 
         // List version
         public static void ReplaceByteSequence(List<byte> input, byte[] pattern, byte[] replacePattern)
@@ -908,6 +940,8 @@ namespace AL_Common
                 }
             }
         }
+
+#endif
 
         public static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
 
