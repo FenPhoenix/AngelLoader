@@ -115,7 +115,7 @@ namespace AngelLoader
 
                 for (int i = digits - 1; i >= 0; i--)
                 {
-                    _colorNumberBytes.Add((byte)((number % 10) + '0'));
+                    _colorNumberBytes.Insert(0, (byte)((number % 10) + '0'));
                     number /= 10;
                 }
 
@@ -243,6 +243,15 @@ namespace AngelLoader
                 darkModeBytes,
                 colorTableEntryLength + lastClosingBraceIndex,
                 RTF_DarkBackgroundBytes.Length
+            );
+
+            // Copy from the last closing brace to the end
+            Array.Copy(
+                currentReadmeBytes,
+                lastClosingBraceIndex,
+                darkModeBytes,
+                colorTableEntryLength + RTF_DarkBackgroundBytes.Length + lastClosingBraceIndex,
+                currentReadmeBytes.Length - lastClosingBraceIndex
             );
 
             #region Issues/quirks/etc.
