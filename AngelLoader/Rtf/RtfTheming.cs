@@ -90,6 +90,8 @@ namespace AngelLoader
 
         #endregion
 
+        private static readonly List<byte> _colorNumberBytes = new(3);
+
         #endregion
 
         internal static readonly string RTF_DarkBackgroundString = @"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv "
@@ -105,17 +107,19 @@ namespace AngelLoader
             // our new background color to keep author intent (avoiding spoilers etc.)
             static bool ColorIsTheSameAsBackground(Color color) => color.R == 255 && color.G == 255 && color.B == 255;
 
-            static byte[] ByteToASCIICharBytes(byte number)
+            static List<byte> ByteToASCIICharBytes(byte number)
             {
-                byte[] ret = new byte[number <= 9 ? 1 : number <= 99 ? 2 : 3];
+                _colorNumberBytes.Clear();
 
-                for (int i = ret.Length - 1; i >= 0; i--)
+                int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
+
+                for (int i = digits - 1; i >= 0; i--)
                 {
-                    ret[i] = (byte)((number % 10) + '0');
+                    _colorNumberBytes.Add((byte)((number % 10) + '0'));
                     number /= 10;
                 }
 
-                return ret;
+                return _colorNumberBytes;
             }
 
             #endregion
@@ -198,27 +202,30 @@ namespace AngelLoader
             var darkModeBytes = new byte[currentReadmeBytes.Length + colorTableEntryLength + RTF_DarkBackgroundBytes.Length];
 
             int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
-            int headerIndex = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
+            int firstIndexPastHeader = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
 
+            // Copy header
             Array.Copy(
                 currentReadmeBytes,
                 0,
                 darkModeBytes,
                 0,
-                headerIndex
+                firstIndexPastHeader
             );
 
+            // Copy color table
             for (int i = 0; i < colorEntriesBytesList.Length; i++)
             {
-                darkModeBytes[headerIndex + i] = colorEntriesBytesList[i];
+                darkModeBytes[firstIndexPastHeader + i] = colorEntriesBytesList[i];
             }
 
+            // Copy main body
             Array.Copy(
                 currentReadmeBytes,
-                headerIndex,
+                firstIndexPastHeader,
                 darkModeBytes,
-                headerIndex + colorTableEntryLength,
-                lastClosingBraceIndex - (headerIndex - 1)
+                firstIndexPastHeader + colorTableEntryLength,
+                lastClosingBraceIndex - (firstIndexPastHeader - 1)
             );
 
             // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts
