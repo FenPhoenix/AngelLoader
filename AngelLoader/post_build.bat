@@ -47,6 +47,8 @@ if %ConfigurationName% == Release_Public (
 "%system%xcopy" "%ProjectDir%Languages\*.ini" "%TargetDir%Data\Languages\" /y /i /e
 )
 
+"%system%xcopy" "%ProjectDir%Resources\AngelLoader.ico" "%TargetDir%" /y /i
+
 "%system%xcopy" "%SolutionDir%BinReleaseOnly" "%TargetDir%" /y /i /e
 
 rem Exlude "history" dir without having to copy and delete it afterwards (it's large) or write out an excludes file
