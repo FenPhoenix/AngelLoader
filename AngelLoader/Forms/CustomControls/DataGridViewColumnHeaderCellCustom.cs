@@ -82,8 +82,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     try
                     {
-                        // @NET5: This will be "_selectionMode" in post-Framework versions
-                        selectionModeField = typeof(DataGridView).GetField("selectionMode", _bfAll);
+                        selectionModeField = typeof(DataGridView).GetField(WinFormsReflection.DGV_SelectionModeBackingFieldName, _bfAll);
                         if (selectionModeField == null ||
                             selectionModeField.GetValue(DataGridView) is not DataGridViewSelectionMode)
                         {
