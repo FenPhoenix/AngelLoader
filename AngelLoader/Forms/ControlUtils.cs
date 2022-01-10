@@ -522,7 +522,7 @@ namespace AngelLoader.Forms
                     try
                     {
                         _toolTipNativeWindowControlField = _toolTipNativeWindowClass
-                            .GetField("control",
+                            .GetField(WinFormsReflection.ToolTipNativeWindow_ToolTipFieldName,
                                 bindingFlags);
 
                         if (_toolTipNativeWindowControlField == null ||

@@ -6,14 +6,21 @@
 #if NETFRAMEWORK
             "selectionMode";
 #else
-            "_selectionMode"
+            "_selectionMode";
 #endif
 
         internal const string DGV_TypeInternalBackingFieldName =
 #if NETFRAMEWORK
             "typeInternal";
 #else
-            "_typeInternal"
+            "_typeInternal";
+#endif
+
+        internal const string ToolTipNativeWindow_ToolTipFieldName =
+#if NETFRAMEWORK
+            "control";
+#else
+            "_toolTip";
 #endif
     }
 }
