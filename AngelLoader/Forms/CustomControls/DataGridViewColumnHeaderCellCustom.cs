@@ -109,6 +109,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
 
                 DataGridViewSelectionMode oldSelectionMode;
+                DataGridViewSelectionMode oldSelectionModeProperty = DataGridView.SelectionMode;
                 try
                 {
                     oldSelectionMode = (DataGridViewSelectionMode)selectionModeField.GetValue(DataGridView);
@@ -117,7 +118,7 @@ namespace AngelLoader.Forms.CustomControls
                 catch
                 {
                     // Force correct selection mode back in this case, because our temp set could have failed
-                    DataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    DataGridView.SelectionMode = oldSelectionModeProperty;
                     CallBase(disableReflection: true);
                     return;
                 }
@@ -135,7 +136,7 @@ namespace AngelLoader.Forms.CustomControls
                     catch
                     {
                         // Ditto
-                        DataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                        DataGridView.SelectionMode = oldSelectionModeProperty;
                         _reflectionSupported = false;
                     }
                 }
