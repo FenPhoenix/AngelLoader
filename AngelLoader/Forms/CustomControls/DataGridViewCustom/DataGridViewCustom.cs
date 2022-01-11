@@ -391,7 +391,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 catch
                 {
-                    displayed = true;
+                    displayed = false;
                 }
 
                 SelectedRows.Add((selRow.Index, displayed, new DataGridViewRow()));
