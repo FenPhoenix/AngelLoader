@@ -404,7 +404,7 @@ namespace AngelLoader.Forms
             FMsDGV.BackgroundColor = SystemColors.ControlDark;
             FMsDGV.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
             FMsDGV.Location = new Point(1, 26);
-            FMsDGV.MultiSelect = false;
+            FMsDGV.MultiSelect = true;
             FMsDGV.ReadOnly = true;
             FMsDGV.RowHeadersVisible = false;
             FMsDGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;

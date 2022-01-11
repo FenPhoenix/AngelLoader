@@ -255,7 +255,7 @@ namespace AngelLoader.Forms.CustomControls
             try
             {
                 // Note: we need to do this null check here, otherwise we get an exception that doesn't get caught(!!!)
-                SelectedRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
+                base.SelectedRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
             }
             catch
             {
@@ -369,6 +369,37 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        internal readonly Dictionary<int, DataGridViewRow> SelectedRowsDict = new();
+        internal new List<(int Index, bool Displayed, DataGridViewRow Row)> SelectedRows { get; } = new();
+        internal DataGridViewSelectedRowCollection SelectedRowsBase => base.SelectedRows;
+
+        protected override void OnSelectionChanged(EventArgs e)
+        {
+            SelectedRowsDict.Clear();
+            SelectedRows.Clear();
+            var selRows = base.SelectedRows;
+            for (int i = 0; i < selRows.Count; i++)
+            {
+                var selRow = selRows[i];
+
+                SelectedRowsDict.Add(selRow.Index, selRow);
+
+                bool displayed;
+                try
+                {
+                    displayed = selRow.Displayed;
+                }
+                catch
+                {
+                    displayed = true;
+                }
+
+                SelectedRows.Add((selRow.Index, displayed, new DataGridViewRow()));
+            }
+
+            base.OnSelectionChanged(e);
+        }
+
         #region Paint
 
         protected override void OnPaint(PaintEventArgs e)
@@ -426,14 +457,29 @@ namespace AngelLoader.Forms.CustomControls
             // This is for having different colored grid lines in recent-highlighted rows.
             // That way, we can get a good, visible separator color for all cases by just having two.
 
-            int selectedIndex = SelectedRows.Count == 0 ? -1 : SelectedRows[0].Index;
+            DataGridViewSelectedRowCollection selRows = base.SelectedRows;
+
+            static bool ContainsIndex(int index, DataGridViewSelectedRowCollection selRows)
+            {
+                //return selRows.ContainsKey(index);
+
+                for (int i = 0; i < selRows.Count; i++)
+                {
+                    if (selRows[i].Index == index)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             if (e.RowIndex > -1)
             {
                 FanMission fm = GetFMFromIndex(e.RowIndex);
 
                 #region Paint cell background
 
-                SolidBrush bgBrush = selectedIndex == e.RowIndex
+                SolidBrush bgBrush = ContainsIndex(e.RowIndex, selRows)
                     ? DarkColors.BlueSelectionBrush
                     : fm.MarkedUnavailable
                     ? DarkColors.Fen_RedHighlightBrush
@@ -449,7 +495,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 #region Draw content
 
-                e.CellStyle.ForeColor = selectedIndex == e.RowIndex
+                e.CellStyle.ForeColor = ContainsIndex(e.RowIndex, selRows)
                     ? DarkColors.Fen_HighlightText
                     : DarkColors.Fen_DarkForeground;
 

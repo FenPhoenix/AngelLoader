@@ -476,7 +476,7 @@
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
-            this.FMsDGV.MultiSelect = false;
+            this.FMsDGV.MultiSelect = true;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
