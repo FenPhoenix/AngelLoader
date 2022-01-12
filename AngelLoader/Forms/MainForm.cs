@@ -19,6 +19,16 @@ the scroll bar was).
 @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 
 @MULTISEL: Extending selection downwards loads each new FM; extending selection upwards doesn't.
+Actually, extending upwards currently just keeps reloading the bottom-most FM each time a new one is added to the
+selected set. This means our menu is always up-to-date, but if we fixed it so it didn't reload, our menu would
+NOT be updated on selection set change, but only on actual FM reload.
+We need to update our menu separately from FM display, so that it can know when our selection has moved from one
+to multiple.
+
+@MULTISEL: Maybe we should never load any new FMs when the selection set expands.
+That way, we don't have to lag the selection process with loading heavy readmes. It would also prevent the running
+of horrifically slow and intrusive operations - like .7z scanning/caching - in the middle of a selection operation.
+
 @MULTISEL: There's some glitchiness with initial selection or two, might be to do with the initial selection reload hack.
 @MULTISEL: Test game tabs mode
 */
