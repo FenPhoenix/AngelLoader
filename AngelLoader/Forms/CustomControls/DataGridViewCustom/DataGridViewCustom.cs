@@ -426,14 +426,16 @@ namespace AngelLoader.Forms.CustomControls
             // This is for having different colored grid lines in recent-highlighted rows.
             // That way, we can get a good, visible separator color for all cases by just having two.
 
-            int selectedIndex = SelectedRows.Count == 0 ? -1 : SelectedRows[0].Index;
+            static bool IsSelected(DataGridViewElementStates state) =>
+                (state & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected;
+
             if (e.RowIndex > -1)
             {
                 FanMission fm = GetFMFromIndex(e.RowIndex);
 
                 #region Paint cell background
 
-                SolidBrush bgBrush = selectedIndex == e.RowIndex
+                SolidBrush bgBrush = IsSelected(e.State)
                     ? DarkColors.BlueSelectionBrush
                     : fm.MarkedUnavailable
                     ? DarkColors.Fen_RedHighlightBrush
@@ -449,7 +451,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 #region Draw content
 
-                e.CellStyle.ForeColor = selectedIndex == e.RowIndex
+                e.CellStyle.ForeColor = IsSelected(e.State)
                     ? DarkColors.Fen_HighlightText
                     : DarkColors.Fen_DarkForeground;
 
