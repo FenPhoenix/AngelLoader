@@ -21,9 +21,6 @@ the scroll bar was).
 @MULTISEL: Extending selection downwards loads each new FM; extending selection upwards doesn't.
 @MULTISEL: There's some glitchiness with initial selection or two, might be to do with the initial selection reload hack.
 @MULTISEL: Test game tabs mode
-
-@MULTISEL(When FM context menu is activated by keyboard "context menu button"):
-We need to make this be the menu for the currently displayed FM, not SelectedRows[0]
 */
 
 using System;
@@ -4521,12 +4518,13 @@ namespace AngelLoader.Forms
             bool gameIsSupported = GameIsKnownAndSupported(fm.Game);
             bool gameIsSupportedAndAvailable = gameIsSupported && !fm.MarkedUnavailable;
 
-            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(gameIsSupportedAndAvailable);
+            // @MULTISEL(FM menu item toggles): Maybe we want to hide unsupported menu items rather disable?
+            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(!FMsDGV.MultipleFMsSelected() && gameIsSupportedAndAvailable);
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
-            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!fm.MarkedUnavailable);
+            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!FMsDGV.MultipleFMsSelected() && !fm.MarkedUnavailable);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(gameIsSupportedAndAvailable);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(!FMsDGV.MultipleFMsSelected() && gameIsSupportedAndAvailable);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
@@ -4535,20 +4533,22 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(fmIsSS2);
             FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
-            FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!fm.MarkedUnavailable);
+            FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!FMsDGV.MultipleFMsSelected() && !fm.MarkedUnavailable);
 
-            FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(fm.Installed);
+            FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!FMsDGV.MultipleFMsSelected() && fm.Installed);
 
             FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!fm.MarkedUnavailable);
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(GameIsDark(fm.Game) && fm.Installed && !fm.MarkedUnavailable);
 
-            InstallUninstallFMLLButton.SetEnabled(gameIsSupportedAndAvailable);
+            FMsDGV_FM_LLMenu.SetWebSearchEnabled(!FMsDGV.MultipleFMsSelected());
+
+            InstallUninstallFMLLButton.SetEnabled(!FMsDGV.MultipleFMsSelected() && gameIsSupportedAndAvailable);
             InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
-            PlayFMButton.Enabled = gameIsSupportedAndAvailable;
+            PlayFMButton.Enabled = !FMsDGV.MultipleFMsSelected() && gameIsSupportedAndAvailable;
 
-            WebSearchButton.Enabled = true;
+            WebSearchButton.Enabled = !FMsDGV.MultipleFMsSelected();
 
             StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 

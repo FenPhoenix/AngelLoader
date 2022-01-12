@@ -34,6 +34,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private bool _finishedOnExpertChecked;
         private bool _finishedOnExtremeChecked;
         private bool _finishedOnUnknownChecked;
+        private bool _webSearchMenuItemEnabled;
 
         #endregion
 
@@ -302,6 +303,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
 
             ConvertAudioMenuItem.Enabled = _convertAudioSubMenuEnabled;
+
+            WebSearchMenuItem.Enabled = _webSearchMenuItemEnabled;
 
             #endregion
 
@@ -603,6 +606,18 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             SetFinishedOnUnknownMenuItemChecked(false);
             UncheckFinishedOnMenuItemsExceptUnknown();
+        }
+
+        internal void SetWebSearchEnabled(bool value)
+        {
+            if (_constructed)
+            {
+                WebSearchMenuItem.Enabled = value;
+            }
+            else
+            {
+                _webSearchMenuItemEnabled = value;
+            }
         }
 
         #endregion

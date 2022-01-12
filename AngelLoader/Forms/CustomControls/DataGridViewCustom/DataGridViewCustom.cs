@@ -184,6 +184,8 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         internal bool RowSelected() => SelectedRows.Count > 0;
 
+        internal bool MultipleFMsSelected() => SelectedRows.Count > 1;
+
         internal void SelectSingle(int index)
         {
             ClearSelection();
