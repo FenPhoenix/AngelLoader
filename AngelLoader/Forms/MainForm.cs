@@ -367,7 +367,7 @@ namespace AngelLoader.Forms
                 else if (m.Msg == Native.WM_MBUTTONDOWN && CursorOverControl(FMsDGV))
                 {
                     FMsDGV.Focus();
-                    if (FMsDGV.RowSelected() && !FMsDGV.SelectedRowsBase[0].Displayed)
+                    if (FMsDGV.RowSelected() && !FMsDGV.SelectedRows[0].Displayed)
                     {
                         CenterSelectedFM();
                     }
