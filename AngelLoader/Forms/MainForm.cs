@@ -17,6 +17,13 @@ but then when the scroll bar isn't there at runtime, their positions are wrong (
 the scroll bar was).
 
 @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
+
+@MULTISEL: Extending selection downwards loads each new FM; extending selection upwards doesn't.
+@MULTISEL: There's some glitchiness with initial selection or two, might be to do with the initial selection reload hack.
+@MULTISEL: Test game tabs mode
+
+@MULTISEL(When FM context menu is activated by keyboard "context menu button"):
+We need to make this be the menu for the currently displayed FM, not SelectedRows[0]
 */
 
 using System;
@@ -884,7 +891,7 @@ namespace AngelLoader.Forms
             Core.SetFilter();
             if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
             {
-                await Core.DisplayFM();
+                _displayedFM = await Core.DisplayFM();
             }
 
             FMsDGV.Focus();
@@ -1045,9 +1052,16 @@ namespace AngelLoader.Forms
 
             if (KeyPressesDisabled) return;
 
-            void SelectAndSuppress(int index)
+            void SelectAndSuppress(int index, bool singleSelect = false)
             {
-                FMsDGV.Rows[index].Selected = true;
+                if (singleSelect)
+                {
+                    FMsDGV.SelectSingle(index);
+                }
+                else
+                {
+                    FMsDGV.Rows[index].Selected = true;
+                }
                 FMsDGV.SelectProperly();
                 e.SuppressKeyPress = true;
             }
@@ -1089,18 +1103,19 @@ namespace AngelLoader.Forms
                 }
             }
             #region FMsDGV nav
+            // @MULTISEL(FMsDGV nav): Regression: These now reload the FM when selection is at top/bottom again
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    SelectAndSuppress(0);
+                    SelectAndSuppress(0, singleSelect: !e.Shift);
                 }
             }
             else if (e.KeyCode == Keys.End || (e.Control && e.KeyCode == Keys.Down))
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    SelectAndSuppress(FMsDGV.RowCount - 1);
+                    SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift);
                 }
             }
             // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
@@ -1108,7 +1123,7 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    if (FMsDGV.SelectedRows[0].Index == 0)
+                    if (FMsDGV.SelectedRows.Contains(FMsDGV.Rows[0]))
                     {
                         SelectAndSuppress(0);
                     }
@@ -1123,7 +1138,7 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    if (FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1)
+                    if (FMsDGV.SelectedRows.Contains(FMsDGV.Rows[FMsDGV.RowCount - 1]))
                     {
                         SelectAndSuppress(FMsDGV.RowCount - 1);
                     }
@@ -2708,7 +2723,7 @@ namespace AngelLoader.Forms
 
                     // Events will be re-enabled at the end of the enclosing using block
                     if (keepSelection != KeepSel.False) EventsDisabled = true;
-                    FMsDGV.Rows[row].Selected = true;
+                    FMsDGV.SelectSingle(row);
                     FMsDGV.SelectProperly(suspendResume: startup);
 
                     // Resume drawing before loading the readme; that way the list will update instantly even
@@ -2735,7 +2750,7 @@ namespace AngelLoader.Forms
             using (new DisableEvents(this))
             {
                 FMsDGV.Refresh();
-                FMsDGV.Rows[selectedRow].Selected = true;
+                FMsDGV.SelectSingle(selectedRow);
                 // TODO: This pops our position back to put selected FM in view - but do we really need to run this here?
                 // Alternatively, maybe SelectProperly() should pop us back to where we were after it's done?
                 FMsDGV.SelectProperly();
@@ -2753,7 +2768,7 @@ namespace AngelLoader.Forms
             if (sender == EditFMScanForReadmesButton)
             {
                 Ini.WriteFullFMDataIni();
-                await Core.DisplayFM(refreshCache: true);
+                _displayedFM = await Core.DisplayFM(refreshCache: true);
             }
             else
             {
@@ -2990,6 +3005,8 @@ namespace AngelLoader.Forms
         }
 
         public FanMission? GetSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
+
+        public FanMission? GetFMFromIndex(int index) => FMsDGV.RowSelected() ? FMsDGV.GetFMFromIndex(index) : null;
 
         public (string Category, string Tag)
         SelectedCategoryAndTag()
@@ -3329,6 +3346,8 @@ namespace AngelLoader.Forms
 
         #region FMs list
 
+        private FanMission? _displayedFM;
+
         public int GetSelectedRowIndex() => FMsDGV.RowSelected() ? FMsDGV.SelectedRows[0].Index : -1;
 
         public SelectedFM? GetFMPosInfoFromIndex(int index) =>
@@ -3397,18 +3416,31 @@ namespace AngelLoader.Forms
                 FMsDGV.RowTemplate.Height = rowHeight;
 
                 // Save previous selection
-                int selIndex = FMsDGV.RowSelected() ? FMsDGV.SelectedRows[0].Index : -1;
+                var selRows = FMsDGV.SelectedRows;
+                int[] selIndices = new int[selRows.Count];
+                for (int i = 0; i < selRows.Count; i++)
+                {
+                    selIndices[i] = selRows[i].Index;
+                }
                 using (new DisableEvents(this))
                 {
                     // Force a regeneration of rows (height will take effect here)
                     int rowCount = FMsDGV.RowCount;
                     FMsDGV.RowCount = 0;
                     FMsDGV.RowCount = rowCount;
+                    // Setting RowCount to > 0 causes the first row to be auto-selected, so de-select it.
+                    FMsDGV.ClearSelection();
 
                     // Restore previous selection (no events will be fired, due to being in a DisableEvents block)
-                    if (selIndex > -1)
+                    if (selIndices.Length > 0)
                     {
-                        FMsDGV.Rows[selIndex].Selected = true;
+                        // Sort and select in reverse order so the topmost selection is always the "main" selection
+                        Array.Sort(selIndices);
+                        for (int i = selIndices.Length - 1; i >= 0; i--)
+                        {
+                            FMsDGV.Rows[selIndices[i]].Selected = true;
+                        }
+
                         FMsDGV.SelectProperly();
                     }
 
@@ -3456,7 +3488,7 @@ namespace AngelLoader.Forms
                 }
 
                 // Keep selected FM in the center of the list vertically where possible (UX nicety)
-                if (selIndex > -1 && selFM != null) CenterSelectedFM();
+                if (selIndices.Length > 0 && selFM != null) CenterSelectedFM();
             }
             finally
             {
@@ -3608,7 +3640,7 @@ namespace AngelLoader.Forms
                     // Fix: when resetting release date filter the readme wouldn't load for the selected FM
                     oldSelectedFM == null)
                 {
-                    await Core.DisplayFM();
+                    _displayedFM = await Core.DisplayFM();
                 }
             }
         }
@@ -3772,12 +3804,12 @@ namespace AngelLoader.Forms
                 if (selFM != null && FMsDGV.RowSelected() &&
                     selFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir)
                 {
-                    await Core.DisplayFM();
+                    _displayedFM = await Core.DisplayFM();
                 }
             }
         }
 
-        private void FMsDGV_MouseDown(object sender, MouseEventArgs e)
+        private async void FMsDGV_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
 
@@ -3792,7 +3824,15 @@ namespace AngelLoader.Forms
             else if (ht.Type == DataGridViewHitTestType.Cell && ht.ColumnIndex > -1 && ht.RowIndex > -1)
             {
                 FMsDGV.ContextMenuStrip = FMsDGV_FM_LLMenu.Menu;
-                FMsDGV.Rows[ht.RowIndex].Selected = true;
+                if (FMsDGV.Rows[ht.RowIndex].Selected)
+                {
+                    // Actually make it load the FM and stuff
+                    await ChangeSelection(ht.RowIndex);
+                }
+                else
+                {
+                    FMsDGV.SelectSingle(ht.RowIndex);
+                }
                 // We don't need to call SelectProperly() here because the mousedown will select it properly
             }
             else
@@ -3803,13 +3843,20 @@ namespace AngelLoader.Forms
             #endregion
         }
 
+        private async void FMsDGV_SelectionChanged(object sender, EventArgs e) => await ChangeSelection();
+
         // Okay, boys and girls. We get the glitched last row on keyboard-scroll if we don't do this idiot thing.
         // No, we can't do any of the normal things you'd think would work in RefreshFMsList() itself. I tried.
         // Everything is stupid. Whatever.
         private bool _fmsListOneTimeHackRefreshDone;
-        private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
+        private async Task ChangeSelection(int index = -1)
         {
             if (EventsDisabled) return;
+
+            if (index > -1 && _displayedFM == GetFMFromIndex(index))
+            {
+                return;
+            }
 
             if (!FMsDGV.RowSelected())
             {
@@ -3821,11 +3868,12 @@ namespace AngelLoader.Forms
 
                 if (!_fmsListOneTimeHackRefreshDone)
                 {
-                    RefreshFMsList(FMsDGV.GetSelectedFMPosInfo(), startup: false, KeepSel.TrueNearest);
+                    SelectedFM selFM = index == -1 ? FMsDGV.GetSelectedFMPosInfo() : FMsDGV.GetFMPosInfoFromIndex(index);
+                    RefreshFMsList(selFM, startup: false, KeepSel.TrueNearest);
                     _fmsListOneTimeHackRefreshDone = true;
                 }
 
-                await Core.DisplayFM();
+                _displayedFM = await Core.DisplayFM(index: index);
             }
         }
 
@@ -3850,7 +3898,7 @@ namespace AngelLoader.Forms
 
                 if (rowIndex > -1)
                 {
-                    FMsDGV.Rows[rowIndex].Selected = true;
+                    FMsDGV.SelectSingle(rowIndex);
                     FMsDGV.SelectProperly();
                     FMsDGV.FirstDisplayedScrollingRowIndex = FMsDGV.SelectedRows[0].Index;
                 }
@@ -4278,6 +4326,8 @@ namespace AngelLoader.Forms
 
         #region FM display
 
+        // @MULTISEL(FM clear/display): Handle menu item state for multi-selection
+
         // Perpetual TODO: Make sure this clears everything including the top right tab stuff
         private void ClearShownData()
         {
@@ -4416,6 +4466,8 @@ namespace AngelLoader.Forms
 
                 #endregion
             }
+
+            _displayedFM = null;
         }
 
         private void HidePatchSectionWithMessage(string message)

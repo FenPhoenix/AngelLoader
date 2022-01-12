@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
+using JetBrains.Annotations;
 using Microsoft.Win32;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -466,7 +467,7 @@ namespace AngelLoader
 
             #endregion
 
-            #region Return bools for appropriate refresh method (if applicable)
+            #region Refresh (if applicable)
 
             bool keepSel = false;
             bool sortAndSetFilter = false;
@@ -1869,11 +1870,13 @@ namespace AngelLoader
             Ini.WriteFullFMDataIni();
         }
 
-        internal static async Task DisplayFM(bool refreshCache = false)
+        [MustUseReturnValue]
+        internal static async Task<FanMission?>
+        DisplayFM(int index = -1, bool refreshCache = false)
         {
-            FanMission? fm = View.GetSelectedFMOrNull();
+            FanMission? fm = index > -1 ? View.GetFMFromIndex(index) : View.GetSelectedFMOrNull();
             AssertR(fm != null, nameof(fm) + " == null");
-            if (fm == null) return;
+            if (fm == null) return fm;
 
             if (FMNeedsScan(fm))
             {
@@ -1917,7 +1920,7 @@ namespace AngelLoader
                     case 0:
                         View.SetReadmeState(ReadmeState.LoadError);
                         View.SetReadmeText(LText.ReadmeArea.NoReadmeFound);
-                        return;
+                        return fm;
                     case > 1:
                         string safeReadme = DetectSafeReadme(readmeFiles, fm.Title);
                         if (!safeReadme.IsEmpty())
@@ -1929,7 +1932,7 @@ namespace AngelLoader
                         else
                         {
                             View.SetReadmeState(ReadmeState.InitialReadmeChooser, readmeFiles);
-                            return;
+                            return fm;
                         }
                         break;
                     case 1:
@@ -1944,6 +1947,8 @@ namespace AngelLoader
             LoadReadme(fm);
 
             #endregion
+
+            return fm;
         }
 
         #region Shutdown

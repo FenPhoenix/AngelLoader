@@ -259,5 +259,6 @@ namespace AngelLoader.Forms
         void ShowInitialReadmeChooser(bool visible);
         void ActivateThisInstance();
         Task<bool> AddFMs(string[] fmArchiveNames);
+        FanMission? GetFMFromIndex(int index);
     }
 }

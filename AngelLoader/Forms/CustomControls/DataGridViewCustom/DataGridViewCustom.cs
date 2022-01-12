@@ -184,6 +184,12 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         internal bool RowSelected() => SelectedRows.Count > 0;
 
+        internal void SelectSingle(int index)
+        {
+            ClearSelection();
+            Rows[index].Selected = true;
+        }
+
         #region Get and set columns
 
         internal ColumnData[] GetColumnData()
@@ -247,7 +253,11 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         internal void SelectProperly(bool suspendResume = true)
         {
-            if (Rows.Count == 0 || SelectedRows.Count == 0 || Columns.Count == 0) return;
+            DataGridViewSelectedRowCollection selRows;
+            if (Rows.Count == 0 || Columns.Count == 0 || (selRows = SelectedRows).Count == 0)
+            {
+                return;
+            }
 
             // Crappy mitigation for losing horizontal scroll position, not perfect but better than nothing
             int origHSO = HorizontalScrollingOffset;
@@ -255,7 +265,7 @@ namespace AngelLoader.Forms.CustomControls
             try
             {
                 // Note: we need to do this null check here, otherwise we get an exception that doesn't get caught(!!!)
-                base.SelectedRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
+                selRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
             }
             catch
             {
