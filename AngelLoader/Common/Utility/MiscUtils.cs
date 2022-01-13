@@ -203,30 +203,43 @@ namespace AngelLoader
 
             // We're doing this whole rigamarole because the game might have been started by someone other than
             // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
-            foreach (Process proc in Process.GetProcesses())
-            {
-                try
-                {
-                    string fn = GetProcessPath(proc.Id, buffer);
-                    if (!fn.IsEmpty() &&
-                        ((checkAllGames &&
-                          (AnyGameRunning(fn) ||
-                           (!T2MPExe().IsEmpty() && fn.PathEqualsI(T2MPExe())))) ||
-                         (!checkAllGames &&
-                          (!gameExe.IsEmpty() && fn.PathEqualsI(gameExe)))))
-                    {
-                        string logExe = checkAllGames ? "a game exe" : gameExe;
 
-                        Log("Found " + logExe + " running: " + fn +
-                            "\r\nReturning true, game should be blocked from starting");
-                        return true;
+            Process[] processes = Process.GetProcesses();
+            try
+            {
+                foreach (Process proc in processes)
+                {
+                    try
+                    {
+                        string fn = GetProcessPath(proc.Id, buffer);
+                        if (!fn.IsEmpty() &&
+                            ((checkAllGames &&
+                              (AnyGameRunning(fn) ||
+                               (!T2MPExe().IsEmpty() && fn.PathEqualsI(T2MPExe())))) ||
+                             (!checkAllGames &&
+                              (!gameExe.IsEmpty() && fn.PathEqualsI(gameExe)))))
+                        {
+                            string logExe = checkAllGames ? "a game exe" : gameExe;
+
+                            Log("Found " + logExe + " running: " + fn +
+                                "\r\nReturning true, game should be blocked from starting");
+                            return true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Even if this were to be one of our games, if .NET won't let us find out then all we can do
+                        // is shrug and move on.
+                        Log(ex: ex);
                     }
                 }
-                catch (Exception ex)
+            }
+            finally
+            {
+                // Are we serious? Do we have this nasty of a gotcha going on here?!
+                foreach (Process proc in processes)
                 {
-                    // Even if this were to be one of our games, if .NET won't let us find out then all we can do
-                    // is shrug and move on.
-                    Log(ex: ex);
+                    proc.Dispose();
                 }
             }
 
