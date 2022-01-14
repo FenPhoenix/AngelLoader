@@ -606,8 +606,8 @@ namespace AngelLoader.Forms.WinFormsNative
         {
             var handles = new List<IntPtr>();
 
-            var threads = Process.GetCurrentProcess().Threads;
-            foreach (ProcessThread thread in threads)
+            using Process currentProcess = Process.GetCurrentProcess();
+            foreach (ProcessThread thread in currentProcess.Threads)
             {
                 EnumThreadWindows(thread.Id, (hWnd, _) => { handles.Add(hWnd); return true; }, IntPtr.Zero);
             }
