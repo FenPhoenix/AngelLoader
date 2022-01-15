@@ -54,7 +54,7 @@ namespace AngelLoader.Forms
         private readonly int?[] _pageVScrollValues;
 
         private readonly DarkTextBox[] ExePathTextBoxes;
-        private readonly DarkTextBox[] ErrorableTextBoxes;
+        private readonly Control[] ErrorableControls;
 
         private readonly DarkLabel[] GameExeLabels;
         private readonly DarkTextBox[] GameExeTextBoxes;
@@ -181,11 +181,12 @@ namespace AngelLoader.Forms
 
             #region Errorable textboxes
 
-            ErrorableTextBoxes = new DarkTextBox[SupportedGameCount + 2];
-            Array.Copy(GameExeTextBoxes, 0, ErrorableTextBoxes, 0, SupportedGameCount);
+            ErrorableControls = new Control[SupportedGameCount + 3];
+            Array.Copy(GameExeTextBoxes, 0, ErrorableControls, 0, SupportedGameCount);
 
-            ErrorableTextBoxes[SupportedGameCount] = PathsPage.SteamExeTextBox;
-            ErrorableTextBoxes[SupportedGameCount + 1] = PathsPage.BackupPathTextBox;
+            ErrorableControls[SupportedGameCount] = PathsPage.SteamExeTextBox;
+            ErrorableControls[SupportedGameCount + 1] = PathsPage.BackupPathTextBox;
+            ErrorableControls[SupportedGameCount + 2] = PathsPage.FMArchivePathsListBox;
 
             #endregion
 
@@ -586,9 +587,9 @@ namespace AngelLoader.Forms
 
                 Images.DarkModeEnabled = darkMode;
                 SetRatingImage();
-                for (int i = 0; i < ErrorableTextBoxes.Length; i++)
+                for (int i = 0; i < ErrorableControls.Length; i++)
                 {
-                    ShowPathError(ErrorableTextBoxes[i], PathErrorIsSet(ErrorableTextBoxes[i]));
+                    ShowPathError(ErrorableControls[i], PathErrorIsSet(ErrorableControls[i]));
                 }
                 // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
                 // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
@@ -819,6 +820,16 @@ namespace AngelLoader.Forms
             //    }
             //}
 
+            foreach (string path in PathsPage.FMArchivePathsListBox.ItemsAsStrings)
+            {
+                if (!Directory.Exists(path))
+                {
+                    error = true;
+                    ShowPathError(PathsPage.FMArchivePathsListBox, true);
+                    break;
+                }
+            }
+
             if (error)
             {
                 // Currently, all errors happen on the Paths page, so go to that page automatically.
@@ -827,11 +838,11 @@ namespace AngelLoader.Forms
                 // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
                 // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen
                 // to make it clear.
-                foreach (DarkTextBox tb in ErrorableTextBoxes)
+                foreach (Control control in ErrorableControls)
                 {
-                    if (PathErrorIsSet(tb))
+                    if (PathErrorIsSet(control))
                     {
-                        PathsPage.PagePanel.ScrollControlIntoView(tb);
+                        PathsPage.PagePanel.ScrollControlIntoView(control);
                         break;
                     }
                 }
@@ -850,12 +861,29 @@ namespace AngelLoader.Forms
             }
             else
             {
-                foreach (var tb in ErrorableTextBoxes)
+                foreach (Control control in ErrorableControls)
                 {
-                    tb.BackColor = _selfTheme == VisualTheme.Dark
-                        ? tb.DarkModeBackColor
-                        : SystemColors.Window;
-                    tb.Tag = PathError.False;
+                    if (control is DarkTextBox tb)
+                    {
+                        tb.BackColor = _selfTheme == VisualTheme.Dark
+                            ? tb.DarkModeBackColor
+                            : SystemColors.Window;
+                    }
+                    else if (control is DarkListBox lb)
+                    {
+                        Color color = _selfTheme == VisualTheme.Dark
+                            ? DarkColors.LightBackground
+                            : SystemColors.Window;
+
+                        lb.BackColor = color;
+
+                        foreach (ListViewItem item in lb.Items)
+                        {
+                            item.BackColor = color;
+                        }
+                    }
+
+                    control.Tag = PathError.False;
                 }
                 ErrorIconPictureBox.Hide();
                 ErrorLabel.Hide();
@@ -1302,9 +1330,15 @@ namespace AngelLoader.Forms
                 }
                 PathsPage.FMArchivePathsListBox.EndUpdate();
             }
+
+            CheckForErrors();
         }
 
-        private void RemoveFMArchivePathButton_Click(object sender, EventArgs e) => PathsPage.FMArchivePathsListBox.RemoveAndSelectNearest();
+        private void RemoveFMArchivePathButton_Click(object sender, EventArgs e)
+        {
+            PathsPage.FMArchivePathsListBox.RemoveAndSelectNearest();
+            CheckForErrors();
+        }
 
         #endregion
 
@@ -1534,22 +1568,43 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void ShowPathError(DarkTextBox textBox, bool shown)
+        private void ShowPathError(Control control, bool shown)
         {
-            textBox.BackColor =
-                _selfTheme == VisualTheme.Dark
-                    ? shown
-                        ? DarkColors.Fen_RedHighlight
-                        : textBox.DarkModeBackColor
-                    : shown
-                        ? Color.MistyRose
-                        : SystemColors.Window;
+            if (control is DarkTextBox textBox)
+            {
+                textBox.BackColor =
+                    _selfTheme == VisualTheme.Dark
+                        ? shown
+                            ? DarkColors.Fen_RedHighlight
+                            : textBox.DarkModeBackColor
+                        : shown
+                            ? Color.MistyRose
+                            : SystemColors.Window;
+            }
+            else if (control is DarkListBox listBox)
+            {
+                Color color =
+                    _selfTheme == VisualTheme.Dark
+                        ? shown
+                            ? DarkColors.Fen_RedHighlight
+                            : DarkColors.LightBackground
+                        : shown
+                            ? Color.MistyRose
+                            : SystemColors.Window;
 
-            textBox.Tag = shown ? PathError.True : PathError.False;
+                listBox.BackColor = color;
+
+                foreach (ListViewItem item in listBox.Items)
+                {
+                    item.BackColor = color;
+                }
+            }
+
+            control.Tag = shown ? PathError.True : PathError.False;
 
             if (!shown)
             {
-                foreach (var tb in ErrorableTextBoxes)
+                foreach (var tb in ErrorableControls)
                 {
                     if (PathErrorIsSet(tb)) return;
                 }
