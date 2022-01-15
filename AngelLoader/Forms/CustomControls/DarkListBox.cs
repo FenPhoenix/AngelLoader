@@ -238,24 +238,27 @@ namespace AngelLoader.Forms.CustomControls
                 e.Bounds.Height
             );
 
-            Brush bgBrush =
-                itemSelected
-                    ? _darkModeEnabled
-                        ? !Enabled
-                            ? DarkColors.LightBackgroundBrush
-                            : DarkColors.BlueSelectionBrush
-                        : !Enabled
-                            ? SystemBrushes.ControlLight
-                            : SystemBrushes.Highlight
-                    : _darkModeEnabled
-                        ? !Enabled
-                            ? DarkColors.Fen_ControlBackgroundBrush
-                            : DarkColors.LightBackgroundBrush
-                        : !Enabled
-                            ? SystemBrushes.Control
-                            : SystemBrushes.Window;
+            using (var bcBrush = new SolidBrush(BackColor))
+            {
+                Brush bgBrush =
+                    itemSelected
+                        ? _darkModeEnabled
+                            ? !Enabled
+                                ? bcBrush
+                                : DarkColors.BlueSelectionBrush
+                            : !Enabled
+                                ? SystemBrushes.ControlLight
+                                : SystemBrushes.Highlight
+                        : _darkModeEnabled
+                            ? !Enabled
+                                ? DarkColors.Fen_ControlBackgroundBrush
+                                : bcBrush
+                            : !Enabled
+                                ? SystemBrushes.Control
+                                : bcBrush;
 
-            e.Graphics.FillRectangle(bgBrush, selRect);
+                e.Graphics.FillRectangle(bgBrush, selRect);
+            }
 
             Color textColor =
                 _darkModeEnabled
@@ -274,18 +277,18 @@ namespace AngelLoader.Forms.CustomControls
                 _darkModeEnabled
                     ? !Enabled
                         ? itemSelected
-                            ? DarkColors.LightBackground
+                            ? BackColor
                             : DarkColors.Fen_ControlBackground
                         : itemSelected
                             ? DarkColors.BlueSelection
-                            : DarkColors.LightBackground
+                            : BackColor
                     : !Enabled
                         ? itemSelected
                             ? SystemColors.ControlLight
                             : SystemColors.Control
                         : itemSelected
                             ? SystemColors.Highlight
-                            : SystemColors.Window;
+                            : BackColor;
 
             const TextFormatFlags textFormatFlags =
                 TextFormatFlags.Left |

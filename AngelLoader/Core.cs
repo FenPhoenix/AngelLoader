@@ -142,7 +142,17 @@ namespace AngelLoader
 
                 splashScreen.SetMessage(LText.SplashScreen.CheckingRequiredSettingsFields);
 
-                openSettings = !Directory.Exists(Config.FMsBackupPath);
+                bool backupPathExists = Directory.Exists(Config.FMsBackupPath);
+                bool allArchivePathsExist = true;
+                for (int i = 0; i < Config.FMArchivePaths.Count; i++)
+                {
+                    if (!Directory.Exists(Config.FMArchivePaths[i]))
+                    {
+                        allArchivePathsExist = false;
+                        break;
+                    }
+                }
+                openSettings = !backupPathExists || !allArchivePathsExist;
             }
             // Don't show the splash screen on first start, because it looks awkward
             else
