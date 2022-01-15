@@ -184,12 +184,12 @@ namespace AngelLoader
 
             int colorTableEntryLength = 0;
 
-            byte[] colorEntriesBytesList = Array.Empty<byte>();
+            List<byte>? colorEntriesBytesList = null;
 
             if (success)
             {
-                colorEntriesBytesList = CreateColorTableRTFBytes(colorTable).ToArray();
-                colorTableEntryLength = colorEntriesBytesList.Length;
+                colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
+                colorTableEntryLength = colorEntriesBytesList.Count;
             }
 
             var darkModeBytes = new byte[currentReadmeBytes.Length + colorTableEntryLength + RTF_DarkBackgroundBytes.Length];
@@ -213,9 +213,12 @@ namespace AngelLoader
             // @DarkModeNote: We could add code to delete the old color table at some point.
             // This would make us some amount slower, and it's not necessary currently, so let's just not do it
             // for now.
-            for (int i = 0; i < colorEntriesBytesList.Length; i++)
+            if (colorEntriesBytesList != null)
             {
-                darkModeBytes[firstIndexPastHeader + i] = colorEntriesBytesList[i];
+                for (int i = 0; i < colorTableEntryLength; i++)
+                {
+                    darkModeBytes[firstIndexPastHeader + i] = colorEntriesBytesList[i];
+                }
             }
 
             // Copy main body
