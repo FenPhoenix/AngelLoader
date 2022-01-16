@@ -4525,7 +4525,7 @@ namespace AngelLoader.Forms
 
             bool multiSelected = FMsDGV.MultipleFMsSelected();
 
-            // @MULTISEL(FM menu item toggles): Maybe we want to hide unsupported menu items rather disable?
+            // @MULTISEL(FM menu item toggles): Maybe we want to hide unsupported menu items rather than disable?
             FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(!multiSelected && gameIsSupportedAndAvailable);
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
