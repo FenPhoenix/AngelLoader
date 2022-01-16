@@ -3816,7 +3816,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void FMsDGV_MouseDown(object sender, MouseEventArgs e)
+        private void FMsDGV_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
 
