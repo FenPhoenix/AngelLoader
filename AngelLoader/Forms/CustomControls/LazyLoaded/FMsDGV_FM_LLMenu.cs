@@ -729,33 +729,45 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             var senderItem = (ToolStripMenuItemCustom)sender;
 
-            var fm = _owner.FMsDGV.GetMainSelectedFM();
+            FanMission mainSelectedFM = _owner.FMsDGV.GetMainSelectedFM();
 
-            fm.FinishedOn = 0;
-            fm.FinishedOnUnknown = false;
-
-            if (senderItem == FinishedOnUnknownMenuItem)
+            void SetFinishedOnState(FanMission fm)
             {
-                fm.FinishedOnUnknown = senderItem.Checked;
+                fm.FinishedOn = 0;
+                fm.FinishedOnUnknown = false;
+
+                if (senderItem == FinishedOnUnknownMenuItem)
+                {
+                    fm.FinishedOnUnknown = senderItem.Checked;
+                }
+                else
+                {
+                    uint at = 1;
+                    foreach (ToolStripMenuItemCustom item in FinishedOnMenu.Items)
+                    {
+                        if (item == FinishedOnUnknownMenuItem) continue;
+
+                        if (item.Checked) fm.FinishedOn |= at;
+                        at <<= 1;
+                    }
+                    if (fm.FinishedOn > 0)
+                    {
+                        if (fm == mainSelectedFM)
+                        {
+                            FinishedOnUnknownMenuItem.Checked = false;
+                        }
+                        fm.FinishedOnUnknown = false;
+                    }
+                }
             }
-            else
+
+            foreach (FanMission fm in _owner.FMsDGV.GetSelectedFMs())
             {
-                uint at = 1;
-                foreach (ToolStripMenuItemCustom item in FinishedOnMenu.Items)
-                {
-                    if (item == FinishedOnUnknownMenuItem) continue;
-
-                    if (item.Checked) fm.FinishedOn |= at;
-                    at <<= 1;
-                }
-                if (fm.FinishedOn > 0)
-                {
-                    FinishedOnUnknownMenuItem.Checked = false;
-                    fm.FinishedOnUnknown = false;
-                }
+                SetFinishedOnState(fm);
             }
 
-            _owner.RefreshFM(fm, rowOnly: true);
+            _owner.RefreshAllSelectedFMs(rowOnly: true);
+
             Ini.WriteFullFMDataIni();
         }
 
