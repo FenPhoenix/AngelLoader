@@ -114,8 +114,9 @@ namespace AngelLoader.Forms.CustomControls
         internal FanMission GetSelectedFM()
         {
             AssertR(SelectedRows.Count > 0, "GetSelectedFM: no rows selected!");
+            AssertR(MainSelectedRow != null, nameof(MainSelectedRow) + " is null when it shouldn't be");
 
-            return GetFMFromIndex(SelectedRows[0].Index);
+            return GetFMFromIndex(MainSelectedRow!.Index);
         }
 
         internal int GetIndexFromInstalledName(string installedName, bool findNearest)
@@ -156,7 +157,7 @@ namespace AngelLoader.Forms.CustomControls
         internal SelectedFM GetSelectedFMPosInfo() =>
             SelectedRows.Count == 0
                 ? new SelectedFM { InstalledName = "", IndexFromTop = 0 }
-                : GetFMPosInfoFromIndex(index: SelectedRows[0].Index);
+                : GetFMPosInfoFromIndex(index: MainSelectedRow!.Index);
 
         internal SelectedFM GetFMPosInfoFromIndex(int index)
         {
@@ -182,7 +183,7 @@ namespace AngelLoader.Forms.CustomControls
         /// Returns true if any row is selected, false if no rows exist or none are selected.
         /// </summary>
         /// <returns></returns>
-        internal bool RowSelected() => SelectedRows.Count > 0;
+        internal bool RowSelected() => MainSelectedRow != null;
 
         internal bool MultipleFMsSelected() => SelectedRows.Count > 1;
 
@@ -314,6 +315,46 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #region Event overrides
+
+        internal DataGridViewRow? MainSelectedRow = null;
+
+        private void SetMainSelectedRow()
+        {
+            var selRows = SelectedRows;
+            if (selRows.Count == 0)
+            {
+                MainSelectedRow = null;
+                //System.Diagnostics.Trace.WriteLine("selection cleared");
+            }
+            else
+            {
+                if (MainSelectedRow == null || selRows.Count == 1)
+                {
+                    MainSelectedRow = selRows[0];
+                }
+                //System.Diagnostics.Trace.WriteLine(GetFMFromIndex(MainSelectedRow.Index).Archive);
+            }
+        }
+
+        protected override void OnSelectionChanged(EventArgs e)
+        {
+            SetMainSelectedRow();
+            base.OnSelectionChanged(e);
+        }
+
+        // @MULTISEL(FMsDGV on rows added/removed): I suspect we don't need to set main sel on these
+        // Because the FM refresh method changes the selection explicitly (for rows) or implicitly (for no rows)
+        protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
+        {
+            SetMainSelectedRow();
+            base.OnRowsAdded(e);
+        }
+
+        protected override void OnRowsRemoved(DataGridViewRowsRemovedEventArgs e)
+        {
+            SetMainSelectedRow();
+            base.OnRowsRemoved(e);
+        }
 
         protected override void OnColumnAdded(DataGridViewColumnEventArgs e)
         {

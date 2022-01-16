@@ -381,7 +381,7 @@ namespace AngelLoader.Forms
                 else if (m.Msg == Native.WM_MBUTTONDOWN && CursorOverControl(FMsDGV))
                 {
                     FMsDGV.Focus();
-                    if (FMsDGV.RowSelected() && !FMsDGV.SelectedRows[0].Displayed)
+                    if (FMsDGV.RowSelected() && !FMsDGV.MainSelectedRow!.Displayed)
                     {
                         CenterSelectedFM();
                     }
@@ -2648,7 +2648,7 @@ namespace AngelLoader.Forms
 
             if (selectedFM == fm)
             {
-                FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
+                FMsDGV.InvalidateRow(FMsDGV.MainSelectedRow!.Index);
                 if (!rowOnly) UpdateAllFMUIDataExceptReadme(selectedFM);
             }
             else
@@ -2752,7 +2752,7 @@ namespace AngelLoader.Forms
         {
             if (FMsDGV.RowCount == 0) return;
 
-            int selectedRow = FMsDGV.SelectedRows[0].Index;
+            int selectedRow = FMsDGV.MainSelectedRow!.Index;
 
             using (new DisableEvents(this))
             {
@@ -3355,7 +3355,7 @@ namespace AngelLoader.Forms
 
         private FanMission? _displayedFM;
 
-        public int GetSelectedRowIndex() => FMsDGV.RowSelected() ? FMsDGV.SelectedRows[0].Index : -1;
+        public int GetSelectedRowIndex() => FMsDGV.RowSelected() ? FMsDGV.MainSelectedRow!.Index : -1;
 
         public SelectedFM? GetFMPosInfoFromIndex(int index) =>
             FMsDGV.RowCount == 0 || index < 0 || index >= FMsDGV.RowCount
@@ -3508,7 +3508,7 @@ namespace AngelLoader.Forms
             try
             {
                 FMsDGV.FirstDisplayedScrollingRowIndex =
-                    (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
+                    (FMsDGV.MainSelectedRow!.Index - (FMsDGV.DisplayedRowCount(true) / 2))
                     .Clamp(0, FMsDGV.RowCount - 1);
             }
             catch
@@ -3850,7 +3850,14 @@ namespace AngelLoader.Forms
             #endregion
         }
 
-        private async void FMsDGV_SelectionChanged(object sender, EventArgs e) => await ChangeSelection();
+        private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
+        {
+            // Don't run selection logic for extra selected rows, to prevent a possible cascade of heavy operations
+            // from being run during multi-select (scanning, caching, who knows what)
+            if (FMsDGV.SelectedRows.Count > 1) return;
+
+            await ChangeSelection(FMsDGV.MainSelectedRow?.Index ?? -1);
+        }
 
         // Okay, boys and girls. We get the glitched last row on keyboard-scroll if we don't do this idiot thing.
         // No, we can't do any of the normal things you'd think would work in RefreshFMsList() itself. I tried.
@@ -3907,7 +3914,7 @@ namespace AngelLoader.Forms
                 {
                     FMsDGV.SelectSingle(rowIndex);
                     FMsDGV.SelectProperly();
-                    FMsDGV.FirstDisplayedScrollingRowIndex = FMsDGV.SelectedRows[0].Index;
+                    FMsDGV.FirstDisplayedScrollingRowIndex = FMsDGV.MainSelectedRow!.Index;
                 }
             }
         }
