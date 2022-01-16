@@ -1780,6 +1780,8 @@ namespace AngelLoader
             if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await View.SortAndSetFilter(forceDisplayFM: true);
         }
 
+        // @MULTISEL(PinOrUnpinFM): This one needs more than nominal work.
+        // It seems to depend on a single-selection in more ways than are obvious (at least to me when I'm tired).
         internal static async Task PinOrUnpinFM()
         {
             var fm = View.GetSelectedFMOrNull();

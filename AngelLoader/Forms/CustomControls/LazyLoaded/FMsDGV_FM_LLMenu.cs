@@ -673,6 +673,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
                 await FMAudio.ConvertToWAVs(_owner.FMsDGV.GetMainSelectedFM(), convertType, true);
             }
+            // @MULTISEL: In multi-selection case, let's have both discrete Pin and Unpin menu options, rather than just the one that switches
             else if (sender == PinToTopMenuItem)
             {
                 await Core.PinOrUnpinFM();
