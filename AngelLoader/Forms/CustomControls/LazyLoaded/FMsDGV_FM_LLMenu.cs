@@ -334,7 +334,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             // Some menu items' text depends on FM state. Because this could be run after startup, we need to
             // make sure those items' text is set correctly.
-            FanMission? selFM = _owner.GetSelectedFMOrNull();
+            FanMission? selFM = _owner.GetMainSelectedFMOrNull();
             bool sayInstall = selFM is not { Installed: true };
             // @GENGAMES - Localize FM context menu - "sayShockEd"
             bool sayShockEd = selFM is { Game: Game.SS2 };

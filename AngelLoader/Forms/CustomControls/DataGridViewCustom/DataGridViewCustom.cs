@@ -113,7 +113,7 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         internal FanMission GetMainSelectedFM()
         {
-            AssertR(SelectedRows.Count > 0, "GetSelectedFM: no rows selected!");
+            AssertR(SelectedRows.Count > 0, nameof(GetMainSelectedFM) + ": no rows selected!");
             AssertR(MainSelectedRow != null, nameof(MainSelectedRow) + " is null when it shouldn't be");
 
             return GetFMFromIndex(MainSelectedRow!.Index);
@@ -165,7 +165,7 @@ namespace AngelLoader.Forms.CustomControls
             return 0;
         }
 
-        internal SelectedFM GetSelectedFMPosInfo() =>
+        internal SelectedFM GetMainSelectedFMPosInfo() =>
             SelectedRows.Count == 0
                 ? new SelectedFM { InstalledName = "", IndexFromTop = 0 }
                 : GetFMPosInfoFromIndex(index: MainSelectedRow!.Index);

@@ -707,7 +707,7 @@ namespace AngelLoader
 
         public static async Task RefreshFMsListFromDisk()
         {
-            SelectedFM? selFM = View.GetSelectedFMPosInfo();
+            SelectedFM? selFM = View.GetMainSelectedFMPosInfo();
             using (new DisableEvents(View))
             {
                 var fmsViewListUnscanned = FindFMs.Find();
@@ -1784,7 +1784,7 @@ namespace AngelLoader
         // It seems to depend on a single-selection in more ways than are obvious (at least to me when I'm tired).
         internal static async Task PinOrUnpinFM()
         {
-            var fm = View.GetSelectedFMOrNull();
+            var fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
             fm.Pinned = !fm.Pinned;
@@ -1800,7 +1800,7 @@ namespace AngelLoader
             }
             else
             {
-                int index = View.GetSelectedRowIndex();
+                int index = View.GetMainSelectedRowIndex();
                 selFM = View.GetFMPosInfoFromIndex(index == rowCount - 1 ? index - 1 : index + 1);
             }
             await View.SortAndSetFilter(keepSelection: fm.Pinned, selectedFM: selFM);
@@ -1822,7 +1822,7 @@ namespace AngelLoader
 
         internal static void UpdateFMComment()
         {
-            FanMission? fm = View.GetSelectedFMOrNull();
+            FanMission? fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
             string commentText = View.GetFMCommentText();
@@ -1840,7 +1840,7 @@ namespace AngelLoader
 
         internal static void ScanAndFillLanguagesList(bool forceScan)
         {
-            FanMission? fm = View.GetSelectedFMOrNull();
+            FanMission? fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
             View.ClearLanguagesList();
@@ -1875,10 +1875,10 @@ namespace AngelLoader
 
         internal static void UpdateFMSelectedLanguage()
         {
-            FanMission? fm = View.GetSelectedFMOrNull();
+            FanMission? fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
-            fm.SelectedLang = View.GetSelectedLanguage() ?? FMLanguages.DefaultLangKey;
+            fm.SelectedLang = View.GetMainSelectedLanguage() ?? FMLanguages.DefaultLangKey;
             Ini.WriteFullFMDataIni();
         }
 
@@ -1886,7 +1886,7 @@ namespace AngelLoader
         internal static async Task<FanMission?>
         DisplayFM(int index = -1, bool refreshCache = false)
         {
-            FanMission? fm = index > -1 ? View.GetFMFromIndex(index) : View.GetSelectedFMOrNull();
+            FanMission? fm = index > -1 ? View.GetFMFromIndex(index) : View.GetMainSelectedFMOrNull();
             AssertR(fm != null, nameof(fm) + " == null");
             if (fm == null) return fm;
 

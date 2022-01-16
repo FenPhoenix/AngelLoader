@@ -230,7 +230,7 @@ namespace AngelLoader.Forms
 
         void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded);
 
-        SelectedFM? GetSelectedFMPosInfo();
+        SelectedFM? GetMainSelectedFMPosInfo();
 
         void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
 
@@ -238,19 +238,19 @@ namespace AngelLoader.Forms
         void UpdateGameScreenShotModes();
 #endif
 
-        FanMission? GetSelectedFMOrNull();
+        FanMission? GetMainSelectedFMOrNull();
         (string Category, string Tag) SelectedCategoryAndTag();
         void DisplayFMTags(FMCategoriesCollection fmTags);
         void ClearTagsSearchBox();
         void SetPinnedMenuState(bool pinned);
         int GetRowCount();
-        int GetSelectedRowIndex();
+        int GetMainSelectedRowIndex();
         SelectedFM? GetFMPosInfoFromIndex(int index);
         string GetFMCommentText();
         void ClearLanguagesList();
         void AddLanguageToList(string backingItem, string item);
         string? SetSelectedLanguage(string language);
-        string? GetSelectedLanguage();
+        string? GetMainSelectedLanguage();
         void SetPlayOriginalGameControlsState();
         void ClearReadmesList();
         void UpdateAllFMUIDataExceptReadme(FanMission fm);

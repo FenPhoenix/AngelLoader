@@ -68,7 +68,7 @@ namespace AngelLoader
                     ? LText.AlertMessages.Play_ConfirmMessage
                     : LText.AlertMessages.Play_InstallAndPlayConfirmMessage;
 
-                if (Core.View.GetSelectedFMOrNull() != fm)
+                if (Core.View.GetMainSelectedFMOrNull() != fm)
                 {
                     message += "\r\n\r\n" +
                                fm.Archive + "\r\n" +

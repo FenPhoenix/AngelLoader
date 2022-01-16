@@ -1247,7 +1247,7 @@ namespace AngelLoader.Forms
         {
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
-            FanMission? selFM = GetSelectedFMOrNull();
+            FanMission? selFM = GetMainSelectedFMOrNull();
 
             try
             {
@@ -1710,7 +1710,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            SelectedFM selectedFM = FMsDGV.GetSelectedFMPosInfo();
+            SelectedFM selectedFM = FMsDGV.GetMainSelectedFMPosInfo();
 
             var topRightTabs = new TopRightTabsData
             {
@@ -1955,7 +1955,7 @@ namespace AngelLoader.Forms
             if (tabPage == null) return;
 
             var (gameSelFM, gameFilter, _) = GetGameSelFMAndFilter(tabPage);
-            SelectedFM selFM = FMsDGV.GetSelectedFMPosInfo();
+            SelectedFM selFM = FMsDGV.GetMainSelectedFMPosInfo();
             selFM.DeepCopyTo(gameSelFM);
             FMsDGV.Filter.DeepCopyTo(gameFilter);
         }
@@ -2633,7 +2633,7 @@ namespace AngelLoader.Forms
 
         public void RefreshFM(FanMission fm, bool rowOnly = false)
         {
-            FanMission? selectedFM = GetSelectedFMOrNull();
+            FanMission? selectedFM = GetMainSelectedFMOrNull();
             if (selectedFM == null) return;
 
             if (selectedFM == fm)
@@ -2651,7 +2651,7 @@ namespace AngelLoader.Forms
         {
             if (!rowOnly)
             {
-                FanMission? selectedFM = GetSelectedFMOrNull();
+                FanMission? selectedFM = GetMainSelectedFMOrNull();
                 if (selectedFM != null)
                 {
                     UpdateAllFMUIDataExceptReadme(selectedFM);
@@ -3029,7 +3029,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        public FanMission? GetSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
+        public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
 
         public FanMission? GetFMFromIndex(int index) => FMsDGV.RowSelected() ? FMsDGV.GetFMFromIndex(index) : null;
 
@@ -3373,14 +3373,14 @@ namespace AngelLoader.Forms
 
         private FanMission? _displayedFM;
 
-        public int GetSelectedRowIndex() => FMsDGV.RowSelected() ? FMsDGV.MainSelectedRow!.Index : -1;
+        public int GetMainSelectedRowIndex() => FMsDGV.RowSelected() ? FMsDGV.MainSelectedRow!.Index : -1;
 
         public SelectedFM? GetFMPosInfoFromIndex(int index) =>
             FMsDGV.RowCount == 0 || index < 0 || index >= FMsDGV.RowCount
                 ? null
                 : FMsDGV.GetFMPosInfoFromIndex(index);
 
-        public SelectedFM? GetSelectedFMPosInfo() => FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
+        public SelectedFM? GetMainSelectedFMPosInfo() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFMPosInfo() : null;
 
         public int GetRowCount() => FMsDGV.RowCount;
 
@@ -3401,7 +3401,7 @@ namespace AngelLoader.Forms
                 // So suspend EverythingPanel instead and it works fine.
                 TopSplitContainer.Panel1.SuspendDrawing();
 
-                SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
+                SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFMPosInfo() : null;
 
                 Font f = FMsDGV.DefaultCellStyle.Font;
 
@@ -3586,10 +3586,10 @@ namespace AngelLoader.Forms
         {
             bool selFMWasPassedIn = selectedFM != null;
 
-            FanMission? oldSelectedFM = GetSelectedFMOrNull();
+            FanMission? oldSelectedFM = GetMainSelectedFMOrNull();
 
             selectedFM ??= keepSelection && !gameTabSwitch && FMsDGV.RowSelected()
-                ? FMsDGV.GetSelectedFMPosInfo()
+                ? FMsDGV.GetMainSelectedFMPosInfo()
                 : null;
 
             KeepSel keepSel =
@@ -3651,7 +3651,7 @@ namespace AngelLoader.Forms
                 //Trace.WriteLine(nameof(keepSelection) + ": " + keepSelection);
                 //Trace.WriteLine("selectedFM != null: " + (selectedFM != null));
                 //Trace.WriteLine("!selectedFM.InstalledName.IsEmpty(): " + (selectedFM != null && !selectedFM.InstalledName.IsEmpty()));
-                //Trace.WriteLine("selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir: " + (selectedFM != null && selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir));
+                //Trace.WriteLine("selectedFM.InstalledName != FMsDGV.GetMainSelectedFM().InstalledDir: " + (selectedFM != null && selectedFM.InstalledName != FMsDGV.GetMainSelectedFM().InstalledDir));
 
                 // Optimization in case we land on the same FM as before, don't reload it
                 // And whaddaya know, I still ended up having to have this eyes-glazing-over stuff here.
@@ -3814,7 +3814,7 @@ namespace AngelLoader.Forms
         {
             if (e.Button != MouseButtons.Left) return;
 
-            SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
+            SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFMPosInfo() : null;
 
             var newSortDirection =
                 e.ColumnIndex == (int)FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortDirection.Ascending
@@ -3895,7 +3895,7 @@ namespace AngelLoader.Forms
 
                 if (!_fmsListOneTimeHackRefreshDone)
                 {
-                    SelectedFM selFM = index == -1 ? FMsDGV.GetSelectedFMPosInfo() : FMsDGV.GetFMPosInfoFromIndex(index);
+                    SelectedFM selFM = index == -1 ? FMsDGV.GetMainSelectedFMPosInfo() : FMsDGV.GetFMPosInfoFromIndex(index);
                     RefreshFMsList(selFM, startup: false, KeepSel.TrueNearest);
                     _fmsListOneTimeHackRefreshDone = true;
                 }
@@ -4830,7 +4830,7 @@ namespace AngelLoader.Forms
 
         public void AddLanguageToList(string backingItem, string item) => EditFMLanguageComboBox.AddFullItem(backingItem, item);
 
-        public string? GetSelectedLanguage()
+        public string? GetMainSelectedLanguage()
         {
             return EditFMLanguageComboBox.SelectedIndex == -1 ? null : EditFMLanguageComboBox.SelectedBackingItem();
         }
