@@ -112,6 +112,25 @@ namespace AngelLoader
             {
                 try
                 {
+                    foreach (string f in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                    {
+                        new FileInfo(f).IsReadOnly = false;
+                    }
+
+                    foreach (string d in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
+                    {
+                        Misc.Dir_UnSetReadOnly(d);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception setting temp path subtree to all non-readonly.\r\n" +
+                        "path was: " + path, ex);
+                }
+
+                try
+                {
+
                     foreach (string f in FastIO.GetFilesTopOnly(path, "*")) File.Delete(f);
                     foreach (string d in FastIO.GetDirsTopOnly(path, "*")) Directory.Delete(d, recursive: true);
                 }
