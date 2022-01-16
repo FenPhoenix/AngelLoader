@@ -668,10 +668,15 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     }
                 }
             }
+            // @MULTISEL(Convert audio): Test this, and with error cases too!
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
             {
                 var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
-                await FMAudio.ConvertToWAVs(_owner.FMsDGV.GetMainSelectedFM(), convertType, true);
+                FanMission[] fms = _owner.FMsDGV.GetSelectedFMs();
+                foreach (FanMission fm in fms)
+                {
+                    await FMAudio.ConvertToWAVs(fm, convertType, true);
+                }
             }
             // @MULTISEL: In multi-selection case, let's have both discrete Pin and Unpin menu options, rather than just the one that switches
             else if (sender == PinToTopMenuItem)

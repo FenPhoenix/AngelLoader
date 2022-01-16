@@ -4520,7 +4520,9 @@ namespace AngelLoader.Forms
             bool gameIsSupported = GameIsKnownAndSupported(fm.Game);
             bool gameIsSupportedAndAvailable = gameIsSupported && !fm.MarkedUnavailable;
 
-            bool multiSelected = FMsDGV.MultipleFMsSelected();
+            var selRows = FMsDGV.SelectedRows;
+
+            bool multiSelected = selRows.Count > 1;
 
             // @MULTISEL(FM menu item toggles): Maybe we want to hide unsupported menu items rather than disable?
             FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(!multiSelected && gameIsSupportedAndAvailable);
@@ -4543,7 +4545,17 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!fm.MarkedUnavailable);
 
-            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(GameIsDark(fm.Game) && fm.Installed && !fm.MarkedUnavailable);
+            bool allSelectedAreAudioConvertible = true;
+            for (int i = 0; i < selRows.Count; i++)
+            {
+                FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
+                if (!sFM.Installed || !GameIsDark(sFM.Game) || sFM.MarkedUnavailable)
+                {
+                    allSelectedAreAudioConvertible = false;
+                    break;
+                }
+            }
+            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(allSelectedAreAudioConvertible);
 
             FMsDGV_FM_LLMenu.SetWebSearchEnabled(!multiSelected);
 
