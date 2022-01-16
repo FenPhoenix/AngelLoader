@@ -2760,7 +2760,7 @@ namespace AngelLoader.Forms
 
             try
             {
-                EverythingPanel.SuspendDrawing();
+                TopSplitContainer.Panel1.SuspendDrawing();
                 using (new DisableEvents(this))
                 {
                     FMsDGV.SelectSingle(selectedRow);
@@ -2778,7 +2778,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                EverythingPanel.ResumeDrawing();
+                TopSplitContainer.Panel1.ResumeDrawing();
             }
         }
 
@@ -3399,7 +3399,7 @@ namespace AngelLoader.Forms
                 // If we suspend the form, our mouse events go THROUGH it to any underlying window and affect that.
                 // If we suspend FMsDGV, it straight-up doesn't work and still flickers.
                 // So suspend EverythingPanel instead and it works fine.
-                EverythingPanel.SuspendDrawing();
+                TopSplitContainer.Panel1.SuspendDrawing();
 
                 SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
@@ -3517,7 +3517,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                EverythingPanel.ResumeDrawing();
+                TopSplitContainer.Panel1.ResumeDrawing();
             }
         }
 
