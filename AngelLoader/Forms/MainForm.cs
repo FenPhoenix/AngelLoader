@@ -2646,6 +2646,16 @@ namespace AngelLoader.Forms
             }
         }
 
+        public void RefreshAllSelectedFMs()
+        {
+            FanMission? selectedFM = GetSelectedFMOrNull();
+            if (selectedFM != null)
+            {
+                UpdateAllFMUIDataExceptReadme(selectedFM);
+            }
+            RefreshFMsListKeepSelection();
+        }
+
         /// <summary>
         /// Returns false if the list is empty and ClearShownData() has been called, otherwise true
         /// </summary>

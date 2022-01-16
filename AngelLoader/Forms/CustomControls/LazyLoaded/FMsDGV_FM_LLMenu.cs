@@ -659,10 +659,13 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == ScanFMMenuItem)
             {
-                FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-                if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
+                FanMission[] fms = _owner.FMsDGV.GetSelectedFMs();
+                if (fms.Length > 0)
                 {
-                    _owner.RefreshFM(fm);
+                    if (await FMScan.ScanFMs(fms.ToList(), hideBoxIfZip: true))
+                    {
+                        _owner.RefreshAllSelectedFMs();
+                    }
                 }
             }
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)

@@ -119,6 +119,17 @@ namespace AngelLoader.Forms.CustomControls
             return GetFMFromIndex(MainSelectedRow!.Index);
         }
 
+        internal FanMission[] GetSelectedFMs()
+        {
+            var selRows = SelectedRows;
+            var ret = new FanMission[selRows.Count];
+            for (int i = 0; i < selRows.Count; i++)
+            {
+                ret[i] = GetFMFromIndex(selRows[i].Index);
+            }
+            return ret;
+        }
+
         internal int GetIndexFromInstalledName(string installedName, bool findNearest)
         {
             // Graceful default if a value is missing
