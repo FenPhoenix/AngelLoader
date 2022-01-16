@@ -3831,12 +3831,7 @@ namespace AngelLoader.Forms
             else if (ht.Type == DataGridViewHitTestType.Cell && ht.ColumnIndex > -1 && ht.RowIndex > -1)
             {
                 FMsDGV.ContextMenuStrip = FMsDGV_FM_LLMenu.Menu;
-                if (FMsDGV.Rows[ht.RowIndex].Selected)
-                {
-                    // Actually make it load the FM and stuff
-                    await ChangeSelection(ht.RowIndex);
-                }
-                else
+                if (!FMsDGV.Rows[ht.RowIndex].Selected)
                 {
                     FMsDGV.SelectSingle(ht.RowIndex);
                 }
