@@ -3747,9 +3747,23 @@ namespace FMScanner
                     return;
                 }
 
-                var ds = Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly);
-                for (int i = 0; i < ds.Length; i++) Directory.Delete(ds[i], true);
+                foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.AllDirectories))
+                {
+                    new FileInfo(f).IsReadOnly = false;
+                }
 
+                foreach (string d in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.AllDirectories))
+                {
+                    _ = new DirectoryInfo(d) { Attributes = FileAttributes.Normal };
+                }
+
+                var ds = Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly);
+                for (int i = 0; i < ds.Length; i++)
+                {
+                    Directory.Delete(ds[i], true);
+                }
+
+                _ = new DirectoryInfo(_fmWorkingPath) { Attributes = FileAttributes.Normal };
                 Directory.Delete(_fmWorkingPath, recursive: true);
             }
             catch
