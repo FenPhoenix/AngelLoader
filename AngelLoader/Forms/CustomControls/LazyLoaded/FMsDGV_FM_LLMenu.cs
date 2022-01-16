@@ -638,28 +638,28 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (sender == PlayFMMenuItem || sender == PlayFMInMPMenuItem)
             {
-                await FMInstallAndPlay.InstallIfNeededAndPlay(_owner.FMsDGV.GetSelectedFM(), playMP: sender == PlayFMInMPMenuItem);
+                await FMInstallAndPlay.InstallIfNeededAndPlay(_owner.FMsDGV.GetMainSelectedFM(), playMP: sender == PlayFMInMPMenuItem);
             }
             else if (sender == InstallUninstallMenuItem)
             {
-                await FMInstallAndPlay.InstallOrUninstall(_owner.FMsDGV.GetSelectedFM());
+                await FMInstallAndPlay.InstallOrUninstall(_owner.FMsDGV.GetMainSelectedFM());
             }
             else if (sender == DeleteFMMenuItem)
             {
-                await FMArchives.Delete(_owner.FMsDGV.GetSelectedFM());
+                await FMArchives.Delete(_owner.FMsDGV.GetMainSelectedFM());
             }
             else if (sender == OpenInDromEdMenuItem)
             {
-                var fm = _owner.FMsDGV.GetSelectedFM();
+                var fm = _owner.FMsDGV.GetMainSelectedFM();
                 if (fm.Installed || await FMInstallAndPlay.InstallFM(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
             }
             else if (sender == OpenFMFolderMenuItem)
             {
-                Core.OpenFMFolder(_owner.FMsDGV.GetSelectedFM());
+                Core.OpenFMFolder(_owner.FMsDGV.GetMainSelectedFM());
             }
             else if (sender == ScanFMMenuItem)
             {
-                FanMission fm = _owner.FMsDGV.GetSelectedFM();
+                FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
                 if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
                 {
                     _owner.RefreshFM(fm);
@@ -668,7 +668,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
             {
                 var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
-                await FMAudio.ConvertToWAVs(_owner.FMsDGV.GetSelectedFM(), convertType, true);
+                await FMAudio.ConvertToWAVs(_owner.FMsDGV.GetMainSelectedFM(), convertType, true);
             }
             else if (sender == PinToTopMenuItem)
             {
@@ -683,7 +683,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 if (RatingMenuItem.DropDownItems[i] == sender)
                 {
                     int rating = i - 1;
-                    FanMission fm = _owner.FMsDGV.GetSelectedFM();
+                    FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
                     fm.Rating = rating;
                     _owner.RefreshFM(fm, rowOnly: true);
                     _owner.UpdateRatingMenus(rating, disableEvents: true);
@@ -708,7 +708,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             var senderItem = (ToolStripMenuItemCustom)sender;
 
-            var fm = _owner.FMsDGV.GetSelectedFM();
+            var fm = _owner.FMsDGV.GetMainSelectedFM();
 
             fm.FinishedOn = 0;
             fm.FinishedOnUnknown = false;
@@ -743,7 +743,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (FinishedOnUnknownMenuItem.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
-        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(_owner.FMsDGV.GetSelectedFM().Title);
+        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(_owner.FMsDGV.GetMainSelectedFM().Title);
 
         #endregion
     }

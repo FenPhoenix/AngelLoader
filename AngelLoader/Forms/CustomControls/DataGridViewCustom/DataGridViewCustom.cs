@@ -111,7 +111,7 @@ namespace AngelLoader.Forms.CustomControls
         /// Gets the currently selected FM, taking the currently set filters into account.
         /// </summary>
         /// <returns></returns>
-        internal FanMission GetSelectedFM()
+        internal FanMission GetMainSelectedFM()
         {
             AssertR(SelectedRows.Count > 0, "GetSelectedFM: no rows selected!");
             AssertR(MainSelectedRow != null, nameof(MainSelectedRow) + " is null when it shouldn't be");
@@ -333,7 +333,7 @@ namespace AngelLoader.Forms.CustomControls
                     MainSelectedRow = selRows[0];
                 }
                 //System.Diagnostics.Trace.WriteLine(GetFMFromIndex(MainSelectedRow.Index).Archive);
-                _owner.UpdateUIControlsForMultiSelectState(GetSelectedFM());
+                _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
             }
         }
 
