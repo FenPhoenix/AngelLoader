@@ -722,6 +722,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
+        // @MULTISEL(FinishedOn):
+        // This needs to only add/remove finished states from all selected FMs, not overwrite their old value
+        // with the absolute value of the main selected one.
         private void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
             var senderItem = (ToolStripMenuItemCustom)sender;
