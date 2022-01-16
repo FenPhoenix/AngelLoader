@@ -340,6 +340,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             bool sayShockEd = selFM is { Game: Game.SS2 };
             bool sayPin = selFM is not { Pinned: true };
 
+            bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
+
             #endregion
 
             #region Play
@@ -353,13 +355,13 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             SetPinOrUnpinMenuItemState(sayPin);
 
-            DeleteFMMenuItem.Text = LText.FMsList.FMMenu_DeleteFM;
+            DeleteFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_DeleteFMs : LText.FMsList.FMMenu_DeleteFM;
 
             SetOpenInDromEdMenuItemText(sayShockEd);
 
             OpenFMFolderMenuItem.Text = LText.FMsList.FMMenu_OpenFMFolder;
 
-            ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM;
+            ScanFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_ScanFMs : LText.FMsList.FMMenu_ScanFM;
 
             #region Convert audio submenu
 

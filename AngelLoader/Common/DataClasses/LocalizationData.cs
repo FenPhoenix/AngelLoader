@@ -400,6 +400,7 @@ namespace AngelLoader.DataClasses
             internal readonly string FMMenu_PinFM = "Pin to top";
             internal readonly string FMMenu_UnpinFM = "Unpin from top";
             internal readonly string FMMenu_DeleteFM = "Delete FM archive";
+            internal readonly string FMMenu_DeleteFMs = "Delete FM archives";
             internal readonly string FMMenu_OpenInDromEd = "Open FM in DromEd";
             internal readonly string FMMenu_OpenInShockEd = "Open FM in ShockEd";
             internal readonly string FMMenu_OpenFMFolder = "Open FM folder";
@@ -407,6 +408,7 @@ namespace AngelLoader.DataClasses
             internal readonly string FMMenu_FinishedOn = "Finished on";
             internal readonly string FMMenu_ConvertAudio = "Convert audio";
             internal readonly string FMMenu_ScanFM = "Scan FM";
+            internal readonly string FMMenu_ScanFMs = "Scan FMs";
             internal readonly string FMMenu_WebSearch = "Web search";
             [FenGenBlankLine]
             internal readonly string ConvertAudioMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";

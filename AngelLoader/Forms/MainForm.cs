@@ -4543,6 +4543,8 @@ namespace AngelLoader.Forms
             PlayFMButton.Enabled = !multiSelected && gameIsSupportedAndAvailable;
 
             WebSearchButton.Enabled = !multiSelected;
+
+            FMsDGV_FM_LLMenu.Localize();
         }
 
         // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
