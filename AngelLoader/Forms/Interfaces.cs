@@ -148,8 +148,9 @@ namespace AngelLoader.Forms
 
         #region Filter
 
-        Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false, bool keepSelection = false,
-                              bool gameTabSwitch = false, bool landImmediate = false);
+        Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
+                              bool keepSelection = false, bool gameTabSwitch = false,
+                              bool landImmediate = false);
 
         Filter GetFilter();
 

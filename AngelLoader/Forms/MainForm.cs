@@ -1157,7 +1157,7 @@ namespace AngelLoader.Forms
                     }
                     else if (!e.Shift)
                     {
-                        await SortAndSetFilter();
+                        await SortAndSetFilter(keepSelection: true);
                         e.SuppressKeyPress = true;
                     }
                 }
@@ -1990,7 +1990,7 @@ namespace AngelLoader.Forms
 
             SetUIFilterValues(gameFilter);
 
-            await SortAndSetFilter(gameTabSwitch: true);
+            await SortAndSetFilter(keepSelection: true, gameTabSwitch: true);
         }
 
         #endregion
@@ -2260,7 +2260,7 @@ namespace AngelLoader.Forms
                 UpdateRatingLabel();
             }
 
-            await SortAndSetFilter();
+            await SortAndSetFilter(keepSelection: true);
         }
 
         private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
@@ -3581,7 +3581,7 @@ namespace AngelLoader.Forms
         /// <param name="landImmediate"></param>
         /// <returns></returns>
         public async Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
-                                           bool keepSelection = true, bool gameTabSwitch = false,
+                                           bool keepSelection = false, bool gameTabSwitch = false,
                                            bool landImmediate = false)
         {
             bool selFMWasPassedIn = selectedFM != null;
