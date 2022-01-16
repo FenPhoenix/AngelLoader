@@ -333,7 +333,7 @@ namespace AngelLoader.Forms.CustomControls
                     MainSelectedRow = selRows[0];
                 }
                 //System.Diagnostics.Trace.WriteLine(GetFMFromIndex(MainSelectedRow.Index).Archive);
-                _owner.UpdateFMContextMenuMultiSelectState(GetSelectedFM());
+                _owner.UpdateUIControlsForMultiSelectState(GetSelectedFM());
             }
         }
 

@@ -4516,7 +4516,7 @@ namespace AngelLoader.Forms
         // @MULTISEL(Context menu sel state update): Go through this with a fine tooth comb
         // @MULTISEL(Context menu sel state update): Since this runs always on selection change...
         // ... we might not need to call it on FM load.
-        internal void UpdateFMContextMenuMultiSelectState(FanMission fm)
+        internal void UpdateUIControlsForMultiSelectState(FanMission fm)
         {
             bool fmIsSS2 = fm.Game == Game.SS2;
 
@@ -4571,7 +4571,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
             // FinishedOnUnknownMenuItem text stays the same
 
-            UpdateFMContextMenuMultiSelectState(fm);
+            UpdateUIControlsForMultiSelectState(fm);
 
             StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 
