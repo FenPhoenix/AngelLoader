@@ -19,7 +19,8 @@ the scroll bar was).
 @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 
 @MULTISEL: There's some glitchiness with initial selection or two, might be to do with the initial selection reload hack.
-@MULTISEL: Test game tabs mode
+@MULTISEL: Test game tabs mode.
+@MULTISEL: Do we want to disable the top-right tabs area when multiple FMs are selected to avoid confusion?
 */
 
 using System;
@@ -2646,12 +2647,15 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void RefreshAllSelectedFMs()
+        public void RefreshAllSelectedFMs(bool rowOnly = false)
         {
-            FanMission? selectedFM = GetSelectedFMOrNull();
-            if (selectedFM != null)
+            if (!rowOnly)
             {
-                UpdateAllFMUIDataExceptReadme(selectedFM);
+                FanMission? selectedFM = GetSelectedFMOrNull();
+                if (selectedFM != null)
+                {
+                    UpdateAllFMUIDataExceptReadme(selectedFM);
+                }
             }
             RefreshFMsListKeepSelection();
         }
@@ -2747,19 +2751,34 @@ namespace AngelLoader.Forms
             return true;
         }
 
-        public void RefreshFMsListKeepSelection()
+        public void RefreshFMsListKeepSelection(bool keepMulti = true)
         {
             if (FMsDGV.RowCount == 0) return;
 
             int selectedRow = FMsDGV.MainSelectedRow!.Index;
+            var selRows = FMsDGV.SelectedRows;
 
-            using (new DisableEvents(this))
+            try
             {
-                FMsDGV.Refresh();
-                FMsDGV.SelectSingle(selectedRow);
-                // TODO: This pops our position back to put selected FM in view - but do we really need to run this here?
-                // Alternatively, maybe SelectProperly() should pop us back to where we were after it's done?
-                FMsDGV.SelectProperly();
+                EverythingPanel.SuspendDrawing();
+                using (new DisableEvents(this))
+                {
+                    FMsDGV.SelectSingle(selectedRow);
+                    // TODO: This pops our position back to put selected FM in view - but do we really need to run this here?
+                    // Alternatively, maybe SelectProperly() should pop us back to where we were after it's done?
+                    FMsDGV.SelectProperly();
+                    if (keepMulti)
+                    {
+                        foreach (DataGridViewRow row in selRows)
+                        {
+                            FMsDGV.Rows[row.Index].Selected = true;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                EverythingPanel.ResumeDrawing();
             }
         }
 

@@ -696,6 +696,15 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     fm.Rating = rating;
                     _owner.RefreshFM(fm, rowOnly: true);
                     _owner.UpdateRatingMenus(rating, disableEvents: true);
+                    FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
+                    if (sFMs.Length > 1)
+                    {
+                        foreach (FanMission sFM in sFMs)
+                        {
+                            sFM.Rating = rating;
+                        }
+                        _owner.RefreshAllSelectedFMs(rowOnly: true);
+                    }
                     Ini.WriteFullFMDataIni();
                     break;
                 }
