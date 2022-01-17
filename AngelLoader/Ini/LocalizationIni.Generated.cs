@@ -219,8 +219,8 @@ namespace AngelLoader
             #endregion
 
             var ret = new LText_Class();
-            string[] lines = File.ReadAllLines(file, Encoding.UTF8);
-            int linesLength = lines.Length;
+            var lines = AL_Common.Common.File_ReadAllLines_List(file, Encoding.UTF8);
+            int linesLength = lines.Count;
             for (int i = 0; i < linesLength; i++)
             {
                 string lineT = lines[i].Trim();
