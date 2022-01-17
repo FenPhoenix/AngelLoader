@@ -895,9 +895,9 @@ namespace AngelLoader
 
         internal static void ReadConfigIni(string path, ConfigData config)
         {
-            string[] iniLines = File.ReadAllLines(path);
+            var iniLines = File_ReadAllLines_List(path);
 
-            for (int li = 0; li < iniLines.Length; li++)
+            for (int li = 0; li < iniLines.Count; li++)
             {
                 string lineTS = iniLines[li].TrimStart();
 

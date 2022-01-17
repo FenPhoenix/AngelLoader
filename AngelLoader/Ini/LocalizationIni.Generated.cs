@@ -1,15 +1,7 @@
 #define FenGen_LocalizationDest
 
-// These are for the reflection-style codegen in case it's enabled. If it's disabled, these aren't necessary, but
-// I still want to keep them around so I don't have to keep adding them back.
-#pragma warning disable IDE0005 // Using directive is unnecessary.
-// ReSharper disable once RedundantUsingDirective
 using System.Collections.Generic;
-// ReSharper disable once RedundantUsingDirective
 using System.Reflection;
-#pragma warning restore IDE0005 // Using directive is unnecessary.
-
-using System.IO;
 using System.Text;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;

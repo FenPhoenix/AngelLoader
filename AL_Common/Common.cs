@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using JetBrains.Annotations;
 using static System.StringComparison;
 
@@ -320,6 +322,38 @@ namespace AL_Common
         #endregion
 
         #region File/Path
+
+        #region ReadAllLines
+
+        // Return the original lists to avoid the wasteful and useless allocation of the array conversion that
+        // you get with the built-in methods
+
+        public static List<string> File_ReadAllLines_List(string path) => path switch
+        {
+            "" => throw new ArgumentException("Empty path name is not legal."),
+            null => throw new ArgumentNullException(nameof(path)),
+            _ => InternalFileReadAllLinesList(path, Encoding.UTF8)
+        };
+
+        public static List<string> File_ReadAllLines_List(string path, Encoding encoding) =>
+            path == null ? throw new ArgumentNullException(nameof(path)) :
+            encoding == null ? throw new ArgumentNullException(nameof(encoding)) :
+            path.Length == 0 ? throw new ArgumentException("Empty path name is not legal.") :
+            InternalFileReadAllLinesList(path, encoding);
+
+        private static List<string> InternalFileReadAllLinesList(string path, Encoding encoding)
+        {
+            var stringList = new List<string>();
+            using var streamReader = new StreamReader(path, encoding);
+            string? str;
+            while ((str = streamReader.ReadLine()) != null)
+            {
+                stringList.Add(str);
+            }
+            return stringList;
+        }
+
+        #endregion
 
         #region Path-specific string queries (separator-agnostic)
 

@@ -511,10 +511,10 @@ namespace AngelLoader
 
             if (!File.Exists(fmselInf!)) return FixUp();
 
-            string[] lines;
+            List<string> lines;
             try
             {
-                lines = File.ReadAllLines(fmselInf!);
+                lines = File_ReadAllLines_List(fmselInf!);
             }
             catch (Exception ex)
             {
@@ -522,7 +522,7 @@ namespace AngelLoader
                 return null;
             }
 
-            if (lines.Length < 2 || !lines[0].StartsWithI("Name=") || !lines[1].StartsWithI("Archive="))
+            if (lines.Count < 2 || !lines[0].StartsWithI("Name=") || !lines[1].StartsWithI("Archive="))
             {
                 return FixUp();
             }
