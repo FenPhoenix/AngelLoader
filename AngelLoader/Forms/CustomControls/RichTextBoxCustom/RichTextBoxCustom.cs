@@ -448,15 +448,23 @@ namespace AngelLoader.Forms.CustomControls
         Yeah... it _also_ streams out the rtf into a string just to do a comparison. So. Yeah.
 
         The only choice - short of just copy-pasting the entire RichTextBox control code and straightening it all
-        out to not be dumb - is to just suppress the base OnHandleDestroyed() method. Probably a fantastically
+        out to not be dumb* - is to just suppress the base OnHandleDestroyed() method. Probably a fantastically
         bad idea in general, but in our particular case it's fine because we're about to close the app anyway,
         so cleanup doesn't matter.
 
-        @MEM: Really just gotta see if we can copy-paste the RichTextBox code.
-        Tricky because it inherits from TextBox and all, but...
+        *Basically impossible. It has too many tentacles too deep into the entire framework. Ugh.
         */
         protected override void OnHandleDestroyed(EventArgs e)
         {
+            // Only suppress if we're closing, because there are a couple other situations in which the handle
+            // can be recreated in the normal course of things (changing ScrollBars for example).
+            // We don't do any of them at the moment (2021-01-17) but meh.
+            if (FindForm() is MainForm { AboutToClose: true })
+            {
+                return;
+            }
+
+            base.OnHandleDestroyed(e);
         }
 
         protected override void Dispose(bool disposing)
