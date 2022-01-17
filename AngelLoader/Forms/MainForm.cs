@@ -1782,10 +1782,12 @@ namespace AngelLoader.Forms
         {
             if (!control.Visible || !control.Enabled) return false;
 
-            // Don't create eleventy billion Rectangle objects per second
-            Point rpt = PointToClient(control.PointToScreen(new Point(0, 0)));
+            Point rpt = this.PointToClient_Fast(control.PointToScreen_Fast(new Point(0, 0)));
             Size rcs = fullArea ? control.Size : control.ClientSize;
-            Point ptc = PointToClient(Cursor.Position);
+
+            Point ptc = this.PointToClient_Fast(Native.GetCursorPosition_Fast());
+
+            // Don't create eleventy billion Rectangle objects per second
             return ptc.X >= rpt.X && ptc.X < rpt.X + rcs.Width &&
                    ptc.Y >= rpt.Y && ptc.Y < rpt.Y + rcs.Height;
         }

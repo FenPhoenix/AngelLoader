@@ -50,6 +50,49 @@ namespace AngelLoader.Forms.WinFormsNative
             }
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private sealed class POINT
+        {
+            public int x;
+            public int y;
+        }
+
+        private static readonly HandleRef NullHandleRef = new(null, IntPtr.Zero);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern bool GetCursorPos([In, Out] POINT pt);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern int MapWindowPoints(
+            HandleRef hWndFrom,
+            HandleRef hWndTo,
+            [In, Out] POINT pt,
+            int cPoints);
+
+        private static readonly POINT _globalNativePoint = new();
+
+        public static Point GetCursorPosition_Fast()
+        {
+            GetCursorPos(_globalNativePoint);
+            return new Point(_globalNativePoint.x, _globalNativePoint.y);
+        }
+
+        public static Point PointToClient_Fast(this Control control, Point p)
+        {
+            _globalNativePoint.x = p.X;
+            _globalNativePoint.y = p.Y;
+            MapWindowPoints(NullHandleRef, new HandleRef(control, control.Handle), _globalNativePoint, 1);
+            return new Point(_globalNativePoint.x, _globalNativePoint.y);
+        }
+
+        public static Point PointToScreen_Fast(this Control control, Point p)
+        {
+            _globalNativePoint.x = p.X;
+            _globalNativePoint.y = p.Y;
+            MapWindowPoints(new HandleRef(control, control.Handle), NullHandleRef, _globalNativePoint, 1);
+            return new Point(_globalNativePoint.x, _globalNativePoint.y);
+        }
+
         #region SendMessage/PostMessage
 
         [DllImport("user32.dll")]
