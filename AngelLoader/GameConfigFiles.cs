@@ -190,8 +190,8 @@ namespace AngelLoader
             bool alwaysShowLoaderFound = false;
             bool alwaysShowLoader = false;
 
-            string[] lines = File.ReadAllLines(soIni);
-            for (int i = 0; i < lines.Length; i++)
+            var lines = File_ReadAllLines_List(soIni);
+            for (int i = 0; i < lines.Count; i++)
             {
                 string lineT = lines[i].Trim();
                 if (lineT.EqualsI("[Loader]"))
@@ -205,7 +205,7 @@ namespace AngelLoader
                      - Case-insensitive "true" is true, anything else is false
                      - If duplicate keys exist, the earliest one is used
                     */
-                    while (i < lines.Length - 1)
+                    while (i < lines.Count - 1)
                     {
                         string lt = lines[i + 1].Trim();
                         if (!ignoreSavesKeyFound &&
@@ -347,7 +347,7 @@ namespace AngelLoader
                 List<string> lines;
                 try
                 {
-                    lines = File.ReadAllLines(cfgFile).ToList();
+                    lines = File_ReadAllLines_List(cfgFile);
                 }
                 catch (Exception ex)
                 {
@@ -415,7 +415,7 @@ namespace AngelLoader
             List<string> lines;
             try
             {
-                lines = File.ReadAllLines(camCfg).ToList();
+                lines = File_ReadAllLines_List(camCfg);
             }
             catch (Exception ex)
             {
@@ -544,7 +544,7 @@ namespace AngelLoader
             List<string> lines;
             try
             {
-                lines = File.ReadAllLines(camModIni).ToList();
+                lines = File_ReadAllLines_List(camModIni);
             }
             catch (Exception ex)
             {
@@ -739,7 +739,7 @@ namespace AngelLoader
             List<string> lines;
             try
             {
-                lines = File.ReadAllLines(soIni).ToList();
+                lines = File_ReadAllLines_List(soIni);
             }
             catch (Exception ex)
             {
@@ -913,7 +913,7 @@ namespace AngelLoader
 
             bool ret = false;
 
-            var lines = File.ReadAllLines(userCfgFile).ToList();
+            var lines = File_ReadAllLines_List(userCfgFile);
             for (int i = 0; i < lines.Count; i++)
             {
                 string lt = lines[i].Trim();
@@ -935,7 +935,7 @@ namespace AngelLoader
         {
             if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserCfg, out string userCfgFile)) return;
 
-            var lines = File.ReadAllLines(userCfgFile).ToList();
+            var lines = File_ReadAllLines_List(userCfgFile);
             for (int i = 0; i < lines.Count; i++)
             {
                 string lt = lines[i].Trim();
@@ -992,10 +992,10 @@ namespace AngelLoader
                 return (Error.CamModIniNotFound, list);
             }
 
-            string[] lines;
+            List<string> lines;
             try
             {
-                lines = File.ReadAllLines(camModIni);
+                lines = File_ReadAllLines_List(camModIni);
             }
             catch (Exception ex)
             {
@@ -1013,7 +1013,7 @@ namespace AngelLoader
             int mpModPathLastIndex = -1;
             int mpUberModPathLastIndex = -1;
 
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 string lineT = lines[i].Trim();
 
@@ -1038,7 +1038,7 @@ namespace AngelLoader
             }
 
             static List<string>
-            GetModPaths(string[] lines, int lastIndex, string pathKey)
+            GetModPaths(List<string> lines, int lastIndex, string pathKey)
             {
                 return lastIndex > -1
                     ? lines[lastIndex].Substring(pathKey.Length).Trim()

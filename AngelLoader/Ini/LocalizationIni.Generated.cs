@@ -1,15 +1,7 @@
 #define FenGen_LocalizationDest
 
-// These are for the reflection-style codegen in case it's enabled. If it's disabled, these aren't necessary, but
-// I still want to keep them around so I don't have to keep adding them back.
-#pragma warning disable IDE0005 // Using directive is unnecessary.
-// ReSharper disable once RedundantUsingDirective
 using System.Collections.Generic;
-// ReSharper disable once RedundantUsingDirective
 using System.Reflection;
-#pragma warning restore IDE0005 // Using directive is unnecessary.
-
-using System.IO;
 using System.Text;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -227,8 +219,8 @@ namespace AngelLoader
             #endregion
 
             var ret = new LText_Class();
-            string[] lines = File.ReadAllLines(file, Encoding.UTF8);
-            int linesLength = lines.Length;
+            var lines = AL_Common.Common.File_ReadAllLines_List(file, Encoding.UTF8);
+            int linesLength = lines.Count;
             for (int i = 0; i < linesLength; i++)
             {
                 string lineT = lines[i].Trim();

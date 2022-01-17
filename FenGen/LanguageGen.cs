@@ -239,8 +239,8 @@ namespace FenGen
                 w.WL();
             }
             w.WL("var ret = new " + langClassName + "();");
-            w.WL("string[] lines = File.ReadAllLines(file, Encoding.UTF8);");
-            w.WL("int linesLength = lines.Length;");
+            w.WL("var lines = AL_Common.Common.File_ReadAllLines_List(file, Encoding.UTF8);");
+            w.WL("int linesLength = lines.Count;");
             w.WL("for (int i = 0; i < linesLength; i++)");
             w.WL("{");
             w.WL("string lineT = lines[i].Trim();");
