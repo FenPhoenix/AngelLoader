@@ -46,6 +46,11 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
+        /// <summary>
+        /// Any control that might need to know this can check it.
+        /// </summary>
+        internal bool AboutToClose;
+
         #region Window size/location
 
         private FormWindowState _nominalWindowState;
@@ -1220,6 +1225,8 @@ namespace AngelLoader.Forms
             // Argh, stupid hack to get this to not run TWICE on Application.Exit()
             // Application.Exit() is the worst thing ever. Before closing it just does whatever the hell it wants.
             FormClosing -= MainForm_FormClosing;
+
+            AboutToClose = true;
 
             UpdateConfig();
             Core.Shutdown();
