@@ -11,7 +11,7 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms.CustomControls
 {
     /*
-    BUG: ReadmeRichTextBoxCustom: Memory leak on Windows' side
+    BUG: @MEM: ReadmeRichTextBoxCustom: Memory leak on Windows' side
     The RichTextBox leaks memory when new content is loaded when ReadOnly == false. It does NOT appear to leak
     when ReadOnly == true. But we need ReadOnly to be false during load, otherwise we lose some of the images.
     In real-world use the leak should not be very significant on average (1.4.8 exhibits it too, which means it's
@@ -383,6 +383,81 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         #endregion
+
+        /*
+        Hack to work around a memory issue...
+
+        When the handle is destroyed, it gets the RTF (through StreamOut, returning a string containing the RTF)
+        and assigns the string to a field:
+
+        --- snip ---
+
+        protected override void OnHandleDestroyed(EventArgs e)
+        {
+            base.OnHandleDestroyed(e);
+            if (!this.InConstructor)
+            {
+                this.textRtf = this.Rtf;
+                if (this.textRtf.Length == 0)
+                    this.textRtf = (string)null;
+            }
+            this.oleCallback = (object)null;
+            SystemEvents.UserPreferenceChanged -= new UserPreferenceChangedEventHandler(this.UserPreferenceChangedHandler);
+        }
+
+        --- snip ---
+
+        At first this seems pointless, to allocate a potentially multi-megabyte string for seemingly no reason.
+        Reading the code, it looks like it's so that it can store the RTF string through a handle recreation.
+        Okay, fair I guess if that's needed, but for us, it just wastes a ton of memory for absolutely no reason
+        whatsoever. We never recreate the handle and the only time we destroy is it implicitly when we're shutting
+        down anyway. Previously, we would spike our memory usage right before shutdown, which is dumb.
+
+        We could set Rtf = "" in the main form closing handler. Except...
+
+        --- snip ---
+
+        public string Rtf
+        {
+            get
+            {
+                if (this.IsHandleCreated)
+                    return this.StreamOut(2);
+                if (this.textPlain == null)
+                    return this.textRtf;
+                this.ForceHandleCreate();
+                return this.StreamOut(2);
+            }
+            set
+            {
+                if (value == null)
+                    value = "";
+                if (value.Equals(this.Rtf))       // <- this line here
+                    return;
+                this.ForceHandleCreate();
+                this.textRtf = value;
+                this.StreamIn(value, 2);
+                if (!this.CanRaiseTextChangedEvent)
+                    return;
+                this.OnTextChanged(EventArgs.Empty);
+            }
+        }
+
+        --- snip ---
+
+        Yeah... it _also_ streams out the rtf into a string just to do a comparison. So. Yeah.
+
+        The only choice - short of just copy-pasting the entire RichTextBox control code and straightening it all
+        out to not be dumb - is to just suppress the base OnHandleDestroyed() method. Probably a fantastically
+        bad idea in general, but in our particular case it's fine because we're about to close the app anyway,
+        so cleanup doesn't matter.
+
+        @MEM: Really just gotta see if we can copy-paste the RichTextBox code.
+        Tricky because it inherits from TextBox and all, but...
+        */
+        protected override void OnHandleDestroyed(EventArgs e)
+        {
+        }
 
         protected override void Dispose(bool disposing)
         {
