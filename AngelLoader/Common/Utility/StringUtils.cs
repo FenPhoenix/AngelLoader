@@ -139,10 +139,10 @@ namespace AngelLoader
             }
 
             _toInstDirNameSB.Clear();
-            _toInstDirNameSB.Append(archiveName);
-            for (int i = 0; i < illegalChars.Length; i++) _toInstDirNameSB.Replace(illegalChars[i], '_', 0, count);
+            _toInstDirNameSB.Append(archiveName, 0, count);
+            for (int i = 0; i < illegalChars.Length; i++) _toInstDirNameSB.Replace(illegalChars[i], '_');
 
-            return _toInstDirNameSB.ToString(0, count);
+            return _toInstDirNameSB.ToString();
         }
 
         #endregion
