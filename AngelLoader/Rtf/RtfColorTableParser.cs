@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
@@ -326,20 +325,54 @@ namespace AngelLoader
                 }
                 else
                 {
-                    // Horrible but functional just to get it going
-                    // NOTE: In theory this could throw, but if so it'll be caught by the try-catch wrapping the
-                    // entire parse operation, and we'll return false, which is what we want. No need to add a
-                    // second try-catch here.
-                    Match redMatch = Regex.Match(entry, @"\\red(?<Value>[0123456789]{1,3})");
-                    Match greenMatch = Regex.Match(entry, @"\\green(?<Value>[0123456789]{1,3})");
-                    Match blueMatch = Regex.Match(entry, @"\\blue(?<Value>[0123456789]{1,3})");
+                    const string redString = "\\red";
+                    const int redStringLen = 4;
+                    const string greenString = "\\green";
+                    const int greenStringLen = 6;
+                    const string blueString = "\\blue";
+                    const int blueStringLen = 5;
 
-                    if (redMatch.Success &&
-                        blueMatch.Success &&
-                        greenMatch.Success &&
-                        byte.TryParse(redMatch.Groups["Value"].Value, out byte red) &&
-                        byte.TryParse(greenMatch.Groups["Value"].Value, out byte green) &&
-                        byte.TryParse(blueMatch.Groups["Value"].Value, out byte blue))
+                    static bool GetColorByte(string entry, string hueString, int hueStringLen, out byte result)
+                    {
+                        int hueIndex = FindIndexOfCharSequence(entry, hueString);
+                        if (hueIndex > -1)
+                        {
+                            int indexPastHue = hueIndex + hueStringLen;
+                            if (indexPastHue < entry.Length)
+                            {
+                                char firstDigit = entry[indexPastHue];
+                                if (firstDigit.IsAsciiNumeric())
+                                {
+                                    int colorValue = firstDigit - '0';
+                                    for (int colorI = indexPastHue + 1; colorI < entry.Length; colorI++)
+                                    {
+                                        char c = entry[colorI];
+                                        if (!c.IsAsciiNumeric()) break;
+                                        // Color value too long, must be 1-3 digits
+                                        if (colorI >= indexPastHue + 3)
+                                        {
+                                            result = 0;
+                                            return false;
+                                        }
+                                        colorValue *= 10;
+                                        colorValue += c - '0';
+                                    }
+                                    if (colorValue is >= 0 and <= 255)
+                                    {
+                                        result = (byte)colorValue;
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+
+                        result = 0;
+                        return false;
+                    }
+
+                    if (GetColorByte(entry, redString, redStringLen, out byte red) &&
+                        GetColorByte(entry, greenString, greenStringLen, out byte green) &&
+                        GetColorByte(entry, blueString, blueStringLen, out byte blue))
                     {
                         _colorTable.Add(Color.FromArgb(red, green, blue));
                     }

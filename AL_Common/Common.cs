@@ -887,6 +887,30 @@ namespace AL_Common
             return -1;
         }
 
+        // String version
+        public static int FindIndexOfCharSequence(string input, string pattern, int start = 0)
+        {
+            char firstChar = pattern[0];
+            int index = input.IndexOf(firstChar, start);
+
+            while (index > -1)
+            {
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    if (index + i >= input.Length) return -1;
+                    if (pattern[i] != input[index + i])
+                    {
+                        if ((index = input.IndexOf(firstChar, index + i)) == -1) return -1;
+                        break;
+                    }
+
+                    if (i == pattern.Length - 1) return index;
+                }
+            }
+
+            return -1;
+        }
+
 #if false
 
         // List version
