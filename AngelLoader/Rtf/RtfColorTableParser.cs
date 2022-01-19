@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
@@ -38,9 +37,7 @@ namespace AngelLoader
 
         #region Resettables
 
-        private readonly StringBuilder _colorTableSB = new StringBuilder(4096);
-
-        private readonly List<Color> _colorTable = new List<Color>(32);
+        private List<Color>? _colorTable;
         private int _colorTableStartIndex;
         private int _colorTableEndIndex;
 
@@ -49,7 +46,7 @@ namespace AngelLoader
         #region Public API
 
         [PublicAPI]
-        public (bool Success, List<Color> ColorTable, int ColorTableStartIndex, int ColorTableEndIndex)
+        public (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex)
         GetColorTable(byte[] stream)
         {
             Reset(stream);
@@ -82,8 +79,7 @@ namespace AngelLoader
 
             #endregion
 
-            _colorTableSB.Clear();
-            _colorTable.Clear();
+            _colorTable = null;
 
             // This one has the seek-back buffer (a Stack<char>) which is technically eligible for deallocation,
             // even though in practice I think it's guaranteed never to have more than like 5 chars in it maybe?
@@ -275,10 +271,11 @@ namespace AngelLoader
 
         private Error ParseAndBuildColorTable()
         {
+            var _colorTableSB = new StringBuilder(4096);
+
             Error ClearReturnFields(Error error)
             {
-                _colorTableSB.Clear();
-                _colorTable.Clear();
+                _colorTable = null;
                 _colorTableStartIndex = 0;
                 _colorTableEndIndex = 0;
                 return error;
@@ -301,20 +298,23 @@ namespace AngelLoader
             }
 
             string ct = _colorTableSB.ToString();
-            List<string> entries = ct.Split(';').ToList();
+            string[] entries = ct.Split(';');
 
-            if (entries.Count == 0)
+            int realEntryCount = entries.Length;
+            if (entries.Length == 0)
             {
                 return ClearReturnFields(Error.OK);
             }
             // Remove the last blank entry so we don't count it as the auto/default one by hitting a blank entry
             // in the loop below
-            else if (entries.Count > 1 && entries[entries.Count - 1].IsWhiteSpace())
+            else if (entries.Length > 1 && entries[entries.Length - 1].IsWhiteSpace())
             {
-                entries.RemoveAt(entries.Count - 1);
+                realEntryCount--;
             }
 
-            for (int i = 0; i < entries.Count; i++)
+            _colorTable = new List<Color>(realEntryCount);
+
+            for (int i = 0; i < realEntryCount; i++)
             {
                 string entry = entries[i].Trim();
 
