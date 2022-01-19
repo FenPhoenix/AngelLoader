@@ -31,7 +31,16 @@ namespace AngelLoader.Forms.CustomControls
     Doesn't do jack squat in the test project either.
     -Test with WPF project: The WPF RichTextBox does NOT leak memory on TPOAIR.
     -WPF implements its RichTextBox from scratch... and it's MIT licensed. So good, some RichEdit-compatible
-     (presumably) code exist that I could use to make a custom control in some way, possibly.
+     (presumably) code exists that I could use to make a custom control in some way, possibly.
+
+    2022-01-18:
+    The leak is 100% on Windows' side. Tested with WordPad loading "Enigmatic Treasure" over and over, and it
+    exhibits the same behavior: constantly increasing memory.
+    Note that even disposing the RichTextBox, and even using reflection to get the "IntPtr moduleHandle" field
+    and calling FreeLibrary() on it, STILL doesn't release the unmanaged memory.
+    We would have to put it in an entirely separate process and do like RichTextBoxAsync (but without the async)
+    and then just restart the process whenever our memory use gets too high. Or, just use WPF's version through
+    an ElementHost.
     */
 
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
