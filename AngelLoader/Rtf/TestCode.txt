@@ -101,7 +101,7 @@ namespace AngelLoader.Forms.CustomControls
 
                     if (!path.IsEmpty())
                     {
-                        const string dir = @"C:\rtf_new_test";
+                        const string dir = @"C:\rtf_new_test2";
                         Directory.CreateDirectory(dir);
 
                         File.WriteAllBytes(Path.Combine(dir, path.Replace(":", "_").Replace("\\", "_").Replace("/", "_")), bytes);

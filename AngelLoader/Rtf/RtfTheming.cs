@@ -99,7 +99,7 @@ namespace AngelLoader
                                                         + "}}}}}";
         private static readonly byte[] RTF_DarkBackgroundBytes = Encoding.ASCII.GetBytes(RTF_DarkBackgroundString);
 
-        private static List<byte> CreateColorTableRTFBytes(List<Color> colorTable)
+        private static List<byte> CreateColorTableRTFBytes(List<Color>? colorTable)
         {
             #region Local functions
 
@@ -131,44 +131,48 @@ namespace AngelLoader
             // Size us large enough that we don't reallocate
             var colorEntriesBytesList = new List<byte>(
                 _colortbl.Length +
-                (maxColorEntryStringLength * colorTable.Count)
+                (maxColorEntryStringLength * colorTable?.Count ?? 0)
                 + 2);
 
             colorEntriesBytesList.AddRange(_colortbl);
 
-            for (int i = 0; i < colorTable.Count; i++)
+            if (colorTable != null)
             {
-                Color invertedColor;
-                Color currentColor = colorTable[i];
-                if (i == 0 && currentColor.A == 0)
+                for (int i = 0; i < colorTable.Count; i++)
                 {
-                    // We can just do the standard thing now, because with the sys color hook our default color
-                    // is now our bright foreground color
+                    Color invertedColor;
+                    Color currentColor = colorTable[i];
+                    if (i == 0 && currentColor.A == 0)
+                    {
+                        // We can just do the standard thing now, because with the sys color hook our default color
+                        // is now our bright foreground color
+                        colorEntriesBytesList.Add((byte)';');
+                        continue;
+                    }
+                    else
+                    {
+                        // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
+                        // white and that's a bit too bright.
+                        invertedColor = currentColor.R == 0 && currentColor.G == 0 && currentColor.B == 0
+                            ? DarkColors.Fen_DarkForeground
+                            : ColorIsTheSameAsBackground(currentColor)
+                            ? DarkColors.Fen_DarkBackground
+                            : ColorUtils.InvertLightness(currentColor);
+                    }
+
+                    colorEntriesBytesList.AddRange(_redFieldBytes);
+                    colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.R));
+
+                    colorEntriesBytesList.AddRange(_greenFieldBytes);
+                    colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.G));
+
+                    colorEntriesBytesList.AddRange(_blueFieldBytes);
+                    colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.B));
+
                     colorEntriesBytesList.Add((byte)';');
-                    continue;
                 }
-                else
-                {
-                    // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
-                    // white and that's a bit too bright.
-                    invertedColor = currentColor.R == 0 && currentColor.G == 0 && currentColor.B == 0
-                        ? DarkColors.Fen_DarkForeground
-                        : ColorIsTheSameAsBackground(currentColor)
-                        ? DarkColors.Fen_DarkBackground
-                        : ColorUtils.InvertLightness(currentColor);
-                }
-
-                colorEntriesBytesList.AddRange(_redFieldBytes);
-                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.R));
-
-                colorEntriesBytesList.AddRange(_greenFieldBytes);
-                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.G));
-
-                colorEntriesBytesList.AddRange(_blueFieldBytes);
-                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.B));
-
-                colorEntriesBytesList.Add((byte)';');
             }
+
             colorEntriesBytesList.Add((byte)'}');
 
             return colorEntriesBytesList;
@@ -180,7 +184,7 @@ namespace AngelLoader
             // and arrays for our readme bytes is going to blow out memory.
 
             var parser = new RtfColorTableParser();
-            (bool success, List<Color> colorTable, _, int _) = parser.GetColorTable(currentReadmeBytes);
+            (bool success, List<Color>? colorTable, _, int _) = parser.GetColorTable(currentReadmeBytes);
 
             int colorTableEntryLength = 0;
 
