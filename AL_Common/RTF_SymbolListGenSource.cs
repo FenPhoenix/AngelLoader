@@ -46,7 +46,7 @@ namespace AL_Common
 
             #endregion
 
-            // \v to make all plain text hidden (not output to the conversion stream)}, \v0 to make it shown again
+            // \v to make all plain text hidden (not output to the conversion stream), \v0 to make it shown again
             new Symbol("v", 1, false, KeywordType.Property, (int)Property.Hidden),
 
             #region Newlines

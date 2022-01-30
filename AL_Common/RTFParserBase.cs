@@ -263,7 +263,7 @@ namespace AL_Common
             // Ignore list item bullets and numeric prefixes etc. We don't need them.
 
             // For "v"
-            // \v to make all plain text hidden (not output to the conversion stream)}, \v0 to make it shown again
+            // \v to make all plain text hidden (not output to the conversion stream), \v0 to make it shown again
 
             // For "ansi"
             // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
