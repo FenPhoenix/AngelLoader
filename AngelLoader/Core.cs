@@ -318,6 +318,9 @@ namespace AngelLoader
             bool useFixedFontChanged =
                 !startup && Config.ReadmeUseFixedWidthFont != outConfig.ReadmeUseFixedWidthFont;
 
+            bool playWithFMButtonStyleChanged =
+                !startup && Config.PlayOriginalSeparateButtons != outConfig.PlayOriginalSeparateButtons;
+
             #endregion
 
             #region Set config data
@@ -377,7 +380,7 @@ namespace AngelLoader
             // For clarity, don't copy the other tabs' data on startup, because their tabs won't be shown and so
             // they won't have been changed
 
-            #region FM Display tab
+            #region Appearance tab
 
             Config.VisualTheme = outConfig.VisualTheme;
 
@@ -403,6 +406,8 @@ namespace AngelLoader
             Config.DateCustomFormatString = outConfig.DateCustomFormatString;
 
             Config.DaysRecent = outConfig.DaysRecent;
+
+            Config.PlayOriginalSeparateButtons = outConfig.PlayOriginalSeparateButtons;
 
             #endregion
 
@@ -476,17 +481,33 @@ namespace AngelLoader
 
             #endregion
 
+            bool playWithoutFMControlsStateSet = false;
+
+            void SetPlayWithoutFMControlsState_Once()
+            {
+                if (!playWithoutFMControlsStateSet)
+                {
+                    View.SetPlayOriginalGameControlsState();
+                    playWithoutFMControlsStateSet = true;
+                }
+            }
+
             #region Return bools for appropriate refresh method (if applicable)
 
             bool keepSel = false;
             bool sortAndSetFilter = false;
+
+            if (playWithFMButtonStyleChanged)
+            {
+                SetPlayWithoutFMControlsState_Once();
+            }
 
             if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged ||
                 daysRecentChanged)
             {
                 if (gamePathsChanged)
                 {
-                    View.SetPlayOriginalGameControlsState();
+                    SetPlayWithoutFMControlsState_Once();
 #if !ReleaseBeta && !ReleasePublic
                     View.UpdateGameScreenShotModes();
 #endif

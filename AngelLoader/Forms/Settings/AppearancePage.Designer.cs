@@ -82,6 +82,9 @@ namespace AngelLoader.Forms
             this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
+            this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.PagePanel.SuspendLayout();
             this.FMsListGroupBox.SuspendLayout();
             this.DateFormatRBPanel.SuspendLayout();
@@ -95,11 +98,13 @@ namespace AngelLoader.Forms
             this.ShowOrHideUIElementsGroupBox.SuspendLayout();
             this.VisualThemeGroupBox.SuspendLayout();
             this.LanguageGroupBox.SuspendLayout();
+            this.PlayWithoutFMGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
             // 
             this.PagePanel.AutoScroll = true;
+            this.PagePanel.Controls.Add(this.PlayWithoutFMGroupBox);
             this.PagePanel.Controls.Add(this.FMsListGroupBox);
             this.PagePanel.Controls.Add(this.ReadmeGroupBox);
             this.PagePanel.Controls.Add(this.ShowOrHideUIElementsGroupBox);
@@ -109,12 +114,12 @@ namespace AngelLoader.Forms
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(496, 1065);
+            this.PagePanel.Size = new System.Drawing.Size(496, 1143);
             this.PagePanel.TabIndex = 0;
             // 
             // FMsListGroupBox
             // 
-            this.FMsListGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsListGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMsListGroupBox.Controls.Add(this.darkHorizontalDivider4);
             this.FMsListGroupBox.Controls.Add(this.darkHorizontalDivider3);
@@ -147,7 +152,7 @@ namespace AngelLoader.Forms
             // 
             // darkHorizontalDivider4
             // 
-            this.darkHorizontalDivider4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.darkHorizontalDivider4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.darkHorizontalDivider4.Location = new System.Drawing.Point(8, 584);
             this.darkHorizontalDivider4.Name = "darkHorizontalDivider4";
@@ -156,7 +161,7 @@ namespace AngelLoader.Forms
             // 
             // darkHorizontalDivider3
             // 
-            this.darkHorizontalDivider3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.darkHorizontalDivider3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.darkHorizontalDivider3.Location = new System.Drawing.Point(8, 408);
             this.darkHorizontalDivider3.Name = "darkHorizontalDivider3";
@@ -165,7 +170,7 @@ namespace AngelLoader.Forms
             // 
             // darkHorizontalDivider2
             // 
-            this.darkHorizontalDivider2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.darkHorizontalDivider2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.darkHorizontalDivider2.Location = new System.Drawing.Point(8, 264);
             this.darkHorizontalDivider2.Name = "darkHorizontalDivider2";
@@ -174,7 +179,7 @@ namespace AngelLoader.Forms
             // 
             // darkHorizontalDivider1
             // 
-            this.darkHorizontalDivider1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.darkHorizontalDivider1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.darkHorizontalDivider1.Location = new System.Drawing.Point(8, 136);
             this.darkHorizontalDivider1.Name = "darkHorizontalDivider1";
@@ -183,7 +188,7 @@ namespace AngelLoader.Forms
             // 
             // DateFormatRBPanel
             // 
-            this.DateFormatRBPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.DateFormatRBPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.DateFormatRBPanel.Controls.Add(this.DateCurrentCultureShortRadioButton);
             this.DateFormatRBPanel.Controls.Add(this.DateCurrentCultureLongRadioButton);
@@ -225,7 +230,7 @@ namespace AngelLoader.Forms
             // 
             // RatingDisplayStyleRBPanel
             // 
-            this.RatingDisplayStyleRBPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.RatingDisplayStyleRBPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RatingDisplayStyleRBPanel.Controls.Add(this.RatingNDLDisplayStyleRadioButton);
             this.RatingDisplayStyleRBPanel.Controls.Add(this.RatingFMSelDisplayStyleRadioButton);
@@ -258,7 +263,7 @@ namespace AngelLoader.Forms
             // 
             // GameOrganizationRBPanel
             // 
-            this.GameOrganizationRBPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.GameOrganizationRBPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.GameOrganizationRBPanel.Controls.Add(this.OrganizeGamesByTabRadioButton);
             this.GameOrganizationRBPanel.Controls.Add(this.OrganizeGamesInOneListRadioButton);
@@ -270,7 +275,7 @@ namespace AngelLoader.Forms
             // 
             // OrganizeGamesByTabRadioButton
             // 
-            this.OrganizeGamesByTabRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.OrganizeGamesByTabRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OrganizeGamesByTabRadioButton.Location = new System.Drawing.Point(0, 0);
             this.OrganizeGamesByTabRadioButton.Name = "OrganizeGamesByTabRadioButton";
@@ -281,7 +286,7 @@ namespace AngelLoader.Forms
             // 
             // OrganizeGamesInOneListRadioButton
             // 
-            this.OrganizeGamesInOneListRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.OrganizeGamesInOneListRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OrganizeGamesInOneListRadioButton.Checked = true;
             this.OrganizeGamesInOneListRadioButton.Location = new System.Drawing.Point(0, 64);
@@ -321,7 +326,7 @@ namespace AngelLoader.Forms
             // 
             // RecentFMsLabel
             // 
-            this.RecentFMsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.RecentFMsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RecentFMsLabel.Location = new System.Drawing.Point(16, 624);
             this.RecentFMsLabel.Name = "RecentFMsLabel";
@@ -332,7 +337,7 @@ namespace AngelLoader.Forms
             // 
             // PreviewDateFlowLayoutPanel
             // 
-            this.PreviewDateFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.PreviewDateFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PreviewDateFlowLayoutPanel.Controls.Add(this.PreviewDateLabel);
             this.PreviewDateFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
@@ -486,7 +491,7 @@ namespace AngelLoader.Forms
             // 
             // MoveArticlesToEndCheckBox
             // 
-            this.MoveArticlesToEndCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.MoveArticlesToEndCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MoveArticlesToEndCheckBox.Checked = true;
             this.MoveArticlesToEndCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -499,7 +504,7 @@ namespace AngelLoader.Forms
             // 
             // EnableIgnoreArticlesCheckBox
             // 
-            this.EnableIgnoreArticlesCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EnableIgnoreArticlesCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EnableIgnoreArticlesCheckBox.Checked = true;
             this.EnableIgnoreArticlesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -512,7 +517,7 @@ namespace AngelLoader.Forms
             // 
             // ArticlesTextBox
             // 
-            this.ArticlesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.ArticlesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ArticlesTextBox.Location = new System.Drawing.Point(16, 208);
             this.ArticlesTextBox.Name = "ArticlesTextBox";
@@ -521,7 +526,7 @@ namespace AngelLoader.Forms
             // 
             // ReadmeGroupBox
             // 
-            this.ReadmeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.ReadmeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeGroupBox.Controls.Add(this.ReadmeFixedWidthFontCheckBox);
             this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 991);
@@ -534,7 +539,7 @@ namespace AngelLoader.Forms
             // 
             // ReadmeFixedWidthFontCheckBox
             // 
-            this.ReadmeFixedWidthFontCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.ReadmeFixedWidthFontCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeFixedWidthFontCheckBox.Checked = true;
             this.ReadmeFixedWidthFontCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -547,7 +552,7 @@ namespace AngelLoader.Forms
             // 
             // ShowOrHideUIElementsGroupBox
             // 
-            this.ShowOrHideUIElementsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.ShowOrHideUIElementsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideExitButtonCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideFMListZoomButtonsCheckBox);
@@ -562,7 +567,7 @@ namespace AngelLoader.Forms
             // 
             // HideExitButtonCheckBox
             // 
-            this.HideExitButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.HideExitButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.HideExitButtonCheckBox.Checked = true;
             this.HideExitButtonCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -575,7 +580,7 @@ namespace AngelLoader.Forms
             // 
             // HideFMListZoomButtonsCheckBox
             // 
-            this.HideFMListZoomButtonsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.HideFMListZoomButtonsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 44);
             this.HideFMListZoomButtonsCheckBox.Name = "HideFMListZoomButtonsCheckBox";
@@ -586,7 +591,7 @@ namespace AngelLoader.Forms
             // 
             // HideUninstallButtonCheckBox
             // 
-            this.HideUninstallButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.HideUninstallButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 16);
             this.HideUninstallButtonCheckBox.Name = "HideUninstallButtonCheckBox";
@@ -597,7 +602,7 @@ namespace AngelLoader.Forms
             // 
             // VisualThemeGroupBox
             // 
-            this.VisualThemeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.VisualThemeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.VisualThemeGroupBox.Controls.Add(this.DarkThemeRadioButton);
             this.VisualThemeGroupBox.Controls.Add(this.ClassicThemeRadioButton);
@@ -633,7 +638,7 @@ namespace AngelLoader.Forms
             // 
             // LanguageGroupBox
             // 
-            this.LanguageGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.LanguageGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LanguageGroupBox.Controls.Add(this.LanguageComboBox);
             this.LanguageGroupBox.Location = new System.Drawing.Point(8, 8);
@@ -659,13 +664,49 @@ namespace AngelLoader.Forms
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
             this.DummyAutoScrollPanel.TabIndex = 3;
             // 
+            // PlayWithoutFMGroupBox
+            // 
+            this.PlayWithoutFMGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_MultipleButtonsRadioButton);
+            this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_SingleButtonRadioButton);
+            this.PlayWithoutFMGroupBox.Location = new System.Drawing.Point(8, 1056);
+            this.PlayWithoutFMGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
+            this.PlayWithoutFMGroupBox.Name = "PlayWithoutFMGroupBox";
+            this.PlayWithoutFMGroupBox.Size = new System.Drawing.Size(480, 80);
+            this.PlayWithoutFMGroupBox.TabIndex = 5;
+            this.PlayWithoutFMGroupBox.TabStop = false;
+            this.PlayWithoutFMGroupBox.Text = "Play without FM";
+            // 
+            // PlayWithoutFM_SingleButtonRadioButton
+            // 
+            this.PlayWithoutFM_SingleButtonRadioButton.AutoSize = true;
+            this.PlayWithoutFM_SingleButtonRadioButton.Location = new System.Drawing.Point(16, 24);
+            this.PlayWithoutFM_SingleButtonRadioButton.Name = "PlayWithoutFM_SingleButtonRadioButton";
+            this.PlayWithoutFM_SingleButtonRadioButton.Size = new System.Drawing.Size(138, 17);
+            this.PlayWithoutFM_SingleButtonRadioButton.TabIndex = 0;
+            this.PlayWithoutFM_SingleButtonRadioButton.TabStop = true;
+            this.PlayWithoutFM_SingleButtonRadioButton.Text = "Single button with menu";
+            this.PlayWithoutFM_SingleButtonRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // PlayWithoutFM_MultipleButtonsRadioButton
+            // 
+            this.PlayWithoutFM_MultipleButtonsRadioButton.AutoSize = true;
+            this.PlayWithoutFM_MultipleButtonsRadioButton.Location = new System.Drawing.Point(16, 48);
+            this.PlayWithoutFM_MultipleButtonsRadioButton.Name = "PlayWithoutFM_MultipleButtonsRadioButton";
+            this.PlayWithoutFM_MultipleButtonsRadioButton.Size = new System.Drawing.Size(99, 17);
+            this.PlayWithoutFM_MultipleButtonsRadioButton.TabIndex = 0;
+            this.PlayWithoutFM_MultipleButtonsRadioButton.TabStop = true;
+            this.PlayWithoutFM_MultipleButtonsRadioButton.Text = "Multiple buttons";
+            this.PlayWithoutFM_MultipleButtonsRadioButton.UseVisualStyleBackColor = true;
+            // 
             // AppearancePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "AppearancePage";
-            this.Size = new System.Drawing.Size(496, 1065);
+            this.Size = new System.Drawing.Size(496, 1143);
             this.PagePanel.ResumeLayout(false);
             this.FMsListGroupBox.ResumeLayout(false);
             this.FMsListGroupBox.PerformLayout();
@@ -686,6 +727,8 @@ namespace AngelLoader.Forms
             this.VisualThemeGroupBox.ResumeLayout(false);
             this.VisualThemeGroupBox.PerformLayout();
             this.LanguageGroupBox.ResumeLayout(false);
+            this.PlayWithoutFMGroupBox.ResumeLayout(false);
+            this.PlayWithoutFMGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -744,5 +787,8 @@ namespace AngelLoader.Forms
         private AngelLoader.Forms.CustomControls.DarkHorizontalDivider darkHorizontalDivider4;
         private AngelLoader.Forms.CustomControls.DarkHorizontalDivider darkHorizontalDivider3;
         private AngelLoader.Forms.CustomControls.DarkHorizontalDivider darkHorizontalDivider2;
+        internal CustomControls.DarkGroupBox PlayWithoutFMGroupBox;
+        internal CustomControls.DarkRadioButton PlayWithoutFM_MultipleButtonsRadioButton;
+        internal CustomControls.DarkRadioButton PlayWithoutFM_SingleButtonRadioButton;
     }
 }
