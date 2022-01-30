@@ -533,7 +533,7 @@ namespace AngelLoader.DataClasses
             internal readonly string PlayFM = "Play FM";
             internal readonly string InstallFM = "Install FM";
             internal readonly string UninstallFM = "Uninstall FM";
-            internal readonly string PlayOriginalGame = "Play original game...";
+            internal readonly string PlayOriginalGame = "Play without FM...";
             internal readonly string WebSearch = "Web search";
             internal readonly string Settings = "Settings...";
         }
@@ -628,6 +628,10 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Appearance_ReadmeBox = "Readme box";
             internal readonly string Appearance_ReadmeUseFixedWidthFont = "Use a fixed-width font when displaying plain text";
+            [FenGenBlankLine]
+            internal readonly string Appearance_PlayWithoutFM = "Play without FM";
+            internal readonly string Appearance_PlayWithoutFM_SingleButton = "Single button with menu";
+            internal readonly string Appearance_PlayWithoutFM_MultiButton = "Multiple buttons";
             [FenGenBlankLine]
             internal readonly string Other_TabText = "Other";
             [FenGenBlankLine]

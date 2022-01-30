@@ -321,7 +321,7 @@ namespace AngelLoader.Forms
 
             if (!startup)
             {
-                #region FM Display page
+                #region Appearance page
 
                 switch (_selfTheme)
                 {
@@ -454,6 +454,15 @@ namespace AngelLoader.Forms
                 #endregion
 
                 AppearancePage.ReadmeFixedWidthFontCheckBox.Checked = config.ReadmeUseFixedWidthFont;
+
+                if (config.PlayOriginalSeparateButtons)
+                {
+                    AppearancePage.PlayWithoutFM_MultipleButtonsRadioButton.Checked = true;
+                }
+                else
+                {
+                    AppearancePage.PlayWithoutFM_SingleButtonRadioButton.Checked = true;
+                }
 
                 #endregion
 
@@ -703,7 +712,7 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    #region FM Display tab
+                    #region Appearance tab
 
                     AppearanceRadioButton.Text = LText.SettingsWindow.Appearance_TabText;
 
@@ -733,6 +742,10 @@ namespace AngelLoader.Forms
 
                     AppearancePage.RecentFMsHeaderLabel.Text = LText.SettingsWindow.Appearance_RecentFMs;
                     AppearancePage.RecentFMsLabel.Text = LText.SettingsWindow.Appearance_RecentFMs_MaxDays;
+
+                    AppearancePage.PlayWithoutFMGroupBox.Text = LText.SettingsWindow.Appearance_PlayWithoutFM;
+                    AppearancePage.PlayWithoutFM_SingleButtonRadioButton.Text = LText.SettingsWindow.Appearance_PlayWithoutFM_SingleButton;
+                    AppearancePage.PlayWithoutFM_MultipleButtonsRadioButton.Text = LText.SettingsWindow.Appearance_PlayWithoutFM_MultiButton;
 
                     #endregion
 
@@ -986,7 +999,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                #region FM Display page
+                #region Appearance page
 
                 OutConfig.VisualTheme = AppearancePage.DarkThemeRadioButton.Checked
                     ? VisualTheme.Dark
@@ -1076,6 +1089,8 @@ namespace AngelLoader.Forms
                 #endregion
 
                 OutConfig.ReadmeUseFixedWidthFont = AppearancePage.ReadmeFixedWidthFontCheckBox.Checked;
+
+                OutConfig.PlayOriginalSeparateButtons = AppearancePage.PlayWithoutFM_MultipleButtonsRadioButton.Checked;
 
                 #endregion
 
@@ -1344,7 +1359,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region FM Display page
+        #region Appearance page
 
         private void VisualThemeRadioButtons_CheckedChanged(object sender, EventArgs e)
         {
