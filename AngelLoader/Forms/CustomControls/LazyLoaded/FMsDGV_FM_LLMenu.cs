@@ -58,6 +58,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private ToolStripMenuItemCustom PlayFMInMPMenuItem = null!;
         private ToolStripMenuItemCustom InstallUninstallMenuItem = null!;
         private ToolStripMenuItemCustom PinToTopMenuItem = null!;
+        private ToolStripMenuItemCustom ExplicitPinToTopMenuItem = null!;
+        private ToolStripMenuItemCustom ExplicitUnpinFromTopMenuItem = null!;
         private ToolStripMenuItemCustom DeleteFMMenuItem = null!;
         private ToolStripSeparator OpenInDromEdSep = null!;
         private ToolStripMenuItemCustom OpenInDromEdMenuItem = null!;
@@ -96,6 +98,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                 DeleteFMMenuItem.Image = Images.Trash_16;
                 PinToTopMenuItem.Image = _sayPin ? Images.Pin_16 : Images.Unpin_16;
+                ExplicitPinToTopMenuItem.Image = Images.Pin_16;
+                ExplicitUnpinFromTopMenuItem.Image = Images.Unpin_16;
             }
         }
 
@@ -209,7 +213,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 PlayFMInMPMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 InstallUninstallMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 new ToolStripSeparator { Tag = LoadType.Lazy },
-                PinToTopMenuItem= new ToolStripMenuItemCustom{ Tag = LoadType.Lazy },
+                PinToTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy, Image = Images.Pin_16, Visible = false },
+                ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy, Image = Images.Unpin_16, Visible = false },
                 new ToolStripSeparator { Tag = LoadType.Lazy },
                 DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16, Tag = LoadType.Lazy },
                 OpenInDromEdSep = new ToolStripSeparator { Tag = LoadType.Lazy },
@@ -259,6 +265,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             PlayFMInMPMenuItem.Click += AsyncMenuItems_Click;
             InstallUninstallMenuItem.Click += AsyncMenuItems_Click;
             PinToTopMenuItem.Click += AsyncMenuItems_Click;
+            ExplicitPinToTopMenuItem.Click += AsyncMenuItems_Click;
+            ExplicitUnpinFromTopMenuItem.Click += AsyncMenuItems_Click;
             DeleteFMMenuItem.Click += AsyncMenuItems_Click;
             OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
             OpenFMFolderMenuItem.Click += AsyncMenuItems_Click;
@@ -321,6 +329,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _constructed = true;
 
             // These must come after the constructed bool gets set to true
+            SetPinItemsMode();
             UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
             SetRatingMenuItemChecked(_rating);
             Localize();
@@ -354,6 +363,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             SetInstallUninstallMenuItemText(sayInstall);
 
             SetPinOrUnpinMenuItemState(sayPin);
+            ExplicitPinToTopMenuItem.Text = LText.FMsList.FMMenu_PinFM;
+            ExplicitUnpinFromTopMenuItem.Text = LText.FMsList.FMMenu_UnpinFM;
 
             DeleteFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_DeleteFMs : LText.FMsList.FMMenu_DeleteFM;
 
@@ -475,6 +486,51 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 : LText.FMsList.FMMenu_UnpinFM;
 
             PinToTopMenuItem.Image = sayPin ? Images.Pin_16 : Images.Unpin_16;
+        }
+
+        internal void SetPinItemsMode()
+        {
+            if (!_constructed) return;
+
+            bool atLeastOnePinned = false;
+            bool atLeastOneUnpinned = false;
+
+            bool multiplePinnedStates = false;
+
+            var selectedFMs = _owner.FMsDGV.GetSelectedFMs();
+            if (selectedFMs.Length > 1)
+            {
+                for (int i = 0; i < selectedFMs.Length; i++)
+                {
+                    if (selectedFMs[i].Pinned)
+                    {
+                        atLeastOnePinned = true;
+                    }
+                    else
+                    {
+                        atLeastOneUnpinned = true;
+                    }
+
+                    if (atLeastOnePinned && atLeastOneUnpinned)
+                    {
+                        multiplePinnedStates = true;
+                        break;
+                    }
+                }
+            }
+
+            if (multiplePinnedStates)
+            {
+                PinToTopMenuItem.Visible = false;
+                ExplicitPinToTopMenuItem.Visible = true;
+                ExplicitUnpinFromTopMenuItem.Visible = true;
+            }
+            else
+            {
+                PinToTopMenuItem.Visible = true;
+                ExplicitPinToTopMenuItem.Visible = false;
+                ExplicitUnpinFromTopMenuItem.Visible = false;
+            }
         }
 
         internal void SetDeleteFMMenuItemEnabled(bool value)
@@ -679,7 +735,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 }
             }
             // @MULTISEL: In multi-selection case, let's have both discrete Pin and Unpin menu options, rather than just the one that switches
-            else if (sender == PinToTopMenuItem)
+            else if (sender == PinToTopMenuItem ||
+                     sender == ExplicitPinToTopMenuItem ||
+                     sender == ExplicitUnpinFromTopMenuItem)
             {
                 await Core.PinOrUnpinFM();
             }

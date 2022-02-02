@@ -4562,6 +4562,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
+            FMsDGV_FM_LLMenu.SetPinItemsMode();
 
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(!fm.MarkedUnavailable);
 
