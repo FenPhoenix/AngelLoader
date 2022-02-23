@@ -654,10 +654,12 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Other_ConfirmPlayOnDCOrEnter = "Play FM on double-click / Enter";
             internal readonly string Other_ConfirmPlayOnDCOrEnter_Ask = "Ask for confirmation";
-            // @vNext("File context menu" etc. strings): Figure out how to make these clear what they are to users
+#if false
+            // @!vNext("File context menu" etc. strings): Figure out how to make these clear what they are to users
             [FenGenBlankLine]
             internal readonly string Other_FileContextMenu = "File context menu";
             internal readonly string Other_FileContextMenu_ShowCommands = "Show commands";
+#endif
         }
 
         internal sealed class DateFilterBox_Class
