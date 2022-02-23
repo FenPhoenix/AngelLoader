@@ -209,12 +209,6 @@ namespace AngelLoader
             {
                 AddFMsToSet_Dict.Add(f.Name, f);
             }
-            var shellContextMenuFields = typeof(LText_Class.ShellContextMenu_Class).GetFields(_bfLText);
-            var ShellContextMenu_Dict = new Dictionary<string, FieldInfo>(shellContextMenuFields.Length);
-            foreach (var f in shellContextMenuFields)
-            {
-                ShellContextMenu_Dict.Add(f.Name, f);
-            }
 
             #endregion
 
@@ -875,28 +869,6 @@ namespace AngelLoader
                             if (AddFMsToSet_Dict.TryGetValue(key, out FieldInfo value))
                             {
                                 value.SetValue(ret.AddFMsToSet, lt.Substring(eqIndex + 1));
-                            }
-                        }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[')
-                        {
-                            break;
-                        }
-                        i++;
-                    }
-                }
-                else if (lineT == "[ShellContextMenu]")
-                {
-                    while (i < linesLength - 1)
-                    {
-                        int ltLength;
-                        string lt = lines[i + 1].TrimStart();
-                        int eqIndex = lt.IndexOf('=');
-                        if (eqIndex > -1)
-                        {
-                            string key = lt.Substring(0, eqIndex);
-                            if (ShellContextMenu_Dict.TryGetValue(key, out FieldInfo value))
-                            {
-                                value.SetValue(ret.ShellContextMenu, lt.Substring(eqIndex + 1));
                             }
                         }
                         else if ((ltLength = lt.Length) > 0 && lt[0] == '[')
