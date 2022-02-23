@@ -58,6 +58,7 @@
             this.OSContextMenuGroupBox.Size = new System.Drawing.Size(424, 56);
             this.OSContextMenuGroupBox.TabIndex = 5;
             this.OSContextMenuGroupBox.TabStop = false;
+            this.OSContextMenuGroupBox.Visible = false;
             // 
             // ShowCommandsCheckBox
             // 

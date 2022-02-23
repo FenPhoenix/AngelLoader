@@ -221,7 +221,9 @@ namespace AngelLoader
                 }
             }
 
+#if false
             await HandleCommandLineArgs(args);
+#endif
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
@@ -2101,9 +2103,13 @@ namespace AngelLoader
             }
         }
 
+#if false
         // @vNext(HandleCommandLineArgs): Finalize this and take care of any notes and todos
         public static async Task HandleCommandLineArgs(ReadOnlyCollection<string> args)
         {
+            return;
+
+
             using var mutex = new Mutex(true, AppGuid, out bool createdNew);
             if (!createdNew) return;
 
@@ -2196,6 +2202,7 @@ namespace AngelLoader
                     break;
             }
         }
+#endif
 
         /*
         @vNext: TODO(AddUsToWindowsContextMenu):
@@ -2219,6 +2226,9 @@ namespace AngelLoader
         */
         internal static bool AddUsToWindowsContextMenu(bool enable)
         {
+            return false;
+
+#if false
             static bool SetRegExt(string ext, bool enable)
             {
                 AssertR(ext.Trim('.') == ext, nameof(ext) + " was passed with a dot prefix or suffix");
@@ -2227,7 +2237,7 @@ namespace AngelLoader
                 const string alKeyName = "play_with_angelloader";
                 string alKeyPath = sfaExtShellPath + @"\" + alKeyName;
 
-                #region Local functions
+            #region Local functions
 
                 static RegistryKey? CreateSubKey(string path)
                 {
@@ -2329,7 +2339,7 @@ namespace AngelLoader
 
                 bool Cleanup() => DeleteKey(sfaExtShellPath, alKeyPath, silentCleanupMode: true);
 
-                #endregion
+            #endregion
 
                 if (enable)
                 {
@@ -2383,6 +2393,7 @@ namespace AngelLoader
             }
 
             return SetRegExt("zip", enable) && SetRegExt("7z", enable);
+#endif
         }
 
         #endregion

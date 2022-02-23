@@ -410,7 +410,8 @@ namespace AngelLoader.DataClasses
 
         internal bool PlayOriginalSeparateButtons = true;
 
-        internal bool ShowOSContextMenuCommands = true;
+        // Dummied out for now
+        internal bool ShowOSContextMenuCommands { get => false; set => value = false; }
 
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now

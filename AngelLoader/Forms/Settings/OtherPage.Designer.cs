@@ -86,6 +86,7 @@ namespace AngelLoader.Forms
             this.OSContextMenuGroupBox.TabIndex = 5;
             this.OSContextMenuGroupBox.TabStop = false;
             this.OSContextMenuGroupBox.Text = "File context menu";
+            this.OSContextMenuGroupBox.Visible = false;
             // 
             // ShowCommandsCheckBox
             // 
