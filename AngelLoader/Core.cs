@@ -2111,7 +2111,7 @@ namespace AngelLoader
         }
 
 #if false
-        // @vNext(HandleCommandLineArgs): Finalize this and take care of any notes and todos
+        // @!vNext(HandleCommandLineArgs): Finalize this and take care of any notes and todos
         public static async Task HandleCommandLineArgs(ReadOnlyCollection<string> args)
         {
             using var mutex = new Mutex(true, AppGuid, out bool createdNew);
@@ -2209,7 +2209,7 @@ namespace AngelLoader
 #endif
 
         /*
-        @vNext: TODO(AddUsToWindowsContextMenu):
+        @!vNext: TODO(AddUsToWindowsContextMenu):
         -Decide if we want options for "Play with AL", "Install with AL", "Add to list" etc.
         -Test with non-admin, and on Win7.
 

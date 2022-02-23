@@ -17,7 +17,9 @@ namespace AngelLoader.DataClasses
         internal static readonly string FMGameTypeIsNotDark = "FM game type is not supported: FM must be for a Dark Engine game.";
         internal static readonly string MultiplayerForNonThief2 = "Multiplayer is not supported for games other than Thief 2.";
         internal static readonly string GamePathEmpty = "Game directory is empty (a path to the game executable has not been specified).";
+#if false
         internal static readonly string UnableToAddItemsToExplorerMenu = "Unable to add item(s) to Explorer context menu.";
         internal static readonly string UnableToRemoveItemsFromExplorerMenu = "Unable to remove item(s) from Explorer context menu.";
+#endif
     }
 }

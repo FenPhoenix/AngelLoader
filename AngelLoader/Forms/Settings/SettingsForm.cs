@@ -782,8 +782,10 @@ namespace AngelLoader.Forms
                     AppearancePage.ReadmeGroupBox.Text = LText.SettingsWindow.Appearance_ReadmeBox;
                     AppearancePage.ReadmeFixedWidthFontCheckBox.Text = LText.SettingsWindow.Appearance_ReadmeUseFixedWidthFont;
 
+#if false
                     OtherPage.OSContextMenuGroupBox.Text = LText.SettingsWindow.Other_FileContextMenu;
                     OtherPage.ShowCommandsCheckBox.Text = LText.SettingsWindow.Other_FileContextMenu_ShowCommands;
+#endif
 
                     #endregion
                 }
