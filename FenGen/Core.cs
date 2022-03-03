@@ -1,7 +1,7 @@
 ﻿// FenGen - Fen's code generator for AngelLoader
 // Not perfect by any means, and still with lots of hardcoded stuff that shouldn't be, but it gets the job done.
 
-#region Snarky explanation on why we don't the official Source Generators feature
+#region Snarky explanation on why we don't use the official Source Generators feature
 /*
 Yes, I know they have official Source Generators now. And using them, we could avoid the awkward requirement to
 rebuild the entire solution to get this generator to do its work 100% correctly.
