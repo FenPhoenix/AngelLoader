@@ -467,7 +467,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             // Only suppress if we're closing, because there are a couple other situations in which the handle
             // can be recreated in the normal course of things (changing ScrollBars for example).
-            // We don't do any of them at the moment (2021-01-17) but meh.
+            // We don't do any of them at the moment (2022-01-17) but meh.
             if (FindForm() is MainForm { AboutToClose: true })
             {
                 return;
