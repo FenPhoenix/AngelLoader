@@ -66,6 +66,15 @@ namespace FenGen
 
         private const string _oldResourceFormatMessage = "Old resource format - backward compatibility, we still have to be able to read it";
 
+        private static bool IsDecimal(string value) =>
+            value
+                is "float"
+                or "float?"
+                or "double"
+                or "double?"
+                or "decimal"
+                or "decimal?";
+
         internal static void Generate(string sourceFile, string destFile)
         {
             FieldList fields = ReadSourceFields(sourceFile);
@@ -190,7 +199,7 @@ namespace FenGen
             {
                 if (item.IsKind(SyntaxKind.FieldDeclaration) || item.IsKind(SyntaxKind.PropertyDeclaration))
                 {
-                    Field last = new Field();
+                    var last = new Field();
                     FillFieldFromAttributes((MemberDeclarationSyntax)item, last, out bool ignore);
                     if (ignore) continue;
 
@@ -211,13 +220,7 @@ namespace FenGen
         private static void WriteReadSection(CodeWriters.IndentingWriter w, string obj, FieldList fields)
         {
             static string GetFloatArgsRead(string fieldType) =>
-                fieldType
-                    is "float"
-                    or "float?"
-                    or "double"
-                    or "double?"
-                    or "decimal"
-                    or "decimal?"
+                IsDecimal(fieldType)
                     ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                     : "";
 
@@ -324,8 +327,7 @@ namespace FenGen
                 }
                 else if (field.Type == "bool?")
                 {
-                    w.WL(objDotField + " =");
-                    w.WL("!string.IsNullOrEmpty(" + valTrimmed + ") ? " + valTrimmed + ".EqualsTrue() : (bool?)null;");
+                    w.WL(objDotField + " = !string.IsNullOrEmpty(" + valTrimmed + ") ? " + valTrimmed + ".EqualsTrue() : (bool?)null;");
                 }
                 else if (_numericTypes.Contains(field.Type))
                 {
@@ -482,13 +484,7 @@ namespace FenGen
             const string unixDateString = "UnixDateString";
 
             static string GetFloatArgsWrite(string fieldType) =>
-                fieldType
-                    is "float"
-                    or "float?"
-                    or "double"
-                    or "double?"
-                    or "decimal"
-                    or "decimal?"
+                IsDecimal(fieldType)
                     ? "NumberFormatInfo.InvariantInfo"
                     : "";
 
