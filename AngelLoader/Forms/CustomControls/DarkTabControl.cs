@@ -184,7 +184,7 @@ namespace AngelLoader.Forms.CustomControls
 
                         var backColorBrush = focused
                             ? DarkColors.LightBackgroundBrush
-                            : tabRect.Contains(PointToClient(Cursor.Position))
+                            : Enabled && tabRect.Contains(PointToClient(Cursor.Position))
                             ? DarkColors.Fen_HotTabBackgroundBrush
                             : DarkColors.Fen_DeselectedTabBackgroundBrush;
 
