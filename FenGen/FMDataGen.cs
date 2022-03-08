@@ -272,7 +272,7 @@ namespace FenGen
                         {
                             w.WL("if (!string.IsNullOrEmpty(" + valTrimmed + "))");
                             w.WL("{");
-                            w.WL(objListSet + "");
+                            w.WL(objListSet);
                             w.WL("}");
                         }
                         else
@@ -282,7 +282,7 @@ namespace FenGen
                             w.WL("for (int a = 0; a < items.Length; a++)");
                             w.WL("{");
                             w.WL("string result = items[a].Trim();");
-                            w.WL(objListSet + "");
+                            w.WL(objListSet);
                             w.WL("}");
                         }
                     }
@@ -298,7 +298,7 @@ namespace FenGen
                             w.WL("bool success = " + listType + ".TryParse(" + valTrimmed + ", " + floatArgs + "out " + listType + " result);");
                             w.WL("if(success)");
                             w.WL("{");
-                            w.WL(objListSet + "");
+                            w.WL(objListSet);
                             w.WL("}");
                         }
                         else
@@ -311,7 +311,7 @@ namespace FenGen
                             w.WL("bool success = " + listType + ".TryParse(items[a], " + floatArgs + "out " + listType + " result);");
                             w.WL("if(success)");
                             w.WL("{");
-                            w.WL(objListSet + "");
+                            w.WL(objListSet);
                             w.WL("}");
                             w.WL("}");
                         }
