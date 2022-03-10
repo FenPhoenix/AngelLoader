@@ -19,6 +19,22 @@ the scroll bar was).
 @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 
 @MULTISEL: There's some glitchiness with initial selection or two, might be to do with the initial selection reload hack.
+Elaboration:
+When first loading and setting the initial selected FM, if you use the keyboard to try to move the selection or
+to expand the selection, the selected FM will pop back up to being the first one in the list (or in the case of
+multiple selection, the multi-select will start from the top of the list rather than whatever one is actually
+selected). Subsequent keyboard select operations work correctly.
+This is because in RefreshFMsList() the RowCount set call for some reason selects the first FM in the list
+immediately upon setting the row count to any number when it was 0 before. We then set the selection again,
+which clears the selection to none and then sets it to the correct FM. But something is getting out of sync
+and in some way the DGV thinks the selection is still at the top for certain purposes (but not fully, because
+in most respects the selection is the correct one and is displayed as such).
+
+Ruled-out potential causes:
+-Disabling the first-time selection hack (avoidance of glitched last line) doesn't affect it.
+-Disabling SelectProperly() doesn't affect it.
+(Phew to both of these)
+
 @MULTISEL: Test game tabs mode.
 @MULTISEL: Do we want to disable the top-right tabs area when multiple FMs are selected to avoid confusion?
 */
