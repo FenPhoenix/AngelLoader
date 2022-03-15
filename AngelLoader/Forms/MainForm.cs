@@ -35,6 +35,9 @@ Ruled-out potential causes:
 -Disabling SelectProperly() doesn't affect it.
 (Phew to both of these)
 
+2022-03-15:
+Deployed some crap-garbage hacks and I believe this to be fixed now(?)
+
 @MULTISEL: Test game tabs mode.
 @MULTISEL: Do we want to disable the top-right tabs area when multiple FMs are selected to avoid confusion?
 */
@@ -2757,9 +2760,19 @@ namespace AngelLoader.Forms
                     }
 
                     // Events will be re-enabled at the end of the enclosing using block
-                    if (keepSelection != KeepSel.False) EventsDisabled = true;
-                    FMsDGV.SelectSingle(row);
-                    FMsDGV.SelectProperly(suspendResume: startup);
+
+                    void DoSelect()
+                    {
+                        if (keepSelection != KeepSel.False) EventsDisabled = true;
+                        FMsDGV.SelectSingle(row);
+                        FMsDGV.SelectProperly(suspendResume: startup);
+                    }
+
+                    // Stupid hack to attempt to prevent multiselect-set-popping-back-to-starting-at-list-top
+                    FMsDGV.MultiSelect = false;
+                    DoSelect();
+                    FMsDGV.MultiSelect = true;
+                    DoSelect();
 
                     // Resume drawing before loading the readme; that way the list will update instantly even
                     // if the readme doesn't. The user will see delays in the "right place" (the readme box)
@@ -3916,6 +3929,16 @@ namespace AngelLoader.Forms
             }
             else
             {
+                // Stupid hack to attempt to prevent multiselect-set-popping-back-to-starting-at-list-top
+                if (index > -1)
+                {
+                    using (new DisableEvents(this))
+                    {
+                        FMsDGV.SelectSingle(index);
+                        FMsDGV.SelectProperly();
+                    }
+                }
+
                 FMsDGV.SelectProperly();
 
                 if (!_fmsListOneTimeHackRefreshDone)
