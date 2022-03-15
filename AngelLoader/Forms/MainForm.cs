@@ -39,6 +39,10 @@ Ruled-out potential causes:
 Deployed some crap-garbage hacks and I believe this to be fixed now(?)
 
 @MULTISEL: Test game tabs mode.
+
+@MULTISEL: When switching game tabs, multi-selections are not saved. Do we want this behavior or no?
+This is part of the decision of "how temporary" do we want multi-selections to be.
+
 @MULTISEL: Do we want to disable the top-right tabs area when multiple FMs are selected to avoid confusion?
 */
 
