@@ -3907,9 +3907,13 @@ namespace AngelLoader.Forms
 
         private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
+            // We don't need this because there's another check in ChangeSelection(), but we can avoid running
+            // the async machinery with this.
+            if (EventsDisabled) return;
+
             // Don't run selection logic for extra selected rows, to prevent a possible cascade of heavy operations
             // from being run during multi-select (scanning, caching, who knows what)
-            if (FMsDGV.SelectedRows.Count > 1) return;
+            if (FMsDGV.MultipleFMsSelected()) return;
 
             await ChangeSelection(FMsDGV.MainSelectedRow?.Index ?? -1);
         }
