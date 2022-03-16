@@ -231,6 +231,8 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             [FenGenComment("Text for the button in the Error dialog box that lets the user view the error log file.")]
             internal readonly string Error_ViewLog = "View log";
+            [FenGenBlankLine]
+            internal readonly string FinishedOnUnknown_MultiFMChange = "All selected FMs' finished states are about to be removed and replaced with 'Unknown'. Are you sure want to do this?";
         }
 
         // Working, subject to change

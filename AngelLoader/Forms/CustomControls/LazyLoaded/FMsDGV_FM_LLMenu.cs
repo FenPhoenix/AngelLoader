@@ -780,51 +780,82 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
-        // @MULTISEL(FinishedOn):
-        // This needs to only add/remove finished states from all selected FMs, not overwrite their old value
-        // with the absolute value of the main selected one.
         private void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
             var senderItem = (ToolStripMenuItemCustom)sender;
 
-            FanMission mainSelectedFM = _owner.FMsDGV.GetMainSelectedFM();
+            FanMission[] selFMs = _owner.FMsDGV.GetSelectedFMs();
+            FanMission mainFM = _owner.FMsDGV.GetMainSelectedFM();
 
-            void SetFinishedOnState(FanMission fm)
+            if (selFMs.Length > 1)
             {
-                fm.FinishedOn = 0;
-                fm.FinishedOnUnknown = false;
-
                 if (senderItem == FinishedOnUnknownMenuItem)
                 {
-                    fm.FinishedOnUnknown = senderItem.Checked;
-                }
-                else
-                {
-                    uint at = 1;
-                    foreach (ToolStripMenuItemCustom item in FinishedOnMenu.Items)
+                    bool doFinishedOnUnknown = Dialogs.AskToContinue(
+                        LText.AlertMessages.FinishedOnUnknown_MultiFMChange,
+                        LText.AlertMessages.Alert,
+                        defaultButton: DarkTaskDialog.Button.No
+                    );
+                    if (!doFinishedOnUnknown)
                     {
-                        if (item == FinishedOnUnknownMenuItem) continue;
-
-                        if (item.Checked) fm.FinishedOn |= at;
-                        at <<= 1;
-                    }
-                    if (fm.FinishedOn > 0)
-                    {
-                        if (fm == mainSelectedFM)
-                        {
-                            FinishedOnUnknownMenuItem.Checked = false;
-                        }
-                        fm.FinishedOnUnknown = false;
+                        SetFinishedOnMenuItemsChecked((Difficulty)mainFM.FinishedOn, mainFM.FinishedOnUnknown);
+                        return;
                     }
                 }
             }
 
-            foreach (FanMission fm in _owner.FMsDGV.GetSelectedFMs())
+            mainFM.FinishedOn = 0;
+            mainFM.FinishedOnUnknown = false;
+
+            if (senderItem == FinishedOnUnknownMenuItem)
             {
-                SetFinishedOnState(fm);
+                mainFM.FinishedOnUnknown = senderItem.Checked;
+            }
+            else
+            {
+                uint at = 1;
+                foreach (ToolStripMenuItemCustom item in FinishedOnMenu.Items)
+                {
+                    if (item == FinishedOnUnknownMenuItem) continue;
+
+                    if (item.Checked) mainFM.FinishedOn |= at;
+                    at <<= 1;
+                }
+                if (mainFM.FinishedOn > 0)
+                {
+                    FinishedOnUnknownMenuItem.Checked = false;
+                    mainFM.FinishedOnUnknown = false;
+                }
             }
 
-            _owner.RefreshAllSelectedFMs(rowOnly: true);
+            foreach (FanMission fm in selFMs)
+            {
+                if (fm == mainFM) continue;
+                uint at = 1;
+                foreach (ToolStripMenuItemCustom item in FinishedOnMenu.Items)
+                {
+                    if (item == FinishedOnUnknownMenuItem)
+                    {
+                        fm.FinishedOn = 0;
+                        fm.FinishedOnUnknown = true;
+                    }
+                    else if (item == senderItem)
+                    {
+                        if (item.Checked)
+                        {
+                            fm.FinishedOn |= at;
+                        }
+                        else
+                        {
+                            fm.FinishedOn &= ~at;
+                        }
+                        break;
+                    }
+                    at <<= 1;
+                }
+            }
+
+            _owner.RefreshAllSelectedFMRows();
 
             Ini.WriteFullFMDataIni();
         }

@@ -2692,6 +2692,15 @@ namespace AngelLoader.Forms
             RefreshFMsListKeepSelection();
         }
 
+        public void RefreshAllSelectedFMRows()
+        {
+            var selRows = FMsDGV.SelectedRows;
+            foreach (DataGridViewRow row in selRows)
+            {
+                FMsDGV.InvalidateRow(row.Index);
+            }
+        }
+
         /// <summary>
         /// Returns false if the list is empty and ClearShownData() has been called, otherwise true
         /// </summary>
