@@ -698,10 +698,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == InstallUninstallMenuItem)
             {
+                // @MULTISEL: Make FM install/uninstall code multi-FM aware
                 await FMInstallAndPlay.InstallOrUninstall(_owner.FMsDGV.GetMainSelectedFM());
             }
             else if (sender == DeleteFMMenuItem)
             {
+                // @MULTISEL: Make FM delete method multi-FM aware
                 await FMArchives.Delete(_owner.FMsDGV.GetMainSelectedFM());
             }
             else if (sender == OpenInDromEdMenuItem)
