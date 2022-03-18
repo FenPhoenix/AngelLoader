@@ -787,20 +787,19 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             FanMission[] selFMs = _owner.FMsDGV.GetSelectedFMs();
             FanMission mainFM = _owner.FMsDGV.GetMainSelectedFM();
 
-            if (selFMs.Length > 1)
+            if (selFMs.Length > 1 &&
+                senderItem == FinishedOnUnknownMenuItem &&
+                FinishedOnUnknownMenuItem.Checked)
             {
-                if (senderItem == FinishedOnUnknownMenuItem)
+                bool doFinishedOnUnknown = Dialogs.AskToContinue(
+                    LText.AlertMessages.FinishedOnUnknown_MultiFMChange,
+                    LText.AlertMessages.Alert,
+                    defaultButton: DarkTaskDialog.Button.No
+                );
+                if (!doFinishedOnUnknown)
                 {
-                    bool doFinishedOnUnknown = Dialogs.AskToContinue(
-                        LText.AlertMessages.FinishedOnUnknown_MultiFMChange,
-                        LText.AlertMessages.Alert,
-                        defaultButton: DarkTaskDialog.Button.No
-                    );
-                    if (!doFinishedOnUnknown)
-                    {
-                        SetFinishedOnMenuItemsChecked((Difficulty)mainFM.FinishedOn, mainFM.FinishedOnUnknown);
-                        return;
-                    }
+                    SetFinishedOnMenuItemsChecked((Difficulty)mainFM.FinishedOn, mainFM.FinishedOnUnknown);
+                    return;
                 }
             }
 
@@ -836,11 +835,19 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 {
                     if (item == FinishedOnUnknownMenuItem)
                     {
-                        fm.FinishedOn = 0;
-                        fm.FinishedOnUnknown = true;
+                        if (item.Checked)
+                        {
+                            fm.FinishedOn = 0;
+                            fm.FinishedOnUnknown = true;
+                        }
+                        else
+                        {
+                            fm.FinishedOnUnknown = false;
+                        }
                     }
                     else if (item == senderItem)
                     {
+                        fm.FinishedOnUnknown = false;
                         if (item.Checked)
                         {
                             fm.FinishedOn |= at;
