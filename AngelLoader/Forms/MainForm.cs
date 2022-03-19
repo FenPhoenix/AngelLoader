@@ -2954,11 +2954,26 @@ namespace AngelLoader.Forms
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            int rating = EditFMRatingComboBox.SelectedIndex - 1;
+            UpdateRatingForSelectedFMs(EditFMRatingComboBox.SelectedIndex - 1);
+        }
+
+        internal void UpdateRatingForSelectedFMs(int rating)
+        {
             FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.Rating = rating;
-            FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
             RefreshFM(fm, rowOnly: true);
+
+            UpdateRatingMenus(rating, disableEvents: true);
+
+            FanMission[] sFMs = FMsDGV.GetSelectedFMs();
+            if (sFMs.Length > 1)
+            {
+                foreach (FanMission sFM in sFMs)
+                {
+                    sFM.Rating = rating;
+                }
+                RefreshAllSelectedFMs(rowOnly: true);
+            }
             Ini.WriteFullFMDataIni();
         }
 
@@ -4585,7 +4600,7 @@ namespace AngelLoader.Forms
             StatsCheckBoxesPanel.Hide();
         }
 
-        public void UpdateRatingMenus(int rating, bool disableEvents = false)
+        private void UpdateRatingMenus(int rating, bool disableEvents = false)
         {
             using (disableEvents ? new DisableEvents(this) : null)
             {

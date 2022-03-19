@@ -751,21 +751,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 if (RatingMenuItem.DropDownItems[i] == sender)
                 {
-                    int rating = i - 1;
-                    FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-                    fm.Rating = rating;
-                    _owner.RefreshFM(fm, rowOnly: true);
-                    _owner.UpdateRatingMenus(rating, disableEvents: true);
-                    FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
-                    if (sFMs.Length > 1)
-                    {
-                        foreach (FanMission sFM in sFMs)
-                        {
-                            sFM.Rating = rating;
-                        }
-                        _owner.RefreshAllSelectedFMs(rowOnly: true);
-                    }
-                    Ini.WriteFullFMDataIni();
+                    _owner.UpdateRatingForSelectedFMs(rating: i - 1);
                     break;
                 }
             }
