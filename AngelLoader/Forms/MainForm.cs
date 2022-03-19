@@ -4444,7 +4444,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(false);
             FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(false);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(sayInstall: true);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(sayInstall: true, multiSelected: false);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(false);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(sayPin: true);
@@ -4645,7 +4645,7 @@ namespace AngelLoader.Forms
             bool allSelectedAreSameInstalledState = AllSelectedAre(x => x.Installed) || AllSelectedAre(x => !x.Installed);
 
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(allSelectedAreSameInstalledState && gameIsSupportedAndAvailable);
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
             FMsDGV_FM_LLMenu.SetPinItemsMode();

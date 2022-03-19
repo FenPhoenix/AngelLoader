@@ -400,7 +400,9 @@ namespace AngelLoader.DataClasses
             internal readonly string FMMenu_PlayFM = "Play FM";
             internal readonly string FMMenu_PlayFM_Multiplayer = "Play FM (multiplayer)";
             internal readonly string FMMenu_InstallFM = "Install FM";
+            internal readonly string FMMenu_InstallFMs = "Install FMs";
             internal readonly string FMMenu_UninstallFM = "Uninstall FM";
+            internal readonly string FMMenu_UninstallFMs = "Uninstall FMs";
             internal readonly string FMMenu_PinFM = "Pin to top";
             internal readonly string FMMenu_UnpinFM = "Unpin from top";
             internal readonly string FMMenu_DeleteFM = "Delete FM archive";

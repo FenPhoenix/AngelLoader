@@ -360,7 +360,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             #endregion
 
-            SetInstallUninstallMenuItemText(sayInstall);
+            SetInstallUninstallMenuItemText(sayInstall, multiSelected);
 
             SetPinOrUnpinMenuItemState(sayPin);
             ExplicitPinToTopMenuItem.Text = LText.FMsList.FMMenu_PinFM;
@@ -466,13 +466,18 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
-        internal void SetInstallUninstallMenuItemText(bool sayInstall)
+        internal void SetInstallUninstallMenuItemText(bool sayInstall, bool multiSelected)
         {
             if (!_constructed) return;
 
-            InstallUninstallMenuItem.Text = sayInstall
-                ? LText.FMsList.FMMenu_InstallFM
-                : LText.FMsList.FMMenu_UninstallFM;
+            InstallUninstallMenuItem.Text =
+                sayInstall
+                    ? multiSelected
+                        ? LText.FMsList.FMMenu_InstallFMs
+                        : LText.FMsList.FMMenu_InstallFM
+                    : multiSelected
+                        ? LText.FMsList.FMMenu_UninstallFMs
+                        : LText.FMsList.FMMenu_UninstallFM;
         }
 
         internal void SetPinOrUnpinMenuItemState(bool sayPin)
