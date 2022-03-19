@@ -81,16 +81,17 @@ namespace AngelLoader
         /// Returns a list of all matching FM archive files, or an empty list if no matches were found.
         /// </summary>
         /// <param name="fmArchive"></param>
+        /// <param name="archivePaths"></param>
         /// <returns></returns>
-        internal static List<string> FindAllMatches(string fmArchive)
+        internal static List<string> FindAllMatches(string fmArchive, List<string>? archivePaths = null)
         {
             if (fmArchive.IsEmpty()) return new List<string>();
 
-            var archivePaths = GetFMArchivePaths();
+            var paths = archivePaths?.Count > 0 ? archivePaths : GetFMArchivePaths();
 
-            var list = new List<string>(archivePaths.Count);
+            var list = new List<string>(paths.Count);
 
-            foreach (string path in archivePaths)
+            foreach (string path in paths)
             {
                 if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
                 {
@@ -190,6 +191,40 @@ namespace AngelLoader
                     await Core.View.SortAndSetFilter(keepSelection: true);
                 }
             }
+        }
+
+        internal static async Task Delete(List<FanMission> fms)
+        {
+            for (int i = 0; i < fms.Count; i++)
+            {
+                if (fms[i].MarkedUnavailable)
+                {
+                    fms.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            if (fms.Count == 0) return;
+
+            var archivesList = new List<List<string>>();
+
+            var archivePaths = GetFMArchivePaths();
+            foreach (var fm in fms)
+            {
+                archivesList.Add(FindAllMatches(fm.Archive, archivePaths));
+            }
+
+            // @MULTISEL: Multi-selection Delete() method in progress code
+            // We need to have some kind of good UX for if we're deleting multiple FMs AND one or more FMs have
+            // more than one archive found.
+
+            if (archivesList.Count == 0)
+            {
+                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
+                return;
+            }
+
+            throw new NotImplementedException();
         }
 
         internal static async Task<bool> Add(IWin32Window owner, List<string> droppedItemsList)
