@@ -4614,12 +4614,25 @@ namespace AngelLoader.Forms
         // ... we might not need to call it on FM load.
         internal void UpdateUIControlsForMultiSelectState(FanMission fm)
         {
+            var selRows = FMsDGV.SelectedRows;
+
+            bool AllSelectedAre(Func<FanMission, bool> predicate)
+            {
+                for (int i = 0; i < selRows.Count; i++)
+                {
+                    FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
+                    if (!predicate.Invoke(sFM))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
             bool fmIsSS2 = fm.Game == Game.SS2;
 
             bool gameIsSupported = GameIsKnownAndSupported(fm.Game);
             bool gameIsSupportedAndAvailable = gameIsSupported && !fm.MarkedUnavailable;
-
-            var selRows = FMsDGV.SelectedRows;
 
             bool multiSelected = selRows.Count > 1;
 
@@ -4629,7 +4642,9 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(!multiSelected && gameIsSupportedAndAvailable);
+            bool allSelectedAreSameInstalledState = AllSelectedAre(x => x.Installed) || AllSelectedAre(x => !x.Installed);
+
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(allSelectedAreSameInstalledState && gameIsSupportedAndAvailable);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
@@ -4645,16 +4660,8 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!fm.MarkedUnavailable);
 
-            bool allSelectedAreAudioConvertible = true;
-            for (int i = 0; i < selRows.Count; i++)
-            {
-                FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
-                if (!sFM.Installed || !GameIsDark(sFM.Game) || sFM.MarkedUnavailable)
-                {
-                    allSelectedAreAudioConvertible = false;
-                    break;
-                }
-            }
+            bool allSelectedAreAudioConvertible = AllSelectedAre(x => x.Installed && GameIsDark(x.Game) && !x.MarkedUnavailable);
+
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(allSelectedAreAudioConvertible);
 
             FMsDGV_FM_LLMenu.SetWebSearchEnabled(!multiSelected);
