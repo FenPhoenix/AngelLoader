@@ -1807,26 +1807,35 @@ namespace AngelLoader
         // It seems to depend on a single-selection in more ways than are obvious (at least to me when I'm tired).
         internal static async Task PinOrUnpinFM()
         {
-            var fm = View.GetMainSelectedFMOrNull();
-            if (fm == null) return;
+            FanMission[] selFMs = View.GetSelectedFMs();
 
-            fm.Pinned = !fm.Pinned;
-
-            View.SetPinnedMenuState(fm.Pinned);
-
-            int rowCount = View.GetRowCount();
-
-            SelectedFM? selFM;
-            if (fm.Pinned || rowCount == 1)
+            if (selFMs.Length == 1)
             {
-                selFM = null;
+                var fm = View.GetMainSelectedFMOrNull();
+                if (fm == null) return;
+
+                fm.Pinned = !fm.Pinned;
+
+                View.SetPinnedMenuState(fm.Pinned);
+
+                int rowCount = View.GetRowCount();
+
+                SelectedFM? selFM;
+                if (fm.Pinned || rowCount == 1)
+                {
+                    selFM = null;
+                }
+                else
+                {
+                    int index = View.GetMainSelectedRowIndex();
+                    selFM = View.GetFMPosInfoFromIndex(index == rowCount - 1 ? index - 1 : index + 1);
+                }
+                await View.SortAndSetFilter(keepSelection: fm.Pinned, selectedFM: selFM);
             }
             else
             {
-                int index = View.GetMainSelectedRowIndex();
-                selFM = View.GetFMPosInfoFromIndex(index == rowCount - 1 ? index - 1 : index + 1);
+                throw new NotImplementedException();
             }
-            await View.SortAndSetFilter(keepSelection: fm.Pinned, selectedFM: selFM);
         }
 
         internal static bool AtLeastOneDroppedFileValid(string[] droppedItems)

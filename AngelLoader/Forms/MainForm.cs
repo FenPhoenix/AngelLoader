@@ -3097,6 +3097,8 @@ namespace AngelLoader.Forms
 
         public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
 
+        public FanMission[] GetSelectedFMs() => FMsDGV.GetSelectedFMs();
+
         public FanMission? GetFMFromIndex(int index) => FMsDGV.RowSelected() ? FMsDGV.GetFMFromIndex(index) : null;
 
         public (string Category, string Tag)
