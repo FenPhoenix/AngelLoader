@@ -742,11 +742,17 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 }
             }
             // @MULTISEL: In multi-selection case, let's have both discrete Pin and Unpin menu options, rather than just the one that switches
-            else if (sender == PinToTopMenuItem ||
-                     sender == ExplicitPinToTopMenuItem ||
-                     sender == ExplicitUnpinFromTopMenuItem)
+            else if (sender == PinToTopMenuItem)
             {
                 await Core.PinOrUnpinFM();
+            }
+            else if (sender == ExplicitPinToTopMenuItem)
+            {
+                await Core.PinOrUnpinFM(explicitPin: true);
+            }
+            else if (sender == ExplicitUnpinFromTopMenuItem)
+            {
+                await Core.PinOrUnpinFM(explicitPin: false);
             }
         }
 

@@ -1805,7 +1805,7 @@ namespace AngelLoader
 
         // @MULTISEL(PinOrUnpinFM): This one needs more than nominal work.
         // It seems to depend on a single-selection in more ways than are obvious (at least to me when I'm tired).
-        internal static async Task PinOrUnpinFM()
+        internal static async Task PinOrUnpinFM(bool? explicitPin = null)
         {
             FanMission[] selFMs = View.GetSelectedFMs();
 
@@ -1834,6 +1834,13 @@ namespace AngelLoader
             }
             else
             {
+                if (explicitPin == null) return;
+
+                for (int i = 0; i < selFMs.Length; i++)
+                {
+                    selFMs[i].Pinned = explicitPin == true;
+                }
+
                 throw new NotImplementedException();
             }
         }
