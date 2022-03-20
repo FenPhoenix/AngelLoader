@@ -140,6 +140,22 @@ namespace AngelLoader.Forms.CustomControls
                 if (GetFMFromIndex(i).InstalledDir.EqualsI(installedName)) return i;
             }
 
+            // @MULTISEL(Find nearest / unpin incorrect behavior) theory 1:
+            // I believe what's happening is we're selecting a. and then b. which is the next FM below it, and
+            // then this thing is choosing the "nearest" FM to change the selection to, but that ends up being
+            // b. (the next one below the main selection, a.) and it sets the selection to that, because it's not
+            // multi-selection aware. I'm like 99% sure that must be what's going on here. So we should make this
+            // multi-selection aware.
+
+            // @MULTISEL(Find nearest / unpin incorrect behavior) theory 2:
+            // Scratch the above, the findNearest section isn't even being hit (though we should still see if we
+            // need to make it multi-select aware). I don't even know how tf the single-select unpin is working
+            // as it should, might be dumb luck?
+            // It's not working on the findNearest principle because the unpinned FM doesn't actually get filtered
+            // out, but just moves. And I also remember something about knowing that when I wrote the code, and
+            // I must have found some way to still make it work with the single, but it doesn't do the right thing
+            // with the multi. I should probably look in that direction to figure out how to do this.
+
             // If a refresh has caused our selected FM to be filtered out, find the next closest one
             if (findNearest)
             {
