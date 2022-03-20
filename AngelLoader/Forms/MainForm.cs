@@ -4637,15 +4637,13 @@ namespace AngelLoader.Forms
             bool multiSelected = selRows.Count > 1;
 
             // @MULTISEL(FM menu item toggles): Maybe we want to hide unsupported menu items rather than disable?
-            FMsDGV_FM_LLMenu.SetPlayFMMenuItemVisible(!multiSelected);
             FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(!multiSelected && gameIsSupportedAndAvailable);
 
-            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
+            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
             bool allSelectedAreSameInstalledState = AllSelectedAre(x => x.Installed) || AllSelectedAre(x => !x.Installed);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemVisible(true);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(allSelectedAreSameInstalledState && gameIsSupportedAndAvailable);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected);
 
@@ -4657,7 +4655,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(allSelectedAreAvailable);
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(fmIsSS2);
-            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected && GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
+            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
             FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!multiSelected && !fm.MarkedUnavailable);
 
             FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && fm.Installed);

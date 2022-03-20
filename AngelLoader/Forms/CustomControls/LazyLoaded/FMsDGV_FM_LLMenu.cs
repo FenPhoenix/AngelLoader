@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -19,11 +18,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         #region Backing fields
 
         private bool _constructed;
-        private bool _playFMMenuItemVisible;
         private bool _playFMMenuItemEnabled;
         private bool _playFMInMPMenuItemVisible;
         private bool _playFMInMPMenuItemEnabled;
-        private bool _installUninstallMenuItemVisible;
         private bool _installUninstallMenuItemEnabled;
         private bool _deleteFMMenuItemEnabled;
         private bool _openInDromEdMenuItemVisible;
@@ -60,7 +57,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private ToolStripMenuItemCustom PlayFMMenuItem = null!;
         private ToolStripMenuItemCustom PlayFMInMPMenuItem = null!;
         private ToolStripMenuItemCustom InstallUninstallMenuItem = null!;
-        private ToolStripSeparator PlayInstallSep = null!;
         private ToolStripMenuItemCustom PinToTopMenuItem = null!;
         private ToolStripMenuItemCustom ExplicitPinToTopMenuItem = null!;
         private ToolStripMenuItemCustom ExplicitUnpinFromTopMenuItem = null!;
@@ -216,7 +212,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 PlayFMMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 PlayFMInMPMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 InstallUninstallMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                PlayInstallSep = new ToolStripSeparator { Tag = LoadType.Lazy },
+                new ToolStripSeparator { Tag = LoadType.Lazy },
                 PinToTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy, Image = Images.Pin_16, Visible = false },
                 ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy, Image = Images.Unpin_16, Visible = false },
@@ -297,12 +293,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             #region Set main menu item values
 
-            PlayFMMenuItem.Visible = _playFMInMPMenuItemVisible;
             PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
             PlayFMInMPMenuItem.Visible = _playFMInMPMenuItemVisible;
             PlayFMInMPMenuItem.Enabled = _playFMInMPMenuItemEnabled;
 
-            InstallUninstallMenuItem.Visible = _installUninstallMenuItemVisible;
             InstallUninstallMenuItem.Enabled = _installUninstallMenuItemEnabled;
 
             DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
@@ -335,22 +329,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _constructed = true;
 
             // These must come after the constructed bool gets set to true
-            SetPlayInstallSepVisibility();
             SetPinItemsMode();
             UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
             SetRatingMenuItemChecked(_rating);
             Localize();
-        }
-
-        private void SetPlayInstallSepVisibility()
-        {
-            if (_constructed)
-            {
-                PlayInstallSep.Visible =
-                    PlayFMMenuItem.LogicallyVisible ||
-                    PlayFMInMPMenuItem.LogicallyVisible ||
-                    InstallUninstallMenuItem.LogicallyVisible;
-            }
         }
 
         internal void Localize()
@@ -436,19 +418,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             return FinishedOnMenu;
         }
 
-        internal void SetPlayFMMenuItemVisible(bool value)
-        {
-            if (_constructed)
-            {
-                PlayFMMenuItem.Visible = value;
-                SetPlayInstallSepVisibility();
-            }
-            else
-            {
-                _playFMMenuItemVisible = value;
-            }
-        }
-
         internal void SetPlayFMMenuItemEnabled(bool value)
         {
             if (_constructed)
@@ -466,7 +435,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (_constructed)
             {
                 PlayFMInMPMenuItem.Visible = value;
-                SetPlayInstallSepVisibility();
             }
             else
             {
@@ -483,19 +451,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             else
             {
                 _playFMInMPMenuItemEnabled = value;
-            }
-        }
-
-        internal void SetInstallUninstallMenuItemVisible(bool value)
-        {
-            if (_constructed)
-            {
-                InstallUninstallMenuItem.Visible = value;
-                SetPlayInstallSepVisibility();
-            }
-            else
-            {
-                _installUninstallMenuItemVisible = value;
             }
         }
 
