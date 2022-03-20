@@ -1834,7 +1834,8 @@ namespace AngelLoader
             }
             else
             {
-                // NOTE: This doesn't work at all whatsoever just like the last time
+                // @MULTISEL(PinOrUnPinFM()): Clean this horrible mess up
+                // @MULTISEL(PinOrUnPinFM()): Make it so pinning multiple FMs keeps them all selected
 
                 bool autoPin = explicitPin == null;
                 explicitPin ??= !selFMs[0].Pinned;
@@ -1848,7 +1849,7 @@ namespace AngelLoader
 
                 int rowCount = View.GetRowCount();
 
-                SelectedFM? selFM;
+                SelectedFM? selFM = null;
                 if ((autoPin ? selFMs[0].Pinned : pin) || rowCount == 1)
                 {
                     selFM = null;
@@ -1856,26 +1857,23 @@ namespace AngelLoader
                 else
                 {
                     int index = View.GetMainSelectedRowIndex();
-                    /*
-                    ORIGINAL COMMENT:
-                    @MULTISEL(Find nearest / unpin incorrect behavior) theory 1:
-                    I believe what's happening is we're selecting a. and then b. which is the next FM below it, and
-                    then this thing is choosing the "nearest" FM to change the selection to, but that ends up being
-                    b. (the next one below the main selection, a.) and it sets the selection to that, because it's not
-                    multi-selection aware. I'm like 99% sure that must be what's going on here. So we should make this
-                    multi-selection aware.
-
-                    @MULTISEL(Find nearest / unpin incorrect behavior) theory 1a:
-                    Oh... the theory was right, we're basically doing a mini find-nearest right here and it's
-                    exactly as I hypothesized, just happening in a different place.
-                    Changing index + 1 to index + 2 confirms this theory. So we just need to loop until index
-                    lands on a non-selected row.
-                    */
-                    selFM = View.GetFMPosInfoFromIndex(index == rowCount - 1 ? index - 1 : index + 1);
+                    if (index == rowCount - 1)
+                    {
+                        selFM = View.GetFMPosInfoFromIndex(index - 1);
+                    }
+                    else
+                    {
+                        for (int i = index; i < rowCount; i++)
+                        {
+                            if (!View.RowSelected(i))
+                            {
+                                selFM = View.GetFMPosInfoFromIndex(i);
+                                break;
+                            }
+                        }
+                    }
                 }
                 await View.SortAndSetFilter(keepSelection: pin, selectedFM: selFM);
-
-                //throw new NotImplementedException();
             }
         }
 

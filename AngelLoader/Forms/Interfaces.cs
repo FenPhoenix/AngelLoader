@@ -248,6 +248,7 @@ namespace AngelLoader.Forms
         int GetRowCount();
         int GetMainSelectedRowIndex();
         SelectedFM? GetFMPosInfoFromIndex(int index);
+        bool RowSelected(int index);
         string GetFMCommentText();
         void ClearLanguagesList();
         void AddLanguageToList(string backingItem, string item);

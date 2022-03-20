@@ -3448,6 +3448,9 @@ namespace AngelLoader.Forms
                 ? null
                 : FMsDGV.GetFMPosInfoFromIndex(index);
 
+        public bool RowSelected(int index) => FMsDGV.RowCount > 0 && index > -1 && index < FMsDGV.RowCount &&
+                                              FMsDGV.Rows[index].Selected;
+
         public SelectedFM? GetMainSelectedFMPosInfo() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFMPosInfo() : null;
 
         public int GetRowCount() => FMsDGV.RowCount;
