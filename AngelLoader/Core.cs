@@ -1834,14 +1834,33 @@ namespace AngelLoader
             }
             else
             {
-                if (explicitPin == null) return;
+                // NOTE: This doesn't work at all whatsoever just like the last time
+
+                bool autoPin = explicitPin == null;
+                explicitPin ??= !selFMs[0].Pinned;
+
+                bool pin = explicitPin == true;
 
                 for (int i = 0; i < selFMs.Length; i++)
                 {
-                    selFMs[i].Pinned = explicitPin == true;
+                    selFMs[i].Pinned = pin;
                 }
 
-                throw new NotImplementedException();
+                int rowCount = View.GetRowCount();
+
+                SelectedFM? selFM;
+                if ((autoPin ? selFMs[0].Pinned : pin) || rowCount == 1)
+                {
+                    selFM = null;
+                }
+                else
+                {
+                    int index = View.GetMainSelectedRowIndex();
+                    selFM = View.GetFMPosInfoFromIndex(index == rowCount - 1 ? index - 1 : index + 1);
+                }
+                await View.SortAndSetFilter(keepSelection: pin, selectedFM: selFM);
+
+                //throw new NotImplementedException();
             }
         }
 
