@@ -110,6 +110,18 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public GameSupport.GameIndex GameIndex { get; set; } = GameSupport.GameIndex.Thief1;
 
+        public new bool Visible
+        {
+            get => base.Visible;
+            set
+            {
+                base.Visible = value;
+                LogicallyVisible = value;
+            }
+        }
+
+        public bool LogicallyVisible { get; private set; }
+
         public ToolStripMenuItemCustom() { }
 
         /// <summary>Set text with escaped ampersands.</summary>
