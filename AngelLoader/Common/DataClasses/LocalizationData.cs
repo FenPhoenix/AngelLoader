@@ -419,6 +419,12 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string ConvertAudioMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";
             internal readonly string ConvertAudioMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
+            [FenGenBlankLine]
+            // @MULTISEL(Localization): Try to put this line somewhere better sorted?
+            [FenGenComment(
+                "When multiple FMs are selected, the top-right tabs area will be hidden and this message will appear",
+                "in its place.")]
+            internal readonly string TopRight_MultipleFMsSelected = "Multiple FMs selected.";
         }
 
         internal sealed class StatisticsTab_Class

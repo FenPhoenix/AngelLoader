@@ -2052,10 +2052,13 @@
 #endif
 
 #if !ReleaseBeta && !ReleasePublic
-        internal readonly AngelLoader.Forms.CustomControls.DarkCheckBox ForceWindowedCheckBox;
-        internal readonly AngelLoader.Forms.CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
-        internal readonly AngelLoader.Forms.CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
+        internal AngelLoader.Forms.CustomControls.DarkCheckBox ForceWindowedCheckBox;
+        internal AngelLoader.Forms.CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
+        internal AngelLoader.Forms.CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
 #endif
+
+        internal AngelLoader.Forms.CustomControls.DrawnPanel TopRightMultiSelectBlockerPanel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel TopRightMultiSelectBlockerLabel;
 
         internal AngelLoader.Forms.CustomControls.DarkSplitContainerCustom MainSplitContainer;
         internal System.Windows.Forms.Panel BottomPanel;

@@ -526,6 +526,26 @@ namespace AngelLoader.Forms
                 SortMode = DataGridViewColumnSortMode.Programmatic
             };
 
+            TopRightMultiSelectBlockerPanel = new DrawnPanel
+            {
+                Visible = false,
+                Location = new Point(0, 0),
+                Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
+                Size = new Size(533, 310),
+                DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground
+            };
+            TopSplitContainer.Panel2.Controls.Add(TopRightMultiSelectBlockerPanel);
+            TopRightMultiSelectBlockerPanel.BringToFront();
+
+            TopRightMultiSelectBlockerLabel = new DarkLabel
+            {
+                AutoSize = false,
+                DarkModeBackColor = DarkColors.Fen_ControlBackground,
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+            TopRightMultiSelectBlockerPanel.Controls.Add(TopRightMultiSelectBlockerLabel);
+
             #endregion
 
             #region Construct + init non-public-release controls
@@ -1354,6 +1374,8 @@ namespace AngelLoader.Forms
                 #endregion
 
                 #region Top-right tabs area
+
+                TopRightMultiSelectBlockerLabel.Text = LText.FMsList.TopRight_MultipleFMsSelected;
 
                 TopRightLLMenu.Localize();
 
@@ -3396,7 +3418,19 @@ namespace AngelLoader.Forms
         private void SetTopRightCollapsedState()
         {
             bool collapsed = TopSplitContainer.FullScreen;
-            TopRightTabControl.Enabled = !collapsed;
+
+            if (collapsed)
+            {
+                TopRightTabControl.Enabled = false;
+            }
+            else
+            {
+                if (!TopRightMultiSelectBlockerPanel.Visible)
+                {
+                    TopRightTabControl.Enabled = true;
+                }
+            }
+
             TopRightCollapseButton.ArrowDirection = collapsed ? Direction.Left : Direction.Right;
         }
 
@@ -3933,6 +3967,15 @@ namespace AngelLoader.Forms
             #endregion
         }
 
+        private void SetTopRightTabsMultiSelectBlockerPanel(bool visible)
+        {
+            TopRightMultiSelectBlockerPanel.Visible = visible;
+            if (!TopSplitContainer.FullScreen)
+            {
+                TopRightTabControl.Enabled = !TopRightMultiSelectBlockerPanel.Visible;
+            }
+        }
+
         private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
             // We don't need this because there's another check in ChangeSelection(), but we can avoid running
@@ -3941,7 +3984,13 @@ namespace AngelLoader.Forms
 
             // Don't run selection logic for extra selected rows, to prevent a possible cascade of heavy operations
             // from being run during multi-select (scanning, caching, who knows what)
-            if (FMsDGV.MultipleFMsSelected()) return;
+            if (FMsDGV.MultipleFMsSelected())
+            {
+                SetTopRightTabsMultiSelectBlockerPanel(true);
+                return;
+            }
+
+            SetTopRightTabsMultiSelectBlockerPanel(false);
 
             await ChangeSelection(FMsDGV.MainSelectedRow?.Index ?? -1);
         }

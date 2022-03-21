@@ -24,6 +24,11 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color? DarkModeForeColor { get; set; }
 
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Color? DarkModeBackColor { get; set; }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             if (DarkModeEnabled)
@@ -39,7 +44,16 @@ namespace AngelLoader.Forms.CustomControls
                     | TextFormatFlags.WordBreak;
 
                 Color color = Enabled ? DarkModeForeColor ?? DarkColors.LightText : DarkColors.DisabledText;
-                TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, textFormatFlags);
+                if (DarkModeBackColor == null)
+                {
+                    TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, textFormatFlags);
+                }
+                else
+                {
+                    using var bgBrush = new SolidBrush((Color)DarkModeBackColor);
+                    e.Graphics.FillRectangle(bgBrush, ClientRectangle);
+                    TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, (Color)DarkModeBackColor, textFormatFlags);
+                }
             }
             else
             {
