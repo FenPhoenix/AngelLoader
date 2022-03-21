@@ -1803,75 +1803,48 @@ namespace AngelLoader
             if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await View.SortAndSetFilter(forceDisplayFM: true);
         }
 
-        internal static async Task PinOrUnpinFM(bool? explicitPin = null)
+        internal static async Task PinOrUnpinFM(bool pin)
         {
             FanMission[] selFMs = View.GetSelectedFMs();
+            if (selFMs.Length == 0) return;
 
-            if (selFMs.Length == 1)
+            int rowCount = View.GetRowCount();
+            if (rowCount == 0) return;
+
+            bool singleFMSelected = selFMs.Length == 1;
+
+            for (int i = 0; i < selFMs.Length; i++)
             {
-                var fm = View.GetMainSelectedFMOrNull();
-                if (fm == null) return;
-
-                fm.Pinned = !fm.Pinned;
-
-                View.SetPinnedMenuState(fm.Pinned);
-
-                int rowCount = View.GetRowCount();
-
-                SelectedFM? selFM;
-                if (fm.Pinned || rowCount == 1)
-                {
-                    selFM = null;
-                }
-                else
-                {
-                    int index = View.GetMainSelectedRowIndex();
-                    selFM = View.GetFMPosInfoFromIndex(index == rowCount - 1 ? index - 1 : index + 1);
-                }
-                await View.SortAndSetFilter(keepSelection: fm.Pinned, selectedFM: selFM);
+                selFMs[i].Pinned = pin;
             }
-            else
+
+            if (singleFMSelected) View.SetPinnedMenuState(pin);
+
+            SelectedFM? selFM = null;
+            if (!pin && rowCount > 1)
             {
-                // @MULTISEL(PinOrUnPinFM()): Clean this horrible mess up
-
-                bool autoPin = explicitPin == null;
-                explicitPin ??= !selFMs[0].Pinned;
-
-                bool pin = explicitPin == true;
-
-                for (int i = 0; i < selFMs.Length; i++)
+                int index = View.GetMainSelectedRowIndex();
+                if (index == rowCount - 1)
                 {
-                    selFMs[i].Pinned = pin;
-                }
-
-                int rowCount = View.GetRowCount();
-
-                SelectedFM? selFM = null;
-                if ((autoPin ? selFMs[0].Pinned : pin) || rowCount == 1)
-                {
-                    selFM = null;
+                    selFM = View.GetFMPosInfoFromIndex(index - 1);
                 }
                 else
                 {
-                    int index = View.GetMainSelectedRowIndex();
-                    if (index == rowCount - 1)
+                    for (int i = index; i < rowCount; i++)
                     {
-                        selFM = View.GetFMPosInfoFromIndex(index - 1);
-                    }
-                    else
-                    {
-                        for (int i = index; i < rowCount; i++)
+                        if (!View.RowSelected(i))
                         {
-                            if (!View.RowSelected(i))
-                            {
-                                selFM = View.GetFMPosInfoFromIndex(i);
-                                break;
-                            }
+                            selFM = View.GetFMPosInfoFromIndex(i);
+                            break;
                         }
                     }
                 }
-                await View.SortAndSetFilter(keepSelection: pin, selectedFM: selFM, keepMultiSelection: pin);
             }
+
+            await View.SortAndSetFilter(
+                keepSelection: pin,
+                selectedFM: selFM,
+                keepMultiSelection: !singleFMSelected && pin);
         }
 
         internal static bool AtLeastOneDroppedFileValid(string[] droppedItems)

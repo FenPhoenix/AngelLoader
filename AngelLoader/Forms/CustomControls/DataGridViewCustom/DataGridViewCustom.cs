@@ -26,6 +26,8 @@ namespace AngelLoader.Forms.CustomControls
         private bool _mouseHere;
         private int _mouseDownOnHeader = -1;
 
+        private bool _suppressSelectionEvent;
+
         #endregion
 
         #region Public fields
@@ -207,10 +209,19 @@ namespace AngelLoader.Forms.CustomControls
 
         internal bool MultipleFMsSelected() => SelectedRows.Count > 1;
 
-        internal void SelectSingle(int index)
+        internal void SelectSingle(int index, bool suppressSelectionChangedEvent = false)
         {
-            ClearSelection();
-            Rows[index].Selected = true;
+            try
+            {
+                if (suppressSelectionChangedEvent) _suppressSelectionEvent = true;
+
+                ClearSelection();
+                Rows[index].Selected = true;
+            }
+            finally
+            {
+                if (suppressSelectionChangedEvent) _suppressSelectionEvent = false;
+            }
         }
 
         #region Get and set columns
@@ -359,7 +370,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnSelectionChanged(EventArgs e)
         {
-            SetMainSelectedRow();
+            if (!_suppressSelectionEvent) SetMainSelectedRow();
             base.OnSelectionChanged(e);
         }
 

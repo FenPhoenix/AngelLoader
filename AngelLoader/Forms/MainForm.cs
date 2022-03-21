@@ -2775,11 +2775,13 @@ namespace AngelLoader.Forms
 
                     // Events will be re-enabled at the end of the enclosing using block
 
+                    bool selectDoneAtLeastOnce = false;
                     void DoSelect()
                     {
                         if (keepSelection != KeepSel.False) EventsDisabled = true;
-                        FMsDGV.SelectSingle(row);
+                        FMsDGV.SelectSingle(row, suppressSelectionChangedEvent: !selectDoneAtLeastOnce);
                         FMsDGV.SelectProperly(suspendResume: startup);
+                        selectDoneAtLeastOnce = true;
                     }
 
                     // Stupid hack to attempt to prevent multiselect-set-popping-back-to-starting-at-list-top
@@ -4634,6 +4636,11 @@ namespace AngelLoader.Forms
         // @MULTISEL(Context menu sel state update): Go through this with a fine tooth comb
         // @MULTISEL(Context menu sel state update): Since this runs always on selection change...
         // ... we might not need to call it on FM load.
+
+        // NOTE(Context menu sel state update):
+        // Keep this light and fast, because it gets called like 3 times every selection due to the stupid hacks
+        // for preventing "multi-select starts from top row even though our selection is not actually at the top
+        // row"
         internal void UpdateUIControlsForMultiSelectState(FanMission fm)
         {
             var selRows = FMsDGV.SelectedRows;
@@ -4688,6 +4695,28 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(allSelectedAreAudioConvertible);
 
+            // @MULTISEL(Finished state menu text):
+            // Calling side (see other note)
+#if false
+            Game finishedOnGames = Game.Null;
+            if (multiSelected)
+            {
+                for (int i = 0; i < selRows.Count; i++)
+                {
+                    FanMission rowFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
+                    finishedOnGames |= rowFM.Game;
+                }
+            }
+            else
+            {
+                finishedOnGames = fm.Game;
+            }
+            
+            FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(finishedOnGames);
+#endif
+
+            FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
+
             FMsDGV_FM_LLMenu.SetWebSearchEnabled(!multiSelected);
 
             InstallUninstallFMLLButton.SetEnabled(!multiSelected && gameIsSupportedAndAvailable);
@@ -4696,8 +4725,6 @@ namespace AngelLoader.Forms
             PlayFMButton.Enabled = !multiSelected && gameIsSupportedAndAvailable;
 
             WebSearchButton.Enabled = !multiSelected;
-
-            FMsDGV_FM_LLMenu.Localize();
         }
 
         // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
@@ -4709,9 +4736,6 @@ namespace AngelLoader.Forms
 
             // We should never get here when FMsList.Count == 0, but hey
             MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
-
-            FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
-            // FinishedOnUnknownMenuItem text stays the same
 
             UpdateUIControlsForMultiSelectState(fm);
 

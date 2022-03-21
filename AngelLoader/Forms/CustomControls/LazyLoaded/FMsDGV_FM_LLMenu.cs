@@ -659,6 +659,60 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (!_constructed) return;
 
+            // @MULTISEL(Finished state menu text):
+            // We want to say like "Normal (T1, T2) / Easy (SS2)" if we have T1, T2, SS2 FMs selected, and not
+            // say "Easy (T3)" if we don't have T3 selected for example.
+            // If we have only one FM selected, we want to just say the difficulty name as before.
+            // To do an automated per-game thing like usual, this will require some concept of storing which
+            // games have the same difficulty names (so we can comma combine them), and some more generated game
+            // type utility code.
+            // In Construct(), it will also require combining the games of all selected FMs, as well as doing
+            // that on the calling side. So make that a function I guess.
+
+#if false
+
+            string diff1Text = "";
+
+            if (game is Game.Thief1 or Game.Thief2 or Game.Thief3 or Game.SS2)
+            {
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    if (GameToGameIndex(game) == gameIndex)
+                    {
+                        diff1Text = GetLocalizedDifficultyName(game, Difficulty.Normal);
+                        break;
+                    }
+                }
+            }
+
+            if (diff1Text.IsEmpty())
+            {
+                if (game.HasFlagFast(Game.Thief1))
+                {
+                    diff1Text += GetLocalizedDifficultyName(Game.Thief1, Difficulty.Normal) + " (" + GetShortLocalizedGameName(GameIndex.Thief1) + ")";
+                }
+                if (game.HasFlagFast(Game.Thief2))
+                {
+                    if (!diff1Text.IsEmpty()) diff1Text += " / ";
+                    diff1Text += GetLocalizedDifficultyName(Game.Thief2, Difficulty.Normal) + " (" + GetShortLocalizedGameName(GameIndex.Thief2) + ")";
+                }
+                if (game.HasFlagFast(Game.Thief3))
+                {
+                    if (!diff1Text.IsEmpty()) diff1Text += " / ";
+                    diff1Text += GetLocalizedDifficultyName(Game.Thief3, Difficulty.Normal) + " (" + GetShortLocalizedGameName(GameIndex.Thief3) + ")";
+                }
+                if (game.HasFlagFast(Game.SS2))
+                {
+                    if (!diff1Text.IsEmpty()) diff1Text += " / ";
+                    diff1Text += GetLocalizedDifficultyName(Game.SS2, Difficulty.Normal) + " (" + GetShortLocalizedGameName(GameIndex.SS2) + ")";
+                }
+            }
+
+            FinishedOnNormalMenuItem.Text = diff1Text;
+
+#endif
+
             FinishedOnNormalMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Normal);
             FinishedOnHardMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Hard);
             FinishedOnExpertMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Expert);
@@ -744,15 +798,15 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             // @MULTISEL: In multi-selection case, let's have both discrete Pin and Unpin menu options, rather than just the one that switches
             else if (sender == PinToTopMenuItem)
             {
-                await Core.PinOrUnpinFM();
+                await Core.PinOrUnpinFM(pin: !_owner.FMsDGV.GetMainSelectedFM().Pinned);
             }
             else if (sender == ExplicitPinToTopMenuItem)
             {
-                await Core.PinOrUnpinFM(explicitPin: true);
+                await Core.PinOrUnpinFM(pin: true);
             }
             else if (sender == ExplicitUnpinFromTopMenuItem)
             {
-                await Core.PinOrUnpinFM(explicitPin: false);
+                await Core.PinOrUnpinFM(pin: false);
             }
         }
 
