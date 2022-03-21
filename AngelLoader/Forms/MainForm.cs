@@ -2708,9 +2708,10 @@ namespace AngelLoader.Forms
         /// <param name="startup"></param>
         /// <param name="keepSelection"></param>
         /// <param name="fromColumnClick"></param>
+        /// <param name="multiSelectedFMs"></param>
         /// <returns></returns>
         private bool RefreshFMsList(SelectedFM? selectedFM, bool startup = false, KeepSel keepSelection = KeepSel.False,
-                                    bool fromColumnClick = false)
+                                    bool fromColumnClick = false, FanMission[]? multiSelectedFMs = null)
         {
             using (new DisableEvents(this))
             {
@@ -2786,6 +2787,18 @@ namespace AngelLoader.Forms
                     DoSelect();
                     FMsDGV.MultiSelect = true;
                     DoSelect();
+
+                    if (multiSelectedFMs != null)
+                    {
+                        foreach (FanMission fm in multiSelectedFMs)
+                        {
+                            int index = FMsDGV.GetIndexFromFM(fm);
+                            if (index > -1)
+                            {
+                                FMsDGV.Rows[index].Selected = true;
+                            }
+                        }
+                    }
 
                     // Resume drawing before loading the readme; that way the list will update instantly even
                     // if the readme doesn't. The user will see delays in the "right place" (the readme box)
@@ -3650,10 +3663,11 @@ namespace AngelLoader.Forms
         /// <param name="keepSelection"></param>
         /// <param name="gameTabSwitch"></param>
         /// <param name="landImmediate"></param>
+        /// <param name="keepMultiSelection"></param>
         /// <returns></returns>
         public async Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
                                            bool keepSelection = false, bool gameTabSwitch = false,
-                                           bool landImmediate = false)
+                                           bool landImmediate = false, bool keepMultiSelection = false)
         {
             bool selFMWasPassedIn = selectedFM != null;
 
@@ -3662,6 +3676,9 @@ namespace AngelLoader.Forms
             selectedFM ??= keepSelection && !gameTabSwitch && FMsDGV.RowSelected()
                 ? FMsDGV.GetMainSelectedFMPosInfo()
                 : null;
+
+            // Do this before any changes to the list (set filter, sort, etc.) because otherwise it will be wrong
+            FanMission[]? multiSelectedFMs = keepMultiSelection ? FMsDGV.GetSelectedFMs() : null;
 
             KeepSel keepSel =
                 selectedFM != null ? KeepSel.TrueNearest :
@@ -3716,7 +3733,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            if (RefreshFMsList(selectedFM, keepSelection: keepSel))
+            if (RefreshFMsList(selectedFM, keepSelection: keepSel, multiSelectedFMs: multiSelectedFMs))
             {
                 // DEBUG: Keep this in for testing this because the whole thing is irrepressibly finicky
                 //Trace.WriteLine(nameof(keepSelection) + ": " + keepSelection);

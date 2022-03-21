@@ -130,6 +130,15 @@ namespace AngelLoader.Forms.CustomControls
             return ret;
         }
 
+        internal int GetIndexFromFM(FanMission fm)
+        {
+            for (int i = 0; i < FilterShownIndexList.Count; i++)
+            {
+                if (GetFMFromIndex(i) == fm) return i;
+            }
+            return -1;
+        }
+
         internal int GetIndexFromInstalledName(string installedName, bool findNearest)
         {
             // Graceful default if a value is missing

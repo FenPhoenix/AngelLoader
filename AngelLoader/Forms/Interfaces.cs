@@ -150,7 +150,7 @@ namespace AngelLoader.Forms
 
         Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
                               bool keepSelection = false, bool gameTabSwitch = false,
-                              bool landImmediate = false);
+                              bool landImmediate = false, bool keepMultiSelection = false);
 
         Filter GetFilter();
 

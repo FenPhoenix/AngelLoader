@@ -1835,7 +1835,6 @@ namespace AngelLoader
             else
             {
                 // @MULTISEL(PinOrUnPinFM()): Clean this horrible mess up
-                // @MULTISEL(PinOrUnPinFM()): Make it so pinning multiple FMs keeps them all selected
 
                 bool autoPin = explicitPin == null;
                 explicitPin ??= !selFMs[0].Pinned;
@@ -1873,7 +1872,7 @@ namespace AngelLoader
                         }
                     }
                 }
-                await View.SortAndSetFilter(keepSelection: pin, selectedFM: selFM);
+                await View.SortAndSetFilter(keepSelection: pin, selectedFM: selFM, keepMultiSelection: pin);
             }
         }
 
