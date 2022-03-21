@@ -795,7 +795,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     await FMAudio.ConvertToWAVs(fm, convertType, true);
                 }
             }
-            // @MULTISEL: In multi-selection case, let's have both discrete Pin and Unpin menu options, rather than just the one that switches
             else if (sender == PinToTopMenuItem)
             {
                 await Core.PinOrUnpinFM(pin: !_owner.FMsDGV.GetMainSelectedFM().Pinned);
