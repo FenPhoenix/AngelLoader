@@ -4724,26 +4724,6 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(allSelectedAreAudioConvertible);
 
-            // @MULTISEL(Finished state menu text):
-            // Calling side (see other note)
-#if false
-            Game finishedOnGames = Game.Null;
-            if (multiSelected)
-            {
-                for (int i = 0; i < selRows.Count; i++)
-                {
-                    FanMission rowFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
-                    finishedOnGames |= rowFM.Game;
-                }
-            }
-            else
-            {
-                finishedOnGames = fm.Game;
-            }
-            
-            FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(finishedOnGames);
-#endif
-
             FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
 
             FMsDGV_FM_LLMenu.SetWebSearchEnabled(!multiSelected);
