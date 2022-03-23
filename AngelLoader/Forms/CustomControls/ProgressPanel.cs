@@ -79,9 +79,6 @@ namespace AngelLoader.Forms.CustomControls
 
             this.CenterHV(_owner!, clientSize: true);
 
-            ProgressMessageLabel.CenterH(this);
-            CurrentThingLabel.CenterH(this);
-            ProgressPercentLabel.CenterH(this);
             ProgressBar.CenterH(this);
 
             ProgressMessageLabel.Text = progressTask switch
