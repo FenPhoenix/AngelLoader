@@ -63,10 +63,10 @@ namespace AngelLoader.Forms
             FMsDGV.SelectProperly();
         }
 
-        public void ShowProgressBox(ProgressTask progressTask, bool suppressShow = false)
+        public void ShowProgressBox(ProgressTask progressTask, bool suppressShow = false, bool useExtendedSize = false)
         {
             ConstructProgressBox();
-            ProgressBox!.ShowProgressWindow(progressTask, suppressShow);
+            ProgressBox!.ShowProgressWindow(progressTask, suppressShow, useExtendedSize);
         }
 
         public void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)

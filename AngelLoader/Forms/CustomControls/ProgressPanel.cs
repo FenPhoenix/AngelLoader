@@ -73,16 +73,22 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Open/close
 
-        internal void ShowProgressWindow(ProgressTask progressTask, bool suppressShow = false)
+        internal void ShowProgressWindow(ProgressTask progressTask, bool suppressShow, bool useExtendedHeight)
         {
+            const int regularHeight = 128;
+            const int extendedHeight = 192;
+
             _progressTask = progressTask;
+
+            Size = Size with { Height = useExtendedHeight ? extendedHeight : regularHeight };
+            CurrentSubThingLabel.Visible = useExtendedHeight;
+            SubProgressPercentLabel.Visible = useExtendedHeight;
+            SubProgressBar.Visible = useExtendedHeight;
 
             this.CenterHV(_owner!, clientSize: true);
 
-            ProgressMessageLabel.CenterH(this);
-            CurrentThingLabel.CenterH(this);
-            ProgressPercentLabel.CenterH(this);
             ProgressBar.CenterH(this);
+            SubProgressBar.CenterH(this);
 
             ProgressMessageLabel.Text = progressTask switch
             {
