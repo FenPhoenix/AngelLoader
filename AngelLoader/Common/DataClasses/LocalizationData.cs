@@ -554,6 +554,7 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string Scanning = "Scanning...";
             internal readonly string InstallingFM = "Installing FM...";
+            internal readonly string InstallingFMs = "Installing FMs...";
             internal readonly string UninstallingFM = "Uninstalling FM...";
             internal readonly string ConvertingFiles = "Converting files...";
             internal readonly string PreparingToScanFMs = "Preparing to scan FM(s)...";

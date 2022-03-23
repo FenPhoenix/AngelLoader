@@ -195,7 +195,7 @@ namespace AngelLoader.Forms.CustomControls
         internal void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName)
         {
             ProgressBar.Value = mainPercent;
-            ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
+            ProgressMessageLabel.Text = LText.ProgressBox.InstallingFMs;
             ProgressPercentLabel.Text = mainPercent + "%";
 
             SubProgressBar.Value = subPercent;
