@@ -50,6 +50,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 BackColor = back;
                 ForeColor = fore;
+
                 CurrentThingLabel.BackColor = back;
                 CurrentThingLabel.ForeColor = fore;
                 ProgressMessageLabel.ForeColor = fore;
@@ -57,6 +58,12 @@ namespace AngelLoader.Forms.CustomControls
                 ProgressPercentLabel.ForeColor = fore;
                 ProgressPercentLabel.BackColor = back;
                 ProgressBar.DarkModeEnabled = _darkModeEnabled;
+
+                CurrentSubThingLabel.BackColor = back;
+                CurrentSubThingLabel.ForeColor = fore;
+                SubProgressPercentLabel.BackColor = back;
+                SubProgressPercentLabel.ForeColor = fore;
+                SubProgressBar.DarkModeEnabled = _darkModeEnabled;
             }
         }
 
