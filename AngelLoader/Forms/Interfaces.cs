@@ -106,7 +106,8 @@ namespace AngelLoader.Forms
         void ShowProgressBox(ProgressTask progressTask, bool suppressShow = false, bool useExtendedHeight = false);
         void HideProgressBox();
         void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName);
-        void ReportFMExtractProgress(int percent);
+        void ReportFMInstallProgress(int percent);
+        void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName);
         void ReportCachingProgress(int percent);
         void SetCancelingFMInstall();
 

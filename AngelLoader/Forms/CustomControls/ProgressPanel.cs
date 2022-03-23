@@ -149,11 +149,17 @@ namespace AngelLoader.Forms.CustomControls
             Hide();
 
             ProgressMessageLabel.Text = "";
+
             CurrentThingLabel.Text = "";
             ProgressPercentLabel.Text = "";
             ProgressBar.Value = 0;
-
             ProgressBar.Style = ProgressBarStyle.Blocks;
+
+            CurrentSubThingLabel.Text = "";
+            SubProgressPercentLabel.Text = "";
+            SubProgressBar.Value = 0;
+            SubProgressBar.Style = ProgressBarStyle.Blocks;
+
             ProgressCancelButton.Show();
 
             Enabled = false;
@@ -177,13 +183,26 @@ namespace AngelLoader.Forms.CustomControls
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
         }
 
-        internal void ReportFMExtractProgress(int percent)
+        internal void ReportFMInstallProgress(int percent)
         {
             ProgressBar.Value = percent;
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
             ProgressPercentLabel.Text = percent + "%";
 
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
+        }
+
+        internal void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName)
+        {
+            ProgressBar.Value = mainPercent;
+            ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
+            ProgressPercentLabel.Text = mainPercent + "%";
+
+            SubProgressBar.Value = subPercent;
+            CurrentSubThingLabel.Text = fmName;
+            SubProgressPercentLabel.Text = subPercent + "%";
+
+            if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, mainPercent, 100);
         }
 
         internal void ReportCachingProgress(int percent)

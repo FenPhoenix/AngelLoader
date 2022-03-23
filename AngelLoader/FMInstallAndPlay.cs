@@ -695,7 +695,7 @@ namespace AngelLoader
 
                     int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
-                    Core.View.InvokeSync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
+                    Core.View.InvokeSync(new Action(() => Core.View.ReportFMInstallProgress(percent)));
 
                     if (_extractCts.Token.IsCancellationRequested)
                     {
@@ -732,7 +732,7 @@ namespace AngelLoader
                 static void ReportProgress(Fen7z.Fen7z.ProgressReport pr) =>
                     Core.View.InvokeSync(pr.Canceling
                         ? new Action(Core.View.SetCancelingFMInstall)
-                        : new Action(() => Core.View.ReportFMExtractProgress(pr.PercentOfEntries)));
+                        : new Action(() => Core.View.ReportFMInstallProgress(pr.PercentOfEntries)));
 
                 var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
 
