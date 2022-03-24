@@ -39,7 +39,9 @@ namespace AngelLoader
         {
             FMScan,
             InstallFM,
+            InstallFMs,
             UninstallFM,
+            UninstallFMs,
             ConvertFiles,
             ImportFromDarkLoader,
             ImportFromNDL,

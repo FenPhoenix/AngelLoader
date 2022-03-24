@@ -38,7 +38,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_darkModeEnabled)
                 {
-                    // Use a lighter background so make it easy to see we're supposed to be in front and modal
+                    // Use a lighter background to make it easy to see we're supposed to be in front and modal
                     back = DarkColors.LightBackground;
                     fore = DarkColors.LightText;
                 }
@@ -101,7 +101,9 @@ namespace AngelLoader.Forms.CustomControls
             {
                 ProgressTask.FMScan => LText.ProgressBox.Scanning,
                 ProgressTask.InstallFM => LText.ProgressBox.InstallingFM,
+                ProgressTask.InstallFMs => LText.ProgressBox.InstallingFMs,
                 ProgressTask.UninstallFM => LText.ProgressBox.UninstallingFM,
+                ProgressTask.UninstallFMs => LText.ProgressBox.UninstallingFMs,
                 ProgressTask.ConvertFiles => LText.ProgressBox.ConvertingFiles,
                 ProgressTask.ImportFromDarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
                 ProgressTask.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
@@ -119,6 +121,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (progressTask
                 is ProgressTask.UninstallFM
+                or ProgressTask.UninstallFMs
                 or ProgressTask.ConvertFiles
                 or ProgressTask.ImportFromDarkLoader
                 or ProgressTask.ImportFromNDL
