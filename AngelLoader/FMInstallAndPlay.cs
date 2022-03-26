@@ -516,15 +516,30 @@ namespace AngelLoader
 
         #region Install
 
+        private sealed class FMData
+        {
+            internal readonly FanMission FM;
+            internal readonly GameIndex GameIndex;
+            internal readonly string ArchivePath;
+            internal readonly string GameExe;
+            internal readonly string GameName;
+            internal readonly string InstBasePath;
+
+            public FMData(FanMission fm, GameIndex gameIndex, string archivePath, string gameExe, string gameName, string instBasePath)
+            {
+                FM = fm;
+                GameIndex = gameIndex;
+                ArchivePath = archivePath;
+                GameExe = gameExe;
+                GameName = gameName;
+                InstBasePath = instBasePath;
+            }
+        }
+
+        // @MULTISEL(Install/main - cancel install): Maybe ask if they want to cancel just this, all, or all subsequent?
         internal static async Task<bool> InstallFM(params FanMission[] fms)
         {
-            var fmDataList = new (
-                FanMission FM,
-                GameIndex GameIndex,
-                string ArchivePath,
-                string GameExe,
-                string GameName,
-                string InstBasePath)[fms.Length];
+            var fmDataList = new FMData[fms.Length];
 
             #region Checks
 
@@ -534,19 +549,21 @@ namespace AngelLoader
 
                 AssertR(!fm.Installed, "fm.Installed == true");
 
-                fmDataList[i].FM = fm;
-
                 GameIndex gameIndex = GameToGameIndex(fm.Game);
                 string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
                 string gameExe = Config.GetGameExe(gameIndex);
                 string gameName = GetLocalizedGameName(gameIndex);
                 string instBasePath = Config.GetFMInstallPath(gameIndex);
 
-                fmDataList[i].GameIndex = gameIndex;
-                fmDataList[i].ArchivePath = fmArchivePath;
-                fmDataList[i].GameExe = gameExe;
-                fmDataList[i].GameName = gameName;
-                fmDataList[i].InstBasePath = instBasePath;
+                fmDataList[i] = new FMData
+                (
+                    fm,
+                    gameIndex,
+                    fmArchivePath,
+                    gameExe,
+                    gameName,
+                    instBasePath
+                );
 
                 if (!GameIsKnownAndSupported(fm.Game))
                 {
@@ -599,6 +616,35 @@ namespace AngelLoader
 
             _extractCts = new CancellationTokenSource();
 
+            static async Task<bool> RollBackInstalls(FMData[] fmDataList, int i)
+            {
+                try
+                {
+                    Core.View.SetCancelingFMInstall();
+                    await Task.Run(() =>
+                    {
+                        for (int j = i; j >= 0; j--)
+                        {
+                            var fmData = fmDataList[j];
+                            string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
+                            if (!DeleteFMInstalledDirectory(fmInstalledPath))
+                            {
+                                // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
+                                Log("Unable to delete FM installed directory " + fmInstalledPath);
+                            }
+                            fmData.FM.Installed = false;
+                        }
+                    });
+                }
+                finally
+                {
+                    Ini.WriteFullFMDataIni();
+                    Core.View.HideProgressBox();
+                }
+
+                return false;
+            }
+
             try
             {
                 bool single = fmDataList.Length == 1;
@@ -620,27 +666,10 @@ namespace AngelLoader
 
                     if (canceled)
                     {
-                        Core.View.SetCancelingFMInstall();
-                        await Task.Run(() =>
-                        {
-                            try
-                            {
-                                Directory.Delete(fmInstalledPath, recursive: true);
-                            }
-                            catch (Exception ex)
-                            {
-                                // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
-                                Log("Unable to delete FM installed directory " + fmInstalledPath, ex);
-                            }
-                        });
-                        Core.View.HideProgressBox();
-                        return false;
+                        return await RollBackInstalls(fmDataList, i);
                     }
 
                     fmData.FM.Installed = true;
-
-                    // @MULTISEL(Install/main): Do we want to write this for each FM, or once at the end?
-                    Ini.WriteFullFMDataIni();
 
                     try
                     {
@@ -696,13 +725,13 @@ namespace AngelLoader
 
                     if (_extractCts.IsCancellationRequested)
                     {
-                        // @MULTISEL(Install/main): Unwind install stack as it were.
-                        // @MULTISEL(Install/main): Maybe ask if they want to cancel just this, all, or all subsequent?
+                        return await RollBackInstalls(fmDataList, i);
                     }
                 }
             }
             finally
             {
+                Ini.WriteFullFMDataIni();
                 Core.View.HideProgressBox();
             }
 
@@ -755,8 +784,6 @@ namespace AngelLoader
 
                     if (_extractCts.Token.IsCancellationRequested)
                     {
-                        // @MULTISEL(Install/zip): Unwind install stack as it were.
-                        // @MULTISEL(Install/zip): Maybe ask if they want to cancel just this, all, or all subsequent?
                         canceled = true;
                         return false;
                     }
@@ -808,8 +835,6 @@ namespace AngelLoader
                     progress
                 );
 
-                // @MULTISEL(Install/7z): Unwind install stack as it were.
-                // @MULTISEL(Install/7z): Maybe ask if they want to cancel just this, all, or all subsequent?
                 canceled = result.Canceled;
 
                 if (result.ErrorOccurred)
@@ -1031,11 +1056,16 @@ namespace AngelLoader
                     Directory.Delete(path, recursive: true);
                     return true;
                 }
-                catch
+                catch (Exception ex1)
                 {
+                    Log("Failed to delete FM path '" + path + "', attempting to remove readonly attributes and trying again...", ex1);
                     try
                     {
-                        if (triedReadOnlyRemove) return false;
+                        if (triedReadOnlyRemove)
+                        {
+                            Log("Failed to delete FM path '" + path + "' twice, giving up...");
+                            return false;
+                        }
 
                         // FMs installed by us will not have any readonly attributes set, so we work on the
                         // assumption that this is the rarer case and only do this extra work if we need to.
@@ -1051,8 +1081,9 @@ namespace AngelLoader
 
                         triedReadOnlyRemove = true;
                     }
-                    catch
+                    catch (Exception ex2)
                     {
+                        Log("Failed to remove readonly attributes, giving up...", ex2);
                         return false;
                     }
                 }
