@@ -4674,64 +4674,82 @@ namespace AngelLoader.Forms
         {
             var selRows = FMsDGV.SelectedRows;
 
-            bool AllSelectedAre(Func<FanMission, bool> predicate)
+            #region Get attributes that apply to all items
+
+            // Crap-garbage code to loop through only once in case we have a large selection set
+
+            bool allAreInstalled,
+                noneAreInstalled,
+                allAreDark,
+                allAreAvailable,
+                allAreKnownAndSupported,
+                allSelectedAreSameInstalledState,
+                allAreSupportedAndAvailable;
             {
-                for (int i = 0; i < selRows.Count; i++)
+                int installedCount = 0,
+                    markedUnavailableCount = 0,
+                    gameIsDarkCount = 0,
+                    knownAndSupportedCount = 0;
+
+                int selRowsCount = selRows.Count;
+                for (int i = 0; i < selRowsCount; i++)
                 {
                     FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
-                    if (!predicate.Invoke(sFM))
-                    {
-                        return false;
-                    }
+                    if (sFM.Installed) installedCount++;
+                    if (sFM.MarkedUnavailable) markedUnavailableCount++;
+                    if (GameIsDark(sFM.Game)) gameIsDarkCount++;
+                    if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
                 }
-                return true;
+
+                allAreInstalled = installedCount == selRowsCount;
+                noneAreInstalled = installedCount == 0;
+                allAreDark = gameIsDarkCount == selRowsCount;
+                allAreKnownAndSupported = knownAndSupportedCount == selRowsCount;
+                allAreAvailable = markedUnavailableCount == 0;
+                allSelectedAreSameInstalledState = allAreInstalled || noneAreInstalled;
+                allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
             }
 
-            bool fmIsSS2 = fm.Game == Game.SS2;
-
-            bool gameIsSupported = GameIsKnownAndSupported(fm.Game);
-            bool gameIsSupportedAndAvailable = gameIsSupported && !fm.MarkedUnavailable;
+            #endregion
 
             bool multiSelected = selRows.Count > 1;
 
             // @MULTISEL(FM menu item toggles): Maybe we want to hide unsupported menu items rather than disable?
-            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(!multiSelected && gameIsSupportedAndAvailable);
+            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(!multiSelected && allAreSupportedAndAvailable);
 
-            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
+            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
-            bool allSelectedAreSameInstalledState = AllSelectedAre(x => x.Installed) || AllSelectedAre(x => !x.Installed);
-
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(allSelectedAreSameInstalledState && gameIsSupportedAndAvailable);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(allSelectedAreSameInstalledState && allAreSupportedAndAvailable);
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
             FMsDGV_FM_LLMenu.SetPinItemsMode();
 
-            bool allSelectedAreAvailable = AllSelectedAre(x => !x.MarkedUnavailable);
+            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(allAreAvailable);
 
-            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(allSelectedAreAvailable);
-
-            FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(fmIsSS2);
-            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
+            FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: fm.Game == Game.SS2);
+            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected && GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
             FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!multiSelected && !fm.MarkedUnavailable);
 
             FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && fm.Installed);
 
-            FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!fm.MarkedUnavailable);
+            // @MULTISEL(Scan FMs): 2 things:
+            // 1. Make this pop up the window where you choose what fields to scan for.
+            // 2. Make this still be enabled if some selected are unavailable, but just don't include those in
+            //    the scan.
+            FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(allAreAvailable);
 
-            bool allSelectedAreAudioConvertible = AllSelectedAre(x => x.Installed && GameIsDark(x.Game) && !x.MarkedUnavailable);
-
-            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(allSelectedAreAudioConvertible);
+            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(allAreInstalled && allAreDark && allAreAvailable);
 
             FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
 
             FMsDGV_FM_LLMenu.SetWebSearchEnabled(!multiSelected);
 
-            InstallUninstallFMLLButton.SetEnabled(allSelectedAreSameInstalledState && gameIsSupportedAndAvailable);
+            InstallUninstallFMLLButton.SetEnabled(allSelectedAreSameInstalledState && allAreSupportedAndAvailable);
             InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
-            PlayFMButton.Enabled = !multiSelected && gameIsSupportedAndAvailable;
+            PlayFMButton.Enabled = !multiSelected && allAreSupportedAndAvailable;
 
             WebSearchButton.Enabled = !multiSelected;
         }
