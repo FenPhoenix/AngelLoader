@@ -214,7 +214,7 @@ namespace AngelLoader
                 archivesList.Add(FindAllMatches(fm.Archive, archivePaths));
             }
 
-            // @MULTISEL: Multi-selection Delete() method in progress code
+            // @MULTISEL: Multi-selection Delete() method in-progress code
             // We need to have some kind of good UX for if we're deleting multiple FMs AND one or more FMs have
             // more than one archive found.
 

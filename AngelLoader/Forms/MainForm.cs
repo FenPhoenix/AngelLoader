@@ -22,8 +22,6 @@ the scroll bar was).
 
 @MULTISEL: When switching game tabs, multi-selections are not saved. Do we want this behavior or no?
 This is part of the decision of "how temporary" do we want multi-selections to be.
-
-@MULTISEL: Do we want to disable the top-right tabs area when multiple FMs are selected to avoid confusion?
 */
 
 using System;
@@ -1129,6 +1127,7 @@ namespace AngelLoader.Forms
             }
             #region FMsDGV nav
             // @MULTISEL(FMsDGV nav): Regression: These now reload the FM when selection is at top/bottom again
+            // @MULTISEL(FMsDGV nav): Regression: Jump to top/bottom only selects top/bottom FM but doesn't scroll to it
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
