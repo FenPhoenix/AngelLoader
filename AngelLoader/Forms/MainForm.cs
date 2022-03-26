@@ -4728,7 +4728,7 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetWebSearchEnabled(!multiSelected);
 
-            InstallUninstallFMLLButton.SetEnabled(!multiSelected && gameIsSupportedAndAvailable);
+            InstallUninstallFMLLButton.SetEnabled(allSelectedAreSameInstalledState && gameIsSupportedAndAvailable);
             InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
             PlayFMButton.Enabled = !multiSelected && gameIsSupportedAndAvailable;
