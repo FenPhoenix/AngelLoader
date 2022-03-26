@@ -39,7 +39,11 @@ namespace AngelLoader
 
         private static CancellationTokenSource _extractCts = new CancellationTokenSource();
 
-        internal static Task InstallOrUninstall(FanMission fm) => fm.Installed ? UninstallFM(fm) : InstallFM(fm);
+        internal static Task InstallOrUninstall(params FanMission[] fms)
+        {
+            AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
+            return fms[0].Installed ? UninstallFM(fms[0]) : InstallFM(fms);
+        }
 
         internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
         {
@@ -512,145 +516,190 @@ namespace AngelLoader
 
         #region Install
 
-        internal static async Task<bool> InstallFM(FanMission fm)
+        internal static async Task<bool> InstallFM(params FanMission[] fms)
         {
+            var fmDataList = new (
+                FanMission FM,
+                GameIndex GameIndex,
+                string ArchivePath,
+                string GameExe,
+                string GameName,
+                string InstBasePath)[fms.Length];
+
             #region Checks
 
-            AssertR(!fm.Installed, "fm.Installed == false");
-
-            if (!GameIsKnownAndSupported(fm.Game))
+            for (int i = 0; i < fms.Length; i++)
             {
-                Log("FM game type is unknown or unsupported.\r\n" +
-                    "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
-                    "FM game was: " + fm.Game);
-                Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
-                return false;
-            }
+                FanMission fm = fms[i];
 
-            GameIndex gameIndex = GameToGameIndex(fm.Game);
+                AssertR(!fm.Installed, "fm.Installed == true");
 
-            string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
+                fmDataList[i].FM = fm;
 
-            if (fmArchivePath.IsEmpty())
-            {
-                Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
-                    "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
-                    "FM game was: " + fm.Game);
-                Dialogs.ShowError(LText.AlertMessages.Install_ArchiveNotFound);
-                return false;
-            }
+                GameIndex gameIndex = GameToGameIndex(fm.Game);
+                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
+                string gameExe = Config.GetGameExe(gameIndex);
+                string gameName = GetLocalizedGameName(gameIndex);
+                string instBasePath = Config.GetFMInstallPath(gameIndex);
 
-            string gameExe = Config.GetGameExe(gameIndex);
-            string gameName = GetLocalizedGameName(gameIndex);
-            if (!File.Exists(gameExe))
-            {
-                Log("Game executable not found.\r\n" +
-                    "Game executable: " + gameExe);
-                Dialogs.ShowError(gameName + ":\r\n" +
-                                  LText.AlertMessages.Install_ExecutableNotFound);
-                return false;
-            }
+                fmDataList[i].GameIndex = gameIndex;
+                fmDataList[i].ArchivePath = fmArchivePath;
+                fmDataList[i].GameExe = gameExe;
+                fmDataList[i].GameName = gameName;
+                fmDataList[i].InstBasePath = instBasePath;
 
-            string instBasePath = Config.GetFMInstallPath(gameIndex);
+                if (!GameIsKnownAndSupported(fm.Game))
+                {
+                    Log("FM game type is unknown or unsupported.\r\n" +
+                        "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                        "FM game was: " + fm.Game);
+                    Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
+                    return false;
+                }
 
-            if (!Directory.Exists(instBasePath))
-            {
-                Log("FM install path not found.\r\n" +
-                    "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
-                    "FM game was: " + fm.Game + "\r\n" +
-                    "FM install path: " + instBasePath
+                if (fmArchivePath.IsEmpty())
+                {
+                    Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
+                        "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                        "FM game was: " + fm.Game);
+                    Dialogs.ShowError(LText.AlertMessages.Install_ArchiveNotFound);
+                    return false;
+                }
+
+                if (!File.Exists(gameExe))
+                {
+                    Log("Game executable not found.\r\n" +
+                        "Game executable: " + gameExe);
+                    Dialogs.ShowError(gameName + ":\r\n" +
+                                      LText.AlertMessages.Install_ExecutableNotFound);
+                    return false;
+                }
+
+                if (!Directory.Exists(instBasePath))
+                {
+                    Log("FM install path not found.\r\n" +
+                        "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                        "FM game was: " + fm.Game + "\r\n" +
+                        "FM install path: " + instBasePath
                     );
-                Dialogs.ShowError(gameName + ":\r\n" +
-                                  LText.AlertMessages.Install_FMInstallPathNotFound);
-                return false;
-            }
+                    Dialogs.ShowError(gameName + ":\r\n" +
+                                      LText.AlertMessages.Install_FMInstallPathNotFound);
+                    return false;
+                }
 
-            if (GameIsRunning(gameExe))
-            {
-                Dialogs.ShowAlert(gameName + ":\r\n" +
-                                  LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
-                return false;
+                if (GameIsRunning(gameExe))
+                {
+                    Dialogs.ShowAlert(gameName + ":\r\n" +
+                                      LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
+                    return false;
+                }
             }
 
             #endregion
 
-            string fmInstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
-
             _extractCts = new CancellationTokenSource();
 
-            Core.View.ShowProgressBox(ProgressTask.InstallFM);
-
-            // Framework zip extracting is much faster, so use it if possible
-            bool canceled = !await (fmArchivePath.ExtIsZip()
-                ? Task.Run(() => InstallFMZip(fmArchivePath, fmInstalledPath))
-                : Task.Run(() => InstallFMSevenZip(fmArchivePath, fmInstalledPath)));
-
-            if (canceled)
+            try
             {
-                Core.View.SetCancelingFMInstall();
-                await Task.Run(() =>
+                bool single = fmDataList.Length == 1;
+
+                for (int i = 0; i < fmDataList.Length; i++)
                 {
+                    var fmData = fmDataList[i];
+
+                    int mainPercent = GetPercentFromValue_Int(i + 1, fmDataList.Length);
+
+                    string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
+
+                    Core.View.ShowProgressBox(ProgressTask.InstallFM);
+
+                    // Framework zip extracting is much faster, so use it if possible
+                    bool canceled = !await (fmData.ArchivePath.ExtIsZip()
+                        ? Task.Run(() => InstallFMZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, single))
+                        : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, single)));
+
+                    if (canceled)
+                    {
+                        Core.View.SetCancelingFMInstall();
+                        await Task.Run(() =>
+                        {
+                            try
+                            {
+                                Directory.Delete(fmInstalledPath, recursive: true);
+                            }
+                            catch (Exception ex)
+                            {
+                                // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
+                                Log("Unable to delete FM installed directory " + fmInstalledPath, ex);
+                            }
+                        });
+                        Core.View.HideProgressBox();
+                        return false;
+                    }
+
+                    fmData.FM.Installed = true;
+
+                    // @MULTISEL(Install/main): Do we want to write this for each FM, or once at the end?
+                    Ini.WriteFullFMDataIni();
+
                     try
                     {
-                        Directory.Delete(fmInstalledPath, recursive: true);
+                        using var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf), append: false);
+                        await sw.WriteLineAsync("Name=" + fmData.FM.InstalledDir);
+                        await sw.WriteLineAsync("Archive=" + fmData.FM.Archive);
                     }
                     catch (Exception ex)
                     {
-                        // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
-                        Log("Unable to delete FM installed directory " + fmInstalledPath, ex);
+                        Log("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
                     }
-                });
-                Core.View.HideProgressBox();
-                return false;
-            }
 
-            fm.Installed = true;
+                    // Only Dark engine games need audio conversion
+                    if (GameIsDark(fmData.GameIndex))
+                    {
+                        try
+                        {
+                            if (single)
+                            {
+                                Core.View.ShowProgressBox(ProgressTask.ConvertFiles);
+                            }
+                            else
+                            {
+                                Core.View.ReportMultiFMInstallProgress(mainPercent, 100, LText.ProgressBox.ConvertingFiles, fmData.FM.Archive);
+                            }
 
-            Ini.WriteFullFMDataIni();
+                            // Dark engine games can't play MP3s, so they must be converted in all cases.
+                            // This one won't be called anywhere except during install, because it always runs during
+                            // install so there's no need to make it optional elsewhere. So we don't need to have a
+                            // check bool or anything.
+                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, false);
+                            if (Config.ConvertOGGsToWAVsOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, false);
+                            if (Config.ConvertWAVsTo16BitOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, false);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Exception in audio conversion", ex);
+                        }
+                    }
 
-            try
-            {
-                using var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf), append: false);
-                await sw.WriteLineAsync("Name=" + fm.InstalledDir);
-                await sw.WriteLineAsync("Archive=" + fm.Archive);
-            }
-            catch (Exception ex)
-            {
-                Log("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
-            }
+                    // Don't be lazy about this; there can be no harm and only benefits by doing it right away
+                    GenerateMissFlagFileIfRequired(fmData.FM);
 
-            // Only Dark engine games need audio conversion
-            if (GameIsDark(gameIndex))
-            {
-                try
-                {
-                    Core.View.ShowProgressBox(ProgressTask.ConvertFiles);
+                    // TODO: Put up a "Restoring saves and screenshots" box here to avoid the "converting files" one lasting beyond its time?
+                    try
+                    {
+                        await RestoreFM(fmData.FM);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log(ex: ex);
+                    }
 
-                    // Dark engine games can't play MP3s, so they must be converted in all cases.
-                    // This one won't be called anywhere except during install, because it always runs during
-                    // install so there's no need to make it optional elsewhere. So we don't need to have a
-                    // check bool or anything.
-                    await FMAudio.ConvertToWAVs(fm, AudioConvert.MP3ToWAV, false);
-                    if (Config.ConvertOGGsToWAVsOnInstall) await FMAudio.ConvertToWAVs(fm, AudioConvert.OGGToWAV, false);
-                    if (Config.ConvertWAVsTo16BitOnInstall) await FMAudio.ConvertToWAVs(fm, AudioConvert.WAVToWAV16, false);
+                    if (_extractCts.IsCancellationRequested)
+                    {
+                        // @MULTISEL(Install/main): Unwind install stack as it were.
+                        // @MULTISEL(Install/main): Maybe ask if they want to cancel just this, all, or all subsequent?
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Log("Exception in audio conversion", ex);
-                }
-            }
-
-            // Don't be lazy about this; there can be no harm and only benefits by doing it right away
-            GenerateMissFlagFileIfRequired(fm);
-
-            // TODO: Put up a "Restoring saves and screenshots" box here to avoid the "converting files" one lasting beyond its time?
-            try
-            {
-                await RestoreFM(fm);
-            }
-            catch (Exception ex)
-            {
-                Log(ex: ex);
             }
             finally
             {
@@ -658,12 +707,15 @@ namespace AngelLoader
             }
 
             // Not doing RefreshFM(rowOnly: true) because that wouldn't update the install/uninstall buttons
-            Core.View.RefreshFM(fm);
+            //Core.View.RefreshFM(fm);
+            Core.View.RefreshAllSelectedFMRows();
+            // @MULTISEL(Install/main): Make this callable in a less janky way
+            Core.View.UpdateUIControlsForMultiSelectState(Core.View.GetMainSelectedFMOrNull()!);
 
             return true;
         }
 
-        private static bool InstallFMZip(string fmArchivePath, string fmInstalledPath)
+        private static bool InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, bool single)
         {
             bool canceled = false;
 
@@ -695,10 +747,16 @@ namespace AngelLoader
 
                     int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
-                    Core.View.InvokeSync(new Action(() => Core.View.ReportFMInstallProgress(percent)));
+                    Core.View.InvokeSync(
+                        single
+                            ? new Action(() => Core.View.ReportFMInstallProgress(percent))
+                            : new Action(() => Core.View.ReportMultiFMInstallProgress(mainPercent, percent, fmArchive))
+                        );
 
                     if (_extractCts.Token.IsCancellationRequested)
                     {
+                        // @MULTISEL(Install/zip): Unwind install stack as it were.
+                        // @MULTISEL(Install/zip): Maybe ask if they want to cancel just this, all, or all subsequent?
                         canceled = true;
                         return false;
                     }
@@ -714,7 +772,7 @@ namespace AngelLoader
             return !canceled;
         }
 
-        private static bool InstallFMSevenZip(string fmArchivePath, string fmInstalledPath)
+        private static bool InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, bool single)
         {
             bool canceled = false;
             try
@@ -729,10 +787,12 @@ namespace AngelLoader
                     entriesCount = extractor.ArchiveFileData.Count;
                 }
 
-                static void ReportProgress(Fen7z.Fen7z.ProgressReport pr) =>
+                void ReportProgress(Fen7z.Fen7z.ProgressReport pr) =>
                     Core.View.InvokeSync(pr.Canceling
                         ? new Action(Core.View.SetCancelingFMInstall)
-                        : new Action(() => Core.View.ReportFMInstallProgress(pr.PercentOfEntries)));
+                        : single
+                            ? new Action(() => Core.View.ReportFMInstallProgress(pr.PercentOfEntries))
+                            : new Action(() => Core.View.ReportMultiFMInstallProgress(mainPercent, pr.PercentOfEntries, fmArchive)));
 
                 var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
 
@@ -748,6 +808,8 @@ namespace AngelLoader
                     progress
                 );
 
+                // @MULTISEL(Install/7z): Unwind install stack as it were.
+                // @MULTISEL(Install/7z): Maybe ask if they want to cancel just this, all, or all subsequent?
                 canceled = result.Canceled;
 
                 if (result.ErrorOccurred)

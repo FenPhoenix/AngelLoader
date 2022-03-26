@@ -87,6 +87,12 @@ namespace AngelLoader.Forms
             ProgressBox!.ReportMultiFMInstallProgress(mainPercent, subPercent, fmName);
         }
 
+        public void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string subMessage, string fmName)
+        {
+            ConstructProgressBox();
+            ProgressBox!.ReportMultiFMInstallProgress(mainPercent, subPercent, fmName, subMessage: subMessage);
+        }
+
         public void ReportCachingProgress(int percent)
         {
             ConstructProgressBox();

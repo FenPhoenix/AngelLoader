@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -202,7 +203,7 @@ namespace AngelLoader.Forms.CustomControls
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
         }
 
-        internal void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName)
+        internal void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName, string subMessage = "")
         {
             ProgressBar.Value = mainPercent;
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFMs;
@@ -210,7 +211,7 @@ namespace AngelLoader.Forms.CustomControls
 
             SubProgressBar.Value = subPercent;
             CurrentSubThingLabel.Text = fmName;
-            SubProgressPercentLabel.Text = subPercent + "%";
+            SubProgressPercentLabel.Text = !subMessage.IsEmpty() ? subMessage : subPercent + "%";
 
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, mainPercent, 100);
         }

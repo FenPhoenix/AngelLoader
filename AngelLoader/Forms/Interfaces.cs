@@ -108,6 +108,7 @@ namespace AngelLoader.Forms
         void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName);
         void ReportFMInstallProgress(int percent);
         void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName);
+        void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string subMessage, string fmName);
         void ReportCachingProgress(int percent);
         void SetCancelingFMInstall();
 
@@ -209,6 +210,12 @@ namespace AngelLoader.Forms
         void RefreshFM(FanMission fm, bool rowOnly = false);
 
         void RefreshFMsListKeepSelection(bool keepMulti = true);
+
+        void RefreshAllSelectedFMRows();
+
+        void RefreshAllSelectedFMs(bool rowOnly = false);
+
+        void UpdateUIControlsForMultiSelectState(FanMission fm);
 
         #endregion
 
