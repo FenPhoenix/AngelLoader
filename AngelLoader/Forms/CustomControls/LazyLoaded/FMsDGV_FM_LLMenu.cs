@@ -707,7 +707,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             else if (sender == InstallUninstallMenuItem)
             {
                 // @MULTISEL: Make FM install/uninstall code multi-FM aware
-                await FMInstallAndPlay.InstallOrUninstall(_owner.FMsDGV.GetMainSelectedFM());
+                await FMInstallAndPlay.InstallOrUninstall(_owner.FMsDGV.GetSelectedFMs());
             }
             else if (sender == DeleteFMMenuItem)
             {
@@ -717,7 +717,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             else if (sender == OpenInDromEdMenuItem)
             {
                 var fm = _owner.FMsDGV.GetMainSelectedFM();
-                if (fm.Installed || await FMInstallAndPlay.InstallFM(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
+                if (fm.Installed || await FMInstallAndPlay.Install(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
             }
             else if (sender == OpenFMFolderMenuItem)
             {

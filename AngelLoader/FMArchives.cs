@@ -155,7 +155,7 @@ namespace AngelLoader
 
                 if (cont)
                 {
-                    bool canceled = !await FMInstallAndPlay.UninstallFM(fm);
+                    bool canceled = !await FMInstallAndPlay.Uninstall(fm);
                     if (canceled) return;
                 }
             }

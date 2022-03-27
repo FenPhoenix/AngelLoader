@@ -42,7 +42,7 @@ namespace AngelLoader
         internal static Task InstallOrUninstall(params FanMission[] fms)
         {
             AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
-            return fms[0].Installed ? UninstallFM(fms[0]) : InstallFM(fms);
+            return fms[0].Installed ? Uninstall(fms[0]) : Install(fms);
         }
 
         internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
@@ -93,7 +93,7 @@ namespace AngelLoader
                 Config.ConfirmPlayOnDCOrEnter = !dontAskAgain;
             }
 
-            if (!fm.Installed && !await InstallFM(fm)) return;
+            if (!fm.Installed && !await Install(fm)) return;
 
             if (playMP && gameIndex == GameIndex.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
@@ -537,7 +537,7 @@ namespace AngelLoader
         }
 
         // @MULTISEL(Install/main - cancel install): Maybe ask if they want to cancel just this, all, or all subsequent?
-        internal static async Task<bool> InstallFM(params FanMission[] fms)
+        internal static async Task<bool> Install(params FanMission[] fms)
         {
             var fmDataList = new FMData[fms.Length];
 
@@ -883,7 +883,8 @@ namespace AngelLoader
 
         #region Uninstall
 
-        internal static async Task<bool> UninstallFM(FanMission fm)
+        // @MULTISEL(Uninstall): Implement multi-FM support for this
+        internal static async Task<bool> Uninstall(FanMission fm)
         {
             if (!fm.Installed || !GameIsKnownAndSupported(fm.Game)) return false;
 
