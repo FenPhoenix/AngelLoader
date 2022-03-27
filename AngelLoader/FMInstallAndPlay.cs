@@ -618,7 +618,7 @@ namespace AngelLoader
 
             #endregion
 
-            _extractCts = new CancellationTokenSource();
+            _extractCts = _extractCts.Recreate();
 
             static async Task<bool> RollBackInstalls(FMData[] fmDataList, int i)
             {

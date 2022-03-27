@@ -22,7 +22,7 @@ namespace AngelLoader
 
         internal static async Task Check()
         {
-            CheckForUpdatesCTS = new CancellationTokenSource();
+            CheckForUpdatesCTS = CheckForUpdatesCTS.Recreate();
 
             //const string uri = "https://fenphoenix.github.io/AngelLoader/al_update/al_update.ini";
             const string uri = "https://fenphoenix.github.io/AngelLoader/al_update_testing/al_update.ini";

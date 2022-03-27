@@ -90,7 +90,7 @@ namespace AngelLoader
 
                 #region Init
 
-                _scanCts = new CancellationTokenSource();
+                _scanCts = _scanCts.Recreate();
 
                 var fms = new List<FMScanner.FMToScan>(fmsToScan.Count);
 
