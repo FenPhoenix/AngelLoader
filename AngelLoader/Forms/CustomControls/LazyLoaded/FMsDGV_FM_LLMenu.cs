@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -12,7 +11,6 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    // @MULTISEL(FM menu): Act on knowledge of multi-selection
     internal sealed class FMsDGV_FM_LLMenu
     {
         #region Backing fields

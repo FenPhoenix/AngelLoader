@@ -4667,10 +4667,8 @@ namespace AngelLoader.Forms
             }
         }
 
-        // @MULTISEL(Context menu sel state update): Go through this with a fine tooth comb
         // @MULTISEL(Context menu sel state update): Since this runs always on selection change...
         // ... we might not need to call it on FM load.
-
         // NOTE(Context menu sel state update):
         // Keep this light and fast, because it gets called like 3 times every selection due to the stupid hacks
         // for preventing "multi-select starts from top row even though our selection is not actually at the top
