@@ -49,7 +49,7 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log("Game is unknown or unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                Log("Game is unknown or unsupported for FM " + GetFMId(fm) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
                 Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
                 return;
@@ -60,7 +60,7 @@ namespace AngelLoader
             if (playMP && gameIndex != GameIndex.Thief2)
             {
                 Log("playMP was true, but fm.Game was not Thief 2.\r\n" +
-                    "fm: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "fm: " + GetFMId(fm) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
                 Dialogs.ShowError(ErrorText.MultiplayerForNonThief2);
                 return;
@@ -143,7 +143,7 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log("Game is unknown or unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                Log("Game is unknown or unsupported for FM " + GetFMId(fm) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
                 Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
                 return false;
@@ -210,7 +210,7 @@ namespace AngelLoader
             if (!GameIsDark(fm.Game))
             {
                 Log("FM game type is not a Dark Engine game.\r\n" +
-                    "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "FM: " + GetFMId(fm) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
                 Dialogs.ShowError(ErrorText.FMGameTypeIsNotDark);
                 return false;
@@ -230,7 +230,7 @@ namespace AngelLoader
             if (editorExe.IsEmpty())
             {
                 Log("Editor executable not found.\r\n" +
-                    "FM:" + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "FM: " + GetFMId(fm) + "\r\n" +
                     "Editor executable: " + editorExe);
                 Dialogs.ShowError(fm.Game == Game.SS2
                     ? LText.AlertMessages.ShockEd_ExecutableNotFound
@@ -541,7 +541,6 @@ namespace AngelLoader
         {
             var fmDataList = new FMData[fms.Length];
 
-            // @MULTISEL(Install/checks): Make error messages clearer they're talking about one of many FMs
             #region Checks
 
             for (int i = 0; i < fms.Length; i++)
@@ -569,18 +568,20 @@ namespace AngelLoader
                 if (!GameIsKnownAndSupported(fm.Game))
                 {
                     Log("FM game type is unknown or unsupported.\r\n" +
-                        "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                        "FM: " + GetFMId(fm) + "\r\n" +
                         "FM game was: " + fm.Game);
-                    Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
+                    Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                      ErrorText.FMGameTypeUnknownOrUnsupported);
                     return false;
                 }
 
                 if (fmArchivePath.IsEmpty())
                 {
                     Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
-                        "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                        "FM: " + GetFMId(fm) + "\r\n" +
                         "FM game was: " + fm.Game);
-                    Dialogs.ShowError(LText.AlertMessages.Install_ArchiveNotFound);
+                    Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                      LText.AlertMessages.Install_ArchiveNotFound);
                     return false;
                 }
 
@@ -589,6 +590,7 @@ namespace AngelLoader
                     Log("Game executable not found.\r\n" +
                         "Game executable: " + gameExe);
                     Dialogs.ShowError(gameName + ":\r\n" +
+                                      GetFMId(fm) + "\r\n" +
                                       LText.AlertMessages.Install_ExecutableNotFound);
                     return false;
                 }
@@ -596,11 +598,12 @@ namespace AngelLoader
                 if (!Directory.Exists(instBasePath))
                 {
                     Log("FM install path not found.\r\n" +
-                        "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                        "FM: " + GetFMId(fm) + "\r\n" +
                         "FM game was: " + fm.Game + "\r\n" +
                         "FM install path: " + instBasePath
                     );
                     Dialogs.ShowError(gameName + ":\r\n" +
+                                      GetFMId(fm) + "\r\n" +
                                       LText.AlertMessages.Install_FMInstallPathNotFound);
                     return false;
                 }
@@ -1001,7 +1004,7 @@ namespace AngelLoader
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
                     Log("Could not delete FM installed directory.\r\n" +
-                        "FM: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                        "FM: " + GetFMId(fm) + "\r\n" +
                         "FM installed path: " + fmInstalledPath);
                     Dialogs.ShowError(LText.AlertMessages.Uninstall_UninstallNotCompleted);
                 }
