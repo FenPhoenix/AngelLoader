@@ -576,7 +576,7 @@ namespace AngelLoader
 
             string fmInstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
 
-            _extractCts = new CancellationTokenSource();
+            _extractCts = _extractCts.Recreate();
 
             Core.View.ShowProgressBox(ProgressTask.InstallFM);
 

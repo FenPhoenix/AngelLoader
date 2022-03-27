@@ -251,6 +251,17 @@ namespace AngelLoader
             try { value.Cancel(); } catch (ObjectDisposedException) { }
         }
 
+        /// <summary>
+        /// Disposes and assigns a new one.
+        /// </summary>
+        /// <param name="cts"></param>
+        /// <returns></returns>
+        internal static CancellationTokenSource Recreate(this CancellationTokenSource cts)
+        {
+            cts.Dispose();
+            return new CancellationTokenSource();
+        }
+
         internal static bool WinVersionIs7OrAbove()
         {
             try
