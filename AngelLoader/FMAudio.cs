@@ -35,6 +35,12 @@ namespace AngelLoader
         private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
         private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
 
+        // @MULTISEL(Audio conversion):
+        // We need to refactor all the "return or throw if this one FM doesn't pass" into something that checks
+        // all FMs first and fails us if any fail, and if we can't do that for all situations, we need something
+        // that at least works with multiple FMs in some fashion. Like "this one FM failed, continue to the next
+        // or stop the operation?". We can't actually "cancel" (ie. roll back) the operation because we'll be
+        // replacing files... so "stop" operation is the best we can do.
         internal static async Task ConvertToWAVs(FanMission fm, AudioConvert type, bool doChecksAndProgressBox)
         {
             if (doChecksAndProgressBox)

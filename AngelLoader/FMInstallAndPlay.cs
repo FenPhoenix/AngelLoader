@@ -541,6 +541,7 @@ namespace AngelLoader
         {
             var fmDataList = new FMData[fms.Length];
 
+            // @MULTISEL(Install/checks): Make error messages clearer they're talking about one of many FMs
             #region Checks
 
             for (int i = 0; i < fms.Length; i++)
