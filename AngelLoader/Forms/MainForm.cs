@@ -121,7 +121,7 @@ namespace AngelLoader.Forms
         internal bool CellValueNeededDisabled;
 
         private TransparentPanel? ViewBlockingPanel;
-        private bool _viewBlocked;
+        internal bool ViewBlocked { get; private set; }
 
         #endregion
 
@@ -264,7 +264,7 @@ namespace AngelLoader.Forms
                 // value, and that causes the min,max,close button flickering.
                 if (!TryGetHWndFromMousePos(m, out IntPtr hWnd)) return PassMessageOn;
 
-                if (_viewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
+                if (ViewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
                 int delta = Native.SignedHIWORD(m.WParam);
                 if (CanFocus && CursorOverControl(FilterBarFLP) && !CursorOverControl(FMsDGV))
@@ -312,7 +312,7 @@ namespace AngelLoader.Forms
             {
                 if (!TryGetHWndFromMousePos(m, out _)) return PassMessageOn;
 
-                if (_viewBlocked) return BlockMessage;
+                if (ViewBlocked) return BlockMessage;
 
                 if (CanFocus && CursorOverControl(FMsDGV))
                 {
@@ -331,7 +331,7 @@ namespace AngelLoader.Forms
             {
                 if (!CanFocus) return PassMessageOn;
 
-                if (CursorOutsideAddTagsDropDownArea() || _viewBlocked) return BlockMessage;
+                if (CursorOutsideAddTagsDropDownArea() || ViewBlocked) return BlockMessage;
 
                 ShowReadmeControls(CursorOverReadmeArea());
             }
@@ -348,7 +348,13 @@ namespace AngelLoader.Forms
             {
                 if (!CanFocus) return PassMessageOn;
 
-                if (_viewBlocked)
+                if (ViewBlocked &&
+                    // Fix multi-select after view-blocking scan
+                    // (so it doesn't throw out the mouseup and leave us selecting lines with mouse not down)
+                    (m.Msg is
+                        Native.WM_LBUTTONDOWN or Native.WM_NCLBUTTONDOWN or
+                        Native.WM_MBUTTONDOWN or Native.WM_NCMBUTTONDOWN or
+                        Native.WM_RBUTTONDOWN or Native.WM_NCRBUTTONDOWN))
                 {
                     return BlockMessage;
                 }
@@ -394,7 +400,7 @@ namespace AngelLoader.Forms
             // Any other keys have to use this.
             else if (m.Msg == Native.WM_KEYDOWN)
             {
-                if (KeyPressesDisabled || _viewBlocked) return BlockMessage;
+                if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
 
                 int wParam = (int)m.WParam;
                 if (wParam == (int)Keys.F1 && CanFocus)
@@ -444,7 +450,7 @@ namespace AngelLoader.Forms
             }
             else if (m.Msg == Native.WM_KEYUP)
             {
-                if (KeyPressesDisabled || _viewBlocked) return BlockMessage;
+                if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
             }
             #endregion
 
@@ -1245,7 +1251,7 @@ namespace AngelLoader.Forms
         {
             // Extremely cheap and cheesy, but otherwise I have to figure out how to wait for a completely
             // separate and detached thread to complete. Argh. Threading sucks.
-            if (!EverythingPanel.Enabled || _viewBlocked)
+            if (!EverythingPanel.Enabled || ViewBlocked)
             {
                 Dialogs.ShowAlert(
                     LText.AlertMessages.AppClosing_OperationInProgress,
@@ -1714,7 +1720,7 @@ namespace AngelLoader.Forms
             {
                 // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
                 EverythingPanel.SuspendDrawing();
-                _viewBlocked = block;
+                ViewBlocked = block;
                 ViewBlockingPanel.Visible = block;
                 ViewBlockingPanel.BringToFront();
             }

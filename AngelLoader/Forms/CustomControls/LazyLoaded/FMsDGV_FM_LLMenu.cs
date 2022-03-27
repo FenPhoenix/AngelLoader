@@ -691,7 +691,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             // Fix for a corner case where the user could press the right mouse button, hold it, keyboard-switch
             // to an empty tab, then let up the mouse and a menu would come up even though no FM was selected.
-            if (_owner.FMsDGV.RowCount == 0 || _owner.FMsDGV.SelectedRows.Count == 0) e.Cancel = true;
+            if (_owner.FMsDGV.RowCount == 0 ||
+                _owner.FMsDGV.SelectedRows.Count == 0 ||
+                _owner.ViewBlocked)
+            {
+                e.Cancel = true;
+            }
         }
 
         // Extra async/await avoidance
