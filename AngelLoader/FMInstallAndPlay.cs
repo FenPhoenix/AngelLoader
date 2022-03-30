@@ -661,14 +661,24 @@ namespace AngelLoader
                 {
                     var fmData = fmDataList[i];
 
-                    int mainPercent = GetPercentFromValue_Int(i + 1, fmDataList.Length);
-
                     string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
 
+                    // We want to get the main percent back as modified by these install methods, but we can't
+                    // pass by ref because then the thing can't be used in the weird closures and delegates all
+                    // over the place in there. So just pass it in and get it back as a return.
+                    // @MULTISEL(Install main percent return):
+                    // Actually, the only reason we need to get this back is so we can pass the reporter the same
+                    // percentage value as before so it doesn't change when the other text ("Converting files" etc.)
+                    // gets set. If we just make a new reporting method that just changes the text we want to
+                    // change, we can get rid of this whole need to return the value back.
+                    int mainPercentInitial = GetPercentFromValue_Int(i, fmDataList.Length);
+
                     // Framework zip extracting is much faster, so use it if possible
-                    bool canceled = !await (fmData.ArchivePath.ExtIsZip()
-                        ? Task.Run(() => InstallFMZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, single))
-                        : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, single)));
+                    (bool success, int mainPercent) = await (fmData.ArchivePath.ExtIsZip()
+                        ? Task.Run(() => InstallFMZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercentInitial, fmDataList.Length))
+                        : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercentInitial, fmDataList.Length)));
+
+                    bool canceled = !success;
 
                     if (canceled)
                     {
@@ -747,9 +757,14 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, bool single)
+        private static (bool Success, int MainPercent)
+        InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
         {
             bool canceled = false;
+
+            bool single = fmCount == 1;
+
+            int newMainPercent = mainPercent;
 
             try
             {
@@ -779,16 +794,19 @@ namespace AngelLoader
 
                     int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
+                    newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
+                    int passedMainPercent = newMainPercent;
+
                     Core.View.InvokeSync(
                         single
                             ? new Action(() => Core.View.ReportFMInstallProgress(percent))
-                            : new Action(() => Core.View.ReportMultiFMInstallProgress(mainPercent, percent, fmArchive))
+                            : new Action(() => Core.View.ReportMultiFMInstallProgress(passedMainPercent, percent, fmArchive))
                         );
 
                     if (_extractCts.Token.IsCancellationRequested)
                     {
                         canceled = true;
-                        return false;
+                        return (false, newMainPercent);
                     }
                 }
             }
@@ -799,12 +817,18 @@ namespace AngelLoader
                     Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially)));
             }
 
-            return !canceled;
+            return (!canceled, newMainPercent);
         }
 
-        private static bool InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, bool single)
+        private static (bool Success, int MainPercent)
+        InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
         {
             bool canceled = false;
+
+            bool single = fmCount == 1;
+
+            int newMainPercent = mainPercent;
+
             try
             {
                 Directory.CreateDirectory(fmInstalledPath);
@@ -817,12 +841,15 @@ namespace AngelLoader
                     entriesCount = extractor.ArchiveFileData.Count;
                 }
 
-                void ReportProgress(Fen7z.Fen7z.ProgressReport pr) =>
+                void ReportProgress(Fen7z.Fen7z.ProgressReport pr)
+                {
+                    newMainPercent = mainPercent + (pr.PercentOfEntries / fmCount).ClampToZero();
                     Core.View.InvokeSync(pr.Canceling
                         ? new Action(Core.View.SetCancelingFMInstall)
                         : single
                             ? new Action(() => Core.View.ReportFMInstallProgress(pr.PercentOfEntries))
-                            : new Action(() => Core.View.ReportMultiFMInstallProgress(mainPercent, pr.PercentOfEntries, fmArchive)));
+                            : new Action(() => Core.View.ReportMultiFMInstallProgress(newMainPercent, pr.PercentOfEntries, fmArchive)));
+                }
 
                 var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
 
@@ -851,7 +878,7 @@ namespace AngelLoader
                     Core.View.InvokeSync(new Action(() =>
                         Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially)));
 
-                    return !result.Canceled;
+                    return (!result.Canceled, newMainPercent);
                 }
 
                 if (!result.Canceled)
@@ -863,7 +890,7 @@ namespace AngelLoader
                     }
                 }
 
-                return !result.Canceled;
+                return (!result.Canceled, newMainPercent);
             }
             catch (Exception ex)
             {
@@ -872,7 +899,7 @@ namespace AngelLoader
                 Core.View.InvokeSync(new Action(() =>
                     Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially)));
 
-                return !canceled;
+                return (!canceled, newMainPercent);
             }
         }
 
