@@ -34,6 +34,11 @@ namespace AngelLoader.Forms
         bool EventsDisabled { set; }
     }
 
+    internal interface IZeroSelectCodeDisabler
+    {
+        bool ZeroSelectCodeDisabled { set; }
+    }
+
     internal sealed class DisableEvents : IDisposable
     {
         private readonly IEventDisabler Obj;
@@ -44,6 +49,18 @@ namespace AngelLoader.Forms
         }
 
         public void Dispose() => Obj.EventsDisabled = false;
+    }
+
+    internal sealed class DisableZeroSelectCode : IDisposable
+    {
+        private readonly IZeroSelectCodeDisabler Obj;
+        internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
+        {
+            Obj = obj;
+            Obj.ZeroSelectCodeDisabled = true;
+        }
+
+        public void Dispose() => Obj.ZeroSelectCodeDisabled = false;
     }
 
     #endregion
@@ -99,7 +116,7 @@ namespace AngelLoader.Forms
         void SelectBackingIndexOf(string item);
     }
 
-    internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IMessageFilter
+    internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler, IMessageFilter
     {
         #region Progress box
 

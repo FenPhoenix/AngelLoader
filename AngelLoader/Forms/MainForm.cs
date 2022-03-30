@@ -112,9 +112,14 @@ namespace AngelLoader.Forms
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool KeyPressesDisabled { get; set; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool ZeroSelectCodeDisabled { get; set; }
 
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
         // middle of the operation
@@ -3945,7 +3950,6 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_MouseDown(object sender, MouseEventArgs e)
         {
-            // @MULTISEL: Right-click flickers the top-right area when new FM selected, left-click doesn't
             if (e.Button != MouseButtons.Right) return;
 
             var ht = FMsDGV.HitTest(e.X, e.Y);
@@ -4495,6 +4499,10 @@ namespace AngelLoader.Forms
         // Perpetual TODO: Make sure this clears everything including the top right tab stuff
         private void ClearShownData()
         {
+            // Hack to stop this being run when we clear selection for the purpose of selecting just one immediately
+            // after.
+            if (ZeroSelectCodeDisabled) return;
+
             #region Menus
 
             MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
