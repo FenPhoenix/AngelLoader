@@ -543,8 +543,11 @@ namespace AngelLoader.DataClasses
         internal sealed class MainButtons_Class
         {
             internal readonly string PlayFM = "Play FM";
+            // @MULTISEL: Combine the button and the menu strings into one place?
             internal readonly string InstallFM = "Install FM";
             internal readonly string UninstallFM = "Uninstall FM";
+            internal readonly string InstallFMs = "Install FMs";
+            internal readonly string UninstallFMs = "Uninstall FMs";
             internal readonly string PlayOriginalGame = "Play without FM...";
             internal readonly string WebSearch = "Web search";
             internal readonly string Settings = "Settings...";
