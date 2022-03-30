@@ -3945,6 +3945,7 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_MouseDown(object sender, MouseEventArgs e)
         {
+            // @MULTISEL: Right-click flickers the top-right area when new FM selected, left-click doesn't
             if (e.Button != MouseButtons.Right) return;
 
             var ht = FMsDGV.HitTest(e.X, e.Y);

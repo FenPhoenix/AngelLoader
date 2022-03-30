@@ -81,12 +81,14 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Open/close
 
-        internal void ShowProgressWindow(ProgressTask progressTask, bool suppressShow, bool useExtendedHeight)
+        internal void ShowProgressWindow(ProgressTask progressTask, bool suppressShow)
         {
             const int regularHeight = 128;
             const int extendedHeight = 192;
 
             _progressTask = progressTask;
+
+            bool useExtendedHeight = _progressTask == ProgressTask.InstallFMs;
 
             Size = Size with { Height = useExtendedHeight ? extendedHeight : regularHeight };
             CurrentSubThingLabel.Visible = useExtendedHeight;
@@ -259,6 +261,7 @@ namespace AngelLoader.Forms.CustomControls
                     FMScan.CancelScan();
                     break;
                 case ProgressTask.InstallFM:
+                case ProgressTask.InstallFMs:
                     FMInstallAndPlay.CancelInstallFM();
                     break;
             }

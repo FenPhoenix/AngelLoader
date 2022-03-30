@@ -624,6 +624,8 @@ namespace AngelLoader
             {
                 try
                 {
+                    // @MULTISEL(Cancel install): Put message on the progress box saying which FM we're uninstalling
+                    // Like as reverse progress, "Rolling back install of 'fm'" maybe even with a reverse progress bar
                     Core.View.SetCancelingFMInstall();
                     await Task.Run(() =>
                     {
@@ -653,6 +655,8 @@ namespace AngelLoader
             {
                 bool single = fmDataList.Length == 1;
 
+                Core.View.ShowProgressBox(single ? ProgressTask.InstallFM : ProgressTask.InstallFMs);
+
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
                     var fmData = fmDataList[i];
@@ -660,8 +664,6 @@ namespace AngelLoader
                     int mainPercent = GetPercentFromValue_Int(i + 1, fmDataList.Length);
 
                     string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
-
-                    Core.View.ShowProgressBox(ProgressTask.InstallFM);
 
                     // Framework zip extracting is much faster, so use it if possible
                     bool canceled = !await (fmData.ArchivePath.ExtIsZip()
