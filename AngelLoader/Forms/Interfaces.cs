@@ -232,7 +232,7 @@ namespace AngelLoader.Forms
 
         void RefreshAllSelectedFMs(bool rowOnly = false);
 
-        void UpdateUIControlsForMultiSelectState(FanMission fm);
+        void RefreshCurrentFM_IncludeInstalledState();
 
         #endregion
 

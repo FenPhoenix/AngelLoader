@@ -2691,6 +2691,14 @@ namespace AngelLoader.Forms
             }
         }
 
+        public void RefreshCurrentFM_IncludeInstalledState()
+        {
+            FanMission? selectedFM = GetMainSelectedFMOrNull();
+            if (selectedFM == null) return;
+
+            UpdateUIControlsForMultiSelectState(selectedFM);
+        }
+
         public void RefreshAllSelectedFMs(bool rowOnly = false)
         {
             if (!rowOnly)
@@ -4682,7 +4690,7 @@ namespace AngelLoader.Forms
         // Keep this light and fast, because it gets called like 3 times every selection due to the stupid hacks
         // for preventing "multi-select starts from top row even though our selection is not actually at the top
         // row"
-        public void UpdateUIControlsForMultiSelectState(FanMission fm)
+        internal void UpdateUIControlsForMultiSelectState(FanMission fm)
         {
             var selRows = FMsDGV.SelectedRows;
 

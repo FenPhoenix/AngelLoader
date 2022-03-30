@@ -741,11 +741,8 @@ namespace AngelLoader
                 Core.View.HideProgressBox();
             }
 
-            // Not doing RefreshFM(rowOnly: true) because that wouldn't update the install/uninstall buttons
-            //Core.View.RefreshFM(fm);
             Core.View.RefreshAllSelectedFMRows();
-            // @MULTISEL(Install/main): Make this callable in a less janky way
-            Core.View.UpdateUIControlsForMultiSelectState(Core.View.GetMainSelectedFMOrNull()!);
+            Core.View.RefreshCurrentFM_IncludeInstalledState();
 
             return true;
         }
