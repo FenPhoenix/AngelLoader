@@ -4713,6 +4713,7 @@ namespace AngelLoader.Forms
                 noneAreInstalled,
                 allAreDark,
                 allAreAvailable,
+                noneAreAvailable,
                 allAreKnownAndSupported,
                 allSelectedAreSameInstalledState,
                 allAreSupportedAndAvailable;
@@ -4737,6 +4738,7 @@ namespace AngelLoader.Forms
                 allAreDark = gameIsDarkCount == selRowsCount;
                 allAreKnownAndSupported = knownAndSupportedCount == selRowsCount;
                 allAreAvailable = markedUnavailableCount == 0;
+                noneAreAvailable = markedUnavailableCount == selRowsCount;
                 allSelectedAreSameInstalledState = allAreInstalled || noneAreInstalled;
                 allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
             }
@@ -4765,11 +4767,8 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && fm.Installed);
 
-            // @MULTISEL(Scan FMs): 2 things:
-            // 1. Make this pop up the window where you choose what fields to scan for.
-            // 2. Make this still be enabled if some selected are unavailable, but just don't include those in
-            //    the scan.
-            FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(allAreAvailable);
+            FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!noneAreAvailable);
+            FMsDGV_FM_LLMenu.SetScanFMText();
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(allAreInstalled && allAreDark && allAreAvailable);
 

@@ -414,7 +414,10 @@ namespace AngelLoader.DataClasses
             internal readonly string FMMenu_FinishedOn = "Finished on";
             internal readonly string FMMenu_ConvertAudio = "Convert audio";
             internal readonly string FMMenu_ScanFM = "Scan FM";
-            internal readonly string FMMenu_ScanFMs = "Scan FMs";
+            [FenGenComment(
+                "This should have an ellipsis after it (...) because it opens up a dialog box, whereas the singular",
+                "one above doesn't.")]
+            internal readonly string FMMenu_ScanFMs = "Scan FMs...";
             internal readonly string FMMenu_WebSearch = "Web search";
             [FenGenBlankLine]
             internal readonly string ConvertAudioMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";

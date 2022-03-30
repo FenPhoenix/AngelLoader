@@ -370,7 +370,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             OpenFMFolderMenuItem.Text = LText.FMsList.FMMenu_OpenFMFolder;
 
-            ScanFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_ScanFMs : LText.FMsList.FMMenu_ScanFM;
+            SetScanFMText();
 
             #region Convert audio submenu
 
@@ -397,6 +397,14 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             #endregion
 
             WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch;
+        }
+
+        internal void SetScanFMText()
+        {
+            if (!_constructed) return;
+
+            bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
+            ScanFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_ScanFMs : LText.FMsList.FMMenu_ScanFM;
         }
 
         internal void UpdateRatingList(bool fmSelStyle)
@@ -725,9 +733,19 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             else if (sender == ScanFMMenuItem)
             {
                 FanMission[] fms = _owner.FMsDGV.GetSelectedFMs();
-                if (fms.Length > 0)
+                if (fms.Length == 1)
                 {
                     if (await FMScan.ScanFMs(fms.ToList(), hideBoxIfZip: true))
+                    {
+                        _owner.RefreshFM(fms[0]);
+                    }
+                }
+                else if (fms.Length > 1)
+                {
+                    FMScanner.ScanOptions? scanOptions = Core.GetScanStuff();
+                    if (scanOptions == null) return;
+
+                    if (await FMScan.ScanFMs(fms.ToList(), scanOptions, hideBoxIfZip: true))
                     {
                         _owner.RefreshAllSelectedFMs();
                     }

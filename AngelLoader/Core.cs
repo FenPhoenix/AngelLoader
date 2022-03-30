@@ -1781,15 +1781,13 @@ namespace AngelLoader
             }
         }
 
-        internal static async Task ScanAllFMs()
+        internal static FMScanner.ScanOptions? GetScanStuff()
         {
-            if (FMsViewList.Count == 0) return;
-
             FMScanner.ScanOptions? scanOptions = null;
             bool noneSelected;
             using (var f = new ScanAllFMsForm())
             {
-                if (f.ShowDialogDark() != DialogResult.OK) return;
+                if (f.ShowDialogDark() != DialogResult.OK) return null;
                 noneSelected = f.NoneSelected;
                 if (!noneSelected) scanOptions = f.ScanOptions;
             }
@@ -1797,10 +1795,23 @@ namespace AngelLoader
             if (noneSelected)
             {
                 Dialogs.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
-                return;
+                return null;
             }
 
-            if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await View.SortAndSetFilter(forceDisplayFM: true);
+            return scanOptions;
+        }
+
+        internal static async Task ScanAllFMs()
+        {
+            if (FMsViewList.Count == 0) return;
+
+            FMScanner.ScanOptions? scanOptions = GetScanStuff();
+            if (scanOptions == null) return;
+
+            if (await FMScan.ScanFMs(FMsViewList, scanOptions))
+            {
+                await View.SortAndSetFilter(forceDisplayFM: true);
+            }
         }
 
         internal static async Task PinOrUnpinFM(bool pin)
