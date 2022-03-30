@@ -82,9 +82,8 @@ namespace AngelLoader.Forms
         bool DarkModeEnabled { get; set; }
     }
 
-    // We need to pass this around to a whole chain of methods to get it to the right places for it to be able to
-    // close before long-running work is done but still stay open long enough for the main window to initialize.
-    // We pass as this interface to guarantee that nobody can do anything dangerous with it.
+    // The splash screen is extremely un-thread-safe by design (because it's a UI we have to update while another
+    // UI is loading), so we pass as this interface to guarantee that nobody can do anything dangerous with it.
     public interface ISplashScreen_Safe
     {
         void Hide();
