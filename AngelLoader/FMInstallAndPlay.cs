@@ -674,11 +674,9 @@ namespace AngelLoader
                     int mainPercentInitial = GetPercentFromValue_Int(i, fmDataList.Length);
 
                     // Framework zip extracting is much faster, so use it if possible
-                    (bool success, int mainPercent) = await (fmData.ArchivePath.ExtIsZip()
+                    bool canceled = !await (fmData.ArchivePath.ExtIsZip()
                         ? Task.Run(() => InstallFMZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercentInitial, fmDataList.Length))
                         : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercentInitial, fmDataList.Length)));
-
-                    bool canceled = !success;
 
                     if (canceled)
                     {
@@ -709,7 +707,7 @@ namespace AngelLoader
                             }
                             else
                             {
-                                Core.View.ReportMultiFMInstallProgress(mainPercent, 100, LText.ProgressBox.ConvertingFiles, fmData.FM.Archive);
+                                Core.View.ReportMultiFMInstallProgress(-1, 100, LText.ProgressBox.ConvertingFiles, fmData.FM.Archive);
                             }
 
                             // Dark engine games can't play MP3s, so they must be converted in all cases.
@@ -757,14 +755,11 @@ namespace AngelLoader
             return true;
         }
 
-        private static (bool Success, int MainPercent)
-        InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+        private static bool InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
         {
             bool canceled = false;
 
             bool single = fmCount == 1;
-
-            int newMainPercent = mainPercent;
 
             try
             {
@@ -794,19 +789,18 @@ namespace AngelLoader
 
                     int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
-                    newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
-                    int passedMainPercent = newMainPercent;
+                    int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
                     Core.View.InvokeSync(
                         single
                             ? new Action(() => Core.View.ReportFMInstallProgress(percent))
-                            : new Action(() => Core.View.ReportMultiFMInstallProgress(passedMainPercent, percent, fmArchive))
+                            : new Action(() => Core.View.ReportMultiFMInstallProgress(newMainPercent, percent, fmArchive))
                         );
 
                     if (_extractCts.Token.IsCancellationRequested)
                     {
                         canceled = true;
-                        return (false, newMainPercent);
+                        return false;
                     }
                 }
             }
@@ -817,17 +811,14 @@ namespace AngelLoader
                     Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially)));
             }
 
-            return (!canceled, newMainPercent);
+            return !canceled;
         }
 
-        private static (bool Success, int MainPercent)
-        InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+        private static bool InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
         {
             bool canceled = false;
 
             bool single = fmCount == 1;
-
-            int newMainPercent = mainPercent;
 
             try
             {
@@ -843,7 +834,7 @@ namespace AngelLoader
 
                 void ReportProgress(Fen7z.Fen7z.ProgressReport pr)
                 {
-                    newMainPercent = mainPercent + (pr.PercentOfEntries / fmCount).ClampToZero();
+                    int newMainPercent = mainPercent + (pr.PercentOfEntries / fmCount).ClampToZero();
                     Core.View.InvokeSync(pr.Canceling
                         ? new Action(Core.View.SetCancelingFMInstall)
                         : single
@@ -878,7 +869,7 @@ namespace AngelLoader
                     Core.View.InvokeSync(new Action(() =>
                         Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially)));
 
-                    return (!result.Canceled, newMainPercent);
+                    return !result.Canceled;
                 }
 
                 if (!result.Canceled)
@@ -890,7 +881,7 @@ namespace AngelLoader
                     }
                 }
 
-                return (!result.Canceled, newMainPercent);
+                return !result.Canceled;
             }
             catch (Exception ex)
             {
@@ -899,7 +890,7 @@ namespace AngelLoader
                 Core.View.InvokeSync(new Action(() =>
                     Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially)));
 
-                return (!canceled, newMainPercent);
+                return !canceled;
             }
         }
 

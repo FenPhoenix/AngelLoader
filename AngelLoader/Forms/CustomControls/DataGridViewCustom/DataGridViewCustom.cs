@@ -121,6 +121,11 @@ namespace AngelLoader.Forms.CustomControls
             return GetFMFromIndex(MainSelectedRow!.Index);
         }
 
+        /// <summary>
+        /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder"/>
+        /// if you need them in visual order.
+        /// </summary>
+        /// <returns></returns>
         internal FanMission[] GetSelectedFMs()
         {
             var selRows = SelectedRows;
@@ -129,6 +134,29 @@ namespace AngelLoader.Forms.CustomControls
             {
                 ret[i] = GetFMFromIndex(selRows[i].Index);
             }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
+        /// </summary>
+        /// <returns></returns>
+        internal FanMission[] GetSelectedFMs_InOrder()
+        {
+            // Why. Why would Microsoft have all these infuriatingly stupid custom list types.
+            // DataGridViewSelectedRowCollection?! Not even a row collection, but a _SELECTED_ row collection.
+            // Jesus christ is that really necessary? And it has no sort methods either because it's custom, so
+            // it's copy with Cast and then copy with OrderBy and then copy to Array and then copy that to another
+            // array of actual FM objects. Hooray. We've got a garbage collector so who cares right?
+            var selRows = SelectedRows.Cast<DataGridViewRow>().OrderBy(x => x.Index).ToArray();
+
+            var ret = new FanMission[selRows.Length];
+            for (int i = 0; i < selRows.Length; i++)
+            {
+                ret[i] = GetFMFromIndex(selRows[i].Index);
+            }
+
             return ret;
         }
 

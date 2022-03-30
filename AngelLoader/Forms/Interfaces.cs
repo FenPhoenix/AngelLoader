@@ -288,5 +288,6 @@ namespace AngelLoader.Forms
         void ActivateThisInstance();
         Task<bool> AddFMs(string[] fmArchiveNames);
         FanMission? GetFMFromIndex(int index);
+        FanMission[] GetSelectedFMs_InOrder();
     }
 }

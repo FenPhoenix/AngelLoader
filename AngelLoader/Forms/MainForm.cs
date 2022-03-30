@@ -3132,7 +3132,18 @@ namespace AngelLoader.Forms
 
         public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
 
+        /// <summary>
+        /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder"/>
+        /// if you need them in visual order.
+        /// </summary>
+        /// <returns></returns>
         public FanMission[] GetSelectedFMs() => FMsDGV.GetSelectedFMs();
+
+        /// <summary>
+        /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
+        /// </summary>
+        /// <returns></returns>
+        public FanMission[] GetSelectedFMs_InOrder() => FMsDGV.GetSelectedFMs_InOrder();
 
         public FanMission? GetFMFromIndex(int index) => FMsDGV.RowSelected() ? FMsDGV.GetFMFromIndex(index) : null;
 
@@ -4387,7 +4398,7 @@ namespace AngelLoader.Forms
         {
             if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
             {
-                await FMInstallAndPlay.InstallOrUninstall(FMsDGV.GetMainSelectedFM());
+                await FMInstallAndPlay.InstallOrUninstall(GetSelectedFMs_InOrder());
             }
             else if (sender == PlayFMButton)
             {

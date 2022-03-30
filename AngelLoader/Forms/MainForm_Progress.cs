@@ -81,12 +81,25 @@ namespace AngelLoader.Forms
             ProgressBox!.ReportFMInstallProgress(percent);
         }
 
+        /// <summary>
+        /// For the percents, -1 means don't update the displayed values.
+        /// </summary>
+        /// <param name="mainPercent"></param>
+        /// <param name="subPercent"></param>
+        /// <param name="fmName"></param>
         public void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName)
         {
             ConstructProgressBox();
             ProgressBox!.ReportMultiFMInstallProgress(mainPercent, subPercent, fmName);
         }
 
+        /// <summary>
+        /// For the percents, -1 means don't update the displayed values.
+        /// </summary>
+        /// <param name="mainPercent"></param>
+        /// <param name="subPercent"></param>
+        /// <param name="subMessage"></param>
+        /// <param name="fmName"></param>
         public void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string subMessage, string fmName)
         {
             ConstructProgressBox();

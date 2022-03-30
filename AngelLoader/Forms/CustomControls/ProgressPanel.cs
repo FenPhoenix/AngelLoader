@@ -205,15 +205,32 @@ namespace AngelLoader.Forms.CustomControls
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
         }
 
+        /// <summary>
+        /// For the percents, -1 means don't update the displayed values.
+        /// </summary>
+        /// <param name="mainPercent"></param>
+        /// <param name="subPercent"></param>
+        /// <param name="fmName"></param>
+        /// <param name="subMessage"></param>
         internal void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName, string subMessage = "")
         {
-            ProgressBar.Value = mainPercent;
+            if (mainPercent > -1)
+            {
+                ProgressBar.Value = mainPercent;
+                ProgressPercentLabel.Text = mainPercent + "%";
+            }
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFMs;
-            ProgressPercentLabel.Text = mainPercent + "%";
 
-            SubProgressBar.Value = subPercent;
+            if (subPercent > -1)
+            {
+                SubProgressBar.Value = subPercent;
+                SubProgressPercentLabel.Text = !subMessage.IsEmpty() ? subMessage : subPercent + "%";
+            }
+            else
+            {
+                if (!subMessage.IsEmpty()) SubProgressPercentLabel.Text = subMessage;
+            }
             CurrentSubThingLabel.Text = fmName;
-            SubProgressPercentLabel.Text = !subMessage.IsEmpty() ? subMessage : subPercent + "%";
 
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, mainPercent, 100);
         }
