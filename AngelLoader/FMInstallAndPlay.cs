@@ -663,20 +663,12 @@ namespace AngelLoader
 
                     string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
 
-                    // We want to get the main percent back as modified by these install methods, but we can't
-                    // pass by ref because then the thing can't be used in the weird closures and delegates all
-                    // over the place in there. So just pass it in and get it back as a return.
-                    // @MULTISEL(Install main percent return):
-                    // Actually, the only reason we need to get this back is so we can pass the reporter the same
-                    // percentage value as before so it doesn't change when the other text ("Converting files" etc.)
-                    // gets set. If we just make a new reporting method that just changes the text we want to
-                    // change, we can get rid of this whole need to return the value back.
-                    int mainPercentInitial = GetPercentFromValue_Int(i, fmDataList.Length);
+                    int mainPercent = GetPercentFromValue_Int(i, fmDataList.Length);
 
                     // Framework zip extracting is much faster, so use it if possible
                     bool canceled = !await (fmData.ArchivePath.ExtIsZip()
-                        ? Task.Run(() => InstallFMZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercentInitial, fmDataList.Length))
-                        : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercentInitial, fmDataList.Length)));
+                        ? Task.Run(() => InstallFMZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length))
+                        : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
 
                     if (canceled)
                     {

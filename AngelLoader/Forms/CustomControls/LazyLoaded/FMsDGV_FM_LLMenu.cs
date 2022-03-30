@@ -706,7 +706,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == InstallUninstallMenuItem)
             {
-                // @MULTISEL: Make FM install/uninstall code multi-FM aware
                 await FMInstallAndPlay.InstallOrUninstall(_owner.GetSelectedFMs_InOrder());
             }
             else if (sender == DeleteFMMenuItem)
