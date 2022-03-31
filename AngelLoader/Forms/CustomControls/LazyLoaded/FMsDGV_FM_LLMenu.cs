@@ -747,7 +747,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 await Core.PinOrUnpinFM(pin: sender == PinToTopMenuItem
                     ? !_owner.FMsDGV.GetMainSelectedFM().Pinned
                     : sender == ExplicitPinToTopMenuItem);
-                ;
             }
         }
 
