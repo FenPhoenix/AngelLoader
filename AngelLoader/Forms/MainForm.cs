@@ -3998,10 +3998,16 @@ namespace AngelLoader.Forms
 
         private void SetTopRightTabsMultiSelectBlockerPanel(bool visible)
         {
-            TopRightMultiSelectBlockerPanel.Visible = visible;
-            if (!TopSplitContainer.FullScreen)
+            // Always make sure the blocker is covering up the enabled changed work, to prevent flicker of it
+            if (visible)
             {
-                TopRightTabControl.Enabled = !TopRightMultiSelectBlockerPanel.Visible;
+                TopRightMultiSelectBlockerPanel.Visible = true;
+                if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = false;
+            }
+            else
+            {
+                if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = true;
+                TopRightMultiSelectBlockerPanel.Visible = false;
             }
         }
 
