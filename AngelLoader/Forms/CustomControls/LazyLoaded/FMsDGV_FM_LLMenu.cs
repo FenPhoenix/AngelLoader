@@ -732,24 +732,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == ScanFMMenuItem)
             {
-                FanMission[] fms = _owner.FMsDGV.GetSelectedFMs();
-                if (fms.Length == 1)
-                {
-                    if (await FMScan.ScanFMs(fms.ToList(), hideBoxIfZip: true))
-                    {
-                        _owner.RefreshFM(fms[0]);
-                    }
-                }
-                else if (fms.Length > 1)
-                {
-                    FMScanner.ScanOptions? scanOptions = Core.GetScanStuff();
-                    if (scanOptions == null) return;
-
-                    if (await FMScan.ScanFMs(fms.ToList(), scanOptions, hideBoxIfZip: true))
-                    {
-                        _owner.RefreshAllSelectedFMs();
-                    }
-                }
+                await FMScan.ScanSelectedFMs();
             }
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
             {

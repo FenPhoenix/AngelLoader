@@ -1781,39 +1781,6 @@ namespace AngelLoader
             }
         }
 
-        internal static FMScanner.ScanOptions? GetScanStuff()
-        {
-            FMScanner.ScanOptions? scanOptions = null;
-            bool noneSelected;
-            using (var f = new ScanAllFMsForm())
-            {
-                if (f.ShowDialogDark() != DialogResult.OK) return null;
-                noneSelected = f.NoneSelected;
-                if (!noneSelected) scanOptions = f.ScanOptions;
-            }
-
-            if (noneSelected)
-            {
-                Dialogs.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
-                return null;
-            }
-
-            return scanOptions;
-        }
-
-        internal static async Task ScanAllFMs()
-        {
-            if (FMsViewList.Count == 0) return;
-
-            FMScanner.ScanOptions? scanOptions = GetScanStuff();
-            if (scanOptions == null) return;
-
-            if (await FMScan.ScanFMs(FMsViewList, scanOptions))
-            {
-                await View.SortAndSetFilter(forceDisplayFM: true);
-            }
-        }
-
         internal static async Task PinOrUnpinFM(bool pin)
         {
             FanMission[] selFMs = View.GetSelectedFMs();

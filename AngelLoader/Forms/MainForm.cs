@@ -1876,7 +1876,7 @@ namespace AngelLoader.Forms
             await Import.ImportFrom(importType);
         }
 
-        internal async void ScanAllFMsMenuItem_Click(object sender, EventArgs e) => await Core.ScanAllFMs();
+        internal async void ScanAllFMsMenuItem_Click(object sender, EventArgs e) => await FMScan.ScanAllFMs();
 
 #if false
         internal void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
