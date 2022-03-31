@@ -740,17 +740,14 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     ? AudioConvert.WAVToWAV16
                     : AudioConvert.OGGToWAV);
             }
-            else if (sender == PinToTopMenuItem)
+            else if (sender == PinToTopMenuItem ||
+                     sender == ExplicitPinToTopMenuItem ||
+                     sender == ExplicitUnpinFromTopMenuItem)
             {
-                await Core.PinOrUnpinFM(pin: !_owner.FMsDGV.GetMainSelectedFM().Pinned);
-            }
-            else if (sender == ExplicitPinToTopMenuItem)
-            {
-                await Core.PinOrUnpinFM(pin: true);
-            }
-            else if (sender == ExplicitUnpinFromTopMenuItem)
-            {
-                await Core.PinOrUnpinFM(pin: false);
+                await Core.PinOrUnpinFM(pin: sender == PinToTopMenuItem
+                    ? !_owner.FMsDGV.GetMainSelectedFM().Pinned
+                    : sender == ExplicitPinToTopMenuItem);
+                ;
             }
         }
 
