@@ -18,6 +18,10 @@ namespace AngelLoader
         // @BetterErrors(FMAudio):
         // Lots of exceptions possible here... we need to decide which to actually bother the user about...
 
+        private static readonly byte[] _riff = { (byte)'R', (byte)'I', (byte)'F', (byte)'F' };
+        private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
+        private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
+
         #region Public methods
 
         // PERF_TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
@@ -30,9 +34,31 @@ namespace AngelLoader
         // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
         // them to WAV files during installation."
 
-        private static readonly byte[] _riff = { (byte)'R', (byte)'I', (byte)'F', (byte)'F' };
-        private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
-        private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
+        internal static async Task ConvertSelected(AudioConvert convertType)
+        {
+            FanMission[] fms = Core.View.GetSelectedFMs_InOrder();
+            if (fms.Length == 0) return;
+
+            foreach (FanMission fm in fms)
+            {
+                if (!ChecksPassed(fm)) return;
+            }
+
+            try
+            {
+                Core.View.ShowProgressBox(ProgressTask.ConvertFiles);
+
+                foreach (FanMission fm in fms)
+                {
+                    Core.View.SetProgressBoxSecondMessage(GetFMId(fm));
+                    await ConvertToWAVs(fm, convertType, false);
+                }
+            }
+            finally
+            {
+                Core.View.HideProgressBox();
+            }
+        }
 
         // @MULTISEL(Audio conversion):
         // Since we can now convert audio in bulk, we REALLY need a Cancel button. Otherwise the user could be
@@ -243,7 +269,7 @@ namespace AngelLoader
 
         #region Helpers
 
-        internal static bool
+        private static bool
         ChecksPassed(FanMission fm)
         {
             if (!fm.Installed || !GameIsDark(fm.Game)) return false;
