@@ -69,6 +69,12 @@ namespace AngelLoader.Forms
             ProgressBox!.ShowProgressWindow(progressTask, suppressShow);
         }
 
+        public void SetProgressBoxSecondMessage(string message)
+        {
+            ConstructProgressBox();
+            ProgressBox!.SetCurrentThingMessage(message);
+        }
+
         public void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
         {
             ConstructProgressBox();

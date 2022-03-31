@@ -245,7 +245,7 @@ namespace AngelLoader
 
         #region Helpers
 
-        private static bool
+        internal static bool
         ChecksPassed(FanMission fm)
         {
             if (!fm.Installed || !GameIsDark(fm.Game)) return false;

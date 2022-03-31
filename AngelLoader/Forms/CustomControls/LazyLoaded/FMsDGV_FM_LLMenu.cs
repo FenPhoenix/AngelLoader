@@ -754,11 +754,31 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             // @MULTISEL(Convert audio): Test this, and with error cases too!
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
             {
-                var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
-                FanMission[] fms = _owner.FMsDGV.GetSelectedFMs();
+                FanMission[] fms = _owner.FMsDGV.GetSelectedFMs_InOrder();
+                if (fms.Length == 0) return;
+
                 foreach (FanMission fm in fms)
                 {
-                    await FMAudio.ConvertToWAVs(fm, convertType, true);
+                    if (!FMAudio.ChecksPassed(fm)) return;
+                }
+
+                try
+                {
+                    Core.View.ShowProgressBox(ProgressTask.ConvertFiles);
+
+                    var convertType = sender == ConvertWAVsTo16BitMenuItem
+                        ? AudioConvert.WAVToWAV16
+                        : AudioConvert.OGGToWAV;
+
+                    foreach (FanMission fm in fms)
+                    {
+                        Core.View.SetProgressBoxSecondMessage(GetFMId(fm));
+                        await FMAudio.ConvertToWAVs(fm, convertType, false);
+                    }
+                }
+                finally
+                {
+                    Core.View.HideProgressBox();
                 }
             }
             else if (sender == PinToTopMenuItem)

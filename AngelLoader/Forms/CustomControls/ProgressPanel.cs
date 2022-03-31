@@ -183,6 +183,11 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Reporting
 
+        internal void SetCurrentThingMessage(string message)
+        {
+            CurrentThingLabel.Text = message;
+        }
+
         internal void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
         {
             ProgressBar.Value = percent;
