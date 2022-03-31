@@ -751,7 +751,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     }
                 }
             }
-            // @MULTISEL(Convert audio): Test this, and with error cases too!
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
             {
                 FanMission[] fms = _owner.FMsDGV.GetSelectedFMs_InOrder();
