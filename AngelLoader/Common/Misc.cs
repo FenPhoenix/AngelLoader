@@ -43,6 +43,7 @@ namespace AngelLoader
             UninstallFM,
             UninstallFMs,
             ConvertFiles,
+            ConvertFilesManual,
             ImportFromDarkLoader,
             ImportFromNDL,
             ImportFromFMSel,

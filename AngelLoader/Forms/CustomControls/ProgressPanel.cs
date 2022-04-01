@@ -107,7 +107,8 @@ namespace AngelLoader.Forms.CustomControls
                 ProgressTask.InstallFMs => LText.ProgressBox.InstallingFMs,
                 ProgressTask.UninstallFM => LText.ProgressBox.UninstallingFM,
                 ProgressTask.UninstallFMs => LText.ProgressBox.UninstallingFMs,
-                ProgressTask.ConvertFiles => LText.ProgressBox.ConvertingFiles,
+                ProgressTask.ConvertFiles or
+                ProgressTask.ConvertFilesManual => LText.ProgressBox.ConvertingFiles,
                 ProgressTask.ImportFromDarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
                 ProgressTask.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
                 ProgressTask.ImportFromFMSel => LText.ProgressBox.ImportingFromFMSel,
@@ -126,6 +127,7 @@ namespace AngelLoader.Forms.CustomControls
                 is ProgressTask.UninstallFM
                 or ProgressTask.UninstallFMs
                 or ProgressTask.ConvertFiles
+                or ProgressTask.ConvertFilesManual
                 or ProgressTask.ImportFromDarkLoader
                 or ProgressTask.ImportFromNDL
                 or ProgressTask.ImportFromFMSel
@@ -133,7 +135,10 @@ namespace AngelLoader.Forms.CustomControls
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
                 if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
-                ProgressCancelButton.Hide();
+                if (progressTask != ProgressTask.ConvertFilesManual)
+                {
+                    ProgressCancelButton.Hide();
+                }
             }
             else
             {
@@ -153,6 +158,8 @@ namespace AngelLoader.Forms.CustomControls
             BringToFront();
             Show();
             ProgressCancelButton.Focus();
+
+            Localize();
         }
 
         internal void HideThis()
@@ -268,7 +275,9 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void Localize()
         {
-            ProgressCancelButton.Text = LText.Global.Cancel;
+            ProgressCancelButton.Text = _progressTask == ProgressTask.ConvertFilesManual
+                ? LText.Global.Stop
+                : LText.Global.Cancel;
             ProgressCancelButton.CenterH(this);
         }
 
@@ -285,6 +294,9 @@ namespace AngelLoader.Forms.CustomControls
                 case ProgressTask.InstallFM:
                 case ProgressTask.InstallFMs:
                     FMInstallAndPlay.CancelInstallFM();
+                    break;
+                case ProgressTask.ConvertFilesManual:
+                    FMAudio.StopConversion();
                     break;
             }
         }

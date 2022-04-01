@@ -3,7 +3,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
@@ -22,6 +24,8 @@ namespace AngelLoader
         private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
         private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
 
+        private static CancellationTokenSource _conversionCTS = new();
+
         #region Public methods
 
         // PERF_TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
@@ -33,6 +37,8 @@ namespace AngelLoader
         // "The game _can_ play OGG files but it can under some circumstance cause short hiccups, on less powerful
         // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
         // them to WAV files during installation."
+
+        internal static void StopConversion() => _conversionCTS.CancelIfNotDisposed();
 
         internal static async Task ConvertSelected(AudioConvert convertType)
         {
@@ -46,12 +52,42 @@ namespace AngelLoader
 
             try
             {
-                Core.View.ShowProgressBox(ProgressTask.ConvertFiles);
+                _conversionCTS = _conversionCTS.Recreate();
+
+                Core.View.ShowProgressBox(ProgressTask.ConvertFilesManual);
 
                 foreach (FanMission fm in fms)
                 {
                     Core.View.SetProgressBoxSecondMessage(GetFMId(fm));
                     await ConvertToWAVs(fm, convertType, false);
+
+                    // @MULTISEL(Audio convert manual): Notes on cancel/stop:
+                    // We should make it so we can stop in the middle of a conversion, not just after each one.
+                    // We'll need to rewrite the loop so instead of a bunch of single convert-and-copy operations
+                    // in a row, we should convert all at once into a temp folder structure, during which we allow
+                    // stopping, and then only at the very end copy them all into the FM's folder (during which we
+                    // don't allow stopping, disable the button I guess.)
+                    if (_conversionCTS.IsCancellationRequested)
+                    {
+                        // @MULTISEL(Audio convert manual, "stop" dialog message) - make this final or get rid of it or whatever
+                        (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                            "Really stop converting audio for the selected FM(s)?\r\n" +
+                            "Whatever has been done to this point won't (can't) be undone, but no more FMs' audio files will be converted.",
+                            LText.AlertMessages.Alert,
+                            MessageBoxIcon.None,
+                            false,
+                            "Continue",
+                            "Stop"
+                        );
+                        if (cancel)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            _conversionCTS = _conversionCTS.Recreate();
+                        }
+                    }
                 }
             }
             finally
