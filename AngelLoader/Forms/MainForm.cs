@@ -1086,11 +1086,33 @@ namespace AngelLoader.Forms
 
             if (KeyPressesDisabled) return;
 
-            void SelectAndSuppress(int index, bool singleSelect = false)
+            void SelectAndSuppress(int index, bool singleSelect = false, bool stupidHack = false)
             {
                 if (singleSelect)
                 {
-                    FMsDGV.SelectSingle(index);
+                    // Yes, yet another instance of this repellent garbage to work around DGV having no brain cells
+                    // is needed here too...
+                    if (stupidHack)
+                    {
+                        try
+                        {
+                            EverythingPanel.SuspendDrawing();
+
+                            FMsDGV.MultiSelect = false;
+                            FMsDGV.SelectSingle(index, suppressSelectionChangedEvent: true);
+                            FMsDGV.SelectProperly();
+                            FMsDGV.MultiSelect = true;
+                            FMsDGV.SelectSingle(index);
+                        }
+                        finally
+                        {
+                            EverythingPanel.ResumeDrawing();
+                        }
+                    }
+                    else
+                    {
+                        FMsDGV.SelectSingle(index);
+                    }
                 }
                 else
                 {
@@ -1138,19 +1160,36 @@ namespace AngelLoader.Forms
             }
             #region FMsDGV nav
             // @MULTISEL(FMsDGV nav): Regression: These now reload the FM when selection is at top/bottom again
-            // @MULTISEL(FMsDGV nav): Regression: Jump to top/bottom only selects top/bottom FM but doesn't scroll to it
+            // @MULTISEL(FMsDGV nav): Regression: Jump to top/bottom with shift-select doesn't select all like you'd expect
+            // It selects current and [top/bottom] but none in between
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    SelectAndSuppress(0, singleSelect: !e.Shift);
+                    try
+                    {
+                        FMsDGV.FirstDisplayedScrollingRowIndex = 0;
+                    }
+                    catch
+                    {
+                        // no room is available to display rows
+                    }
+                    SelectAndSuppress(0, singleSelect: !e.Shift, stupidHack: true);
                 }
             }
             else if (e.KeyCode == Keys.End || (e.Control && e.KeyCode == Keys.Down))
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift);
+                    try
+                    {
+                        FMsDGV.FirstDisplayedScrollingRowIndex = FMsDGV.Rows[FMsDGV.RowCount - 1].Index;
+                    }
+                    catch
+                    {
+                        // no room is available to display rows
+                    }
+                    SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, stupidHack: true);
                 }
             }
             // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
