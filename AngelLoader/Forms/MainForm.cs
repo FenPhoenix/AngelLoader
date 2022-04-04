@@ -22,6 +22,13 @@ the scroll bar was).
 
 @MULTISEL: When switching game tabs, multi-selections are not saved. Do we want this behavior or no?
 This is part of the decision of "how temporary" do we want multi-selections to be.
+
+@MULTISEL(Theory about the Stupid Hack for selection point syncing):
+Is it because we go like Row 5 -> select, Row 0 -> deselect, but "deselect" is counted as a selection "thing",
+so that the last point where a selection "thing" happened is counted as the point from where a new keyboard
+selection will start? So we're selected on only Row 5 but "last selection thing" is Row 0 so we start from Row 0?
+If that's the case, we could remove the stupid hack from everywhere and just change the selection in a way that
+makes DGV's idea of things match the ACTUAL blatantly displayed user-facing idea.
 */
 
 using System;
