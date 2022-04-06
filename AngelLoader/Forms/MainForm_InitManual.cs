@@ -417,7 +417,6 @@ namespace AngelLoader.Forms
             FMsDGV.ColumnHeaderMouseClick += FMsDGV_ColumnHeaderMouseClick;
             FMsDGV.SelectionChanged += FMsDGV_SelectionChanged;
             FMsDGV.KeyDown += FMsDGV_KeyDown;
-            FMsDGV.KeyPress += FMsDGV_KeyPress;
             FMsDGV.MouseDown += FMsDGV_MouseDown;
             // 
             // GameTypeColumn

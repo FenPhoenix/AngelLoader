@@ -4118,36 +4118,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        #region Crappy hack for basic go-to-first-typed-letter
-
-        // TODO: Make this into a working, polished, documented feature
-
-        private void FMsDGV_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar.IsAsciiAlpha())
-            {
-                int rowIndex = -1;
-
-                for (int i = 0; i < FMsDGV.RowCount; i++)
-                {
-                    if (FMsDGV.Rows[i].Cells[(int)Column.Title].Value.ToString().StartsWithI(e.KeyChar.ToString()))
-                    {
-                        rowIndex = i;
-                        break;
-                    }
-                }
-
-                if (rowIndex > -1)
-                {
-                    FMsDGV.SelectSingle(rowIndex);
-                    FMsDGV.SelectProperly();
-                    FMsDGV.FirstDisplayedScrollingRowIndex = FMsDGV.MainSelectedRow!.Index;
-                }
-            }
-        }
-
-        #endregion
-
         private void FMsDGV_KeyDown(object sender, KeyEventArgs e)
         {
             // This is in here because it doesn't really work right if we put it in MainForm_KeyDown anyway
