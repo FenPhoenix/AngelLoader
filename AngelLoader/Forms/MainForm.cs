@@ -1166,9 +1166,9 @@ namespace AngelLoader.Forms
                 }
             }
             #region FMsDGV nav
-            // @MULTISEL(FMsDGV nav): Regression: These now reload the FM when selection is at top/bottom again
             // @MULTISEL(FMsDGV nav): Regression: Jump to top/bottom with shift-select doesn't select all like you'd expect
             // It selects current and [top/bottom] but none in between
+            // @MULTISEL(FMsDGV nav): Top/bottom wall bump should deselect all but top/bottom row
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
@@ -1181,7 +1181,14 @@ namespace AngelLoader.Forms
                     {
                         // no room is available to display rows
                     }
-                    SelectAndSuppress(0, singleSelect: !e.Shift, stupidHack: true);
+                    if (FMsDGV.MainSelectedRow == FMsDGV.Rows[0])
+                    {
+                        e.SuppressKeyPress = true;
+                    }
+                    else
+                    {
+                        SelectAndSuppress(0, singleSelect: !e.Shift, stupidHack: true);
+                    }
                 }
             }
             else if (e.KeyCode == Keys.End || (e.Control && e.KeyCode == Keys.Down))
@@ -1196,7 +1203,14 @@ namespace AngelLoader.Forms
                     {
                         // no room is available to display rows
                     }
-                    SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, stupidHack: true);
+                    if (FMsDGV.MainSelectedRow == FMsDGV.Rows[FMsDGV.RowCount - 1])
+                    {
+                        e.SuppressKeyPress = true;
+                    }
+                    else
+                    {
+                        SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, stupidHack: true);
+                    }
                 }
             }
             // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
