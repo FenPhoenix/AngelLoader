@@ -402,6 +402,19 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        internal void SetRowSelected(int index, bool selected, bool suppressEvent)
+        {
+            try
+            {
+                if (suppressEvent) _suppressSelectionEvent = true;
+                Rows[index].Selected = selected;
+            }
+            finally
+            {
+                if (suppressEvent) _suppressSelectionEvent = false;
+            }
+        }
+
         protected override void OnSelectionChanged(EventArgs e)
         {
             if (!_suppressSelectionEvent) SetMainSelectedRow();

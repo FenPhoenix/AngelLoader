@@ -1129,6 +1129,50 @@ namespace AngelLoader.Forms
                 e.SuppressKeyPress = true;
             }
 
+            void HandleHomeOrEnd(bool home)
+            {
+                if (!FMsDGV.RowSelected() || (!FMsDGV.Focused && !CursorOverControl(FMsDGV))) return;
+
+                var edgeRow = FMsDGV.Rows[home ? 0 : FMsDGV.RowCount - 1];
+                try
+                {
+                    FMsDGV.FirstDisplayedScrollingRowIndex = edgeRow.Index;
+                }
+                catch
+                {
+                    // no room is available to display rows
+                }
+                if (FMsDGV.MainSelectedRow == edgeRow)
+                {
+                    e.SuppressKeyPress = true;
+                }
+                else
+                {
+                    using (new DisableEvents(this))
+                    {
+                        if (e.Shift)
+                        {
+                            for (int i = 0; i < FMsDGV.RowCount; i++)
+                            {
+                                var row = FMsDGV.Rows[i];
+                                bool sel = home
+                                    ? row.Index <= FMsDGV.MainSelectedRow!.Index
+                                    : row.Index >= FMsDGV.MainSelectedRow!.Index;
+                                FMsDGV.SetRowSelected(row.Index, selected: sel, suppressEvent: true);
+                            }
+                        }
+                        else
+                        {
+                            FMsDGV.ClearSelection();
+                        }
+                    }
+                    SelectAndSuppress(edgeRow.Index, singleSelect: !e.Shift, stupidHack: true);
+                    // Have to do these manually because we're suppressing the normal chain of selection logic
+                    SetTopRightBlockerVisible();
+                    UpdateUIControlsForMultiSelectState(FMsDGV.GetMainSelectedFM());
+                }
+            }
+
             // Let user use Home+End keys to navigate a filter textbox if it's focused, even if the mouse is over
             // the FMs list
             if ((FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused) &&
@@ -1171,47 +1215,11 @@ namespace AngelLoader.Forms
             // @MULTISEL(FMsDGV nav): Top/bottom wall bump should deselect all but top/bottom row
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
-                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
-                {
-                    try
-                    {
-                        FMsDGV.FirstDisplayedScrollingRowIndex = 0;
-                    }
-                    catch
-                    {
-                        // no room is available to display rows
-                    }
-                    if (FMsDGV.MainSelectedRow == FMsDGV.Rows[0])
-                    {
-                        e.SuppressKeyPress = true;
-                    }
-                    else
-                    {
-                        SelectAndSuppress(0, singleSelect: !e.Shift, stupidHack: true);
-                    }
-                }
+                HandleHomeOrEnd(home: true);
             }
             else if (e.KeyCode == Keys.End || (e.Control && e.KeyCode == Keys.Down))
             {
-                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
-                {
-                    try
-                    {
-                        FMsDGV.FirstDisplayedScrollingRowIndex = FMsDGV.Rows[FMsDGV.RowCount - 1].Index;
-                    }
-                    catch
-                    {
-                        // no room is available to display rows
-                    }
-                    if (FMsDGV.MainSelectedRow == FMsDGV.Rows[FMsDGV.RowCount - 1])
-                    {
-                        e.SuppressKeyPress = true;
-                    }
-                    else
-                    {
-                        SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, stupidHack: true);
-                    }
-                }
+                HandleHomeOrEnd(home: false);
             }
             // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
             else if (e.KeyCode is Keys.PageUp or Keys.Up)
@@ -4071,6 +4079,13 @@ namespace AngelLoader.Forms
             }
         }
 
+        private bool SetTopRightBlockerVisible()
+        {
+            bool val = FMsDGV.MultipleFMsSelected();
+            SetTopRightTabsMultiSelectBlockerPanel(val);
+            return val;
+        }
+
         private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
             // We don't need this because there's another check in ChangeSelection(), but we can avoid running
@@ -4079,13 +4094,7 @@ namespace AngelLoader.Forms
 
             // Don't run selection logic for extra selected rows, to prevent a possible cascade of heavy operations
             // from being run during multi-select (scanning, caching, who knows what)
-            if (FMsDGV.MultipleFMsSelected())
-            {
-                SetTopRightTabsMultiSelectBlockerPanel(true);
-                return;
-            }
-
-            SetTopRightTabsMultiSelectBlockerPanel(false);
+            if (SetTopRightBlockerVisible()) return;
 
             await ChangeSelection(FMsDGV.MainSelectedRow?.Index ?? -1);
         }
