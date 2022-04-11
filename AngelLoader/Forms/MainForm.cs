@@ -1210,8 +1210,6 @@ namespace AngelLoader.Forms
                 }
             }
             #region FMsDGV nav
-            // @MULTISEL(FMsDGV nav): Regression: Jump to top/bottom with shift-select doesn't select all like you'd expect
-            // It selects current and [top/bottom] but none in between
             // @MULTISEL(FMsDGV nav): Top/bottom wall bump should deselect all but top/bottom row
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
