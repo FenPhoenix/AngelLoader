@@ -1145,6 +1145,18 @@ namespace AngelLoader.Forms
                 if (FMsDGV.MainSelectedRow == edgeRow)
                 {
                     e.SuppressKeyPress = true;
+                    if (!e.Shift)
+                    {
+                        using (new DisableEvents(this))
+                        {
+                            for (int i = 0; i < FMsDGV.RowCount; i++)
+                            {
+                                var row = FMsDGV.Rows[i];
+                                if (row == edgeRow) continue;
+                                FMsDGV.SetRowSelected(row.Index, selected: false, suppressEvent: true);
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -1210,7 +1222,7 @@ namespace AngelLoader.Forms
                 }
             }
             #region FMsDGV nav
-            // @MULTISEL(FMsDGV nav): Top/bottom wall bump should deselect all but top/bottom row
+            // @MULTISEL(FMsDGV nav): Top/bottom wall bump should deselect all but top/bottom row (for arrows/page keys)
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
                 HandleHomeOrEnd(home: true);
@@ -1224,7 +1236,7 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    if (FMsDGV.SelectedRows.Contains(FMsDGV.Rows[0]))
+                    if (FMsDGV.Rows[0].Selected)
                     {
                         SelectAndSuppress(0);
                     }
@@ -1239,7 +1251,7 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    if (FMsDGV.SelectedRows.Contains(FMsDGV.Rows[FMsDGV.RowCount - 1]))
+                    if (FMsDGV.Rows[FMsDGV.RowCount - 1].Selected)
                     {
                         SelectAndSuppress(FMsDGV.RowCount - 1);
                     }
