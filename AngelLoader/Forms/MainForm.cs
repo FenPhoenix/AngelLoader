@@ -1224,6 +1224,7 @@ namespace AngelLoader.Forms
             #region FMsDGV nav
             // @MULTISEL(FMsDGV nav): Shift-selecting "backwards" (so items deselect back toward main selection)
             // doesn't work if main selection is an edge row.
+            // @MULTISEL(FMsDGV nav): We need to do hack-select on no-shift arrow key press at edge when multi are selected
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
                 HandleHomeOrEnd(home: true);
