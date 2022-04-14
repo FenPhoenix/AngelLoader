@@ -1222,7 +1222,8 @@ namespace AngelLoader.Forms
                 }
             }
             #region FMsDGV nav
-            // @MULTISEL(FMsDGV nav): Top/bottom wall bump should deselect all but top/bottom row (for arrows/page keys)
+            // @MULTISEL(FMsDGV nav): Shift-selecting "backwards" (so items deselect back toward main selection)
+            // doesn't work if main selection is an edge row.
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
                 HandleHomeOrEnd(home: true);
@@ -1239,6 +1240,7 @@ namespace AngelLoader.Forms
                     if (FMsDGV.Rows[0].Selected)
                     {
                         SelectAndSuppress(0);
+                        HandleHomeOrEnd(home: true);
                     }
                     else
                     {
@@ -1254,6 +1256,7 @@ namespace AngelLoader.Forms
                     if (FMsDGV.Rows[FMsDGV.RowCount - 1].Selected)
                     {
                         SelectAndSuppress(FMsDGV.RowCount - 1);
+                        HandleHomeOrEnd(home: false);
                     }
                     else
                     {
