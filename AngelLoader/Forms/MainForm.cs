@@ -23,7 +23,7 @@ the scroll bar was).
 @MULTISEL: When switching game tabs, multi-selections are not saved. Do we want this behavior or no?
 This is part of the decision of "how temporary" do we want multi-selections to be.
 
-@MULTISEL(Theory about the Stupid Hack for selection point syncing):
+@MULTISEL(Theory about the Stupid Hack for selection point syncing / @SEL_SYNC_HACK):
 Is it because we go like Row 5 -> select, Row 0 -> deselect, but "deselect" is counted as a selection "thing",
 so that the last point where a selection "thing" happened is counted as the point from where a new keyboard
 selection will start? So we're selected on only Row 5 but "last selection thing" is Row 0 so we start from Row 0?
@@ -1093,18 +1093,17 @@ namespace AngelLoader.Forms
 
             if (KeyPressesDisabled) return;
 
-            void SelectAndSuppress(int index, bool singleSelect = false, bool stupidHack = false)
+            void SelectAndSuppress(int index, bool singleSelect = false, bool selectionSyncHack = false)
             {
                 if (singleSelect)
                 {
-                    // Yes, yet another instance of this repellent garbage to work around DGV having no brain cells
-                    // is needed here too...
-                    if (stupidHack)
+                    if (selectionSyncHack)
                     {
                         try
                         {
                             EverythingPanel.SuspendDrawing();
 
+                            // @SEL_SYNC_HACK
                             FMsDGV.MultiSelect = false;
                             FMsDGV.SelectSingle(index, suppressSelectionChangedEvent: true);
                             FMsDGV.SelectProperly();
@@ -1178,7 +1177,7 @@ namespace AngelLoader.Forms
                             FMsDGV.ClearSelection();
                         }
                     }
-                    SelectAndSuppress(edgeRow.Index, singleSelect: !e.Shift, stupidHack: true);
+                    SelectAndSuppress(edgeRow.Index, singleSelect: !e.Shift, selectionSyncHack: true);
                     // Have to do these manually because we're suppressing the normal chain of selection logic
                     SetTopRightBlockerVisible();
                     UpdateUIControlsForMultiSelectState(FMsDGV.GetMainSelectedFM());
@@ -1241,7 +1240,7 @@ namespace AngelLoader.Forms
                     {
                         using (!e.Shift ? new DisableEvents(this) : null)
                         {
-                            SelectAndSuppress(0, singleSelect: !e.Shift, stupidHack: !e.Shift);
+                            SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                         }
                         HandleHomeOrEnd(home: true);
                     }
@@ -1260,7 +1259,7 @@ namespace AngelLoader.Forms
                     {
                         using (!e.Shift ? new DisableEvents(this) : null)
                         {
-                            SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, stupidHack: !e.Shift);
+                            SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                         }
                         HandleHomeOrEnd(home: false);
                     }
@@ -2891,6 +2890,7 @@ namespace AngelLoader.Forms
                         selectDoneAtLeastOnce = true;
                     }
 
+                    // @SEL_SYNC_HACK
                     // Stupid hack to attempt to prevent multiselect-set-popping-back-to-starting-at-list-top
                     FMsDGV.MultiSelect = false;
                     DoSelect();
@@ -4137,6 +4137,7 @@ namespace AngelLoader.Forms
             }
             else
             {
+                // @SEL_SYNC_HACK
                 // Stupid hack to attempt to prevent multiselect-set-popping-back-to-starting-at-list-top
                 if (index > -1)
                 {
@@ -4762,7 +4763,7 @@ namespace AngelLoader.Forms
         // @MULTISEL(Context menu sel state update): Since this runs always on selection change...
         // ... we might not need to call it on FM load.
         // NOTE(Context menu sel state update):
-        // Keep this light and fast, because it gets called like 3 times every selection due to the stupid hacks
+        // Keep this light and fast, because it gets called like 3 times every selection due to the @SEL_SYNC_HACK
         // for preventing "multi-select starts from top row even though our selection is not actually at the top
         // row"
         internal void UpdateUIControlsForMultiSelectState(FanMission fm)
