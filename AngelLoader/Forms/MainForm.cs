@@ -29,6 +29,14 @@ so that the last point where a selection "thing" happened is counted as the poin
 selection will start? So we're selected on only Row 5 but "last selection thing" is Row 0 so we start from Row 0?
 If that's the case, we could remove the stupid hack from everywhere and just change the selection in a way that
 makes DGV's idea of things match the ACTUAL blatantly displayed user-facing idea.
+@MULTISEL(@SEL_SYNC_HACK enlightenment):
+There's the concept of "current row" (CurrentRow) and "current cell" (CurrentCell). CurrentRow is read-only (of
+bloody course), but it can be set in a roundabout way by setting CurrentCell to a cell in the current row. BUT,
+setting this causes the row to scroll into view (as documented) and possibly also some other goddamn visual garbage,
+visible selection change/flickering etc.
+It's conceptually much cleaner to use this method, but we would then have to hack around this infuriating unwanted
+behavior that comes part and parcel with what should be a simple #$@!ing property flip.
+Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
 */
 
 using System;
@@ -1128,7 +1136,7 @@ namespace AngelLoader.Forms
                 e.SuppressKeyPress = true;
             }
 
-            void HandleHomeOrEnd(bool home)
+            async Task HandleHomeOrEnd(bool home)
             {
                 if (!FMsDGV.RowSelected() || (!FMsDGV.Focused && !CursorOverControl(FMsDGV))) return;
 
@@ -1154,6 +1162,11 @@ namespace AngelLoader.Forms
                                 if (row == edgeRow) continue;
                                 FMsDGV.SetRowSelected(row.Index, selected: false, suppressEvent: true);
                             }
+                        }
+                        if (FMsDGV.GetMainSelectedFM() != _displayedFM)
+                        {
+                            _displayedFM = await Core.DisplayFM();
+                            SetTopRightBlockerVisible();
                         }
                     }
                 }
@@ -1225,11 +1238,11 @@ namespace AngelLoader.Forms
             // doesn't work if main selection is an edge row.
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
-                HandleHomeOrEnd(home: true);
+                await HandleHomeOrEnd(home: true);
             }
             else if (e.KeyCode == Keys.End || (e.Control && e.KeyCode == Keys.Down))
             {
-                HandleHomeOrEnd(home: false);
+                await HandleHomeOrEnd(home: false);
             }
             // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
             else if (e.KeyCode is Keys.PageUp or Keys.Up)
@@ -1242,7 +1255,7 @@ namespace AngelLoader.Forms
                         {
                             SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                         }
-                        HandleHomeOrEnd(home: true);
+                        await HandleHomeOrEnd(home: true);
                     }
                     else
                     {
@@ -1261,7 +1274,7 @@ namespace AngelLoader.Forms
                         {
                             SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                         }
-                        HandleHomeOrEnd(home: false);
+                        await HandleHomeOrEnd(home: false);
                     }
                     else
                     {
