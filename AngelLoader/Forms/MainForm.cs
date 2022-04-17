@@ -1101,27 +1101,47 @@ namespace AngelLoader.Forms
 
             if (KeyPressesDisabled) return;
 
+            // Let user use Home+End keys to navigate a filter textbox if it's focused, even if the mouse is over
+            // the FMs list
+            if ((FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused) &&
+                (e.KeyCode is Keys.Home or Keys.End))
+            {
+                return;
+            }
+
+            #region FMsDGV nav
+
+            // NIGHTMARE REALM
+            // This code is absurd. Bow howdy I hope I never have to touch it again.
+
+            void DoSelectionSyncHack(int index, bool suspendResume = true)
+            {
+                try
+                {
+                    if (suspendResume) EverythingPanel.SuspendDrawing();
+
+                    // @SEL_SYNC_HACK
+                    FMsDGV.MultiSelect = false;
+                    FMsDGV.SelectSingle(index, suppressSelectionChangedEvent: true);
+                    FMsDGV.SelectProperly();
+                    FMsDGV.MultiSelect = true;
+                    FMsDGV.SelectSingle(index);
+                }
+                finally
+                {
+                    if (suspendResume) EverythingPanel.ResumeDrawing();
+                }
+            }
+
             void SelectAndSuppress(int index, bool singleSelect = false, bool selectionSyncHack = false)
             {
+                bool fmsDifferent = GetMainSelectedFMOrNull() != _displayedFM;
+
                 if (singleSelect)
                 {
                     if (selectionSyncHack)
                     {
-                        try
-                        {
-                            EverythingPanel.SuspendDrawing();
-
-                            // @SEL_SYNC_HACK
-                            FMsDGV.MultiSelect = false;
-                            FMsDGV.SelectSingle(index, suppressSelectionChangedEvent: true);
-                            FMsDGV.SelectProperly();
-                            FMsDGV.MultiSelect = true;
-                            FMsDGV.SelectSingle(index);
-                        }
-                        finally
-                        {
-                            EverythingPanel.ResumeDrawing();
-                        }
+                        DoSelectionSyncHack(index, suspendResume: fmsDifferent);
                     }
                     else
                     {
@@ -1136,7 +1156,7 @@ namespace AngelLoader.Forms
                 e.SuppressKeyPress = true;
             }
 
-            async Task HandleHomeOrEnd(bool home)
+            async Task HandleHomeOrEnd(bool home, bool selectionSyncHack = true)
             {
                 if (!FMsDGV.RowSelected() || (!FMsDGV.Focused && !CursorOverControl(FMsDGV))) return;
 
@@ -1163,10 +1183,19 @@ namespace AngelLoader.Forms
                                 FMsDGV.SetRowSelected(row.Index, selected: false, suppressEvent: true);
                             }
                         }
-                        if (FMsDGV.GetMainSelectedFM() != _displayedFM)
+                        bool fmsDifferent = FMsDGV.GetMainSelectedFM() != _displayedFM;
+                        if (fmsDifferent)
                         {
                             _displayedFM = await Core.DisplayFM();
-                            SetTopRightBlockerVisible();
+                        }
+                        SetTopRightBlockerVisible();
+
+                        if (selectionSyncHack)
+                        {
+                            using (new DisableEvents(this))
+                            {
+                                DoSelectionSyncHack(edgeRow.Index, suspendResume: fmsDifferent);
+                            }
                         }
                     }
                 }
@@ -1197,15 +1226,59 @@ namespace AngelLoader.Forms
                 }
             }
 
-            // Let user use Home+End keys to navigate a filter textbox if it's focused, even if the mouse is over
-            // the FMs list
-            if ((FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused) &&
-                (e.KeyCode is Keys.Home or Keys.End))
+            // @MULTISEL(FMsDGV nav): Shift-selecting "backwards" (so items deselect back toward main selection)
+            // doesn't work if main selection is an edge row.
+            if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
-                return;
+                await HandleHomeOrEnd(home: true);
+            }
+            else if (e.KeyCode == Keys.End || (e.Control && e.KeyCode == Keys.Down))
+            {
+                await HandleHomeOrEnd(home: false);
+            }
+            // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
+            else if (e.KeyCode is Keys.PageUp or Keys.Up)
+            {
+                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+                {
+                    if (FMsDGV.Rows[0].Selected)
+                    {
+                        using (!e.Shift ? new DisableEvents(this) : null)
+                        {
+                            SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
+                        }
+                        await HandleHomeOrEnd(home: true, selectionSyncHack: e.Shift);
+                    }
+                    else
+                    {
+                        FMsDGV.SendKeyDown(e);
+                        e.SuppressKeyPress = true;
+                    }
+                }
+            }
+            else if (e.KeyCode is Keys.PageDown or Keys.Down)
+            {
+                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+                {
+                    if (FMsDGV.Rows[FMsDGV.RowCount - 1].Selected)
+                    {
+                        using (!e.Shift ? new DisableEvents(this) : null)
+                        {
+                            SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
+                        }
+                        await HandleHomeOrEnd(home: false, selectionSyncHack: e.Shift);
+                    }
+                    else
+                    {
+                        FMsDGV.SendKeyDown(e);
+                        e.SuppressKeyPress = true;
+                    }
+                }
             }
 
-            if (e.KeyCode == Keys.Enter)
+            #endregion
+
+            else if (e.KeyCode == Keys.Enter)
             {
                 FanMission fm;
                 if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported((fm = FMsDGV.GetMainSelectedFM()).Game))
@@ -1233,56 +1306,6 @@ namespace AngelLoader.Forms
                     FMsDGV.Focus();
                 }
             }
-            #region FMsDGV nav
-            // @MULTISEL(FMsDGV nav): Shift-selecting "backwards" (so items deselect back toward main selection)
-            // doesn't work if main selection is an edge row.
-            else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
-            {
-                await HandleHomeOrEnd(home: true);
-            }
-            else if (e.KeyCode == Keys.End || (e.Control && e.KeyCode == Keys.Down))
-            {
-                await HandleHomeOrEnd(home: false);
-            }
-            // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
-            else if (e.KeyCode is Keys.PageUp or Keys.Up)
-            {
-                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
-                {
-                    if (FMsDGV.Rows[0].Selected)
-                    {
-                        using (!e.Shift ? new DisableEvents(this) : null)
-                        {
-                            SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
-                        }
-                        await HandleHomeOrEnd(home: true);
-                    }
-                    else
-                    {
-                        FMsDGV.SendKeyDown(e);
-                        e.SuppressKeyPress = true;
-                    }
-                }
-            }
-            else if (e.KeyCode is Keys.PageDown or Keys.Down)
-            {
-                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
-                {
-                    if (FMsDGV.Rows[FMsDGV.RowCount - 1].Selected)
-                    {
-                        using (!e.Shift ? new DisableEvents(this) : null)
-                        {
-                            SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
-                        }
-                        await HandleHomeOrEnd(home: false);
-                    }
-                    else
-                    {
-                        FMsDGV.SendKeyDown(e);
-                        e.SuppressKeyPress = true;
-                    }
-                }
-            }
             else if (e.KeyCode == Keys.F5)
             {
                 if (FMsDGV.Focused || CursorOverControl(FMsDGV))
@@ -1299,7 +1322,6 @@ namespace AngelLoader.Forms
                     }
                 }
             }
-            #endregion
             else if (e.Control)
             {
                 if (e.KeyCode == Keys.F)
