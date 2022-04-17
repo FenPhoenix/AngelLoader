@@ -1822,6 +1822,8 @@ namespace AngelLoader.Forms
 
             try
             {
+                if (block) Cursor = Cursors.WaitCursor;
+
                 // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
                 EverythingPanel.SuspendDrawing();
                 ViewBlocked = block;
@@ -1831,6 +1833,8 @@ namespace AngelLoader.Forms
             finally
             {
                 EverythingPanel.ResumeDrawing();
+
+                if (!block) Cursor = Cursors.Default;
             }
         }
 
