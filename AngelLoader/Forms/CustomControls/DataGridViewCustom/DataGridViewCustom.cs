@@ -381,7 +381,52 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Event overrides
 
-        internal DataGridViewRow? MainSelectedRow = null;
+#if false
+        // Still skittish about this. Don't wanna enable it unless I know it even hits the cached value like ever,
+        // and doesn't cause problems.
+
+        // Stupid bloody SelectedRows rebuilds itself EVERY. TIME. YOU. CALL. IT.
+        // So cache the frigging thing so we don't do a full rebuild if we haven't changed.
+        private DataGridViewSelectedRowCollection? _selectedRowsCached;
+        [Browsable(false)]
+        public new DataGridViewSelectedRowCollection SelectedRows => _selectedRowsCached ??= base.SelectedRows;
+#endif
+
+        internal DataGridViewRow? MainSelectedRow;
+
+        // Better, faster (especially with a large selection set) way of doing the hack that prevents the glitched
+        // last row on first jump-to-end when the end is scrolled offscreen.
+        private bool _fmsListOneTimeHackRefreshDone;
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new int FirstDisplayedScrollingRowIndex
+        {
+            get => base.FirstDisplayedScrollingRowIndex;
+            set
+            {
+                bool needsResume = false;
+                try
+                {
+                    // The hack only works when owner form is visible, and it's only done once, so don't waste it.
+                    if (!_fmsListOneTimeHackRefreshDone && _owner.Visible)
+                    {
+                        needsResume = true;
+                        this.SuspendDrawing();
+
+                        try { base.FirstDisplayedScrollingRowIndex++; } catch {/* ignore */}
+                        try { base.FirstDisplayedScrollingRowIndex--; } catch {/* ignore */}
+                        _fmsListOneTimeHackRefreshDone = true;
+                    }
+                    base.FirstDisplayedScrollingRowIndex = value;
+                }
+                finally
+                {
+                    // Don't refresh cause we'll refresh automatically as a result of the scrolling, and calling
+                    // Refresh() just causes visual issues and/or is slow
+                    if (needsResume) this.ResumeDrawing(refresh: false);
+                }
+            }
+        }
 
         private void SetMainSelectedRow()
         {
@@ -417,6 +462,9 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnSelectionChanged(EventArgs e)
         {
+#if false
+            _selectedRowsCached = null;
+#endif
             if (!_suppressSelectionEvent) SetMainSelectedRow();
             base.OnSelectionChanged(e);
         }

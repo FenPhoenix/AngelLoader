@@ -1227,7 +1227,7 @@ namespace AngelLoader.Forms
             }
 
             // @MULTISEL(FMsDGV nav): Shift-selecting "backwards" (so items deselect back toward main selection)
-            // doesn't work if main selection is an edge row.
+            // doesn't work with Home/End (but now works with arrows/page keys)
             if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
                 await HandleHomeOrEnd(home: true);
@@ -1241,7 +1241,8 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    if (FMsDGV.Rows[0].Selected)
+                    var firstRow = FMsDGV.Rows[0];
+                    if (firstRow.Selected && FMsDGV.MainSelectedRow != firstRow)
                     {
                         using (!e.Shift ? new DisableEvents(this) : null)
                         {
@@ -1260,7 +1261,8 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    if (FMsDGV.Rows[FMsDGV.RowCount - 1].Selected)
+                    var lastRow = FMsDGV.Rows[FMsDGV.RowCount - 1];
+                    if (lastRow.Selected && FMsDGV.MainSelectedRow != lastRow)
                     {
                         using (!e.Shift ? new DisableEvents(this) : null)
                         {
@@ -4157,10 +4159,6 @@ namespace AngelLoader.Forms
             await ChangeSelection(FMsDGV.MainSelectedRow?.Index ?? -1);
         }
 
-        // Okay, boys and girls. We get the glitched last row on keyboard-scroll if we don't do this idiot thing.
-        // No, we can't do any of the normal things you'd think would work in RefreshFMsList() itself. I tried.
-        // Everything is stupid. Whatever.
-        private bool _fmsListOneTimeHackRefreshDone;
         private async Task ChangeSelection(int index = -1)
         {
             if (EventsDisabled) return;
@@ -4188,13 +4186,6 @@ namespace AngelLoader.Forms
                 }
 
                 FMsDGV.SelectProperly();
-
-                if (!_fmsListOneTimeHackRefreshDone)
-                {
-                    SelectedFM selFM = index == -1 ? FMsDGV.GetMainSelectedFMPosInfo() : FMsDGV.GetFMPosInfoFromIndex(index);
-                    RefreshFMsList(selFM, startup: false, KeepSel.TrueNearest);
-                    _fmsListOneTimeHackRefreshDone = true;
-                }
 
                 _displayedFM = await Core.DisplayFM(index: index);
             }
