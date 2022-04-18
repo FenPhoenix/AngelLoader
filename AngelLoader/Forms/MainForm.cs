@@ -943,9 +943,10 @@ namespace AngelLoader.Forms
                 _displayedFM = await Core.DisplayFM();
             }
 
-            FMsDGV.Focus();
-
             if (!Visible) Show();
+
+            // Must come after Show() I guess or it doesn't work?!
+            FMsDGV.Focus();
 
 #if !ReleasePublic
             //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
