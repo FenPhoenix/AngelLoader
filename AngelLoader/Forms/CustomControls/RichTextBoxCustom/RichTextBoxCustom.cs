@@ -83,7 +83,7 @@ namespace AngelLoader.Forms.CustomControls
         // .wri file and have fallen back to treating it as unparsed plain text.
         private bool _currentReadmeSupportsEncodingChange;
 
-        private MainForm _owner = null!;
+        private Form _owner = null!;
 
         #endregion
 
@@ -202,7 +202,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public methods
 
-        internal void InjectOwner(MainForm owner) => _owner = owner;
+        internal void InjectOwner(Form owner) => _owner = owner;
 
         #region Zoom stuff
 

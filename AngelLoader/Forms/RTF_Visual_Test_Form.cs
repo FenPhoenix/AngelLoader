@@ -68,6 +68,8 @@ namespace AngelLoader.Forms
         {
             InitializeComponent();
 
+            RTFBox.InjectOwner(this);
+
             ConfigFile = Path.Combine(ConfigDir, "Config.ini");
 
             var rtfFiles = Directory
