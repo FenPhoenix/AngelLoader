@@ -77,6 +77,8 @@ namespace AngelLoader.Forms.CustomControls
         // .wri file and have fallen back to treating it as unparsed plain text.
         private bool _currentReadmeSupportsEncodingChange;
 
+        private MainForm _owner = null!;
+
         #endregion
 
         public RichTextBoxCustom() => InitWorkarounds();
@@ -194,6 +196,8 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public methods
 
+        internal void InjectOwner(MainForm owner) => _owner = owner;
+
         #region Zoom stuff
 
         internal void SetAndStoreZoomFactor(float zoomFactor)
@@ -293,8 +297,26 @@ namespace AngelLoader.Forms.CustomControls
             // Do it for GLML files too, as they can have images (horizontal lines)!
             bool toggleReadOnly = fileType is ReadmeType.RichText or ReadmeType.GLML;
 
+            bool needsCursorReset = false;
+
             try
             {
+                // Use a rough heuristic to guess if we're going to take long enough to warrant a wait cursor.
+                // Load time is not about the file size per se, it's just that a big file size probably means
+                // big images, which are slow to load.
+                // Note that we can't just run a timer and only show the wait cursor if we're taking >100ms,
+                // because the UI thread is blocked during this load so we can't change the cursor in the middle
+                // of it.
+                if (fileType is ReadmeType.RichText)
+                {
+                    long size = new FileInfo(path).Length;
+                    if (size > ByteSize.KB * 500)
+                    {
+                        _owner.Cursor = Cursors.WaitCursor;
+                        needsCursorReset = true;
+                    }
+                }
+
                 SuspendState(toggleReadOnly);
 
                 SetReadmeTypeAndColorState(fileType);
@@ -361,6 +383,10 @@ namespace AngelLoader.Forms.CustomControls
             finally
             {
                 ResumeState(toggleReadOnly);
+                if (needsCursorReset)
+                {
+                    _owner.Cursor = Cursors.Default;
+                }
             }
 
             return retEncoding;
