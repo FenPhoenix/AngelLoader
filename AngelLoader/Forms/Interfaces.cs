@@ -91,6 +91,7 @@ namespace AngelLoader.Forms
     {
         void Localize();
         void SetTheme(VisualTheme theme);
+        Cursor Cursor { get; set; }
     }
 
     [PublicAPI]
