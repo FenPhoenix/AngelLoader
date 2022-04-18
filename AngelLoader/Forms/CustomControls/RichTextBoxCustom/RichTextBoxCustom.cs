@@ -41,6 +41,12 @@ namespace AngelLoader.Forms.CustomControls
     We would have to put it in an entirely separate process and do like RichTextBoxAsync (but without the async)
     and then just restart the process whenever our memory use gets too high. Or, just use WPF's version through
     an ElementHost.
+
+    TODO: BUG: RTF shppict/nonshppict blanking hack:
+    Occasionally (at least one FM we know - Castle Michele), this replacement hack will cause an image to just
+    not show up at all. What we need to do, is after we find a shppict/nonshppict keyword, we should parse the
+    group and look for "\pngblip" and only if we find it, should we do the hack (because only pngs can have
+    transparency, which is what the hack is for).
     */
 
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
