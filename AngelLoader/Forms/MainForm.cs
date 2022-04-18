@@ -1206,12 +1206,23 @@ namespace AngelLoader.Forms
                     {
                         if (e.Shift)
                         {
+                            int mainSelectedRowIndex = FMsDGV.MainSelectedRow!.Index;
+                            // We can set CurrentCell here because we've already scrolled the row into view, so
+                            // the fact that setting CurrentCell force-scrolls it into view is irrelevant
+                            try
+                            {
+                                FMsDGV.CurrentCell = edgeRow.Cells[FMsDGV.FirstDisplayedCell?.ColumnIndex ?? 0];
+                            }
+                            catch
+                            {
+                                // ignore
+                            }
                             for (int i = 0; i < FMsDGV.RowCount; i++)
                             {
                                 var row = FMsDGV.Rows[i];
                                 bool sel = home
-                                    ? row.Index <= FMsDGV.MainSelectedRow!.Index
-                                    : row.Index >= FMsDGV.MainSelectedRow!.Index;
+                                    ? row.Index <= mainSelectedRowIndex
+                                    : row.Index >= mainSelectedRowIndex;
                                 FMsDGV.SetRowSelected(row.Index, selected: sel, suppressEvent: true);
                             }
                         }
@@ -1243,11 +1254,14 @@ namespace AngelLoader.Forms
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
                     var firstRow = FMsDGV.Rows[0];
-                    if (firstRow.Selected && FMsDGV.MainSelectedRow != firstRow)
+                    if (firstRow.Selected)
                     {
-                        using (!e.Shift ? new DisableEvents(this) : null)
+                        if (FMsDGV.MainSelectedRow != firstRow)
                         {
-                            SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
+                            using (!e.Shift ? new DisableEvents(this) : null)
+                            {
+                                SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
+                            }
                         }
                         await HandleHomeOrEnd(home: true, selectionSyncHack: e.Shift);
                     }
@@ -1263,11 +1277,14 @@ namespace AngelLoader.Forms
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
                     var lastRow = FMsDGV.Rows[FMsDGV.RowCount - 1];
-                    if (lastRow.Selected && FMsDGV.MainSelectedRow != lastRow)
+                    if (lastRow.Selected)
                     {
-                        using (!e.Shift ? new DisableEvents(this) : null)
+                        if (FMsDGV.MainSelectedRow != lastRow)
                         {
-                            SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
+                            using (!e.Shift ? new DisableEvents(this) : null)
+                            {
+                                SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
+                            }
                         }
                         await HandleHomeOrEnd(home: false, selectionSyncHack: e.Shift);
                     }
