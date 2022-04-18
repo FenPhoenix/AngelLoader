@@ -310,7 +310,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (fileType is ReadmeType.RichText)
                 {
                     long size = new FileInfo(path).Length;
-                    if (size > ByteSize.KB * 500)
+                    if (size > ByteSize.KB * 300)
                     {
                         _owner.Cursor = Cursors.WaitCursor;
                         needsCursorReset = true;
