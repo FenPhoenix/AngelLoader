@@ -53,14 +53,14 @@ namespace AngelLoader
             private readonly string?[] _symbolTable =
             {
                 null, null, null, null, null, null, null,
-                "wbitmap",
+                "wbitmap", // can have param
                 "jpegblip",
-                "wmetafile",
+                "wmetafile", // can have param
                 null, null,
                 "pngblip",
-                "dibitmap",
+                "dibitmap", // can have param
                 null,
-                "pmmetafile",
+                "pmmetafile", // can have param
                 null,
                 "macpict",
                 null, null, null, null,

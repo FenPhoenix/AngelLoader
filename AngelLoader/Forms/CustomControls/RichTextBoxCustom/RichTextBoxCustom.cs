@@ -385,6 +385,35 @@ namespace AngelLoader.Forms.CustomControls
                             // If shppict type is pngblip (able to be transparent), we need to patch its matching
                             // nonshppict REGARDLESS of what that nonshppict's type is. Otherwise, we need to
                             // leave both unpatched.
+
+                            /*
+                            List of problematic files:
+
+                            __2011-06-30_Heretic_ND__FMInfo-de.rtf
+                            __2011-06-30_Heretic_ND__FMInfo-En.rtf
+                            __2011-06-30_Heretic_ND__FMInfo-FR.rtf
+
+                            The above files are all not displaying the header image.
+
+                            This file DOES display it:
+                            __2011-06-30_Heretic_ND__FMInfo-It.rtf
+
+                            The broken files all have a shppict pngblip / nonshppict wmetafile pair.
+                            The working file has a shppict pngblip / nonshppict wmetafile8 pair.
+
+                            We should try detecting this situation and NOT blanking the nonshppict in that case.
+
+                            ---
+
+                            __michele_v1__FMInfo-Fr.rtf
+
+                            Same issue as above - wmetafile (no 8)
+
+                            ---
+
+                            Test to see if any explicit params (like 1, the default) cause this problem and exclude
+                            on those too.
+                            */
                             int end = 0;
                             byte[] keyword = _shppict;
                             byte[] replace = _shppictBlanked;
