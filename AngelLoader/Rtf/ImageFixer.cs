@@ -1,4 +1,8 @@
-﻿using System;
+﻿//#define ENABLE_IMAGE_FIXER
+
+#if ENABLE_IMAGE_FIXER
+
+using System;
 using System.Runtime.CompilerServices;
 
 namespace AngelLoader
@@ -225,3 +229,4 @@ namespace AngelLoader
         }
     }
 }
+#endif

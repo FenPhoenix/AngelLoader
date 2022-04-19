@@ -368,12 +368,19 @@ namespace AngelLoader.Forms.CustomControls
                         // We control the format of GLML-converted files, so no need to do this for those
                         if (fileType == ReadmeType.RichText)
                         {
-                            // The old method, use this to compare old vs. new for regressions
-#if false
+                            /*
+                            It's six of one half a dozen of the other - each method causes rare cases of images
+                            not showing, but for different files.
+                            And trying to get too clever and specific about it (if shppict says pngblip, and
+                            nonshppict says wmetafile, then DON'T patch shppict, otherwise do, etc.) is making
+                            me uncomfortable. I don't even know what Win7 or Win11 will do with that kind of
+                            overly-specific meddling. Microsoft have changed their RichEdit control before, and
+                            they might again, in which case I'm screwed either way.
+                            */
+#if true
                             ReplaceByteSequence(_currentReadmeBytes, _shppict, _shppictBlanked);
                             ReplaceByteSequence(_currentReadmeBytes, _nonshppict, _nonshppictBlanked);
-#endif
-
+#else
                             var fixer = new ImageFixer();
 
                             // TODO: @vNext: This code is suspect. It may work okay in practice, but:
@@ -435,6 +442,9 @@ namespace AngelLoader.Forms.CustomControls
                                 keyword = keyword == _shppict ? _nonshppict : _shppict;
                                 replace = replace == _shppictBlanked ? _nonshppictBlanked : _shppictBlanked;
                             }
+
+                            //File.WriteAllBytes(@"M:\Local Storage HDD\rtf\heretic_current_modded.rtf", _currentReadmeBytes);
+#endif
                         }
 
                         // This resets the font if false, so don't do it after the load or it messes up the RTF.
