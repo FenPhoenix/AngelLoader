@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Text;
 using JetBrains.Annotations;
 
 namespace AL_Common
@@ -12,7 +11,7 @@ namespace AL_Common
         #region Constants
 
         private const int _maxScopes = 100;
-        private const int _keywordMaxLen = 32;
+        protected const int _keywordMaxLen = 32;
         // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
         private const int _paramMaxLen = 10;
 
@@ -85,26 +84,6 @@ namespace AL_Common
                 Properties[(int)Property.UnicodeCharSkipCount] = 1;
                 Properties[(int)Property.FontNum] = -1;
             }
-        }
-
-        protected static ListFast<char> CreateListFastChar(string source)
-        {
-            var ret = new ListFast<char>(source.Length);
-            for (int i = 0; i < source.Length; i++)
-            {
-                ret.AddFast(source[i]);
-            }
-            return ret;
-        }
-
-        protected static string ListFastToString(ListFast<char> listFast)
-        {
-            var sb = new StringBuilder(listFast.Count);
-            for (int i = 0; i < listFast.Count; i++)
-            {
-                sb.Append(listFast.ItemsArray[i]);
-            }
-            return sb.ToString();
         }
 
         // How many times have you thought, "Gee, I wish I could just reach in and grab that backing array from

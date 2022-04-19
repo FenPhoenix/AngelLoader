@@ -125,9 +125,31 @@ namespace AngelLoader
             return true;
         }
 
+        private static ListFast<char> CreateListFastChar(string source)
+        {
+            var ret = new ListFast<char>(source.Length);
+            for (int i = 0; i < source.Length; i++)
+            {
+                ret.AddFast(source[i]);
+            }
+            return ret;
+        }
+
+        private static readonly StringBuilder _tempSB = new(_keywordMaxLen);
+
+        private static string ListFastToString(ListFast<char> listFast)
+        {
+            _tempSB.Clear();
+            for (int i = 0; i < listFast.Count; i++)
+            {
+                _tempSB.Append(listFast.ItemsArray[i]);
+            }
+            return _tempSB.ToString();
+        }
+
         protected override Error DispatchKeyword(int param, bool hasParam)
         {
-            // TODO: We want to get rid of the ToString call if we can... it makes a StringBuilder AND a new string
+            // TODO: We want to get rid of the ToString call if we can...
             if (_keywordHashSet.Contains(ListFastToString(_keyword)))
             {
                 Trace.WriteLine("ImageFixer: Found a keyword hit");
