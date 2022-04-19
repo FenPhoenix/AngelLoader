@@ -23,6 +23,8 @@ namespace AngelLoader
             "wbitmapN"
         };
 
+        private byte[] _replaceArray = Array.Empty<byte>();
+
         private ByteArraySegmentSlim _stream;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -32,9 +34,11 @@ namespace AngelLoader
             base.ResetStreamBase(stream.Count);
         }
 
-        private void Reset(ByteArraySegmentSlim stream)
+        private void Reset(ByteArraySegmentSlim stream, byte[] replaceArray)
         {
             base.ResetBase();
+
+            _replaceArray = replaceArray;
 
             ResetStream(stream);
         }
@@ -42,9 +46,9 @@ namespace AngelLoader
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override byte StreamReadByte() => _stream[(int)CurrentPos];
 
-        public bool Run(ByteArraySegmentSlim stream)
+        public bool Run(ByteArraySegmentSlim stream, byte[] replaceArray)
         {
-            Reset(stream);
+            Reset(stream, replaceArray);
 
             try
             {
@@ -152,11 +156,12 @@ namespace AngelLoader
             // TODO: We want to get rid of the ToString call if we can...
             if (_keywordHashSet.Contains(ListFastToString(_keyword)))
             {
-                Trace.WriteLine("ImageFixer: Found a keyword hit");
                 if (SeqEqual(_keyword, "pngblip"))
                 {
-                    Trace.WriteLine("ImageFixer: Found the 'pngblip' keyword");
-                    // TODO: Implement byte sequence replacer for shppict or whatever we're on
+                    for (int i = 0; i < _replaceArray.Length; i++)
+                    {
+                        _stream[i] = _replaceArray[i];
+                    }
                 }
                 _exiting = true;
             }

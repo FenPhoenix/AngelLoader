@@ -245,6 +245,21 @@ namespace AngelLoader.Forms
                 (byte)'t'
             };
 
+            byte[] _shppictBlanked =
+            {
+                (byte)'{',
+                (byte)'\\',
+                (byte)'*',
+                (byte)'\\',
+                (byte)'x',
+                (byte)'x',
+                (byte)'x',
+                (byte)'x',
+                (byte)'x',
+                (byte)'x',
+                (byte)'x'
+            };
+
             byte[] bytes = File.ReadAllBytes(@"M:\Local Storage HDD\rtf\Factory.rtf");
             (bool found, int start, int end) = FindStartAndEndIndicesOfRtfGroup(bytes.ToList(), _shppict);
             Trace.WriteLine("found: " + found);
@@ -254,8 +269,8 @@ namespace AngelLoader.Forms
             var seg = new ByteArraySegmentSlim(bytes, start, end - start);
 
             var parser = new ImageFixer();
-            parser.Run(seg);
-            return;
+            parser.Run(seg, _shppictBlanked);
+            //return;
 
             using var fs = File.Create(@"M:\Local Storage HDD\rtf\Factory_rtf_segment.txt");
             using var sw = new BinaryWriter(fs);
