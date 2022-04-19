@@ -268,8 +268,8 @@ namespace AngelLoader.Forms
 
             var seg = new ByteArraySegmentSlim(bytes, start, end - start);
 
-            var parser = new ImageFixer();
-            parser.Run(seg, _shppictBlanked);
+            var fixer = new ImageFixer();
+            fixer.Run(seg, _shppictBlanked);
             //return;
 
             using var fs = File.Create(@"M:\Local Storage HDD\rtf\Factory_rtf_segment.txt");
