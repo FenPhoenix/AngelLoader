@@ -1,29 +1,100 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AngelLoader
 {
     public sealed class ImageFixer : AL_Common.RTFParserBase
     {
-        // Static - we do want to keep this around because this will be run very frequently
-        private static readonly HashSet<string> _keywordHashSet = new()
+        private static readonly KeywordHashSet _keywordHashSet = new();
+
+        private sealed class KeywordHashSet
         {
-            "emfblip",
-            "pngblip",
-            "jpegblip",
-            "macpict",
-            "pmmetafile",
-            "wmetafile",
-            "dibitmap",
-            "wbitmap"
-        };
+            /* ANSI-C code produced by gperf version 3.1 */
+            /* Command-line: gperf --output-file='c:\\gperf\\tools\\gperf_out.txt' -t 'c:\\gperf\\tools\\gperf_rtf.txt'  */
+            /* Computed positions: -k'1' */
+
+            //private const int TOTAL_KEYWORDS = 8;
+            private const int MIN_WORD_LENGTH = 7;
+            private const int MAX_WORD_LENGTH = 10;
+            //private const int MIN_HASH_VALUE = 7;
+            private const int MAX_HASH_VALUE = 22;
+            /* maximum key range = 16, duplicates = 0 */
+
+            private readonly byte[] asso_values =
+            {
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                5, 15, 23, 23, 23, 23, 0, 23, 23, 10,
+                23, 23, 5, 23, 23, 23, 23, 23, 23, 0,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+                23, 23, 23, 23, 23, 23
+            };
+
+            private readonly string?[] _symbolTable =
+            {
+                null, null, null, null, null, null, null,
+                "wbitmap",
+                "jpegblip",
+                "wmetafile",
+                null, null,
+                "pngblip",
+                "dibitmap",
+                null,
+                "pmmetafile",
+                null,
+                "macpict",
+                null, null, null, null,
+                "emfblip"
+            };
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private uint Hash(ListFast<char> str, int len)
+            {
+                return (uint)(len + asso_values[str.ItemsArray[0]]);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool Contains(ListFast<char> str)
+            {
+                int len = str.Count;
+                if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
+                {
+                    uint key = Hash(str, len);
+
+                    if (key <= MAX_HASH_VALUE)
+                    {
+                        string? keyword = _symbolTable[key];
+                        return keyword != null && SeqEqual(str, keyword);
+                    }
+                }
+
+                return false;
+            }
+        }
 
         private byte[] _replaceArray = Array.Empty<byte>();
+
+        private bool _exiting;
 
         private ByteArraySegmentSlim _stream;
 
@@ -60,8 +131,6 @@ namespace AngelLoader
                 return false;
             }
         }
-
-        private bool _exiting;
 
         private Error ParseRtf()
         {
@@ -129,32 +198,9 @@ namespace AngelLoader
             return true;
         }
 
-        private static ListFast<char> CreateListFastChar(string source)
-        {
-            var ret = new ListFast<char>(source.Length);
-            for (int i = 0; i < source.Length; i++)
-            {
-                ret.AddFast(source[i]);
-            }
-            return ret;
-        }
-
-        private static readonly StringBuilder _tempSB = new(_keywordMaxLen);
-
-        private static string ListFastToString(ListFast<char> listFast)
-        {
-            _tempSB.Clear();
-            for (int i = 0; i < listFast.Count; i++)
-            {
-                _tempSB.Append(listFast.ItemsArray[i]);
-            }
-            return _tempSB.ToString();
-        }
-
         protected override Error DispatchKeyword(int param, bool hasParam)
         {
-            // TODO: We want to get rid of the ToString call if we can...
-            if (_keywordHashSet.Contains(ListFastToString(_keyword)))
+            if (_keywordHashSet.Contains(_keyword))
             {
                 if (SeqEqual(_keyword, "pngblip"))
                 {
