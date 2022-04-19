@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace AL_Common
@@ -84,6 +85,26 @@ namespace AL_Common
                 Properties[(int)Property.UnicodeCharSkipCount] = 1;
                 Properties[(int)Property.FontNum] = -1;
             }
+        }
+
+        protected static ListFast<char> CreateListFastChar(string source)
+        {
+            var ret = new ListFast<char>(source.Length);
+            for (int i = 0; i < source.Length; i++)
+            {
+                ret.AddFast(source[i]);
+            }
+            return ret;
+        }
+
+        protected static string ListFastToString(ListFast<char> listFast)
+        {
+            var sb = new StringBuilder(listFast.Count);
+            for (int i = 0; i < listFast.Count; i++)
+            {
+                sb.Append(listFast.ItemsArray[i]);
+            }
+            return sb.ToString();
         }
 
         // How many times have you thought, "Gee, I wish I could just reach in and grab that backing array from

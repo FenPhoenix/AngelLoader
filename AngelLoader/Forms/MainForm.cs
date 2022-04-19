@@ -251,12 +251,17 @@ namespace AngelLoader.Forms
             Trace.WriteLine("start, end: " + start + ", " + end);
             if (!found) return;
 
-            var seg = new ArraySegment<byte>(bytes, start, end - start);
-            using var fs = File.OpenWrite(@"M:\Local Storage HDD\rtf\Factory_rtf_segment.txt");
+            var seg = new ByteArraySegmentSlim(bytes, start, end - start);
+
+            var parser = new ImageFixer();
+            parser.Run(seg);
+            return;
+
+            using var fs = File.Create(@"M:\Local Storage HDD\rtf\Factory_rtf_segment.txt");
             using var sw = new BinaryWriter(fs);
-            for (int i = seg.Offset; i < seg.Offset + seg.Count; i++)
+            for (int i = 0; i < seg.Count; i++)
             {
-                sw.Write(seg.Array[i]);
+                sw.Write(seg[i]);
             }
         }
 
