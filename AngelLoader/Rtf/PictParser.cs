@@ -17,10 +17,10 @@ namespace AngelLoader
             "pngblip",
             "jpegblip",
             "macpict",
-            "pmmetafileN",
-            "wmetafileN",
-            "dibitmapN",
-            "wbitmapN"
+            "pmmetafile",
+            "wmetafile",
+            "dibitmap",
+            "wbitmap"
         };
 
         private byte[] _replaceArray = Array.Empty<byte>();
