@@ -42,11 +42,41 @@ namespace AngelLoader.Forms.CustomControls
     and then just restart the process whenever our memory use gets too high. Or, just use WPF's version through
     an ElementHost.
 
+    ---
+
     TODO: BUG: RTF shppict/nonshppict blanking hack:
     Occasionally (at least one FM we know - Castle Michele), this replacement hack will cause an image to just
     not show up at all. What we need to do, is after we find a shppict/nonshppict keyword, we should parse the
     group and look for "\pngblip" and only if we find it, should we do the hack (because only pngs can have
     transparency, which is what the hack is for).
+
+    -Find start of {\*\shppict
+    -Parse until we find one of the following keywords:
+     \emfblip
+     \pngblip
+     \jpegblip
+     \macpict
+     \pmmetafileN
+     \wmetafileN
+     \dibitmapN
+     \wbitmapN
+     (look all keywords up in a hashtable containing only these)
+     (one of these keywords is required by spec to be there)
+    -if (keyword is in table)
+     {
+         if (keyword == "\pngblip")
+         {
+            do the blanking hack on this shppict keyword
+         }
+         quit parse and return;
+     }
+
+    -Repeat until we don't find any more shppict keywords (using end index to pass to the group finder)
+    
+    -Repeat the above process for \nonshppict
+    
+    In this way, we avoid having to scan through the potentially extremely large binary section or even to detect
+    it unless the file is broken and not to spec, and in that case oh well, it's just slower but won't crash.
     */
 
     internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable

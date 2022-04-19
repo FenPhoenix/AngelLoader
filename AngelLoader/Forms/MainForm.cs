@@ -42,6 +42,7 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -229,6 +230,34 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
+            byte[] _shppict =
+            {
+                (byte)'{',
+                (byte)'\\',
+                (byte)'*',
+                (byte)'\\',
+                (byte)'s',
+                (byte)'h',
+                (byte)'p',
+                (byte)'p',
+                (byte)'i',
+                (byte)'c',
+                (byte)'t'
+            };
+
+            byte[] bytes = File.ReadAllBytes(@"M:\Local Storage HDD\rtf\Factory.rtf");
+            (bool found, int start, int end) = FindStartAndEndIndicesOfRtfGroup(bytes.ToList(), _shppict);
+            Trace.WriteLine("found: " + found);
+            Trace.WriteLine("start, end: " + start + ", " + end);
+            if (!found) return;
+
+            var seg = new ArraySegment<byte>(bytes, start, end - start);
+            using var fs = File.OpenWrite(@"M:\Local Storage HDD\rtf\Factory_rtf_segment.txt");
+            using var sw = new BinaryWriter(fs);
+            for (int i = seg.Offset; i < seg.Offset + seg.Count; i++)
+            {
+                sw.Write(seg.Array[i]);
+            }
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
