@@ -230,54 +230,6 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
-            byte[] _shppict =
-            {
-                (byte)'{',
-                (byte)'\\',
-                (byte)'*',
-                (byte)'\\',
-                (byte)'s',
-                (byte)'h',
-                (byte)'p',
-                (byte)'p',
-                (byte)'i',
-                (byte)'c',
-                (byte)'t'
-            };
-
-            byte[] _shppictBlanked =
-            {
-                (byte)'{',
-                (byte)'\\',
-                (byte)'*',
-                (byte)'\\',
-                (byte)'x',
-                (byte)'x',
-                (byte)'x',
-                (byte)'x',
-                (byte)'x',
-                (byte)'x',
-                (byte)'x'
-            };
-
-            byte[] bytes = File.ReadAllBytes(@"M:\Local Storage HDD\rtf\Factory.rtf");
-            (bool found, int start, int end) = FindStartAndEndIndicesOfRtfGroup(bytes, _shppict);
-            Trace.WriteLine("found: " + found);
-            Trace.WriteLine("start, end: " + start + ", " + end);
-            if (!found) return;
-
-            var seg = new ByteArraySegmentSlim(bytes, start, end - start);
-
-            var fixer = new ImageFixer();
-            fixer.Run(seg, _shppictBlanked);
-            //return;
-
-            using var fs = File.Create(@"M:\Local Storage HDD\rtf\Factory_rtf_segment.txt");
-            using var sw = new BinaryWriter(fs);
-            for (int i = 0; i < seg.Count; i++)
-            {
-                sw.Write(seg[i]);
-            }
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
