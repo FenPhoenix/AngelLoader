@@ -95,6 +95,7 @@ namespace AngelLoader
         private byte[] _replaceArray = Array.Empty<byte>();
 
         private bool _exiting;
+        private bool _replaced;
 
         private ByteArraySegmentSlim _stream;
 
@@ -109,6 +110,8 @@ namespace AngelLoader
         {
             base.ResetBase();
 
+            _exiting = false;
+            _replaced = false;
             _replaceArray = replaceArray;
 
             ResetStream(stream);
@@ -123,8 +126,8 @@ namespace AngelLoader
 
             try
             {
-                Error error = ParseRtf();
-                return error == Error.OK;
+                ParseRtf();
+                return _replaced;
             }
             catch
             {
@@ -198,16 +201,23 @@ namespace AngelLoader
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Replace(ByteArraySegmentSlim original, byte[] replace)
+        {
+            for (int i = 0; i < replace.Length; i++)
+            {
+                original[i] = replace[i];
+            }
+        }
+
         protected override Error DispatchKeyword(int param, bool hasParam)
         {
             if (_keywordHashSet.Contains(_keyword))
             {
                 if (SeqEqual(_keyword, "pngblip"))
                 {
-                    for (int i = 0; i < _replaceArray.Length; i++)
-                    {
-                        _stream[i] = _replaceArray[i];
-                    }
+                    Replace(_stream, _replaceArray);
+                    _replaced = true;
                 }
                 _exiting = true;
             }

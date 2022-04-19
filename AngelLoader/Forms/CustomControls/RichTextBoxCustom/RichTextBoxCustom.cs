@@ -368,8 +368,44 @@ namespace AngelLoader.Forms.CustomControls
                         // We control the format of GLML-converted files, so no need to do this for those
                         if (fileType == ReadmeType.RichText)
                         {
+                            // The old method, use this to compare old vs. new for regressions
+#if false
                             ReplaceByteSequence(_currentReadmeBytes, _shppict, _shppictBlanked);
                             ReplaceByteSequence(_currentReadmeBytes, _nonshppict, _nonshppictBlanked);
+#endif
+
+                            var fixer = new ImageFixer();
+
+                            // TODO: @vNext: This code is suspect. It may work okay in practice, but:
+                            // We should at the very least make sure our nonshppict is DIRECTLY after the shppict.
+                            // In theory, a shppict should always be paired up with a nonshppict directly after
+                            // it. So this code should probably be correct if every file is to spec. That's if
+                            // every file is to spec... run a semi-auto eyeball test on the cached set of files.
+
+                            // If shppict type is pngblip (able to be transparent), we need to patch its matching
+                            // nonshppict REGARDLESS of what that nonshppict's type is. Otherwise, we need to
+                            // leave both unpatched.
+                            int end = 0;
+                            byte[] keyword = _shppict;
+                            byte[] replace = _shppictBlanked;
+                            bool replacedShppictInThisSet = false;
+                            while (true)
+                            {
+                                (bool found, int start, end) = FindStartAndEndIndicesOfRtfGroup(_currentReadmeBytes, keyword, end);
+                                if (!found) break;
+                                var seg = new ByteArraySegmentSlim(_currentReadmeBytes, start, end - start);
+                                if (keyword == _shppict)
+                                {
+                                    replacedShppictInThisSet = fixer.Run(seg, replace);
+                                }
+                                else if (replacedShppictInThisSet)
+                                {
+                                    ImageFixer.Replace(seg, replace);
+                                    replacedShppictInThisSet = false;
+                                }
+                                keyword = keyword == _shppict ? _nonshppict : _shppict;
+                                replace = replace == _shppictBlanked ? _nonshppictBlanked : _shppictBlanked;
+                            }
                         }
 
                         // This resets the font if false, so don't do it after the load or it messes up the RTF.

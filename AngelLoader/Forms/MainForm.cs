@@ -261,7 +261,7 @@ namespace AngelLoader.Forms
             };
 
             byte[] bytes = File.ReadAllBytes(@"M:\Local Storage HDD\rtf\Factory.rtf");
-            (bool found, int start, int end) = FindStartAndEndIndicesOfRtfGroup(bytes.ToList(), _shppict);
+            (bool found, int start, int end) = FindStartAndEndIndicesOfRtfGroup(bytes, _shppict);
             Trace.WriteLine("found: " + found);
             Trace.WriteLine("start, end: " + start + ", " + end);
             if (!found) return;

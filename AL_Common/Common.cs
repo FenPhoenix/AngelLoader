@@ -911,6 +911,7 @@ namespace AL_Common
             return -1;
         }
 
+#if false
         // List version
         public static int FindIndexOfByteSequence(List<byte> input, byte[] pattern, int start = 0)
         {
@@ -935,6 +936,8 @@ namespace AL_Common
             return -1;
         }
 
+#endif
+
         /// <summary>
         /// What it says
         /// </summary>
@@ -943,14 +946,14 @@ namespace AL_Common
         /// <param name="start"></param>
         /// <returns></returns>
         public static (bool Found, int StartIndex, int EndIndex)
-        FindStartAndEndIndicesOfRtfGroup(List<byte> input, byte[] groupControlWord, int start = 0)
+        FindStartAndEndIndicesOfRtfGroup(byte[] input, byte[] groupControlWord, int start = 0)
         {
             int index = FindIndexOfByteSequence(input, groupControlWord, start: start);
             if (index == -1) return (false, -1, -1);
 
             int braceLevel = 1;
 
-            for (int i = index + 1; i < input.Count; i++)
+            for (int i = index + 1; i < input.Length; i++)
             {
                 byte b = input[i];
                 if (b == (byte)'{')
