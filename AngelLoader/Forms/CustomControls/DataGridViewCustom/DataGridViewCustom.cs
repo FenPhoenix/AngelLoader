@@ -423,7 +423,9 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     // Don't refresh cause we'll refresh automatically as a result of the scrolling, and calling
                     // Refresh() just causes visual issues and/or is slow
-                    if (needsResume) this.ResumeDrawing(refresh: false);
+                    // But ALSO still invalidate if not refreshing because otherwise the middle-click centering
+                    // breaks!
+                    if (needsResume) this.ResumeDrawing(invalidateInsteadOfRefresh: true);
                 }
             }
         }

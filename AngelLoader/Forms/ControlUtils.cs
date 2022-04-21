@@ -25,11 +25,18 @@ namespace AngelLoader.Forms
             Native.SendMessage(control.Handle, Native.WM_SETREDRAW, false, 0);
         }
 
-        internal static void ResumeDrawing(this Control control, bool refresh = true)
+        internal static void ResumeDrawing(this Control control, bool invalidateInsteadOfRefresh = false)
         {
             if (!control.IsHandleCreated || !control.Visible) return;
             Native.SendMessage(control.Handle, Native.WM_SETREDRAW, true, 0);
-            if (refresh) control.Refresh();
+            if (invalidateInsteadOfRefresh)
+            {
+                control.Invalidate();
+            }
+            else
+            {
+                control.Refresh();
+            }
         }
 
         #endregion
