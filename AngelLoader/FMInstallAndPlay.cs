@@ -519,16 +519,14 @@ namespace AngelLoader
         private sealed class FMData
         {
             internal readonly FanMission FM;
-            internal readonly GameIndex GameIndex;
             internal readonly string ArchivePath;
             internal readonly string GameExe;
             internal readonly string GameName;
             internal readonly string InstBasePath;
 
-            public FMData(FanMission fm, GameIndex gameIndex, string archivePath, string gameExe, string gameName, string instBasePath)
+            public FMData(FanMission fm, string archivePath, string gameExe, string gameName, string instBasePath)
             {
                 FM = fm;
-                GameIndex = gameIndex;
                 ArchivePath = archivePath;
                 GameExe = gameExe;
                 GameName = gameName;
@@ -549,22 +547,6 @@ namespace AngelLoader
 
                 AssertR(!fm.Installed, "fm.Installed == true");
 
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
-                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
-                string gameExe = Config.GetGameExe(gameIndex);
-                string gameName = GetLocalizedGameName(gameIndex);
-                string instBasePath = Config.GetFMInstallPath(gameIndex);
-
-                fmDataList[i] = new FMData
-                (
-                    fm,
-                    gameIndex,
-                    fmArchivePath,
-                    gameExe,
-                    gameName,
-                    instBasePath
-                );
-
                 if (!GameIsKnownAndSupported(fm.Game))
                 {
                     Log("FM game type is unknown or unsupported.\r\n" +
@@ -574,6 +556,21 @@ namespace AngelLoader
                                       ErrorText.FMGameTypeUnknownOrUnsupported);
                     return false;
                 }
+
+                GameIndex gameIndex = GameToGameIndex(fm.Game);
+                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
+                string gameExe = Config.GetGameExe(gameIndex);
+                string gameName = GetLocalizedGameName(gameIndex);
+                string instBasePath = Config.GetFMInstallPath(gameIndex);
+
+                fmDataList[i] = new FMData
+                (
+                    fm,
+                    fmArchivePath,
+                    gameExe,
+                    gameName,
+                    instBasePath
+                );
 
                 if (fmArchivePath.IsEmpty())
                 {
@@ -689,7 +686,7 @@ namespace AngelLoader
                     }
 
                     // Only Dark engine games need audio conversion
-                    if (GameIsDark(fmData.GameIndex))
+                    if (GameIsDark(fmData.FM.Game))
                     {
                         try
                         {
