@@ -1784,6 +1784,8 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        public void SetCursor(Cursor cursor) => Cursor = cursor;
+
         #region Helpers & misc
 
         // TODO: This is a crappy way to do it, make a proper "logical visibility" layer for these

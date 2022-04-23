@@ -607,8 +607,10 @@ namespace AngelLoader
 
                 if (GameIsRunning(gameExe))
                 {
-                    Dialogs.ShowAlert(gameName + ":\r\n" +
-                                      LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
+                    Dialogs.ShowAlert(
+                        gameName + ":\r\n" +
+                        LText.AlertMessages.Install_GameIsRunning,
+                        LText.AlertMessages.Alert);
                     return false;
                 }
             }
@@ -890,92 +892,86 @@ namespace AngelLoader
         #region Uninstall
 
         // @MULTISEL(Uninstall): Implement multi-FM support for this
-        internal static async Task<bool> Uninstall(FanMission fm)
+        // In progress!
+        internal static async Task<bool> Uninstall(params FanMission[] fms)
         {
-            if (!fm.Installed || !GameIsKnownAndSupported(fm.Game)) return false;
+            var fmDataList = new FMData[fms.Length];
 
-            GameIndex gameIndex = GameToGameIndex(fm.Game);
+            bool single = fmDataList.Length == 1;
 
-            if (Config.ConfirmUninstall)
+            bool doBackup;
+
+            try
             {
-                (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
-                        message: LText.AlertMessages.Uninstall_Confirm,
+                Core.View.SetCursor(Cursors.WaitCursor);
+
+                #region Checks
+
+                for (int i = 0; i < fms.Length; i++)
+                {
+                    FanMission fm = fms[i];
+
+                    AssertR(fm.Installed, "fm.Installed == false");
+
+                    if (!GameIsKnownAndSupported(fm.Game))
+                    {
+                        Log("FM game type is unknown or unsupported.\r\n" +
+                            "FM: " + GetFMId(fm) + "\r\n" +
+                            "FM game was: " + fm.Game);
+                        Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                          ErrorText.FMGameTypeUnknownOrUnsupported);
+                        return false;
+                    }
+
+                    GameIndex gameIndex = GameToGameIndex(fm.Game);
+                    string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
+                    string gameExe = Config.GetGameExe(gameIndex);
+                    string gameName = GetLocalizedGameName(gameIndex);
+                    string instBasePath = Config.GetFMInstallPath(gameIndex);
+
+                    fmDataList[i] = new FMData
+                    (
+                        fm,
+                        fmArchivePath,
+                        gameExe,
+                        gameName,
+                        instBasePath
+                    );
+
+                    if (GameIsRunning(gameExe))
+                    {
+                        Dialogs.ShowAlert(
+                            gameName + ":\r\n" +
+                            LText.AlertMessages.Uninstall_GameIsRunning,
+                            LText.AlertMessages.Alert);
+                        return false;
+                    }
+                }
+
+                #endregion
+
+                #region Confirm uninstall
+
+                if (Config.ConfirmUninstall)
+                {
+                    (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
+                        message: single
+                            ? LText.AlertMessages.Uninstall_Confirm
+                            : LText.AlertMessages.Uninstall_Confirm_Multiple,
                         title: LText.AlertMessages.Confirm,
                         icon: MessageBoxIcon.Warning,
                         showDontAskAgain: true,
                         yes: LText.AlertMessages.Uninstall,
                         no: LText.Global.Cancel);
 
-                if (cancel) return false;
-
-                Config.ConfirmUninstall = !dontAskAgain;
-            }
-
-            string gameExe = Config.GetGameExe(gameIndex);
-            string gameName = GetLocalizedGameName(gameIndex);
-            if (GameIsRunning(gameExe))
-            {
-                Dialogs.ShowAlert(
-                    gameName + ":\r\n" + LText.AlertMessages.Uninstall_GameIsRunning,
-                    LText.AlertMessages.Alert);
-                return false;
-            }
-
-            Core.View.ShowProgressBox(ProgressTask.UninstallFM);
-
-            try
-            {
-                string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
-
-                bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
-                if (!fmDirExists)
-                {
-                    bool yes = Dialogs.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
-                        LText.AlertMessages.Alert);
-                    if (yes)
-                    {
-                        fm.Installed = false;
-                        Core.View.RefreshFM(fm);
-                    }
-                    return true;
-                }
-
-                string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive));
-
-                bool markFMAsUnavailable = false;
-
-                if (fmArchivePath.IsEmpty())
-                {
-                    (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
-                        message: LText.AlertMessages.Uninstall_ArchiveNotFound,
-                        title: LText.AlertMessages.Warning,
-                        icon: MessageBoxIcon.Warning,
-                        showDontAskAgain: false,
-                        yes: LText.AlertMessages.Uninstall,
-                        no: LText.Global.Cancel);
-
                     if (cancel) return false;
-                    markFMAsUnavailable = true;
+
+                    Config.ConfirmUninstall = !dontAskAgain;
                 }
 
-                // If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
-                // This file will be included in the search when restoring, and the newest will be taken as
-                // usual.
+                #endregion
 
-                // fm.Archive can be blank at this point when all of the following conditions are true:
-                // -fm is installed
-                // -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
-                // -fm was not in the database on startup
-                // -the folder where the FM's archive is located is not in Config.FMArchivePaths (or its sub-
-                //  folders if that option is enabled)
-
-                // It's not particularly likely, but it could happen if the user had NDL-installed FMs (which
-                // don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
-                // archive folder on initial setup, and hasn't imported from NDL by this point.
-
-                #region Backup
-
-                bool doBackup;
+                #region Confirm backup
 
                 if (Config.BackupAlwaysAsk)
                 {
@@ -1002,50 +998,118 @@ namespace AngelLoader
                     doBackup = true;
                 }
 
-                if (doBackup) await BackupFM(fm, fmInstalledPath, fmArchivePath);
-
                 #endregion
-
-                // TODO: Give the user the option to retry or something, if it's cause they have a file open
-                // Make option to open the folder in Explorer and delete it manually?
-                if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
-                {
-                    Log("Could not delete FM installed directory.\r\n" +
-                        "FM: " + GetFMId(fm) + "\r\n" +
-                        "FM installed path: " + fmInstalledPath);
-                    Dialogs.ShowError(LText.AlertMessages.Uninstall_UninstallNotCompleted);
-                }
-
-                fm.Installed = false;
-                if (markFMAsUnavailable) fm.MarkedUnavailable = true;
-
-                // NewDarkLoader still truncates its Thief 3 install names, but the "official" way is not to
-                // do it for Thief 3. If the user already has FMs that were installed with NewDarkLoader, we
-                // just read in the truncated names and treat them as normal for compatibility purposes. But
-                // if we've just uninstalled the mission, then we can safely convert InstalledDir back to full
-                // un-truncated form for future use.
-                if (gameIndex == GameIndex.Thief3 && !fm.Archive.IsEmpty())
-                {
-                    fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
-                }
-
-                Ini.WriteFullFMDataIni();
-
-                // If the FM is gone, refresh the list to remove it. Otherwise, don't refresh the list because
-                // then the FM might move in the list if we're sorting by installed state.
-                if (fm.MarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
-                {
-                    await Core.View.SortAndSetFilter(keepSelection: true);
-                }
-                else
-                {
-                    Core.View.RefreshFM(fm);
-                }
             }
-            catch (Exception ex)
+            finally
             {
-                Log("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
-                Dialogs.ShowError(LText.AlertMessages.Uninstall_FailedFullyOrPartially);
+                Core.View.SetCursor(Cursors.Default);
+            }
+
+            try
+            {
+                Core.View.ShowProgressBox(single ? ProgressTask.UninstallFM : ProgressTask.UninstallFMs);
+
+                for (int i = 0; i < fmDataList.Length; i++)
+                {
+                    var fmData = fmDataList[i];
+
+                    FanMission fm = fmData.FM;
+
+                    GameIndex gameIndex = GameToGameIndex(fm.Game);
+
+                    string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+
+                    // @MULTISEL(Uninstall): This needs to account for multiple FMs, can't just return true
+                    #region Check for already uninstalled
+
+                    bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
+                    if (!fmDirExists)
+                    {
+                        bool yes = Dialogs.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
+                            LText.AlertMessages.Alert);
+                        if (yes)
+                        {
+                            fm.Installed = false;
+                            Core.View.RefreshFM(fm);
+                        }
+                        return true;
+                    }
+
+                    #endregion
+
+                    string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive));
+
+                    bool markFMAsUnavailable = false;
+
+                    // @MULTISEL(Uninstall): This one needs to account for multiple FMs too
+                    if (fmArchivePath.IsEmpty())
+                    {
+                        (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                            message: LText.AlertMessages.Uninstall_ArchiveNotFound,
+                            title: LText.AlertMessages.Warning,
+                            icon: MessageBoxIcon.Warning,
+                            showDontAskAgain: false,
+                            yes: LText.AlertMessages.Uninstall,
+                            no: LText.Global.Cancel);
+
+                        if (cancel) return false;
+                        markFMAsUnavailable = true;
+                    }
+
+                    // If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
+                    // This file will be included in the search when restoring, and the newest will be taken as
+                    // usual.
+
+                    // fm.Archive can be blank at this point when all of the following conditions are true:
+                    // -fm is installed
+                    // -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
+                    // -fm was not in the database on startup
+                    // -the folder where the FM's archive is located is not in Config.FMArchivePaths (or its sub-
+                    //  folders if that option is enabled)
+
+                    // It's not particularly likely, but it could happen if the user had NDL-installed FMs (which
+                    // don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
+                    // archive folder on initial setup, and hasn't imported from NDL by this point.
+
+                    if (doBackup) await BackupFM(fm, fmInstalledPath, fmArchivePath);
+
+                    // TODO: Give the user the option to retry or something, if it's cause they have a file open
+                    // Make option to open the folder in Explorer and delete it manually?
+                    if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
+                    {
+                        Log("Could not delete FM installed directory.\r\n" +
+                            "FM: " + GetFMId(fm) + "\r\n" +
+                            "FM installed path: " + fmInstalledPath);
+                        Dialogs.ShowError(LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
+                                          "FM: " + GetFMId(fm));
+                    }
+
+                    fm.Installed = false;
+                    if (markFMAsUnavailable) fm.MarkedUnavailable = true;
+
+                    // NewDarkLoader still truncates its Thief 3 install names, but the "official" way is not to
+                    // do it for Thief 3. If the user already has FMs that were installed with NewDarkLoader, we
+                    // just read in the truncated names and treat them as normal for compatibility purposes. But
+                    // if we've just uninstalled the mission, then we can safely convert InstalledDir back to full
+                    // un-truncated form for future use.
+                    if (gameIndex == GameIndex.Thief3 && !fm.Archive.IsEmpty())
+                    {
+                        fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
+                    }
+
+                    Ini.WriteFullFMDataIni();
+
+                    // If the FM is gone, refresh the list to remove it. Otherwise, don't refresh the list because
+                    // then the FM might move in the list if we're sorting by installed state.
+                    if (fm.MarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
+                    {
+                        await Core.View.SortAndSetFilter(keepSelection: true);
+                    }
+                    else
+                    {
+                        Core.View.RefreshFM(fm);
+                    }
+                }
             }
             finally
             {
