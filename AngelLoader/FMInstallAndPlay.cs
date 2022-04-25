@@ -43,7 +43,7 @@ namespace AngelLoader
         internal static Task InstallOrUninstall(params FanMission[] fms)
         {
             AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
-            return fms[0].Installed ? Uninstall(fms[0]) : Install(fms);
+            return fms[0].Installed ? Uninstall(fms) : Install(fms);
         }
 
         internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
