@@ -1,4 +1,8 @@
-﻿using System;
+﻿//#define ENABLE_IMAGE_FIXER
+
+#if ENABLE_IMAGE_FIXER
+
+using System;
 
 namespace AngelLoader
 {
@@ -27,3 +31,4 @@ namespace AngelLoader
         public int Count { get; }
     }
 }
+#endif
