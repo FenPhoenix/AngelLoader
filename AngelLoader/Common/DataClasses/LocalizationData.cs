@@ -72,6 +72,7 @@ namespace AngelLoader.DataClasses
             internal readonly string OK = "OK";
             internal readonly string Cancel = "Cancel";
             internal readonly string Stop = "Stop";
+            internal readonly string Continue = "Continue";
             internal readonly string Yes = "Yes";
             internal readonly string No = "No";
             internal readonly string BrowseEllipses = "Browse...";

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
+using FMScanner.FastZipReader;
 using SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.FMBackupAndRestore;
@@ -534,12 +535,52 @@ namespace AngelLoader
             }
         }
 
+        private sealed class GameDiskFreeSpace
+        {
+            internal long DiskFreeSpace;
+            internal bool WasAbleToCalculate = true;
+        }
+
         // @MULTISEL(Install/main - cancel install): Maybe ask if they want to cancel just this, all, or all subsequent?
         internal static async Task<bool> Install(params FanMission[] fms)
         {
             var fmDataList = new FMData[fms.Length];
 
             #region Checks
+
+            Game games = Game.Null;
+            for (int i = 0; i < fms.Length; i++)
+            {
+                games |= fms[i].Game;
+            }
+
+            var perGameFMInstallPathItems = new List<(GameIndex GameIndex, string FMInstallPath, long? FreeDriveSpace)>(SupportedGameCount);
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gameIndex = (GameIndex)i;
+                if (games.HasFlagFast(GameIndexToGame(gameIndex)))
+                {
+                    string fmInstallPath = Config.GetFMInstallPath(gameIndex);
+                    if (!fmInstallPath.IsEmpty()) perGameFMInstallPathItems.Add((gameIndex, fmInstallPath, null));
+                }
+            }
+
+            var perGameDriveSpaceItems = new List<(GameIndex GameIndex, long? FreeDriveSpace)>(SupportedGameCount);
+            for (int i = 0; i < perGameFMInstallPathItems.Count; i++)
+            {
+                var item = perGameFMInstallPathItems[i];
+                long? freeSpace;
+                try
+                {
+                    var di = new DriveInfo(item.FMInstallPath);
+                    freeSpace = di.AvailableFreeSpace;
+                }
+                catch
+                {
+                    freeSpace = null;
+                }
+                perGameDriveSpaceItems.Add((item.GameIndex, freeSpace));
+            }
 
             for (int i = 0; i < fms.Length; i++)
             {
@@ -615,6 +656,33 @@ namespace AngelLoader
                 }
             }
 
+            bool atLeastOneNullDriveSpaceFound = false;
+            string fmInstallPathsText = "";
+            foreach (var item in perGameDriveSpaceItems)
+            {
+                if (item.FreeDriveSpace == null)
+                {
+                    atLeastOneNullDriveSpaceFound = true;
+                    if (!fmInstallPathsText.IsEmpty()) fmInstallPathsText += "\r\n";
+                    fmInstallPathsText += Config.GetFMInstallPath(item.GameIndex);
+                }
+            }
+
+            if (atLeastOneNullDriveSpaceFound)
+            {
+                // @MULTISEL(Install/disk space check): Localize/finalize
+                (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                    "Unable to calculate free space in the following paths:" + "\r\n\r\n" + fmInstallPathsText +
+                    "\r\n\r\n" + "Continue installing selected FM(s) anyway?",
+                    LText.AlertMessages.Alert,
+                    MessageBoxIcon.Warning,
+                    showDontAskAgain: false,
+                    LText.Global.Continue,
+                    LText.Global.Cancel,
+                    defaultButton: DarkTaskDialog.Button.No);
+                if (cancel) return false;
+            }
+
             #endregion
 
             _extractCts = _extractCts.Recreate();
@@ -655,6 +723,61 @@ namespace AngelLoader
                 bool single = fmDataList.Length == 1;
 
                 Core.View.ShowProgressBox(single ? ProgressTask.InstallFM : ProgressTask.InstallFMs);
+
+                // @MULTISEL(Install/disk space check): Needs to be total per-game, not just one total
+                bool calculatedTotalExtractedSize = true;
+                long totalFMSetExtractedSize = 0;
+                for (int i = 0; i < fmDataList.Length; i++)
+                {
+                    var fmData = fmDataList[i];
+                    long fmExtractedSize = 0;
+                    try
+                    {
+                        if (fmData.ArchivePath.ExtIsZip())
+                        {
+                            using var archive = new ZipArchiveFast(File.OpenRead(fmData.ArchivePath));
+                            var entries = archive.Entries;
+                            for (int entryI = 0; entryI < entries.Count; entryI++)
+                            {
+                                fmExtractedSize += entries[entryI].Length;
+                            }
+                        }
+                        else
+                        {
+                            using var archive = new SevenZipExtractor(fmData.ArchivePath);
+                            fmExtractedSize = archive.UnpackedSize;
+                            if (fmExtractedSize <= 0)
+                            {
+                                calculatedTotalExtractedSize = false;
+                            }
+                        }
+                        totalFMSetExtractedSize += fmExtractedSize;
+                    }
+                    catch
+                    {
+                        calculatedTotalExtractedSize = false;
+                    }
+                }
+
+                if (totalFMSetExtractedSize <= 0)
+                {
+                    calculatedTotalExtractedSize = false;
+                }
+
+                if (!calculatedTotalExtractedSize)
+                {
+                    // @MULTISEL(Install/disk space check): Localize/finalize
+                    (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                        "Unable to calculate how much disk space the selected FMs will take when installed." + "\r\n\r\n" +
+                        "Continue installing selected FM(s) anyway?",
+                        LText.AlertMessages.Alert,
+                        MessageBoxIcon.Warning,
+                        showDontAskAgain: false,
+                        LText.Global.Continue,
+                        LText.Global.Cancel,
+                        defaultButton: DarkTaskDialog.Button.No);
+                    if (cancel) return false;
+                }
 
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
