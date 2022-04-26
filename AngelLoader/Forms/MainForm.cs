@@ -1115,7 +1115,7 @@ namespace AngelLoader.Forms
             #region FMsDGV nav
 
             // NIGHTMARE REALM
-            // This code is absurd. Bow howdy I hope I never have to touch it again.
+            // This code is absurd. Boy howdy I hope I never have to touch it again.
 
             void DoSelectionSyncHack(int index, bool suspendResume = true)
             {
