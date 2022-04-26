@@ -451,7 +451,10 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (MainSelectedRow == null || GetRowSelectedCountInternal() == 1)
                 {
-                    MainSelectedRow = CurrentRow;
+                    // Need to make a SelectedRows call here, can't set CurrentRow for example because that ends
+                    // up causing bad behavior when right-clicking to open the menu.
+                    // In theory this should only ever be 1 long anyway.
+                    MainSelectedRow = SelectedRows[0];
                 }
                 _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
             }
