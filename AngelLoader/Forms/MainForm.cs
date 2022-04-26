@@ -1265,11 +1265,7 @@ namespace AngelLoader.Forms
                                 SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                             }
                         }
-                        // @MULTISEL(key nav): This one allows shift-arrows when at edge, but causes multiple other problems
-                        //if (!e.Shift) await HandleHomeOrEnd(home: true, selectionSyncHack: true);
-
-                        // This one breaks shift-arrows when at edge, but everything else works (as far as I can tell anyway...)
-                        await HandleHomeOrEnd(home: true, selectionSyncHack: e.Shift);
+                        if (!e.Shift) await HandleHomeOrEnd(home: true, selectionSyncHack: true);
                     }
                     else
                     {
@@ -1292,9 +1288,7 @@ namespace AngelLoader.Forms
                                 SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                             }
                         }
-                        // @MULTISEL(key nav): Ditto above
-                        //if (!e.Shift) await HandleHomeOrEnd(home: false, selectionSyncHack: true);
-                        await HandleHomeOrEnd(home: false, selectionSyncHack: e.Shift);
+                        if (!e.Shift) await HandleHomeOrEnd(home: false, selectionSyncHack: true);
                     }
                     else
                     {

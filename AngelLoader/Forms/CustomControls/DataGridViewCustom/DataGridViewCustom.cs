@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -235,8 +234,7 @@ namespace AngelLoader.Forms.CustomControls
         /// Returns true if any row is selected, false if no rows exist or none are selected.
         /// </summary>
         /// <returns></returns>
-        [MemberNotNullWhen(true, nameof(MainSelectedRow))]
-        internal bool RowSelected() => MainSelectedRow != null;
+        internal bool RowSelected() => GetRowSelectedCountInternal() > 0;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetRowSelectedCountInternal()
@@ -343,7 +341,7 @@ namespace AngelLoader.Forms.CustomControls
             try
             {
                 // Note: we need to do this null check here, otherwise we get an exception that doesn't get caught(!!!)
-                MainSelectedRow.Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
+                SelectedRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
             }
             catch
             {
@@ -391,16 +389,11 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Event overrides
 
-#if false
-        // Still skittish about this. Don't wanna enable it unless I know it even hits the cached value like ever,
-        // and doesn't cause problems.
-
         // Stupid bloody SelectedRows rebuilds itself EVERY. TIME. YOU. CALL. IT.
         // So cache the frigging thing so we don't do a full rebuild if we haven't changed.
         private DataGridViewSelectedRowCollection? _selectedRowsCached;
         [Browsable(false)]
         public new DataGridViewSelectedRowCollection SelectedRows => _selectedRowsCached ??= base.SelectedRows;
-#endif
 
         internal DataGridViewRow? MainSelectedRow;
 
@@ -475,9 +468,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnSelectionChanged(EventArgs e)
         {
-#if false
             _selectedRowsCached = null;
-#endif
             if (!_suppressSelectionEvent) SetMainSelectedRow();
             base.OnSelectionChanged(e);
         }
