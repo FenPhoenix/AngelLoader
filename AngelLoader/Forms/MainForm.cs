@@ -1265,7 +1265,7 @@ namespace AngelLoader.Forms
                                 SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                             }
                         }
-                        if (!e.Shift) await HandleHomeOrEnd(home: true, selectionSyncHack: e.Shift);
+                        if (!e.Shift) await HandleHomeOrEnd(home: true, selectionSyncHack: true);
                     }
                     else
                     {
@@ -1288,7 +1288,7 @@ namespace AngelLoader.Forms
                                 SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                             }
                         }
-                        if (!e.Shift) await HandleHomeOrEnd(home: false, selectionSyncHack: e.Shift);
+                        if (!e.Shift) await HandleHomeOrEnd(home: false, selectionSyncHack: true);
                     }
                     else
                     {
