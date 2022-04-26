@@ -33,6 +33,10 @@ namespace AngelLoader
             if (_splashScreenForm.VisibleCached) _splashScreenForm.SetCheckAtStoredMessageWidth();
         }
 
-        public void Dispose() => _splashScreenForm.ProgrammaticClose();
+        public void Dispose()
+        {
+            _splashScreenForm.ProgrammaticClose();
+            _splashScreenForm.Dispose();
+        }
     }
 }
