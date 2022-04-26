@@ -235,7 +235,12 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         internal bool RowSelected() => MainSelectedRow != null;
 
-        internal bool MultipleFMsSelected() => SelectedRows.Count > 1;
+        internal bool MultipleFMsSelected()
+        {
+            // Since we're full-row select, one row will be ColumnsCount cells selected, so any more than that
+            // and we know we have more than one row selected. Avoids having to make a heavy SelectedRows call.
+            return GetCellCount(DataGridViewElementStates.Selected) > ColumnsCount;
+        }
 
         internal void SelectSingle(int index, bool suppressSelectionChangedEvent = false)
         {
