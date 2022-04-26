@@ -231,12 +231,7 @@ namespace AngelLoader.Forms.CustomControls
 
             // Full-width item hack part deux: We can't tell it to make the actual selection area full-width, so
             // we just draw it full-width ourselves and handle the click interaction later (see WndProc).
-            var selRect = new Rectangle(
-                e.Bounds.X,
-                e.Bounds.Y,
-                ClientRectangle.Width - e.Bounds.X,
-                e.Bounds.Height
-            );
+            var selRect = e.Bounds with { Width = ClientRectangle.Width - e.Bounds.X };
 
             using (var bcBrush = new SolidBrush(BackColor))
             {

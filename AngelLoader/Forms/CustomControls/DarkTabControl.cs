@@ -174,12 +174,7 @@ namespace AngelLoader.Forms.CustomControls
 
                         if (focused)
                         {
-                            tabRect = new Rectangle(
-                                tabRect.X,
-                                tabRect.Y - 2,
-                                tabRect.Width,
-                                tabRect.Height + 2
-                            );
+                            tabRect = tabRect with { Y = tabRect.Y - 2, Height = tabRect.Height + 2 };
                         }
 
                         var backColorBrush = focused

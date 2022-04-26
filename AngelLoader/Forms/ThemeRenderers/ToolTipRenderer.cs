@@ -27,12 +27,11 @@ namespace AngelLoader.Forms.ThemeRenderers
                 g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
                 g.DrawRectangle(
                     DarkColors.GreySelectionPen,
-                    new Rectangle(
-                        rect.X,
-                        rect.Y,
-                        rect.Width - 1,
-                        rect.Height - 1
-                    ));
+                    rect with
+                    {
+                        Width = rect.Width - 1,
+                        Height = rect.Height - 1
+                    });
                 return true;
             }
             else

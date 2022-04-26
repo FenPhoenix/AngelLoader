@@ -86,8 +86,8 @@ namespace AngelLoader.Forms
             #region Autosize controls
 
             int innerControlWidth = MainFLP.Width - 10;
-            MessageTopLabel.MaximumSize = new Size(innerControlWidth, MessageTopLabel.MaximumSize.Height);
-            MessageBottomLabel.MaximumSize = new Size(innerControlWidth, MessageBottomLabel.MaximumSize.Height);
+            MessageTopLabel.MaximumSize = MessageTopLabel.MaximumSize with { Width = innerControlWidth };
+            MessageBottomLabel.MaximumSize = MessageBottomLabel.MaximumSize with { Width = innerControlWidth };
 
             if (_multiChoice)
             {

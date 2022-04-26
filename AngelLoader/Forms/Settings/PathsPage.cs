@@ -52,9 +52,10 @@ namespace AngelLoader.Forms
                     FlowLayoutPanel1.Controls[i].Width = FlowLayoutPanel1.ClientSize.Width - 16;
                 }
 
-                BackupPathHelpLabel.MaximumSize = new Size(
-                    OtherGroupBox.Width - (BackupPathHelpLabel.Left * 2),
-                    BackupPathHelpLabel.MaximumSize.Height);
+                BackupPathHelpLabel.MaximumSize = BackupPathHelpLabel.MaximumSize with
+                {
+                    Width = OtherGroupBox.Width - (BackupPathHelpLabel.Left * 2)
+                };
 
                 OtherGroupBox.Height = OtherGroupBox.Padding.Vertical +
                                        BackupPathPanel.Top +

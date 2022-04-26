@@ -48,12 +48,12 @@ namespace AngelLoader.Forms.ThemeRenderers
                         case Native.SBP_THUMBBTNHORZ:
                             g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.Right, rect.Y);
                             g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Bottom - 1, rect.Right, rect.Bottom - 1);
-                            rect = new Rectangle(rect.X, rect.Y + 1, rect.Width, rect.Height - 2);
+                            rect = rect with { Y = rect.Y + 1, Height = rect.Height - 2 };
                             break;
                         case Native.SBP_THUMBBTNVERT:
                             g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.X, rect.Bottom);
                             g.DrawLine(DarkColors.DarkBackgroundPen, rect.Right - 1, rect.Y, rect.Right - 1, rect.Bottom);
-                            rect = new Rectangle(rect.X + 1, rect.Y, rect.Width - 2, rect.Height);
+                            rect = rect with { X = rect.X + 1, Width = rect.Width - 2 };
                             break;
                     }
 

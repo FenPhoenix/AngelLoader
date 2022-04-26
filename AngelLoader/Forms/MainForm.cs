@@ -2389,7 +2389,7 @@ namespace AngelLoader.Forms
                 filterBarAfterTabsX = TopBarXZero() + lastRect.X + lastRect.Width + 5;
             }
 
-            FilterBarFLP.Location = new Point(filterBarAfterTabsX, FilterBarFLP.Location.Y);
+            FilterBarFLP.Location = FilterBarFLP.Location with { X = filterBarAfterTabsX };
             SetFilterBarWidth();
         }
 
@@ -2607,7 +2607,7 @@ namespace AngelLoader.Forms
 
             void ShowLeft()
             {
-                FilterBarScrollLeftButton.Location = new Point(FilterBarFLP.Location.X, FilterBarFLP.Location.Y + 1);
+                FilterBarScrollLeftButton.Location = FilterBarFLP.Location with { Y = FilterBarFLP.Location.Y + 1 };
                 FilterBarScrollLeftButton.Show();
             }
 

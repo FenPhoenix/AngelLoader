@@ -217,7 +217,7 @@ namespace AngelLoader.Forms
                 AppearancePage.PagePanel.Controls.Remove(LangGroupBox);
                 LangGroupBox.Location = new Point(8, 8);
                 LangGroupBox.Width = PathsPage.Width - 16;
-                LangGroupBox.MinimumSize = new Size(LangGroupBox.Width, LangGroupBox.MinimumSize.Height);
+                LangGroupBox.MinimumSize = LangGroupBox.MinimumSize with { Width = LangGroupBox.Width };
                 PathsPage.ActualPathsPanel.Location = new Point(0, LangGroupBox.Height + 8);
             }
             else

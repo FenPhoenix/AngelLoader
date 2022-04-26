@@ -68,7 +68,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _listBox.EndUpdate();
 
             Point p = _owner.PointToClient(_owner.AddTagTextBox.PointToScreen(new Point(0, 0)));
-            _listBox.Location = new Point(p.X, p.Y + _owner.AddTagTextBox.Height);
+            _listBox.Location = p with { Y = p.Y + _owner.AddTagTextBox.Height };
             _listBox.Size = new Size(Math.Max(_owner.AddTagTextBox.Width, 256), 225);
 
             _listBox.BringToFront();

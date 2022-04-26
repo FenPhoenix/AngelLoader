@@ -290,8 +290,8 @@ namespace AngelLoader.Forms.CustomControls
             if (!IsSplitterFixed && _sibling != null)
             {
                 int sibCursorPos = IsMain()
-                    ? _sibling.Panel1.PointToClient(new Point(Cursor.Position.X, 0)).X
-                    : _sibling.Panel1.PointToClient(new Point(0, Cursor.Position.Y)).Y;
+                    ? _sibling.Panel1.PointToClient(Cursor.Position with { Y = 0 }).X
+                    : _sibling.Panel1.PointToClient(Cursor.Position with { X = 0 }).Y;
 
                 int sibSplitterPos = IsMain()
                     ? _sibling.Panel1.Width

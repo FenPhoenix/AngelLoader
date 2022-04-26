@@ -705,11 +705,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 // For now, we're just simplifying and not drawing all the fussy borders of the classic mode.
                 // This way looks perfectly fine in dark mode and saves work.
-                var selectionRect = new Rectangle(
-                    e.CellBounds.X,
-                    e.CellBounds.Y,
-                    e.CellBounds.Width,
-                    e.CellBounds.Height - 1);
+                var selectionRect = e.CellBounds with { Height = e.CellBounds.Height - 1 };
 
                 e.Graphics.FillRectangle(DarkColors.GreyBackgroundBrush, e.CellBounds);
 
@@ -739,12 +735,11 @@ namespace AngelLoader.Forms.CustomControls
 
                 // The classic-themed bounds are complicated and difficult to discern, so we're just using
                 // measured constants here, which match classic mode in our particular case.
-                var textRect = new Rectangle(
-                    e.CellBounds.X + (displayIndex == 0 ? 6 : 4),
-                    e.CellBounds.Y,
-                    e.CellBounds.Width - (displayIndex == 0 ? 10 : 6),
-                    e.CellBounds.Height
-                );
+                var textRect = e.CellBounds with
+                {
+                    X = e.CellBounds.X + (displayIndex == 0 ? 6 : 4),
+                    Width = e.CellBounds.Width - (displayIndex == 0 ? 10 : 6)
+                };
 
                 if (e.Value is string headerText)
                 {

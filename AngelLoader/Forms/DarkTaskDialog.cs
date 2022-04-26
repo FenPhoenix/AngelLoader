@@ -91,7 +91,7 @@ namespace AngelLoader.Forms
 
             if (icon != MessageBoxIcon.None) ControlUtils.SetMessageBoxIcon(IconPictureBox, icon);
 
-            MessageLabel.Location = new Point(imageMarginX, MessageLabel.Location.Y);
+            MessageLabel.Location = MessageLabel.Location with { X = imageMarginX };
 
             #region Set default buttons
 
@@ -132,7 +132,7 @@ namespace AngelLoader.Forms
                 bottomBarContentWidth += VerificationCheckBox.Margin.Horizontal + VerificationCheckBox.Width + 22;
             }
             int width = Math.Max(bottomBarContentWidth, Math.Min(550, MessageLabel.Width + imageMarginX + 7));
-            MessageLabel.MaximumSize = new Size((width - imageMarginX) - 7, MessageLabel.MaximumSize.Height);
+            MessageLabel.MaximumSize = MessageLabel.MaximumSize with { Width = (width - imageMarginX) - 7 };
             int height = MessageLabel.Top + MessageLabel.Height + 15 + BottomFLP.Height;
 
             // Add some padding between the bottom of the icon and the bottom panel
@@ -150,10 +150,10 @@ namespace AngelLoader.Forms
             // 1px less than font height in this case, but I don't know how consistent that is)
             if (MessageLabel.Height <= MessageLabel.Font.Height + 2)
             {
-                MessageLabel.Location = new Point(
-                    MessageLabel.Location.X,
-                    (BottomFLP.Top / 2) - (MessageLabel.Height / 2)
-                );
+                MessageLabel.Location = MessageLabel.Location with
+                {
+                    Y = (BottomFLP.Top / 2) - (MessageLabel.Height / 2)
+                };
             }
 
             DialogResult = DialogResult.Cancel;

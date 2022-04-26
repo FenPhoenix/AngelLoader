@@ -34,9 +34,9 @@ namespace AngelLoader.Forms
 
             int width = (OKButton.Width + Cancel_Button.Width + 24).Clamp(_minClientWidth, int.MaxValue);
 
-            ClientSize = new Size(width, ClientSize.Height);
+            ClientSize = ClientSize with { Width = width };
 
-            Cancel_Button.Location = new Point(OKButton.Right + 8, Cancel_Button.Location.Y);
+            Cancel_Button.Location = Cancel_Button.Location with { X = OKButton.Right + 8 };
 
             FromComboBox.Items.Add(LText.Global.Unrated);
             for (int i = 0; i <= 10; i++) FromComboBox.Items.Add((outOfFive ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture));
