@@ -486,7 +486,7 @@ namespace AngelLoader.Forms
         #region Image arrays
 
         // Load this only once, as it's transparent and so doesn't have to change with the theme
-        internal static readonly Bitmap? Blank = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
+        internal static readonly Bitmap Blank = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
 
         // We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
         // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good

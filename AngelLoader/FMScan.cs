@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
@@ -346,6 +348,61 @@ namespace AngelLoader
             return ScanFMs(fmsToScan,
                 FMScanner.ScanOptions.FalseDefault(scanGameType: true),
                 scanFullIfNew: true);
+        }
+
+        private static FMScanner.ScanOptions? GetScanOptionsFromDialog()
+        {
+            FMScanner.ScanOptions? scanOptions = null;
+            bool noneSelected;
+            using (var f = new ScanAllFMsForm())
+            {
+                if (f.ShowDialogDark() != DialogResult.OK) return null;
+                noneSelected = f.NoneSelected;
+                if (!noneSelected) scanOptions = f.ScanOptions;
+            }
+
+            if (noneSelected)
+            {
+                Dialogs.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
+                return null;
+            }
+
+            return scanOptions;
+        }
+
+        internal static async Task ScanAllFMs()
+        {
+            if (FMsViewList.Count == 0) return;
+
+            FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog();
+            if (scanOptions == null) return;
+
+            if (await ScanFMs(FMsViewList, scanOptions))
+            {
+                await Core.View.SortAndSetFilter(forceDisplayFM: true);
+            }
+        }
+
+        internal static async Task ScanSelectedFMs()
+        {
+            FanMission[] fms = Core.View.GetSelectedFMs_InOrder();
+            if (fms.Length == 1)
+            {
+                if (await ScanFMs(fms.ToList(), hideBoxIfZip: true))
+                {
+                    Core.View.RefreshFM(fms[0]);
+                }
+            }
+            else if (fms.Length > 1)
+            {
+                FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog();
+                if (scanOptions == null) return;
+
+                if (await ScanFMs(fms.ToList(), scanOptions))
+                {
+                    Core.View.RefreshAllSelectedFMs();
+                }
+            }
         }
     }
 }

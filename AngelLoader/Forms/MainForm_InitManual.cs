@@ -404,7 +404,7 @@ namespace AngelLoader.Forms
             FMsDGV.BackgroundColor = SystemColors.ControlDark;
             FMsDGV.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
             FMsDGV.Location = new Point(1, 26);
-            FMsDGV.MultiSelect = false;
+            FMsDGV.MultiSelect = true;
             FMsDGV.ReadOnly = true;
             FMsDGV.RowHeadersVisible = false;
             FMsDGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -417,7 +417,6 @@ namespace AngelLoader.Forms
             FMsDGV.ColumnHeaderMouseClick += FMsDGV_ColumnHeaderMouseClick;
             FMsDGV.SelectionChanged += FMsDGV_SelectionChanged;
             FMsDGV.KeyDown += FMsDGV_KeyDown;
-            FMsDGV.KeyPress += FMsDGV_KeyPress;
             FMsDGV.MouseDown += FMsDGV_MouseDown;
             // 
             // GameTypeColumn

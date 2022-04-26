@@ -476,7 +476,7 @@
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
-            this.FMsDGV.MultiSelect = false;
+            this.FMsDGV.MultiSelect = true;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -498,7 +498,6 @@
             this.FMsDGV.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.FMsDGV_ColumnHeaderMouseClick);
             this.FMsDGV.SelectionChanged += new System.EventHandler(this.FMsDGV_SelectionChanged);
             this.FMsDGV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FMsDGV_KeyDown);
-            this.FMsDGV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FMsDGV_KeyPress);
             this.FMsDGV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FMsDGV_MouseDown);
             // 
             // GameTypeColumn
@@ -2052,10 +2051,13 @@
 #endif
 
 #if !ReleaseBeta && !ReleasePublic
-        internal readonly AngelLoader.Forms.CustomControls.DarkCheckBox ForceWindowedCheckBox;
-        internal readonly AngelLoader.Forms.CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
-        internal readonly AngelLoader.Forms.CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
+        internal AngelLoader.Forms.CustomControls.DarkCheckBox ForceWindowedCheckBox;
+        internal AngelLoader.Forms.CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
+        internal AngelLoader.Forms.CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
 #endif
+
+        internal AngelLoader.Forms.CustomControls.DrawnPanel TopRightMultiSelectBlockerPanel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel TopRightMultiSelectBlockerLabel;
 
         internal AngelLoader.Forms.CustomControls.DarkSplitContainerCustom MainSplitContainer;
         internal System.Windows.Forms.Panel BottomPanel;

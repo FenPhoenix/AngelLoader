@@ -80,6 +80,13 @@ namespace AngelLoader
 
         #region FM utils
 
+        /// <summary>
+        /// If FM's archive name is non-blank, returns it; otherwise, returns FM's installed dir name.
+        /// </summary>
+        /// <param name="fm"></param>
+        /// <returns></returns>
+        internal static string GetFMId(FanMission fm) => !fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir;
+
         internal static void SetFMResource(FanMission fm, CustomResources resource, bool value)
         {
             if (value) { fm.Resources |= resource; } else { fm.Resources &= ~resource; }

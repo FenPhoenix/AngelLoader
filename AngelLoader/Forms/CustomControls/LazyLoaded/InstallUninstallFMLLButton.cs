@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -79,16 +80,22 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             // Have to call this to get its layout working
             Button.Show();
 
-            string instString = LText.MainButtons.InstallFM;
-            string uninstString = LText.MainButtons.UninstallFM;
-            int instStringWidth = TextRenderer.MeasureText(instString, Button.Font).Width;
-            int uninstStringWidth = TextRenderer.MeasureText(uninstString, Button.Font).Width;
-            string longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
+            (string Text, int Length)[] stringsAndLengths =
+            {
+                (LText.MainButtons.UninstallFMs, TextRenderer.MeasureText(LText.MainButtons.UninstallFMs, Button.Font).Width),
+                (LText.MainButtons.UninstallFM, TextRenderer.MeasureText(LText.MainButtons.UninstallFM, Button.Font).Width),
+                (LText.MainButtons.InstallFMs, TextRenderer.MeasureText(LText.MainButtons.InstallFMs, Button.Font).Width),
+                (LText.MainButtons.InstallFM, TextRenderer.MeasureText(LText.MainButtons.InstallFM, Button.Font).Width)
+            };
+
+            stringsAndLengths = stringsAndLengths.OrderByDescending(x => x.Length).ToArray();
+
+            string longestString = stringsAndLengths[0].Text;
 
             // Special case autosize text-set: can't be GrowAndShrink
             Button.SetTextAutoSize(longestString);
 
-            if (!startup) Button.Text = SayInstallState ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
+            if (!startup) SetButtonText(SayInstallState);
 
             if (Button.Visible && Config.HideUninstallButton) Button.Hide();
 
@@ -116,10 +123,24 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (Constructed) Button.Hide();
         }
 
+        private void SetButtonText(bool installState)
+        {
+            bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
+
+            // Special-cased; don't autosize this one
+            Button.Text =
+                installState
+                    ? multiSelected
+                        ? LText.MainButtons.InstallFMs
+                        : LText.MainButtons.InstallFM
+                    : multiSelected
+                        ? LText.MainButtons.UninstallFMs
+                        : LText.MainButtons.UninstallFM;
+        }
+
         private void SetSayInstallState(bool value)
         {
-            // Special-cased; don't autosize this one
-            Button.Text = value ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
+            SetButtonText(value);
             Button.Invalidate();
         }
     }

@@ -912,7 +912,6 @@ namespace AL_Common
         }
 
 #if false
-
         // List version
         public static int FindIndexOfByteSequence(List<byte> input, byte[] pattern, int start = 0)
         {
@@ -938,6 +937,39 @@ namespace AL_Common
         }
 
 #endif
+
+        /// <summary>
+        /// What it says
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="groupControlWord">Must start with '{', for example "{\fonttbl"</param>
+        /// <param name="start"></param>
+        /// <returns></returns>
+        public static (bool Found, int StartIndex, int EndIndex)
+        FindStartAndEndIndicesOfRtfGroup(byte[] input, byte[] groupControlWord, int start = 0)
+        {
+            int index = FindIndexOfByteSequence(input, groupControlWord, start: start);
+            if (index == -1) return (false, -1, -1);
+
+            int braceLevel = 1;
+
+            for (int i = index + 1; i < input.Length; i++)
+            {
+                byte b = input[i];
+                if (b == (byte)'{')
+                {
+                    braceLevel++;
+                }
+                else if (b == (byte)'}')
+                {
+                    braceLevel--;
+                }
+
+                if (braceLevel < 1) return (true, index, i + 1);
+            }
+
+            return (false, -1, -1);
+        }
 
         // Array version
         public static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)

@@ -1371,8 +1371,19 @@ namespace AngelLoader.Forms
                 ? VisualTheme.Dark
                 : VisualTheme.Classic;
 
-            SetTheme(theme, startup: false);
-            _ownerForm?.SetTheme(theme);
+            try
+            {
+                if (_ownerForm != null) _ownerForm.Cursor = Cursors.WaitCursor;
+                Cursor = Cursors.WaitCursor;
+
+                SetTheme(theme, startup: false);
+                _ownerForm?.SetTheme(theme);
+            }
+            finally
+            {
+                if (_ownerForm != null) _ownerForm.Cursor = Cursors.Default;
+                Cursor = Cursors.Default;
+            }
         }
 
         private void GameOrganizationRadioButtons_CheckedChanged(object sender, EventArgs e)

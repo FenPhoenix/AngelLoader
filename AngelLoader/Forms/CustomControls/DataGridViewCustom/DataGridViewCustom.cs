@@ -26,6 +26,8 @@ namespace AngelLoader.Forms.CustomControls
         private bool _mouseHere;
         private int _mouseDownOnHeader = -1;
 
+        private bool _suppressSelectionEvent;
+
         #endregion
 
         #region Public fields
@@ -111,11 +113,60 @@ namespace AngelLoader.Forms.CustomControls
         /// Gets the currently selected FM, taking the currently set filters into account.
         /// </summary>
         /// <returns></returns>
-        internal FanMission GetSelectedFM()
+        internal FanMission GetMainSelectedFM()
         {
-            AssertR(SelectedRows.Count > 0, "GetSelectedFM: no rows selected!");
+            AssertR(SelectedRows.Count > 0, nameof(GetMainSelectedFM) + ": no rows selected!");
+            AssertR(MainSelectedRow != null, nameof(MainSelectedRow) + " is null when it shouldn't be");
 
-            return GetFMFromIndex(SelectedRows[0].Index);
+            return GetFMFromIndex(MainSelectedRow!.Index);
+        }
+
+        /// <summary>
+        /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder"/>
+        /// if you need them in visual order.
+        /// </summary>
+        /// <returns></returns>
+        internal FanMission[] GetSelectedFMs()
+        {
+            var selRows = SelectedRows;
+            var ret = new FanMission[selRows.Count];
+            for (int i = 0; i < selRows.Count; i++)
+            {
+                ret[i] = GetFMFromIndex(selRows[i].Index);
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
+        /// </summary>
+        /// <returns></returns>
+        internal FanMission[] GetSelectedFMs_InOrder()
+        {
+            // Why. Why would Microsoft have all these infuriatingly stupid custom list types.
+            // DataGridViewSelectedRowCollection?! Not even a row collection, but a _SELECTED_ row collection.
+            // Jesus christ is that really necessary? And it has no sort methods either because it's custom, so
+            // it's copy with Cast and then copy with OrderBy and then copy to Array and then copy that to another
+            // array of actual FM objects. Hooray. We've got a garbage collector so who cares right?
+            var selRows = SelectedRows.Cast<DataGridViewRow>().OrderBy(x => x.Index).ToArray();
+
+            var ret = new FanMission[selRows.Length];
+            for (int i = 0; i < selRows.Length; i++)
+            {
+                ret[i] = GetFMFromIndex(selRows[i].Index);
+            }
+
+            return ret;
+        }
+
+        internal int GetIndexFromFM(FanMission fm)
+        {
+            for (int i = 0; i < FilterShownIndexList.Count; i++)
+            {
+                if (GetFMFromIndex(i) == fm) return i;
+            }
+            return -1;
         }
 
         internal int GetIndexFromInstalledName(string installedName, bool findNearest)
@@ -153,10 +204,10 @@ namespace AngelLoader.Forms.CustomControls
             return 0;
         }
 
-        internal SelectedFM GetSelectedFMPosInfo() =>
+        internal SelectedFM GetMainSelectedFMPosInfo() =>
             SelectedRows.Count == 0
                 ? new SelectedFM { InstalledName = "", IndexFromTop = 0 }
-                : GetFMPosInfoFromIndex(index: SelectedRows[0].Index);
+                : GetFMPosInfoFromIndex(index: MainSelectedRow!.Index);
 
         internal SelectedFM GetFMPosInfoFromIndex(int index)
         {
@@ -182,7 +233,30 @@ namespace AngelLoader.Forms.CustomControls
         /// Returns true if any row is selected, false if no rows exist or none are selected.
         /// </summary>
         /// <returns></returns>
-        internal bool RowSelected() => SelectedRows.Count > 0;
+        internal bool RowSelected() => MainSelectedRow != null;
+
+        internal bool MultipleFMsSelected() => SelectedRows.Count > 1;
+
+        internal void SelectSingle(int index, bool suppressSelectionChangedEvent = false)
+        {
+            try
+            {
+                if (suppressSelectionChangedEvent) _suppressSelectionEvent = true;
+
+                // Stops the no-FM-selected code from being run (would clear the top-right area etc.) causing flicker.
+                // Because clearing the selection is just some stupid crap we have to do to make one be selected,
+                // so it shouldn't count as actually having none selected.
+                using (new DisableZeroSelectCode(_owner))
+                {
+                    ClearSelection();
+                    Rows[index].Selected = true;
+                }
+            }
+            finally
+            {
+                if (suppressSelectionChangedEvent) _suppressSelectionEvent = false;
+            }
+        }
 
         #region Get and set columns
 
@@ -247,7 +321,11 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         internal void SelectProperly(bool suspendResume = true)
         {
-            if (Rows.Count == 0 || SelectedRows.Count == 0 || Columns.Count == 0) return;
+            DataGridViewSelectedRowCollection selRows;
+            if (Rows.Count == 0 || Columns.Count == 0 || (selRows = SelectedRows).Count == 0)
+            {
+                return;
+            }
 
             // Crappy mitigation for losing horizontal scroll position, not perfect but better than nothing
             int origHSO = HorizontalScrollingOffset;
@@ -255,7 +333,7 @@ namespace AngelLoader.Forms.CustomControls
             try
             {
                 // Note: we need to do this null check here, otherwise we get an exception that doesn't get caught(!!!)
-                SelectedRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
+                selRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
             }
             catch
             {
@@ -302,6 +380,110 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #region Event overrides
+
+#if false
+        // Still skittish about this. Don't wanna enable it unless I know it even hits the cached value like ever,
+        // and doesn't cause problems.
+
+        // Stupid bloody SelectedRows rebuilds itself EVERY. TIME. YOU. CALL. IT.
+        // So cache the frigging thing so we don't do a full rebuild if we haven't changed.
+        private DataGridViewSelectedRowCollection? _selectedRowsCached;
+        [Browsable(false)]
+        public new DataGridViewSelectedRowCollection SelectedRows => _selectedRowsCached ??= base.SelectedRows;
+#endif
+
+        internal DataGridViewRow? MainSelectedRow;
+
+        // Better, faster (especially with a large selection set) way of doing the hack that prevents the glitched
+        // last row on first jump-to-end when the end is scrolled offscreen.
+        private bool _fmsListOneTimeHackRefreshDone;
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new int FirstDisplayedScrollingRowIndex
+        {
+            get => base.FirstDisplayedScrollingRowIndex;
+            set
+            {
+                bool needsResume = false;
+                try
+                {
+                    // The hack only works when owner form is visible, and it's only done once, so don't waste it.
+                    if (!_fmsListOneTimeHackRefreshDone && _owner.Visible)
+                    {
+                        needsResume = true;
+                        this.SuspendDrawing();
+
+                        try { base.FirstDisplayedScrollingRowIndex++; } catch {/* ignore */}
+                        try { base.FirstDisplayedScrollingRowIndex--; } catch {/* ignore */}
+                        _fmsListOneTimeHackRefreshDone = true;
+                    }
+                    base.FirstDisplayedScrollingRowIndex = value;
+                }
+                finally
+                {
+                    // Don't refresh cause we'll refresh automatically as a result of the scrolling, and calling
+                    // Refresh() just causes visual issues and/or is slow
+                    // But ALSO still invalidate if not refreshing because otherwise the middle-click centering
+                    // breaks!
+                    if (needsResume) this.ResumeDrawing(invalidateInsteadOfRefresh: true);
+                }
+            }
+        }
+
+        private void SetMainSelectedRow()
+        {
+            var selRows = SelectedRows;
+            if (selRows.Count == 0)
+            {
+                MainSelectedRow = null;
+                //System.Diagnostics.Trace.WriteLine("selection cleared");
+            }
+            else
+            {
+                if (MainSelectedRow == null || selRows.Count == 1)
+                {
+                    MainSelectedRow = selRows[0];
+                }
+                //System.Diagnostics.Trace.WriteLine(GetFMFromIndex(MainSelectedRow.Index).Archive);
+                _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
+            }
+        }
+
+        internal void SetRowSelected(int index, bool selected, bool suppressEvent)
+        {
+            try
+            {
+                if (suppressEvent) _suppressSelectionEvent = true;
+                Rows[index].Selected = selected;
+            }
+            finally
+            {
+                if (suppressEvent) _suppressSelectionEvent = false;
+            }
+        }
+
+        protected override void OnSelectionChanged(EventArgs e)
+        {
+#if false
+            _selectedRowsCached = null;
+#endif
+            if (!_suppressSelectionEvent) SetMainSelectedRow();
+            base.OnSelectionChanged(e);
+        }
+
+        // @MULTISEL(FMsDGV on rows added/removed): I suspect we don't need to set main sel on these
+        // Because the FM refresh method changes the selection explicitly (for rows) or implicitly (for no rows)
+        protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
+        {
+            SetMainSelectedRow();
+            base.OnRowsAdded(e);
+        }
+
+        protected override void OnRowsRemoved(DataGridViewRowsRemovedEventArgs e)
+        {
+            SetMainSelectedRow();
+            base.OnRowsRemoved(e);
+        }
 
         protected override void OnColumnAdded(DataGridViewColumnEventArgs e)
         {

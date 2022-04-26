@@ -71,6 +71,8 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string OK = "OK";
             internal readonly string Cancel = "Cancel";
+            internal readonly string Stop = "Stop";
+            internal readonly string Continue = "Continue";
             internal readonly string Yes = "Yes";
             internal readonly string No = "No";
             internal readonly string BrowseEllipses = "Browse...";
@@ -176,6 +178,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Install_GameIsRunning = "Game is running; unable to install FM. Please exit the game and then try again.";
             [FenGenBlankLine]
             internal readonly string Uninstall_Confirm = "Are you sure you want to uninstall this FM?";
+            internal readonly string Uninstall_Confirm_Multiple = "Are you sure you want to uninstall these FMs?";
             internal readonly string Uninstall_GameIsRunning = "Game is running; unable to uninstall FM. Please exit the game and then try again.";
             internal readonly string Uninstall_FMAlreadyUninstalled = "This FM has already been uninstalled or its folder cannot be found. Mark it as uninstalled?";
             internal readonly string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Saves and screenshots will be backed up, but any other data will not. Are you sure you want to uninstall this FM?";
@@ -231,6 +234,8 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             [FenGenComment("Text for the button in the Error dialog box that lets the user view the error log file.")]
             internal readonly string Error_ViewLog = "View log";
+            [FenGenBlankLine]
+            internal readonly string FinishedOnUnknown_MultiFMChange = "All selected FMs' finished states are about to be removed and replaced with 'Unknown'. Are you sure want to do this?";
         }
 
         // Working, subject to change
@@ -398,10 +403,13 @@ namespace AngelLoader.DataClasses
             internal readonly string FMMenu_PlayFM = "Play FM";
             internal readonly string FMMenu_PlayFM_Multiplayer = "Play FM (multiplayer)";
             internal readonly string FMMenu_InstallFM = "Install FM";
+            internal readonly string FMMenu_InstallFMs = "Install FMs";
             internal readonly string FMMenu_UninstallFM = "Uninstall FM";
+            internal readonly string FMMenu_UninstallFMs = "Uninstall FMs";
             internal readonly string FMMenu_PinFM = "Pin to top";
             internal readonly string FMMenu_UnpinFM = "Unpin from top";
             internal readonly string FMMenu_DeleteFM = "Delete FM archive";
+            internal readonly string FMMenu_DeleteFMs = "Delete FM archives";
             internal readonly string FMMenu_OpenInDromEd = "Open FM in DromEd";
             internal readonly string FMMenu_OpenInShockEd = "Open FM in ShockEd";
             internal readonly string FMMenu_OpenFMFolder = "Open FM folder";
@@ -409,10 +417,20 @@ namespace AngelLoader.DataClasses
             internal readonly string FMMenu_FinishedOn = "Finished on";
             internal readonly string FMMenu_ConvertAudio = "Convert audio";
             internal readonly string FMMenu_ScanFM = "Scan FM";
+            [FenGenComment(
+                "This should have an ellipsis after it (...) because it opens up a dialog box, whereas the singular",
+                "one above doesn't.")]
+            internal readonly string FMMenu_ScanFMs = "Scan FMs...";
             internal readonly string FMMenu_WebSearch = "Web search";
             [FenGenBlankLine]
             internal readonly string ConvertAudioMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";
             internal readonly string ConvertAudioMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
+            [FenGenBlankLine]
+            // @MULTISEL(Localization): Try to put this line somewhere better sorted?
+            [FenGenComment(
+                "When multiple FMs are selected, the top-right tabs area will be hidden and this message will appear",
+                "in its place.")]
+            internal readonly string TopRight_MultipleFMsSelected = "Multiple FMs selected.";
         }
 
         internal sealed class StatisticsTab_Class
@@ -531,8 +549,11 @@ namespace AngelLoader.DataClasses
         internal sealed class MainButtons_Class
         {
             internal readonly string PlayFM = "Play FM";
+            // @MULTISEL: Combine the button and the menu strings into one place?
             internal readonly string InstallFM = "Install FM";
             internal readonly string UninstallFM = "Uninstall FM";
+            internal readonly string InstallFMs = "Install FMs";
+            internal readonly string UninstallFMs = "Uninstall FMs";
             internal readonly string PlayOriginalGame = "Play without FM...";
             internal readonly string WebSearch = "Web search";
             internal readonly string Settings = "Settings...";
@@ -542,7 +563,9 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string Scanning = "Scanning...";
             internal readonly string InstallingFM = "Installing FM...";
+            internal readonly string InstallingFMs = "Installing FMs...";
             internal readonly string UninstallingFM = "Uninstalling FM...";
+            internal readonly string UninstallingFMs = "Uninstalling FMs...";
             internal readonly string ConvertingFiles = "Converting files...";
             internal readonly string PreparingToScanFMs = "Preparing to scan FM(s)...";
             internal readonly string ReportScanningFirst = "Scanning ";

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -33,6 +32,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private bool _finishedOnExpertChecked;
         private bool _finishedOnExtremeChecked;
         private bool _finishedOnUnknownChecked;
+        private bool _webSearchMenuItemEnabled;
 
         #endregion
 
@@ -56,6 +56,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private ToolStripMenuItemCustom PlayFMInMPMenuItem = null!;
         private ToolStripMenuItemCustom InstallUninstallMenuItem = null!;
         private ToolStripMenuItemCustom PinToTopMenuItem = null!;
+        private ToolStripMenuItemCustom ExplicitPinToTopMenuItem = null!;
+        private ToolStripMenuItemCustom ExplicitUnpinFromTopMenuItem = null!;
         private ToolStripMenuItemCustom DeleteFMMenuItem = null!;
         private ToolStripSeparator OpenInDromEdSep = null!;
         private ToolStripMenuItemCustom OpenInDromEdMenuItem = null!;
@@ -94,6 +96,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                 DeleteFMMenuItem.Image = Images.Trash_16;
                 PinToTopMenuItem.Image = _sayPin ? Images.Pin_16 : Images.Unpin_16;
+                ExplicitPinToTopMenuItem.Image = Images.Pin_16;
+                ExplicitUnpinFromTopMenuItem.Image = Images.Unpin_16;
             }
         }
 
@@ -207,7 +211,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 PlayFMInMPMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 InstallUninstallMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 new ToolStripSeparator { Tag = LoadType.Lazy },
-                PinToTopMenuItem= new ToolStripMenuItemCustom{ Tag = LoadType.Lazy },
+                PinToTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy, Image = Images.Pin_16, Visible = false },
+                ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy, Image = Images.Unpin_16, Visible = false },
                 new ToolStripSeparator { Tag = LoadType.Lazy },
                 DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16, Tag = LoadType.Lazy },
                 OpenInDromEdSep = new ToolStripSeparator { Tag = LoadType.Lazy },
@@ -257,6 +263,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             PlayFMInMPMenuItem.Click += AsyncMenuItems_Click;
             InstallUninstallMenuItem.Click += AsyncMenuItems_Click;
             PinToTopMenuItem.Click += AsyncMenuItems_Click;
+            ExplicitPinToTopMenuItem.Click += AsyncMenuItems_Click;
+            ExplicitUnpinFromTopMenuItem.Click += AsyncMenuItems_Click;
             DeleteFMMenuItem.Click += AsyncMenuItems_Click;
             OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
             OpenFMFolderMenuItem.Click += AsyncMenuItems_Click;
@@ -302,6 +310,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             ConvertAudioMenuItem.Enabled = _convertAudioSubMenuEnabled;
 
+            WebSearchMenuItem.Enabled = _webSearchMenuItemEnabled;
+
             #endregion
 
             #region Set Finished On checked values
@@ -317,6 +327,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _constructed = true;
 
             // These must come after the constructed bool gets set to true
+            SetPinItemsMode();
             UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
             SetRatingMenuItemChecked(_rating);
             Localize();
@@ -330,11 +341,13 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             // Some menu items' text depends on FM state. Because this could be run after startup, we need to
             // make sure those items' text is set correctly.
-            FanMission? selFM = _owner.GetSelectedFMOrNull();
+            FanMission? selFM = _owner.GetMainSelectedFMOrNull();
             bool sayInstall = selFM is not { Installed: true };
             // @GENGAMES - Localize FM context menu - "sayShockEd"
             bool sayShockEd = selFM is { Game: Game.SS2 };
             bool sayPin = selFM is not { Pinned: true };
+
+            bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
 
             #endregion
 
@@ -345,17 +358,19 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             #endregion
 
-            SetInstallUninstallMenuItemText(sayInstall);
+            SetInstallUninstallMenuItemText(sayInstall, multiSelected);
 
             SetPinOrUnpinMenuItemState(sayPin);
+            ExplicitPinToTopMenuItem.Text = LText.FMsList.FMMenu_PinFM;
+            ExplicitUnpinFromTopMenuItem.Text = LText.FMsList.FMMenu_UnpinFM;
 
-            DeleteFMMenuItem.Text = LText.FMsList.FMMenu_DeleteFM;
+            DeleteFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_DeleteFMs : LText.FMsList.FMMenu_DeleteFM;
 
             SetOpenInDromEdMenuItemText(sayShockEd);
 
             OpenFMFolderMenuItem.Text = LText.FMsList.FMMenu_OpenFMFolder;
 
-            ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM;
+            SetScanFMText();
 
             #region Convert audio submenu
 
@@ -382,6 +397,14 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             #endregion
 
             WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch;
+        }
+
+        internal void SetScanFMText()
+        {
+            if (!_constructed) return;
+
+            bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
+            ScanFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_ScanFMs : LText.FMsList.FMMenu_ScanFM;
         }
 
         internal void UpdateRatingList(bool fmSelStyle)
@@ -449,13 +472,18 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
-        internal void SetInstallUninstallMenuItemText(bool sayInstall)
+        internal void SetInstallUninstallMenuItemText(bool sayInstall, bool multiSelected)
         {
             if (!_constructed) return;
 
-            InstallUninstallMenuItem.Text = sayInstall
-                ? LText.FMsList.FMMenu_InstallFM
-                : LText.FMsList.FMMenu_UninstallFM;
+            InstallUninstallMenuItem.Text =
+                sayInstall
+                    ? multiSelected
+                        ? LText.FMsList.FMMenu_InstallFMs
+                        : LText.FMsList.FMMenu_InstallFM
+                    : multiSelected
+                        ? LText.FMsList.FMMenu_UninstallFMs
+                        : LText.FMsList.FMMenu_UninstallFM;
         }
 
         internal void SetPinOrUnpinMenuItemState(bool sayPin)
@@ -469,6 +497,51 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 : LText.FMsList.FMMenu_UnpinFM;
 
             PinToTopMenuItem.Image = sayPin ? Images.Pin_16 : Images.Unpin_16;
+        }
+
+        internal void SetPinItemsMode()
+        {
+            if (!_constructed) return;
+
+            bool atLeastOnePinned = false;
+            bool atLeastOneUnpinned = false;
+
+            bool multiplePinnedStates = false;
+
+            var selectedFMs = _owner.FMsDGV.GetSelectedFMs();
+            if (selectedFMs.Length > 1)
+            {
+                for (int i = 0; i < selectedFMs.Length; i++)
+                {
+                    if (selectedFMs[i].Pinned)
+                    {
+                        atLeastOnePinned = true;
+                    }
+                    else
+                    {
+                        atLeastOneUnpinned = true;
+                    }
+
+                    if (atLeastOnePinned && atLeastOneUnpinned)
+                    {
+                        multiplePinnedStates = true;
+                        break;
+                    }
+                }
+            }
+
+            if (multiplePinnedStates)
+            {
+                PinToTopMenuItem.Visible = false;
+                ExplicitPinToTopMenuItem.Visible = true;
+                ExplicitUnpinFromTopMenuItem.Visible = true;
+            }
+            else
+            {
+                PinToTopMenuItem.Visible = true;
+                ExplicitPinToTopMenuItem.Visible = false;
+                ExplicitUnpinFromTopMenuItem.Visible = false;
+            }
         }
 
         internal void SetDeleteFMMenuItemEnabled(bool value)
@@ -604,6 +677,18 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
+        internal void SetWebSearchEnabled(bool value)
+        {
+            if (_constructed)
+            {
+                WebSearchMenuItem.Enabled = value;
+            }
+            else
+            {
+                _webSearchMenuItemEnabled = value;
+            }
+        }
+
         #endregion
 
         #region Event handlers
@@ -612,7 +697,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             // Fix for a corner case where the user could press the right mouse button, hold it, keyboard-switch
             // to an empty tab, then let up the mouse and a menu would come up even though no FM was selected.
-            if (_owner.FMsDGV.RowCount == 0 || _owner.FMsDGV.SelectedRows.Count == 0) e.Cancel = true;
+            if (_owner.FMsDGV.RowCount == 0 ||
+                _owner.FMsDGV.SelectedRows.Count == 0 ||
+                _owner.ViewBlocked)
+            {
+                e.Cancel = true;
+            }
         }
 
         // Extra async/await avoidance
@@ -620,41 +710,43 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (sender == PlayFMMenuItem || sender == PlayFMInMPMenuItem)
             {
-                await FMInstallAndPlay.InstallIfNeededAndPlay(_owner.FMsDGV.GetSelectedFM(), playMP: sender == PlayFMInMPMenuItem);
+                await FMInstallAndPlay.InstallIfNeededAndPlay(_owner.FMsDGV.GetMainSelectedFM(), playMP: sender == PlayFMInMPMenuItem);
             }
             else if (sender == InstallUninstallMenuItem)
             {
-                await FMInstallAndPlay.InstallOrUninstall(_owner.FMsDGV.GetSelectedFM());
+                await FMInstallAndPlay.InstallOrUninstall(_owner.GetSelectedFMs_InOrder());
             }
             else if (sender == DeleteFMMenuItem)
             {
-                await FMArchives.Delete(_owner.FMsDGV.GetSelectedFM());
+                // @MULTISEL: Make FM delete method multi-FM aware
+                await FMArchives.Delete(_owner.FMsDGV.GetMainSelectedFM());
             }
             else if (sender == OpenInDromEdMenuItem)
             {
-                var fm = _owner.FMsDGV.GetSelectedFM();
-                if (fm.Installed || await FMInstallAndPlay.InstallFM(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
+                var fm = _owner.FMsDGV.GetMainSelectedFM();
+                if (fm.Installed || await FMInstallAndPlay.Install(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
             }
             else if (sender == OpenFMFolderMenuItem)
             {
-                Core.OpenFMFolder(_owner.FMsDGV.GetSelectedFM());
+                Core.OpenFMFolder(_owner.FMsDGV.GetMainSelectedFM());
             }
             else if (sender == ScanFMMenuItem)
             {
-                FanMission fm = _owner.FMsDGV.GetSelectedFM();
-                if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
-                {
-                    _owner.RefreshFM(fm);
-                }
+                await FMScan.ScanSelectedFMs();
             }
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
             {
-                var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
-                await FMAudio.ConvertToWAVs(_owner.FMsDGV.GetSelectedFM(), convertType, true);
+                await FMAudio.ConvertSelected(sender == ConvertWAVsTo16BitMenuItem
+                    ? AudioConvert.WAVToWAV16
+                    : AudioConvert.OGGToWAV);
             }
-            else if (sender == PinToTopMenuItem)
+            else if (sender == PinToTopMenuItem ||
+                     sender == ExplicitPinToTopMenuItem ||
+                     sender == ExplicitUnpinFromTopMenuItem)
             {
-                await Core.PinOrUnpinFM();
+                await Core.PinOrUnpinFM(pin: sender == PinToTopMenuItem
+                    ? !_owner.FMsDGV.GetMainSelectedFM().Pinned
+                    : sender == ExplicitPinToTopMenuItem);
             }
         }
 
@@ -664,12 +756,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 if (RatingMenuItem.DropDownItems[i] == sender)
                 {
-                    int rating = i - 1;
-                    FanMission fm = _owner.FMsDGV.GetSelectedFM();
-                    fm.Rating = rating;
-                    _owner.RefreshFM(fm, rowOnly: true);
-                    _owner.UpdateRatingMenus(rating, disableEvents: true);
-                    Ini.WriteFullFMDataIni();
+                    _owner.UpdateRatingForSelectedFMs(rating: i - 1);
                     break;
                 }
             }
@@ -690,14 +777,31 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             var senderItem = (ToolStripMenuItemCustom)sender;
 
-            var fm = _owner.FMsDGV.GetSelectedFM();
+            FanMission[] selFMs = _owner.FMsDGV.GetSelectedFMs();
+            FanMission mainFM = _owner.FMsDGV.GetMainSelectedFM();
 
-            fm.FinishedOn = 0;
-            fm.FinishedOnUnknown = false;
+            if (selFMs.Length > 1 &&
+                senderItem == FinishedOnUnknownMenuItem &&
+                FinishedOnUnknownMenuItem.Checked)
+            {
+                bool doFinishedOnUnknown = Dialogs.AskToContinue(
+                    LText.AlertMessages.FinishedOnUnknown_MultiFMChange,
+                    LText.AlertMessages.Alert,
+                    defaultButton: DarkTaskDialog.Button.No
+                );
+                if (!doFinishedOnUnknown)
+                {
+                    SetFinishedOnMenuItemsChecked((Difficulty)mainFM.FinishedOn, mainFM.FinishedOnUnknown);
+                    return;
+                }
+            }
+
+            mainFM.FinishedOn = 0;
+            mainFM.FinishedOnUnknown = false;
 
             if (senderItem == FinishedOnUnknownMenuItem)
             {
-                fm.FinishedOnUnknown = senderItem.Checked;
+                mainFM.FinishedOnUnknown = senderItem.Checked;
             }
             else
             {
@@ -706,17 +810,53 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 {
                     if (item == FinishedOnUnknownMenuItem) continue;
 
-                    if (item.Checked) fm.FinishedOn |= at;
+                    if (item.Checked) mainFM.FinishedOn |= at;
                     at <<= 1;
                 }
-                if (fm.FinishedOn > 0)
+                if (mainFM.FinishedOn > 0)
                 {
                     FinishedOnUnknownMenuItem.Checked = false;
-                    fm.FinishedOnUnknown = false;
+                    mainFM.FinishedOnUnknown = false;
                 }
             }
 
-            _owner.RefreshFM(fm, rowOnly: true);
+            foreach (FanMission fm in selFMs)
+            {
+                if (fm == mainFM) continue;
+                uint at = 1;
+                foreach (ToolStripMenuItemCustom item in FinishedOnMenu.Items)
+                {
+                    if (item == FinishedOnUnknownMenuItem)
+                    {
+                        if (item.Checked)
+                        {
+                            fm.FinishedOn = 0;
+                            fm.FinishedOnUnknown = true;
+                        }
+                        else
+                        {
+                            fm.FinishedOnUnknown = false;
+                        }
+                    }
+                    else if (item == senderItem)
+                    {
+                        fm.FinishedOnUnknown = false;
+                        if (item.Checked)
+                        {
+                            fm.FinishedOn |= at;
+                        }
+                        else
+                        {
+                            fm.FinishedOn &= ~at;
+                        }
+                        break;
+                    }
+                    at <<= 1;
+                }
+            }
+
+            _owner.RefreshAllSelectedFMRows();
+
             Ini.WriteFullFMDataIni();
         }
 
@@ -725,7 +865,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (FinishedOnUnknownMenuItem.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
-        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(_owner.FMsDGV.GetSelectedFM().Title);
+        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(_owner.FMsDGV.GetMainSelectedFM().Title);
 
         #endregion
     }

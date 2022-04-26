@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
+using JetBrains.Annotations;
 using Microsoft.Win32;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -494,7 +495,7 @@ namespace AngelLoader
                 }
             }
 
-            #region Return bools for appropriate refresh method (if applicable)
+            #region Refresh (if applicable)
 
             bool keepSel = false;
             bool sortAndSetFilter = false;
@@ -729,7 +730,7 @@ namespace AngelLoader
 
         public static async Task RefreshFMsListFromDisk()
         {
-            SelectedFM? selFM = View.GetSelectedFMPosInfo();
+            SelectedFM? selFM = View.GetMainSelectedFMPosInfo();
             using (new DisableEvents(View))
             {
                 var fmsViewListUnscanned = FindFMs.Find();
@@ -1780,50 +1781,48 @@ namespace AngelLoader
             }
         }
 
-        internal static async Task ScanAllFMs()
+        internal static async Task PinOrUnpinFM(bool pin)
         {
-            if (FMsViewList.Count == 0) return;
-
-            FMScanner.ScanOptions? scanOptions = null;
-            bool noneSelected;
-            using (var f = new ScanAllFMsForm())
-            {
-                if (f.ShowDialogDark() != DialogResult.OK) return;
-                noneSelected = f.NoneSelected;
-                if (!noneSelected) scanOptions = f.ScanOptions;
-            }
-
-            if (noneSelected)
-            {
-                Dialogs.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
-                return;
-            }
-
-            if (await FMScan.ScanFMs(FMsViewList, scanOptions!)) await View.SortAndSetFilter(forceDisplayFM: true);
-        }
-
-        internal static async Task PinOrUnpinFM()
-        {
-            var fm = View.GetSelectedFMOrNull();
-            if (fm == null) return;
-
-            fm.Pinned = !fm.Pinned;
-
-            View.SetPinnedMenuState(fm.Pinned);
+            FanMission[] selFMs = View.GetSelectedFMs();
+            if (selFMs.Length == 0) return;
 
             int rowCount = View.GetRowCount();
+            if (rowCount == 0) return;
 
-            SelectedFM? selFM;
-            if (fm.Pinned || rowCount == 1)
+            bool singleFMSelected = selFMs.Length == 1;
+
+            for (int i = 0; i < selFMs.Length; i++)
             {
-                selFM = null;
+                selFMs[i].Pinned = pin;
             }
-            else
+
+            if (singleFMSelected) View.SetPinnedMenuState(pin);
+
+            SelectedFM? selFM = null;
+            if (!pin && rowCount > 1)
             {
-                int index = View.GetSelectedRowIndex();
-                selFM = View.GetFMPosInfoFromIndex(index == rowCount - 1 ? index - 1 : index + 1);
+                int index = View.GetMainSelectedRowIndex();
+                if (index == rowCount - 1)
+                {
+                    selFM = View.GetFMPosInfoFromIndex(index - 1);
+                }
+                else
+                {
+                    for (int i = index; i < rowCount; i++)
+                    {
+                        if (!View.RowSelected(i))
+                        {
+                            selFM = View.GetFMPosInfoFromIndex(i);
+                            break;
+                        }
+                    }
+                }
             }
-            await View.SortAndSetFilter(keepSelection: fm.Pinned, selectedFM: selFM);
+
+            await View.SortAndSetFilter(
+                keepSelection: pin,
+                selectedFM: selFM,
+                keepMultiSelection: !singleFMSelected && pin);
         }
 
         internal static bool AtLeastOneDroppedFileValid(string[] droppedItems)
@@ -1842,7 +1841,7 @@ namespace AngelLoader
 
         internal static void UpdateFMComment()
         {
-            FanMission? fm = View.GetSelectedFMOrNull();
+            FanMission? fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
             string commentText = View.GetFMCommentText();
@@ -1860,7 +1859,7 @@ namespace AngelLoader
 
         internal static void ScanAndFillLanguagesList(bool forceScan)
         {
-            FanMission? fm = View.GetSelectedFMOrNull();
+            FanMission? fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
             View.ClearLanguagesList();
@@ -1895,18 +1894,20 @@ namespace AngelLoader
 
         internal static void UpdateFMSelectedLanguage()
         {
-            FanMission? fm = View.GetSelectedFMOrNull();
+            FanMission? fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
-            fm.SelectedLang = View.GetSelectedLanguage() ?? FMLanguages.DefaultLangKey;
+            fm.SelectedLang = View.GetMainSelectedLanguage() ?? FMLanguages.DefaultLangKey;
             Ini.WriteFullFMDataIni();
         }
 
-        internal static async Task DisplayFM(bool refreshCache = false)
+        [MustUseReturnValue]
+        internal static async Task<FanMission?>
+        DisplayFM(int index = -1, bool refreshCache = false)
         {
-            FanMission? fm = View.GetSelectedFMOrNull();
+            FanMission? fm = index > -1 ? View.GetFMFromIndex(index) : View.GetMainSelectedFMOrNull();
             AssertR(fm != null, nameof(fm) + " == null");
-            if (fm == null) return;
+            if (fm == null) return fm;
 
             if (FMNeedsScan(fm))
             {
@@ -1950,7 +1951,7 @@ namespace AngelLoader
                     case 0:
                         View.SetReadmeState(ReadmeState.LoadError);
                         View.SetReadmeText(LText.ReadmeArea.NoReadmeFound);
-                        return;
+                        return fm;
                     case > 1:
                         string safeReadme = DetectSafeReadme(readmeFiles, fm.Title);
                         if (!safeReadme.IsEmpty())
@@ -1962,7 +1963,7 @@ namespace AngelLoader
                         else
                         {
                             View.SetReadmeState(ReadmeState.InitialReadmeChooser, readmeFiles);
-                            return;
+                            return fm;
                         }
                         break;
                     case 1:
@@ -1977,6 +1978,8 @@ namespace AngelLoader
             LoadReadme(fm);
 
             #endregion
+
+            return fm;
         }
 
         #region Shutdown
@@ -2107,9 +2110,6 @@ namespace AngelLoader
         // @!vNext(HandleCommandLineArgs): Finalize this and take care of any notes and todos
         public static async Task HandleCommandLineArgs(ReadOnlyCollection<string> args)
         {
-            return;
-
-
             using var mutex = new Mutex(true, AppGuid, out bool createdNew);
             if (!createdNew) return;
 

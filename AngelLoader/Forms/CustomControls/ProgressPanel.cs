@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -38,7 +39,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_darkModeEnabled)
                 {
-                    // Use a lighter background so make it easy to see we're supposed to be in front and modal
+                    // Use a lighter background to make it easy to see we're supposed to be in front and modal
                     back = DarkColors.LightBackground;
                     fore = DarkColors.LightText;
                 }
@@ -50,6 +51,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 BackColor = back;
                 ForeColor = fore;
+
                 CurrentThingLabel.BackColor = back;
                 CurrentThingLabel.ForeColor = fore;
                 ProgressMessageLabel.ForeColor = fore;
@@ -57,6 +59,12 @@ namespace AngelLoader.Forms.CustomControls
                 ProgressPercentLabel.ForeColor = fore;
                 ProgressPercentLabel.BackColor = back;
                 ProgressBar.DarkModeEnabled = _darkModeEnabled;
+
+                CurrentSubThingLabel.BackColor = back;
+                CurrentSubThingLabel.ForeColor = fore;
+                SubProgressPercentLabel.BackColor = back;
+                SubProgressPercentLabel.ForeColor = fore;
+                SubProgressBar.DarkModeEnabled = _darkModeEnabled;
             }
         }
 
@@ -73,20 +81,34 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Open/close
 
-        internal void ShowProgressWindow(ProgressTask progressTask, bool suppressShow = false)
+        internal void ShowProgressWindow(ProgressTask progressTask, bool suppressShow)
         {
+            const int regularHeight = 128;
+            const int extendedHeight = 192;
+
             _progressTask = progressTask;
+
+            bool useExtendedHeight = _progressTask == ProgressTask.InstallFMs;
+
+            Size = Size with { Height = useExtendedHeight ? extendedHeight : regularHeight };
+            CurrentSubThingLabel.Visible = useExtendedHeight;
+            SubProgressPercentLabel.Visible = useExtendedHeight;
+            SubProgressBar.Visible = useExtendedHeight;
 
             this.CenterHV(_owner!, clientSize: true);
 
             ProgressBar.CenterH(this);
+            SubProgressBar.CenterH(this);
 
             ProgressMessageLabel.Text = progressTask switch
             {
                 ProgressTask.FMScan => LText.ProgressBox.Scanning,
                 ProgressTask.InstallFM => LText.ProgressBox.InstallingFM,
+                ProgressTask.InstallFMs => LText.ProgressBox.InstallingFMs,
                 ProgressTask.UninstallFM => LText.ProgressBox.UninstallingFM,
-                ProgressTask.ConvertFiles => LText.ProgressBox.ConvertingFiles,
+                ProgressTask.UninstallFMs => LText.ProgressBox.UninstallingFMs,
+                ProgressTask.ConvertFiles or
+                ProgressTask.ConvertFilesManual => LText.ProgressBox.ConvertingFiles,
                 ProgressTask.ImportFromDarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
                 ProgressTask.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
                 ProgressTask.ImportFromFMSel => LText.ProgressBox.ImportingFromFMSel,
@@ -103,7 +125,9 @@ namespace AngelLoader.Forms.CustomControls
 
             if (progressTask
                 is ProgressTask.UninstallFM
+                or ProgressTask.UninstallFMs
                 or ProgressTask.ConvertFiles
+                or ProgressTask.ConvertFilesManual
                 or ProgressTask.ImportFromDarkLoader
                 or ProgressTask.ImportFromNDL
                 or ProgressTask.ImportFromFMSel
@@ -111,7 +135,10 @@ namespace AngelLoader.Forms.CustomControls
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
                 if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
-                ProgressCancelButton.Hide();
+                if (progressTask != ProgressTask.ConvertFilesManual)
+                {
+                    ProgressCancelButton.Hide();
+                }
             }
             else
             {
@@ -131,6 +158,8 @@ namespace AngelLoader.Forms.CustomControls
             BringToFront();
             Show();
             ProgressCancelButton.Focus();
+
+            Localize();
         }
 
         internal void HideThis()
@@ -140,11 +169,17 @@ namespace AngelLoader.Forms.CustomControls
             Hide();
 
             ProgressMessageLabel.Text = "";
+
             CurrentThingLabel.Text = "";
             ProgressPercentLabel.Text = "";
             ProgressBar.Value = 0;
-
             ProgressBar.Style = ProgressBarStyle.Blocks;
+
+            CurrentSubThingLabel.Text = "";
+            SubProgressPercentLabel.Text = "";
+            SubProgressBar.Value = 0;
+            SubProgressBar.Style = ProgressBarStyle.Blocks;
+
             ProgressCancelButton.Show();
 
             Enabled = false;
@@ -154,6 +189,11 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         #region Reporting
+
+        internal void SetCurrentThingMessage(string message)
+        {
+            CurrentThingLabel.Text = message;
+        }
 
         internal void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
         {
@@ -168,13 +208,43 @@ namespace AngelLoader.Forms.CustomControls
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
         }
 
-        internal void ReportFMExtractProgress(int percent)
+        internal void ReportFMInstallProgress(int percent)
         {
             ProgressBar.Value = percent;
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
             ProgressPercentLabel.Text = percent + "%";
 
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
+        }
+
+        /// <summary>
+        /// For the percents, -1 means don't update the displayed values.
+        /// </summary>
+        /// <param name="mainPercent"></param>
+        /// <param name="subPercent"></param>
+        /// <param name="fmName"></param>
+        /// <param name="subMessage"></param>
+        internal void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName, string subMessage = "")
+        {
+            if (mainPercent > -1)
+            {
+                ProgressBar.Value = mainPercent;
+                ProgressPercentLabel.Text = mainPercent + "%";
+            }
+            ProgressMessageLabel.Text = LText.ProgressBox.InstallingFMs;
+
+            if (subPercent > -1)
+            {
+                SubProgressBar.Value = subPercent;
+                SubProgressPercentLabel.Text = !subMessage.IsEmpty() ? subMessage : subPercent + "%";
+            }
+            else
+            {
+                if (!subMessage.IsEmpty()) SubProgressPercentLabel.Text = subMessage;
+            }
+            CurrentSubThingLabel.Text = fmName;
+
+            if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, mainPercent, 100);
         }
 
         internal void ReportCachingProgress(int percent)
@@ -205,7 +275,9 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void Localize()
         {
-            ProgressCancelButton.Text = LText.Global.Cancel;
+            ProgressCancelButton.Text = _progressTask == ProgressTask.ConvertFilesManual
+                ? LText.Global.Stop
+                : LText.Global.Cancel;
             ProgressCancelButton.CenterH(this);
         }
 
@@ -220,7 +292,11 @@ namespace AngelLoader.Forms.CustomControls
                     FMScan.CancelScan();
                     break;
                 case ProgressTask.InstallFM:
+                case ProgressTask.InstallFMs:
                     FMInstallAndPlay.CancelInstallFM();
+                    break;
+                case ProgressTask.ConvertFilesManual:
+                    FMAudio.StopConversion();
                     break;
             }
         }

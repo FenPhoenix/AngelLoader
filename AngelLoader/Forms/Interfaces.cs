@@ -34,6 +34,11 @@ namespace AngelLoader.Forms
         bool EventsDisabled { set; }
     }
 
+    internal interface IZeroSelectCodeDisabler
+    {
+        bool ZeroSelectCodeDisabled { set; }
+    }
+
     internal sealed class DisableEvents : IDisposable
     {
         private readonly IEventDisabler Obj;
@@ -44,6 +49,18 @@ namespace AngelLoader.Forms
         }
 
         public void Dispose() => Obj.EventsDisabled = false;
+    }
+
+    internal sealed class DisableZeroSelectCode : IDisposable
+    {
+        private readonly IZeroSelectCodeDisabler Obj;
+        internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
+        {
+            Obj = obj;
+            Obj.ZeroSelectCodeDisabled = true;
+        }
+
+        public void Dispose() => Obj.ZeroSelectCodeDisabled = false;
     }
 
     #endregion
@@ -74,6 +91,7 @@ namespace AngelLoader.Forms
     {
         void Localize();
         void SetTheme(VisualTheme theme);
+        Cursor Cursor { get; set; }
     }
 
     [PublicAPI]
@@ -98,14 +116,16 @@ namespace AngelLoader.Forms
         void SelectBackingIndexOf(string item);
     }
 
-    internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IMessageFilter
+    internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler, IMessageFilter
     {
         #region Progress box
 
         void ShowProgressBox(ProgressTask progressTask, bool suppressShow = false);
         void HideProgressBox();
         void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName);
-        void ReportFMExtractProgress(int percent);
+        void ReportFMInstallProgress(int percent);
+        void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName);
+        void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string subMessage, string fmName);
         void ReportCachingProgress(int percent);
         void SetCancelingFMInstall();
 
@@ -149,7 +169,7 @@ namespace AngelLoader.Forms
 
         Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
                               bool keepSelection = false, bool gameTabSwitch = false,
-                              bool landImmediate = false);
+                              bool landImmediate = false, bool keepMultiSelection = false);
 
         Filter GetFilter();
 
@@ -206,7 +226,13 @@ namespace AngelLoader.Forms
 
         void RefreshFM(FanMission fm, bool rowOnly = false);
 
-        void RefreshFMsListKeepSelection();
+        void RefreshFMsListKeepSelection(bool keepMulti = true);
+
+        void RefreshAllSelectedFMRows();
+
+        void RefreshAllSelectedFMs(bool rowOnly = false);
+
+        void RefreshCurrentFM_IncludeInstalledState();
 
         #endregion
 
@@ -224,13 +250,15 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        void SetCursor(Cursor cursor);
+
         void Block(bool block);
 
         void ChangeReadmeBoxFont(bool useFixed);
 
         void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded);
 
-        SelectedFM? GetSelectedFMPosInfo();
+        SelectedFM? GetMainSelectedFMPosInfo();
 
         void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
 
@@ -238,19 +266,21 @@ namespace AngelLoader.Forms
         void UpdateGameScreenShotModes();
 #endif
 
-        FanMission? GetSelectedFMOrNull();
+        FanMission? GetMainSelectedFMOrNull();
+        FanMission[] GetSelectedFMs();
         (string Category, string Tag) SelectedCategoryAndTag();
         void DisplayFMTags(FMCategoriesCollection fmTags);
         void ClearTagsSearchBox();
         void SetPinnedMenuState(bool pinned);
         int GetRowCount();
-        int GetSelectedRowIndex();
+        int GetMainSelectedRowIndex();
         SelectedFM? GetFMPosInfoFromIndex(int index);
+        bool RowSelected(int index);
         string GetFMCommentText();
         void ClearLanguagesList();
         void AddLanguageToList(string backingItem, string item);
         string? SetSelectedLanguage(string language);
-        string? GetSelectedLanguage();
+        string? GetMainSelectedLanguage();
         void SetPlayOriginalGameControlsState();
         void ClearReadmesList();
         void UpdateAllFMUIDataExceptReadme(FanMission fm);
@@ -259,5 +289,8 @@ namespace AngelLoader.Forms
         void ShowInitialReadmeChooser(bool visible);
         void ActivateThisInstance();
         Task<bool> AddFMs(string[] fmArchiveNames);
+        FanMission? GetFMFromIndex(int index);
+        FanMission[] GetSelectedFMs_InOrder();
+        void SetProgressBoxSecondMessage(string message);
     }
 }

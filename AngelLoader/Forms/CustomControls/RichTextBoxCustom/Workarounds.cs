@@ -389,6 +389,11 @@ namespace AngelLoader.Forms.CustomControls
         // ReSharper disable IdentifierTypo
         private static readonly byte[] _shppict =
         {
+#if false
+            (byte)'{',
+            (byte)'\\',
+            (byte)'*',
+#endif
             (byte)'\\',
             (byte)'s',
             (byte)'h',
@@ -400,6 +405,11 @@ namespace AngelLoader.Forms.CustomControls
         };
         private static readonly byte[] _shppictBlanked =
         {
+#if false
+            (byte)'{',
+            (byte)'\\',
+            (byte)'*',
+#endif
             (byte)'\\',
             (byte)'x',
             (byte)'x',
@@ -412,6 +422,9 @@ namespace AngelLoader.Forms.CustomControls
 
         private static readonly byte[] _nonshppict =
         {
+#if false
+            (byte)'{',
+#endif
             (byte)'\\',
             (byte)'n',
             (byte)'o',
@@ -426,6 +439,9 @@ namespace AngelLoader.Forms.CustomControls
         };
         private static readonly byte[] _nonshppictBlanked =
         {
+#if false
+            (byte)'{',
+#endif
             (byte)'\\',
             (byte)'x',
             (byte)'x',
