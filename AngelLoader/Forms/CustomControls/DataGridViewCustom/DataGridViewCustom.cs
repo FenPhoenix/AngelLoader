@@ -397,6 +397,7 @@ namespace AngelLoader.Forms.CustomControls
         // Better, faster (especially with a large selection set) way of doing the hack that prevents the glitched
         // last row on first jump-to-end when the end is scrolled offscreen.
         private bool _fmsListOneTimeHackRefreshDone;
+        ///<inheritdoc cref="DataGridView.FirstDisplayedScrollingRowIndex"></inheritdoc>
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new int FirstDisplayedScrollingRowIndex
