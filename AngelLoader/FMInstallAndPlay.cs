@@ -1063,7 +1063,7 @@ namespace AngelLoader
 
             try
             {
-                Core.View.SetCursor(Cursors.WaitCursor);
+                Core.View.Cursor = Cursors.WaitCursor;
 
                 #region Checks
 
@@ -1162,7 +1162,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.View.SetCursor(Cursors.Default);
+                Core.View.Cursor = Cursors.Default;
             }
 
             try

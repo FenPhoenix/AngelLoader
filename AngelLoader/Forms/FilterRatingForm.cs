@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Globalization;
 using AL_Common;
 using static AngelLoader.Misc;

@@ -174,7 +174,7 @@ namespace FenGen
                     if (initializer == null)
                     {
                         string type = m.IsKind(SyntaxKind.FieldDeclaration) ? "field" : "property";
-                        ThrowErrorAndTerminate(nameof(Language) + ":\r\n" + "Found a " + type + " without an initializer in " + file);
+                        ThrowErrorAndTerminate(nameof(Language) + ":\r\nFound a " + type + " without an initializer in " + file);
                     }
 
                     if (gameIndex > -1)

@@ -9,7 +9,7 @@ namespace FenGen
         internal sealed class IndentingWriter
         {
             private int _nextIndent;
-            private bool _fileScopedNamespace;
+            private readonly bool _fileScopedNamespace;
             private readonly StringBuilder _sb;
 
             private static string Indent(int num)

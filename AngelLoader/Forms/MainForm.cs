@@ -42,7 +42,6 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -1783,8 +1782,6 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-
-        public void SetCursor(Cursor cursor) => Cursor = cursor;
 
         #region Helpers & misc
 

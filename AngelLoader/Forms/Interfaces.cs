@@ -250,8 +250,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        void SetCursor(Cursor cursor);
-
         void Block(bool block);
 
         void ChangeReadmeBoxFont(bool useFixed);

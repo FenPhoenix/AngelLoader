@@ -520,7 +520,7 @@ namespace FenGen
 
                 foreach (SyntaxTrivia t in destNode.Node.DescendantTrivia())
                 {
-                    if (t.Kind() == SyntaxKind.SingleLineCommentTrivia)
+                    if (t.IsKind(SyntaxKind.SingleLineCommentTrivia))
                     {
                         destNode.Comments.Add(t.ToString());
                     }
@@ -582,7 +582,7 @@ namespace FenGen
                 }
                 else if (destNode.PropName == "Location" &&
                          (
-                             (props.Location?.X == 0 && props.Location?.Y == 0) ||
+                             props.Location is { X: 0, Y: 0 } ||
                              props.DockIsFill ||
                              controlsInFlowLayoutPanels.Contains(destNode.ControlName)
                          )
