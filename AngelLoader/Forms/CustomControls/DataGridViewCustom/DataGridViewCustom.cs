@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -115,7 +117,7 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         internal FanMission GetMainSelectedFM()
         {
-            AssertR(SelectedRows.Count > 0, nameof(GetMainSelectedFM) + ": no rows selected!");
+            AssertR(GetRowSelectedCountInternal() > 0, nameof(GetMainSelectedFM) + ": no rows selected!");
             AssertR(MainSelectedRow != null, nameof(MainSelectedRow) + " is null when it shouldn't be");
 
             return GetFMFromIndex(MainSelectedRow!.Index);
@@ -205,7 +207,7 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         internal SelectedFM GetMainSelectedFMPosInfo() =>
-            SelectedRows.Count == 0
+            !RowSelected()
                 ? new SelectedFM { InstalledName = "", IndexFromTop = 0 }
                 : GetFMPosInfoFromIndex(index: MainSelectedRow!.Index);
 
@@ -213,7 +215,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             var ret = new SelectedFM { InstalledName = "", IndexFromTop = 0 };
 
-            if (SelectedRows.Count == 0) return ret;
+            if (!RowSelected()) return ret;
 
             int firstDisplayed = FirstDisplayedScrollingRowIndex;
             int lastDisplayed = firstDisplayed + DisplayedRowCount(false);
@@ -233,14 +235,18 @@ namespace AngelLoader.Forms.CustomControls
         /// Returns true if any row is selected, false if no rows exist or none are selected.
         /// </summary>
         /// <returns></returns>
+        [MemberNotNullWhen(true, nameof(MainSelectedRow))]
         internal bool RowSelected() => MainSelectedRow != null;
 
-        internal bool MultipleFMsSelected()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetRowSelectedCountInternal()
         {
-            // Since we're full-row select, one row will be ColumnsCount cells selected, so any more than that
-            // and we know we have more than one row selected. Avoids having to make a heavy SelectedRows call.
-            return GetCellCount(DataGridViewElementStates.Selected) > ColumnsCount;
+            // Since we're full-row select, one row will be ColumnsCount cells selected. Avoids having to make a
+            // heavy SelectedRows call.
+            return GetCellCount(DataGridViewElementStates.Selected) / ColumnsCount;
         }
+
+        internal bool MultipleFMsSelected() => GetRowSelectedCountInternal() > 1;
 
         internal void SelectSingle(int index, bool suppressSelectionChangedEvent = false)
         {
@@ -326,8 +332,7 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         internal void SelectProperly(bool suspendResume = true)
         {
-            DataGridViewSelectedRowCollection selRows;
-            if (Rows.Count == 0 || Columns.Count == 0 || (selRows = SelectedRows).Count == 0)
+            if (Rows.Count == 0 || Columns.Count == 0 || !RowSelected())
             {
                 return;
             }
@@ -338,7 +343,7 @@ namespace AngelLoader.Forms.CustomControls
             try
             {
                 // Note: we need to do this null check here, otherwise we get an exception that doesn't get caught(!!!)
-                selRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
+                MainSelectedRow.Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
             }
             catch
             {
@@ -438,19 +443,16 @@ namespace AngelLoader.Forms.CustomControls
 
         private void SetMainSelectedRow()
         {
-            var selRows = SelectedRows;
-            if (selRows.Count == 0)
+            if (GetRowSelectedCountInternal() == 0)
             {
                 MainSelectedRow = null;
-                //System.Diagnostics.Trace.WriteLine("selection cleared");
             }
             else
             {
-                if (MainSelectedRow == null || selRows.Count == 1)
+                if (MainSelectedRow == null || GetRowSelectedCountInternal() == 1)
                 {
-                    MainSelectedRow = selRows[0];
+                    MainSelectedRow = CurrentRow;
                 }
-                //System.Diagnostics.Trace.WriteLine(GetFMFromIndex(MainSelectedRow.Index).Archive);
                 _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
             }
         }
