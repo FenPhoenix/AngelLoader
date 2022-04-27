@@ -537,10 +537,15 @@ namespace AngelLoader
 
         private sealed class GameData
         {
-            internal string FMInstallPath = "";
+            internal readonly GameIndex GameIndex;
             internal long? FreeSpaceOnFMInstallDisk;
             internal bool TotalExtractedSizeCalcSuccessful = true;
-            internal long TotalExtractedSizeOfAllFMsForThisGame;
+            internal long TotalExtractedSizeOfAllFMsForThisPath;
+
+            internal GameData(GameIndex gameIndex)
+            {
+                GameIndex = gameIndex;
+            }
         }
 
         // @MULTISEL(Install/main - cancel install): Maybe ask if they want to cancel just this, all, or all subsequent?
@@ -548,7 +553,7 @@ namespace AngelLoader
         {
             var fmDataList = new FMData[fms.Length];
 
-            var gameDataDict = new Dictionary<GameIndex, GameData>();
+            var fmInstPathDict = new Dictionary<string, GameData>();
 
             #region Checks
 
@@ -567,10 +572,10 @@ namespace AngelLoader
                     string fmInstallPath = Config.GetFMInstallPath(gameIndex);
                     if (!fmInstallPath.IsEmpty())
                     {
-                        if (!gameDataDict.TryGetValue(gameIndex, out GameData gameData))
+                        if (!fmInstPathDict.TryGetValue(fmInstallPath, out GameData gameData))
                         {
-                            gameData = new GameData { FMInstallPath = fmInstallPath };
-                            gameDataDict[gameIndex] = gameData;
+                            gameData = new GameData(gameIndex);
+                            fmInstPathDict[fmInstallPath] = gameData;
                         }
 
                         try
@@ -721,13 +726,10 @@ namespace AngelLoader
 
                 Core.View.ShowProgressBox(single ? ProgressTask.InstallFM : ProgressTask.InstallFMs);
 
-                // @MULTISEL(Install/disk space check): This is STILL wrong, we need to combine by disk, not by game!
-                // Otherwise C:\ could have 5GB free, and all T1 are 2GB combined (pass) and all T2 are 4GB combined
-                // (pass) but together are 6GB (should fail).
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
                     var fmData = fmDataList[i];
-                    var gameData = gameDataDict[GameToGameIndex(fmData.FM.Game)];
+                    var gameData = fmInstPathDict[fmData.InstBasePath];
                     long fmExtractedSize = 0;
                     try
                     {
@@ -747,10 +749,10 @@ namespace AngelLoader
                             if (fmExtractedSize <= 0)
                             {
                                 gameData.TotalExtractedSizeCalcSuccessful = false;
-                                gameData.TotalExtractedSizeOfAllFMsForThisGame = 0;
+                                gameData.TotalExtractedSizeOfAllFMsForThisPath = 0;
                             }
                         }
-                        gameData.TotalExtractedSizeOfAllFMsForThisGame += fmExtractedSize;
+                        gameData.TotalExtractedSizeOfAllFMsForThisPath += fmExtractedSize;
                     }
                     catch
                     {
@@ -763,26 +765,27 @@ namespace AngelLoader
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     GameIndex gameIndex = (GameIndex)i;
-                    if (gameDataDict.TryGetValue(gameIndex, out GameData gameData))
+                    string fmInstallPath = Config.GetFMInstallPath(gameIndex);
+                    if (fmInstPathDict.TryGetValue(fmInstallPath, out GameData gameData))
                     {
-                        if (!gameData.TotalExtractedSizeCalcSuccessful)
+                        if (!gameData.TotalExtractedSizeCalcSuccessful || gameData.FreeSpaceOnFMInstallDisk == null)
                         {
                             if (freeSpaceCalcFailedLines.IsEmpty())
                             {
                                 // @MULTISEL(Install/disk space check): Localize/finalize
-                                freeSpaceCalcFailedLines = "Could not calculate the total extracted size of the FMs for the following games:\r\n\r\n";
+                                freeSpaceCalcFailedLines = "Could not calculate whether there is enough free disk space to install FMs to the following paths:\r\n\r\n";
                             }
-                            freeSpaceCalcFailedLines += GetLocalizedGameName(gameIndex) + "\r\n";
+                            freeSpaceCalcFailedLines += fmInstallPath + "\r\n";
                         }
                         // @MULTISEL(Install/disk space check): Replace with smarter estimation here
-                        else if (gameData.TotalExtractedSizeOfAllFMsForThisGame >= gameData.FreeSpaceOnFMInstallDisk)
+                        else if (gameData.TotalExtractedSizeOfAllFMsForThisPath >= gameData.FreeSpaceOnFMInstallDisk)
                         {
                             if (notEnoughFreeSpaceLines.IsEmpty())
                             {
                                 // @MULTISEL(Install/disk space check): Localize/finalize
-                                notEnoughFreeSpaceLines = "Not enough disk space to extract FMs to the following paths:\r\n\r\n";
+                                notEnoughFreeSpaceLines = "There is not enough free disk space to install FMs to the following paths:\r\n\r\n";
                             }
-                            notEnoughFreeSpaceLines += gameData.FMInstallPath + "\r\n";
+                            notEnoughFreeSpaceLines += fmInstallPath + "\r\n";
                         }
                     }
                 }
