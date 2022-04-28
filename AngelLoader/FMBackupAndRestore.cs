@@ -17,6 +17,9 @@ using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace AngelLoader
 {
+    // @BetterErrors(Backup/restore): We really need to not be silent if there are problems here.
+    // We could be in a messed-up state and the user won't know and we don't even try to fix it.
+
     // NOTE: Zip quirk: LastWriteTime (and presumably any other metadata) must be set BEFORE opening the entry
     //       for writing. Even if you put it after the using block, it throws. So always set this before writing!
 
@@ -70,7 +73,7 @@ namespace AngelLoader
                 return;
             }
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
@@ -148,38 +151,62 @@ namespace AngelLoader
 
                 try
                 {
-                    using var archive = new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
-                        ZipArchiveMode.Create, leaveOpen: false);
-
-                    foreach (string f in installedFMFiles)
+                    using (var archive = new ZipArchive(
+                               new FileStream(bakFile, FileMode.Create, FileAccess.Write),
+                               ZipArchiveMode.Create,
+                               leaveOpen: false))
                     {
-                        string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
-                        if (IsSaveOrScreenshot(fn, fm.Game) ||
-                            (!fn.PathEqualsI(Paths.FMSelInf) && !fn.PathEqualsI(_startMisSav) &&
-                            (changedList.PathContainsI(fn) || addedList.PathContainsI(fn))))
+                        foreach (string f in installedFMFiles)
                         {
-                            AddEntry(archive, f, fn);
+                            string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
+                            if (IsSaveOrScreenshot(fn, fm.Game) ||
+                                (!fn.PathEqualsI(Paths.FMSelInf) && !fn.PathEqualsI(_startMisSav) &&
+                                (changedList.PathContainsI(fn) || addedList.PathContainsI(fn))))
+                            {
+                                AddEntry(archive, f, fn);
+                            }
+                        }
+
+                        string fmSelInfString = "";
+                        for (int i = 0; i < fullList.Count; i++)
+                        {
+                            string f = fullList[i];
+                            if (!installedFMFiles.PathContainsI(Path.Combine(fmInstalledPath, f)))
+                            {
+                                // @DIRSEP: Test if FMSel is dirsep-agnostic here. If so, remove the ToSystemDirSeps()
+                                fmSelInfString += _removeFileEq + f.ToSystemDirSeps() + "\r\n";
+                            }
+                        }
+
+                        if (!fmSelInfString.IsEmpty())
+                        {
+                            var entry = archive.CreateEntry(Paths.FMSelInf, CompressionLevel.Fastest);
+                            using var eo = entry.Open();
+                            using var sw = new StreamWriter(eo, Encoding.UTF8);
+                            sw.Write(fmSelInfString);
                         }
                     }
 
-                    string fmSelInfString = "";
-                    for (int i = 0; i < fullList.Count; i++)
+                    #region Move DarkLoader backup
+
+                    /*
+                    Do this here, NOT on restore! Otherwise, we could end up with the following scenario:
+                    -User installs FM, we restore DarkLoader backup, we move DarkLoader backup to Original folder
+                    -User uninstalls FM and chooses "don't back up"
+                    -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it)
+                     and we also don't find any new-style backup (because we didn't create one). Therefore we
+                     don't restore the backup, which is not at all what the user expects given we tell them that
+                     existing backups haven't been changed.
+                    */
+                    var dlBackup = await GetBackupFile(fm, findDarkLoaderOnly: true);
+                    if (dlBackup.Found)
                     {
-                        string f = fullList[i];
-                        if (!installedFMFiles.PathContainsI(Path.Combine(fmInstalledPath, f)))
-                        {
-                            // @DIRSEP: Test if FMSel is dirsep-agnostic here. If so, remove the ToSystemDirSeps()
-                            fmSelInfString += _removeFileEq + f.ToSystemDirSeps() + "\r\n";
-                        }
+                        string dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
+                        Directory.CreateDirectory(dlOrigBakDir);
+                        File.Move(dlBackup.Name, Path.Combine(dlOrigBakDir, dlBackup.Name.GetFileNameFast()));
                     }
 
-                    if (!fmSelInfString.IsEmpty())
-                    {
-                        var entry = archive.CreateEntry(Paths.FMSelInf, CompressionLevel.Fastest);
-                        using var eo = entry.Open();
-                        using var sw = new StreamWriter(eo, Encoding.UTF8);
-                        sw.Write(fmSelInfString);
-                    }
+                    #endregion
                 }
                 catch (Exception ex)
                 {
@@ -189,7 +216,7 @@ namespace AngelLoader
         }
 
         internal static async Task<BackupFile>
-        GetBackupFile(FanMission fm)
+        GetBackupFile(FanMission fm, bool findDarkLoaderOnly = false)
         {
             return await Task.Run(() =>
             {
@@ -214,12 +241,15 @@ namespace AngelLoader
                         if (!an.IsEmpty() && an.PathEqualsI(fm.Archive.RemoveExtension().Trim()))
                         {
                             fileToUse = new BackupFile(true, f, true);
+                            if (findDarkLoaderOnly) return fileToUse;
                             break;
                         }
                     }
                 }
 
                 #endregion
+
+                if (findDarkLoaderOnly) return new BackupFile(false, "", false);
 
                 #region AngelLoader / FMSel / NewDarkLoader
 
@@ -484,23 +514,6 @@ namespace AngelLoader
                         }
                     }
 #endif
-                }
-                /*
-                BUG: IMPORTANT: (DarkLoader move to Original folder):
-                We move the file on restore, so the following could happen:
-                -User installs FM, we restore DarkLoader backup, we move DarkLoader backup to Original folder
-                -User uninstalls FM and chooses "don't back up"
-                -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it) and we
-                 also don't find any new-style backup (because we didn't create one). Therefore we don't restore
-                 the backup, which is not at all what the user expects given we tell them existing backups haven't
-                 been changed.
-                To fix, we should only do the move on uninstall-and-backup, NOT here!
-                */
-                if (backupFile.DarkLoader)
-                {
-                    string dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
-                    Directory.CreateDirectory(dlOrigBakDir);
-                    File.Move(backupFile.Name, Path.Combine(dlOrigBakDir, backupFile.Name.GetFileNameFast()));
                 }
             });
         }
