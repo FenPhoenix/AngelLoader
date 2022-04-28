@@ -1126,7 +1126,7 @@ namespace AngelLoader.Forms
                     // @SEL_SYNC_HACK
                     FMsDGV.MultiSelect = false;
                     FMsDGV.SelectSingle(index, suppressSelectionChangedEvent: true);
-                    FMsDGV.SelectProperly();
+                    FMsDGV.SelectProperly(suspendResume: !suspendResume);
                     FMsDGV.MultiSelect = true;
                     FMsDGV.SelectSingle(index);
                 }
@@ -3743,7 +3743,7 @@ namespace AngelLoader.Forms
                             FMsDGV.Rows[selIndices[i]].Selected = true;
                         }
 
-                        FMsDGV.SelectProperly();
+                        FMsDGV.SelectProperly(suspendResume: false);
                     }
 
                     // Set column widths (keeping ratio to height)
@@ -4206,8 +4206,10 @@ namespace AngelLoader.Forms
                         FMsDGV.SelectProperly();
                     }
                 }
-
-                FMsDGV.SelectProperly();
+                else
+                {
+                    FMsDGV.SelectProperly();
+                }
 
                 _displayedFM = await Core.DisplayFM(index: index);
             }
