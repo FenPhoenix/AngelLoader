@@ -27,7 +27,7 @@ namespace AngelLoader.Forms.CustomControls
         private bool _mouseHere;
         private int _mouseDownOnHeader = -1;
 
-        private bool _suppressSelectionEvent;
+        internal bool SuppressSelectionEvent;
 
         #endregion
 
@@ -250,7 +250,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             try
             {
-                if (suppressSelectionChangedEvent) _suppressSelectionEvent = true;
+                if (suppressSelectionChangedEvent) SuppressSelectionEvent = true;
 
                 // Stops the no-FM-selected code from being run (would clear the top-right area etc.) causing flicker.
                 // Because clearing the selection is just some stupid crap we have to do to make one be selected,
@@ -263,7 +263,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             finally
             {
-                if (suppressSelectionChangedEvent) _suppressSelectionEvent = false;
+                if (suppressSelectionChangedEvent) SuppressSelectionEvent = false;
             }
         }
 
@@ -457,19 +457,19 @@ namespace AngelLoader.Forms.CustomControls
         {
             try
             {
-                if (suppressEvent) _suppressSelectionEvent = true;
+                if (suppressEvent) SuppressSelectionEvent = true;
                 Rows[index].Selected = selected;
             }
             finally
             {
-                if (suppressEvent) _suppressSelectionEvent = false;
+                if (suppressEvent) SuppressSelectionEvent = false;
             }
         }
 
         protected override void OnSelectionChanged(EventArgs e)
         {
             _selectedRowsCached = null;
-            if (!_suppressSelectionEvent) SetMainSelectedRow();
+            if (!SuppressSelectionEvent) SetMainSelectedRow();
             base.OnSelectionChanged(e);
         }
 

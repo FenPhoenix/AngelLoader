@@ -4168,6 +4168,8 @@ namespace AngelLoader.Forms
 
         private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
+            if (FMsDGV.SuppressSelectionEvent) return;
+
             // We don't need this because there's another check in ChangeSelection(), but we can avoid running
             // the async machinery with this.
             if (EventsDisabled) return;
