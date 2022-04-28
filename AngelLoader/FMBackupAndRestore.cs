@@ -485,6 +485,17 @@ namespace AngelLoader
                     }
 #endif
                 }
+                /*
+                BUG: IMPORTANT: (DarkLoader move to Original folder):
+                We move the file on restore, so the following could happen:
+                -User installs FM, we restore DarkLoader backup, we move DarkLoader backup to Original folder
+                -User uninstalls FM and chooses "don't back up"
+                -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it) and we
+                 also don't find any new-style backup (because we didn't create one). Therefore we don't restore
+                 the backup, which is not at all what the user expects given we tell them existing backups haven't
+                 been changed.
+                To fix, we should only do the move on uninstall-and-backup, NOT here!
+                */
                 if (backupFile.DarkLoader)
                 {
                     string dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
