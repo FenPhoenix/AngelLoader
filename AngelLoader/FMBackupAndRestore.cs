@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -187,21 +188,12 @@ namespace AngelLoader
             });
         }
 
-        internal static async Task RestoreFM(FanMission fm)
+        internal static async Task<BackupFile>
+        GetBackupFile(FanMission fm)
         {
-            if (!GameIsKnownAndSupported(fm.Game))
+            return await Task.Run(() =>
             {
-                Log("Game type is unknown or unsupported (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", stackTrace: true);
-                return;
-            }
-
-            bool restoreSavesAndScreensOnly = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
-                                             (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
-            bool fmIsT3 = fm.Game == Game.Thief3;
-
-            await Task.Run(() =>
-            {
-                (string Name, bool DarkLoader) fileToUse = ("", false);
+                var fileToUse = new BackupFile();
 
                 #region DarkLoader
 
@@ -221,7 +213,7 @@ namespace AngelLoader
                         // way, so whatever.
                         if (!an.IsEmpty() && an.PathEqualsI(fm.Archive.RemoveExtension().Trim()))
                         {
-                            fileToUse = (f, true);
+                            fileToUse = new BackupFile(true, f, true);
                             break;
                         }
                     }
@@ -252,8 +244,8 @@ namespace AngelLoader
                     fileToUse.Name = bakFiles.Count == 1
                         ? bakFiles[0].FullName
                         : bakFiles.Count > 1
-                        ? bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName
-                        : "";
+                            ? bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName
+                            : "";
 
                     bakFiles.Clear();
 
@@ -263,7 +255,7 @@ namespace AngelLoader
                     {
                         foreach (string path in FMArchives.GetFMArchivePaths()) AddBakFilesFrom(path);
 
-                        if (bakFiles.Count == 0) return;
+                        if (bakFiles.Count == 0) return new BackupFile(false, "", false);
 
                         // Use the newest of all files found in all archive dirs
                         fileToUse.Name = bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName;
@@ -272,16 +264,60 @@ namespace AngelLoader
 
                 #endregion
 
+                fileToUse.Found = true;
+                return fileToUse;
+            });
+        }
+
+        [PublicAPI]
+        internal sealed class BackupFile
+        {
+            internal bool Found;
+            internal string Name;
+            internal bool DarkLoader;
+
+            internal BackupFile()
+            {
+                Found = false;
+                Name = "";
+                DarkLoader = false;
+            }
+
+            internal BackupFile(bool found, string name, bool darkLoader)
+            {
+                Found = found;
+                Name = name;
+                DarkLoader = darkLoader;
+            }
+        }
+
+        internal static async Task RestoreFM(FanMission fm, BackupFile? backupFile = null)
+        {
+            if (!GameIsKnownAndSupported(fm.Game))
+            {
+                Log("Game type is unknown or unsupported (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", stackTrace: true);
+                return;
+            }
+
+            bool restoreSavesAndScreensOnly = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
+                                             (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
+            bool fmIsT3 = fm.Game == Game.Thief3;
+
+            await Task.Run(async () =>
+            {
+                backupFile ??= await GetBackupFile(fm);
+                if (!backupFile.Found) return;
+
                 var fileExcludes = new List<string>();
                 //var dirExcludes = new List<string>();
 
                 string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
-                using (var archive = GetZipArchiveCharEnc(fileToUse.Name))
+                using (var archive = GetZipArchiveCharEnc(backupFile.Name))
                 {
                     int filesCount = archive.Entries.Count;
-                    if (fileToUse.DarkLoader)
+                    if (backupFile.DarkLoader)
                     {
                         for (int i = 0; i < filesCount; i++)
                         {
@@ -449,11 +485,11 @@ namespace AngelLoader
                     }
 #endif
                 }
-                if (fileToUse.DarkLoader)
+                if (backupFile.DarkLoader)
                 {
                     string dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
                     Directory.CreateDirectory(dlOrigBakDir);
-                    File.Move(fileToUse.Name, Path.Combine(dlOrigBakDir, fileToUse.Name.GetFileNameFast()));
+                    File.Move(backupFile.Name, Path.Combine(dlOrigBakDir, backupFile.Name.GetFileNameFast()));
                 }
             });
         }

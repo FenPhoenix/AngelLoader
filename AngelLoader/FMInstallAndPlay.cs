@@ -525,6 +525,7 @@ namespace AngelLoader
             internal readonly string GameExe;
             internal readonly string GameName;
             internal readonly string InstBasePath;
+            internal BackupFile? BackupFile;
 
             public FMData(FanMission fm, string archivePath, string gameExe, string gameName, string instBasePath)
             {
@@ -601,6 +602,43 @@ namespace AngelLoader
                 catch
                 {
                     return null;
+                }
+            }
+
+            static void AddArchiveExtractedSize(string archivePath, GameData gameData)
+            {
+                long fmExtractedSize = 0;
+                try
+                {
+                    if (archivePath.ExtIsZip())
+                    {
+                        using var archive = new ZipArchiveFast(File.OpenRead(archivePath));
+                        var entries = archive.Entries;
+                        for (int entryI = 0; entryI < entries.Count; entryI++)
+                        {
+                            fmExtractedSize += entries[entryI].Length;
+                        }
+                        gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
+                    }
+                    else
+                    {
+                        using var archive = new SevenZipExtractor(archivePath);
+                        fmExtractedSize = archive.UnpackedSize;
+                        if (fmExtractedSize < 0)
+                        {
+                            gameData.TotalExtractedSizeCalcSuccessful = false;
+                            gameData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
+                        }
+                        else
+                        {
+                            gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
+                        }
+                    }
+                }
+                catch
+                {
+                    gameData.TotalExtractedSizeCalcSuccessful = false;
+                    gameData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
                 }
             }
 
@@ -760,38 +798,12 @@ namespace AngelLoader
                         continue;
                     }
 
-                    long fmExtractedSize = 0;
-                    try
+                    AddArchiveExtractedSize(fmData.ArchivePath, gameData);
+                    var backupFile = await GetBackupFile(fmData.FM);
+                    if (backupFile.Found)
                     {
-                        if (fmData.ArchivePath.ExtIsZip())
-                        {
-                            using var archive = new ZipArchiveFast(File.OpenRead(fmData.ArchivePath));
-                            var entries = archive.Entries;
-                            for (int entryI = 0; entryI < entries.Count; entryI++)
-                            {
-                                fmExtractedSize += entries[entryI].Length;
-                            }
-                            gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
-                        }
-                        else
-                        {
-                            using var archive = new SevenZipExtractor(fmData.ArchivePath);
-                            fmExtractedSize = archive.UnpackedSize;
-                            if (fmExtractedSize <= 0)
-                            {
-                                gameData.TotalExtractedSizeCalcSuccessful = false;
-                                gameData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
-                            }
-                            else
-                            {
-                                gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        gameData.TotalExtractedSizeCalcSuccessful = false;
-                        gameData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
+                        AddArchiveExtractedSize(backupFile.Name, gameData);
+                        fmData.BackupFile = backupFile;
                     }
                 }
 
@@ -925,7 +937,7 @@ namespace AngelLoader
                     // TODO: Put up a "Restoring saves and screenshots" box here to avoid the "converting files" one lasting beyond its time?
                     try
                     {
-                        await RestoreFM(fmData.FM);
+                        await RestoreFM(fmData.FM, fmData.BackupFile);
                     }
                     catch (Exception ex)
                     {
