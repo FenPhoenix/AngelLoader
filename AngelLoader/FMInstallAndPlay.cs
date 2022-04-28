@@ -538,7 +538,6 @@ namespace AngelLoader
         private sealed class GameData
         {
             internal readonly GameIndex GameIndex;
-            internal long? FreeSpaceOnFMInstallDisk;
             internal bool TotalExtractedSizeCalcSuccessful = true;
             internal long TotalExtractedSizeOfAllFMsForThisPath;
 
@@ -551,65 +550,83 @@ namespace AngelLoader
         // @MULTISEL(Install/main - cancel install): Maybe ask if they want to cancel just this, all, or all subsequent?
         internal static async Task<bool> Install(params FanMission[] fms)
         {
-            var fmDataList = new FMData[fms.Length];
+            #region Local functions
 
-            var fmInstPathDict = new Dictionary<string, GameData>();
-
-            #region Checks
-
-            Game games = Game.Null;
-            for (int i = 0; i < fms.Length; i++)
+            static Dictionary<string, GameData> GetGameDataDict(FanMission[] fms)
             {
-                games |= fms[i].Game;
-            }
+                var fmInstPathDict = new Dictionary<string, GameData>();
 
-            string errorLines = "";
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameIndex gameIndex = (GameIndex)i;
-                if (games.HasFlagFast(GameIndexToGame(gameIndex)))
+                Game games = Game.Null;
+                for (int i = 0; i < fms.Length; i++)
                 {
-                    string fmInstallPath = Config.GetFMInstallPath(gameIndex);
-                    if (!fmInstallPath.IsEmpty())
+                    games |= fms[i].Game;
+                }
+
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    if (games.HasFlagFast(GameIndexToGame(gameIndex)))
                     {
-                        if (!fmInstPathDict.TryGetValue(fmInstallPath, out GameData gameData))
+                        string fmInstallPath = Config.GetFMInstallPath(gameIndex);
+                        if (!fmInstallPath.IsEmpty() && !fmInstPathDict.TryGetValue(fmInstallPath, out GameData gameData))
                         {
                             gameData = new GameData(gameIndex);
                             fmInstPathDict[fmInstallPath] = gameData;
                         }
-
-                        try
-                        {
-                            var di = new DriveInfo(fmInstallPath);
-                            gameData.FreeSpaceOnFMInstallDisk = di.AvailableFreeSpace;
-                        }
-                        catch
-                        {
-                            gameData.FreeSpaceOnFMInstallDisk = null;
-                            if (!errorLines.IsEmpty())
-                            {
-                                errorLines += "\r\n";
-                            }
-                            errorLines += fmInstallPath;
-                        }
                     }
+                }
+                return fmInstPathDict;
+            }
+
+            static long? GetFreeDiskSpaceForPath(string fmInstallPath)
+            {
+                try
+                {
+                    var di = new DriveInfo(fmInstallPath);
+                    return di.AvailableFreeSpace;
+                }
+                catch
+                {
+                    return null;
                 }
             }
 
-            if (!errorLines.IsEmpty())
+            static async Task<bool> RollBackInstalls(FMData[] fmDataList, int i)
             {
-                // @MULTISEL(Install/disk space check): Localize/finalize
-                (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
-                    "Unable to calculate free space in the following paths:" + "\r\n\r\n" + errorLines +
-                    "\r\n\r\n" + "Continue installing selected FM(s) anyway?",
-                    LText.AlertMessages.Alert,
-                    MessageBoxIcon.Warning,
-                    showDontAskAgain: false,
-                    LText.Global.Continue,
-                    LText.Global.Cancel,
-                    defaultButton: DarkTaskDialog.Button.No);
-                if (cancel) return false;
+                try
+                {
+                    // @MULTISEL(Cancel install): Put message on the progress box saying which FM we're uninstalling
+                    // Like as reverse progress, "Rolling back install of 'fm'" maybe even with a reverse progress bar
+                    Core.View.SetCancelingFMInstall();
+                    await Task.Run(() =>
+                    {
+                        for (int j = i; j >= 0; j--)
+                        {
+                            var fmData = fmDataList[j];
+                            string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
+                            if (!DeleteFMInstalledDirectory(fmInstalledPath))
+                            {
+                                // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
+                                Log("Unable to delete FM installed directory " + fmInstalledPath);
+                            }
+                            fmData.FM.Installed = false;
+                        }
+                    });
+                }
+                finally
+                {
+                    Ini.WriteFullFMDataIni();
+                    Core.View.HideProgressBox();
+                }
+
+                return false;
             }
+
+            #endregion
+
+            var fmDataList = new FMData[fms.Length];
+
+            #region Checks
 
             for (int i = 0; i < fms.Length; i++)
             {
@@ -687,49 +704,24 @@ namespace AngelLoader
 
             #endregion
 
-            _extractCts = _extractCts.Recreate();
-
-            static async Task<bool> RollBackInstalls(FMData[] fmDataList, int i)
-            {
-                try
-                {
-                    // @MULTISEL(Cancel install): Put message on the progress box saying which FM we're uninstalling
-                    // Like as reverse progress, "Rolling back install of 'fm'" maybe even with a reverse progress bar
-                    Core.View.SetCancelingFMInstall();
-                    await Task.Run(() =>
-                    {
-                        for (int j = i; j >= 0; j--)
-                        {
-                            var fmData = fmDataList[j];
-                            string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
-                            if (!DeleteFMInstalledDirectory(fmInstalledPath))
-                            {
-                                // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
-                                Log("Unable to delete FM installed directory " + fmInstalledPath);
-                            }
-                            fmData.FM.Installed = false;
-                        }
-                    });
-                }
-                finally
-                {
-                    Ini.WriteFullFMDataIni();
-                    Core.View.HideProgressBox();
-                }
-
-                return false;
-            }
-
             try
             {
+                _extractCts = _extractCts.Recreate();
+
                 bool single = fmDataList.Length == 1;
 
                 Core.View.ShowProgressBox(single ? ProgressTask.InstallFM : ProgressTask.InstallFMs);
 
+                // @MULTISEL(Install/disk space check): Our dict needs to key by actual drive, not path, I think
+                // For the "two different paths but on the same drive" combining thing to check properly
+                #region Free space checks
+
+                var gameDataDict = GetGameDataDict(fms);
+
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
                     var fmData = fmDataList[i];
-                    var gameData = fmInstPathDict[fmData.InstBasePath];
+                    var gameData = gameDataDict[fmData.InstBasePath];
                     long fmExtractedSize = 0;
                     try
                     {
@@ -766,9 +758,10 @@ namespace AngelLoader
                 {
                     GameIndex gameIndex = (GameIndex)i;
                     string fmInstallPath = Config.GetFMInstallPath(gameIndex);
-                    if (fmInstPathDict.TryGetValue(fmInstallPath, out GameData gameData))
+                    if (gameDataDict.TryGetValue(fmInstallPath, out GameData gameData))
                     {
-                        if (!gameData.TotalExtractedSizeCalcSuccessful || gameData.FreeSpaceOnFMInstallDisk == null)
+                        long? freeSpace = GetFreeDiskSpaceForPath(fmInstallPath);
+                        if (!gameData.TotalExtractedSizeCalcSuccessful || freeSpace == null)
                         {
                             if (freeSpaceCalcFailedLines.IsEmpty())
                             {
@@ -778,7 +771,7 @@ namespace AngelLoader
                             freeSpaceCalcFailedLines += fmInstallPath + "\r\n";
                         }
                         // @MULTISEL(Install/disk space check): Replace with smarter estimation here
-                        else if (gameData.TotalExtractedSizeOfAllFMsForThisPath >= gameData.FreeSpaceOnFMInstallDisk)
+                        else if (gameData.TotalExtractedSizeOfAllFMsForThisPath >= freeSpace)
                         {
                             if (notEnoughFreeSpaceLines.IsEmpty())
                             {
@@ -818,6 +811,8 @@ namespace AngelLoader
                         defaultButton: DarkTaskDialog.Button.No);
                     if (cancel) return false;
                 }
+
+                #endregion
 
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
