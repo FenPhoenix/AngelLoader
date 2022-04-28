@@ -132,6 +132,7 @@ namespace AngelLoader
                         AddEntry(archive, f, fn);
                     }
 
+                    await MoveDarkLoaderBackup(fm);
                     return;
                 }
 
@@ -187,32 +188,32 @@ namespace AngelLoader
                         }
                     }
 
-                    #region Move DarkLoader backup
-
-                    /*
-                    Do this here, NOT on restore! Otherwise, we could end up with the following scenario:
-                    -User installs FM, we restore DarkLoader backup, we move DarkLoader backup to Original folder
-                    -User uninstalls FM and chooses "don't back up"
-                    -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it)
-                     and we also don't find any new-style backup (because we didn't create one). Therefore we
-                     don't restore the backup, which is not at all what the user expects given we tell them that
-                     existing backups haven't been changed.
-                    */
-                    var dlBackup = await GetBackupFile(fm, findDarkLoaderOnly: true);
-                    if (dlBackup.Found)
-                    {
-                        string dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
-                        Directory.CreateDirectory(dlOrigBakDir);
-                        File.Move(dlBackup.Name, Path.Combine(dlOrigBakDir, dlBackup.Name.GetFileNameFast()));
-                    }
-
-                    #endregion
+                    await MoveDarkLoaderBackup(fm);
                 }
                 catch (Exception ex)
                 {
                     Log("Exception in zip archive create and/or write (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", ex);
                 }
             });
+        }
+
+        /*
+        Do this after backup, NOT after restore! Otherwise, we could end up with the following scenario:
+        -User installs FM, we restore DarkLoader backup, we move DarkLoader backup to Original folder
+        -User uninstalls FM and chooses "don't back up"
+        -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it) and we also
+         don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
+         which is not at all what the user expects given we tell them that existing backups haven't been changed.
+        */
+        private static async Task MoveDarkLoaderBackup(FanMission fm)
+        {
+            var dlBackup = await GetBackupFile(fm, findDarkLoaderOnly: true);
+            if (dlBackup.Found)
+            {
+                string dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
+                Directory.CreateDirectory(dlOrigBakDir);
+                File.Move(dlBackup.Name, Path.Combine(dlOrigBakDir, dlBackup.Name.GetFileNameFast()));
+            }
         }
 
         internal static async Task<BackupFile>
