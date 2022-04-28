@@ -725,7 +725,6 @@ namespace AngelLoader
 
                 Core.View.ShowProgressBox(single ? ProgressTask.InstallFM : ProgressTask.InstallFMs);
 
-                // @MULTISEL(Install/disk space check): Test if "two different paths on the same drive" combining works
                 #region Free space checks
 
                 bool success = GetGameDataDict(fms, out var errorPaths, out var gameDataDict);
@@ -837,13 +836,13 @@ namespace AngelLoader
                     }
 
                     string finalErrorText = "";
-                    if (freeSpaceCalcFailedLines.Count > 0)
-                    {
-                        finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, second: false);
-                    }
                     if (notEnoughFreeSpaceLines.Count > 0)
                     {
-                        finalErrorText = AppendErrorText(finalErrorText, notEnoughFreeSpaceLines, second: true);
+                        finalErrorText = AppendErrorText(finalErrorText, notEnoughFreeSpaceLines, second: false);
+                    }
+                    if (freeSpaceCalcFailedLines.Count > 0)
+                    {
+                        finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, second: true);
                     }
 
                     (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
