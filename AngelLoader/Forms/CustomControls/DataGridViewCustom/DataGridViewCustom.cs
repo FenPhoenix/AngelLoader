@@ -449,7 +449,7 @@ namespace AngelLoader.Forms.CustomControls
                     // In theory this should only ever be 1 long anyway.
                     MainSelectedRow = SelectedRows[0];
                 }
-                if (!SuppressSelectionEvent) _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
+                _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
             }
         }
 
@@ -469,7 +469,7 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnSelectionChanged(EventArgs e)
         {
             _selectedRowsCached = null;
-            SetMainSelectedRow();
+            if (!SuppressSelectionEvent) SetMainSelectedRow();
             base.OnSelectionChanged(e);
         }
 
@@ -478,14 +478,14 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
         {
             _selectedRowsCached = null;
-            SetMainSelectedRow();
+            if (!SuppressSelectionEvent) SetMainSelectedRow();
             base.OnRowsAdded(e);
         }
 
         protected override void OnRowsRemoved(DataGridViewRowsRemovedEventArgs e)
         {
             _selectedRowsCached = null;
-            SetMainSelectedRow();
+            if (!SuppressSelectionEvent) SetMainSelectedRow();
             base.OnRowsRemoved(e);
         }
 

@@ -3803,7 +3803,11 @@ namespace AngelLoader.Forms
                 }
 
                 // Keep selected FM in the center of the list vertically where possible (UX nicety)
-                if (selIndices.Length > 0 && selFM != null) CenterSelectedFM();
+                if (selIndices.Length > 0 && selFM != null)
+                {
+                    if (mainRowIndex > -1) FMsDGV.MainSelectedRow = FMsDGV.Rows[mainRowIndex];
+                    CenterSelectedFM();
+                }
             }
             finally
             {
