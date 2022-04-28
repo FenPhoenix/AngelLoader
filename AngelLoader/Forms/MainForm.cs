@@ -3677,6 +3677,8 @@ namespace AngelLoader.Forms
                 // If we suspend FMsDGV, it straight-up doesn't work and still flickers.
                 // So suspend EverythingPanel instead and it works fine.
                 TopSplitContainer.Panel1.SuspendDrawing();
+                // Must suppress this or our context menu becomes wrong
+                FMsDGV.SuppressSelectionEvent = true;
 
                 SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFMPosInfo() : null;
 
@@ -3691,7 +3693,7 @@ namespace AngelLoader.Forms
                     _fmsListDefaultFontSizeInPoints).ClampToFMsDGVFontSizeMinMax();
 
                 // Set new font size
-                Font newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
+                var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
 
                 // Set row height based on font plus some padding
                 int rowHeight = type == ZoomFMsDGVType.ResetZoom ? _fmsListDefaultRowHeight : newF.Height + 9;
@@ -3718,6 +3720,7 @@ namespace AngelLoader.Forms
                 FMsDGV.RowTemplate.Height = rowHeight;
 
                 // Save previous selection
+                int mainRowIndex = FMsDGV.MainSelectedRow?.Index ?? -1;
                 var selRows = FMsDGV.SelectedRows;
                 int[] selIndices = new int[selRows.Count];
                 for (int i = 0; i < selRows.Count; i++)
@@ -3736,11 +3739,21 @@ namespace AngelLoader.Forms
                     // Restore previous selection (no events will be fired, due to being in a DisableEvents block)
                     if (selIndices.Length > 0)
                     {
-                        // Sort and select in reverse order so the topmost selection is always the "main" selection
-                        Array.Sort(selIndices);
+                        // Must come first because it deselects all other rows (sometimes?!)
+                        if (mainRowIndex > -1)
+                        {
+                            try
+                            {
+                                FMsDGV.CurrentCell = FMsDGV.Rows[mainRowIndex].Cells[FMsDGV.FirstDisplayedCell?.ColumnIndex ?? 0];
+                            }
+                            catch
+                            {
+                                // ignore
+                            }
+                        }
                         for (int i = selIndices.Length - 1; i >= 0; i--)
                         {
-                            FMsDGV.Rows[selIndices[i]].Selected = true;
+                            FMsDGV.SetRowSelected(selIndices[i], true, suppressEvent: true);
                         }
 
                         FMsDGV.SelectProperly(suspendResume: false);
@@ -3794,6 +3807,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
+                FMsDGV.SuppressSelectionEvent = false;
                 TopSplitContainer.Panel1.ResumeDrawing();
             }
         }
