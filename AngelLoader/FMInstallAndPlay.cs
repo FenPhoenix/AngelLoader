@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -538,12 +539,14 @@ namespace AngelLoader
         private sealed class GameData
         {
             internal readonly GameIndex GameIndex;
+            internal readonly DriveInfo? DriveInfo;
             internal bool TotalExtractedSizeCalcSuccessful = true;
-            internal long TotalExtractedSizeOfAllFMsForThisPath;
+            internal long TotalExtractedSizeOfAllFMsForThisDisk;
 
-            internal GameData(GameIndex gameIndex)
+            internal GameData(GameIndex gameIndex, DriveInfo? driveInfo)
             {
                 GameIndex = gameIndex;
+                DriveInfo = driveInfo;
             }
         }
 
@@ -552,9 +555,10 @@ namespace AngelLoader
         {
             #region Local functions
 
-            static Dictionary<string, GameData> GetGameDataDict(FanMission[] fms)
+            static bool GetGameDataDict(FanMission[] fms, out List<string> paths, out Dictionary<string, GameData> result)
             {
-                var fmInstPathDict = new Dictionary<string, GameData>();
+                result = new Dictionary<string, GameData>();
+                paths = new List<string>();
 
                 Game games = Game.Null;
                 for (int i = 0; i < fms.Length; i++)
@@ -568,22 +572,31 @@ namespace AngelLoader
                     if (games.HasFlagFast(GameIndexToGame(gameIndex)))
                     {
                         string fmInstallPath = Config.GetFMInstallPath(gameIndex);
-                        if (!fmInstallPath.IsEmpty() && !fmInstPathDict.TryGetValue(fmInstallPath, out GameData gameData))
+                        if (!fmInstallPath.IsEmpty() && !result.TryGetValue(fmInstallPath, out GameData gameData))
                         {
-                            gameData = new GameData(gameIndex);
-                            fmInstPathDict[fmInstallPath] = gameData;
+                            try
+                            {
+                                var driveInfo = new DriveInfo(fmInstallPath);
+                                gameData = new GameData(gameIndex, driveInfo);
+                                result[driveInfo.Name] = gameData;
+                            }
+                            catch
+                            {
+                                paths.Add(fmInstallPath);
+                            }
                         }
                     }
                 }
-                return fmInstPathDict;
+                return true;
             }
 
-            static long? GetFreeDiskSpaceForPath(string fmInstallPath)
+            static long? GetFreeDiskSpaceForPath(Dictionary<string, GameData> gameDict, string driveName)
             {
                 try
                 {
-                    var di = new DriveInfo(fmInstallPath);
-                    return di.AvailableFreeSpace;
+                    return gameDict.TryGetValue(driveName, out GameData gameData) && gameData.DriveInfo != null
+                        ? gameData.DriveInfo.TotalFreeSpace
+                        : null;
                 }
                 catch
                 {
@@ -626,7 +639,7 @@ namespace AngelLoader
 
             var fmDataList = new FMData[fms.Length];
 
-            #region Checks
+            #region Pre-checks
 
             for (int i = 0; i < fms.Length; i++)
             {
@@ -712,16 +725,42 @@ namespace AngelLoader
 
                 Core.View.ShowProgressBox(single ? ProgressTask.InstallFM : ProgressTask.InstallFMs);
 
-                // @MULTISEL(Install/disk space check): Our dict needs to key by actual drive, not path, I think
-                // For the "two different paths but on the same drive" combining thing to check properly
+                // @MULTISEL(Install/disk space check): Test if "two different paths on the same drive" combining works
                 #region Free space checks
 
-                var gameDataDict = GetGameDataDict(fms);
+                bool success = GetGameDataDict(fms, out var errorPaths, out var gameDataDict);
+                if (!success)
+                {
+                    string errorLines = "";
+                    for (int i = 0; i < errorPaths.Count; i++)
+                    {
+                        errorLines += errorPaths[i] + "\r\n";
+                    }
+
+                    (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                        // @MULTISEL(Install/disk space check): Localize/finalize
+                        message:
+                        "AngelLoader was unable to calculate the free disk space for the following path(s):\r\n\r\n" +
+                        errorLines + "\r\n" +
+                        "Continue anyway?",
+                        title: LText.AlertMessages.Alert,
+                        icon: MessageBoxIcon.Warning,
+                        showDontAskAgain: false,
+                        yes: LText.Global.Continue,
+                        no: LText.Global.Cancel,
+                        defaultButton: DarkTaskDialog.Button.No);
+                    if (cancel) return false;
+                }
 
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
                     var fmData = fmDataList[i];
-                    var gameData = gameDataDict[fmData.InstBasePath];
+
+                    if (!gameDataDict.TryGetValue(Path.GetPathRoot(fmData.InstBasePath), out GameData gameData))
+                    {
+                        continue;
+                    }
+
                     long fmExtractedSize = 0;
                     try
                     {
@@ -733,6 +772,7 @@ namespace AngelLoader
                             {
                                 fmExtractedSize += entries[entryI].Length;
                             }
+                            gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
                         }
                         else
                         {
@@ -741,68 +781,75 @@ namespace AngelLoader
                             if (fmExtractedSize <= 0)
                             {
                                 gameData.TotalExtractedSizeCalcSuccessful = false;
-                                gameData.TotalExtractedSizeOfAllFMsForThisPath = 0;
+                                gameData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
+                            }
+                            else
+                            {
+                                gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
                             }
                         }
-                        gameData.TotalExtractedSizeOfAllFMsForThisPath += fmExtractedSize;
                     }
                     catch
                     {
                         gameData.TotalExtractedSizeCalcSuccessful = false;
+                        gameData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
                     }
                 }
 
-                string freeSpaceCalcFailedLines = "";
-                string notEnoughFreeSpaceLines = "";
+                var freeSpaceCalcFailedLines = new HashSetI(SupportedGameCount);
+                var notEnoughFreeSpaceLines = new HashSetI(SupportedGameCount);
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     GameIndex gameIndex = (GameIndex)i;
-                    string fmInstallPath = Config.GetFMInstallPath(gameIndex);
-                    if (gameDataDict.TryGetValue(fmInstallPath, out GameData gameData))
+                    string driveName = Path.GetPathRoot(Config.GetFMInstallPath(gameIndex));
+                    if (gameDataDict.TryGetValue(driveName, out GameData gameData))
                     {
-                        long? freeSpace = GetFreeDiskSpaceForPath(fmInstallPath);
+                        long? freeSpace = GetFreeDiskSpaceForPath(gameDataDict, driveName);
                         if (!gameData.TotalExtractedSizeCalcSuccessful || freeSpace == null)
                         {
-                            if (freeSpaceCalcFailedLines.IsEmpty())
-                            {
-                                // @MULTISEL(Install/disk space check): Localize/finalize
-                                freeSpaceCalcFailedLines = "Could not calculate whether there is enough free disk space to install FMs to the following paths:\r\n\r\n";
-                            }
-                            freeSpaceCalcFailedLines += fmInstallPath + "\r\n";
+                            freeSpaceCalcFailedLines.Add(driveName);
                         }
                         // @MULTISEL(Install/disk space check): Replace with smarter estimation here
-                        else if (gameData.TotalExtractedSizeOfAllFMsForThisPath >= freeSpace)
+                        else if (gameData.TotalExtractedSizeOfAllFMsForThisDisk >= freeSpace)
                         {
-                            if (notEnoughFreeSpaceLines.IsEmpty())
-                            {
-                                // @MULTISEL(Install/disk space check): Localize/finalize
-                                notEnoughFreeSpaceLines = "There is not enough free disk space to install FMs to the following paths:\r\n\r\n";
-                            }
-                            notEnoughFreeSpaceLines += fmInstallPath + "\r\n";
+                            notEnoughFreeSpaceLines.Add(driveName);
                         }
                     }
                 }
 
-                if (!freeSpaceCalcFailedLines.IsEmpty() || !notEnoughFreeSpaceLines.IsEmpty())
+                if (freeSpaceCalcFailedLines.Count > 0 || notEnoughFreeSpaceLines.Count > 0)
                 {
+                    static string AppendErrorText(string errorText, HashSetI lines, bool second)
+                    {
+                        // @MULTISEL(Install/disk space check): Localize/finalize
+                        string header = second
+                            ? "Could not calculate whether there is enough free disk space to install FMs to the following disks:\r\n\r\n"
+                            : "There is not enough free disk space to install FMs to the following disks:\r\n\r\n";
+
+                        string[] linesArray = lines.ToArray();
+                        Array.Sort(linesArray, StringComparer.OrdinalIgnoreCase);
+
+                        errorText += header;
+                        errorText += string.Join("\r\n", linesArray);
+                        errorText += "\r\n\r\n";
+
+                        return errorText;
+                    }
+
                     string finalErrorText = "";
-                    if (!freeSpaceCalcFailedLines.IsEmpty() && !notEnoughFreeSpaceLines.IsEmpty())
+                    if (freeSpaceCalcFailedLines.Count > 0)
                     {
-                        finalErrorText += freeSpaceCalcFailedLines + "\r\n" + notEnoughFreeSpaceLines;
+                        finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, second: false);
                     }
-                    else if (!freeSpaceCalcFailedLines.IsEmpty())
+                    if (notEnoughFreeSpaceLines.Count > 0)
                     {
-                        finalErrorText = freeSpaceCalcFailedLines;
-                    }
-                    else if (!notEnoughFreeSpaceLines.IsEmpty())
-                    {
-                        finalErrorText = notEnoughFreeSpaceLines;
+                        finalErrorText = AppendErrorText(finalErrorText, notEnoughFreeSpaceLines, second: true);
                     }
 
                     (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
                         // @MULTISEL(Install/disk space check): Localize/finalize
-                        message: "There may not be enough free disk space to install the selected FMs.\r\n\r\n" + finalErrorText + "\r\n" +
-                        "If you continue, the installation will probably fail. Continue anyway?",
+                        message: finalErrorText +
+                                 "If you continue, the installation will probably fail. Continue anyway?",
                         title: LText.AlertMessages.Alert,
                         icon: MessageBoxIcon.Warning,
                         showDontAskAgain: false,
