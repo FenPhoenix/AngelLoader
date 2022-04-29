@@ -683,11 +683,12 @@ namespace AngelLoader
                 // @MULTISEL(Install/progress box): Show like "doing pre-checks" message during pre-checks
                 Core.View.ShowProgressBox(ProgressTask.CheckingFreeSpace);
 
-                bool success = await Task.Run(async () =>
+                bool success = await Task.Run(() =>
                 {
                     #region Pre-checks
 
                     var gameChecksHashSet = new HashSet<GameIndex>();
+                    List<string>? fmArchivePaths = null;
                     for (int i = 0; i < fms.Length; i++)
                     {
                         FanMission fm = fms[i];
@@ -708,7 +709,8 @@ namespace AngelLoader
                         }
 
                         GameIndex gameIndex = GameToGameIndex(fm.Game);
-                        string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
+                        fmArchivePaths ??= FMArchives.GetFMArchivePaths();
+                        string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, fmArchivePaths);
                         string gameExe = Config.GetGameExe(gameIndex);
                         string gameName = GetLocalizedGameName(gameIndex);
                         string instBasePath = Config.GetFMInstallPath(gameIndex);
@@ -825,8 +827,15 @@ namespace AngelLoader
                         }
 
                         AddArchiveExtractedSize(fmData.ArchivePath, gameData);
-                        darkLoaderArchiveFiles ??= GetDarkLoaderArchiveFiles();
-                        var backupFile = await GetBackupFile(fmData.FM, cachedDarkLoaderFiles: darkLoaderArchiveFiles);
+
+                        var backupFile = GetBackupFile(
+                            fmData.FM,
+                            cachedDarkLoaderFiles: darkLoaderArchiveFiles,
+                            cachedFMArchivePaths: fmArchivePaths);
+
+                        darkLoaderArchiveFiles = backupFile.Cached_DarkLoaderBackups;
+                        fmArchivePaths = backupFile.Cached_NewBackups;
+
                         if (backupFile.Found)
                         {
                             AddArchiveExtractedSize(backupFile.Name, gameData);
@@ -1294,12 +1303,10 @@ namespace AngelLoader
 
                     #endregion
 
-                    string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive));
-
                     bool markFMAsUnavailable = false;
 
                     // @MULTISEL(Uninstall): This one needs to account for multiple FMs too
-                    if (fmArchivePath.IsEmpty())
+                    if (fmData.ArchivePath.IsEmpty())
                     {
                         (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
                             message: LText.AlertMessages.Uninstall_ArchiveNotFound,
@@ -1328,7 +1335,7 @@ namespace AngelLoader
                     // don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
                     // archive folder on initial setup, and hasn't imported from NDL by this point.
 
-                    if (doBackup) await BackupFM(fm, fmInstalledPath, fmArchivePath);
+                    if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath);
 
                     // TODO: Give the user the option to retry or something, if it's cause they have a file open
                     // Make option to open the folder in Explorer and delete it manually?

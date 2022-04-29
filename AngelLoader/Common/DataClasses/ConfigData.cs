@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -87,7 +88,23 @@ namespace AngelLoader.DataClasses
         //  having backup path be the lone required field feels arbitrary. But then, allowing the user to not
         //  worry about it but then slapping them with a "hey, go set this!" message as soon as they try to
         //  install or uninstall something might be the more annoying thing.
-        internal string FMsBackupPath = "";
+        private string _fmsBackupPath = "";
+        internal string FMsBackupPath
+        {
+            get => _fmsBackupPath;
+            set
+            {
+                _fmsBackupPath = value;
+                _darkLoaderBackupPath = null;
+                _darkLoaderOriginalBackupPath = null;
+            }
+        }
+
+        private string? _darkLoaderBackupPath;
+        internal string DarkLoaderBackupPath => _darkLoaderBackupPath ??= Path.Combine(FMsBackupPath, Paths.DarkLoaderSaveBakDir);
+
+        private string? _darkLoaderOriginalBackupPath;
+        internal string DarkLoaderOriginalBackupPath => _darkLoaderOriginalBackupPath ??= Path.Combine(FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
 
         #region Game exes
 

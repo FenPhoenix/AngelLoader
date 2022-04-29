@@ -73,7 +73,7 @@ namespace AngelLoader
                 return;
             }
 
-            await Task.Run(async () =>
+            await Task.Run(() =>
             {
                 if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
@@ -132,7 +132,7 @@ namespace AngelLoader
                         AddEntry(archive, f, fn);
                     }
 
-                    await MoveDarkLoaderBackup(fm);
+                    MoveDarkLoaderBackup(fm);
                     return;
                 }
 
@@ -188,7 +188,7 @@ namespace AngelLoader
                         }
                     }
 
-                    await MoveDarkLoaderBackup(fm);
+                    MoveDarkLoaderBackup(fm);
                 }
                 catch (Exception ex)
                 {
@@ -205,105 +205,120 @@ namespace AngelLoader
          don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
          which is not at all what the user expects given we tell them that existing backups haven't been changed.
         */
-        private static async Task MoveDarkLoaderBackup(FanMission fm)
+        private static void MoveDarkLoaderBackup(FanMission fm)
         {
-            var dlBackup = await GetBackupFile(fm, findDarkLoaderOnly: true);
+            var dlBackup = GetBackupFile(fm, findDarkLoaderOnly: true);
             if (dlBackup.Found)
             {
-                string dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
-                Directory.CreateDirectory(dlOrigBakDir);
-                File.Move(dlBackup.Name, Path.Combine(dlOrigBakDir, dlBackup.Name.GetFileNameFast()));
+                Directory.CreateDirectory(Config.DarkLoaderOriginalBackupPath);
+                File.Move(dlBackup.Name, Path.Combine(Config.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast()));
             }
         }
 
-        internal static List<string> GetDarkLoaderArchiveFiles()
+        internal static BackupFile
+        GetBackupFile(
+            FanMission fm,
+            bool findDarkLoaderOnly = false,
+            List<string>? cachedDarkLoaderFiles = null,
+            List<string>? cachedFMArchivePaths = null)
         {
-            string dlBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
-            return FastIO.GetFilesTopOnly(dlBakDir, "*.zip");
-        }
+            static List<string> GetDarkLoaderArchiveFiles() => FastIO.GetFilesTopOnly(Config.DarkLoaderBackupPath, "*.zip");
 
-        internal static async Task<BackupFile>
-        GetBackupFile(FanMission fm, bool findDarkLoaderOnly = false, List<string>? cachedDarkLoaderFiles = null)
-        {
-            return await Task.Run(() =>
+            var ret = new BackupFile();
+
+            BackupFile DoReturn()
             {
-                var fileToUse = new BackupFile();
+                ret.Cached_DarkLoaderBackups = cachedDarkLoaderFiles;
+                ret.Cached_NewBackups = cachedFMArchivePaths;
 
-                #region DarkLoader
+                return ret;
+            }
 
-                string dlBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
+            #region DarkLoader
 
-                if (Directory.Exists(dlBakDir))
+            if (Directory.Exists(Config.DarkLoaderBackupPath))
+            {
+                // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
+                // Rather than just using File.Exists()?!
+                foreach (string f in cachedDarkLoaderFiles ??= GetDarkLoaderArchiveFiles())
                 {
-                    foreach (string f in cachedDarkLoaderFiles ?? GetDarkLoaderArchiveFiles())
-                    {
-                        string fn = f.GetFileNameFast();
-                        int index = fn.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
-                        if (index == -1) continue;
+                    string fn = f.GetFileNameFast();
+                    int index = fn.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
+                    if (index == -1) continue;
 
-                        string an = fn.Substring(0, index).Trim();
-                        // Account for the fact that DarkLoader trims archive names for save backup zips
-                        // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
-                        // way, so whatever.
-                        if (!an.IsEmpty() && an.PathEqualsI(fm.Archive.RemoveExtension().Trim()))
-                        {
-                            fileToUse = new BackupFile(true, f, true);
-                            if (findDarkLoaderOnly) return fileToUse;
-                            break;
-                        }
+                    string an = fn.Substring(0, index).Trim();
+                    // Account for the fact that DarkLoader trims archive names for save backup zips
+                    // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
+                    // way, so whatever.
+                    if (!an.IsEmpty() && an.PathEqualsI(fm.Archive.RemoveExtension().Trim()))
+                    {
+                        ret.Set(true, f, true);
+                        if (findDarkLoaderOnly) return DoReturn();
+                        break;
+                    }
+                }
+            }
+
+            #endregion
+
+            if (findDarkLoaderOnly)
+            {
+                ret.Set(false, "", false);
+                return DoReturn();
+            }
+
+            #region AngelLoader / FMSel / NewDarkLoader
+
+            if (ret.Name.IsEmpty())
+            {
+                var bakFiles = new List<FileInfo>();
+
+                void AddBakFilesFrom(string path)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        string fNoExt = i == 0 ? fm.Archive.RemoveExtension() : fm.InstalledDir;
+                        string bakFile = Path.Combine(path, fNoExt + Paths.FMBackupSuffix);
+                        if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
                     }
                 }
 
-                #endregion
+                // Our backup path, separate to avoid creating any more ambiguity
+                AddBakFilesFrom(Config.FMsBackupPath);
 
-                if (findDarkLoaderOnly) return new BackupFile(false, "", false);
+                // If ArchiveName.bak and InstalledName.bak files both exist, use the newest of the two
+                ret.Name = bakFiles.Count == 1
+                    ? bakFiles[0].FullName
+                    : bakFiles.Count > 1
+                        ? bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName
+                        : "";
 
-                #region AngelLoader / FMSel / NewDarkLoader
+                bakFiles.Clear();
 
-                if (fileToUse.Name.IsEmpty())
+                // Use file from our bak dir if it exists, otherwise use the newest file from all archive dirs
+                // (for automatic use of FMSel/NDL saves)
+                if (ret.Name.IsEmpty())
                 {
-                    var bakFiles = new List<FileInfo>();
-
-                    void AddBakFilesFrom(string path)
+                    foreach (string path in cachedFMArchivePaths ??= FMArchives.GetFMArchivePaths())
                     {
-                        for (int i = 0; i < 2; i++)
-                        {
-                            string fNoExt = i == 0 ? fm.Archive.RemoveExtension() : fm.InstalledDir;
-                            string bakFile = Path.Combine(path, fNoExt + Paths.FMBackupSuffix);
-                            if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
-                        }
+                        AddBakFilesFrom(path);
                     }
 
-                    // Our backup path, separate to avoid creating any more ambiguity
-                    AddBakFilesFrom(Config.FMsBackupPath);
-
-                    // If ArchiveName.bak and InstalledName.bak files both exist, use the newest of the two
-                    fileToUse.Name = bakFiles.Count == 1
-                        ? bakFiles[0].FullName
-                        : bakFiles.Count > 1
-                            ? bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName
-                            : "";
-
-                    bakFiles.Clear();
-
-                    // Use file from our bak dir if it exists, otherwise use the newest file from all archive dirs
-                    // (for automatic use of FMSel/NDL saves)
-                    if (fileToUse.Name.IsEmpty())
+                    if (bakFiles.Count == 0)
                     {
-                        foreach (string path in FMArchives.GetFMArchivePaths()) AddBakFilesFrom(path);
-
-                        if (bakFiles.Count == 0) return new BackupFile(false, "", false);
-
-                        // Use the newest of all files found in all archive dirs
-                        fileToUse.Name = bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName;
+                        ret.Set(false, "", false);
+                        return DoReturn();
                     }
+
+                    // Use the newest of all files found in all archive dirs
+                    ret.Name = bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName;
                 }
+            }
 
-                #endregion
+            #endregion
 
-                fileToUse.Found = true;
-                return fileToUse;
-            });
+            ret.Found = true;
+            return DoReturn();
         }
 
         [PublicAPI]
@@ -312,12 +327,21 @@ namespace AngelLoader
             internal bool Found;
             internal string Name;
             internal bool DarkLoader;
+            internal List<string>? Cached_DarkLoaderBackups;
+            internal List<string>? Cached_NewBackups;
 
             internal BackupFile()
             {
                 Found = false;
                 Name = "";
                 DarkLoader = false;
+            }
+
+            internal void Set(bool found, string name, bool darkLoader)
+            {
+                Found = found;
+                Name = name;
+                DarkLoader = darkLoader;
             }
 
             internal BackupFile(bool found, string name, bool darkLoader)
@@ -340,9 +364,9 @@ namespace AngelLoader
                                              (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
             bool fmIsT3 = fm.Game == Game.Thief3;
 
-            await Task.Run(async () =>
+            await Task.Run(() =>
             {
-                backupFile ??= await GetBackupFile(fm);
+                backupFile ??= GetBackupFile(fm);
                 if (!backupFile.Found) return;
 
                 var fileExcludes = new List<string>();

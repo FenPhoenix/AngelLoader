@@ -545,14 +545,13 @@ namespace AngelLoader
                 string savesPath = Path.Combine(i switch { 0 => t1Dir, 1 => t2Dir, _ => ss2Dir }, "allsaves");
                 if (!Directory.Exists(savesPath)) continue;
 
-                string convertedPath = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
-                Directory.CreateDirectory(convertedPath);
+                Directory.CreateDirectory(Config.DarkLoaderBackupPath);
 
                 // Converting takes too long, so just copy them to our backup folder and they'll be handled
                 // appropriately next time the user installs an FM
                 foreach (string f in FastIO.GetFilesTopOnly(savesPath, "*.zip"))
                 {
-                    string dest = Path.Combine(convertedPath, f.GetFileNameFast());
+                    string dest = Path.Combine(Config.DarkLoaderBackupPath, f.GetFileNameFast());
                     File.Copy(f, dest, overwrite: true);
                 }
             }
