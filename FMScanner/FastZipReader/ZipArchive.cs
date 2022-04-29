@@ -31,6 +31,8 @@ namespace FMScanner.FastZipReader
 
         internal uint NumberOfThisDisk;
 
+        internal readonly bool DecodeEntryNames;
+
         internal Encoding? EntryNameEncoding
         {
             get { return _entryNameEncoding; }
@@ -71,16 +73,29 @@ namespace FMScanner.FastZipReader
         }
 
         /// <summary>
-        /// Initializes a new instance of ZipArchive on the given stream, specifying whether to leave the stream open.
+        /// Initializes a new instance of ZipArchive on the given stream.
         /// </summary>
         /// <exception cref="ArgumentException">The stream is already closed.</exception>
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
         /// <param name="stream">The input or output stream.</param>
         [PublicAPI]
-        public ZipArchiveFast(Stream stream)
+        public ZipArchiveFast(Stream stream) : this(stream, true) { }
+
+        /// <summary>
+        /// Initializes a new instance of ZipArchive on the given stream.
+        /// </summary>
+        /// <exception cref="ArgumentException">The stream is already closed.</exception>
+        /// <exception cref="ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
+        /// <param name="stream">The input or output stream.</param>
+        /// <param name="decodeEntryNames">Perf, if you're not going to use the entry names.</param>
+        [PublicAPI]
+        public ZipArchiveFast(Stream stream, bool decodeEntryNames)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
+
+            DecodeEntryNames = decodeEntryNames;
 
             EntryNameEncoding = Encoding.UTF8;
 

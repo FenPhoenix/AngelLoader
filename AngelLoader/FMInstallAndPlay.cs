@@ -612,7 +612,7 @@ namespace AngelLoader
                 {
                     if (archivePath.ExtIsZip())
                     {
-                        using var archive = new ZipArchiveFast(File.OpenRead(archivePath));
+                        using var archive = new ZipArchiveFast(File.OpenRead(archivePath), decodeEntryNames: false);
                         var entries = archive.Entries;
                         for (int entryI = 0; entryI < entries.Count; entryI++)
                         {
