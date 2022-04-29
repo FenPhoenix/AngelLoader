@@ -724,8 +724,7 @@ namespace AngelLoader
 
                         if (fmArchivePath.IsEmpty())
                         {
-                            Log(
-                                "FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
+                            Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
                                 "FM: " + GetFMId(fm) + "\r\n" +
                                 "FM game was: " + fm.Game);
                             Core.View.InvokeSync(() =>
@@ -1044,7 +1043,7 @@ namespace AngelLoader
                         single
                             ? new Action(() => Core.View.ReportFMInstallProgress(percent))
                             : new Action(() => Core.View.ReportMultiFMInstallProgress(newMainPercent, percent, fmArchive))
-                        );
+                    );
 
                     if (_extractCts.Token.IsCancellationRequested)
                     {
