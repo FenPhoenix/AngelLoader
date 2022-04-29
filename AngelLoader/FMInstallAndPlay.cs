@@ -596,7 +596,7 @@ namespace AngelLoader
                 try
                 {
                     return gameDict.TryGetValue(driveName, out GameData gameData) && gameData.DriveInfo != null
-                        ? gameData.DriveInfo.TotalFreeSpace
+                        ? gameData.DriveInfo.AvailableFreeSpace
                         : null;
                 }
                 catch
