@@ -623,16 +623,17 @@ namespace AngelLoader
                     else
                     {
                         using var archive = new SevenZipExtractor(archivePath);
-                        fmExtractedSize = archive.UnpackedSize;
-                        if (fmExtractedSize < 0)
+                        // UnpackedSize doesn't work unless you call Check() first, but that takes forever.
+                        // Iterating the entries is fast(ish). Size property is uncompressed size, tested and
+                        // confirmed.
+                        // @MULTISEL(Install/7z size check): To be faster, we should write custom 7z reader code
+                        // to just get the unpacked sizes and ignore everything else (no expensive date conversions etc.)
+                        var entries = archive.ArchiveFileData;
+                        for (int entryI = 0; entryI < entries.Count; entryI++)
                         {
-                            gameData.TotalExtractedSizeCalcSuccessful = false;
-                            gameData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
+                            fmExtractedSize += (long)entries[entryI].Size;
                         }
-                        else
-                        {
-                            gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
-                        }
+                        gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
                     }
                 }
                 catch
@@ -677,200 +678,241 @@ namespace AngelLoader
 
             var fmDataList = new FMData[fms.Length];
 
-            #region Pre-checks
-
-            for (int i = 0; i < fms.Length; i++)
-            {
-                FanMission fm = fms[i];
-
-                AssertR(!fm.Installed, "fm.Installed == true");
-
-                if (!GameIsKnownAndSupported(fm.Game))
-                {
-                    Log("FM game type is unknown or unsupported.\r\n" +
-                        "FM: " + GetFMId(fm) + "\r\n" +
-                        "FM game was: " + fm.Game);
-                    Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                      ErrorText.FMGameTypeUnknownOrUnsupported);
-                    return false;
-                }
-
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
-                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
-                string gameExe = Config.GetGameExe(gameIndex);
-                string gameName = GetLocalizedGameName(gameIndex);
-                string instBasePath = Config.GetFMInstallPath(gameIndex);
-
-                fmDataList[i] = new FMData
-                (
-                    fm,
-                    fmArchivePath,
-                    gameExe,
-                    gameName,
-                    instBasePath
-                );
-
-                if (fmArchivePath.IsEmpty())
-                {
-                    Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
-                        "FM: " + GetFMId(fm) + "\r\n" +
-                        "FM game was: " + fm.Game);
-                    Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                      LText.AlertMessages.Install_ArchiveNotFound);
-                    return false;
-                }
-
-                if (!File.Exists(gameExe))
-                {
-                    Log("Game executable not found.\r\n" +
-                        "Game executable: " + gameExe);
-                    Dialogs.ShowError(gameName + ":\r\n" +
-                                      GetFMId(fm) + "\r\n" +
-                                      LText.AlertMessages.Install_ExecutableNotFound);
-                    return false;
-                }
-
-                if (!Directory.Exists(instBasePath))
-                {
-                    Log("FM install path not found.\r\n" +
-                        "FM: " + GetFMId(fm) + "\r\n" +
-                        "FM game was: " + fm.Game + "\r\n" +
-                        "FM install path: " + instBasePath
-                    );
-                    Dialogs.ShowError(gameName + ":\r\n" +
-                                      GetFMId(fm) + "\r\n" +
-                                      LText.AlertMessages.Install_FMInstallPathNotFound);
-                    return false;
-                }
-
-                if (GameIsRunning(gameExe))
-                {
-                    Dialogs.ShowAlert(
-                        gameName + ":\r\n" +
-                        LText.AlertMessages.Install_GameIsRunning,
-                        LText.AlertMessages.Alert);
-                    return false;
-                }
-            }
-
-            #endregion
-
             try
             {
-                _extractCts = _extractCts.Recreate();
+                // @MULTISEL(Install/progress box): Show like "doing pre-checks" message during pre-checks
+                Core.View.ShowProgressBox(ProgressTask.CheckingFreeSpace);
+
+                bool success = await Task.Run(async () =>
+                {
+                    #region Pre-checks
+
+                    var gameChecksHashSet = new HashSet<GameIndex>();
+                    for (int i = 0; i < fms.Length; i++)
+                    {
+                        FanMission fm = fms[i];
+
+                        AssertR(!fm.Installed, "fm.Installed == true");
+
+                        if (!GameIsKnownAndSupported(fm.Game))
+                        {
+                            Log("FM game type is unknown or unsupported.\r\n" +
+                                "FM: " + GetFMId(fm) + "\r\n" +
+                                "FM game was: " + fm.Game);
+                            Core.View.InvokeSync(() =>
+                            {
+                                Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                                  ErrorText.FMGameTypeUnknownOrUnsupported);
+                            });
+                            return false;
+                        }
+
+                        GameIndex gameIndex = GameToGameIndex(fm.Game);
+                        string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
+                        string gameExe = Config.GetGameExe(gameIndex);
+                        string gameName = GetLocalizedGameName(gameIndex);
+                        string instBasePath = Config.GetFMInstallPath(gameIndex);
+
+                        fmDataList[i] = new FMData
+                        (
+                            fm,
+                            fmArchivePath,
+                            gameExe,
+                            gameName,
+                            instBasePath
+                        );
+
+                        if (fmArchivePath.IsEmpty())
+                        {
+                            Log(
+                                "FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
+                                "FM: " + GetFMId(fm) + "\r\n" +
+                                "FM game was: " + fm.Game);
+                            Core.View.InvokeSync(() =>
+                            {
+                                Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                                  LText.AlertMessages.Install_ArchiveNotFound);
+                            });
+                            return false;
+                        }
+
+                        if (!gameChecksHashSet.Contains(gameIndex))
+                        {
+                            if (!File.Exists(gameExe))
+                            {
+                                Log("Game executable not found.\r\n" +
+                                    "Game executable: " + gameExe);
+                                Core.View.InvokeSync(() =>
+                                {
+                                    Dialogs.ShowError(gameName + ":\r\n" +
+                                                      GetFMId(fm) + "\r\n" +
+                                                      LText.AlertMessages.Install_ExecutableNotFound);
+                                });
+                                return false;
+                            }
+
+                            if (!Directory.Exists(instBasePath))
+                            {
+                                Log("FM install path not found.\r\n" +
+                                    "FM: " + GetFMId(fm) + "\r\n" +
+                                    "FM game was: " + fm.Game + "\r\n" +
+                                    "FM install path: " + instBasePath
+                                );
+                                Core.View.InvokeSync(() =>
+                                {
+                                    Dialogs.ShowError(gameName + ":\r\n" +
+                                                      GetFMId(fm) + "\r\n" +
+                                                      LText.AlertMessages.Install_FMInstallPathNotFound);
+                                });
+                                return false;
+                            }
+
+                            if (GameIsRunning(gameExe))
+                            {
+                                Core.View.InvokeSync(() =>
+                                {
+                                    Dialogs.ShowAlert(
+                                        gameName + ":\r\n" +
+                                        LText.AlertMessages.Install_GameIsRunning,
+                                        LText.AlertMessages.Alert);
+                                });
+                                return false;
+                            }
+
+                            gameChecksHashSet.Add(gameIndex);
+                        }
+                    }
+
+                    #endregion
+
+                    #region Free space checks
+
+                    bool success = GetGameDataDict(fms, out var errorPaths, out var gameDataDict);
+                    if (!success)
+                    {
+                        string errorLines = "";
+                        for (int i = 0; i < errorPaths.Count; i++)
+                        {
+                            errorLines += errorPaths[i] + "\r\n";
+                        }
+
+                        bool cancel = false;
+                        Core.View.InvokeSync(() =>
+                        {
+                            (cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                                // @MULTISEL(Install/disk space check): Localize/finalize
+                                message:
+                                "AngelLoader was unable to calculate the free disk space for the following path(s):\r\n\r\n" +
+                                errorLines + "\r\n" +
+                                "Continue anyway?",
+                                title: LText.AlertMessages.Alert,
+                                icon: MessageBoxIcon.Warning,
+                                showDontAskAgain: false,
+                                yes: LText.Global.Continue,
+                                no: LText.Global.Cancel,
+                                defaultButton: DarkTaskDialog.Button.No);
+                        });
+                        if (cancel) return false;
+                    }
+
+                    List<string>? darkLoaderArchiveFiles = null;
+                    for (int i = 0; i < fmDataList.Length; i++)
+                    {
+                        var fmData = fmDataList[i];
+
+                        if (!gameDataDict.TryGetValue(Path.GetPathRoot(fmData.InstBasePath), out GameData gameData))
+                        {
+                            continue;
+                        }
+
+                        AddArchiveExtractedSize(fmData.ArchivePath, gameData);
+                        darkLoaderArchiveFiles ??= GetDarkLoaderArchiveFiles();
+                        var backupFile = await GetBackupFile(fmData.FM, cachedDarkLoaderFiles: darkLoaderArchiveFiles);
+                        if (backupFile.Found)
+                        {
+                            AddArchiveExtractedSize(backupFile.Name, gameData);
+                            fmData.BackupFile = backupFile;
+                        }
+                    }
+
+                    var freeSpaceCalcFailedLines = new HashSetI(SupportedGameCount);
+                    var notEnoughFreeSpaceLines = new HashSetI(SupportedGameCount);
+                    for (int i = 0; i < SupportedGameCount; i++)
+                    {
+                        GameIndex gameIndex = (GameIndex)i;
+                        string driveName = Path.GetPathRoot(Config.GetFMInstallPath(gameIndex));
+                        if (gameDataDict.TryGetValue(driveName, out GameData gameData))
+                        {
+                            long? freeSpace = GetFreeDiskSpaceForPath(gameDataDict, driveName);
+                            if (!gameData.TotalExtractedSizeCalcSuccessful || freeSpace == null)
+                            {
+                                freeSpaceCalcFailedLines.Add(driveName);
+                            }
+                            // @MULTISEL(Install/disk space check): Replace with smarter estimation here
+                            else if (gameData.TotalExtractedSizeOfAllFMsForThisDisk >= freeSpace)
+                            {
+                                notEnoughFreeSpaceLines.Add(driveName);
+                            }
+                        }
+                    }
+
+                    if (freeSpaceCalcFailedLines.Count > 0 || notEnoughFreeSpaceLines.Count > 0)
+                    {
+                        static string AppendErrorText(string errorText, HashSetI lines, bool second)
+                        {
+                            // @MULTISEL(Install/disk space check): Localize/finalize
+                            string header = second
+                                ? "Could not calculate whether there is enough free disk space to install FMs to the following disks:\r\n\r\n"
+                                : "There is not enough free disk space to install FMs to the following disks:\r\n\r\n";
+
+                            string[] linesArray = lines.ToArray();
+                            Array.Sort(linesArray, StringComparer.OrdinalIgnoreCase);
+
+                            errorText += header;
+                            errorText += string.Join("\r\n", linesArray);
+                            errorText += "\r\n\r\n";
+
+                            return errorText;
+                        }
+
+                        string finalErrorText = "";
+                        if (notEnoughFreeSpaceLines.Count > 0)
+                        {
+                            finalErrorText = AppendErrorText(finalErrorText, notEnoughFreeSpaceLines, second: false);
+                        }
+                        if (freeSpaceCalcFailedLines.Count > 0)
+                        {
+                            finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, second: true);
+                        }
+
+                        bool cancel = false;
+                        Core.View.InvokeSync(() =>
+                        {
+                            (cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                                // @MULTISEL(Install/disk space check): Localize/finalize
+                                message: finalErrorText +
+                                         "If you continue, the installation will probably fail. Continue anyway?",
+                                title: LText.AlertMessages.Alert,
+                                icon: MessageBoxIcon.Warning,
+                                showDontAskAgain: false,
+                                yes: LText.Global.Continue,
+                                no: LText.Global.Cancel,
+                                defaultButton: DarkTaskDialog.Button.No);
+                        });
+                        if (cancel) return false;
+                    }
+
+                    #endregion
+
+                    return true;
+                });
+                if (!success) return false;
 
                 bool single = fmDataList.Length == 1;
 
                 Core.View.ShowProgressBox(single ? ProgressTask.InstallFM : ProgressTask.InstallFMs);
 
-                #region Free space checks
-
-                bool success = GetGameDataDict(fms, out var errorPaths, out var gameDataDict);
-                if (!success)
-                {
-                    string errorLines = "";
-                    for (int i = 0; i < errorPaths.Count; i++)
-                    {
-                        errorLines += errorPaths[i] + "\r\n";
-                    }
-
-                    (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
-                        // @MULTISEL(Install/disk space check): Localize/finalize
-                        message:
-                        "AngelLoader was unable to calculate the free disk space for the following path(s):\r\n\r\n" +
-                        errorLines + "\r\n" +
-                        "Continue anyway?",
-                        title: LText.AlertMessages.Alert,
-                        icon: MessageBoxIcon.Warning,
-                        showDontAskAgain: false,
-                        yes: LText.Global.Continue,
-                        no: LText.Global.Cancel,
-                        defaultButton: DarkTaskDialog.Button.No);
-                    if (cancel) return false;
-                }
-
-                for (int i = 0; i < fmDataList.Length; i++)
-                {
-                    var fmData = fmDataList[i];
-
-                    if (!gameDataDict.TryGetValue(Path.GetPathRoot(fmData.InstBasePath), out GameData gameData))
-                    {
-                        continue;
-                    }
-
-                    AddArchiveExtractedSize(fmData.ArchivePath, gameData);
-                    var backupFile = await GetBackupFile(fmData.FM);
-                    if (backupFile.Found)
-                    {
-                        AddArchiveExtractedSize(backupFile.Name, gameData);
-                        fmData.BackupFile = backupFile;
-                    }
-                }
-
-                var freeSpaceCalcFailedLines = new HashSetI(SupportedGameCount);
-                var notEnoughFreeSpaceLines = new HashSetI(SupportedGameCount);
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    GameIndex gameIndex = (GameIndex)i;
-                    string driveName = Path.GetPathRoot(Config.GetFMInstallPath(gameIndex));
-                    if (gameDataDict.TryGetValue(driveName, out GameData gameData))
-                    {
-                        long? freeSpace = GetFreeDiskSpaceForPath(gameDataDict, driveName);
-                        if (!gameData.TotalExtractedSizeCalcSuccessful || freeSpace == null)
-                        {
-                            freeSpaceCalcFailedLines.Add(driveName);
-                        }
-                        // @MULTISEL(Install/disk space check): Replace with smarter estimation here
-                        else if (gameData.TotalExtractedSizeOfAllFMsForThisDisk >= freeSpace)
-                        {
-                            notEnoughFreeSpaceLines.Add(driveName);
-                        }
-                    }
-                }
-
-                if (freeSpaceCalcFailedLines.Count > 0 || notEnoughFreeSpaceLines.Count > 0)
-                {
-                    static string AppendErrorText(string errorText, HashSetI lines, bool second)
-                    {
-                        // @MULTISEL(Install/disk space check): Localize/finalize
-                        string header = second
-                            ? "Could not calculate whether there is enough free disk space to install FMs to the following disks:\r\n\r\n"
-                            : "There is not enough free disk space to install FMs to the following disks:\r\n\r\n";
-
-                        string[] linesArray = lines.ToArray();
-                        Array.Sort(linesArray, StringComparer.OrdinalIgnoreCase);
-
-                        errorText += header;
-                        errorText += string.Join("\r\n", linesArray);
-                        errorText += "\r\n\r\n";
-
-                        return errorText;
-                    }
-
-                    string finalErrorText = "";
-                    if (notEnoughFreeSpaceLines.Count > 0)
-                    {
-                        finalErrorText = AppendErrorText(finalErrorText, notEnoughFreeSpaceLines, second: false);
-                    }
-                    if (freeSpaceCalcFailedLines.Count > 0)
-                    {
-                        finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, second: true);
-                    }
-
-                    (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
-                        // @MULTISEL(Install/disk space check): Localize/finalize
-                        message: finalErrorText +
-                                 "If you continue, the installation will probably fail. Continue anyway?",
-                        title: LText.AlertMessages.Alert,
-                        icon: MessageBoxIcon.Warning,
-                        showDontAskAgain: false,
-                        yes: LText.Global.Continue,
-                        no: LText.Global.Cancel,
-                        defaultButton: DarkTaskDialog.Button.No);
-                    if (cancel) return false;
-                }
-
-                #endregion
+                _extractCts = _extractCts.Recreate();
 
                 for (int i = 0; i < fmDataList.Length; i++)
                 {

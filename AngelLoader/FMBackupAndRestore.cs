@@ -216,8 +216,14 @@ namespace AngelLoader
             }
         }
 
+        internal static List<string> GetDarkLoaderArchiveFiles()
+        {
+            string dlBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
+            return FastIO.GetFilesTopOnly(dlBakDir, "*.zip");
+        }
+
         internal static async Task<BackupFile>
-        GetBackupFile(FanMission fm, bool findDarkLoaderOnly = false)
+        GetBackupFile(FanMission fm, bool findDarkLoaderOnly = false, List<string>? cachedDarkLoaderFiles = null)
         {
             return await Task.Run(() =>
             {
@@ -229,7 +235,7 @@ namespace AngelLoader
 
                 if (Directory.Exists(dlBakDir))
                 {
-                    foreach (string f in FastIO.GetFilesTopOnly(dlBakDir, "*.zip"))
+                    foreach (string f in cachedDarkLoaderFiles ?? GetDarkLoaderArchiveFiles())
                     {
                         string fn = f.GetFileNameFast();
                         int index = fn.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);

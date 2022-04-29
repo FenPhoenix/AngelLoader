@@ -578,6 +578,7 @@ namespace AngelLoader.DataClasses
             internal readonly string ImportingFromFMSel = "Importing from FMSel...";
             internal readonly string CachingReadmeFiles = "Caching readme files...";
             internal readonly string DeletingFMArchive = "Deleting FM archive...";
+            internal readonly string CheckingFreeSpace = "Checking free disk space...";
         }
 
         internal sealed class SettingsWindow_Class

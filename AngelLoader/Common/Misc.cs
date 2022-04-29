@@ -48,7 +48,8 @@ namespace AngelLoader
             ImportFromNDL,
             ImportFromFMSel,
             CacheFM,
-            DeleteFMArchive
+            DeleteFMArchive,
+            CheckingFreeSpace
         }
 
         public enum ImportType
