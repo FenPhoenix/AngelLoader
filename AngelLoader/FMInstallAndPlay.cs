@@ -681,8 +681,8 @@ namespace AngelLoader
 
             bool single = fmDataList.Length == 1;
 
-            if (Config.AskBeforeInstall == AskBeforeInstall.Always ||
-                (!single && Config.AskBeforeInstall == AskBeforeInstall.OnlyForMultiple))
+            if (Config.ConfirmBeforeInstall == ConfirmBeforeInstall.Always ||
+                (!single && Config.ConfirmBeforeInstall == ConfirmBeforeInstall.OnlyForMultiple))
             {
                 (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
                     // @MULTISEL(Install confirm): Add checkboxes for "don't ask again" / "don't ask again for multiple"

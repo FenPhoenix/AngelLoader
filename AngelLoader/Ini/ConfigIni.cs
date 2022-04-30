@@ -235,6 +235,15 @@ namespace AngelLoader
             config.HideExitButton = valTrimmed.EqualsTrue();
         }
 
+        private static void Config_ConfirmInstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            var field = typeof(ConfirmBeforeInstall).GetField(valTrimmed, _bFlagsEnum);
+            if (field != null)
+            {
+                config.ConfirmBeforeInstall = (ConfirmBeforeInstall)field.GetValue(null);
+            }
+        }
+
         private static void Config_ConfirmUninstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.ConfirmUninstall = valTrimmed.EqualsTrue();
@@ -755,6 +764,7 @@ namespace AngelLoader
             { "HideUninstallButton", Config_HideUninstallButton_Set },
             { "HideFMListZoomButtons", Config_HideFMListZoomButtons_Set },
             { "HideExitButton", Config_HideExitButton_Set },
+            { "ConfirmBeforeInstall", Config_ConfirmInstall_Set },
             { "ConfirmUninstall", Config_ConfirmUninstall_Set },
             { "BackupFMData", Config_BackupFMData_Set },
             { "BackupAlwaysAsk", Config_BackupAlwaysAsk_Set },
@@ -1054,6 +1064,7 @@ namespace AngelLoader
             sb.Append("HideUninstallButton=").Append(config.HideUninstallButton).AppendLine();
             sb.Append("HideFMListZoomButtons=").Append(config.HideFMListZoomButtons).AppendLine();
             sb.Append("HideExitButton=").Append(config.HideExitButton).AppendLine();
+            sb.Append("ConfirmBeforeInstall=").Append(config.ConfirmBeforeInstall).AppendLine();
             sb.Append("ConfirmUninstall=").Append(config.ConfirmUninstall).AppendLine();
             sb.Append("BackupFMData=").Append(config.BackupFMData).AppendLine();
             sb.Append("BackupAlwaysAsk=").Append(config.BackupAlwaysAsk).AppendLine();

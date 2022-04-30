@@ -680,6 +680,12 @@ namespace AngelLoader.DataClasses
             internal readonly string Other_ConvertWAVsTo16BitOnInstall = "Convert .wavs to 16 bit on install";
             internal readonly string Other_ConvertOGGsToWAVsOnInstall = "Convert .oggs to .wavs on install";
             [FenGenBlankLine]
+            internal readonly string Other_InstallingFMs = "Installing FMs";
+            internal readonly string Other_ConfirmBeforeInstallingFM = "Confirm before installing:";
+            internal readonly string Other_InstallConfirm_Always = "Always";
+            internal readonly string Other_InstallConfirm_OnlyForMultipleFMs = "Only for multiple FMs";
+            internal readonly string Other_InstallConfirm_Never = "Never";
+            [FenGenBlankLine]
             internal readonly string Other_UninstallingFMs = "Uninstalling FMs";
             internal readonly string Other_ConfirmBeforeUninstalling = "Confirm before uninstalling";
             internal readonly string Other_WhenUninstallingBackUp = "When uninstalling, back up:";

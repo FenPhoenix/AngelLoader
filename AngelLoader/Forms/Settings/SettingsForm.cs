@@ -475,6 +475,24 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region Installing FMs
+
+                switch (config.ConfirmBeforeInstall)
+                {
+                    case ConfirmBeforeInstall.Always:
+                        OtherPage.Install_ConfirmAlwaysRadioButton.Checked = true;
+                        break;
+                    case ConfirmBeforeInstall.OnlyForMultiple:
+                        OtherPage.Install_ConfirmMultipleOnlyRadioButton.Checked = true;
+                        break;
+                    case ConfirmBeforeInstall.Never:
+                    default:
+                        OtherPage.Install_ConfirmNeverRadioButton.Checked = true;
+                        break;
+                }
+
+                #endregion
+
                 #region Uninstalling FMs
 
                 OtherPage.ConfirmUninstallCheckBox.Checked = config.ConfirmUninstall;
@@ -756,6 +774,12 @@ namespace AngelLoader.Forms
                     OtherPage.FMFileConversionGroupBox.Text = LText.SettingsWindow.Other_FMFileConversion;
                     OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
                     OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
+
+                    OtherPage.InstallingFMsGroupBox.Text = LText.SettingsWindow.Other_InstallingFMs;
+                    OtherPage.ConfirmBeforeInstallLabel.Text = LText.SettingsWindow.Other_ConfirmBeforeInstallingFM;
+                    OtherPage.Install_ConfirmAlwaysRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_Always;
+                    OtherPage.Install_ConfirmMultipleOnlyRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_OnlyForMultipleFMs;
+                    OtherPage.Install_ConfirmNeverRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_Never;
 
                     OtherPage.UninstallingFMsGroupBox.Text = LText.SettingsWindow.Other_UninstallingFMs;
                     OtherPage.ConfirmUninstallCheckBox.Text = LText.SettingsWindow.Other_ConfirmBeforeUninstalling;
@@ -1105,13 +1129,23 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region Installing FMs
+
+                OutConfig.ConfirmBeforeInstall =
+                    OtherPage.Install_ConfirmAlwaysRadioButton.Checked ? ConfirmBeforeInstall.Always :
+                    OtherPage.Install_ConfirmMultipleOnlyRadioButton.Checked ? ConfirmBeforeInstall.OnlyForMultiple :
+                    ConfirmBeforeInstall.Never;
+
+                #endregion
+
                 #region Uninstalling FMs
 
                 OutConfig.ConfirmUninstall = OtherPage.ConfirmUninstallCheckBox.Checked;
 
-                OutConfig.BackupFMData = OtherPage.BackupSavesAndScreensOnlyRadioButton.Checked
-                    ? BackupFMData.SavesAndScreensOnly
-                    : BackupFMData.AllChangedFiles;
+                OutConfig.BackupFMData =
+                    OtherPage.BackupSavesAndScreensOnlyRadioButton.Checked
+                        ? BackupFMData.SavesAndScreensOnly
+                        : BackupFMData.AllChangedFiles;
 
                 OutConfig.BackupAlwaysAsk = OtherPage.BackupAlwaysAskCheckBox.Checked;
 

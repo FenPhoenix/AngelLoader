@@ -427,8 +427,7 @@ namespace AngelLoader.DataClasses
 
         internal bool PlayOriginalSeparateButtons = true;
 
-        // @MULTISEL(Install confirm): Add UI and ini file code for this
-        internal AskBeforeInstall AskBeforeInstall = AskBeforeInstall.OnlyForMultiple;
+        internal ConfirmBeforeInstall ConfirmBeforeInstall = ConfirmBeforeInstall.OnlyForMultiple;
 
         // Dummied out for now
         internal bool ShowOSContextMenuCommands { get => false; set => value = false; }
