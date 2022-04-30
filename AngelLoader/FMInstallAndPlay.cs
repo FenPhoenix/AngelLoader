@@ -69,7 +69,8 @@ namespace AngelLoader
                 return;
             }
 
-            if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
+            bool askingConfirmation = askConfIfRequired && Config.ConfirmPlayOnDCOrEnter;
+            if (askingConfirmation)
             {
                 string message = fm.Installed
                     ? LText.AlertMessages.Play_ConfirmMessage
@@ -96,7 +97,7 @@ namespace AngelLoader
                 Config.ConfirmPlayOnDCOrEnter = !dontAskAgain;
             }
 
-            if (!fm.Installed && !await Install(fm)) return;
+            if (!fm.Installed && !await InstallInternal(fromPlay: true, suppressConfirmation: askingConfirmation, fm)) return;
 
             if (playMP && gameIndex == GameIndex.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
@@ -552,8 +553,10 @@ namespace AngelLoader
             }
         }
 
+        internal static async Task<bool> Install(params FanMission[] fms) => await InstallInternal(false, false, fms);
+
         // @MULTISEL(Install/main - cancel install): Maybe ask if they want to cancel just this, all, or all subsequent?
-        internal static async Task<bool> Install(params FanMission[] fms)
+        private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
         {
             #region Local functions
 
@@ -681,29 +684,31 @@ namespace AngelLoader
 
             bool single = fmDataList.Length == 1;
 
-            if (Config.ConfirmBeforeInstall == ConfirmBeforeInstall.Always ||
-                (!single && Config.ConfirmBeforeInstall == ConfirmBeforeInstall.OnlyForMultiple))
+            if (!suppressConfirmation &&
+                (Config.ConfirmBeforeInstall == ConfirmBeforeInstall.Always ||
+                (!single && Config.ConfirmBeforeInstall == ConfirmBeforeInstall.OnlyForMultiple)))
             {
-                (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
-                    // @MULTISEL(Install confirm): Add checkboxes for "don't ask again" / "don't ask again for multiple"
+                (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
                     message: single
-                        ? LText.AlertMessages.Install_ConfirmSingular
+                        ? fromPlay
+                            ? LText.AlertMessages.Play_InstallAndPlayConfirmMessage
+                            : LText.AlertMessages.Install_ConfirmSingular
                         : LText.AlertMessages.Install_ConfirmPlural_BeforeNumber +
                           fmDataList.Length.ToString(CultureInfo.CurrentCulture) +
                           LText.AlertMessages.Install_ConfirmPlural_AfterNumber,
                     title: LText.AlertMessages.Alert,
                     icon: MessageBoxIcon.None,
-                    showDontAskAgain: false,
-                    yes: single ? LText.FMsList.FMMenu_InstallFM : LText.FMsList.FMMenu_InstallFMs,
+                    showDontAskAgain: true,
+                    yes: single ? fromPlay ? LText.Global.Yes : LText.FMsList.FMMenu_InstallFM : LText.FMsList.FMMenu_InstallFMs,
                     no: LText.Global.Cancel,
                     defaultButton: DarkTaskDialog.Button.No);
                 if (cancel) return false;
+
+                if (dontAskAgain) Config.ConfirmBeforeInstall = ConfirmBeforeInstall.Never;
             }
 
             try
             {
-                // @MULTISEL(Install/progress box): Show like "doing pre-checks" message during pre-checks
-
                 bool success = await Task.Run(() =>
                 {
                     Core.View.InvokeSync(() => Core.View.ShowProgressBox(ProgressTask.PreparingInstall));

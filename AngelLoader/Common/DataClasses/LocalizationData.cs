@@ -194,8 +194,8 @@ namespace AngelLoader.DataClasses
             internal readonly string Play_ExecutableNotFound = "Game executable file not specified or not found. Unable to play.";
             internal readonly string Play_ExecutableNotFoundFM = "Game executable file not specified or not found. Unable to play FM.";
             internal readonly string Play_AnyGameIsRunning = "One or more supported games are already running. Please exit them first.";
-            internal readonly string Play_ConfirmMessage = "Play FM?";
-            internal readonly string Play_InstallAndPlayConfirmMessage = "Install and play FM?";
+            internal readonly string Play_ConfirmMessage = "Do you want to play this FM?";
+            internal readonly string Play_InstallAndPlayConfirmMessage = "Do you want to install and play this FM?";
             internal readonly string Install_ConfirmSingular = "Do you want to install this FM?";
             [FenGenComment(
                 "In English, if you had 5 FMs selected for example, it would say \"Do you want to install these 5 FMs?\".",
