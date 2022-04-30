@@ -49,7 +49,9 @@ namespace AngelLoader
             ImportFromFMSel,
             CacheFM,
             DeleteFMArchive,
-            CheckingFreeSpace
+            CheckingFreeSpace,
+            PreparingInstall,
+            RestoringBackup
         }
 
         public enum ImportType

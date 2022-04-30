@@ -562,20 +562,28 @@ namespace AngelLoader.DataClasses
 
         internal sealed class ProgressBox_Class
         {
-            internal readonly string Scanning = "Scanning...";
             internal readonly string InstallingFM = "Installing FM...";
             internal readonly string InstallingFMs = "Installing FMs...";
+            internal readonly string PreparingToInstall = "Preparing to install...";
+            internal readonly string CancelingInstall = "Canceling install...";
+            [FenGenComment("For example, we could be restoring backed up saves and screenshots for this FM")]
+            internal readonly string RestoringBackup = "Restoring backup...";
+            [FenGenBlankLine]
             internal readonly string UninstallingFM = "Uninstalling FM...";
             internal readonly string UninstallingFMs = "Uninstalling FMs...";
-            internal readonly string ConvertingFiles = "Converting files...";
-            internal readonly string PreparingToScanFMs = "Preparing to scan FM(s)...";
+            [FenGenBlankLine]
+            internal readonly string ConvertingFiles = "Converting audio files...";
+            [FenGenBlankLine]
+            internal readonly string PreparingToScanFMs = "Preparing to scan...";
+            internal readonly string Scanning = "Scanning...";
             internal readonly string ReportScanningFirst = "Scanning ";
             internal readonly string ReportScanningBetweenNumAndTotal = " of ";
             internal readonly string ReportScanningLast = "...";
-            internal readonly string CancelingInstall = "Canceling install...";
+            [FenGenBlankLine]
             internal readonly string ImportingFromDarkLoader = "Importing from DarkLoader...";
             internal readonly string ImportingFromNewDarkLoader = "Importing from NewDarkLoader...";
             internal readonly string ImportingFromFMSel = "Importing from FMSel...";
+            [FenGenBlankLine]
             internal readonly string CachingReadmeFiles = "Caching readme files...";
             internal readonly string DeletingFMArchive = "Deleting FM archive...";
             internal readonly string CheckingFreeSpace = "Checking free disk space...";

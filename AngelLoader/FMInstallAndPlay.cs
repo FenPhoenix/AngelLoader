@@ -681,10 +681,11 @@ namespace AngelLoader
             try
             {
                 // @MULTISEL(Install/progress box): Show like "doing pre-checks" message during pre-checks
-                Core.View.ShowProgressBox(ProgressTask.CheckingFreeSpace);
 
                 bool success = await Task.Run(() =>
                 {
+                    Core.View.InvokeSync(() => Core.View.ShowProgressBox(ProgressTask.PreparingInstall));
+
                     #region Pre-checks
 
                     var gameChecksHashSet = new HashSet<GameIndex>();
@@ -785,6 +786,8 @@ namespace AngelLoader
                     }
 
                     #endregion
+
+                    Core.View.InvokeSync(() => Core.View.ShowProgressBox(ProgressTask.CheckingFreeSpace));
 
                     #region Free space checks
 
@@ -983,6 +986,15 @@ namespace AngelLoader
 
                     // Don't be lazy about this; there can be no harm and only benefits by doing it right away
                     GenerateMissFlagFileIfRequired(fmData.FM);
+
+                    if (single)
+                    {
+                        Core.View.ShowProgressBox(ProgressTask.RestoringBackup);
+                    }
+                    else
+                    {
+                        Core.View.ReportMultiFMInstallProgress(-1, 100, LText.ProgressBox.RestoringBackup, fmData.FM.Archive);
+                    }
 
                     // TODO: Put up a "Restoring saves and screenshots" box here to avoid the "converting files" one lasting beyond its time?
                     try

@@ -115,6 +115,8 @@ namespace AngelLoader.Forms.CustomControls
                 ProgressTask.CacheFM => LText.ProgressBox.CachingReadmeFiles,
                 ProgressTask.DeleteFMArchive => LText.ProgressBox.DeletingFMArchive,
                 ProgressTask.CheckingFreeSpace => LText.ProgressBox.CheckingFreeSpace,
+                ProgressTask.PreparingInstall => LText.ProgressBox.PreparingToInstall,
+                ProgressTask.RestoringBackup => LText.ProgressBox.RestoringBackup,
                 _ => ""
             };
 
@@ -133,7 +135,9 @@ namespace AngelLoader.Forms.CustomControls
                 or ProgressTask.ImportFromNDL
                 or ProgressTask.ImportFromFMSel
                 or ProgressTask.DeleteFMArchive
-                or ProgressTask.CheckingFreeSpace)
+                or ProgressTask.CheckingFreeSpace
+                or ProgressTask.PreparingInstall
+                or ProgressTask.RestoringBackup)
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
                 if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);

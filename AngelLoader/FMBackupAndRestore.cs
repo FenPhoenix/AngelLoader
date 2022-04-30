@@ -59,7 +59,144 @@ namespace AngelLoader
 
         #endregion
 
+        [PublicAPI]
+        internal sealed class BackupFile
+        {
+            internal bool Found;
+            internal string Name;
+            internal bool DarkLoader;
+            internal List<string>? Cached_DarkLoaderBackups;
+            internal List<string>? Cached_NewBackups;
+
+            internal BackupFile()
+            {
+                Found = false;
+                Name = "";
+                DarkLoader = false;
+            }
+
+            internal void Set(bool found, string name, bool darkLoader)
+            {
+                Found = found;
+                Name = name;
+                DarkLoader = darkLoader;
+            }
+
+            internal BackupFile(bool found, string name, bool darkLoader)
+            {
+                Found = found;
+                Name = name;
+                DarkLoader = darkLoader;
+            }
+        }
+
         #region Public methods
+
+        internal static BackupFile
+        GetBackupFile(
+            FanMission fm,
+            bool findDarkLoaderOnly = false,
+            List<string>? cachedDarkLoaderFiles = null,
+            List<string>? cachedFMArchivePaths = null)
+        {
+            static List<string> GetDarkLoaderArchiveFiles() => FastIO.GetFilesTopOnly(Config.DarkLoaderBackupPath, "*.zip");
+
+            var ret = new BackupFile();
+
+            BackupFile DoReturn()
+            {
+                ret.Cached_DarkLoaderBackups = cachedDarkLoaderFiles;
+                ret.Cached_NewBackups = cachedFMArchivePaths;
+
+                return ret;
+            }
+
+            #region DarkLoader
+
+            if (Directory.Exists(Config.DarkLoaderBackupPath))
+            {
+                // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
+                // Rather than just using File.Exists()?!
+                foreach (string f in cachedDarkLoaderFiles ??= GetDarkLoaderArchiveFiles())
+                {
+                    string fn = f.GetFileNameFast();
+                    int index = fn.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
+                    if (index == -1) continue;
+
+                    string an = fn.Substring(0, index).Trim();
+                    // Account for the fact that DarkLoader trims archive names for save backup zips
+                    // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
+                    // way, so whatever.
+                    if (!an.IsEmpty() && an.PathEqualsI(fm.Archive.RemoveExtension().Trim()))
+                    {
+                        ret.Set(true, f, true);
+                        if (findDarkLoaderOnly) return DoReturn();
+                        break;
+                    }
+                }
+            }
+
+            #endregion
+
+            if (findDarkLoaderOnly)
+            {
+                ret.Set(false, "", false);
+                return DoReturn();
+            }
+
+            #region AngelLoader / FMSel / NewDarkLoader
+
+            if (ret.Name.IsEmpty())
+            {
+                var bakFiles = new List<FileInfo>();
+
+                void AddBakFilesFrom(string path)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        string fNoExt = i == 0 ? fm.Archive.RemoveExtension() : fm.InstalledDir;
+                        string bakFile = Path.Combine(path, fNoExt + Paths.FMBackupSuffix);
+                        if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
+                    }
+                }
+
+                // Our backup path, separate to avoid creating any more ambiguity
+                AddBakFilesFrom(Config.FMsBackupPath);
+
+                // If ArchiveName.bak and InstalledName.bak files both exist, use the newest of the two
+                ret.Name = bakFiles.Count == 1
+                    ? bakFiles[0].FullName
+                    : bakFiles.Count > 1
+                        ? bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName
+                        : "";
+
+                bakFiles.Clear();
+
+                // Use file from our bak dir if it exists, otherwise use the newest file from all archive dirs
+                // (for automatic use of FMSel/NDL saves)
+                if (ret.Name.IsEmpty())
+                {
+                    foreach (string path in cachedFMArchivePaths ??= FMArchives.GetFMArchivePaths())
+                    {
+                        AddBakFilesFrom(path);
+                    }
+
+                    if (bakFiles.Count == 0)
+                    {
+                        ret.Set(false, "", false);
+                        return DoReturn();
+                    }
+
+                    // Use the newest of all files found in all archive dirs
+                    ret.Name = bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName;
+                }
+            }
+
+            #endregion
+
+            ret.Found = true;
+            return DoReturn();
+        }
 
         internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
         {
@@ -195,161 +332,6 @@ namespace AngelLoader
                     Log("Exception in zip archive create and/or write (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", ex);
                 }
             });
-        }
-
-        /*
-        Do this after backup, NOT after restore! Otherwise, we could end up with the following scenario:
-        -User installs FM, we restore DarkLoader backup, we move DarkLoader backup to Original folder
-        -User uninstalls FM and chooses "don't back up"
-        -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it) and we also
-         don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
-         which is not at all what the user expects given we tell them that existing backups haven't been changed.
-        */
-        private static void MoveDarkLoaderBackup(FanMission fm)
-        {
-            var dlBackup = GetBackupFile(fm, findDarkLoaderOnly: true);
-            if (dlBackup.Found)
-            {
-                Directory.CreateDirectory(Config.DarkLoaderOriginalBackupPath);
-                File.Move(dlBackup.Name, Path.Combine(Config.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast()));
-            }
-        }
-
-        internal static BackupFile
-        GetBackupFile(
-            FanMission fm,
-            bool findDarkLoaderOnly = false,
-            List<string>? cachedDarkLoaderFiles = null,
-            List<string>? cachedFMArchivePaths = null)
-        {
-            static List<string> GetDarkLoaderArchiveFiles() => FastIO.GetFilesTopOnly(Config.DarkLoaderBackupPath, "*.zip");
-
-            var ret = new BackupFile();
-
-            BackupFile DoReturn()
-            {
-                ret.Cached_DarkLoaderBackups = cachedDarkLoaderFiles;
-                ret.Cached_NewBackups = cachedFMArchivePaths;
-
-                return ret;
-            }
-
-            #region DarkLoader
-
-            if (Directory.Exists(Config.DarkLoaderBackupPath))
-            {
-                // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
-                // Rather than just using File.Exists()?!
-                foreach (string f in cachedDarkLoaderFiles ??= GetDarkLoaderArchiveFiles())
-                {
-                    string fn = f.GetFileNameFast();
-                    int index = fn.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
-                    if (index == -1) continue;
-
-                    string an = fn.Substring(0, index).Trim();
-                    // Account for the fact that DarkLoader trims archive names for save backup zips
-                    // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
-                    // way, so whatever.
-                    if (!an.IsEmpty() && an.PathEqualsI(fm.Archive.RemoveExtension().Trim()))
-                    {
-                        ret.Set(true, f, true);
-                        if (findDarkLoaderOnly) return DoReturn();
-                        break;
-                    }
-                }
-            }
-
-            #endregion
-
-            if (findDarkLoaderOnly)
-            {
-                ret.Set(false, "", false);
-                return DoReturn();
-            }
-
-            #region AngelLoader / FMSel / NewDarkLoader
-
-            if (ret.Name.IsEmpty())
-            {
-                var bakFiles = new List<FileInfo>();
-
-                void AddBakFilesFrom(string path)
-                {
-                    for (int i = 0; i < 2; i++)
-                    {
-                        string fNoExt = i == 0 ? fm.Archive.RemoveExtension() : fm.InstalledDir;
-                        string bakFile = Path.Combine(path, fNoExt + Paths.FMBackupSuffix);
-                        if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
-                    }
-                }
-
-                // Our backup path, separate to avoid creating any more ambiguity
-                AddBakFilesFrom(Config.FMsBackupPath);
-
-                // If ArchiveName.bak and InstalledName.bak files both exist, use the newest of the two
-                ret.Name = bakFiles.Count == 1
-                    ? bakFiles[0].FullName
-                    : bakFiles.Count > 1
-                        ? bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName
-                        : "";
-
-                bakFiles.Clear();
-
-                // Use file from our bak dir if it exists, otherwise use the newest file from all archive dirs
-                // (for automatic use of FMSel/NDL saves)
-                if (ret.Name.IsEmpty())
-                {
-                    foreach (string path in cachedFMArchivePaths ??= FMArchives.GetFMArchivePaths())
-                    {
-                        AddBakFilesFrom(path);
-                    }
-
-                    if (bakFiles.Count == 0)
-                    {
-                        ret.Set(false, "", false);
-                        return DoReturn();
-                    }
-
-                    // Use the newest of all files found in all archive dirs
-                    ret.Name = bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName;
-                }
-            }
-
-            #endregion
-
-            ret.Found = true;
-            return DoReturn();
-        }
-
-        [PublicAPI]
-        internal sealed class BackupFile
-        {
-            internal bool Found;
-            internal string Name;
-            internal bool DarkLoader;
-            internal List<string>? Cached_DarkLoaderBackups;
-            internal List<string>? Cached_NewBackups;
-
-            internal BackupFile()
-            {
-                Found = false;
-                Name = "";
-                DarkLoader = false;
-            }
-
-            internal void Set(bool found, string name, bool darkLoader)
-            {
-                Found = found;
-                Name = name;
-                DarkLoader = darkLoader;
-            }
-
-            internal BackupFile(bool found, string name, bool darkLoader)
-            {
-                Found = found;
-                Name = name;
-                DarkLoader = darkLoader;
-            }
         }
 
         internal static async Task RestoreFM(FanMission fm, BackupFile? backupFile = null)
@@ -552,6 +534,24 @@ namespace AngelLoader
         #endregion
 
         #region Private methods
+
+        /*
+        Do this after backup, NOT after restore! Otherwise, we could end up with the following scenario:
+        -User installs FM, we restore DarkLoader backup, we move DarkLoader backup to Original folder
+        -User uninstalls FM and chooses "don't back up"
+        -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it) and we also
+        don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
+        which is not at all what the user expects given we tell them that existing backups haven't been changed.
+        */
+        private static void MoveDarkLoaderBackup(FanMission fm)
+        {
+            var dlBackup = GetBackupFile(fm, findDarkLoaderOnly: true);
+            if (dlBackup.Found)
+            {
+                Directory.CreateDirectory(Config.DarkLoaderOriginalBackupPath);
+                File.Move(dlBackup.Name, Path.Combine(Config.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast()));
+            }
+        }
 
         private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName)
         {
