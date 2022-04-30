@@ -996,7 +996,6 @@ namespace AngelLoader
                         Core.View.ReportMultiFMInstallProgress(-1, 100, LText.ProgressBox.RestoringBackup, fmData.FM.Archive);
                     }
 
-                    // TODO: Put up a "Restoring saves and screenshots" box here to avoid the "converting files" one lasting beyond its time?
                     try
                     {
                         await RestoreFM(fmData.FM, fmData.BackupFile);
