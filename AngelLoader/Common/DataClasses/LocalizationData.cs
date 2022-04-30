@@ -196,6 +196,14 @@ namespace AngelLoader.DataClasses
             internal readonly string Play_AnyGameIsRunning = "One or more supported games are already running. Please exit them first.";
             internal readonly string Play_ConfirmMessage = "Play FM?";
             internal readonly string Play_InstallAndPlayConfirmMessage = "Install and play FM?";
+            internal readonly string Install_ConfirmSingular = "Do you want to install this FM?";
+            [FenGenComment(
+                "In English, if you had 5 FMs selected for example, it would say \"Do you want to install these 5 FMs?\".",
+                "Structure these lines as appropriate for your language. You can leave one or the other blank if the",
+                "number should go at the start or at the end of the final line.",
+                "Make sure to leave a space at the end of the first line and start of the second line if they're non-empty, as demonstrated.")]
+            internal readonly string Install_ConfirmPlural_BeforeNumber = "Do you want to install these ";
+            internal readonly string Install_ConfirmPlural_AfterNumber = " FMs?";
             [FenGenBlankLine]
             internal readonly string DromEd_ExecutableNotFound = "DromEd.exe was not found in the game directory. Unable to open FM.";
             internal readonly string ShockEd_ExecutableNotFound = "ShockEd.exe was not found in the game directory. Unable to open FM.";

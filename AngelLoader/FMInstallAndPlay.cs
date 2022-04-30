@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -678,6 +679,27 @@ namespace AngelLoader
 
             var fmDataList = new FMData[fms.Length];
 
+            bool single = fmDataList.Length == 1;
+
+            if (Config.AskBeforeInstall == AskBeforeInstall.Always ||
+                (!single && Config.AskBeforeInstall == AskBeforeInstall.OnlyForMultiple))
+            {
+                (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                    // @MULTISEL(Install confirm): Add checkboxes for "don't ask again" / "don't ask again for multiple"
+                    message: single
+                        ? LText.AlertMessages.Install_ConfirmSingular
+                        : LText.AlertMessages.Install_ConfirmPlural_BeforeNumber +
+                          fmDataList.Length.ToString(CultureInfo.CurrentCulture) +
+                          LText.AlertMessages.Install_ConfirmPlural_AfterNumber,
+                    title: LText.AlertMessages.Alert,
+                    icon: MessageBoxIcon.None,
+                    showDontAskAgain: false,
+                    yes: single ? LText.FMsList.FMMenu_InstallFM : LText.FMsList.FMMenu_InstallFMs,
+                    no: LText.Global.Cancel,
+                    defaultButton: DarkTaskDialog.Button.No);
+                if (cancel) return false;
+            }
+
             try
             {
                 // @MULTISEL(Install/progress box): Show like "doing pre-checks" message during pre-checks
@@ -918,8 +940,6 @@ namespace AngelLoader
                     return true;
                 });
                 if (!success) return false;
-
-                bool single = fmDataList.Length == 1;
 
                 Core.View.ShowProgressBox(single ? ProgressTask.InstallFM : ProgressTask.InstallFMs);
 
