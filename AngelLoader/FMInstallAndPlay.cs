@@ -548,6 +548,18 @@ namespace AngelLoader
             internal DriveData(DriveInfo driveInfo) => DriveInfo = driveInfo;
         }
 
+        private static string GetPathRootSafe(string path)
+        {
+            try
+            {
+                return Path.GetPathRoot(path);
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
         internal static Task<bool> Install(params FanMission[] fms) => InstallInternal(false, false, fms);
 
         // @MULTISEL(Install/main - cancel install): Maybe ask if they want to cancel just this, all, or all subsequent?
@@ -555,10 +567,11 @@ namespace AngelLoader
         {
             #region Local functions
 
-            static bool GetDriveDataDict(FanMission[] fms, out List<string> paths, out Dictionary<string, DriveData> result)
+            static bool GetDriveDataDict(FanMission[] fms, out List<string> errorPaths, out Dictionary<string, DriveData> result)
             {
                 result = new Dictionary<string, DriveData>();
-                paths = new List<string>();
+                errorPaths = new List<string>();
+                bool success = true;
 
                 Game games = Game.Null;
                 for (int i = 0; i < fms.Length; i++)
@@ -582,12 +595,14 @@ namespace AngelLoader
                             }
                             catch
                             {
-                                paths.Add(fmInstallPath);
+                                errorPaths.Add(fmInstallPath);
+                                success = false;
                             }
                         }
                     }
                 }
-                return true;
+
+                return success;
             }
 
             static long? GetFreeDiskSpaceForPath(Dictionary<string, DriveData> driveDataDict, string driveName)
@@ -671,6 +686,35 @@ namespace AngelLoader
                 }
 
                 return false;
+            }
+
+            static bool ShowDiskSpaceErrorDialog(string message)
+            {
+                (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                    message: message,
+                    title: LText.AlertMessages.Alert,
+                    icon: MessageBoxIcon.Warning,
+                    showDontAskAgain: false,
+                    yes: LText.Global.Continue,
+                    no: LText.Global.Cancel,
+                    defaultButton: DarkTaskDialog.Button.No);
+                return !cancel;
+            }
+
+            static string AppendErrorText(string errorText, HashSetI lines, bool useCalcFailedLines)
+            {
+                string header = useCalcFailedLines
+                    ? LText.AlertMessages.Install_DiskSpaceCalculationFailed + "\r\n\r\n"
+                    : LText.AlertMessages.Install_NotEnoughFreeDiskSpace + "\r\n\r\n";
+
+                string[] linesArray = lines.ToArray();
+                Array.Sort(linesArray);
+
+                errorText += header;
+                errorText += string.Join("\r\n", linesArray);
+                errorText += "\r\n\r\n";
+
+                return errorText;
             }
 
             #endregion
@@ -816,27 +860,23 @@ namespace AngelLoader
                     bool success = GetDriveDataDict(fms, out var errorPaths, out var driveDataDict);
                     if (!success)
                     {
-                        string errorLines = "";
+                        var hash = new HashSetI(errorPaths.Count);
                         for (int i = 0; i < errorPaths.Count; i++)
                         {
-                            errorLines += errorPaths[i] + "\r\n";
+                            string errorPath = errorPaths[i];
+                            string root = GetPathRootSafe(errorPath);
+                            hash.Add(!root.IsEmpty() ? root : errorPath);
                         }
+
+                        string errorText = "";
+                        errorText = AppendErrorText(errorText, hash, useCalcFailedLines: true);
 
                         bool cancel = false;
                         Core.View.InvokeSync(() =>
                         {
-                            (cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
-                                // @MULTISEL(Install/disk space check): Localize/finalize
-                                message:
-                                "AngelLoader was unable to calculate the free disk space for the following path(s):\r\n\r\n" +
-                                errorLines + "\r\n" +
-                                "Continue anyway?",
-                                title: LText.AlertMessages.Alert,
-                                icon: MessageBoxIcon.Warning,
-                                showDontAskAgain: false,
-                                yes: LText.Global.Continue,
-                                no: LText.Global.Cancel,
-                                defaultButton: DarkTaskDialog.Button.No);
+                            cancel = !ShowDiskSpaceErrorDialog(
+                                errorText +
+                                LText.AlertMessages.Install_ContinueAfterErrorWarning);
                         });
                         if (cancel) return false;
                     }
@@ -846,7 +886,7 @@ namespace AngelLoader
                     {
                         var fmData = fmDataList[i];
 
-                        if (!driveDataDict.TryGetValue(Path.GetPathRoot(fmData.InstBasePath), out DriveData driveData))
+                        if (!driveDataDict.TryGetValue(GetPathRootSafe(fmData.InstBasePath), out DriveData driveData))
                         {
                             continue;
                         }
@@ -873,7 +913,7 @@ namespace AngelLoader
                     for (int i = 0; i < SupportedGameCount; i++)
                     {
                         GameIndex gameIndex = (GameIndex)i;
-                        string driveName = Path.GetPathRoot(Config.GetFMInstallPath(gameIndex));
+                        string driveName = GetPathRootSafe(Config.GetFMInstallPath(gameIndex));
                         if (driveDataDict.TryGetValue(driveName, out DriveData driveData))
                         {
                             long? freeSpace = GetFreeDiskSpaceForPath(driveDataDict, driveName);
@@ -891,46 +931,22 @@ namespace AngelLoader
 
                     if (freeSpaceCalcFailedLines.Count > 0 || notEnoughFreeSpaceLines.Count > 0)
                     {
-                        static string AppendErrorText(string errorText, HashSetI lines, bool second)
-                        {
-                            // @MULTISEL(Install/disk space check): Localize/finalize
-                            string header = second
-                                ? "Could not calculate whether there is enough free disk space to install FMs to the following disks:\r\n\r\n"
-                                : "There is not enough free disk space to install FMs to the following disks:\r\n\r\n";
-
-                            string[] linesArray = lines.ToArray();
-                            Array.Sort(linesArray, StringComparer.OrdinalIgnoreCase);
-
-                            errorText += header;
-                            errorText += string.Join("\r\n", linesArray);
-                            errorText += "\r\n\r\n";
-
-                            return errorText;
-                        }
-
                         string finalErrorText = "";
                         if (notEnoughFreeSpaceLines.Count > 0)
                         {
-                            finalErrorText = AppendErrorText(finalErrorText, notEnoughFreeSpaceLines, second: false);
+                            finalErrorText = AppendErrorText(finalErrorText, notEnoughFreeSpaceLines, useCalcFailedLines: false);
                         }
                         if (freeSpaceCalcFailedLines.Count > 0)
                         {
-                            finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, second: true);
+                            finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, useCalcFailedLines: true);
                         }
 
                         bool cancel = false;
                         Core.View.InvokeSync(() =>
                         {
-                            (cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
-                                // @MULTISEL(Install/disk space check): Localize/finalize
-                                message: finalErrorText +
-                                         "If you continue, the installation will probably fail. Continue anyway?",
-                                title: LText.AlertMessages.Alert,
-                                icon: MessageBoxIcon.Warning,
-                                showDontAskAgain: false,
-                                yes: LText.Global.Continue,
-                                no: LText.Global.Cancel,
-                                defaultButton: DarkTaskDialog.Button.No);
+                            cancel = !ShowDiskSpaceErrorDialog(
+                                finalErrorText +
+                                LText.AlertMessages.Install_ContinueAfterErrorWarning);
                         });
                         if (cancel) return false;
                     }
