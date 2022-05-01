@@ -383,7 +383,7 @@ namespace AngelLoader
                     // there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving us a
                     // useless "percentage" value for this purpose.
                     // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
-                    Core.View.InvokeSync(new Action(() => Core.View.ReportCachingProgress(pr.PercentOfBytes)));
+                    Core.View.InvokeSync(() => Core.View.SetProgressBoxState(mainPercent: pr.PercentOfBytes));
                 }
 
                 var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);

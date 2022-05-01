@@ -101,7 +101,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.View.SetProgressBoxState(visible: false);
+                Core.View.HideProgressBox();
             }
         }
 

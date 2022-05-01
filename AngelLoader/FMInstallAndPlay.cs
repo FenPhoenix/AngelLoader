@@ -694,7 +694,7 @@ namespace AngelLoader
                 finally
                 {
                     Ini.WriteFullFMDataIni();
-                    Core.View.SetProgressBoxState(visible: false);
+                    Core.View.HideProgressBox();
                 }
 
                 return false;
@@ -1097,7 +1097,7 @@ namespace AngelLoader
             finally
             {
                 Ini.WriteFullFMDataIni();
-                Core.View.SetProgressBoxState(visible: false);
+                Core.View.HideProgressBox();
             }
 
             Core.View.RefreshAllSelectedFMRows();

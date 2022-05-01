@@ -320,25 +320,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        #region Reporting
-
-        internal void ReportCachingProgress(int percent)
-        {
-            ProgressBar.Value = percent;
-            ProgressPercentLabel.Text = percent + "%";
-
-            if (Visible)
-            {
-                if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
-            }
-            else
-            {
-                if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
-            }
-        }
-
-        #endregion
-
         internal void Localize()
         {
             ProgressCancelButton.Text = _cancelButtonType == ProgressBoxCancelButtonType.Stop
