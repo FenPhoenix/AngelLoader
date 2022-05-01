@@ -1028,6 +1028,8 @@ namespace AngelLoader
                         Log("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
                     }
 
+                    // @MULTISEL(Install aux tasks): Make conversion/restore cancellable in the middle for more responsiveness
+
                     // Only Dark engine games need audio conversion
                     if (GameIsDark(fmData.FM.Game))
                     {
@@ -1037,17 +1039,14 @@ namespace AngelLoader
                             {
                                 Core.View.SetProgressBoxState(
                                     mainMessage1: LText.ProgressBox.ConvertingFiles,
-                                    subMessage: "",
+                                    mainMessage2: "",
                                     mainProgressBarType: ProgressBarType.Indeterminate
                                 );
                             }
                             else
                             {
                                 // @MULTISEL(Install/convert files message): Maybe have indeterminate progress bar here?
-                                Core.View.SetProgressBoxState(
-                                    subPercent: 100,
-                                    subMessage: LText.ProgressBox.ConvertingFiles
-                                );
+                                Core.View.SetProgressBoxState(subMessage: LText.ProgressBox.ConvertingFiles);
                             }
 
                             // Dark engine games can't play MP3s, so they must be converted in all cases.
@@ -1069,11 +1068,15 @@ namespace AngelLoader
 
                     if (single)
                     {
-                        Core.View.ShowProgressBox(ProgressTask.RestoringBackup);
+                        Core.View.SetProgressBoxState(
+                            mainMessage1: LText.ProgressBox.RestoringBackup,
+                            mainMessage2: "",
+                            mainProgressBarType: ProgressBarType.Indeterminate
+                        );
                     }
                     else
                     {
-                        Core.View.ReportMultiFMInstallProgress(-1, 100, LText.ProgressBox.RestoringBackup, fmData.FM.Archive);
+                        Core.View.SetProgressBoxState(subMessage: LText.ProgressBox.RestoringBackup);
                     }
 
                     try
