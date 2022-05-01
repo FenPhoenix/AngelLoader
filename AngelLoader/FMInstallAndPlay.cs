@@ -1195,6 +1195,7 @@ namespace AngelLoader
 
         // @MULTISEL(Uninstall): Implement multi-FM support for this
         // In progress!
+        // @MULTISEL(Uninstall): Add "Stop" button for uninstall, and two-item progress box as well
         internal static async Task<bool> Uninstall(params FanMission[] fms)
         {
             var fmDataList = new FMData[fms.Length];
@@ -1203,12 +1204,14 @@ namespace AngelLoader
 
             bool doBackup;
 
-            try
+            bool success = await Task.Run(() =>
             {
-                Core.View.Cursor = Cursors.WaitCursor;
-
                 #region Checks
 
+                // @MULTISEL(Uninstall): See if we can combine the install and uninstall check sections in some way
+                // They're similar but not identical, so partial combining I guess
+                var gameChecksHashSet = new HashSet<GameIndex>();
+                List<string>? fmArchivePaths = null;
                 for (int i = 0; i < fms.Length; i++)
                 {
                     FanMission fm = fms[i];
@@ -1220,13 +1223,17 @@ namespace AngelLoader
                         Log("FM game type is unknown or unsupported.\r\n" +
                             "FM: " + GetFMId(fm) + "\r\n" +
                             "FM game was: " + fm.Game);
-                        Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                          ErrorText.FMGameTypeUnknownOrUnsupported);
+                        Core.View.InvokeSync(() =>
+                        {
+                            Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                              ErrorText.FMGameTypeUnknownOrUnsupported);
+                        });
                         return false;
                     }
 
                     GameIndex gameIndex = GameToGameIndex(fm.Game);
-                    string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
+                    fmArchivePaths ??= FMArchives.GetFMArchivePaths();
+                    string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, fmArchivePaths);
                     string gameExe = Config.GetGameExe(gameIndex);
                     string gameName = GetLocalizedGameName(gameIndex);
                     string instBasePath = Config.GetFMInstallPath(gameIndex);
@@ -1240,73 +1247,82 @@ namespace AngelLoader
                         instBasePath
                     );
 
-                    if (GameIsRunning(gameExe))
+                    if (!gameChecksHashSet.Contains(gameIndex))
                     {
-                        Dialogs.ShowAlert(
-                            gameName + ":\r\n" +
-                            LText.AlertMessages.Uninstall_GameIsRunning,
-                            LText.AlertMessages.Alert);
-                        return false;
+                        if (GameIsRunning(gameExe))
+                        {
+                            Core.View.InvokeSync(() =>
+                            {
+                                Dialogs.ShowAlert(
+                                    gameName + ":\r\n" +
+                                    LText.AlertMessages.Uninstall_GameIsRunning,
+                                    LText.AlertMessages.Alert);
+                            });
+                            return false;
+                        }
+
+                        gameChecksHashSet.Add(gameIndex);
                     }
                 }
 
                 #endregion
 
-                #region Confirm uninstall
+                return true;
+            });
+            if (!success) return false;
 
-                if (Config.ConfirmUninstall)
-                {
-                    (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
-                        message: single
-                            ? LText.AlertMessages.Uninstall_Confirm
-                            : LText.AlertMessages.Uninstall_Confirm_Multiple,
-                        title: LText.AlertMessages.Confirm,
-                        icon: MessageBoxIcon.Warning,
-                        showDontAskAgain: true,
-                        yes: LText.AlertMessages.Uninstall,
-                        no: LText.Global.Cancel);
+            #region Confirm uninstall
 
-                    if (cancel) return false;
-
-                    Config.ConfirmUninstall = !dontAskAgain;
-                }
-
-                #endregion
-
-                #region Confirm backup
-
-                if (Config.BackupAlwaysAsk)
-                {
-                    string message = Config.BackupFMData == BackupFMData.SavesAndScreensOnly
-                        ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
-                        : LText.AlertMessages.Uninstall_BackupAllData;
-                    (bool cancel, bool cont, bool dontAskAgain) =
-                        Dialogs.AskToContinueWithCancelCustomStrings(
-                            message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
-                            title: LText.AlertMessages.Confirm,
-                            icon: MessageBoxIcon.None,
-                            showDontAskAgain: true,
-                            yes: LText.AlertMessages.BackUp,
-                            no: LText.AlertMessages.DontBackUp,
-                            cancel: LText.Global.Cancel);
-
-                    if (cancel) return false;
-
-                    Config.BackupAlwaysAsk = !dontAskAgain;
-                    doBackup = cont;
-                }
-                else
-                {
-                    doBackup = true;
-                }
-
-                #endregion
-            }
-            finally
+            if (Config.ConfirmUninstall)
             {
-                Core.View.Cursor = Cursors.Default;
+                (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
+                    message: single
+                        ? LText.AlertMessages.Uninstall_Confirm
+                        : LText.AlertMessages.Uninstall_Confirm_Multiple,
+                    title: LText.AlertMessages.Confirm,
+                    icon: MessageBoxIcon.Warning,
+                    showDontAskAgain: true,
+                    yes: LText.AlertMessages.Uninstall,
+                    no: LText.Global.Cancel);
+
+                if (cancel) return false;
+
+                Config.ConfirmUninstall = !dontAskAgain;
             }
 
+            #endregion
+
+            #region Confirm backup
+
+            if (Config.BackupAlwaysAsk)
+            {
+                string message = Config.BackupFMData == BackupFMData.SavesAndScreensOnly
+                    ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
+                    : LText.AlertMessages.Uninstall_BackupAllData;
+                (bool cancel, bool cont, bool dontAskAgain) =
+                    Dialogs.AskToContinueWithCancelCustomStrings(
+                        message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
+                        title: LText.AlertMessages.Confirm,
+                        icon: MessageBoxIcon.None,
+                        showDontAskAgain: true,
+                        yes: LText.AlertMessages.BackUp,
+                        no: LText.AlertMessages.DontBackUp,
+                        cancel: LText.Global.Cancel);
+
+                if (cancel) return false;
+
+                Config.BackupAlwaysAsk = !dontAskAgain;
+                doBackup = cont;
+            }
+            else
+            {
+                doBackup = true;
+            }
+
+            #endregion
+
+            var fmsAlreadyUninstalled = new HashSet<FanMission>();
+            bool atLeastOneFMMarkedUnavailable = false;
             try
             {
                 Core.View.ShowProgressBox(single ? ProgressTask.UninstallFM : ProgressTask.UninstallFMs);
@@ -1321,39 +1337,45 @@ namespace AngelLoader
 
                     string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
 
-                    // @MULTISEL(Uninstall): This needs to account for multiple FMs, can't just return true
+                    // @MULTISEL(Uninstall): Test this
                     #region Check for already uninstalled
 
                     bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                     if (!fmDirExists)
                     {
-                        bool yes = Dialogs.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
-                            LText.AlertMessages.Alert);
-                        if (yes)
-                        {
-                            fm.Installed = false;
-                            Core.View.RefreshFM(fm);
-                        }
-                        return true;
+                        fmsAlreadyUninstalled.Add(fm);
+                        continue;
+                        //bool yes = Dialogs.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
+                        //    LText.AlertMessages.Alert);
+                        //if (yes)
+                        //{
+                        //    fm.Installed = false;
+                        //    Core.View.RefreshFM(fm);
+                        //}
+                        //return true;
                     }
 
                     #endregion
 
                     bool markFMAsUnavailable = false;
 
-                    // @MULTISEL(Uninstall): This one needs to account for multiple FMs too
+                    // @MULTISEL(Uninstall): Test this
                     if (fmData.ArchivePath.IsEmpty())
                     {
-                        (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                        (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
                             message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                             title: LText.AlertMessages.Warning,
                             icon: MessageBoxIcon.Warning,
                             showDontAskAgain: false,
                             yes: LText.AlertMessages.Uninstall,
-                            no: LText.Global.Cancel);
+                            no: LText.Global.Skip,
+                            cancel: LText.Global.Cancel,
+                            defaultButton: DarkTaskDialog.Button.No);
 
                         if (cancel) return false;
+                        if (!cont) continue;
                         markFMAsUnavailable = true;
+                        atLeastOneFMMarkedUnavailable = true;
                     }
 
                     // If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
@@ -1396,24 +1418,29 @@ namespace AngelLoader
                     {
                         fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
                     }
-
-                    Ini.WriteFullFMDataIni();
-
-                    // If the FM is gone, refresh the list to remove it. Otherwise, don't refresh the list because
-                    // then the FM might move in the list if we're sorting by installed state.
-                    if (fm.MarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
-                    {
-                        await Core.View.SortAndSetFilter(keepSelection: true);
-                    }
-                    else
-                    {
-                        Core.View.RefreshFM(fm);
-                    }
                 }
             }
             finally
             {
+                Ini.WriteFullFMDataIni();
                 Core.View.HideProgressBox();
+            }
+
+            foreach (FanMission fm in fmsAlreadyUninstalled)
+            {
+                fm.Installed = false;
+            }
+
+            // If any FMs are gone, refresh the list to remove them. Otherwise, don't refresh the list because
+            // then the FMs might move in the list if we're sorting by installed state.
+            if (atLeastOneFMMarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
+            {
+                await Core.View.SortAndSetFilter(keepSelection: true);
+            }
+            else
+            {
+                Core.View.RefreshAllSelectedFMRows();
+                Core.View.RefreshCurrentFM_IncludeInstalledState();
             }
 
             return true;
