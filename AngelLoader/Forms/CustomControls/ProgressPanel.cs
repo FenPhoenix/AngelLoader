@@ -19,6 +19,8 @@ namespace AngelLoader.Forms.CustomControls
         private MainForm? _owner;
         private ProgressTask _progressTask;
 
+        private ProgressBoxCancelButtonType _cancelButtonType = ProgressBoxCancelButtonType.Cancel;
+
         private Action _cancelAction = NullAction;
 
         #endregion
@@ -158,7 +160,7 @@ namespace AngelLoader.Forms.CustomControls
             if (!suppressShow) ShowThis();
         }
 
-        private void SetProgressBarType(ProgressBar progressBar, ProgressBarType progressBarType, bool updateTaskbar)
+        private void SetProgressBarType(DarkProgressBar progressBar, ProgressBarType progressBarType, bool updateTaskbar)
         {
             if (progressBarType == ProgressBarType.Indeterminate)
             {
@@ -178,7 +180,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void SetProgressBarValue(ProgressBar progressBar, int value, bool updateTaskbar)
+        private void SetProgressBarValue(DarkProgressBar progressBar, int value, bool updateTaskbar)
         {
             progressBar.Value = value;
             if (updateTaskbar)
@@ -226,19 +228,32 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         #endregion
-
+        /// <summary>
+        /// Sets the state of the progress box. A null parameter means no change.
+        /// </summary>
+        /// <param name="visible"></param>
+        /// <param name="size"></param>
+        /// <param name="mainMessage1"></param>
+        /// <param name="mainMessage2"></param>
+        /// <param name="mainPercent"></param>
+        /// <param name="mainProgressBarType"></param>
+        /// <param name="subMessage"></param>
+        /// <param name="subPercent"></param>
+        /// <param name="subProgressBarType"></param>
+        /// <param name="cancelButtonType"></param>
+        /// <param name="cancelAction">Pass <see cref="NullAction"/> to hide the cancel button.</param>
         internal void SetState(
             bool? visible,
-            ProgressSize? progressSize,
-            string? messageTop,
-            string? messageTop2,
-            int? percentTop,
-            ProgressBarType? progressBarType1,
-            string? messageSecond,
-            int? percentSecond,
-            ProgressBarType? progressBarType2,
-            bool? showCancelButton = null,
-            Action? cancelAction = null)
+            ProgressSize? size,
+            string? mainMessage1,
+            string? mainMessage2,
+            int? mainPercent,
+            ProgressBarType? mainProgressBarType,
+            string? subMessage,
+            int? subPercent,
+            ProgressBarType? subProgressBarType,
+            ProgressBoxCancelButtonType? cancelButtonType,
+            Action? cancelAction)
         {
             if (visible != null)
             {
@@ -251,47 +266,49 @@ namespace AngelLoader.Forms.CustomControls
                     HideThis();
                 }
             }
-            if (progressSize != null)
+            if (size != null)
             {
-                SetSizeMode(doubleSize: progressSize == ProgressSize.Double);
+                SetSizeMode(doubleSize: size == ProgressSize.Double);
             }
-            if (messageTop != null)
+            if (mainMessage1 != null)
             {
-                ProgressMessageLabel.Text = messageTop;
+                ProgressMessageLabel.Text = mainMessage1;
             }
-            if (messageTop2 != null)
+            if (mainMessage2 != null)
             {
-                CurrentThingLabel.Text = messageTop2;
+                CurrentThingLabel.Text = mainMessage2;
             }
-            if (percentTop != null)
+            if (mainPercent != null)
             {
-                ProgressPercentLabel.Text = percentTop + "%";
-                SetProgressBarValue(SubProgressBar, (int)percentTop, updateTaskbar: true);
+                ProgressPercentLabel.Text = mainPercent + "%";
+                SetProgressBarValue(ProgressBar, (int)mainPercent, updateTaskbar: true);
             }
-            if (progressBarType1 != null)
+            if (mainProgressBarType != null)
             {
-                SetProgressBarType(ProgressBar, (ProgressBarType)progressBarType1, updateTaskbar: true);
+                SetProgressBarType(ProgressBar, (ProgressBarType)mainProgressBarType, updateTaskbar: true);
             }
-            if (messageSecond != null)
+            if (subMessage != null)
             {
-                CurrentSubThingLabel.Text = messageSecond;
+                CurrentSubThingLabel.Text = subMessage;
             }
-            if (percentSecond != null)
+            if (subPercent != null)
             {
-                SubProgressPercentLabel.Text = percentSecond + "%";
-                SetProgressBarValue(SubProgressBar, (int)percentSecond, updateTaskbar: false);
+                SubProgressPercentLabel.Text = subPercent + "%";
+                SetProgressBarValue(SubProgressBar, (int)subPercent, updateTaskbar: false);
             }
-            if (progressBarType2 != null)
+            if (subProgressBarType != null)
             {
-                SetProgressBarType(SubProgressBar, (ProgressBarType)progressBarType2, updateTaskbar: false);
-            }
-            if (showCancelButton != null)
-            {
-                ProgressCancelButton.Visible = (bool)showCancelButton;
+                SetProgressBarType(SubProgressBar, (ProgressBarType)subProgressBarType, updateTaskbar: false);
             }
             if (cancelAction != null)
             {
                 _cancelAction = cancelAction;
+                ProgressCancelButton.Visible = cancelAction != NullAction;
+            }
+            if (cancelButtonType != null)
+            {
+                _cancelButtonType = (ProgressBoxCancelButtonType)cancelButtonType;
+                Localize();
             }
         }
 
@@ -396,7 +413,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void Localize()
         {
-            ProgressCancelButton.Text = _progressTask == ProgressTask.ConvertFilesManual
+            ProgressCancelButton.Text = _cancelButtonType == ProgressBoxCancelButtonType.Stop
                 ? LText.Global.Stop
                 : LText.Global.Cancel;
             ProgressCancelButton.CenterH(this);

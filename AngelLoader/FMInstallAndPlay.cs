@@ -661,19 +661,25 @@ namespace AngelLoader
             {
                 try
                 {
-                    Core.View.SetCancelingFMInstall();
-                    Core.View.SetProgressBoxFirstMessage(LText.ProgressBox.CancelingInstall);
+                    Core.View.SetProgressBoxState(
+                        size: ProgressSize.Single,
+                        mainMessage1: LText.ProgressBox.CancelingInstall,
+                        mainPercent: 100,
+                        progressBarType1: ProgressBarType.Determinate,
+                        cancelAction: NullAction
+                    );
 
                     await Task.Run(() =>
                     {
                         for (int j = lastInstalledFMIndex; j >= 0; j--)
                         {
                             var fmData = fmDataList[j];
+                            int j1 = j; // shut up capture warning
                             Core.View.InvokeSync(() =>
                             {
-                                Core.View.ReportFMInstallRollbackProgress(
-                                    GetPercentFromValue_Int(j + 1, lastInstalledFMIndex),
-                                    GetFMId(fmData.FM));
+                                Core.View.SetProgressBoxState(
+                                    mainMessage2: GetFMId(fmData.FM),
+                                    mainPercent: GetPercentFromValue_Int(j1 + 1, lastInstalledFMIndex));
                             });
                             string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
                             if (!DeleteFMInstalledDirectory(fmInstalledPath))
@@ -688,7 +694,7 @@ namespace AngelLoader
                 finally
                 {
                     Ini.WriteFullFMDataIni();
-                    Core.View.HideProgressBox();
+                    Core.View.SetProgressBoxState(visible: false);
                 }
 
                 return false;
@@ -758,7 +764,15 @@ namespace AngelLoader
                 {
                     // @MULTISEL(Install): Let the user cancel during this pre-check process
                     // As the free disk space check in particular could take a long time for large FM sets
-                    Core.View.InvokeSync(() => Core.View.ShowProgressBox(ProgressTask.PreparingInstall));
+                    Core.View.InvokeSync(() =>
+                    {
+                        Core.View.SetProgressBoxState(
+                            visible: true,
+                            size: ProgressSize.Single,
+                            progressBarType1: ProgressBarType.Indeterminate,
+                            mainMessage1: LText.ProgressBox.PreparingToInstall,
+                            cancelAction: NullAction);
+                    });
 
                     #region Pre-checks
 
@@ -861,7 +875,10 @@ namespace AngelLoader
 
                     #endregion
 
-                    Core.View.InvokeSync(() => Core.View.ShowProgressBox(ProgressTask.CheckingFreeSpace));
+                    Core.View.InvokeSync(() =>
+                    {
+                        Core.View.SetProgressBoxState(mainMessage1: LText.ProgressBox.CheckingFreeSpace);
+                    });
 
                     #region Free space checks
 

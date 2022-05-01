@@ -47,7 +47,13 @@ namespace AngelLoader
             Indeterminate
         }
 
-        public static Action NullAction = () => { };
+        public enum ProgressBoxCancelButtonType
+        {
+            Cancel,
+            Stop
+        }
+
+        public static readonly Action NullAction = () => { };
 
         public enum ProgressTask
         {

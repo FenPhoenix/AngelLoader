@@ -72,29 +72,29 @@ namespace AngelLoader.Forms
 
         public void SetProgressBoxState(
             bool? visible = null,
-            ProgressSize? progressSize = null,
-            string? messageTop = null,
-            string? messageTop2 = null,
-            int? percentTop = null,
-            ProgressBarType? progressBarType1 = null,
-            string? messageSecond = null,
-            int? percentSecond = null,
-            ProgressBarType? progressBarType2 = null,
-            bool? showCancelButton = null,
+            ProgressSize? size = null,
+            string? mainMessage1 = null,
+            string? mainMessage2 = null,
+            int? mainPercent = null,
+            ProgressBarType? mainProgressBarType = null,
+            string? subMessage = null,
+            int? subPercent = null,
+            ProgressBarType? subProgressBarType = null,
+            ProgressBoxCancelButtonType? cancelButtonType = null,
             Action? cancelAction = null)
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: visible,
-                progressSize: progressSize,
-                messageTop: messageTop,
-                messageTop2: messageTop2,
-                percentTop: percentTop,
-                progressBarType1: progressBarType1,
-                messageSecond: messageSecond,
-                percentSecond: percentSecond,
-                progressBarType2: progressBarType2,
-                showCancelButton: showCancelButton,
+                size: size,
+                mainMessage1: mainMessage1,
+                mainMessage2: mainMessage2,
+                mainPercent: mainPercent,
+                mainProgressBarType: mainProgressBarType,
+                subMessage: subMessage,
+                subPercent: subPercent,
+                subProgressBarType: subProgressBarType,
+                cancelButtonType: cancelButtonType,
                 cancelAction: cancelAction);
         }
 
