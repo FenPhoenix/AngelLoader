@@ -539,18 +539,13 @@ namespace AngelLoader
             }
         }
 
-        private sealed class GameData
+        private sealed class DriveData
         {
-            internal readonly GameIndex GameIndex;
-            internal readonly DriveInfo? DriveInfo;
+            internal readonly DriveInfo DriveInfo;
             internal bool TotalExtractedSizeCalcSuccessful = true;
             internal long TotalExtractedSizeOfAllFMsForThisDisk;
 
-            internal GameData(GameIndex gameIndex, DriveInfo? driveInfo)
-            {
-                GameIndex = gameIndex;
-                DriveInfo = driveInfo;
-            }
+            internal DriveData(DriveInfo driveInfo) => DriveInfo = driveInfo;
         }
 
         internal static Task<bool> Install(params FanMission[] fms) => InstallInternal(false, false, fms);
@@ -560,9 +555,9 @@ namespace AngelLoader
         {
             #region Local functions
 
-            static bool GetGameDataDict(FanMission[] fms, out List<string> paths, out Dictionary<string, GameData> result)
+            static bool GetDriveDataDict(FanMission[] fms, out List<string> paths, out Dictionary<string, DriveData> result)
             {
-                result = new Dictionary<string, GameData>();
+                result = new Dictionary<string, DriveData>();
                 paths = new List<string>();
 
                 Game games = Game.Null;
@@ -577,13 +572,13 @@ namespace AngelLoader
                     if (games.HasFlagFast(GameIndexToGame(gameIndex)))
                     {
                         string fmInstallPath = Config.GetFMInstallPath(gameIndex);
-                        if (!fmInstallPath.IsEmpty() && !result.TryGetValue(fmInstallPath, out GameData gameData))
+                        if (!fmInstallPath.IsEmpty() && !result.TryGetValue(fmInstallPath, out DriveData driveData))
                         {
                             try
                             {
                                 var driveInfo = new DriveInfo(fmInstallPath);
-                                gameData = new GameData(gameIndex, driveInfo);
-                                result[driveInfo.Name] = gameData;
+                                driveData = new DriveData(driveInfo);
+                                result[driveInfo.Name] = driveData;
                             }
                             catch
                             {
@@ -595,12 +590,12 @@ namespace AngelLoader
                 return true;
             }
 
-            static long? GetFreeDiskSpaceForPath(Dictionary<string, GameData> gameDict, string driveName)
+            static long? GetFreeDiskSpaceForPath(Dictionary<string, DriveData> driveDataDict, string driveName)
             {
                 try
                 {
-                    return gameDict.TryGetValue(driveName, out GameData gameData) && gameData.DriveInfo != null
-                        ? gameData.DriveInfo.AvailableFreeSpace
+                    return driveDataDict.TryGetValue(driveName, out DriveData driveData)
+                        ? driveData.DriveInfo.AvailableFreeSpace
                         : null;
                 }
                 catch
@@ -609,7 +604,7 @@ namespace AngelLoader
                 }
             }
 
-            static void AddArchiveExtractedSize(string archivePath, GameData gameData)
+            static void AddArchiveExtractedSize(string archivePath, DriveData driveData)
             {
                 long fmExtractedSize = 0;
                 try
@@ -622,7 +617,7 @@ namespace AngelLoader
                         {
                             fmExtractedSize += entries[entryI].Length;
                         }
-                        gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
+                        driveData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
                     }
                     else
                     {
@@ -637,13 +632,13 @@ namespace AngelLoader
                         {
                             fmExtractedSize += (long)entries[entryI].Size;
                         }
-                        gameData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
+                        driveData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
                     }
                 }
                 catch
                 {
-                    gameData.TotalExtractedSizeCalcSuccessful = false;
-                    gameData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
+                    driveData.TotalExtractedSizeCalcSuccessful = false;
+                    driveData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
                 }
             }
 
@@ -818,7 +813,7 @@ namespace AngelLoader
 
                     #region Free space checks
 
-                    bool success = GetGameDataDict(fms, out var errorPaths, out var gameDataDict);
+                    bool success = GetDriveDataDict(fms, out var errorPaths, out var driveDataDict);
                     if (!success)
                     {
                         string errorLines = "";
@@ -851,12 +846,12 @@ namespace AngelLoader
                     {
                         var fmData = fmDataList[i];
 
-                        if (!gameDataDict.TryGetValue(Path.GetPathRoot(fmData.InstBasePath), out GameData gameData))
+                        if (!driveDataDict.TryGetValue(Path.GetPathRoot(fmData.InstBasePath), out DriveData driveData))
                         {
                             continue;
                         }
 
-                        AddArchiveExtractedSize(fmData.ArchivePath, gameData);
+                        AddArchiveExtractedSize(fmData.ArchivePath, driveData);
 
                         var backupFile = GetBackupFile(
                             fmData.FM,
@@ -868,7 +863,7 @@ namespace AngelLoader
 
                         if (backupFile.Found)
                         {
-                            AddArchiveExtractedSize(backupFile.Name, gameData);
+                            AddArchiveExtractedSize(backupFile.Name, driveData);
                             fmData.BackupFile = backupFile;
                         }
                     }
@@ -879,15 +874,15 @@ namespace AngelLoader
                     {
                         GameIndex gameIndex = (GameIndex)i;
                         string driveName = Path.GetPathRoot(Config.GetFMInstallPath(gameIndex));
-                        if (gameDataDict.TryGetValue(driveName, out GameData gameData))
+                        if (driveDataDict.TryGetValue(driveName, out DriveData driveData))
                         {
-                            long? freeSpace = GetFreeDiskSpaceForPath(gameDataDict, driveName);
-                            if (!gameData.TotalExtractedSizeCalcSuccessful || freeSpace == null)
+                            long? freeSpace = GetFreeDiskSpaceForPath(driveDataDict, driveName);
+                            if (!driveData.TotalExtractedSizeCalcSuccessful || freeSpace == null)
                             {
                                 freeSpaceCalcFailedLines.Add(driveName);
                             }
                             // @MULTISEL(Install/disk space check): Replace with smarter estimation here
-                            else if (gameData.TotalExtractedSizeOfAllFMsForThisDisk >= freeSpace)
+                            else if (driveData.TotalExtractedSizeOfAllFMsForThisDisk >= freeSpace)
                             {
                                 notEnoughFreeSpaceLines.Add(driveName);
                             }
