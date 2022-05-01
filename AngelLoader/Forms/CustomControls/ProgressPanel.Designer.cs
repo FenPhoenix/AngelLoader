@@ -50,34 +50,34 @@ namespace AngelLoader.Forms.CustomControls
             this.ProgressCancelButton.Name = "ProgressCancelButton";
             this.ProgressCancelButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ProgressCancelButton.Size = new System.Drawing.Size(88, 23);
-            this.ProgressCancelButton.TabIndex = 4;
+            this.ProgressCancelButton.TabIndex = 7;
             this.ProgressCancelButton.Text = "Cancel";
             this.ProgressCancelButton.UseVisualStyleBackColor = true;
             this.ProgressCancelButton.Click += new System.EventHandler(this.ProgressCancelButton_Click);
             // 
             // ProgressPercentLabel
             // 
-            this.ProgressPercentLabel.Location = new System.Drawing.Point(2, 40);
+            this.ProgressPercentLabel.Location = new System.Drawing.Point(0, 40);
             this.ProgressPercentLabel.Name = "ProgressPercentLabel";
-            this.ProgressPercentLabel.Size = new System.Drawing.Size(418, 13);
+            this.ProgressPercentLabel.Size = new System.Drawing.Size(424, 13);
             this.ProgressPercentLabel.TabIndex = 2;
             this.ProgressPercentLabel.Text = "%";
             this.ProgressPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // ProgressMessageLabel
             // 
-            this.ProgressMessageLabel.Location = new System.Drawing.Point(2, 8);
+            this.ProgressMessageLabel.Location = new System.Drawing.Point(0, 8);
             this.ProgressMessageLabel.Name = "ProgressMessageLabel";
-            this.ProgressMessageLabel.Size = new System.Drawing.Size(418, 13);
+            this.ProgressMessageLabel.Size = new System.Drawing.Size(424, 13);
             this.ProgressMessageLabel.TabIndex = 0;
             this.ProgressMessageLabel.Text = "Message";
             this.ProgressMessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // CurrentThingLabel
             // 
-            this.CurrentThingLabel.Location = new System.Drawing.Point(2, 24);
+            this.CurrentThingLabel.Location = new System.Drawing.Point(0, 24);
             this.CurrentThingLabel.Name = "CurrentThingLabel";
-            this.CurrentThingLabel.Size = new System.Drawing.Size(418, 13);
+            this.CurrentThingLabel.Size = new System.Drawing.Size(424, 13);
             this.CurrentThingLabel.TabIndex = 1;
             this.CurrentThingLabel.Text = "Current thing";
             this.CurrentThingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -94,14 +94,14 @@ namespace AngelLoader.Forms.CustomControls
             this.SubProgressBar.Location = new System.Drawing.Point(8, 120);
             this.SubProgressBar.Name = "SubProgressBar";
             this.SubProgressBar.Size = new System.Drawing.Size(408, 16);
-            this.SubProgressBar.TabIndex = 5;
+            this.SubProgressBar.TabIndex = 6;
             // 
             // CurrentSubThingLabel
             // 
             this.CurrentSubThingLabel.Location = new System.Drawing.Point(0, 88);
             this.CurrentSubThingLabel.Name = "CurrentSubThingLabel";
-            this.CurrentSubThingLabel.Size = new System.Drawing.Size(418, 13);
-            this.CurrentSubThingLabel.TabIndex = 1;
+            this.CurrentSubThingLabel.Size = new System.Drawing.Size(424, 13);
+            this.CurrentSubThingLabel.TabIndex = 4;
             this.CurrentSubThingLabel.Text = "Current thing";
             this.CurrentSubThingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
@@ -109,8 +109,8 @@ namespace AngelLoader.Forms.CustomControls
             // 
             this.SubProgressPercentLabel.Location = new System.Drawing.Point(0, 104);
             this.SubProgressPercentLabel.Name = "SubProgressPercentLabel";
-            this.SubProgressPercentLabel.Size = new System.Drawing.Size(418, 13);
-            this.SubProgressPercentLabel.TabIndex = 2;
+            this.SubProgressPercentLabel.Size = new System.Drawing.Size(424, 13);
+            this.SubProgressPercentLabel.TabIndex = 5;
             this.SubProgressPercentLabel.Text = "%";
             this.SubProgressPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 

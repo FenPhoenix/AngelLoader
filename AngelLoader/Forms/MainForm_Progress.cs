@@ -69,6 +69,28 @@ namespace AngelLoader.Forms
             ProgressBox!.ShowProgressWindow(progressTask, suppressShow);
         }
 
+        public void SetProgressBoxState(
+            ProgressSize? progressSize = null,
+            string? messageTop = null,
+            string? messageTop2 = null,
+            int? percentTop = null,
+            ProgressBarType? progressBarType1 = null,
+            string? messageSecond = null,
+            int? percentSecond = null,
+            ProgressBarType? progressBarType2 = null)
+        {
+            ConstructProgressBox();
+            ProgressBox!.SetState(
+                progressSize,
+                messageTop,
+                messageTop2,
+                percentTop,
+                progressBarType1,
+                messageSecond,
+                percentSecond,
+                progressBarType2);
+        }
+
         public void SetProgressBoxSizeMode(bool doubleSize)
         {
             ConstructProgressBox();

@@ -35,6 +35,18 @@ namespace AngelLoader
 
         public enum Zoom { In, Out, Reset }
 
+        public enum ProgressSize
+        {
+            Single,
+            Double
+        }
+
+        public enum ProgressBarType
+        {
+            Determinate,
+            Indeterminate
+        }
+
         public enum ProgressTask
         {
             FMScan,

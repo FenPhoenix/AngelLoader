@@ -100,9 +100,6 @@ namespace AngelLoader.Forms.CustomControls
 
             SetSizeMode(doubleSize: _progressTask == ProgressTask.InstallFMs);
 
-            ProgressBar.CenterH(this);
-            SubProgressBar.CenterH(this);
-
             ProgressMessageLabel.Text = progressTask switch
             {
                 ProgressTask.FMScan => LText.ProgressBox.Scanning,
@@ -196,6 +193,56 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         #endregion
+
+        internal void SetState(
+            ProgressSize? progressSize,
+            string? messageTop,
+            string? messageTop2,
+            int? percentTop,
+            ProgressBarType? progressBarType1,
+            string? messageSecond,
+            int? percentSecond,
+            ProgressBarType? progressBarType2)
+        {
+            if (progressSize != null)
+            {
+                SetSizeMode(doubleSize: progressSize == ProgressSize.Double);
+            }
+            if (messageTop != null)
+            {
+                ProgressMessageLabel.Text = messageTop;
+            }
+            if (messageTop2 != null)
+            {
+                CurrentThingLabel.Text = messageTop2;
+            }
+            if (percentTop != null)
+            {
+                ProgressPercentLabel.Text = percentTop + "%";
+                ProgressBar.Value = (int)percentTop;
+            }
+            if (progressBarType1 != null)
+            {
+                ProgressBar.Style = progressBarType1 == ProgressBarType.Determinate
+                    ? ProgressBarStyle.Blocks
+                    : ProgressBarStyle.Marquee;
+            }
+            if (messageSecond != null)
+            {
+                CurrentSubThingLabel.Text = messageSecond;
+            }
+            if (percentSecond != null)
+            {
+                SubProgressPercentLabel.Text = percentSecond + "%";
+                SubProgressBar.Value = (int)percentSecond;
+            }
+            if (progressBarType2 != null)
+            {
+                SubProgressBar.Style = progressBarType2 == ProgressBarType.Determinate
+                    ? ProgressBarStyle.Blocks
+                    : ProgressBarStyle.Marquee;
+            }
+        }
 
         #region Reporting
 
