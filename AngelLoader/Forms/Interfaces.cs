@@ -290,9 +290,6 @@ namespace AngelLoader.Forms
         FanMission? GetFMFromIndex(int index);
         FanMission[] GetSelectedFMs_InOrder();
         void SetProgressBoxSecondMessage(string message);
-        void SetProgressBoxSizeMode(bool doubleSize);
-        void SetProgressBoxFirstMessage(string message);
-        void ReportFMInstallRollbackProgress(int percent, string message);
         void SetProgressBoxState(bool? visible = null, ProgressSize? size = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressBarType? mainProgressBarType = null, string? subMessage = null, int? subPercent = null, ProgressBarType? subProgressBarType = null, ProgressBoxCancelButtonType? cancelButtonType = null, Action? cancelAction = null);
     }
 }
