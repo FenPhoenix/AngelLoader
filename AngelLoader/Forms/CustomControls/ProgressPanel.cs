@@ -322,19 +322,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Reporting
 
-        internal void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
-        {
-            ProgressBar.Value = percent;
-            string first = LText.ProgressBox.ReportScanningFirst;
-            string between = LText.ProgressBox.ReportScanningBetweenNumAndTotal;
-            string last = LText.ProgressBox.ReportScanningLast;
-            ProgressMessageLabel.Text = first + fmNumber + between + fmsTotal + last;
-            CurrentThingLabel.Text = fmName;
-            ProgressPercentLabel.Text = percent + "%";
-
-            if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
-        }
-
         internal void ReportCachingProgress(int percent)
         {
             ProgressBar.Value = percent;

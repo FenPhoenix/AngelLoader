@@ -47,11 +47,17 @@ namespace AngelLoader
                 scanReleaseDate: true,
                 scanTags: true);
 
-            static void ReportProgress(FMScanner.ProgressReport pr) => Core.View.ReportScanProgress(
-                pr.FMNumber,
-                pr.FMsTotal,
-                pr.Percent,
-                pr.FMName.ExtIsArchive() ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast());
+            static void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState(
+                mainMessage1: LText.ProgressBox.ReportScanningFirst +
+                              pr.FMNumber +
+                              LText.ProgressBox.ReportScanningBetweenNumAndTotal +
+                              pr.FMsTotal +
+                              LText.ProgressBox.ReportScanningLast,
+                mainMessage2: pr.FMName.ExtIsArchive()
+                    ? pr.FMName.GetFileNameFast()
+                    : pr.FMName.GetDirNameFast(),
+                mainPercent: pr.Percent
+            );
 
             #endregion
 

@@ -98,12 +98,6 @@ namespace AngelLoader.Forms
                 cancelAction: cancelAction);
         }
 
-        public void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
-        {
-            ConstructProgressBox();
-            ProgressBox!.ReportScanProgress(fmNumber, fmsTotal, percent, fmName);
-        }
-
         public void ReportCachingProgress(int percent)
         {
             ConstructProgressBox();
