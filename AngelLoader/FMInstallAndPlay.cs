@@ -665,7 +665,7 @@ namespace AngelLoader
                         size: ProgressSize.Single,
                         mainMessage1: LText.ProgressBox.CancelingInstall,
                         mainPercent: 100,
-                        progressBarType1: ProgressBarType.Determinate,
+                        mainProgressBarType: ProgressBarType.Determinate,
                         cancelAction: NullAction
                     );
 
@@ -769,7 +769,7 @@ namespace AngelLoader
                         Core.View.SetProgressBoxState(
                             visible: true,
                             size: ProgressSize.Single,
-                            progressBarType1: ProgressBarType.Indeterminate,
+                            mainProgressBarType: ProgressBarType.Indeterminate,
                             mainMessage1: LText.ProgressBox.PreparingToInstall,
                             cancelAction: NullAction);
                     });
@@ -982,7 +982,18 @@ namespace AngelLoader
                 });
                 if (!success) return false;
 
-                Core.View.ShowProgressBox(single ? ProgressTask.InstallFM : ProgressTask.InstallFMs);
+                Core.View.SetProgressBoxState(
+                    size: single ? ProgressSize.Single : ProgressSize.Double,
+                    mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
+                    mainMessage2: "",
+                    mainPercent: 0,
+                    mainProgressBarType: ProgressBarType.Determinate,
+                    subMessage: "",
+                    subPercent: 0,
+                    subProgressBarType: ProgressBarType.Determinate,
+                    cancelButtonType: ProgressBoxCancelButtonType.Cancel,
+                    cancelAction: CancelInstallFM
+                );
 
                 _extractCts = _extractCts.Recreate();
 
