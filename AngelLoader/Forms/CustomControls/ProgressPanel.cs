@@ -286,6 +286,10 @@ namespace AngelLoader.Forms.CustomControls
             if (mainProgressBarType != null)
             {
                 SetProgressBarType(ProgressBar, (ProgressBarType)mainProgressBarType, updateTaskbar: true);
+                if (mainProgressBarType == ProgressBarType.Indeterminate)
+                {
+                    ProgressPercentLabel.Text = "";
+                }
             }
             if (subMessage != null)
             {
@@ -299,6 +303,10 @@ namespace AngelLoader.Forms.CustomControls
             if (subProgressBarType != null)
             {
                 SetProgressBarType(SubProgressBar, (ProgressBarType)subProgressBarType, updateTaskbar: false);
+                if (subProgressBarType == ProgressBarType.Indeterminate)
+                {
+                    SubProgressPercentLabel.Text = "";
+                }
             }
             if (cancelAction != null)
             {

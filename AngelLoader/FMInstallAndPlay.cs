@@ -1035,11 +1035,19 @@ namespace AngelLoader
                         {
                             if (single)
                             {
-                                Core.View.ShowProgressBox(ProgressTask.ConvertFiles);
+                                Core.View.SetProgressBoxState(
+                                    mainMessage1: LText.ProgressBox.ConvertingFiles,
+                                    subMessage: "",
+                                    mainProgressBarType: ProgressBarType.Indeterminate
+                                );
                             }
                             else
                             {
-                                Core.View.ReportMultiFMInstallProgress(-1, 100, LText.ProgressBox.ConvertingFiles, fmData.FM.Archive);
+                                // @MULTISEL(Install/convert files message): Maybe have indeterminate progress bar here?
+                                Core.View.SetProgressBoxState(
+                                    subPercent: 100,
+                                    subMessage: LText.ProgressBox.ConvertingFiles
+                                );
                             }
 
                             // Dark engine games can't play MP3s, so they must be converted in all cases.
