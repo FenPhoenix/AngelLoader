@@ -19,6 +19,8 @@ namespace AngelLoader.Forms.CustomControls
         private MainForm? _owner;
         private ProgressTask _progressTask;
 
+        private Action _cancelAction = NullAction;
+
         #endregion
 
         private bool _darkModeEnabled;
@@ -156,6 +158,35 @@ namespace AngelLoader.Forms.CustomControls
             if (!suppressShow) ShowThis();
         }
 
+        private void SetProgressBarType(ProgressBar progressBar, ProgressBarType progressBarType, bool updateTaskbar)
+        {
+            if (progressBarType == ProgressBarType.Indeterminate)
+            {
+                progressBar.Style = ProgressBarStyle.Marquee;
+                if (updateTaskbar)
+                {
+                    if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
+                }
+            }
+            else
+            {
+                progressBar.Style = ProgressBarStyle.Blocks;
+                if (updateTaskbar)
+                {
+                    if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
+                }
+            }
+        }
+
+        private void SetProgressBarValue(ProgressBar progressBar, int value, bool updateTaskbar)
+        {
+            progressBar.Value = value;
+            if (updateTaskbar)
+            {
+                if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, value, 100);
+            }
+        }
+
         private void ShowThis()
         {
             _owner!.EnableEverything(false);
@@ -188,6 +219,8 @@ namespace AngelLoader.Forms.CustomControls
 
             ProgressCancelButton.Show();
 
+            _cancelAction = NullAction;
+
             Enabled = false;
             _owner!.EnableEverything(true);
         }
@@ -195,6 +228,7 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         internal void SetState(
+            bool? visible,
             ProgressSize? progressSize,
             string? messageTop,
             string? messageTop2,
@@ -202,8 +236,21 @@ namespace AngelLoader.Forms.CustomControls
             ProgressBarType? progressBarType1,
             string? messageSecond,
             int? percentSecond,
-            ProgressBarType? progressBarType2)
+            ProgressBarType? progressBarType2,
+            bool? showCancelButton = null,
+            Action? cancelAction = null)
         {
+            if (visible != null)
+            {
+                if (visible == true)
+                {
+                    ShowThis();
+                }
+                else
+                {
+                    HideThis();
+                }
+            }
             if (progressSize != null)
             {
                 SetSizeMode(doubleSize: progressSize == ProgressSize.Double);
@@ -219,13 +266,11 @@ namespace AngelLoader.Forms.CustomControls
             if (percentTop != null)
             {
                 ProgressPercentLabel.Text = percentTop + "%";
-                ProgressBar.Value = (int)percentTop;
+                SetProgressBarValue(SubProgressBar, (int)percentTop, updateTaskbar: true);
             }
             if (progressBarType1 != null)
             {
-                ProgressBar.Style = progressBarType1 == ProgressBarType.Determinate
-                    ? ProgressBarStyle.Blocks
-                    : ProgressBarStyle.Marquee;
+                SetProgressBarType(ProgressBar, (ProgressBarType)progressBarType1, updateTaskbar: true);
             }
             if (messageSecond != null)
             {
@@ -234,13 +279,19 @@ namespace AngelLoader.Forms.CustomControls
             if (percentSecond != null)
             {
                 SubProgressPercentLabel.Text = percentSecond + "%";
-                SubProgressBar.Value = (int)percentSecond;
+                SetProgressBarValue(SubProgressBar, (int)percentSecond, updateTaskbar: false);
             }
             if (progressBarType2 != null)
             {
-                SubProgressBar.Style = progressBarType2 == ProgressBarType.Determinate
-                    ? ProgressBarStyle.Blocks
-                    : ProgressBarStyle.Marquee;
+                SetProgressBarType(SubProgressBar, (ProgressBarType)progressBarType2, updateTaskbar: false);
+            }
+            if (showCancelButton != null)
+            {
+                ProgressCancelButton.Visible = (bool)showCancelButton;
+            }
+            if (cancelAction != null)
+            {
+                _cancelAction = cancelAction;
             }
         }
 
@@ -356,18 +407,25 @@ namespace AngelLoader.Forms.CustomControls
         [SuppressMessage("ReSharper", "SwitchStatementMissingSomeEnumCasesNoDefault")]
         private void Cancel()
         {
-            switch (_progressTask)
+            if (_cancelAction != NullAction)
             {
-                case ProgressTask.FMScan:
-                    FMScan.CancelScan();
-                    break;
-                case ProgressTask.InstallFM:
-                case ProgressTask.InstallFMs:
-                    FMInstallAndPlay.CancelInstallFM();
-                    break;
-                case ProgressTask.ConvertFilesManual:
-                    FMAudio.StopConversion();
-                    break;
+                _cancelAction.Invoke();
+            }
+            else
+            {
+                switch (_progressTask)
+                {
+                    case ProgressTask.FMScan:
+                        FMScan.CancelScan();
+                        break;
+                    case ProgressTask.InstallFM:
+                    case ProgressTask.InstallFMs:
+                        FMInstallAndPlay.CancelInstallFM();
+                        break;
+                    case ProgressTask.ConvertFilesManual:
+                        FMAudio.StopConversion();
+                        break;
+                }
             }
         }
 

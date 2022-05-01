@@ -47,6 +47,8 @@ namespace AngelLoader
             Indeterminate
         }
 
+        public static Action NullAction = () => { };
+
         public enum ProgressTask
         {
             FMScan,

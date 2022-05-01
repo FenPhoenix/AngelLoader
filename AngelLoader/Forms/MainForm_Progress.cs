@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -70,6 +71,7 @@ namespace AngelLoader.Forms
         }
 
         public void SetProgressBoxState(
+            bool? visible = null,
             ProgressSize? progressSize = null,
             string? messageTop = null,
             string? messageTop2 = null,
@@ -77,18 +79,23 @@ namespace AngelLoader.Forms
             ProgressBarType? progressBarType1 = null,
             string? messageSecond = null,
             int? percentSecond = null,
-            ProgressBarType? progressBarType2 = null)
+            ProgressBarType? progressBarType2 = null,
+            bool? showCancelButton = null,
+            Action? cancelAction = null)
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
-                progressSize,
-                messageTop,
-                messageTop2,
-                percentTop,
-                progressBarType1,
-                messageSecond,
-                percentSecond,
-                progressBarType2);
+                visible: visible,
+                progressSize: progressSize,
+                messageTop: messageTop,
+                messageTop2: messageTop2,
+                percentTop: percentTop,
+                progressBarType1: progressBarType1,
+                messageSecond: messageSecond,
+                percentSecond: percentSecond,
+                progressBarType2: progressBarType2,
+                showCancelButton: showCancelButton,
+                cancelAction: cancelAction);
         }
 
         public void SetProgressBoxSizeMode(bool doubleSize)

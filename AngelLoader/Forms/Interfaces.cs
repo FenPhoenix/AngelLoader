@@ -293,6 +293,6 @@ namespace AngelLoader.Forms
         void SetProgressBoxSizeMode(bool doubleSize);
         void SetProgressBoxFirstMessage(string message);
         void ReportFMInstallRollbackProgress(int percent, string message);
-        void SetProgressBoxState(ProgressSize? progressSize = null, string? messageTop = null, string? messageTop2 = null, int? percentTop = null, ProgressBarType? progressBarType1 = null, string? messageSecond = null, int? percentSecond = null, ProgressBarType? progressBarType2 = null);
+        void SetProgressBoxState(bool? visible = null, ProgressSize? progressSize = null, string? messageTop = null, string? messageTop2 = null, int? percentTop = null, ProgressBarType? progressBarType1 = null, string? messageSecond = null, int? percentSecond = null, ProgressBarType? progressBarType2 = null, bool? showCancelButton = null, Action? cancelAction = null);
     }
 }
