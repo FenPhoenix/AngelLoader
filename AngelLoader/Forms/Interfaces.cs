@@ -123,11 +123,7 @@ namespace AngelLoader.Forms
         void ShowProgressBox(ProgressTask progressTask, bool suppressShow = false);
         void HideProgressBox();
         void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName);
-        void ReportFMInstallProgress(int percent);
-        void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName);
-        void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string subMessage, string fmName);
         void ReportCachingProgress(int percent);
-        void SetCancelingFMInstall();
 
         #endregion
 
@@ -289,7 +285,6 @@ namespace AngelLoader.Forms
         Task<bool> AddFMs(string[] fmArchiveNames);
         FanMission? GetFMFromIndex(int index);
         FanMission[] GetSelectedFMs_InOrder();
-        void SetProgressBoxSecondMessage(string message);
         void SetProgressBoxState(bool? visible = null, ProgressSize? size = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressBarType? mainProgressBarType = null, string? subMessage = null, int? subPercent = null, ProgressBarType? subProgressBarType = null, ProgressBoxCancelButtonType? cancelButtonType = null, Action? cancelAction = null);
     }
 }

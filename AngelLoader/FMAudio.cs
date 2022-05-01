@@ -54,11 +54,20 @@ namespace AngelLoader
             {
                 _conversionCTS = _conversionCTS.Recreate();
 
-                Core.View.ShowProgressBox(ProgressTask.ConvertFilesManual);
+                Core.View.SetProgressBoxState(
+                    visible: true,
+                    size: ProgressSize.Single,
+                    mainMessage1: LText.ProgressBox.ConvertingFiles,
+                    mainMessage2: "",
+                    mainProgressBarType: ProgressBarType.Indeterminate,
+                    cancelAction: StopConversion
+                );
 
                 foreach (FanMission fm in fms)
                 {
-                    Core.View.SetProgressBoxSecondMessage(GetFMId(fm));
+                    // @MULTISEL(Convert manual): We can add progress percent for this
+                    Core.View.SetProgressBoxState(mainMessage2: GetFMId(fm));
+
                     await ConvertToWAVs(fm, convertType, false);
 
                     // @MULTISEL(Audio convert manual): Notes on cancel/stop:
@@ -92,7 +101,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.View.HideProgressBox();
+                Core.View.SetProgressBoxState(visible: false);
             }
         }
 

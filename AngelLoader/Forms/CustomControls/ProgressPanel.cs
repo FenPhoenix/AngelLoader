@@ -86,7 +86,7 @@ namespace AngelLoader.Forms.CustomControls
         private const int regularHeight = 128;
         private const int extendedHeight = 192;
 
-        internal void SetSizeMode(bool doubleSize)
+        private void SetSizeMode(bool doubleSize)
         {
             Size = Size with { Height = doubleSize ? extendedHeight : regularHeight };
             CurrentSubThingLabel.Visible = doubleSize;
@@ -322,16 +322,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Reporting
 
-        internal void SetMainMessage(string message)
-        {
-            ProgressMessageLabel.Text = message;
-        }
-
-        internal void SetCurrentThingMessage(string message)
-        {
-            CurrentThingLabel.Text = message;
-        }
-
         internal void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
         {
             ProgressBar.Value = percent;
@@ -343,52 +333,6 @@ namespace AngelLoader.Forms.CustomControls
             ProgressPercentLabel.Text = percent + "%";
 
             if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
-        }
-
-        internal void ReportFMInstallProgress(int percent)
-        {
-            ProgressBar.Value = percent;
-            ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
-            ProgressPercentLabel.Text = percent + "%";
-
-            if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
-        }
-
-        internal void ReportFMInstallRollbackProgress(int percent, string message)
-        {
-            ProgressBar.Value = percent;
-            ProgressPercentLabel.Text = percent + "%";
-            CurrentThingLabel.Text = message;
-        }
-
-        /// <summary>
-        /// For the percents, -1 means don't update the displayed values.
-        /// </summary>
-        /// <param name="mainPercent"></param>
-        /// <param name="subPercent"></param>
-        /// <param name="fmName"></param>
-        /// <param name="subMessage"></param>
-        internal void ReportMultiFMInstallProgress(int mainPercent, int subPercent, string fmName, string subMessage = "")
-        {
-            if (mainPercent > -1)
-            {
-                ProgressBar.Value = mainPercent;
-                ProgressPercentLabel.Text = mainPercent + "%";
-            }
-            ProgressMessageLabel.Text = LText.ProgressBox.InstallingFMs;
-
-            if (subPercent > -1)
-            {
-                SubProgressBar.Value = subPercent;
-                SubProgressPercentLabel.Text = !subMessage.IsEmpty() ? subMessage : subPercent + "%";
-            }
-            else
-            {
-                if (!subMessage.IsEmpty()) SubProgressPercentLabel.Text = subMessage;
-            }
-            CurrentSubThingLabel.Text = fmName;
-
-            if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, mainPercent, 100);
         }
 
         internal void ReportCachingProgress(int percent)
@@ -404,17 +348,6 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
             }
-        }
-
-        internal void SetCancelingFMInstall()
-        {
-            SetSizeMode(doubleSize: false);
-
-            ProgressCancelButton.Hide();
-            ProgressBar.Style = ProgressBarStyle.Blocks;
-            ProgressMessageLabel.Text = LText.ProgressBox.CancelingInstall;
-            ProgressBar.Value = 100;
-            ProgressPercentLabel.Text = "100%";
         }
 
         #endregion

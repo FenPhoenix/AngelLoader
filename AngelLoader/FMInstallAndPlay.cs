@@ -1046,7 +1046,7 @@ namespace AngelLoader
                             else
                             {
                                 // @MULTISEL(Install/convert files message): Maybe have indeterminate progress bar here?
-                                Core.View.SetProgressBoxState(subMessage: LText.ProgressBox.ConvertingFiles);
+                                Core.View.SetProgressBoxState(subMessage: LText.ProgressBox.ConvertingFiles, subPercent: 100);
                             }
 
                             // Dark engine games can't play MP3s, so they must be converted in all cases.
@@ -1076,7 +1076,7 @@ namespace AngelLoader
                     }
                     else
                     {
-                        Core.View.SetProgressBoxState(subMessage: LText.ProgressBox.RestoringBackup);
+                        Core.View.SetProgressBoxState(subMessage: LText.ProgressBox.RestoringBackup, subPercent: 100);
                     }
 
                     try
@@ -1142,11 +1142,21 @@ namespace AngelLoader
 
                     int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
-                    Core.View.InvokeSync(
-                        single
-                            ? new Action(() => Core.View.ReportFMInstallProgress(percent))
-                            : new Action(() => Core.View.ReportMultiFMInstallProgress(newMainPercent, percent, fmArchive))
-                    );
+                    Core.View.InvokeSync(() =>
+                    {
+                        if (single)
+                        {
+                            Core.View.SetProgressBoxState(mainPercent: percent);
+                        }
+                        else
+                        {
+                            Core.View.SetProgressBoxState(
+                                mainPercent: newMainPercent,
+                                subPercent: percent,
+                                subMessage: fmArchive
+                            );
+                        }
+                    });
 
                     if (_extractCts.Token.IsCancellationRequested)
                     {
@@ -1186,11 +1196,25 @@ namespace AngelLoader
                 void ReportProgress(Fen7z.Fen7z.ProgressReport pr)
                 {
                     int newMainPercent = mainPercent + (pr.PercentOfEntries / fmCount).ClampToZero();
-                    Core.View.InvokeSync(pr.Canceling
-                        ? new Action(Core.View.SetCancelingFMInstall)
-                        : single
-                            ? new Action(() => Core.View.ReportFMInstallProgress(pr.PercentOfEntries))
-                            : new Action(() => Core.View.ReportMultiFMInstallProgress(newMainPercent, pr.PercentOfEntries, fmArchive)));
+
+                    if (!pr.Canceling)
+                    {
+                        Core.View.InvokeSync(() =>
+                        {
+                            if (single)
+                            {
+                                Core.View.SetProgressBoxState(mainPercent: pr.PercentOfEntries);
+                            }
+                            else
+                            {
+                                Core.View.SetProgressBoxState(
+                                    mainPercent: newMainPercent,
+                                    subPercent: pr.PercentOfEntries,
+                                    subMessage: fmArchive
+                                );
+                            }
+                        });
+                    }
                 }
 
                 var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
