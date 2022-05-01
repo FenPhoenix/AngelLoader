@@ -290,5 +290,8 @@ namespace AngelLoader.Forms
         FanMission? GetFMFromIndex(int index);
         FanMission[] GetSelectedFMs_InOrder();
         void SetProgressBoxSecondMessage(string message);
+        void SetProgressBoxSizeMode(bool doubleSize);
+        void SetProgressBoxFirstMessage(string message);
+        void ReportFMInstallRollbackProgress(int percent, string message);
     }
 }

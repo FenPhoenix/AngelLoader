@@ -69,6 +69,18 @@ namespace AngelLoader.Forms
             ProgressBox!.ShowProgressWindow(progressTask, suppressShow);
         }
 
+        public void SetProgressBoxSizeMode(bool doubleSize)
+        {
+            ConstructProgressBox();
+            ProgressBox!.SetSizeMode(doubleSize);
+        }
+
+        public void SetProgressBoxFirstMessage(string message)
+        {
+            ConstructProgressBox();
+            ProgressBox!.SetMainMessage(message);
+        }
+
         public void SetProgressBoxSecondMessage(string message)
         {
             ConstructProgressBox();
@@ -85,6 +97,12 @@ namespace AngelLoader.Forms
         {
             ConstructProgressBox();
             ProgressBox!.ReportFMInstallProgress(percent);
+        }
+
+        public void ReportFMInstallRollbackProgress(int percent, string message)
+        {
+            ConstructProgressBox();
+            ProgressBox!.ReportFMInstallRollbackProgress(percent, message);
         }
 
         /// <summary>

@@ -657,18 +657,24 @@ namespace AngelLoader
                 }
             }
 
-            static async Task<bool> RollBackInstalls(FMData[] fmDataList, int i)
+            static async Task<bool> RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex)
             {
                 try
                 {
-                    // @MULTISEL(Cancel install): Put message on the progress box saying which FM we're uninstalling
-                    // Like as reverse progress, "Rolling back install of 'fm'" maybe even with a reverse progress bar
                     Core.View.SetCancelingFMInstall();
+                    Core.View.SetProgressBoxFirstMessage(LText.ProgressBox.CancelingInstall);
+
                     await Task.Run(() =>
                     {
-                        for (int j = i; j >= 0; j--)
+                        for (int j = lastInstalledFMIndex; j >= 0; j--)
                         {
                             var fmData = fmDataList[j];
+                            Core.View.InvokeSync(() =>
+                            {
+                                Core.View.ReportFMInstallRollbackProgress(
+                                    GetPercentFromValue_Int(j + 1, lastInstalledFMIndex),
+                                    GetFMId(fmData.FM));
+                            });
                             string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
                             if (!DeleteFMInstalledDirectory(fmInstalledPath))
                             {
@@ -750,6 +756,8 @@ namespace AngelLoader
             {
                 bool success = await Task.Run(() =>
                 {
+                    // @MULTISEL(Install): Let the user cancel during this pre-check process
+                    // As the free disk space check in particular could take a long time for large FM sets
                     Core.View.InvokeSync(() => Core.View.ShowProgressBox(ProgressTask.PreparingInstall));
 
                     #region Pre-checks
