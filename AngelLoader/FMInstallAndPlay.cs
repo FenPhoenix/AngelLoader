@@ -41,7 +41,8 @@ namespace AngelLoader
             FM
         }
 
-        private static CancellationTokenSource _extractCts = new CancellationTokenSource();
+        private static CancellationTokenSource _extractCts = new();
+        private static void CancelToken() => _extractCts.CancelIfNotDisposed();
 
         internal static Task InstallOrUninstall(params FanMission[] fms)
         {
@@ -782,7 +783,7 @@ namespace AngelLoader
                         Core.View.ShowProgressBox_Single(
                             message1: LText.ProgressBox.PreparingToInstall,
                             progressType: ProgressType.Indeterminate,
-                            cancelAction: CancelInstallFM
+                            cancelAction: CancelToken
                         );
                     });
 
@@ -1026,8 +1027,7 @@ namespace AngelLoader
                     subMessage: "",
                     subPercent: 0,
                     subProgressType: ProgressType.Determinate,
-                    cancelType: ProgressBoxCancelType.Cancel,
-                    cancelAction: CancelInstallFM
+                    cancelType: ProgressBoxCancelType.Cancel
                 );
 
                 for (int i = 0; i < fmDataList.Length; i++)
@@ -1307,8 +1307,6 @@ namespace AngelLoader
                 return !canceled;
             }
         }
-
-        internal static void CancelInstallFM() => _extractCts.CancelIfNotDisposed();
 
         #endregion
 

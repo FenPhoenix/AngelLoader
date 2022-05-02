@@ -25,6 +25,7 @@ namespace AngelLoader
         private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
 
         private static CancellationTokenSource _conversionCTS = new();
+        private static void CancelToken() => _conversionCTS.CancelIfNotDisposed();
 
         #region Public methods
 
@@ -37,8 +38,6 @@ namespace AngelLoader
         // "The game _can_ play OGG files but it can under some circumstance cause short hiccups, on less powerful
         // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
         // them to WAV files during installation."
-
-        internal static void StopConversion() => _conversionCTS.CancelIfNotDisposed();
 
         internal static async Task ConvertSelected(AudioConvert convertType)
         {
@@ -57,7 +56,7 @@ namespace AngelLoader
                 Core.View.ShowProgressBox_Single(
                     message1: LText.ProgressBox.ConvertingFiles,
                     progressType: ProgressType.Indeterminate,
-                    cancelAction: StopConversion
+                    cancelAction: CancelToken
                 );
 
                 foreach (FanMission fm in fms)

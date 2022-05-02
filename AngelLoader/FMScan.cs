@@ -16,7 +16,8 @@ namespace AngelLoader
 {
     internal static class FMScan
     {
-        private static CancellationTokenSource _scanCts = new CancellationTokenSource();
+        private static CancellationTokenSource _scanCts = new();
+        private static void CancelToken() => _scanCts.CancelIfNotDisposed();
 
         /// <summary>
         /// Scans a list of FMs using the specified scan options. Pass null for default scan options.
@@ -79,7 +80,7 @@ namespace AngelLoader
                         message2: LText.ProgressBox.PreparingToScanFMs,
                         progressType: ProgressType.Determinate,
                         percent: 0,
-                        cancelAction: CancelScan
+                        cancelAction: CancelToken
                     );
                 }
 
@@ -119,6 +120,8 @@ namespace AngelLoader
                 // memory
                 var archivePaths = await Task.Run(FMArchives.GetFMArchivePaths);
 
+                if (_scanCts.IsCancellationRequested) return false;
+
                 #endregion
 
                 #region Filter out invalid FMs from scan list
@@ -133,6 +136,9 @@ namespace AngelLoader
                     if (fm.MarkedUnavailable) continue;
 
                     string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive, archivePaths));
+
+                    if (_scanCts.IsCancellationRequested) return false;
+
                     if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
                     {
                         fmsToScanFiltered.Add(fm);
@@ -174,6 +180,8 @@ namespace AngelLoader
                     var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
 
                     await Task.Run(() => Paths.CreateOrClearTempPath(Paths.FMScannerTemp));
+
+                    if (_scanCts.IsCancellationRequested) return false;
 
                     using var scanner = new FMScanner.Scanner(Paths.SevenZipExe)
                     {
@@ -341,15 +349,13 @@ namespace AngelLoader
             }
             finally
             {
-                _scanCts?.Dispose();
+                _scanCts.Dispose();
                 Core.View.Block(false);
                 Core.View.HideProgressBox();
             }
 
             return true;
         }
-
-        internal static void CancelScan() => _scanCts.CancelIfNotDisposed();
 
         internal static Task ScanNewFMs(List<int> fmsViewListUnscanned)
         {
