@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using FMScanner.FastZipReader;
+using JetBrains.Annotations;
 using SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.FMBackupAndRestore;
@@ -619,7 +620,8 @@ namespace AngelLoader
                 }
             }
 
-            static void AddArchiveExtractedSize(string archivePath, DriveData driveData)
+            [MustUseReturnValue]
+            static bool AddArchiveExtractedSize(string archivePath, DriveData driveData)
             {
                 long fmExtractedSize = 0;
                 try
@@ -627,7 +629,13 @@ namespace AngelLoader
                     if (archivePath.ExtIsZip())
                     {
                         using var archive = new ZipArchiveFast(File.OpenRead(archivePath), decodeEntryNames: false);
+
+                        if (_extractCts.IsCancellationRequested) return false;
+
                         var entries = archive.Entries;
+
+                        if (_extractCts.IsCancellationRequested) return false;
+
                         for (int entryI = 0; entryI < entries.Count; entryI++)
                         {
                             fmExtractedSize += entries[entryI].Length;
@@ -637,12 +645,18 @@ namespace AngelLoader
                     else
                     {
                         using var archive = new SevenZipExtractor(archivePath);
+
+                        if (_extractCts.IsCancellationRequested) return false;
+
                         // UnpackedSize doesn't work unless you call Check() first, but that takes forever.
                         // Iterating the entries is fast(ish). Size property is uncompressed size, tested and
                         // confirmed.
                         // @MULTISEL(Install/7z size check): To be faster, we should write custom 7z reader code
                         // to just get the unpacked sizes and ignore everything else (no expensive date conversions etc.)
                         var entries = archive.ArchiveFileData;
+
+                        if (_extractCts.IsCancellationRequested) return false;
+
                         for (int entryI = 0; entryI < entries.Count; entryI++)
                         {
                             fmExtractedSize += (long)entries[entryI].Size;
@@ -655,6 +669,8 @@ namespace AngelLoader
                     driveData.TotalExtractedSizeCalcSuccessful = false;
                     driveData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
                 }
+
+                return true;
             }
 
             static async Task<bool> RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex)
@@ -761,15 +777,16 @@ namespace AngelLoader
             {
                 bool success = await Task.Run(() =>
                 {
-                    // @MULTISEL(Install): Let the user cancel during this pre-check process
-                    // As the free disk space check in particular could take a long time for large FM sets
                     Core.View.InvokeSync(() =>
                     {
                         Core.View.ShowProgressBox_Single(
                             message1: LText.ProgressBox.PreparingToInstall,
-                            progressType: ProgressType.Indeterminate
+                            progressType: ProgressType.Indeterminate,
+                            cancelAction: CancelInstallFM
                         );
                     });
+
+                    _extractCts = _extractCts.Recreate();
 
                     #region Pre-checks
 
@@ -796,7 +813,13 @@ namespace AngelLoader
 
                         GameIndex gameIndex = GameToGameIndex(fm.Game);
                         fmArchivePaths ??= FMArchives.GetFMArchivePaths();
+
+                        if (_extractCts.IsCancellationRequested) return false;
+
                         string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, fmArchivePaths);
+
+                        if (_extractCts.IsCancellationRequested) return false;
+
                         string gameExe = Config.GetGameExe(gameIndex);
                         string gameName = GetLocalizedGameName(gameIndex);
                         string instBasePath = Config.GetFMInstallPath(gameIndex);
@@ -838,6 +861,8 @@ namespace AngelLoader
                                 return false;
                             }
 
+                            if (_extractCts.IsCancellationRequested) return false;
+
                             if (!Directory.Exists(instBasePath))
                             {
                                 Log("FM install path not found.\r\n" +
@@ -854,6 +879,8 @@ namespace AngelLoader
                                 return false;
                             }
 
+                            if (_extractCts.IsCancellationRequested) return false;
+
                             if (GameIsRunning(gameExe))
                             {
                                 Core.View.InvokeSync(() =>
@@ -866,20 +893,22 @@ namespace AngelLoader
                                 return false;
                             }
 
+                            if (_extractCts.IsCancellationRequested) return false;
+
                             gameChecksHashSet.Add(gameIndex);
                         }
                     }
 
                     #endregion
 
-                    Core.View.InvokeSync(() =>
-                    {
-                        Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CheckingFreeSpace);
-                    });
+                    Core.View.InvokeSync(() => Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CheckingFreeSpace));
 
                     #region Free space checks
 
                     bool success = GetDriveDataDict(fms, out var errorPaths, out var driveDataDict);
+
+                    if (_extractCts.IsCancellationRequested) return false;
+
                     if (!success)
                     {
                         var hash = new HashSetI(errorPaths.Count);
@@ -913,19 +942,26 @@ namespace AngelLoader
                             continue;
                         }
 
-                        AddArchiveExtractedSize(fmData.ArchivePath, driveData);
+                        if (!AddArchiveExtractedSize(fmData.ArchivePath, driveData)) return false;
+
+                        if (_extractCts.IsCancellationRequested) return false;
 
                         var backupFile = GetBackupFile(
                             fmData.FM,
                             cachedDarkLoaderFiles: darkLoaderArchiveFiles,
                             cachedFMArchivePaths: fmArchivePaths);
 
+                        if (_extractCts.IsCancellationRequested) return false;
+
                         darkLoaderArchiveFiles = backupFile.Cached_DarkLoaderBackups;
                         fmArchivePaths = backupFile.Cached_NewBackups;
 
                         if (backupFile.Found)
                         {
-                            AddArchiveExtractedSize(backupFile.Name, driveData);
+                            if (!AddArchiveExtractedSize(backupFile.Name, driveData)) return false;
+
+                            if (_extractCts.IsCancellationRequested) return false;
+
                             fmData.BackupFile = backupFile;
                         }
                     }
@@ -949,6 +985,8 @@ namespace AngelLoader
                                 notEnoughFreeSpaceLines.Add(driveName);
                             }
                         }
+
+                        if (_extractCts.IsCancellationRequested) return false;
                     }
 
                     if (freeSpaceCalcFailedLines.Count > 0 || notEnoughFreeSpaceLines.Count > 0)
@@ -991,8 +1029,6 @@ namespace AngelLoader
                     cancelType: ProgressBoxCancelType.Cancel,
                     cancelAction: CancelInstallFM
                 );
-
-                _extractCts = _extractCts.Recreate();
 
                 for (int i = 0; i < fmDataList.Length; i++)
                 {

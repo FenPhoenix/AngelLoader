@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
@@ -60,14 +61,20 @@ namespace AngelLoader
         /// </summary>
         /// <param name="fmArchive"></param>
         /// <param name="archivePaths"></param>
+        /// <param name="ct"></param>
         /// <returns></returns>
-        internal static string FindFirstMatch(string fmArchive, List<string>? archivePaths = null)
+        internal static string FindFirstMatch(string fmArchive, List<string>? archivePaths = null, CancellationToken? ct = null)
         {
             if (fmArchive.IsEmpty()) return "";
 
             var paths = archivePaths?.Count > 0 ? archivePaths : GetFMArchivePaths();
             foreach (string path in paths)
             {
+                if (ct != null && ((CancellationToken)ct).IsCancellationRequested)
+                {
+                    return "";
+                }
+
                 if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
                 {
                     return f;
