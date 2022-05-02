@@ -526,7 +526,7 @@ namespace AngelLoader
 
             fmArchivePaths = null;
 
-            var gameChecksHashSet = new HashSet<GameIndex>();
+            var gameChecksHashSet = new HashSet<GameIndex>(SupportedGameCount);
             for (int i = 0; i < fms.Length; i++)
             {
                 FanMission fm = fms[i];
@@ -692,8 +692,8 @@ namespace AngelLoader
 
             static bool GetDriveDataDict(FanMission[] fms, out List<string> errorPaths, out Dictionary<string, DriveData> result)
             {
-                result = new Dictionary<string, DriveData>();
-                errorPaths = new List<string>();
+                result = new Dictionary<string, DriveData>(SupportedGameCount);
+                errorPaths = new List<string>(SupportedGameCount);
                 bool success = true;
 
                 Game games = Game.Null;
