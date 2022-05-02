@@ -661,11 +661,10 @@ namespace AngelLoader
             {
                 try
                 {
-                    Core.View.SetProgressBoxState(
-                        size: ProgressSize.Single,
-                        mainMessage1: LText.ProgressBox.CancelingInstall,
-                        mainPercent: 100,
-                        mainProgressBarType: ProgressBarType.Determinate,
+                    Core.View.SetProgressBoxState_Single(
+                        message1: LText.ProgressBox.CancelingInstall,
+                        percent: 100,
+                        progressType: ProgressType.Determinate,
                         cancelAction: NullAction
                     );
 
@@ -677,9 +676,9 @@ namespace AngelLoader
                             int j1 = j; // shut up capture warning
                             Core.View.InvokeSync(() =>
                             {
-                                Core.View.SetProgressBoxState(
-                                    mainMessage2: GetFMId(fmData.FM),
-                                    mainPercent: GetPercentFromValue_Int(j1 + 1, lastInstalledFMIndex));
+                                Core.View.SetProgressBoxState_Single(
+                                    message2: GetFMId(fmData.FM),
+                                    percent: GetPercentFromValue_Int(j1 + 1, lastInstalledFMIndex));
                             });
                             string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
                             if (!DeleteFMInstalledDirectory(fmInstalledPath))
@@ -766,12 +765,10 @@ namespace AngelLoader
                     // As the free disk space check in particular could take a long time for large FM sets
                     Core.View.InvokeSync(() =>
                     {
-                        Core.View.SetProgressBoxState(
-                            visible: true,
-                            size: ProgressSize.Single,
-                            mainProgressBarType: ProgressBarType.Indeterminate,
-                            mainMessage1: LText.ProgressBox.PreparingToInstall,
-                            cancelAction: NullAction);
+                        Core.View.ShowProgressBox_Single(
+                            message1: LText.ProgressBox.PreparingToInstall,
+                            progressType: ProgressType.Indeterminate
+                        );
                     });
 
                     #region Pre-checks
@@ -877,7 +874,7 @@ namespace AngelLoader
 
                     Core.View.InvokeSync(() =>
                     {
-                        Core.View.SetProgressBoxState(mainMessage1: LText.ProgressBox.CheckingFreeSpace);
+                        Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CheckingFreeSpace);
                     });
 
                     #region Free space checks
@@ -987,11 +984,11 @@ namespace AngelLoader
                     mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
                     mainMessage2: "",
                     mainPercent: 0,
-                    mainProgressBarType: ProgressBarType.Determinate,
+                    mainProgressType: ProgressType.Determinate,
                     subMessage: "",
                     subPercent: 0,
-                    subProgressBarType: ProgressBarType.Determinate,
-                    cancelButtonType: ProgressBoxCancelButtonType.Cancel,
+                    subProgressType: ProgressType.Determinate,
+                    cancelType: ProgressBoxCancelType.Cancel,
                     cancelAction: CancelInstallFM
                 );
 
@@ -1037,16 +1034,19 @@ namespace AngelLoader
                         {
                             if (single)
                             {
-                                Core.View.SetProgressBoxState(
-                                    mainMessage1: LText.ProgressBox.ConvertingFiles,
-                                    mainMessage2: "",
-                                    mainProgressBarType: ProgressBarType.Indeterminate
+                                Core.View.SetProgressBoxState_Single(
+                                    message1: LText.ProgressBox.ConvertingFiles,
+                                    message2: "",
+                                    progressType: ProgressType.Indeterminate
                                 );
                             }
                             else
                             {
                                 // @MULTISEL(Install/convert files message): Maybe have indeterminate progress bar here?
-                                Core.View.SetProgressBoxState(subMessage: LText.ProgressBox.ConvertingFiles, subPercent: 100);
+                                Core.View.SetProgressBoxState_Double(
+                                    subMessage: LText.ProgressBox.ConvertingFiles,
+                                    subPercent: 100
+                                );
                             }
 
                             // Dark engine games can't play MP3s, so they must be converted in all cases.
@@ -1068,15 +1068,18 @@ namespace AngelLoader
 
                     if (single)
                     {
-                        Core.View.SetProgressBoxState(
-                            mainMessage1: LText.ProgressBox.RestoringBackup,
-                            mainMessage2: "",
-                            mainProgressBarType: ProgressBarType.Indeterminate
+                        Core.View.SetProgressBoxState_Single(
+                            message1: LText.ProgressBox.RestoringBackup,
+                            message2: "",
+                            progressType: ProgressType.Indeterminate
                         );
                     }
                     else
                     {
-                        Core.View.SetProgressBoxState(subMessage: LText.ProgressBox.RestoringBackup, subPercent: 100);
+                        Core.View.SetProgressBoxState_Double(
+                            subMessage: LText.ProgressBox.RestoringBackup,
+                            subPercent: 100
+                        );
                     }
 
                     try
@@ -1146,11 +1149,11 @@ namespace AngelLoader
                     {
                         if (single)
                         {
-                            Core.View.SetProgressBoxState(mainPercent: percent);
+                            Core.View.SetProgressPercent(percent);
                         }
                         else
                         {
-                            Core.View.SetProgressBoxState(
+                            Core.View.SetProgressBoxState_Double(
                                 mainPercent: newMainPercent,
                                 subPercent: percent,
                                 subMessage: fmArchive
@@ -1203,11 +1206,11 @@ namespace AngelLoader
                         {
                             if (single)
                             {
-                                Core.View.SetProgressBoxState(mainPercent: pr.PercentOfEntries);
+                                Core.View.SetProgressPercent(pr.PercentOfEntries);
                             }
                             else
                             {
-                                Core.View.SetProgressBoxState(
+                                Core.View.SetProgressBoxState_Double(
                                     mainPercent: newMainPercent,
                                     subPercent: pr.PercentOfEntries,
                                     subMessage: fmArchive
@@ -1285,6 +1288,8 @@ namespace AngelLoader
             bool single = fmDataList.Length == 1;
 
             bool doBackup;
+
+            // @MULTISEL(Uninstall): Put the checks into a thread like the Install version
 
             bool success = await Task.Run(() =>
             {
@@ -1407,12 +1412,10 @@ namespace AngelLoader
             bool atLeastOneFMMarkedUnavailable = false;
             try
             {
-                Core.View.SetProgressBoxState(
+                Core.View.SetProgressBoxState_Single(
                     visible: true,
-                    size: ProgressSize.Single,
-                    mainMessage1: single ? LText.ProgressBox.UninstallingFM : LText.ProgressBox.UninstallingFMs,
-                    mainProgressBarType: ProgressBarType.Indeterminate,
-                    cancelAction: null
+                    message1: single ? LText.ProgressBox.UninstallingFM : LText.ProgressBox.UninstallingFMs,
+                    progressType: ProgressType.Indeterminate
                 );
 
                 for (int i = 0; i < fmDataList.Length; i++)

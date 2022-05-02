@@ -54,19 +54,16 @@ namespace AngelLoader
             {
                 _conversionCTS = _conversionCTS.Recreate();
 
-                Core.View.SetProgressBoxState(
-                    visible: true,
-                    size: ProgressSize.Single,
-                    mainMessage1: LText.ProgressBox.ConvertingFiles,
-                    mainMessage2: "",
-                    mainProgressBarType: ProgressBarType.Indeterminate,
+                Core.View.ShowProgressBox_Single(
+                    message1: LText.ProgressBox.ConvertingFiles,
+                    progressType: ProgressType.Indeterminate,
                     cancelAction: StopConversion
                 );
 
                 foreach (FanMission fm in fms)
                 {
                     // @MULTISEL(Convert manual): We can add progress percent for this
-                    Core.View.SetProgressBoxState(mainMessage2: GetFMId(fm));
+                    Core.View.SetProgressBoxState_Single(message2: GetFMId(fm));
 
                     await ConvertToWAVs(fm, convertType, false);
 
@@ -112,6 +109,7 @@ namespace AngelLoader
         // replacing files... so "stop" operation is the best we can do.
         internal static async Task ConvertToWAVs(FanMission fm, AudioConvert type, bool doChecksAndProgressBox)
         {
+            // @MULTISEL(Audio convert): This bool is not used anymore, because we do this check in the manual method
             if (doChecksAndProgressBox)
             {
                 if (!ChecksPassed(fm)) return;
@@ -123,12 +121,9 @@ namespace AngelLoader
             {
                 if (doChecksAndProgressBox)
                 {
-                    Core.View.SetProgressBoxState(
-                        visible: true,
-                        size: ProgressSize.Single,
-                        mainMessage1: LText.ProgressBox.ConvertingFiles,
-                        cancelAction: NullAction
-                    );
+                    Core.View.ShowProgressBox_Single(
+                        message1: LText.ProgressBox.ConvertingFiles,
+                        progressType: ProgressType.Indeterminate);
                 }
 
                 await Task.Run(async () =>

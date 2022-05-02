@@ -163,10 +163,9 @@ namespace AngelLoader
 
             try
             {
-                Core.View.SetProgressBoxState(
-                    visible: true,
-                    mainMessage1: LText.ProgressBox.DeletingFMArchive,
-                    mainProgressBarType: ProgressBarType.Indeterminate
+                Core.View.ShowProgressBox_Single(
+                    message1: LText.ProgressBox.DeletingFMArchive,
+                    progressType: ProgressType.Indeterminate
                 );
 
                 await Task.Run(() =>

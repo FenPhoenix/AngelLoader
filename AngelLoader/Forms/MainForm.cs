@@ -1667,8 +1667,6 @@ namespace AngelLoader.Forms
                 ExitLLButton.Localize();
 
                 #endregion
-
-                LocalizeProgressBox();
             }
             finally
             {
@@ -1737,7 +1735,7 @@ namespace AngelLoader.Forms
                     InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
                     ExitLLButton.DarkModeEnabled = darkMode;
                     ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
-                    ProgressBoxDarkModeEnabled = darkMode;
+                    SetProgressBoxDarkModeEnabled(darkMode);
                     Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
                     ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
                     EncodingsLLMenu.DarkModeEnabled = darkMode;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Forms.WinFormsNative.Taskbar;
@@ -11,21 +10,23 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed partial class ProgressPanel : UserControl, IDarkable
     {
-        // TODO(ProgressPanel): Make this more general and flexible
-
         // @MULTISEL(Progress box): Handle size mode changing/storing/what it does on visible change in SetState()
+        // @MULTISEL(Progress box): Untangle localization
 
         #region Fields etc.
 
         private MainForm? _owner;
-        private ProgressTask _progressTask;
 
-        private ProgressBoxCancelButtonType _cancelButtonType = ProgressBoxCancelButtonType.Cancel;
+        private ProgressBoxCancelType _cancelType = ProgressBoxCancelType.Cancel;
         private ProgressSize _sizeType = ProgressSize.Single;
 
         private Action _cancelAction = NullAction;
 
         #endregion
+
+        private const ProgressSize _defaultSizeType = ProgressSize.Single;
+        internal const ProgressBoxCancelType CancelTypeDefault = ProgressBoxCancelType.Cancel;
+        internal const ProgressType ProgressTypeDefault = ProgressType.Determinate;
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -88,9 +89,11 @@ namespace AngelLoader.Forms.CustomControls
         private const int regularHeight = 128;
         private const int extendedHeight = 192;
 
-        private void SetSizeMode(ProgressSize size)
+        internal void SetSizeToDefault() => SetSizeMode(_defaultSizeType, forceChange: true);
+
+        private void SetSizeMode(ProgressSize size, bool forceChange = false)
         {
-            if (size == _sizeType) return;
+            if (!forceChange && size == _sizeType) return;
 
             bool doubleSize = size == ProgressSize.Double;
 
@@ -106,32 +109,9 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Open/close
 
-        internal void ShowProgressWindow(ProgressTask progressTask, bool suppressShow)
+        private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, bool updateTaskbar)
         {
-            _progressTask = progressTask;
-
-            MainMessage1Label.Text = progressTask switch
-            {
-                ProgressTask.FMScan => LText.ProgressBox.Scanning,
-                _ => ""
-            };
-
-            MainMessage2Label.Text =
-                progressTask == ProgressTask.FMScan ? LText.ProgressBox.PreparingToScanFMs
-                : "";
-
-            MainPercentLabel.Text = "";
-
-            MainProgressBar.Style = ProgressBarStyle.Blocks;
-            MainProgressBar.Value = 0;
-            Cancel_Button.Visible = true;
-
-            if (!suppressShow) ShowThis();
-        }
-
-        private void SetProgressBarType(DarkProgressBar progressBar, ProgressBarType progressBarType, bool updateTaskbar)
-        {
-            if (progressBarType == ProgressBarType.Indeterminate)
+            if (progressType == ProgressType.Indeterminate)
             {
                 progressBar.Style = ProgressBarStyle.Marquee;
                 if (updateTaskbar)
@@ -189,6 +169,7 @@ namespace AngelLoader.Forms.CustomControls
 
             Cancel_Button.Hide();
             _cancelAction = NullAction;
+            _cancelType = ProgressBoxCancelType.Cancel;
 
             SetSizeMode(ProgressSize.Single);
 
@@ -217,24 +198,13 @@ namespace AngelLoader.Forms.CustomControls
             string? mainMessage1,
             string? mainMessage2,
             int? mainPercent,
-            ProgressBarType? mainProgressBarType,
+            ProgressType? mainProgressBarType,
             string? subMessage,
             int? subPercent,
-            ProgressBarType? subProgressBarType,
-            ProgressBoxCancelButtonType? cancelButtonType,
+            ProgressType? subProgressBarType,
+            ProgressBoxCancelType? cancelButtonType,
             Action? cancelAction)
         {
-            if (visible != null)
-            {
-                if (visible == true)
-                {
-                    ShowThis();
-                }
-                else
-                {
-                    HideThis();
-                }
-            }
             if (size != null)
             {
                 SetSizeMode((ProgressSize)size);
@@ -254,8 +224,8 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (mainProgressBarType != null)
             {
-                SetProgressBarType(MainProgressBar, (ProgressBarType)mainProgressBarType, updateTaskbar: true);
-                if (mainProgressBarType == ProgressBarType.Indeterminate)
+                SetProgressBarType(MainProgressBar, (ProgressType)mainProgressBarType, updateTaskbar: true);
+                if (mainProgressBarType == ProgressType.Indeterminate)
                 {
                     MainPercentLabel.Text = "";
                 }
@@ -271,8 +241,8 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (subProgressBarType != null)
             {
-                SetProgressBarType(SubProgressBar, (ProgressBarType)subProgressBarType, updateTaskbar: false);
-                if (subProgressBarType == ProgressBarType.Indeterminate)
+                SetProgressBarType(SubProgressBar, (ProgressType)subProgressBarType, updateTaskbar: false);
+                if (subProgressBarType == ProgressType.Indeterminate)
                 {
                     SubPercentLabel.Text = "";
                 }
@@ -284,37 +254,35 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (cancelButtonType != null)
             {
-                _cancelButtonType = (ProgressBoxCancelButtonType)cancelButtonType;
+                _cancelType = (ProgressBoxCancelType)cancelButtonType;
                 Localize();
+            }
+
+            // Put this last so the localization and whatever else can be right
+            if (visible != null)
+            {
+                if (visible == true)
+                {
+                    ShowThis();
+                }
+                else
+                {
+                    HideThis();
+                }
             }
         }
 
         internal void Localize()
         {
-            Cancel_Button.Text = _cancelButtonType == ProgressBoxCancelButtonType.Stop
+            Cancel_Button.Text = _cancelType == ProgressBoxCancelType.Stop
                 ? LText.Global.Stop
                 : LText.Global.Cancel;
             Cancel_Button.CenterH(this);
         }
 
-        private void ProgressCancelButton_Click(object sender, EventArgs e) => Cancel();
-
-        [SuppressMessage("ReSharper", "SwitchStatementMissingSomeEnumCasesNoDefault")]
-        private void Cancel()
+        private void ProgressCancelButton_Click(object sender, EventArgs e)
         {
-            if (_cancelAction != NullAction)
-            {
-                _cancelAction.Invoke();
-            }
-            else
-            {
-                switch (_progressTask)
-                {
-                    case ProgressTask.FMScan:
-                        FMScan.CancelScan();
-                        break;
-                }
-            }
+            if (_cancelAction != NullAction) _cancelAction.Invoke();
         }
 
         protected override void OnPaint(PaintEventArgs e)

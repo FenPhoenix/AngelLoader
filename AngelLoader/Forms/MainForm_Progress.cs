@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
-using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -16,17 +15,12 @@ namespace AngelLoader.Forms
         private bool _progressBoxConstructed;
 
         private bool _progressBoxDarkModeEnabled;
-        [PublicAPI]
-        private bool ProgressBoxDarkModeEnabled
+        private void SetProgressBoxDarkModeEnabled(bool value)
         {
-            get => _progressBoxDarkModeEnabled;
-            set
-            {
-                _progressBoxDarkModeEnabled = value;
-                if (!_progressBoxConstructed) return;
+            _progressBoxDarkModeEnabled = value;
+            if (!_progressBoxConstructed) return;
 
-                ProgressBox!.DarkModeEnabled = value;
-            }
+            ProgressBox!.DarkModeEnabled = value;
         }
 
         private void ConstructProgressBox()
@@ -39,14 +33,9 @@ namespace AngelLoader.Forms
             ProgressBox.Localize();
             ProgressBox.Anchor = AnchorStyles.None;
             ProgressBox.DarkModeEnabled = _progressBoxDarkModeEnabled;
+            ProgressBox.SetSizeToDefault();
 
             _progressBoxConstructed = true;
-        }
-
-        private void LocalizeProgressBox()
-        {
-            if (!_progressBoxConstructed) return;
-            ProgressBox!.Localize();
         }
 
         internal void EnableEverything(bool enabled)
@@ -64,10 +53,126 @@ namespace AngelLoader.Forms
             FMsDGV.SelectProperly();
         }
 
-        public void ShowProgressBox(ProgressTask progressTask, bool suppressShow = false)
+        // Convenience methods for first show - they handle a few parameters for you
+        #region Show methods
+
+        public void ShowProgressBox_Single(
+            string? message1 = null,
+            string? message2 = null,
+            ProgressType? progressType = null,
+            ProgressBoxCancelType? cancelType = null,
+            Action? cancelAction = null)
         {
             ConstructProgressBox();
-            ProgressBox!.ShowProgressWindow(progressTask, suppressShow);
+            ProgressBox!.SetState(
+                visible: true,
+                size: ProgressSize.Single,
+                mainMessage1: message1 ?? "",
+                mainMessage2: message2 ?? "",
+                mainPercent: 0,
+                mainProgressBarType: progressType ?? ProgressPanel.ProgressTypeDefault,
+                subMessage: "",
+                subPercent: 0,
+                subProgressBarType: ProgressType.Determinate,
+                cancelButtonType: cancelType ?? ProgressPanel.CancelTypeDefault,
+                cancelAction: cancelAction ?? NullAction);
+        }
+
+        public void ShowProgressBox_Double(
+            string? mainMessage1 = null,
+            string? mainMessage2 = null,
+            ProgressType? mainProgressType = null,
+            string? subMessage = null,
+            ProgressType? subProgressType = null,
+            ProgressBoxCancelType? cancelType = null,
+            Action? cancelAction = null)
+        {
+            ConstructProgressBox();
+            ProgressBox!.SetState(
+                visible: true,
+                size: ProgressSize.Double,
+                mainMessage1: mainMessage1 ?? "",
+                mainMessage2: mainMessage2 ?? "",
+                mainPercent: 0,
+                mainProgressBarType: mainProgressType ?? ProgressPanel.ProgressTypeDefault,
+                subMessage: subMessage ?? "",
+                subPercent: 0,
+                subProgressBarType: subProgressType ?? ProgressPanel.ProgressTypeDefault,
+                cancelButtonType: cancelType ?? ProgressPanel.CancelTypeDefault,
+                cancelAction: cancelAction ?? NullAction);
+        }
+
+        #endregion
+
+        // Intended to be used after first show, for modifying the state
+        #region Set methods
+
+        public void SetProgressBoxState_Single(
+            bool? visible = null,
+            string? message1 = null,
+            string? message2 = null,
+            int? percent = null,
+            ProgressType? progressType = null,
+            ProgressBoxCancelType? cancelType = null,
+            Action? cancelAction = null)
+        {
+            ConstructProgressBox();
+            ProgressBox!.SetState(
+                visible: visible,
+                size: ProgressSize.Single,
+                mainMessage1: message1,
+                mainMessage2: message2,
+                mainPercent: percent,
+                mainProgressBarType: progressType,
+                subMessage: "",
+                subPercent: 0,
+                subProgressBarType: ProgressType.Determinate,
+                cancelButtonType: cancelType,
+                cancelAction: cancelAction);
+        }
+
+        public void SetProgressBoxState_Double(
+            bool? visible = null,
+            string? mainMessage1 = null,
+            string? mainMessage2 = null,
+            int? mainPercent = null,
+            ProgressType? mainProgressType = null,
+            string? subMessage = null,
+            int? subPercent = null,
+            ProgressType? subProgressType = null,
+            ProgressBoxCancelType? cancelType = null,
+            Action? cancelAction = null)
+        {
+            ConstructProgressBox();
+            ProgressBox!.SetState(
+                visible: visible,
+                size: ProgressSize.Double,
+                mainMessage1: mainMessage1,
+                mainMessage2: mainMessage2,
+                mainPercent: mainPercent,
+                mainProgressBarType: mainProgressType,
+                subMessage: subMessage,
+                subPercent: subPercent,
+                subProgressBarType: subProgressType,
+                cancelButtonType: cancelType,
+                cancelAction: cancelAction);
+        }
+
+        public void SetProgressPercent(int percent)
+        {
+            ConstructProgressBox();
+            ProgressBox!.SetState(
+                visible: null,
+                size: null,
+                mainMessage1: null,
+                mainMessage2: null,
+                mainPercent: percent,
+                mainProgressBarType: null,
+                subMessage: null,
+                subPercent: null,
+                subProgressBarType: null,
+                cancelButtonType: null,
+                cancelAction: null);
         }
 
         public void SetProgressBoxState(
@@ -76,11 +181,11 @@ namespace AngelLoader.Forms
             string? mainMessage1 = null,
             string? mainMessage2 = null,
             int? mainPercent = null,
-            ProgressBarType? mainProgressBarType = null,
+            ProgressType? mainProgressType = null,
             string? subMessage = null,
             int? subPercent = null,
-            ProgressBarType? subProgressBarType = null,
-            ProgressBoxCancelButtonType? cancelButtonType = null,
+            ProgressType? subProgressType = null,
+            ProgressBoxCancelType? cancelType = null,
             Action? cancelAction = null)
         {
             ConstructProgressBox();
@@ -90,13 +195,15 @@ namespace AngelLoader.Forms
                 mainMessage1: mainMessage1,
                 mainMessage2: mainMessage2,
                 mainPercent: mainPercent,
-                mainProgressBarType: mainProgressBarType,
+                mainProgressBarType: mainProgressType,
                 subMessage: subMessage,
                 subPercent: subPercent,
-                subProgressBarType: subProgressBarType,
-                cancelButtonType: cancelButtonType,
+                subProgressBarType: subProgressType,
+                cancelButtonType: cancelType,
                 cancelAction: cancelAction);
         }
+
+        #endregion
 
         public void HideProgressBox()
         {

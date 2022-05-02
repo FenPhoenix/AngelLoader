@@ -352,14 +352,7 @@ namespace AngelLoader
                 // up allowing multiple of these to be called and all that insanity...
                 Core.View.InvokeSync(() =>
                 {
-                    Core.View.SetProgressBoxState(
-                        visible: true,
-                        size: ProgressSize.Single,
-                        mainMessage1: LText.ProgressBox.CachingReadmeFiles,
-                        mainProgressBarType: ProgressBarType.Determinate,
-                        mainPercent: 0,
-                        cancelAction: NullAction
-                    );
+                    Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
                 });
 
                 Directory.CreateDirectory(fmCachePath);
@@ -393,7 +386,7 @@ namespace AngelLoader
                     // there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving us a
                     // useless "percentage" value for this purpose.
                     // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
-                    Core.View.InvokeSync(() => Core.View.SetProgressBoxState(mainPercent: pr.PercentOfBytes));
+                    Core.View.InvokeSync(() => Core.View.SetProgressPercent(pr.PercentOfBytes));
                 }
 
                 var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);

@@ -41,24 +41,19 @@ namespace AngelLoader
             Double
         }
 
-        public enum ProgressBarType
+        public enum ProgressType
         {
             Determinate,
             Indeterminate
         }
 
-        public enum ProgressBoxCancelButtonType
+        public enum ProgressBoxCancelType
         {
             Cancel,
             Stop
         }
 
         public static readonly Action NullAction = () => { };
-
-        public enum ProgressTask
-        {
-            FMScan
-        }
 
         public enum ImportType
         {
