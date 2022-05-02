@@ -35,7 +35,7 @@ namespace AngelLoader
 
         public enum Zoom { In, Out, Reset }
 
-        public enum ProgressSize
+        public enum ProgressSizeMode
         {
             Single,
             Double
@@ -47,7 +47,7 @@ namespace AngelLoader
             Indeterminate
         }
 
-        public enum ProgressBoxCancelType
+        public enum ProgressCancelType
         {
             Cancel,
             Stop

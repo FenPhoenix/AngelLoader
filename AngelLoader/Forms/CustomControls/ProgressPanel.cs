@@ -10,23 +10,27 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed partial class ProgressPanel : UserControl, IDarkable
     {
-        // @MULTISEL(Progress box): Handle size mode changing/storing/what it does on visible change in SetState()
-        // @MULTISEL(Progress box): Untangle localization
+        #region Consts
 
-        #region Fields etc.
+        private const ProgressSizeMode _defaultSizeMode = ProgressSizeMode.Single;
+        internal const ProgressCancelType DefaultCancelType = ProgressCancelType.Cancel;
+        internal const ProgressType DefaultProgressType = ProgressType.Determinate;
+
+        private const int regularHeight = 128;
+        private const int extendedHeight = 192;
+
+        #endregion
+
+        #region Fields
 
         private MainForm? _owner;
 
-        private ProgressBoxCancelType _cancelType = ProgressBoxCancelType.Cancel;
-        private ProgressSize _sizeType = ProgressSize.Single;
+        private ProgressCancelType _cancelType = DefaultCancelType;
+        private ProgressSizeMode _sizeModeMode = _defaultSizeMode;
 
         private Action _cancelAction = NullAction;
 
         #endregion
-
-        private const ProgressSize _defaultSizeType = ProgressSize.Single;
-        internal const ProgressBoxCancelType CancelTypeDefault = ProgressBoxCancelType.Cancel;
-        internal const ProgressType ProgressTypeDefault = ProgressType.Determinate;
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -75,6 +79,8 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        #region Init
+
         public ProgressPanel()
         {
 #if DEBUG
@@ -86,16 +92,17 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void InjectOwner(MainForm owner) => _owner = owner;
 
-        private const int regularHeight = 128;
-        private const int extendedHeight = 192;
+        internal void SetSizeToDefault() => SetSizeMode(_defaultSizeMode, forceChange: true);
 
-        internal void SetSizeToDefault() => SetSizeMode(_defaultSizeType, forceChange: true);
+        #endregion
 
-        private void SetSizeMode(ProgressSize size, bool forceChange = false)
+        #region Private methods
+
+        private void SetSizeMode(ProgressSizeMode sizeMode, bool forceChange = false)
         {
-            if (!forceChange && size == _sizeType) return;
+            if (!forceChange && sizeMode == _sizeModeMode) return;
 
-            bool doubleSize = size == ProgressSize.Double;
+            bool doubleSize = sizeMode == ProgressSizeMode.Double;
 
             Size = Size with { Height = doubleSize ? extendedHeight : regularHeight };
             SubMessageLabel.Visible = doubleSize;
@@ -104,10 +111,22 @@ namespace AngelLoader.Forms.CustomControls
 
             this.CenterHV(_owner!, clientSize: true);
 
-            _sizeType = size;
+            _sizeModeMode = sizeMode;
         }
 
-        #region Open/close
+        private void SetCancelType(ProgressCancelType cancelType)
+        {
+            _cancelType = cancelType;
+            Localize();
+        }
+
+        private void Localize()
+        {
+            Cancel_Button.Text = _cancelType == ProgressCancelType.Stop
+                ? LText.Global.Stop
+                : LText.Global.Cancel;
+            Cancel_Button.CenterH(this);
+        }
 
         private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, bool updateTaskbar)
         {
@@ -143,12 +162,16 @@ namespace AngelLoader.Forms.CustomControls
             _owner!.EnableEverything(false);
             Enabled = true;
 
+            SetCancelType(_cancelType);
+
             BringToFront();
             Show();
             Cancel_Button.Focus();
-
-            Localize();
         }
+
+        #endregion
+
+        #region Internal methods
 
         internal void HideThis()
         {
@@ -169,15 +192,14 @@ namespace AngelLoader.Forms.CustomControls
 
             Cancel_Button.Hide();
             _cancelAction = NullAction;
-            _cancelType = ProgressBoxCancelType.Cancel;
+            SetCancelType(DefaultCancelType);
 
-            SetSizeMode(ProgressSize.Single);
+            SetSizeMode(_defaultSizeMode);
 
             Enabled = false;
             _owner!.EnableEverything(true);
         }
 
-        #endregion
         /// <summary>
         /// Sets the state of the progress box. A null parameter means no change.
         /// </summary>
@@ -194,7 +216,7 @@ namespace AngelLoader.Forms.CustomControls
         /// <param name="cancelAction">Pass <see cref="NullAction"/> to hide the cancel button.</param>
         internal void SetState(
             bool? visible,
-            ProgressSize? size,
+            ProgressSizeMode? size,
             string? mainMessage1,
             string? mainMessage2,
             int? mainPercent,
@@ -202,12 +224,12 @@ namespace AngelLoader.Forms.CustomControls
             string? subMessage,
             int? subPercent,
             ProgressType? subProgressBarType,
-            ProgressBoxCancelType? cancelButtonType,
+            ProgressCancelType? cancelButtonType,
             Action? cancelAction)
         {
             if (size != null)
             {
-                SetSizeMode((ProgressSize)size);
+                SetSizeMode((ProgressSizeMode)size);
             }
             if (mainMessage1 != null)
             {
@@ -254,8 +276,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (cancelButtonType != null)
             {
-                _cancelType = (ProgressBoxCancelType)cancelButtonType;
-                Localize();
+                SetCancelType((ProgressCancelType)cancelButtonType);
             }
 
             // Put this last so the localization and whatever else can be right
@@ -272,13 +293,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void Localize()
-        {
-            Cancel_Button.Text = _cancelType == ProgressBoxCancelType.Stop
-                ? LText.Global.Stop
-                : LText.Global.Cancel;
-            Cancel_Button.CenterH(this);
-        }
+        #endregion
 
         private void ProgressCancelButton_Click(object sender, EventArgs e)
         {

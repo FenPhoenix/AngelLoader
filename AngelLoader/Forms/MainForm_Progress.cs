@@ -30,7 +30,6 @@ namespace AngelLoader.Forms
             ProgressBox = new ProgressPanel { Tag = LoadType.Lazy, Visible = false };
             Controls.Add(ProgressBox);
             ProgressBox.InjectOwner(this);
-            ProgressBox.Localize();
             ProgressBox.Anchor = AnchorStyles.None;
             ProgressBox.DarkModeEnabled = _progressBoxDarkModeEnabled;
             ProgressBox.SetSizeToDefault();
@@ -63,21 +62,21 @@ namespace AngelLoader.Forms
             string? message1 = null,
             string? message2 = null,
             ProgressType? progressType = null,
-            ProgressBoxCancelType? cancelType = null,
+            ProgressCancelType? cancelType = null,
             Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: true,
-                size: ProgressSize.Single,
+                size: ProgressSizeMode.Single,
                 mainMessage1: message1 ?? "",
                 mainMessage2: message2 ?? "",
                 mainPercent: 0,
-                mainProgressBarType: progressType ?? ProgressPanel.ProgressTypeDefault,
+                mainProgressBarType: progressType ?? ProgressPanel.DefaultProgressType,
                 subMessage: "",
                 subPercent: 0,
                 subProgressBarType: ProgressType.Determinate,
-                cancelButtonType: cancelType ?? ProgressPanel.CancelTypeDefault,
+                cancelButtonType: cancelType ?? ProgressPanel.DefaultCancelType,
                 cancelAction: cancelAction ?? NullAction);
         });
 
@@ -87,21 +86,21 @@ namespace AngelLoader.Forms
             ProgressType? mainProgressType = null,
             string? subMessage = null,
             ProgressType? subProgressType = null,
-            ProgressBoxCancelType? cancelType = null,
+            ProgressCancelType? cancelType = null,
             Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: true,
-                size: ProgressSize.Double,
+                size: ProgressSizeMode.Double,
                 mainMessage1: mainMessage1 ?? "",
                 mainMessage2: mainMessage2 ?? "",
                 mainPercent: 0,
-                mainProgressBarType: mainProgressType ?? ProgressPanel.ProgressTypeDefault,
+                mainProgressBarType: mainProgressType ?? ProgressPanel.DefaultProgressType,
                 subMessage: subMessage ?? "",
                 subPercent: 0,
-                subProgressBarType: subProgressType ?? ProgressPanel.ProgressTypeDefault,
-                cancelButtonType: cancelType ?? ProgressPanel.CancelTypeDefault,
+                subProgressBarType: subProgressType ?? ProgressPanel.DefaultProgressType,
+                cancelButtonType: cancelType ?? ProgressPanel.DefaultCancelType,
                 cancelAction: cancelAction ?? NullAction);
         });
 
@@ -116,13 +115,13 @@ namespace AngelLoader.Forms
             string? message2 = null,
             int? percent = null,
             ProgressType? progressType = null,
-            ProgressBoxCancelType? cancelType = null,
+            ProgressCancelType? cancelType = null,
             Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: visible,
-                size: ProgressSize.Single,
+                size: ProgressSizeMode.Single,
                 mainMessage1: message1,
                 mainMessage2: message2,
                 mainPercent: percent,
@@ -143,13 +142,13 @@ namespace AngelLoader.Forms
             string? subMessage = null,
             int? subPercent = null,
             ProgressType? subProgressType = null,
-            ProgressBoxCancelType? cancelType = null,
+            ProgressCancelType? cancelType = null,
             Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: visible,
-                size: ProgressSize.Double,
+                size: ProgressSizeMode.Double,
                 mainMessage1: mainMessage1,
                 mainMessage2: mainMessage2,
                 mainPercent: mainPercent,
@@ -180,7 +179,7 @@ namespace AngelLoader.Forms
 
         public void SetProgressBoxState(
             bool? visible = null,
-            ProgressSize? size = null,
+            ProgressSizeMode? size = null,
             string? mainMessage1 = null,
             string? mainMessage2 = null,
             int? mainPercent = null,
@@ -188,7 +187,7 @@ namespace AngelLoader.Forms
             string? subMessage = null,
             int? subPercent = null,
             ProgressType? subProgressType = null,
-            ProgressBoxCancelType? cancelType = null,
+            ProgressCancelType? cancelType = null,
             Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();

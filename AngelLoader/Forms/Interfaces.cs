@@ -134,7 +134,7 @@ namespace AngelLoader.Forms
         /// <param name="progressType"></param>
         /// <param name="cancelType"></param>
         /// <param name="cancelAction"></param>
-        void ShowProgressBox_Single(string? message1 = null, string? message2 = null, ProgressType? progressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
+        void ShowProgressBox_Single(string? message1 = null, string? message2 = null, ProgressType? progressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
@@ -148,7 +148,7 @@ namespace AngelLoader.Forms
         /// <param name="subProgressType"></param>
         /// <param name="cancelType"></param>
         /// <param name="cancelAction"></param>
-        void ShowProgressBox_Double(string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
+        void ShowProgressBox_Double(string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
@@ -162,7 +162,7 @@ namespace AngelLoader.Forms
         /// <param name="progressType"></param>
         /// <param name="cancelType"></param>
         /// <param name="cancelAction"></param>
-        void SetProgressBoxState_Single(bool? visible = null, string? message1 = null, string? message2 = null, int? percent = null, ProgressType? progressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
+        void SetProgressBoxState_Single(bool? visible = null, string? message1 = null, string? message2 = null, int? percent = null, ProgressType? progressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
@@ -179,7 +179,7 @@ namespace AngelLoader.Forms
         /// <param name="subProgressType"></param>
         /// <param name="cancelType"></param>
         /// <param name="cancelAction"></param>
-        void SetProgressBoxState_Double(bool? visible = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
+        void SetProgressBoxState_Double(bool? visible = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
@@ -207,7 +207,7 @@ namespace AngelLoader.Forms
         /// <param name="subProgressType"></param>
         /// <param name="cancelType"></param>
         /// <param name="cancelAction"></param>
-        void SetProgressBoxState(bool? visible = null, ProgressSize? size = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
+        void SetProgressBoxState(bool? visible = null, ProgressSizeMode? size = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.

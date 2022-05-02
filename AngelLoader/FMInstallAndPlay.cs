@@ -1059,7 +1059,7 @@ namespace AngelLoader
                 if (!success) return false;
 
                 Core.View.SetProgressBoxState(
-                    size: single ? ProgressSize.Single : ProgressSize.Double,
+                    size: single ? ProgressSizeMode.Single : ProgressSizeMode.Double,
                     mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
                     mainMessage2: "",
                     mainPercent: 0,
@@ -1067,7 +1067,7 @@ namespace AngelLoader
                     subMessage: "",
                     subPercent: 0,
                     subProgressType: ProgressType.Determinate,
-                    cancelType: ProgressBoxCancelType.Cancel
+                    cancelType: ProgressCancelType.Cancel
                 );
 
                 for (int i = 0; i < fmDataList.Length; i++)
