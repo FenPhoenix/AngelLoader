@@ -847,12 +847,12 @@ namespace AL_Common
 
         #region Dispose and clear
 
-        public static void DisposeAndClear<T>(this T[] array) where T : IDisposable?
+        public static void DisposeAll<T>(this T[] array) where T : IDisposable?
         {
             for (int i = 0; i < array.Length; i++) array[i]?.Dispose();
         }
 
-        public static void DisposeAndClear<T>(this T[] array, int start, int end) where T : IDisposable?
+        public static void DisposeRange<T>(this T[] array, int start, int end) where T : IDisposable?
         {
             for (int i = start; i < end; i++) array[i]?.Dispose();
         }

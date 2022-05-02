@@ -163,7 +163,7 @@ namespace AngelLoader.Forms.CustomControls
         internal void ClearList()
         {
             base.Controls.DisposeAndClear();
-            _checkBoxes.DisposeAndClear();
+            _checkBoxes.DisposeAll();
             _checkBoxes = Array.Empty<DarkCheckBox>();
             CheckItems = Array.Empty<CheckItem>();
         }

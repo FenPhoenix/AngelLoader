@@ -860,7 +860,7 @@ namespace AngelLoader.Forms
         {
             AssertR(FMsList_FinishedOnIcons.Length == 16, "bitmaps.Length != 16");
 
-            FMsList_FinishedOnIcons.DisposeAndClear(1, FMsList_FinishedOnIcons.Length);
+            FMsList_FinishedOnIcons.DisposeRange(1, FMsList_FinishedOnIcons.Length);
             FMsList_FinishedOnIcons[0] = Blank;
 
             Bitmap? _finishedOnNormal_single = null;
@@ -922,7 +922,7 @@ namespace AngelLoader.Forms
 
         private static void LoadRatingImages()
         {
-            FMsList_StarIcons.DisposeAndClear();
+            FMsList_StarIcons.DisposeAll();
 
             bool[] bits = new bool[_numRatings];
 
