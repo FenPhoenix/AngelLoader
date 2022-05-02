@@ -21,6 +21,7 @@ namespace AngelLoader.Forms.CustomControls
         private ProgressTask _progressTask;
 
         private ProgressBoxCancelButtonType _cancelButtonType = ProgressBoxCancelButtonType.Cancel;
+        private ProgressSize _sizeType = ProgressSize.Single;
 
         private Action _cancelAction = NullAction;
 
@@ -38,7 +39,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
 
-                ProgressCancelButton.DarkModeEnabled = _darkModeEnabled;
+                Cancel_Button.DarkModeEnabled = _darkModeEnabled;
 
                 Color back, fore;
 
@@ -57,18 +58,18 @@ namespace AngelLoader.Forms.CustomControls
                 BackColor = back;
                 ForeColor = fore;
 
-                CurrentThingLabel.BackColor = back;
-                CurrentThingLabel.ForeColor = fore;
-                ProgressMessageLabel.ForeColor = fore;
-                ProgressMessageLabel.BackColor = back;
-                ProgressPercentLabel.ForeColor = fore;
-                ProgressPercentLabel.BackColor = back;
-                ProgressBar.DarkModeEnabled = _darkModeEnabled;
+                MainMessage1Label.ForeColor = fore;
+                MainMessage1Label.BackColor = back;
+                MainMessage2Label.BackColor = back;
+                MainMessage2Label.ForeColor = fore;
+                MainPercentLabel.ForeColor = fore;
+                MainPercentLabel.BackColor = back;
+                MainProgressBar.DarkModeEnabled = _darkModeEnabled;
 
-                CurrentSubThingLabel.BackColor = back;
-                CurrentSubThingLabel.ForeColor = fore;
-                SubProgressPercentLabel.BackColor = back;
-                SubProgressPercentLabel.ForeColor = fore;
+                SubMessageLabel.BackColor = back;
+                SubMessageLabel.ForeColor = fore;
+                SubPercentLabel.BackColor = back;
+                SubPercentLabel.ForeColor = fore;
                 SubProgressBar.DarkModeEnabled = _darkModeEnabled;
             }
         }
@@ -87,14 +88,20 @@ namespace AngelLoader.Forms.CustomControls
         private const int regularHeight = 128;
         private const int extendedHeight = 192;
 
-        private void SetSizeMode(bool doubleSize)
+        private void SetSizeMode(ProgressSize size)
         {
+            if (size == _sizeType) return;
+
+            bool doubleSize = size == ProgressSize.Double;
+
             Size = Size with { Height = doubleSize ? extendedHeight : regularHeight };
-            CurrentSubThingLabel.Visible = doubleSize;
-            SubProgressPercentLabel.Visible = doubleSize;
+            SubMessageLabel.Visible = doubleSize;
+            SubPercentLabel.Visible = doubleSize;
             SubProgressBar.Visible = doubleSize;
 
             this.CenterHV(_owner!, clientSize: true);
+
+            _sizeType = size;
         }
 
         #region Open/close
@@ -103,21 +110,21 @@ namespace AngelLoader.Forms.CustomControls
         {
             _progressTask = progressTask;
 
-            ProgressMessageLabel.Text = progressTask switch
+            MainMessage1Label.Text = progressTask switch
             {
                 ProgressTask.FMScan => LText.ProgressBox.Scanning,
                 _ => ""
             };
 
-            CurrentThingLabel.Text =
+            MainMessage2Label.Text =
                 progressTask == ProgressTask.FMScan ? LText.ProgressBox.PreparingToScanFMs
                 : "";
 
-            ProgressPercentLabel.Text = "";
+            MainPercentLabel.Text = "";
 
-            ProgressBar.Style = ProgressBarStyle.Blocks;
-            ProgressCancelButton.Visible = true;
-            ProgressBar.Value = 0;
+            MainProgressBar.Style = ProgressBarStyle.Blocks;
+            MainProgressBar.Value = 0;
+            Cancel_Button.Visible = true;
 
             if (!suppressShow) ShowThis();
         }
@@ -158,7 +165,7 @@ namespace AngelLoader.Forms.CustomControls
 
             BringToFront();
             Show();
-            ProgressCancelButton.Focus();
+            Cancel_Button.Focus();
 
             Localize();
         }
@@ -169,22 +176,21 @@ namespace AngelLoader.Forms.CustomControls
 
             Hide();
 
-            ProgressMessageLabel.Text = "";
+            MainMessage1Label.Text = "";
+            MainMessage2Label.Text = "";
+            MainPercentLabel.Text = "";
+            MainProgressBar.Value = 0;
+            MainProgressBar.Style = ProgressBarStyle.Blocks;
 
-            CurrentThingLabel.Text = "";
-            ProgressPercentLabel.Text = "";
-            ProgressBar.Value = 0;
-            ProgressBar.Style = ProgressBarStyle.Blocks;
-
-            CurrentSubThingLabel.Text = "";
-            SubProgressPercentLabel.Text = "";
+            SubMessageLabel.Text = "";
+            SubPercentLabel.Text = "";
             SubProgressBar.Value = 0;
             SubProgressBar.Style = ProgressBarStyle.Blocks;
 
-            ProgressCancelButton.Hide();
+            Cancel_Button.Hide();
             _cancelAction = NullAction;
 
-            SetSizeMode(doubleSize: false);
+            SetSizeMode(ProgressSize.Single);
 
             Enabled = false;
             _owner!.EnableEverything(true);
@@ -231,36 +237,36 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (size != null)
             {
-                SetSizeMode(doubleSize: size == ProgressSize.Double);
+                SetSizeMode((ProgressSize)size);
             }
             if (mainMessage1 != null)
             {
-                ProgressMessageLabel.Text = mainMessage1;
+                MainMessage1Label.Text = mainMessage1;
             }
             if (mainMessage2 != null)
             {
-                CurrentThingLabel.Text = mainMessage2;
+                MainMessage2Label.Text = mainMessage2;
             }
             if (mainPercent != null)
             {
-                ProgressPercentLabel.Text = mainPercent + "%";
-                SetProgressBarValue(ProgressBar, (int)mainPercent, updateTaskbar: true);
+                MainPercentLabel.Text = mainPercent + "%";
+                SetProgressBarValue(MainProgressBar, (int)mainPercent, updateTaskbar: true);
             }
             if (mainProgressBarType != null)
             {
-                SetProgressBarType(ProgressBar, (ProgressBarType)mainProgressBarType, updateTaskbar: true);
+                SetProgressBarType(MainProgressBar, (ProgressBarType)mainProgressBarType, updateTaskbar: true);
                 if (mainProgressBarType == ProgressBarType.Indeterminate)
                 {
-                    ProgressPercentLabel.Text = "";
+                    MainPercentLabel.Text = "";
                 }
             }
             if (subMessage != null)
             {
-                CurrentSubThingLabel.Text = subMessage;
+                SubMessageLabel.Text = subMessage;
             }
             if (subPercent != null)
             {
-                SubProgressPercentLabel.Text = subPercent + "%";
+                SubPercentLabel.Text = subPercent + "%";
                 SetProgressBarValue(SubProgressBar, (int)subPercent, updateTaskbar: false);
             }
             if (subProgressBarType != null)
@@ -268,13 +274,13 @@ namespace AngelLoader.Forms.CustomControls
                 SetProgressBarType(SubProgressBar, (ProgressBarType)subProgressBarType, updateTaskbar: false);
                 if (subProgressBarType == ProgressBarType.Indeterminate)
                 {
-                    SubProgressPercentLabel.Text = "";
+                    SubPercentLabel.Text = "";
                 }
             }
             if (cancelAction != null)
             {
                 _cancelAction = cancelAction;
-                ProgressCancelButton.Visible = cancelAction != NullAction;
+                Cancel_Button.Visible = cancelAction != NullAction;
             }
             if (cancelButtonType != null)
             {
@@ -285,10 +291,10 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void Localize()
         {
-            ProgressCancelButton.Text = _cancelButtonType == ProgressBoxCancelButtonType.Stop
+            Cancel_Button.Text = _cancelButtonType == ProgressBoxCancelButtonType.Stop
                 ? LText.Global.Stop
                 : LText.Global.Cancel;
-            ProgressCancelButton.CenterH(this);
+            Cancel_Button.CenterH(this);
         }
 
         private void ProgressCancelButton_Click(object sender, EventArgs e) => Cancel();

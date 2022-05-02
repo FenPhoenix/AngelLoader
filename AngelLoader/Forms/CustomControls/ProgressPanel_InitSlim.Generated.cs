@@ -7,55 +7,55 @@
         /// </summary>
         private void InitializeComponentSlim()
         {
-            this.ProgressCancelButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.ProgressPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.ProgressMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.CurrentThingLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.ProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.MainPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.MainMessage1Label = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.MainMessage2Label = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.MainProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
             this.SubProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
-            this.CurrentSubThingLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.SubProgressPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.SubMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.SubPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.SuspendLayout();
             // 
-            // ProgressCancelButton
+            // Cancel_Button
             // 
-            this.ProgressCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ProgressCancelButton.AutoSize = true;
-            this.ProgressCancelButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ProgressCancelButton.Location = new System.Drawing.Point(168, 152);
-            this.ProgressCancelButton.MinimumSize = new System.Drawing.Size(88, 23);
-            this.ProgressCancelButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.ProgressCancelButton.Size = new System.Drawing.Size(88, 23);
-            this.ProgressCancelButton.TabIndex = 7;
-            this.ProgressCancelButton.UseVisualStyleBackColor = true;
-            this.ProgressCancelButton.Click += new System.EventHandler(this.ProgressCancelButton_Click);
+            this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Cancel_Button.AutoSize = true;
+            this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Cancel_Button.Location = new System.Drawing.Point(168, 152);
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(88, 23);
+            this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.Cancel_Button.Size = new System.Drawing.Size(88, 23);
+            this.Cancel_Button.TabIndex = 7;
+            this.Cancel_Button.UseVisualStyleBackColor = true;
+            this.Cancel_Button.Click += new System.EventHandler(this.ProgressCancelButton_Click);
             // 
-            // ProgressPercentLabel
+            // MainPercentLabel
             // 
-            this.ProgressPercentLabel.Location = new System.Drawing.Point(0, 40);
-            this.ProgressPercentLabel.Size = new System.Drawing.Size(424, 13);
-            this.ProgressPercentLabel.TabIndex = 2;
-            this.ProgressPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.MainPercentLabel.Location = new System.Drawing.Point(0, 40);
+            this.MainPercentLabel.Size = new System.Drawing.Size(424, 13);
+            this.MainPercentLabel.TabIndex = 2;
+            this.MainPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // ProgressMessageLabel
+            // MainMessage1Label
             // 
-            this.ProgressMessageLabel.Location = new System.Drawing.Point(0, 8);
-            this.ProgressMessageLabel.Size = new System.Drawing.Size(424, 13);
-            this.ProgressMessageLabel.TabIndex = 0;
-            this.ProgressMessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.MainMessage1Label.Location = new System.Drawing.Point(0, 8);
+            this.MainMessage1Label.Size = new System.Drawing.Size(424, 13);
+            this.MainMessage1Label.TabIndex = 0;
+            this.MainMessage1Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // CurrentThingLabel
+            // MainMessage2Label
             // 
-            this.CurrentThingLabel.Location = new System.Drawing.Point(0, 24);
-            this.CurrentThingLabel.Size = new System.Drawing.Size(424, 13);
-            this.CurrentThingLabel.TabIndex = 1;
-            this.CurrentThingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.MainMessage2Label.Location = new System.Drawing.Point(0, 24);
+            this.MainMessage2Label.Size = new System.Drawing.Size(424, 13);
+            this.MainMessage2Label.TabIndex = 1;
+            this.MainMessage2Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // ProgressBar
+            // MainProgressBar
             // 
-            this.ProgressBar.Location = new System.Drawing.Point(8, 56);
-            this.ProgressBar.Size = new System.Drawing.Size(408, 23);
-            this.ProgressBar.TabIndex = 3;
+            this.MainProgressBar.Location = new System.Drawing.Point(8, 56);
+            this.MainProgressBar.Size = new System.Drawing.Size(408, 23);
+            this.MainProgressBar.TabIndex = 3;
             // 
             // SubProgressBar
             // 
@@ -63,19 +63,19 @@
             this.SubProgressBar.Size = new System.Drawing.Size(408, 16);
             this.SubProgressBar.TabIndex = 6;
             // 
-            // CurrentSubThingLabel
+            // SubMessageLabel
             // 
-            this.CurrentSubThingLabel.Location = new System.Drawing.Point(0, 88);
-            this.CurrentSubThingLabel.Size = new System.Drawing.Size(424, 13);
-            this.CurrentSubThingLabel.TabIndex = 4;
-            this.CurrentSubThingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.SubMessageLabel.Location = new System.Drawing.Point(0, 88);
+            this.SubMessageLabel.Size = new System.Drawing.Size(424, 13);
+            this.SubMessageLabel.TabIndex = 4;
+            this.SubMessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // SubProgressPercentLabel
+            // SubPercentLabel
             // 
-            this.SubProgressPercentLabel.Location = new System.Drawing.Point(0, 104);
-            this.SubProgressPercentLabel.Size = new System.Drawing.Size(424, 13);
-            this.SubProgressPercentLabel.TabIndex = 5;
-            this.SubProgressPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.SubPercentLabel.Location = new System.Drawing.Point(0, 104);
+            this.SubPercentLabel.Size = new System.Drawing.Size(424, 13);
+            this.SubPercentLabel.TabIndex = 5;
+            this.SubPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // ProgressPanel
             // 
@@ -83,13 +83,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Controls.Add(this.SubProgressBar);
-            this.Controls.Add(this.ProgressCancelButton);
-            this.Controls.Add(this.SubProgressPercentLabel);
-            this.Controls.Add(this.ProgressPercentLabel);
-            this.Controls.Add(this.ProgressMessageLabel);
-            this.Controls.Add(this.ProgressBar);
-            this.Controls.Add(this.CurrentSubThingLabel);
-            this.Controls.Add(this.CurrentThingLabel);
+            this.Controls.Add(this.Cancel_Button);
+            this.Controls.Add(this.SubPercentLabel);
+            this.Controls.Add(this.MainPercentLabel);
+            this.Controls.Add(this.MainMessage1Label);
+            this.Controls.Add(this.MainProgressBar);
+            this.Controls.Add(this.SubMessageLabel);
+            this.Controls.Add(this.MainMessage2Label);
             this.Size = new System.Drawing.Size(424, 192);
             this.ResumeLayout(false);
             this.PerformLayout();
