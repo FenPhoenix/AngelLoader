@@ -100,21 +100,22 @@ namespace AngelLoader
                 Config.ConfirmPlayOnDCOrEnter = !dontAskAgain;
             }
 
-            if (!fm.Installed && !await InstallInternal(fromPlay: true, suppressConfirmation: askingConfirmation, fm)) return;
-
-            if (playMP && gameIndex == GameIndex.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
+            if (fm.Installed || await InstallInternal(fromPlay: true, suppressConfirmation: askingConfirmation, fm))
             {
-                Log("Thief2MP.exe not found in Thief 2 game directory.\r\n" +
-                    "Thief 2 game directory: " + Config.GetGamePath(GameIndex.Thief2));
-                Dialogs.ShowError(LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound);
-                return;
-            }
+                if (playMP && gameIndex == GameIndex.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
+                {
+                    Log("Thief2MP.exe not found in Thief 2 game directory.\r\n" +
+                        "Thief 2 game directory: " + Config.GetGamePath(GameIndex.Thief2));
+                    Dialogs.ShowError(LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound);
+                    return;
+                }
 
-            if (PlayFM(fm, playMP))
-            {
-                fm.LastPlayed.DateTime = DateTime.Now;
-                Core.View.RefreshFM(fm);
-                Ini.WriteFullFMDataIni();
+                if (PlayFM(fm, playMP))
+                {
+                    fm.LastPlayed.DateTime = DateTime.Now;
+                    Core.View.RefreshFM(fm);
+                    Ini.WriteFullFMDataIni();
+                }
             }
         }
 
