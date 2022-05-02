@@ -118,6 +118,10 @@ namespace AngelLoader.Forms
 
     internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler, IMessageFilter
     {
+        public bool IsHandleCreated { get; }
+
+        public bool InvokeRequired { get; }
+
         #region Progress box
 
         /// <summary>
@@ -297,9 +301,9 @@ namespace AngelLoader.Forms
 
         #region Invoke
 
-        object InvokeSync(Delegate method);
+        object Invoke(Delegate method);
 
-        //object InvokeSync(Delegate method, params object[] args);
+        //object Invoke(Delegate method, params object[] args);
 
         #endregion
 

@@ -538,11 +538,8 @@ namespace AngelLoader
                     Log("FM game type is unknown or unsupported.\r\n" +
                         "FM: " + GetFMId(fm) + "\r\n" +
                         "FM game was: " + fm.Game);
-                    Core.View.InvokeSync(() =>
-                    {
-                        Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                          ErrorText.FMGameTypeUnknownOrUnsupported);
-                    });
+                    Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                      ErrorText.FMGameTypeUnknownOrUnsupported);
                     return false;
                 }
 
@@ -575,11 +572,9 @@ namespace AngelLoader
                         Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
                             "FM: " + GetFMId(fm) + "\r\n" +
                             "FM game was: " + fm.Game);
-                        Core.View.InvokeSync(() =>
-                        {
-                            Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                              LText.AlertMessages.Install_ArchiveNotFound);
-                        });
+                        Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                          LText.AlertMessages.Install_ArchiveNotFound);
+
                         return false;
                     }
                 }
@@ -592,12 +587,10 @@ namespace AngelLoader
                         {
                             Log("Game executable not found.\r\n" +
                                 "Game executable: " + gameExe);
-                            Core.View.InvokeSync(() =>
-                            {
-                                Dialogs.ShowError(gameName + ":\r\n" +
-                                                  GetFMId(fm) + "\r\n" +
-                                                  LText.AlertMessages.Install_ExecutableNotFound);
-                            });
+                            Dialogs.ShowError(gameName + ":\r\n" +
+                                              GetFMId(fm) + "\r\n" +
+                                              LText.AlertMessages.Install_ExecutableNotFound);
+
                             return false;
                         }
 
@@ -610,12 +603,10 @@ namespace AngelLoader
                                 "FM game was: " + fm.Game + "\r\n" +
                                 "FM install path: " + instBasePath
                             );
-                            Core.View.InvokeSync(() =>
-                            {
-                                Dialogs.ShowError(gameName + ":\r\n" +
-                                                  GetFMId(fm) + "\r\n" +
-                                                  LText.AlertMessages.Install_FMInstallPathNotFound);
-                            });
+                            Dialogs.ShowError(gameName + ":\r\n" +
+                                              GetFMId(fm) + "\r\n" +
+                                              LText.AlertMessages.Install_FMInstallPathNotFound);
+
                             return false;
                         }
                     }
@@ -624,15 +615,13 @@ namespace AngelLoader
 
                     if (GameIsRunning(gameExe))
                     {
-                        Core.View.InvokeSync(() =>
-                        {
-                            Dialogs.ShowAlert(
-                                gameName + ":\r\n" +
-                                (install
-                                    ? LText.AlertMessages.Install_GameIsRunning
-                                    : LText.AlertMessages.Uninstall_GameIsRunning),
-                                LText.AlertMessages.Alert);
-                        });
+                        Dialogs.ShowAlert(
+                            gameName + ":\r\n" +
+                            (install
+                                ? LText.AlertMessages.Install_GameIsRunning
+                                : LText.AlertMessages.Uninstall_GameIsRunning),
+                            LText.AlertMessages.Alert);
+
                         return false;
                     }
 
@@ -939,13 +928,9 @@ namespace AngelLoader
                         string errorText = "";
                         errorText = AppendErrorText(errorText, hash, useCalcFailedLines: true);
 
-                        bool cancel = false;
-                        Core.View.InvokeSync(() =>
-                        {
-                            cancel = !ShowDiskSpaceErrorDialog(
-                                errorText +
-                                LText.AlertMessages.Install_ContinueAfterErrorWarning);
-                        });
+                        bool cancel = !ShowDiskSpaceErrorDialog(
+                            errorText +
+                            LText.AlertMessages.Install_ContinueAfterErrorWarning);
                         if (cancel) return false;
                     }
 
@@ -1018,13 +1003,9 @@ namespace AngelLoader
                             finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, useCalcFailedLines: true);
                         }
 
-                        bool cancel = false;
-                        Core.View.InvokeSync(() =>
-                        {
-                            cancel = !ShowDiskSpaceErrorDialog(
-                                finalErrorText +
-                                LText.AlertMessages.Install_ContinueAfterErrorWarning);
-                        });
+                        bool cancel = !ShowDiskSpaceErrorDialog(
+                            finalErrorText +
+                            LText.AlertMessages.Install_ContinueAfterErrorWarning);
                         if (cancel) return false;
                     }
 
@@ -1220,8 +1201,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
-                Core.View.InvokeSync(new Action(() =>
-                    Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially)));
+                Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
             }
 
             return !canceled;
@@ -1290,8 +1270,7 @@ namespace AngelLoader
                         + "ExitCode: " + result.ExitCode + "\r\n"
                         + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
 
-                    Core.View.InvokeSync(new Action(() =>
-                        Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially)));
+                    Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
 
                     return !result.Canceled;
                 }
@@ -1311,8 +1290,7 @@ namespace AngelLoader
             {
                 Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n", ex);
 
-                Core.View.InvokeSync(new Action(() =>
-                    Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially)));
+                Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
 
                 return !canceled;
             }

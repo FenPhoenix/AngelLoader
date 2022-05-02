@@ -186,7 +186,7 @@ namespace AngelLoader
                         catch (Exception ex)
                         {
                             Log("Exception deleting archive '" + archive + "'", ex);
-                            Core.View.InvokeSync(new Action(() => Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive)));
+                            Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive);
                         }
                     }
                 });
@@ -275,7 +275,7 @@ namespace AngelLoader
                                          "The passed path was:\r\n\r\n" +
                                          di + "\r\n\r\n";
                         Log(message, stackTrace: true);
-                        Core.View.InvokeSync(() => Dialogs.ShowError(message, owner));
+                        Dialogs.ShowError(message, owner);
                         return false;
                     }
 
@@ -307,7 +307,7 @@ namespace AngelLoader
 
                 if (!singleArchivePath)
                 {
-                    DialogResult result = (DialogResult)Core.View.InvokeSync(new Func<DialogResult>(() =>
+                    DialogResult result = (DialogResult)Core.View.Invoke(new Func<DialogResult>(() =>
                     {
                         using var f = new MessageBoxCustomForm(
                             messageTop:
@@ -360,10 +360,9 @@ namespace AngelLoader
                     catch (Exception ex)
                     {
                         Log("Exception copying archive '" + file + "' to '" + destDir, ex);
-                        Core.View.InvokeSync(new Action(() =>
-                            Dialogs.ShowError(LText.AlertMessages.AddFM_UnableToCopy +
-                                              "\r\n\r\nSource FM archive file: " + file +
-                                              "\r\n\r\nDestination directory: " + destDir)));
+                        Dialogs.ShowError(LText.AlertMessages.AddFM_UnableToCopy +
+                                          "\r\n\r\nSource FM archive file: " + file +
+                                          "\r\n\r\nDestination directory: " + destDir);
                     }
                 }
 

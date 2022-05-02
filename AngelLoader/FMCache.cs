@@ -346,7 +346,7 @@ namespace AngelLoader
             try
             {
                 // Critical
-                Core.View.InvokeSync(new Action(() => Core.View.ShowOnly()));
+                Core.View.Invoke(new Action(() => Core.View.ShowOnly()));
 
                 // Block the view immediately after starting another thread, because otherwise we could end
                 // up allowing multiple of these to be called and all that insanity...
