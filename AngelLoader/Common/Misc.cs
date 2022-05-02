@@ -68,7 +68,6 @@ namespace AngelLoader
             ImportFromNDL,
             ImportFromFMSel,
             CacheFM,
-            DeleteFMArchive,
             CheckingFreeSpace,
             PreparingInstall,
             RestoringBackup

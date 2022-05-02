@@ -117,7 +117,6 @@ namespace AngelLoader.Forms.CustomControls
                 ProgressTask.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
                 ProgressTask.ImportFromFMSel => LText.ProgressBox.ImportingFromFMSel,
                 ProgressTask.CacheFM => LText.ProgressBox.CachingReadmeFiles,
-                ProgressTask.DeleteFMArchive => LText.ProgressBox.DeletingFMArchive,
                 ProgressTask.CheckingFreeSpace => LText.ProgressBox.CheckingFreeSpace,
                 ProgressTask.PreparingInstall => LText.ProgressBox.PreparingToInstall,
                 ProgressTask.RestoringBackup => LText.ProgressBox.RestoringBackup,
@@ -138,7 +137,6 @@ namespace AngelLoader.Forms.CustomControls
                 or ProgressTask.ImportFromDarkLoader
                 or ProgressTask.ImportFromNDL
                 or ProgressTask.ImportFromFMSel
-                or ProgressTask.DeleteFMArchive
                 or ProgressTask.CheckingFreeSpace
                 or ProgressTask.PreparingInstall
                 or ProgressTask.RestoringBackup)

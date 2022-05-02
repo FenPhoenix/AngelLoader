@@ -111,6 +111,7 @@ namespace AngelLoader
         {
             if (fm.MarkedUnavailable) return;
 
+            // @MULTISEL(Delete): FindAllMatches() should be in a thread
             var archives = FindAllMatches(fm.Archive);
             if (archives.Count == 0)
             {
@@ -162,7 +163,12 @@ namespace AngelLoader
 
             try
             {
-                Core.View.ShowProgressBox(ProgressTask.DeleteFMArchive);
+                Core.View.SetProgressBoxState(
+                    visible: true,
+                    mainMessage1: LText.ProgressBox.DeletingFMArchive,
+                    mainProgressBarType: ProgressBarType.Indeterminate
+                );
+
                 await Task.Run(() =>
                 {
                     foreach (string archive in finalArchives)
