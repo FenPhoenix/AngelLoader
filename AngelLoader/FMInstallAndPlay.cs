@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -518,6 +519,137 @@ namespace AngelLoader
             }
         }
 
+        [MustUseReturnValue]
+        private static bool DoPreChecks(FanMission[] fms, FMData[] fmDataList, bool install, [NotNullWhen(true)] out List<string>? fmArchivePaths)
+        {
+            static bool Canceled(bool install) => install && _extractCts.IsCancellationRequested;
+
+            fmArchivePaths = null;
+
+            var gameChecksHashSet = new HashSet<GameIndex>();
+            for (int i = 0; i < fms.Length; i++)
+            {
+                FanMission fm = fms[i];
+
+                AssertR(!fm.Installed, "fm.Installed == true");
+
+                if (!GameIsKnownAndSupported(fm.Game))
+                {
+                    Log("FM game type is unknown or unsupported.\r\n" +
+                        "FM: " + GetFMId(fm) + "\r\n" +
+                        "FM game was: " + fm.Game);
+                    Core.View.InvokeSync(() =>
+                    {
+                        Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                          ErrorText.FMGameTypeUnknownOrUnsupported);
+                    });
+                    return false;
+                }
+
+                GameIndex gameIndex = GameToGameIndex(fm.Game);
+                fmArchivePaths ??= FMArchives.GetFMArchivePaths();
+
+                if (Canceled(install)) return false;
+
+                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, fmArchivePaths);
+
+                if (Canceled(install)) return false;
+
+                string gameExe = Config.GetGameExe(gameIndex);
+                string gameName = GetLocalizedGameName(gameIndex);
+                string instBasePath = Config.GetFMInstallPath(gameIndex);
+
+                fmDataList[i] = new FMData
+                (
+                    fm,
+                    fmArchivePath,
+                    gameExe,
+                    gameName,
+                    instBasePath
+                );
+
+                if (install)
+                {
+                    if (fmArchivePath.IsEmpty())
+                    {
+                        Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
+                            "FM: " + GetFMId(fm) + "\r\n" +
+                            "FM game was: " + fm.Game);
+                        Core.View.InvokeSync(() =>
+                        {
+                            Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                              LText.AlertMessages.Install_ArchiveNotFound);
+                        });
+                        return false;
+                    }
+                }
+
+                if (!gameChecksHashSet.Contains(gameIndex))
+                {
+                    if (install)
+                    {
+                        if (!File.Exists(gameExe))
+                        {
+                            Log("Game executable not found.\r\n" +
+                                "Game executable: " + gameExe);
+                            Core.View.InvokeSync(() =>
+                            {
+                                Dialogs.ShowError(gameName + ":\r\n" +
+                                                  GetFMId(fm) + "\r\n" +
+                                                  LText.AlertMessages.Install_ExecutableNotFound);
+                            });
+                            return false;
+                        }
+
+                        if (Canceled(install)) return false;
+
+                        if (!Directory.Exists(instBasePath))
+                        {
+                            Log("FM install path not found.\r\n" +
+                                "FM: " + GetFMId(fm) + "\r\n" +
+                                "FM game was: " + fm.Game + "\r\n" +
+                                "FM install path: " + instBasePath
+                            );
+                            Core.View.InvokeSync(() =>
+                            {
+                                Dialogs.ShowError(gameName + ":\r\n" +
+                                                  GetFMId(fm) + "\r\n" +
+                                                  LText.AlertMessages.Install_FMInstallPathNotFound);
+                            });
+                            return false;
+                        }
+                    }
+
+                    if (Canceled(install)) return false;
+
+                    if (GameIsRunning(gameExe))
+                    {
+                        Core.View.InvokeSync(() =>
+                        {
+                            Dialogs.ShowAlert(
+                                gameName + ":\r\n" +
+                                (install
+                                    ? LText.AlertMessages.Install_GameIsRunning
+                                    : LText.AlertMessages.Uninstall_GameIsRunning),
+                                LText.AlertMessages.Alert);
+                        });
+                        return false;
+                    }
+
+                    if (Canceled(install)) return false;
+
+                    gameChecksHashSet.Add(gameIndex);
+                }
+            }
+
+            // Shouldn't ever be null here, but apparently the static analyzer thinks it can, even if I put a
+            // guard check above the loop like "if (fms.Length == 0) return false;" in case the loop doesn't ever
+            // run. Whatever man.
+            fmArchivePaths ??= new List<string>();
+
+            return true;
+        }
+
         #endregion
 
         #region Install
@@ -789,118 +921,7 @@ namespace AngelLoader
 
                     _extractCts = _extractCts.Recreate();
 
-                    #region Pre-checks
-
-                    var gameChecksHashSet = new HashSet<GameIndex>();
-                    List<string>? fmArchivePaths = null;
-                    for (int i = 0; i < fms.Length; i++)
-                    {
-                        FanMission fm = fms[i];
-
-                        AssertR(!fm.Installed, "fm.Installed == true");
-
-                        if (!GameIsKnownAndSupported(fm.Game))
-                        {
-                            Log("FM game type is unknown or unsupported.\r\n" +
-                                "FM: " + GetFMId(fm) + "\r\n" +
-                                "FM game was: " + fm.Game);
-                            Core.View.InvokeSync(() =>
-                            {
-                                Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                                  ErrorText.FMGameTypeUnknownOrUnsupported);
-                            });
-                            return false;
-                        }
-
-                        GameIndex gameIndex = GameToGameIndex(fm.Game);
-                        fmArchivePaths ??= FMArchives.GetFMArchivePaths();
-
-                        if (_extractCts.IsCancellationRequested) return false;
-
-                        string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, fmArchivePaths);
-
-                        if (_extractCts.IsCancellationRequested) return false;
-
-                        string gameExe = Config.GetGameExe(gameIndex);
-                        string gameName = GetLocalizedGameName(gameIndex);
-                        string instBasePath = Config.GetFMInstallPath(gameIndex);
-
-                        fmDataList[i] = new FMData
-                        (
-                            fm,
-                            fmArchivePath,
-                            gameExe,
-                            gameName,
-                            instBasePath
-                        );
-
-                        if (fmArchivePath.IsEmpty())
-                        {
-                            Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
-                                "FM: " + GetFMId(fm) + "\r\n" +
-                                "FM game was: " + fm.Game);
-                            Core.View.InvokeSync(() =>
-                            {
-                                Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                                  LText.AlertMessages.Install_ArchiveNotFound);
-                            });
-                            return false;
-                        }
-
-                        if (!gameChecksHashSet.Contains(gameIndex))
-                        {
-                            if (!File.Exists(gameExe))
-                            {
-                                Log("Game executable not found.\r\n" +
-                                    "Game executable: " + gameExe);
-                                Core.View.InvokeSync(() =>
-                                {
-                                    Dialogs.ShowError(gameName + ":\r\n" +
-                                                      GetFMId(fm) + "\r\n" +
-                                                      LText.AlertMessages.Install_ExecutableNotFound);
-                                });
-                                return false;
-                            }
-
-                            if (_extractCts.IsCancellationRequested) return false;
-
-                            if (!Directory.Exists(instBasePath))
-                            {
-                                Log("FM install path not found.\r\n" +
-                                    "FM: " + GetFMId(fm) + "\r\n" +
-                                    "FM game was: " + fm.Game + "\r\n" +
-                                    "FM install path: " + instBasePath
-                                );
-                                Core.View.InvokeSync(() =>
-                                {
-                                    Dialogs.ShowError(gameName + ":\r\n" +
-                                                      GetFMId(fm) + "\r\n" +
-                                                      LText.AlertMessages.Install_FMInstallPathNotFound);
-                                });
-                                return false;
-                            }
-
-                            if (_extractCts.IsCancellationRequested) return false;
-
-                            if (GameIsRunning(gameExe))
-                            {
-                                Core.View.InvokeSync(() =>
-                                {
-                                    Dialogs.ShowAlert(
-                                        gameName + ":\r\n" +
-                                        LText.AlertMessages.Install_GameIsRunning,
-                                        LText.AlertMessages.Alert);
-                                });
-                                return false;
-                            }
-
-                            if (_extractCts.IsCancellationRequested) return false;
-
-                            gameChecksHashSet.Add(gameIndex);
-                        }
-                    }
-
-                    #endregion
+                    if (!DoPreChecks(fms, fmDataList, install: true, out var fmArchivePaths)) return false;
 
                     Core.View.InvokeSync(() => Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CheckingFreeSpace));
 
@@ -1323,72 +1344,12 @@ namespace AngelLoader
 
             bool doBackup;
 
-            bool success = await Task.Run(() =>
-            {
-                #region Checks
+            #region Checks
 
-                // @MULTISEL(Uninstall): See if we can combine the install and uninstall check sections in some way
-                // They're similar but not identical, so partial combining I guess
-                var gameChecksHashSet = new HashSet<GameIndex>();
-                List<string>? fmArchivePaths = null;
-                for (int i = 0; i < fms.Length; i++)
-                {
-                    FanMission fm = fms[i];
-
-                    AssertR(fm.Installed, "fm.Installed == false");
-
-                    if (!GameIsKnownAndSupported(fm.Game))
-                    {
-                        Log("FM game type is unknown or unsupported.\r\n" +
-                            "FM: " + GetFMId(fm) + "\r\n" +
-                            "FM game was: " + fm.Game);
-                        Core.View.InvokeSync(() =>
-                        {
-                            Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                              ErrorText.FMGameTypeUnknownOrUnsupported);
-                        });
-                        return false;
-                    }
-
-                    GameIndex gameIndex = GameToGameIndex(fm.Game);
-                    fmArchivePaths ??= FMArchives.GetFMArchivePaths();
-                    string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, fmArchivePaths);
-                    string gameExe = Config.GetGameExe(gameIndex);
-                    string gameName = GetLocalizedGameName(gameIndex);
-                    string instBasePath = Config.GetFMInstallPath(gameIndex);
-
-                    fmDataList[i] = new FMData
-                    (
-                        fm,
-                        fmArchivePath,
-                        gameExe,
-                        gameName,
-                        instBasePath
-                    );
-
-                    if (!gameChecksHashSet.Contains(gameIndex))
-                    {
-                        if (GameIsRunning(gameExe))
-                        {
-                            Core.View.InvokeSync(() =>
-                            {
-                                Dialogs.ShowAlert(
-                                    gameName + ":\r\n" +
-                                    LText.AlertMessages.Uninstall_GameIsRunning,
-                                    LText.AlertMessages.Alert);
-                            });
-                            return false;
-                        }
-
-                        gameChecksHashSet.Add(gameIndex);
-                    }
-                }
-
-                #endregion
-
-                return true;
-            });
+            bool success = await Task.Run(() => DoPreChecks(fms, fmDataList, install: false, out _));
             if (!success) return false;
+
+            #endregion
 
             #region Confirm uninstall
 
