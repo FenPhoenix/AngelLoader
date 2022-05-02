@@ -795,7 +795,7 @@ namespace AngelLoader
                 return true;
             }
 
-            static async Task<bool> RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
+            static async Task RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
             {
                 bool single = fmDataList.Length == 1;
 
@@ -806,10 +806,14 @@ namespace AngelLoader
                         string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
                         if (!DeleteFMInstalledDirectory(fmInstalledPath))
                         {
-                            // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
-                            Log("Unable to delete FM installed directory " + fmInstalledPath);
+                            // Don't log it here because the deleter method will already have logged it
+                            Dialogs.ShowError(
+                                message: LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + "\r\n\r\n" +
+                                         fmInstalledPath);
                         }
-                        fmData.FM.Installed = false;
+                        // This is going to get set based on this anyway at the next load from disk, might as well
+                        // do it now
+                        fmData.FM.Installed = Directory.Exists(fmInstalledPath);
                     }
 
                     if (rollBackCurrentOnly)
@@ -871,8 +875,6 @@ namespace AngelLoader
                         }
                     }
                 });
-
-                return false;
             }
 
             static bool ShowDiskSpaceErrorDialog(string message)
@@ -1088,7 +1090,8 @@ namespace AngelLoader
 
                     if (canceled)
                     {
-                        return await RollBackInstalls(fmDataList, i);
+                        await RollBackInstalls(fmDataList, i);
+                        return false;
                     }
 
                     fmData.FM.Installed = true;
@@ -1172,7 +1175,8 @@ namespace AngelLoader
 
                     if (_extractCts.IsCancellationRequested)
                     {
-                        return await RollBackInstalls(fmDataList, i);
+                        await RollBackInstalls(fmDataList, i);
+                        return false;
                     }
                 }
             }
@@ -1533,6 +1537,8 @@ namespace AngelLoader
 
         private static bool DeleteFMInstalledDirectory(string path)
         {
+            if (!Directory.Exists(path)) return true;
+
             bool triedReadOnlyRemove = false;
 
             // Failsafe cause this is nasty
