@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -13,6 +12,8 @@ namespace AngelLoader.Forms.CustomControls
     public sealed partial class ProgressPanel : UserControl, IDarkable
     {
         // TODO(ProgressPanel): Make this more general and flexible
+
+        // @MULTISEL(Progress box): Handle size mode changing/storing/what it does on visible change in SetState()
 
         #region Fields etc.
 
@@ -102,24 +103,15 @@ namespace AngelLoader.Forms.CustomControls
         {
             _progressTask = progressTask;
 
-            SetSizeMode(doubleSize: _progressTask == ProgressTask.InstallFMs);
-
             ProgressMessageLabel.Text = progressTask switch
             {
                 ProgressTask.FMScan => LText.ProgressBox.Scanning,
-                ProgressTask.InstallFM => LText.ProgressBox.InstallingFM,
-                ProgressTask.InstallFMs => LText.ProgressBox.InstallingFMs,
                 ProgressTask.UninstallFM => LText.ProgressBox.UninstallingFM,
                 ProgressTask.UninstallFMs => LText.ProgressBox.UninstallingFMs,
-                ProgressTask.ConvertFiles or
-                ProgressTask.ConvertFilesManual => LText.ProgressBox.ConvertingFiles,
                 ProgressTask.ImportFromDarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
                 ProgressTask.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
                 ProgressTask.ImportFromFMSel => LText.ProgressBox.ImportingFromFMSel,
                 ProgressTask.CacheFM => LText.ProgressBox.CachingReadmeFiles,
-                ProgressTask.CheckingFreeSpace => LText.ProgressBox.CheckingFreeSpace,
-                ProgressTask.PreparingInstall => LText.ProgressBox.PreparingToInstall,
-                ProgressTask.RestoringBackup => LText.ProgressBox.RestoringBackup,
                 _ => ""
             };
 
@@ -132,21 +124,13 @@ namespace AngelLoader.Forms.CustomControls
             if (progressTask
                 is ProgressTask.UninstallFM
                 or ProgressTask.UninstallFMs
-                or ProgressTask.ConvertFiles
-                or ProgressTask.ConvertFilesManual
                 or ProgressTask.ImportFromDarkLoader
                 or ProgressTask.ImportFromNDL
-                or ProgressTask.ImportFromFMSel
-                or ProgressTask.CheckingFreeSpace
-                or ProgressTask.PreparingInstall
-                or ProgressTask.RestoringBackup)
+                or ProgressTask.ImportFromFMSel)
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
                 if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
-                if (progressTask != ProgressTask.ConvertFilesManual)
-                {
-                    ProgressCancelButton.Hide();
-                }
+                ProgressCancelButton.Hide();
             }
             else
             {
@@ -217,9 +201,10 @@ namespace AngelLoader.Forms.CustomControls
             SubProgressBar.Value = 0;
             SubProgressBar.Style = ProgressBarStyle.Blocks;
 
-            ProgressCancelButton.Show();
-
+            ProgressCancelButton.Hide();
             _cancelAction = NullAction;
+
+            SetSizeMode(doubleSize: false);
 
             Enabled = false;
             _owner!.EnableEverything(true);
@@ -341,13 +326,6 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     case ProgressTask.FMScan:
                         FMScan.CancelScan();
-                        break;
-                    case ProgressTask.InstallFM:
-                    case ProgressTask.InstallFMs:
-                        FMInstallAndPlay.CancelInstallFM();
-                        break;
-                    case ProgressTask.ConvertFilesManual:
-                        FMAudio.StopConversion();
                         break;
                 }
             }

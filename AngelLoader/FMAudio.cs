@@ -121,7 +121,15 @@ namespace AngelLoader
 
             try
             {
-                if (doChecksAndProgressBox) Core.View.ShowProgressBox(ProgressTask.ConvertFiles);
+                if (doChecksAndProgressBox)
+                {
+                    Core.View.SetProgressBoxState(
+                        visible: true,
+                        size: ProgressSize.Single,
+                        mainMessage1: LText.ProgressBox.ConvertingFiles,
+                        cancelAction: NullAction
+                    );
+                }
 
                 await Task.Run(async () =>
                 {
