@@ -57,13 +57,7 @@ namespace AngelLoader
 
         public enum ProgressTask
         {
-            FMScan,
-            UninstallFM,
-            UninstallFMs,
-            ImportFromDarkLoader,
-            ImportFromNDL,
-            ImportFromFMSel,
-            CacheFM
+            FMScan
         }
 
         public enum ImportType

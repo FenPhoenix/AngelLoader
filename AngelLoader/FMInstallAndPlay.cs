@@ -1407,7 +1407,13 @@ namespace AngelLoader
             bool atLeastOneFMMarkedUnavailable = false;
             try
             {
-                Core.View.ShowProgressBox(single ? ProgressTask.UninstallFM : ProgressTask.UninstallFMs);
+                Core.View.SetProgressBoxState(
+                    visible: true,
+                    size: ProgressSize.Single,
+                    mainMessage1: single ? LText.ProgressBox.UninstallingFM : LText.ProgressBox.UninstallingFMs,
+                    mainProgressBarType: ProgressBarType.Indeterminate,
+                    cancelAction: null
+                );
 
                 for (int i = 0; i < fmDataList.Length; i++)
                 {

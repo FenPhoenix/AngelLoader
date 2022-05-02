@@ -153,12 +153,17 @@ namespace AngelLoader
 
                 try
                 {
-                    Core.View.ShowProgressBox(importType switch
-                    {
-                        ImportType.DarkLoader => ProgressTask.ImportFromDarkLoader,
-                        ImportType.FMSel => ProgressTask.ImportFromFMSel,
-                        _ => ProgressTask.ImportFromNDL
-                    });
+                    Core.View.SetProgressBoxState(
+                        visible: true,
+                        size: ProgressSize.Single,
+                        mainMessage1: importType switch
+                        {
+                            ImportType.DarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
+                            ImportType.FMSel => LText.ProgressBox.ImportingFromFMSel,
+                            _ => LText.ProgressBox.ImportingFromNewDarkLoader
+                        },
+                        mainProgressBarType: ProgressBarType.Indeterminate
+                    );
 
                     var (error, fmsToScan) = await Task.Run(() => importType switch
                     {

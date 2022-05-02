@@ -106,12 +106,6 @@ namespace AngelLoader.Forms.CustomControls
             ProgressMessageLabel.Text = progressTask switch
             {
                 ProgressTask.FMScan => LText.ProgressBox.Scanning,
-                ProgressTask.UninstallFM => LText.ProgressBox.UninstallingFM,
-                ProgressTask.UninstallFMs => LText.ProgressBox.UninstallingFMs,
-                ProgressTask.ImportFromDarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
-                ProgressTask.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
-                ProgressTask.ImportFromFMSel => LText.ProgressBox.ImportingFromFMSel,
-                ProgressTask.CacheFM => LText.ProgressBox.CachingReadmeFiles,
                 _ => ""
             };
 
@@ -121,23 +115,9 @@ namespace AngelLoader.Forms.CustomControls
 
             ProgressPercentLabel.Text = "";
 
-            if (progressTask
-                is ProgressTask.UninstallFM
-                or ProgressTask.UninstallFMs
-                or ProgressTask.ImportFromDarkLoader
-                or ProgressTask.ImportFromNDL
-                or ProgressTask.ImportFromFMSel)
-            {
-                ProgressBar.Style = ProgressBarStyle.Marquee;
-                if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
-                ProgressCancelButton.Hide();
-            }
-            else
-            {
-                ProgressBar.Style = ProgressBarStyle.Blocks;
-                ProgressCancelButton.Visible = progressTask != ProgressTask.CacheFM;
-                ProgressBar.Value = 0;
-            }
+            ProgressBar.Style = ProgressBarStyle.Blocks;
+            ProgressCancelButton.Visible = true;
+            ProgressBar.Value = 0;
 
             if (!suppressShow) ShowThis();
         }
