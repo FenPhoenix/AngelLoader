@@ -350,10 +350,8 @@ namespace AngelLoader
 
                 // Block the view immediately after starting another thread, because otherwise we could end
                 // up allowing multiple of these to be called and all that insanity...
-                Core.View.InvokeSync(() =>
-                {
-                    Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
-                });
+
+                Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
 
                 Directory.CreateDirectory(fmCachePath);
 
@@ -386,7 +384,7 @@ namespace AngelLoader
                     // there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving us a
                     // useless "percentage" value for this purpose.
                     // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
-                    Core.View.InvokeSync(() => Core.View.SetProgressPercent(pr.PercentOfBytes));
+                    Core.View.SetProgressPercent(pr.PercentOfBytes);
                 }
 
                 var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
@@ -416,7 +414,7 @@ namespace AngelLoader
             finally
             {
                 foreach (string file in fileNamesList) File_UnSetReadOnly(file);
-                Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
+                Core.View.HideProgressBox();
             }
         }
 

@@ -822,13 +822,11 @@ namespace AngelLoader
                         for (int j = lastInstalledFMIndex; j >= 0; j--)
                         {
                             var fmData = fmDataList[j];
-                            int j1 = j; // shut up capture warning
-                            Core.View.InvokeSync(() =>
-                            {
-                                Core.View.SetProgressBoxState_Single(
-                                    message2: GetFMId(fmData.FM),
-                                    percent: GetPercentFromValue_Int(j1 + 1, lastInstalledFMIndex));
-                            });
+
+                            Core.View.SetProgressBoxState_Single(
+                                message2: GetFMId(fmData.FM),
+                                percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
+
                             string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
                             if (!DeleteFMInstalledDirectory(fmInstalledPath))
                             {
@@ -910,20 +908,17 @@ namespace AngelLoader
             {
                 bool success = await Task.Run(() =>
                 {
-                    Core.View.InvokeSync(() =>
-                    {
-                        Core.View.ShowProgressBox_Single(
-                            message1: LText.ProgressBox.PreparingToInstall,
-                            progressType: ProgressType.Indeterminate,
-                            cancelAction: CancelToken
-                        );
-                    });
+                    Core.View.ShowProgressBox_Single(
+                        message1: LText.ProgressBox.PreparingToInstall,
+                        progressType: ProgressType.Indeterminate,
+                        cancelAction: CancelToken
+                    );
 
                     _extractCts = _extractCts.Recreate();
 
                     if (!DoPreChecks(fms, fmDataList, install: true, out var fmArchivePaths)) return false;
 
-                    Core.View.InvokeSync(() => Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CheckingFreeSpace));
+                    Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CheckingFreeSpace);
 
                     #region Free space checks
 
@@ -1202,21 +1197,18 @@ namespace AngelLoader
 
                     int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
-                    Core.View.InvokeSync(() =>
+                    if (single)
                     {
-                        if (single)
-                        {
-                            Core.View.SetProgressPercent(percent);
-                        }
-                        else
-                        {
-                            Core.View.SetProgressBoxState_Double(
-                                mainPercent: newMainPercent,
-                                subPercent: percent,
-                                subMessage: fmArchive
-                            );
-                        }
-                    });
+                        Core.View.SetProgressPercent(percent);
+                    }
+                    else
+                    {
+                        Core.View.SetProgressBoxState_Double(
+                            mainPercent: newMainPercent,
+                            subPercent: percent,
+                            subMessage: fmArchive
+                        );
+                    }
 
                     if (_extractCts.Token.IsCancellationRequested)
                     {
@@ -1259,21 +1251,18 @@ namespace AngelLoader
 
                     if (!pr.Canceling)
                     {
-                        Core.View.InvokeSync(() =>
+                        if (single)
                         {
-                            if (single)
-                            {
-                                Core.View.SetProgressPercent(pr.PercentOfEntries);
-                            }
-                            else
-                            {
-                                Core.View.SetProgressBoxState_Double(
-                                    mainPercent: newMainPercent,
-                                    subPercent: pr.PercentOfEntries,
-                                    subMessage: fmArchive
-                                );
-                            }
-                        });
+                            Core.View.SetProgressPercent(pr.PercentOfEntries);
+                        }
+                        else
+                        {
+                            Core.View.SetProgressBoxState_Double(
+                                mainPercent: newMainPercent,
+                                subPercent: pr.PercentOfEntries,
+                                subMessage: fmArchive
+                            );
+                        }
                     }
                 }
 

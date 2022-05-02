@@ -53,6 +53,9 @@ namespace AngelLoader.Forms
             FMsDGV.SelectProperly();
         }
 
+        // Just always invoke these, because they're almost always called from another thread anyway. Keeps it
+        // simple.
+
         // Convenience methods for first show - they handle a few parameters for you
         #region Show methods
 
@@ -61,7 +64,7 @@ namespace AngelLoader.Forms
             string? message2 = null,
             ProgressType? progressType = null,
             ProgressBoxCancelType? cancelType = null,
-            Action? cancelAction = null)
+            Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
@@ -76,7 +79,7 @@ namespace AngelLoader.Forms
                 subProgressBarType: ProgressType.Determinate,
                 cancelButtonType: cancelType ?? ProgressPanel.CancelTypeDefault,
                 cancelAction: cancelAction ?? NullAction);
-        }
+        });
 
         public void ShowProgressBox_Double(
             string? mainMessage1 = null,
@@ -85,7 +88,7 @@ namespace AngelLoader.Forms
             string? subMessage = null,
             ProgressType? subProgressType = null,
             ProgressBoxCancelType? cancelType = null,
-            Action? cancelAction = null)
+            Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
@@ -100,7 +103,7 @@ namespace AngelLoader.Forms
                 subProgressBarType: subProgressType ?? ProgressPanel.ProgressTypeDefault,
                 cancelButtonType: cancelType ?? ProgressPanel.CancelTypeDefault,
                 cancelAction: cancelAction ?? NullAction);
-        }
+        });
 
         #endregion
 
@@ -114,7 +117,7 @@ namespace AngelLoader.Forms
             int? percent = null,
             ProgressType? progressType = null,
             ProgressBoxCancelType? cancelType = null,
-            Action? cancelAction = null)
+            Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
@@ -129,7 +132,7 @@ namespace AngelLoader.Forms
                 subProgressBarType: ProgressType.Determinate,
                 cancelButtonType: cancelType,
                 cancelAction: cancelAction);
-        }
+        });
 
         public void SetProgressBoxState_Double(
             bool? visible = null,
@@ -141,7 +144,7 @@ namespace AngelLoader.Forms
             int? subPercent = null,
             ProgressType? subProgressType = null,
             ProgressBoxCancelType? cancelType = null,
-            Action? cancelAction = null)
+            Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
@@ -156,9 +159,9 @@ namespace AngelLoader.Forms
                 subProgressBarType: subProgressType,
                 cancelButtonType: cancelType,
                 cancelAction: cancelAction);
-        }
+        });
 
-        public void SetProgressPercent(int percent)
+        public void SetProgressPercent(int percent) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
@@ -173,7 +176,7 @@ namespace AngelLoader.Forms
                 subProgressBarType: null,
                 cancelButtonType: null,
                 cancelAction: null);
-        }
+        });
 
         public void SetProgressBoxState(
             bool? visible = null,
@@ -186,7 +189,7 @@ namespace AngelLoader.Forms
             int? subPercent = null,
             ProgressType? subProgressType = null,
             ProgressBoxCancelType? cancelType = null,
-            Action? cancelAction = null)
+            Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
@@ -201,14 +204,14 @@ namespace AngelLoader.Forms
                 subProgressBarType: subProgressType,
                 cancelButtonType: cancelType,
                 cancelAction: cancelAction);
-        }
+        });
 
         #endregion
 
-        public void HideProgressBox()
+        public void HideProgressBox() => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.HideThis();
-        }
+        });
     }
 }

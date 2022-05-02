@@ -121,6 +121,8 @@ namespace AngelLoader.Forms
         #region Progress box
 
         /// <summary>
+        /// This method call is auto-invoked, so no need to wrap it manually.
+        /// <para/>
         /// Null parameters mean explicitly set the defaults.
         /// </summary>
         /// <param name="message1"></param>
@@ -131,6 +133,8 @@ namespace AngelLoader.Forms
         void ShowProgressBox_Single(string? message1 = null, string? message2 = null, ProgressType? progressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
 
         /// <summary>
+        /// This method call is auto-invoked, so no need to wrap it manually.
+        /// <para/>
         /// Null parameters mean explicitly set the defaults.
         /// </summary>
         /// <param name="mainMessage1"></param>
@@ -143,6 +147,8 @@ namespace AngelLoader.Forms
         void ShowProgressBox_Double(string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
 
         /// <summary>
+        /// This method call is auto-invoked, so no need to wrap it manually.
+        /// <para/>
         /// Null parameters mean no change.
         /// </summary>
         /// <param name="visible"></param>
@@ -155,6 +161,8 @@ namespace AngelLoader.Forms
         void SetProgressBoxState_Single(bool? visible = null, string? message1 = null, string? message2 = null, int? percent = null, ProgressType? progressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
 
         /// <summary>
+        /// This method call is auto-invoked, so no need to wrap it manually.
+        /// <para/>
         /// Null parameters mean no change.
         /// </summary>
         /// <param name="visible"></param>
@@ -170,6 +178,8 @@ namespace AngelLoader.Forms
         void SetProgressBoxState_Double(bool? visible = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
 
         /// <summary>
+        /// This method call is auto-invoked, so no need to wrap it manually.
+        /// <para/>
         /// Just sets the percent, leaving all other fields unchanged.
         /// </summary>
         /// <param name="percent"></param>
@@ -177,9 +187,10 @@ namespace AngelLoader.Forms
 
         /// <summary>
         /// Use this is you need to be more detailed than any of the tighter-scoped methods.
-        /// <para>
+        /// <para/>
+        /// This method call is auto-invoked, so no need to wrap it manually.
+        /// <para/>
         /// Null parameters mean no change.
-        /// </para>
         /// </summary>
         /// <param name="visible"></param>
         /// <param name="size"></param>
@@ -194,6 +205,9 @@ namespace AngelLoader.Forms
         /// <param name="cancelAction"></param>
         void SetProgressBoxState(bool? visible = null, ProgressSize? size = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, ProgressBoxCancelType? cancelType = null, Action? cancelAction = null);
 
+        /// <summary>
+        /// This method call is auto-invoked, so no need to wrap it manually.
+        /// </summary>
         void HideProgressBox();
 
         #endregion

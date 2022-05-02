@@ -473,7 +473,7 @@ namespace AngelLoader
                     // We don't really need this here; we already close later
                     // This just lets us close before putting up a possible error dialog, but other than that is
                     // unnecessary.
-                    Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
+                    Core.View.HideProgressBox();
                 }
             }
 
