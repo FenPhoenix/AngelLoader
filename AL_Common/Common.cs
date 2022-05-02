@@ -850,11 +850,13 @@ namespace AL_Common
         public static void DisposeAndClear<T>(this T[] array) where T : IDisposable?
         {
             for (int i = 0; i < array.Length; i++) array[i]?.Dispose();
+            Array.Clear(array, 0, array.Length);
         }
 
         public static void DisposeAndClear<T>(this T[] array, int start, int end) where T : IDisposable?
         {
             for (int i = start; i < end; i++) array[i]?.Dispose();
+            Array.Clear(array, 0, array.Length);
         }
 
         #endregion
