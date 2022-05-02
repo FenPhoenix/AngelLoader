@@ -579,6 +579,8 @@ namespace AngelLoader.DataClasses
             internal readonly string InstallingFMs = "Installing FMs...";
             internal readonly string PreparingToInstall = "Preparing to install...";
             internal readonly string CancelingInstall = "Canceling install...";
+            [FenGenComment("It's removing any leftover files from an FM install that didn't succeed")]
+            internal readonly string CleaningUpFailedInstall = "Cleaning up failed install...";
             [FenGenComment("For example, we could be restoring backed up saves and screenshots for this FM")]
             internal readonly string RestoringBackup = "Restoring backup...";
             [FenGenBlankLine]

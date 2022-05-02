@@ -531,7 +531,7 @@ namespace AngelLoader
             {
                 FanMission fm = fms[i];
 
-                AssertR(!fm.Installed, "fm.Installed == true");
+                AssertR(install ? !fm.Installed : fm.Installed, "fm.Installed == " + fm.Installed);
 
                 if (!GameIsKnownAndSupported(fm.Game))
                 {
@@ -795,42 +795,82 @@ namespace AngelLoader
                 return true;
             }
 
-            static async Task<bool> RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex)
+            static async Task<bool> RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
             {
-                try
-                {
-                    Core.View.SetProgressBoxState_Single(
-                        message1: LText.ProgressBox.CancelingInstall,
-                        percent: 100,
-                        progressType: ProgressType.Determinate,
-                        cancelAction: NullAction
-                    );
+                bool single = fmDataList.Length == 1;
 
-                    await Task.Run(() =>
+                await Task.Run(() =>
+                {
+                    static void RemoveFMFromDisk(FMData fmData)
                     {
-                        for (int j = lastInstalledFMIndex; j >= 0; j--)
+                        string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
+                        if (!DeleteFMInstalledDirectory(fmInstalledPath))
                         {
-                            var fmData = fmDataList[j];
-
-                            Core.View.SetProgressBoxState_Single(
-                                message2: GetFMId(fmData.FM),
-                                percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
-
-                            string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
-                            if (!DeleteFMInstalledDirectory(fmInstalledPath))
-                            {
-                                // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
-                                Log("Unable to delete FM installed directory " + fmInstalledPath);
-                            }
-                            fmData.FM.Installed = false;
+                            // @BetterErrors(InstallFM() - install cancellation (folder deletion) failed)
+                            Log("Unable to delete FM installed directory " + fmInstalledPath);
                         }
-                    });
-                }
-                finally
-                {
-                    Ini.WriteFullFMDataIni();
-                    Core.View.HideProgressBox();
-                }
+                        fmData.FM.Installed = false;
+                    }
+
+                    if (rollBackCurrentOnly)
+                    {
+                        try
+                        {
+                            if (single)
+                            {
+                                Core.View.SetProgressBoxState_Single(
+                                    message1: LText.ProgressBox.CleaningUpFailedInstall,
+                                    progressType: ProgressType.Indeterminate,
+                                    cancelAction: NullAction
+                                );
+                            }
+                            else
+                            {
+                                Core.View.SetProgressBoxState_Double(
+                                    subMessage: LText.ProgressBox.CleaningUpFailedInstall,
+                                    subProgressType: ProgressType.Indeterminate
+                                );
+                            }
+
+                            RemoveFMFromDisk(fmDataList[lastInstalledFMIndex]);
+                        }
+                        finally
+                        {
+                            if (!single)
+                            {
+                                Core.View.SetProgressBoxState_Double(subProgressType: ProgressType.Determinate);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Core.View.SetProgressBoxState_Single(
+                                    message1: LText.ProgressBox.CancelingInstall,
+                                    percent: 100,
+                                    progressType: ProgressType.Determinate,
+                                    cancelAction: NullAction
+                                );
+
+                            for (int j = lastInstalledFMIndex; j >= 0; j--)
+                            {
+                                var fmData = fmDataList[j];
+
+                                Core.View.SetProgressBoxState_Single(
+                                        message2: GetFMId(fmData.FM),
+                                        percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
+
+                                RemoveFMFromDisk(fmData);
+                            }
+                        }
+                        finally
+                        {
+                            Ini.WriteFullFMDataIni();
+                            Core.View.HideProgressBox();
+                        }
+                    }
+                });
 
                 return false;
             }
@@ -1036,9 +1076,15 @@ namespace AngelLoader
                     int mainPercent = GetPercentFromValue_Int(i, fmDataList.Length);
 
                     // Framework zip extracting is much faster, so use it if possible
-                    bool canceled = !await (fmData.ArchivePath.ExtIsZip()
+                    (bool canceled, bool installFailed) = await (fmData.ArchivePath.ExtIsZip()
                         ? Task.Run(() => InstallFMZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length))
                         : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
+
+                    if (installFailed)
+                    {
+                        await RollBackInstalls(fmDataList, i, rollBackCurrentOnly: true);
+                        continue;
+                    }
 
                     if (canceled)
                     {
@@ -1142,10 +1188,9 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+        private static (bool Canceled, bool InstallFailed)
+        InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
         {
-            bool canceled = false;
-
             bool single = fmCount == 1;
 
             try
@@ -1193,8 +1238,7 @@ namespace AngelLoader
 
                     if (_extractCts.Token.IsCancellationRequested)
                     {
-                        canceled = true;
-                        return false;
+                        return (true, false);
                     }
                 }
             }
@@ -1202,15 +1246,15 @@ namespace AngelLoader
             {
                 Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
                 Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
+                return (false, true);
             }
 
-            return !canceled;
+            return (false, false);
         }
 
-        private static bool InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+        private static (bool Canceled, bool InstallFailed)
+        InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
         {
-            bool canceled = false;
-
             bool single = fmCount == 1;
 
             try
@@ -1260,8 +1304,6 @@ namespace AngelLoader
                     progress
                 );
 
-                canceled = result.Canceled;
-
                 if (result.ErrorOccurred)
                 {
                     Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n"
@@ -1272,7 +1314,7 @@ namespace AngelLoader
 
                     Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
 
-                    return !result.Canceled;
+                    return (result.Canceled, true);
                 }
 
                 if (!result.Canceled)
@@ -1284,15 +1326,13 @@ namespace AngelLoader
                     }
                 }
 
-                return !result.Canceled;
+                return (result.Canceled, false);
             }
             catch (Exception ex)
             {
                 Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n", ex);
-
                 Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
-
-                return !canceled;
+                return (false, true);
             }
         }
 
