@@ -1325,8 +1325,6 @@ namespace AngelLoader
 
             bool doBackup;
 
-            // @MULTISEL(Uninstall): Put the checks into a thread like the Install version
-
             bool success = await Task.Run(() =>
             {
                 #region Checks
@@ -1444,7 +1442,6 @@ namespace AngelLoader
 
             #endregion
 
-            var fmsAlreadyUninstalled = new HashSet<FanMission>();
             bool atLeastOneFMMarkedUnavailable = false;
             try
             {
@@ -1470,7 +1467,7 @@ namespace AngelLoader
                     bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                     if (!fmDirExists)
                     {
-                        fmsAlreadyUninstalled.Add(fm);
+                        fm.Installed = false;
                         continue;
                         //bool yes = Dialogs.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
                         //    LText.AlertMessages.Alert);
@@ -1551,11 +1548,6 @@ namespace AngelLoader
             {
                 Ini.WriteFullFMDataIni();
                 Core.View.HideProgressBox();
-            }
-
-            foreach (FanMission fm in fmsAlreadyUninstalled)
-            {
-                fm.Installed = false;
             }
 
             // If any FMs are gone, refresh the list to remove them. Otherwise, don't refresh the list because
