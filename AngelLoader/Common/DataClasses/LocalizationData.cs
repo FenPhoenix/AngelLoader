@@ -590,6 +590,8 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string UninstallingFM = "Uninstalling FM...";
             internal readonly string UninstallingFMs = "Uninstalling FMs...";
+            // @MULTISEL(Localization): Not sure if I'm going to use this
+            internal readonly string PreparingToUninstall = "Preparing to uninstall...";
             [FenGenBlankLine]
             internal readonly string ConvertingFiles = "Converting audio files...";
             [FenGenBlankLine]

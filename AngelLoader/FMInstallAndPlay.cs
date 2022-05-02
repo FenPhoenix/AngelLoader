@@ -1344,9 +1344,7 @@ namespace AngelLoader
 
         #region Uninstall
 
-        // @MULTISEL(Uninstall): Implement multi-FM support for this
-        // In progress!
-        // @MULTISEL(Uninstall): Add "Stop" button for uninstall, and two-item progress box as well
+        // @MULTISEL(Uninstall): Add "Stop" button for uninstall
         internal static async Task<bool> Uninstall(params FanMission[] fms)
         {
             var fmDataList = new FMData[fms.Length];
@@ -1355,10 +1353,20 @@ namespace AngelLoader
 
             bool doBackup;
 
+            // Do checks first before progress box so it's not just annoyingly there while in confirmation dialogs
             #region Checks
 
-            bool success = await Task.Run(() => DoPreChecks(fms, fmDataList, install: false, out _));
-            if (!success) return false;
+            try
+            {
+                Core.View.Cursor = Cursors.WaitCursor;
+
+                bool success = await Task.Run(() => DoPreChecks(fms, fmDataList, install: false, out _));
+                if (!success) return false;
+            }
+            finally
+            {
+                Core.View.Cursor = Cursors.Default;
+            }
 
             #endregion
 
@@ -1418,7 +1426,7 @@ namespace AngelLoader
                 Core.View.SetProgressBoxState_Single(
                     visible: true,
                     message1: single ? LText.ProgressBox.UninstallingFM : LText.ProgressBox.UninstallingFMs,
-                    progressType: ProgressType.Indeterminate
+                    progressType: single ? ProgressType.Indeterminate : ProgressType.Determinate
                 );
 
                 for (int i = 0; i < fmDataList.Length; i++)
@@ -1511,6 +1519,14 @@ namespace AngelLoader
                     if (gameIndex == GameIndex.Thief3 && !fm.Archive.IsEmpty())
                     {
                         fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
+                    }
+
+                    if (!single)
+                    {
+                        Core.View.SetProgressBoxState_Single(
+                            percent: GetPercentFromValue_Int(i + 1, fmDataList.Length),
+                            message2: GetFMId(fm)
+                        );
                     }
                 }
             }
