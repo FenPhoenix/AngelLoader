@@ -130,7 +130,6 @@ namespace AngelLoader
 
                 try
                 {
-
                     foreach (string f in FastIO.GetFilesTopOnly(path, "*")) File.Delete(f);
                     foreach (string d in FastIO.GetDirsTopOnly(path, "*")) Directory.Delete(d, recursive: true);
                 }
