@@ -70,8 +70,6 @@ namespace AL_Common
             public DictionaryI(IDictionary<string, TValue> collection) : base(collection, StringComparer.OrdinalIgnoreCase) { }
         }
 
-        #region Preset char arrays
-
         public static readonly byte[] RTFHeaderBytes =
         {
             (byte)'{',
@@ -81,6 +79,10 @@ namespace AL_Common
             (byte)'f',
             (byte)'1'
         };
+
+        public static readonly byte[] RTFHeaderBuffer = new byte[RTFHeaderBytes.Length];
+
+        #region Preset char arrays
 
         // Perf, for passing to Split(), Trim() etc. so we don't allocate all the time
         public static readonly char[] CA_Comma = { ',' };
@@ -824,11 +826,14 @@ namespace AL_Common
         /// <param name="array">The array to clear.</param>
         /// <returns>A cleared version of <paramref name="array"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T[] Clear<T>(this T[] array)
+        public static T[] Cleared<T>(this T[] array)
         {
             Array.Clear(array, 0, array.Length);
             return array;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Clear<T>(this T[] array) => Array.Clear(array, 0, array.Length);
 
         #region Clear and add
 

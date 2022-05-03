@@ -81,18 +81,17 @@ namespace AngelLoader.Forms
                 string file = rtfFiles[i];
 
                 int headerLen = RTFHeaderBytes.Length;
-                byte[] buffer = new byte[headerLen];
 
                 using (var fs = File.OpenRead(file))
                 {
                     if (fs.Length >= headerLen)
                     {
                         using var br = new BinaryReader(fs, Encoding.ASCII);
-                        buffer = br.ReadBytes(headerLen);
+                        _ = br.Read(RTFHeaderBuffer.Cleared(), 0, headerLen);
                     }
                 }
 
-                if (!buffer.SequenceEqual(RTFHeaderBytes))
+                if (!RTFHeaderBuffer.SequenceEqual(RTFHeaderBytes))
                 {
                     rtfFiles.RemoveAt(i);
                     i--;

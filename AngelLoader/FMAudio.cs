@@ -142,15 +142,15 @@ namespace AngelLoader
                                 using var fs = File.OpenRead(file);
                                 using var br = new BinaryReader(fs, Encoding.ASCII);
 
-                                _ = br.Read(_buffer4.Clear(), 0, 4);
+                                _ = br.Read(_buffer4.Cleared(), 0, 4);
                                 if (!_buffer4.SequenceEqual(_riff)) return -1;
 
                                 fs.Seek(4, SeekOrigin.Current);
 
-                                _ = br.Read(_buffer4.Clear(), 0, 4);
+                                _ = br.Read(_buffer4.Cleared(), 0, 4);
                                 if (!_buffer4.SequenceEqual(_wave)) return 0;
 
-                                _ = br.Read(_buffer4.Clear(), 0, 4);
+                                _ = br.Read(_buffer4.Cleared(), 0, 4);
                                 if (!_buffer4.SequenceEqual(_fmt)) return 0;
 
                                 fs.Seek(18, SeekOrigin.Current);

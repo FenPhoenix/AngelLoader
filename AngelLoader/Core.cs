@@ -1239,8 +1239,6 @@ namespace AngelLoader
 
             int headerLen = RTFHeaderBytes.Length;
 
-            byte[] buffer = new byte[headerLen];
-
             // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
             using (var fs = File.OpenRead(readmeOnDisk))
             {
@@ -1249,13 +1247,13 @@ namespace AngelLoader
                 if (fs.Length >= headerLen)
                 {
                     using var br = new BinaryReader(fs, Encoding.ASCII);
-                    buffer = br.ReadBytes(headerLen);
+                    _ = br.Read(RTFHeaderBuffer.Cleared(), 0, headerLen);
                 }
             }
 
-            var rType = buffer.SequenceEqual(RTFHeaderBytes) ? ReadmeType.RichText : ReadmeType.PlainText;
+            var readmeType = RTFHeaderBuffer.SequenceEqual(RTFHeaderBytes) ? ReadmeType.RichText : ReadmeType.PlainText;
 
-            return (readmeOnDisk, rType);
+            return (readmeOnDisk, readmeType);
         }
 
         /// <summary>
