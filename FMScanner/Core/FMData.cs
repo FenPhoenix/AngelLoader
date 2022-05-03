@@ -1,4 +1,4 @@
-﻿// Enable this (and the one in Scanner.cs) to get all features (we use it for testing)
+﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
 //#define FMScanner_FullCode
 
 using System;
