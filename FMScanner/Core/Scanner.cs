@@ -193,48 +193,32 @@ namespace FMScanner
 #endif
         }
 
-        [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         [PublicAPI]
         public Scanner(string sevenZipExePath)
         {
-            // Perf/size balance: we want to build these strings only once so we don't re-concat them a million
-            // times during the scan, but we also want to lower file size by not having a bunch of duplicate
-            // strings. So we build the string arrays dynamically only once here. That way we trade perf where it
-            // doesn't matter (this once-only build is mere noise) and keep it where it does, and also save file
-            // size.
-
             _sevenZipExePath = sevenZipExePath;
+
+            #region Array construction
+
+            // To reduce duplication, we construct some of the arrays algorithmically.
 
             int langsCount = Languages.Length;
             Languages_FS_Lang_FS = new string[langsCount];
             Languages_FS_Lang_Language_FS = new string[langsCount];
             LanguagesC = new DictionaryI<string>(langsCount);
-            EnglishOnly = new List<string> { Languages[0] };
-
-            FMFiles_SS2MisFiles = new HashSetI(23);
 
             #region FMFiles_TitlesStrLocations
 
-            string strings = "strings";
-            string fs = "/";
-            string title = "title";
-            string titles = title + "s";
-            string str = ".str";
-            string titleStr = title + str;
-            string titlesStr = titles + str;
-
             // Do not change search order: strings/english, strings, strings/[any other language]
-            FMFiles_TitlesStrLocations[0] = strings + fs + Languages[0] + fs + titlesStr;
-            FMFiles_TitlesStrLocations[1] = strings + fs + Languages[0] + fs + titleStr;
-            FMFiles_TitlesStrLocations[2] = strings + fs + titlesStr;
-            FMFiles_TitlesStrLocations[3] = strings + fs + titleStr;
+            FMFiles_TitlesStrLocations[0] = "strings/english/titles.str";
+            FMFiles_TitlesStrLocations[1] = "strings/english/title.str";
+            FMFiles_TitlesStrLocations[2] = "strings/titles.str";
+            FMFiles_TitlesStrLocations[3] = "strings/title.str";
 
             for (int i = 1; i < langsCount; i++)
             {
-                FMFiles_TitlesStrLocations[(i - 1) + 4] = strings + fs + Languages[i] + fs + titlesStr;
-                FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = strings + fs + Languages[i] + fs + titleStr;
+                FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + Languages[i] + "/titles.str";
+                FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = "strings/" + Languages[i] + "/title.str";
             }
 
             #endregion
@@ -244,8 +228,8 @@ namespace FMScanner
             for (int i = 0; i < langsCount; i++)
             {
                 string lang = Languages[i];
-                Languages_FS_Lang_FS[i] = fs + Languages[i] + fs;
-                Languages_FS_Lang_Language_FS[i] = fs + Languages[i] + " Language" + fs;
+                Languages_FS_Lang_FS[i] = "/" + Languages[i] + "/";
+                Languages_FS_Lang_Language_FS[i] = "/" + Languages[i] + " Language/";
 
                 // Lowercase to first-char-uppercase dict: Cheesy hack because it wasn't designed this way.
                 // All lang first chars are lowercase ASCII letters, so just subtract 32 to uppercase them.
@@ -253,51 +237,6 @@ namespace FMScanner
             }
 
             #endregion
-
-            #region SS2 mis files
-
-            string mis = ".mis";
-            string command = "command";
-            string eng = "eng";
-            string hydro = "hydro";
-            string medsci = "medsci";
-            string ops = "ops";
-            string rec = "rec";
-            string rick = "rick";
-
-            // This results in smaller file size than a flat sequence of adds
-            for (int i = 1; i <= 2; i++)
-            {
-                FMFiles_SS2MisFiles.Add(command + i + mis);
-            }
-            FMFiles_SS2MisFiles.Add("earth" + mis);
-            for (int i = 1; i <= 2; i++)
-            {
-                FMFiles_SS2MisFiles.Add(eng + i + mis);
-            }
-            for (int i = 1; i <= 3; i++)
-            {
-                FMFiles_SS2MisFiles.Add(hydro + i + mis);
-            }
-            FMFiles_SS2MisFiles.Add("many" + mis);
-            for (int i = 1; i <= 2; i++)
-            {
-                FMFiles_SS2MisFiles.Add(medsci + i + mis);
-            }
-            for (int i = 1; i <= 4; i++)
-            {
-                FMFiles_SS2MisFiles.Add(ops + i + mis);
-            }
-            for (int i = 1; i <= 3; i++)
-            {
-                FMFiles_SS2MisFiles.Add(rec + i + mis);
-            }
-            for (int i = 1; i <= 3; i++)
-            {
-                FMFiles_SS2MisFiles.Add(rick + i + mis);
-            }
-            FMFiles_SS2MisFiles.Add("shodan" + mis);
-            FMFiles_SS2MisFiles.Add("station" + mis);
 
             #endregion
         }

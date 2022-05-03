@@ -94,7 +94,33 @@ namespace FMScanner
         private readonly string[] FMFiles_TitlesStrLocations = new string[24];
 
         // Used for SS2 fingerprinting for the game type scan fallback
-        private readonly HashSetI FMFiles_SS2MisFiles;
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        private readonly HashSetI FMFiles_SS2MisFiles = new(23)
+        {
+            "command1.mis",
+            "command2.mis",
+            "earth.mis",
+            "eng1.mis",
+            "eng2.mis",
+            "hydro1.mis",
+            "hydro2.mis",
+            "hydro3.mis",
+            "many.mis",
+            "medsci1.mis",
+            "medsci2.mis",
+            "ops1.mis",
+            "ops2.mis",
+            "ops3.mis",
+            "ops4.mis",
+            "rec1.mis",
+            "rec2.mis",
+            "rec3.mis",
+            "rick1.mis",
+            "rick2.mis",
+            "rick3.mis",
+            "shodan.mis",
+            "station.mis"
+        };
 
         #endregion
 
@@ -188,7 +214,7 @@ namespace FMScanner
         #region Languages
 
         // Perf micro-optimization: don't create a new list if we're only returning English
-        private readonly List<string> EnglishOnly;
+        private readonly List<string> EnglishOnly = new() { "english" };
 
         // Single source of truth for language names (but we use this to build more arrays based on it for perf)
         private readonly string[]
