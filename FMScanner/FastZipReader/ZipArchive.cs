@@ -33,6 +33,10 @@ namespace FMScanner.FastZipReader
 
         internal readonly bool DecodeEntryNames;
 
+        // @Fen_added: Instantiate this once and pass it every time, otherwise we're just constructing and GC-ing
+        // a default UTF8Encoding object a bazillion times.
+        internal static readonly Encoding UTF8EncodingNoBOM = new UTF8Encoding();
+
         internal Encoding? EntryNameEncoding
         {
             get { return _entryNameEncoding; }
@@ -122,7 +126,7 @@ namespace FMScanner.FastZipReader
 
                 ArchiveStream = stream;
 
-                ArchiveReader = new BinaryReader(ArchiveStream);
+                ArchiveReader = new BinaryReader(ArchiveStream, UTF8EncodingNoBOM);
                 _entries = new List<ZipArchiveEntry>();
                 _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
                 _readEntries = false;

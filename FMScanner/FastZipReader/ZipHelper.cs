@@ -58,12 +58,12 @@ namespace FMScanner.FastZipReader
         internal const ushort Mask16Bit = 0xFFFF;
 
         private const int _backwardsSeekingBufferSize = 32;
-        private const int throwAwayBufferSize = 64;
+        private const int _throwAwayBufferSize = 64;
 
         // Don't recreate constantly
         // Statics for ergonomics of calling - they're both tiny so who cares if they stay around forever
         private static readonly byte[] _backwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
-        private static readonly byte[] _throwawayBuffer = new byte[throwAwayBufferSize];
+        private static readonly byte[] _throwawayBuffer = new byte[_throwAwayBufferSize];
 
         /// <summary>
         /// Reads exactly bytesToRead out of stream, unless it is out of bytes
@@ -135,7 +135,7 @@ namespace FMScanner.FastZipReader
             while (numBytesLeft != 0)
             {
                 Array.Clear(_throwawayBuffer, 0, _throwawayBuffer.Length);
-                int numBytesToSkip = numBytesLeft > throwAwayBufferSize ? throwAwayBufferSize : (int)numBytesLeft;
+                int numBytesToSkip = numBytesLeft > _throwAwayBufferSize ? _throwAwayBufferSize : (int)numBytesLeft;
                 int numBytesActuallySkipped = stream.Read(_throwawayBuffer, 0, numBytesToSkip);
                 if (numBytesActuallySkipped == 0) throw new IOException(SR.UnexpectedEndOfStream);
                 numBytesLeft -= numBytesActuallySkipped;

@@ -43,7 +43,7 @@ namespace FMScanner.FastZipReader
         // If the extra field is going in the local header, it cannot include only
         // one of uncompressed/compressed size
 
-        private const ushort TagConstant = 1;
+        private const ushort _tagConstant = 1;
 
         private ushort _size;
 
@@ -69,15 +69,12 @@ namespace FMScanner.FastZipReader
         //
         // If there are more than one Zip64 extra fields, we take the first one that has the expected size
         //
-        // @Fen_added: Instantiate this once and pass it every time, otherwise we're just constructing and GC-ing
-        // a default UTF8Encoding object a bazillion times.
-        private static readonly Encoding _utf8EncodingNoBOM = new UTF8Encoding();
         internal static Zip64ExtraField GetJustZip64Block(Stream extraFieldStream,
             bool readUncompressedSize, bool readCompressedSize,
             bool readLocalHeaderOffset, bool readStartDiskNumber)
         {
             Zip64ExtraField zip64Field;
-            using (var reader = new BinaryReader(extraFieldStream, _utf8EncodingNoBOM))
+            using (var reader = new BinaryReader(extraFieldStream, ZipArchiveFast.UTF8EncodingNoBOM))
             {
                 while (ZipGenericExtraField.TryReadBlock(reader, extraFieldStream.Length, out var currentExtraField))
                 {
@@ -113,14 +110,14 @@ namespace FMScanner.FastZipReader
                 StartDiskNumber = null
             };
 
-            if (extraField.Tag != TagConstant) return false;
+            if (extraField.Tag != _tagConstant) return false;
 
             // this pattern needed because nested using blocks trigger CA2202
             MemoryStream? ms = null;
             try
             {
                 ms = new MemoryStream(extraField.Data);
-                using var reader = new BinaryReader(ms);
+                using var reader = new BinaryReader(ms, ZipArchiveFast.UTF8EncodingNoBOM);
 
                 // Why did they do this and how does it still work?!
                 ms = null;
