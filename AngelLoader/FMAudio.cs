@@ -23,6 +23,7 @@ namespace AngelLoader
         private static readonly byte[] _riff = { (byte)'R', (byte)'I', (byte)'F', (byte)'F' };
         private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
         private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
+        private static readonly byte[] _buffer4 = new byte[4];
 
         private static CancellationTokenSource _conversionCTS = new();
         private static void CancelToken() => _conversionCTS.CancelIfNotDisposed();
@@ -141,14 +142,19 @@ namespace AngelLoader
                                 using var fs = File.OpenRead(file);
                                 using var br = new BinaryReader(fs, Encoding.ASCII);
 
-                                byte[] riff = br.ReadBytes(4);
-                                if (!riff.SequenceEqual(_riff)) return -1;
-                                br.ReadBytes(4);
-                                byte[] wave = br.ReadBytes(4);
-                                if (!wave.SequenceEqual(_wave)) return 0;
-                                byte[] fmt = br.ReadBytes(4);
-                                if (!fmt.SequenceEqual(_fmt)) return 0;
-                                br.ReadBytes(18);
+                                _ = br.Read(_buffer4.Clear(), 0, 4);
+                                if (!_buffer4.SequenceEqual(_riff)) return -1;
+
+                                fs.Seek(4, SeekOrigin.Current);
+
+                                _ = br.Read(_buffer4.Clear(), 0, 4);
+                                if (!_buffer4.SequenceEqual(_wave)) return 0;
+
+                                _ = br.Read(_buffer4.Clear(), 0, 4);
+                                if (!_buffer4.SequenceEqual(_fmt)) return 0;
+
+                                fs.Seek(18, SeekOrigin.Current);
+
                                 ushort bits = br.ReadUInt16();
                                 return bits;
                             }

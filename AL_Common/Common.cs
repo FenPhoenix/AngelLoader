@@ -817,8 +817,18 @@ namespace AL_Common
             return ret;
         }
 
+        /// <summary>
+        /// Clears <paramref name="array"/> and returns it back.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array">The array to clear.</param>
+        /// <returns>A cleared version of <paramref name="array"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Clear(this Array array) => Array.Clear(array, 0, array.Length);
+        public static T[] Clear<T>(this T[] array)
+        {
+            Array.Clear(array, 0, array.Length);
+            return array;
+        }
 
         #region Clear and add
 
