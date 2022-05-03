@@ -19,7 +19,7 @@ namespace FMScanner.FastZipReader
 
         // shouldn't ever read the byte at position endExtraField
         // assumes we are positioned at the beginning of an extra field subfield
-        internal static bool TryReadBlock(BinaryReader reader, long endExtraField, out ZipGenericExtraField field)
+        internal static bool TryReadBlock(BinaryReader_Custom reader, long endExtraField, out ZipGenericExtraField field)
         {
             field = new ZipGenericExtraField();
 
@@ -69,15 +69,12 @@ namespace FMScanner.FastZipReader
         //
         // If there are more than one Zip64 extra fields, we take the first one that has the expected size
         //
-        // @Fen_added: Instantiate this once and pass it every time, otherwise we're just constructing and GC-ing
-        // a default UTF8Encoding object a bazillion times.
-        private static readonly Encoding _utf8EncodingNoBOM = new UTF8Encoding();
         internal static Zip64ExtraField GetJustZip64Block(Stream extraFieldStream,
             bool readUncompressedSize, bool readCompressedSize,
             bool readLocalHeaderOffset, bool readStartDiskNumber)
         {
             Zip64ExtraField zip64Field;
-            using (var reader = new BinaryReader(extraFieldStream, _utf8EncodingNoBOM))
+            using (var reader = new BinaryReader_Custom(extraFieldStream))
             {
                 while (ZipGenericExtraField.TryReadBlock(reader, extraFieldStream.Length, out var currentExtraField))
                 {
@@ -116,11 +113,11 @@ namespace FMScanner.FastZipReader
             if (extraField.Tag != TagConstant) return false;
 
             // this pattern needed because nested using blocks trigger CA2202
-            MemoryStream? ms = null;
+            MemoryStream_Custom? ms = null;
             try
             {
-                ms = new MemoryStream(extraField.Data);
-                using var reader = new BinaryReader(ms);
+                ms = new MemoryStream_Custom(extraField.Data);
+                using var reader = new BinaryReader_Custom(ms);
 
                 // Why did they do this and how does it still work?!
                 ms = null;
@@ -164,7 +161,7 @@ namespace FMScanner.FastZipReader
 
         internal ulong OffsetOfZip64EOCD;
 
-        internal static bool TryReadBlock(BinaryReader reader, out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
+        internal static bool TryReadBlock(BinaryReader_Custom reader, out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
         {
             zip64EOCDLocator = new Zip64EndOfCentralDirectoryLocator();
 
@@ -186,7 +183,7 @@ namespace FMScanner.FastZipReader
         internal ulong NumberOfEntriesTotal;
         internal ulong OffsetOfCentralDirectory;
 
-        internal static bool TryReadBlock(BinaryReader reader, out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
+        internal static bool TryReadBlock(BinaryReader_Custom reader, out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
         {
             zip64EOCDRecord = new Zip64EndOfCentralDirectoryRecord();
 
@@ -211,7 +208,7 @@ namespace FMScanner.FastZipReader
         private const uint SignatureConstant = 0x04034B50;
 
         // will not throw end of stream exception
-        internal static bool TrySkipBlock(BinaryReader reader)
+        internal static bool TrySkipBlock(BinaryReader_Custom reader)
         {
             const int offsetToFilenameLength = 22; // from the point after the signature
 
@@ -253,7 +250,7 @@ namespace FMScanner.FastZipReader
 
         // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
         // in either case, the zip64 extra field info will be incorporated into other fields
-        internal static bool TryReadBlock(BinaryReader reader, out ZipCentralDirectoryFileHeader header)
+        internal static bool TryReadBlock(BinaryReader_Custom reader, out ZipCentralDirectoryFileHeader header)
         {
             header = new ZipCentralDirectoryFileHeader();
 
@@ -323,7 +320,7 @@ namespace FMScanner.FastZipReader
         internal ushort NumberOfEntriesInTheCentralDirectory;
         internal uint OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
 
-        internal static bool TryReadBlock(BinaryReader reader, out ZipEndOfCentralDirectoryBlock eocdBlock)
+        internal static bool TryReadBlock(BinaryReader_Custom reader, out ZipEndOfCentralDirectoryBlock eocdBlock)
         {
             eocdBlock = new ZipEndOfCentralDirectoryBlock();
             if (reader.ReadUInt32() != SignatureConstant) return false;

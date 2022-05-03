@@ -16,6 +16,10 @@ namespace FMScanner.FastZipReader
 {
     public sealed class ZipArchiveFast : IDisposable
     {
+        // @Fen_added: Instantiate this once and pass it every time, otherwise we're just constructing and GC-ing
+        // a default UTF8Encoding object a bazillion times.
+        internal static readonly Encoding UTF8EncodingNoBOM = new UTF8Encoding();
+
         private readonly List<ZipArchiveEntry> _entries;
         private readonly ReadOnlyCollection<ZipArchiveEntry> _entriesCollection;
         private bool _readEntries;
@@ -25,7 +29,7 @@ namespace FMScanner.FastZipReader
         private readonly Stream? _backingStream;
         private Encoding? _entryNameEncoding;
 
-        internal readonly BinaryReader ArchiveReader;
+        internal readonly BinaryReader_Custom ArchiveReader;
 
         internal readonly Stream ArchiveStream;
 
@@ -115,14 +119,14 @@ namespace FMScanner.FastZipReader
                 if (!stream.CanSeek)
                 {
                     _backingStream = stream;
-                    extraTempStream = stream = new MemoryStream();
+                    extraTempStream = stream = new MemoryStream_Custom();
                     _backingStream.CopyTo(stream);
                     stream.Seek(0, SeekOrigin.Begin);
                 }
 
                 ArchiveStream = stream;
 
-                ArchiveReader = new BinaryReader(ArchiveStream);
+                ArchiveReader = new BinaryReader_Custom(ArchiveStream);
                 _entries = new List<ZipArchiveEntry>();
                 _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
                 _readEntries = false;
