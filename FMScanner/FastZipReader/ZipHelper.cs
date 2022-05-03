@@ -57,7 +57,13 @@ namespace FMScanner.FastZipReader
         internal const uint Mask32Bit = 0xFFFFFFFF;
         internal const ushort Mask16Bit = 0xFFFF;
 
-        private const int BackwardsSeekingBufferSize = 32;
+        private const int _backwardsSeekingBufferSize = 32;
+        private const int throwAwayBufferSize = 64;
+
+        // Don't recreate constantly
+        // Statics for ergonomics of calling - they're both tiny so who cares if they stay around forever
+        private static readonly byte[] _backwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
+        private static readonly byte[] _throwawayBuffer = new byte[throwAwayBufferSize];
 
         /// <summary>
         /// Reads exactly bytesToRead out of stream, unless it is out of bytes
@@ -85,20 +91,20 @@ namespace FMScanner.FastZipReader
         {
             int bufferPointer = 0;
             uint currentSignature = 0;
-            byte[] buffer = new byte[BackwardsSeekingBufferSize];
+            Array.Clear(_backwardsSeekingBuffer, 0, _backwardsSeekingBuffer.Length);
 
             bool outOfBytes = false;
             bool signatureFound = false;
 
             while (!signatureFound && !outOfBytes)
             {
-                outOfBytes = SeekBackwardsAndRead(stream, buffer, out bufferPointer);
+                outOfBytes = SeekBackwardsAndRead(stream, _backwardsSeekingBuffer, out bufferPointer);
 
-                Debug.Assert(bufferPointer < buffer.Length);
+                Debug.Assert(bufferPointer < _backwardsSeekingBuffer.Length);
 
                 while (bufferPointer >= 0 && !signatureFound)
                 {
-                    currentSignature = (currentSignature << 8) | buffer[bufferPointer];
+                    currentSignature = (currentSignature << 8) | _backwardsSeekingBuffer[bufferPointer];
                     if (currentSignature == signatureToFind)
                     {
                         signatureFound = true;
@@ -128,9 +134,9 @@ namespace FMScanner.FastZipReader
             Debug.Assert(numBytesLeft >= 0);
             while (numBytesLeft != 0)
             {
-                const int throwAwayBufferSize = 64;
+                Array.Clear(_throwawayBuffer, 0, _throwawayBuffer.Length);
                 int numBytesToSkip = numBytesLeft > throwAwayBufferSize ? throwAwayBufferSize : (int)numBytesLeft;
-                int numBytesActuallySkipped = stream.Read(new byte[throwAwayBufferSize], 0, numBytesToSkip);
+                int numBytesActuallySkipped = stream.Read(_throwawayBuffer, 0, numBytesToSkip);
                 if (numBytesActuallySkipped == 0) throw new IOException(SR.UnexpectedEndOfStream);
                 numBytesLeft -= numBytesActuallySkipped;
             }
