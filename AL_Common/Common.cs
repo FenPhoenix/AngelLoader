@@ -817,6 +817,9 @@ namespace AL_Common
             return ret;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Clear(this Array array) => Array.Clear(array, 0, array.Length);
+
         #region Clear and add
 
         public static void ClearAndAdd<T>(this List<T> list, T item)
