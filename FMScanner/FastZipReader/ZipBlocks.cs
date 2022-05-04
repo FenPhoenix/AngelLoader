@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.IO;
-using System.Text;
 
 namespace FMScanner.FastZipReader
 {
@@ -109,41 +109,47 @@ namespace FMScanner.FastZipReader
 
             if (extraField.Tag != TagConstant) return false;
 
-            // this pattern needed because nested using blocks trigger CA2202
-            MemoryStream_Custom? ms = null;
-            try
+            zip64Block._size = extraField.Size;
+
+            ushort expectedSize = 0;
+
+            if (readUncompressedSize) expectedSize += 8;
+            if (readCompressedSize) expectedSize += 8;
+            if (readLocalHeaderOffset) expectedSize += 8;
+            if (readStartDiskNumber) expectedSize += 4;
+
+            // if it is not the expected size, perhaps there is another extra field that matches
+            if (expectedSize != zip64Block._size) return false;
+
+            // No need for a MemoryStream, just read straight out of the array
+            int arrayIndex = 0;
+            if (readUncompressedSize)
             {
-                ms = new MemoryStream_Custom(extraField.Data);
-
-                zip64Block._size = extraField.Size;
-
-                ushort expectedSize = 0;
-
-                if (readUncompressedSize) expectedSize += 8;
-                if (readCompressedSize) expectedSize += 8;
-                if (readLocalHeaderOffset) expectedSize += 8;
-                if (readStartDiskNumber) expectedSize += 4;
-
-                // if it is not the expected size, perhaps there is another extra field that matches
-                if (expectedSize != zip64Block._size) return false;
-
-                if (readUncompressedSize) zip64Block.UncompressedSize = BinRead.ReadInt64(ms);
-                if (readCompressedSize) zip64Block.CompressedSize = BinRead.ReadInt64(ms);
-                if (readLocalHeaderOffset) zip64Block.LocalHeaderOffset = BinRead.ReadInt64(ms);
-                if (readStartDiskNumber) zip64Block.StartDiskNumber = BinRead.ReadInt32(ms);
-
-                // original values are unsigned, so implies value is too big to fit in signed integer
-                if (zip64Block.UncompressedSize < 0) throw new InvalidDataException(SR.FieldTooBigUncompressedSize);
-                if (zip64Block.CompressedSize < 0) throw new InvalidDataException(SR.FieldTooBigCompressedSize);
-                if (zip64Block.LocalHeaderOffset < 0) throw new InvalidDataException(SR.FieldTooBigLocalHeaderOffset);
-                if (zip64Block.StartDiskNumber < 0) throw new InvalidDataException(SR.FieldTooBigStartDiskNumber);
-
-                return true;
+                zip64Block.UncompressedSize = BitConverter.ToInt64(extraField.Data, arrayIndex);
+                arrayIndex += 8;
             }
-            finally
+            if (readCompressedSize)
             {
-                ms?.Dispose();
+                zip64Block.CompressedSize = BitConverter.ToInt64(extraField.Data, arrayIndex);
+                arrayIndex += 8;
             }
+            if (readLocalHeaderOffset)
+            {
+                zip64Block.LocalHeaderOffset = BitConverter.ToInt64(extraField.Data, arrayIndex);
+                arrayIndex += 8;
+            }
+            if (readStartDiskNumber)
+            {
+                zip64Block.StartDiskNumber = BitConverter.ToInt32(extraField.Data, arrayIndex);
+            }
+
+            // original values are unsigned, so implies value is too big to fit in signed integer
+            if (zip64Block.UncompressedSize < 0) throw new InvalidDataException(SR.FieldTooBigUncompressedSize);
+            if (zip64Block.CompressedSize < 0) throw new InvalidDataException(SR.FieldTooBigCompressedSize);
+            if (zip64Block.LocalHeaderOffset < 0) throw new InvalidDataException(SR.FieldTooBigLocalHeaderOffset);
+            if (zip64Block.StartDiskNumber < 0) throw new InvalidDataException(SR.FieldTooBigStartDiskNumber);
+
+            return true;
         }
     }
 
