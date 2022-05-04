@@ -37,7 +37,7 @@ namespace FMScanner.FastZipReader
             if (num > _length)
             {
                 _position = _length;
-                __Error.EndOfFile();
+                ThrowHelper.EndOfFile();
             }
             return (int)_buffer[num - 4] | (int)_buffer[num - 3] << 8 | (int)_buffer[num - 2] << 16 | (int)_buffer[num - 1] << 24;
         }

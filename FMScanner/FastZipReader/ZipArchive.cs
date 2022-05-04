@@ -26,7 +26,6 @@ namespace FMScanner.FastZipReader
         private Encoding? _entryNameEncoding;
 
         internal readonly SubReadStream ArchiveSubReadStream;
-        internal readonly BinaryReader_Custom ArchiveReader;
 
         internal readonly Stream ArchiveStream;
 
@@ -125,7 +124,6 @@ namespace FMScanner.FastZipReader
 
                 ArchiveSubReadStream = new SubReadStream(ArchiveStream);
 
-                ArchiveReader = new BinaryReader_Custom(ArchiveStream);
                 _entries = new List<ZipArchiveEntry>();
                 _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
                 _readEntries = false;
@@ -213,7 +211,7 @@ namespace FMScanner.FastZipReader
                 long eocdStart = ArchiveStream.Position;
 
                 // read the EOCD
-                bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(ArchiveReader, out ZipEndOfCentralDirectoryBlock eocd);
+                bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(ArchiveStream, out ZipEndOfCentralDirectoryBlock eocd);
                 Debug.Assert(eocdProper); // we just found this using the signature finder, so it should be okay
 
                 if (eocd.NumberOfThisDisk != eocd.NumberOfTheDiskWithTheStartOfTheCentralDirectory)
@@ -243,7 +241,7 @@ namespace FMScanner.FastZipReader
                     if (ZipHelper.SeekBackwardsToSignature(ArchiveStream, Zip64EndOfCentralDirectoryLocator.SignatureConstant))
                     {
                         // use locator to get to Zip64EOCD
-                        bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(ArchiveReader, out Zip64EndOfCentralDirectoryLocator locator);
+                        bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(ArchiveStream, out Zip64EndOfCentralDirectoryLocator locator);
                         Debug.Assert(zip64EOCDLocatorProper); // we just found this using the signature finder, so it should be okay
 
                         if (locator.OffsetOfZip64EOCD > long.MaxValue)
@@ -255,7 +253,7 @@ namespace FMScanner.FastZipReader
                         ArchiveStream.Seek(zip64EOCDOffset, SeekOrigin.Begin);
 
                         // read Zip64EOCD
-                        if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(ArchiveReader, out Zip64EndOfCentralDirectoryRecord record))
+                        if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(ArchiveStream, out Zip64EndOfCentralDirectoryRecord record))
                         {
                             throw new InvalidDataException(SR.Zip64EOCDNotWhereExpected);
                         }
@@ -312,7 +310,6 @@ namespace FMScanner.FastZipReader
             {
                 ArchiveStream.Dispose();
                 _backingStream?.Dispose();
-                ArchiveReader?.Dispose();
 
                 _isDisposed = true;
             }

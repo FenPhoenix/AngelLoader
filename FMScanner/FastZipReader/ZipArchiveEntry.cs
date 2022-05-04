@@ -225,7 +225,7 @@ namespace FMScanner.FastZipReader
             }
 
             Archive.ArchiveStream.Seek(_offsetOfLocalHeader, SeekOrigin.Begin);
-            if (!ZipLocalFileHeader.TrySkipBlock(Archive.ArchiveReader))
+            if (!ZipLocalFileHeader.TrySkipBlock(Archive.ArchiveStream))
             {
                 message = SR.LocalFileHeaderCorrupt;
                 return false;

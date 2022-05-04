@@ -1011,6 +1011,16 @@ namespace AngelLoader
                         }
                     }
 
+#if false
+                    // Debug - when testing custom zip reader for identicality
+                    foreach (var item in driveDataDict)
+                    {
+                        Trace.WriteLine(item.Value.TotalExtractedSizeOfAllFMsForThisDisk);
+                    }
+
+                    return false;
+#endif
+
                     var freeSpaceCalcFailedLines = new HashSetI(SupportedGameCount);
                     var notEnoughFreeSpaceLines = new HashSetI(SupportedGameCount);
                     for (int i = 0; i < SupportedGameCount; i++)
