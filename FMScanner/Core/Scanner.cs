@@ -1811,7 +1811,7 @@ namespace FMScanner
                 // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
                 if (_fmIsZip)
                 {
-                    using var es = _archive.Entries[missFlag.Index].Open();
+                    using var es = _archive.OpenEntry(_archive.Entries[missFlag.Index]);
                     mfLines = ReadAllLines(es, Encoding.UTF8);
                 }
                 else
@@ -1889,7 +1889,7 @@ namespace FMScanner
 
             if (_fmIsZip)
             {
-                using var es = _archive.Entries[file.Index].Open();
+                using var es = _archive.OpenEntry(_archive.Entries[file.Index]);
                 fmInfoXml.Load(es);
             }
             else
@@ -1950,7 +1950,7 @@ namespace FMScanner
             if (_fmIsZip)
             {
                 var e = _archive.Entries[file.Index];
-                using var es = e.Open();
+                using var es = _archive.OpenEntry(e);
                 iniLines = ReadAllLinesE(es, e.Length);
             }
             else
@@ -2130,7 +2130,7 @@ namespace FMScanner
             if (_fmIsZip)
             {
                 var e = _archive.Entries[file.Index];
-                using var es = e.Open();
+                using var es = _archive.OpenEntry(e);
                 lines = ReadAllLinesE(es, e.Length);
             }
             else
@@ -2282,7 +2282,7 @@ namespace FMScanner
                          amount of memory. Any other time I would choose ultimate speed, but RTF files can be
                          extremely large (due to often containing images), so I'm erring on the side of caution.
                         */
-                        readmeStream = readmeEntry!.Open();
+                        readmeStream = _archive.OpenEntry(readmeEntry!);
                     }
 
                     // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
@@ -2309,7 +2309,7 @@ namespace FMScanner
                         if (_fmIsZip)
                         {
                             readmeStream?.Dispose();
-                            readmeStream = readmeEntry!.Open();
+                            readmeStream = _archive.OpenEntry(readmeEntry!);
                             (success, text) = rtfConverter.Convert(readmeStream, readmeFileLen);
                         }
                         else
@@ -2332,7 +2332,7 @@ namespace FMScanner
                             // Plain text, so load the whole thing in one go
                             readmeStream?.Dispose();
                             readmeStream = new MemoryStream(readmeFileLen);
-                            using var es = readmeEntry!.Open();
+                            using var es = _archive.OpenEntry(readmeEntry!);
                             es.CopyTo(readmeStream);
                         }
 
@@ -2755,7 +2755,7 @@ namespace FMScanner
             if (_fmIsZip)
             {
                 var e = _archive.Entries[newGameStrFile.Index];
-                using var es = e.Open();
+                using var es = _archive.OpenEntry(e);
                 lines = ReadAllLinesE(es, e.Length);
             }
             else
@@ -2900,7 +2900,7 @@ namespace FMScanner
                 if (_fmIsZip)
                 {
                     var e = _archive.Entries[titlesFile.Index];
-                    using var es = e.Open();
+                    using var es = _archive.OpenEntry(e);
                     titlesStrLines = ReadAllLinesE(es, e.Length);
                 }
                 else
@@ -3530,7 +3530,7 @@ namespace FMScanner
             }
 
             using (var sr = _fmIsZip
-                ? new BinaryReader(misFileZipEntry.Open(), Encoding.ASCII, false)
+                ? new BinaryReader(_archive.OpenEntry(misFileZipEntry), Encoding.ASCII, false)
                 : new BinaryReader(File.OpenRead(misFileOnDisk), Encoding.ASCII, false))
             {
                 for (int i = 0; i < locations.Length; i++)
@@ -3627,7 +3627,7 @@ namespace FMScanner
             {
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
-                using Stream stream = smallestGamFile != null ? gamFileZipEntry.Open() : misFileZipEntry.Open();
+                using Stream stream = smallestGamFile != null ? _archive.OpenEntry(gamFileZipEntry) : _archive.OpenEntry(misFileZipEntry);
                 ret.Game = StreamContainsIdentString(stream, Thief2UniqueString)
                     ? Game.Thief2
                     : Game.Thief1;
@@ -3692,7 +3692,7 @@ namespace FMScanner
             // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
             if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
             {
-                using Stream stream = _fmIsZip ? misFileZipEntry.Open() : File.OpenRead(misFileOnDisk);
+                using Stream stream = _fmIsZip ? _archive.OpenEntry(misFileZipEntry) : File.OpenRead(misFileOnDisk);
                 if (StreamContainsIdentString(stream, MAPPARAM))
                 {
                     ret.Game = Game.SS2;
