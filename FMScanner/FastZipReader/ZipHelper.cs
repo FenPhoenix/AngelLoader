@@ -213,10 +213,7 @@ namespace FMScanner.FastZipReader
                 return new DateTime(ValidZipDate_YearMin, 1, 1, 0, 0, 0);
             }
         }
-    }
 
-    internal static class ZipHelper
-    {
         // Static for memory, one instance is only 48 bytes but infinity billion instances are infinity billion bytes
         // @THREADING: Not thread safe
         internal static readonly SubReadStream ArchiveSubReadStream = new();

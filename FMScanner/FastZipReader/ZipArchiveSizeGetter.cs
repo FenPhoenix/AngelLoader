@@ -43,7 +43,7 @@ namespace FMScanner.FastZipReader
                         stream.Seek(0, SeekOrigin.Begin);
                     }
 
-                    ZipHelper.ArchiveSubReadStream.SetSuperStream(stream);
+                    ZipHelpers.ArchiveSubReadStream.SetSuperStream(stream);
 
                     (centralDirectoryStart, expectedNumberOfEntries) = ReadEndOfCentralDirectory(stream);
                 }
@@ -61,7 +61,7 @@ namespace FMScanner.FastZipReader
                 long numberOfEntries = 0;
 
                 //read the central directory
-                while (ZipCentralDirectoryFileHeader.TryReadBlock(stream, ZipHelper.ArchiveSubReadStream, sizeOnly: true, out var currentHeader))
+                while (ZipCentralDirectoryFileHeader.TryReadBlock(stream, ZipHelpers.ArchiveSubReadStream, sizeOnly: true, out var currentHeader))
                 {
                     totalSize += currentHeader.UncompressedSize;
                     numberOfEntries++;
@@ -81,7 +81,7 @@ namespace FMScanner.FastZipReader
             finally
             {
                 stream.Dispose();
-                ZipHelper.ArchiveSubReadStream.SetSuperStream(null);
+                ZipHelpers.ArchiveSubReadStream.SetSuperStream(null);
 
                 backingStream?.Dispose();
                 extraTempStream?.Dispose();
@@ -100,7 +100,7 @@ namespace FMScanner.FastZipReader
             {
                 // this seeks to the start of the end of central directory record
                 stream.Seek(-ZipEndOfCentralDirectoryBlock.SizeOfBlockWithoutSignature, SeekOrigin.End);
-                if (!ZipHelper.SeekBackwardsToSignature(stream, ZipEndOfCentralDirectoryBlock.SignatureConstant))
+                if (!ZipHelpers.SeekBackwardsToSignature(stream, ZipEndOfCentralDirectoryBlock.SignatureConstant))
                 {
                     throw new InvalidDataException(SR.EOCDNotFound);
                 }
@@ -126,15 +126,15 @@ namespace FMScanner.FastZipReader
                 // only bother looking for zip64 EOCD stuff if we suspect it is needed because some value is FFFFFFFFF
                 // because these are the only two values we need, we only worry about these
                 // if we don't find the zip64 EOCD, we just give up and try to use the original values
-                if (eocd.NumberOfThisDisk == ZipHelper.Mask16Bit ||
-                    eocd.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber == ZipHelper.Mask32Bit ||
-                    eocd.NumberOfEntriesInTheCentralDirectory == ZipHelper.Mask16Bit)
+                if (eocd.NumberOfThisDisk == ZipHelpers.Mask16Bit ||
+                    eocd.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber == ZipHelpers.Mask32Bit ||
+                    eocd.NumberOfEntriesInTheCentralDirectory == ZipHelpers.Mask16Bit)
                 {
                     // we need to look for zip 64 EOCD stuff
                     // seek to the zip 64 EOCD locator
                     stream.Seek(eocdStart - Zip64EndOfCentralDirectoryLocator.SizeOfBlockWithoutSignature, SeekOrigin.Begin);
                     // if we don't find it, assume it doesn't exist and use data from normal eocd
-                    if (ZipHelper.SeekBackwardsToSignature(stream, Zip64EndOfCentralDirectoryLocator.SignatureConstant))
+                    if (ZipHelpers.SeekBackwardsToSignature(stream, Zip64EndOfCentralDirectoryLocator.SignatureConstant))
                     {
                         // use locator to get to Zip64EOCD
                         bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(stream, out Zip64EndOfCentralDirectoryLocator locator);

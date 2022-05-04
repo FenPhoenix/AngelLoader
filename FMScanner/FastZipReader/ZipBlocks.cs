@@ -38,7 +38,7 @@ namespace FMScanner.FastZipReader
             }
             else
             {
-                field.Data = ZipHelper.FieldDataSizeOnlyBuffer;
+                field.Data = ZipHelpers.FieldDataSizeOnlyBuffer;
                 int num = stream.Read(field.Data, 0, 28);
                 stream.Seek(field.Size - num, SeekOrigin.Current);
             }
@@ -302,10 +302,10 @@ namespace FMScanner.FastZipReader
                 stream.Seek(header.FilenameLength, SeekOrigin.Current);
             }
 
-            bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelper.Mask32Bit;
-            bool compressedSizeInZip64 = compressedSizeSmall == ZipHelper.Mask32Bit;
-            bool relativeOffsetInZip64 = relativeOffsetOfLocalHeaderSmall == ZipHelper.Mask32Bit;
-            bool diskNumberStartInZip64 = diskNumberStartSmall == ZipHelper.Mask16Bit;
+            bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelpers.Mask32Bit;
+            bool compressedSizeInZip64 = compressedSizeSmall == ZipHelpers.Mask32Bit;
+            bool relativeOffsetInZip64 = relativeOffsetOfLocalHeaderSmall == ZipHelpers.Mask32Bit;
+            bool diskNumberStartInZip64 = diskNumberStartSmall == ZipHelpers.Mask16Bit;
 
             Zip64ExtraField zip64;
 
