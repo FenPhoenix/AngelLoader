@@ -179,12 +179,9 @@ namespace FMScanner.FastZipReader
 
             // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
 
-            Stream compressedStream = new SubReadStream(
-                Archive.ArchiveStream,
-                (long)_storedOffsetOfCompressedData!,
-                CompressedLength);
+            Archive.ArchiveSubReadStream.Set((long)_storedOffsetOfCompressedData!, CompressedLength);
 
-            return GetDataDecompressor(compressedStream);
+            return GetDataDecompressor(Archive.ArchiveSubReadStream);
         }
 
         private bool IsOpenable(out string message)

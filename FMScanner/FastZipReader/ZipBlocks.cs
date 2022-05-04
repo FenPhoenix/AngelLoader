@@ -250,9 +250,11 @@ namespace FMScanner.FastZipReader
 
         // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
         // in either case, the zip64 extra field info will be incorporated into other fields
-        internal static bool TryReadBlock(BinaryReader_Custom reader, bool fileNameNeeded, out ZipCentralDirectoryFileHeader header)
+        internal static bool TryReadBlock(ZipArchiveFast archive, bool fileNameNeeded, out ZipCentralDirectoryFileHeader header)
         {
             header = new ZipCentralDirectoryFileHeader();
+
+            var reader = archive.ArchiveReader;
 
             if (reader.ReadUInt32() != SignatureConstant) return false;
 
@@ -290,12 +292,12 @@ namespace FMScanner.FastZipReader
             Zip64ExtraField zip64;
 
             long endExtraFields = reader.BaseStream.Position + header.ExtraFieldLength;
-            using (Stream str = new SubReadStream(reader.BaseStream, reader.BaseStream.Position, header.ExtraFieldLength))
-            {
-                zip64 = Zip64ExtraField.GetJustZip64Block(str,
-                    uncompressedSizeInZip64, compressedSizeInZip64,
-                    relativeOffsetInZip64, diskNumberStartInZip64);
-            }
+
+            archive.ArchiveSubReadStream.Set(reader.BaseStream.Position, header.ExtraFieldLength);
+
+            zip64 = Zip64ExtraField.GetJustZip64Block(archive.ArchiveSubReadStream,
+                uncompressedSizeInZip64, compressedSizeInZip64,
+                relativeOffsetInZip64, diskNumberStartInZip64);
 
             // There are zip files that have malformed ExtraField blocks in which GetJustZip64Block() silently
             // bails out without reading all the way to the end of the ExtraField block. Thus we must force the

@@ -25,6 +25,7 @@ namespace FMScanner.FastZipReader
         private readonly Stream? _backingStream;
         private Encoding? _entryNameEncoding;
 
+        internal readonly SubReadStream ArchiveSubReadStream;
         internal readonly BinaryReader_Custom ArchiveReader;
 
         internal readonly Stream ArchiveStream;
@@ -122,6 +123,8 @@ namespace FMScanner.FastZipReader
 
                 ArchiveStream = stream;
 
+                ArchiveSubReadStream = new SubReadStream(ArchiveStream);
+
                 ArchiveReader = new BinaryReader_Custom(ArchiveStream);
                 _entries = new List<ZipArchiveEntry>();
                 _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
@@ -175,7 +178,7 @@ namespace FMScanner.FastZipReader
                 long numberOfEntries = 0;
 
                 //read the central directory
-                while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveReader, _decodeEntryNames, out var currentHeader))
+                while (ZipCentralDirectoryFileHeader.TryReadBlock(this, _decodeEntryNames, out var currentHeader))
                 {
                     _entries.Add(new ZipArchiveEntry(this, currentHeader));
                     numberOfEntries++;
