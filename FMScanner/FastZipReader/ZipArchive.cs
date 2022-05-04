@@ -16,9 +16,8 @@ namespace FMScanner.FastZipReader
 {
     public sealed class ZipArchiveFast : IDisposable
     {
-        private readonly List<ZipArchiveEntry> _entries;
-        private readonly ReadOnlyCollection<ZipArchiveEntry> _entriesCollection;
-        private bool _readEntries;
+        private List<ZipArchiveEntry>? _entries;
+        private ReadOnlyCollection<ZipArchiveEntry>? _entriesCollection;
         private long _centralDirectoryStart; //only valid after ReadCentralDirectory
         private bool _isDisposed;
         private long _expectedNumberOfEntries;
@@ -124,9 +123,6 @@ namespace FMScanner.FastZipReader
 
                 ArchiveSubReadStream = new SubReadStream(ArchiveStream);
 
-                _entries = new List<ZipArchiveEntry>();
-                _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
-                _readEntries = false;
                 _centralDirectoryStart = 0; // invalid until ReadCentralDirectory
                 _isDisposed = false;
                 NumberOfThisDisk = 0; // invalid until ReadCentralDirectory
@@ -156,13 +152,14 @@ namespace FMScanner.FastZipReader
             {
                 ThrowIfDisposed();
 
-                if (!_readEntries)
+                if (_entries == null)
                 {
+                    _entries = new List<ZipArchiveEntry>((int)_expectedNumberOfEntries);
+                    _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
                     ReadCentralDirectory();
-                    _readEntries = true;
                 }
 
-                return _entriesCollection;
+                return _entriesCollection!;
             }
         }
 
