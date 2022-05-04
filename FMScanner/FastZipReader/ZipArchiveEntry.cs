@@ -124,7 +124,7 @@ namespace FMScanner.FastZipReader
 
             // Sacrifice a slight amount of time for safety. Zips entry names are emphatically NOT supposed to
             // have backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
-            FullName = archive.DecodeEntryNames ? DecodeEntryName(cd.Filename).Replace('\\', '/') : "";
+            FullName = cd.Filename != null ? DecodeEntryName(cd.Filename).Replace('\\', '/') : "";
             // Lazy-load Name so we don't preemptively do a ton of Substring() calls when we don't need to.
             _versionMadeByCompatibility = (ZipVersionMadeByPlatform)cd.VersionMadeByCompatibility;
         }

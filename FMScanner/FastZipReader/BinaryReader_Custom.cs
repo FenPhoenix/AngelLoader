@@ -1,14 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
-using AL_Common;
 
 namespace FMScanner.FastZipReader
 {
     public sealed class BinaryReader_Custom : IDisposable
     {
-        private static readonly int _encodingMaxByteCount = ZipArchiveFast.UTF8EncodingNoBOM.GetMaxByteCount(1).ClampToMin(16);
-        private static readonly byte[] _buffer = new byte[_encodingMaxByteCount];
+        private static readonly byte[] _buffer = new byte[16];
         private readonly bool _isMemoryStream;
 
         public readonly Stream BaseStream;
@@ -26,7 +23,8 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
         public byte ReadByte()
         {
-            int num = BaseStream.ReadByte();
+            // Avoid calling Read() because it allocates a 1-byte buffer every time (ridiculous)
+            int num = BaseStream.Read(_buffer, 0, 1);
             if (num == -1) __Error.EndOfFile();
             return (byte)num;
         }

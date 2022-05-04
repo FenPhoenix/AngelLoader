@@ -246,11 +246,11 @@ namespace FMScanner.FastZipReader
         internal int DiskNumberStart;
         internal long RelativeOffsetOfLocalHeader;
 
-        internal byte[] Filename;
+        internal byte[]? Filename;
 
         // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
         // in either case, the zip64 extra field info will be incorporated into other fields
-        internal static bool TryReadBlock(BinaryReader_Custom reader, out ZipCentralDirectoryFileHeader header)
+        internal static bool TryReadBlock(BinaryReader_Custom reader, bool fileNameNeeded, out ZipCentralDirectoryFileHeader header)
         {
             header = new ZipCentralDirectoryFileHeader();
 
@@ -273,7 +273,14 @@ namespace FMScanner.FastZipReader
             reader.ReadUInt32(); // ExternalFileAttributes
             uint relativeOffsetOfLocalHeaderSmall = reader.ReadUInt32();
 
-            header.Filename = reader.ReadBytes(header.FilenameLength);
+            if (fileNameNeeded)
+            {
+                header.Filename = reader.ReadBytes(header.FilenameLength);
+            }
+            else
+            {
+                reader.BaseStream.Seek(header.FilenameLength, SeekOrigin.Current);
+            }
 
             bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelper.Mask32Bit;
             bool compressedSizeInZip64 = compressedSizeSmall == ZipHelper.Mask32Bit;
@@ -333,7 +340,7 @@ namespace FMScanner.FastZipReader
             eocdBlock.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = reader.ReadUInt32();
 
             ushort commentLength = reader.ReadUInt16();
-            reader.ReadBytes(commentLength); // ArchiveComment
+            reader.BaseStream.Seek(commentLength, SeekOrigin.Current); // ArchiveComment
 
             return true;
         }

@@ -16,10 +16,6 @@ namespace FMScanner.FastZipReader
 {
     public sealed class ZipArchiveFast : IDisposable
     {
-        // @Fen_added: Instantiate this once and pass it every time, otherwise we're just constructing and GC-ing
-        // a default UTF8Encoding object a bazillion times.
-        internal static readonly Encoding UTF8EncodingNoBOM = new UTF8Encoding();
-
         private readonly List<ZipArchiveEntry> _entries;
         private readonly ReadOnlyCollection<ZipArchiveEntry> _entriesCollection;
         private bool _readEntries;
@@ -35,7 +31,7 @@ namespace FMScanner.FastZipReader
 
         internal uint NumberOfThisDisk;
 
-        internal readonly bool DecodeEntryNames;
+        private readonly bool _decodeEntryNames;
 
         internal Encoding? EntryNameEncoding
         {
@@ -99,7 +95,7 @@ namespace FMScanner.FastZipReader
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            DecodeEntryNames = decodeEntryNames;
+            _decodeEntryNames = decodeEntryNames;
 
             EntryNameEncoding = Encoding.UTF8;
 
@@ -119,7 +115,7 @@ namespace FMScanner.FastZipReader
                 if (!stream.CanSeek)
                 {
                     _backingStream = stream;
-                    extraTempStream = stream = new MemoryStream_Custom();
+                    extraTempStream = stream = new MemoryStream();
                     _backingStream.CopyTo(stream);
                     stream.Seek(0, SeekOrigin.Begin);
                 }
@@ -179,7 +175,7 @@ namespace FMScanner.FastZipReader
                 long numberOfEntries = 0;
 
                 //read the central directory
-                while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveReader, out var currentHeader))
+                while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveReader, _decodeEntryNames, out var currentHeader))
                 {
                     _entries.Add(new ZipArchiveEntry(this, currentHeader));
                     numberOfEntries++;
