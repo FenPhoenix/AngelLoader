@@ -22,7 +22,6 @@ namespace FMScanner.FastZipReader
         private long _centralDirectoryStart; //only valid after ReadCentralDirectory
         private bool _isDisposed;
         private long _expectedNumberOfEntries;
-        private readonly Stream? _backingStream;
         private Encoding? _entryNameEncoding;
 
         internal readonly SubReadStream ArchiveSubReadStream;
@@ -102,42 +101,33 @@ namespace FMScanner.FastZipReader
             // Fen's note: Inlined Init() for nullable detection purposes...
             #region Init
 
-            Stream? extraTempStream = null;
-
-            try
+            if (!stream.CanRead)
             {
-                _backingStream = null;
+                throw new ArgumentException(SR.ReadModeCapabilities);
+            }
 
-                if (!stream.CanRead)
-                {
-                    throw new ArgumentException(SR.ReadModeCapabilities);
-                }
-                if (!stream.CanSeek)
-                {
-                    _backingStream = stream;
-                    extraTempStream = stream = new MemoryStream();
-                    _backingStream.CopyTo(stream);
-                    stream.Seek(0, SeekOrigin.Begin);
-                }
+            if (!stream.CanSeek)
+            {
+                ArchiveStream = new MemoryStream();
+                stream.CopyTo(ArchiveStream);
 
+                ArchiveStream.Seek(0, SeekOrigin.Begin);
+            }
+            else
+            {
                 ArchiveStream = stream;
-
-                ArchiveSubReadStream = new SubReadStream(ArchiveStream);
-
-                _entries = new List<ZipArchiveEntry>();
-                _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
-                _readEntries = false;
-                _centralDirectoryStart = 0; // invalid until ReadCentralDirectory
-                _isDisposed = false;
-                NumberOfThisDisk = 0; // invalid until ReadCentralDirectory
-
-                ReadEndOfCentralDirectory();
             }
-            catch
-            {
-                extraTempStream?.Dispose();
-                throw;
-            }
+
+            ArchiveSubReadStream = new SubReadStream(ArchiveStream);
+
+            _entries = new List<ZipArchiveEntry>();
+            _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
+            _readEntries = false;
+            _centralDirectoryStart = 0; // invalid until ReadCentralDirectory
+            _isDisposed = false;
+            NumberOfThisDisk = 0; // invalid until ReadCentralDirectory
+
+            ReadEndOfCentralDirectory();
 
             #endregion
         }
@@ -309,8 +299,6 @@ namespace FMScanner.FastZipReader
             if (disposing && !_isDisposed)
             {
                 ArchiveStream.Dispose();
-                _backingStream?.Dispose();
-
                 _isDisposed = true;
             }
         }
