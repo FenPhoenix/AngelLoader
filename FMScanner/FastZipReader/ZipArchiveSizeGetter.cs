@@ -9,7 +9,6 @@ using JetBrains.Annotations;
 
 namespace FMScanner.FastZipReader
 {
-    // @THREADING: Not thread safe
     public static class ZipSize
     {
         /// <summary>
@@ -18,7 +17,7 @@ namespace FMScanner.FastZipReader
         /// <returns>The total uncompressed size of all entries in the archive.</returns>
         /// <exception cref="InvalidDataException"></exception>
         [PublicAPI]
-        public static long GetTotalUncompressedSize(Stream stream)
+        public static long GetTotalUncompressedSize(Stream stream, ZipReusableBundle bundle)
         {
             Stream? extraTempStream = null;
             Stream? backingStream = null;
@@ -43,9 +42,9 @@ namespace FMScanner.FastZipReader
                         stream.Seek(0, SeekOrigin.Begin);
                     }
 
-                    ZipHelpers.ArchiveSubReadStream.SetSuperStream(stream);
+                    bundle.ArchiveSubReadStream.SetSuperStream(stream);
 
-                    (centralDirectoryStart, expectedNumberOfEntries) = ReadEndOfCentralDirectory(stream);
+                    (centralDirectoryStart, expectedNumberOfEntries) = ReadEndOfCentralDirectory(stream, bundle);
                 }
                 catch
                 {
@@ -61,7 +60,7 @@ namespace FMScanner.FastZipReader
                 long numberOfEntries = 0;
 
                 //read the central directory
-                while (ZipCentralDirectoryFileHeader.TryReadBlock(stream, ZipHelpers.ArchiveSubReadStream, sizeOnly: true, out var currentHeader))
+                while (ZipCentralDirectoryFileHeader.TryReadBlock(stream, sizeOnly: true, bundle, out var currentHeader))
                 {
                     totalSize += currentHeader.UncompressedSize;
                     numberOfEntries++;
@@ -81,7 +80,7 @@ namespace FMScanner.FastZipReader
             finally
             {
                 stream.Dispose();
-                ZipHelpers.ArchiveSubReadStream.SetSuperStream(null);
+                bundle.ArchiveSubReadStream.SetSuperStream(null);
 
                 backingStream?.Dispose();
                 extraTempStream?.Dispose();
@@ -92,7 +91,8 @@ namespace FMScanner.FastZipReader
         // This offset gets put in _centralDirectoryStart and the number of this disk gets put in _numberOfThisDisk
         // Also does some verification that this isn't a split/spanned archive
         // Also checks that offset to CD isn't out of bounds
-        private static (long CentralDirectoryStart, long ExpectedNumberOfEntries) ReadEndOfCentralDirectory(Stream stream)
+        private static (long CentralDirectoryStart, long ExpectedNumberOfEntries)
+        ReadEndOfCentralDirectory(Stream stream, ZipReusableBundle bundle)
         {
             long centralDirectoryStart, expectedNumberOfEntries;
 
@@ -100,7 +100,7 @@ namespace FMScanner.FastZipReader
             {
                 // this seeks to the start of the end of central directory record
                 stream.Seek(-ZipEndOfCentralDirectoryBlock.SizeOfBlockWithoutSignature, SeekOrigin.End);
-                if (!ZipHelpers.SeekBackwardsToSignature(stream, ZipEndOfCentralDirectoryBlock.SignatureConstant))
+                if (!ZipHelpers.SeekBackwardsToSignature(stream, ZipEndOfCentralDirectoryBlock.SignatureConstant, bundle))
                 {
                     throw new InvalidDataException(SR.EOCDNotFound);
                 }
@@ -108,7 +108,7 @@ namespace FMScanner.FastZipReader
                 long eocdStart = stream.Position;
 
                 // read the EOCD
-                bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(stream, out ZipEndOfCentralDirectoryBlock eocd);
+                bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(stream, bundle, out ZipEndOfCentralDirectoryBlock eocd);
                 Debug.Assert(eocdProper); // we just found this using the signature finder, so it should be okay
 
                 if (eocd.NumberOfThisDisk != eocd.NumberOfTheDiskWithTheStartOfTheCentralDirectory)
@@ -134,10 +134,10 @@ namespace FMScanner.FastZipReader
                     // seek to the zip 64 EOCD locator
                     stream.Seek(eocdStart - Zip64EndOfCentralDirectoryLocator.SizeOfBlockWithoutSignature, SeekOrigin.Begin);
                     // if we don't find it, assume it doesn't exist and use data from normal eocd
-                    if (ZipHelpers.SeekBackwardsToSignature(stream, Zip64EndOfCentralDirectoryLocator.SignatureConstant))
+                    if (ZipHelpers.SeekBackwardsToSignature(stream, Zip64EndOfCentralDirectoryLocator.SignatureConstant, bundle))
                     {
                         // use locator to get to Zip64EOCD
-                        bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(stream, out Zip64EndOfCentralDirectoryLocator locator);
+                        bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(stream, bundle, out Zip64EndOfCentralDirectoryLocator locator);
                         Debug.Assert(zip64EOCDLocatorProper); // we just found this using the signature finder, so it should be okay
 
                         if (locator.OffsetOfZip64EOCD > long.MaxValue)
@@ -149,7 +149,7 @@ namespace FMScanner.FastZipReader
                         stream.Seek(zip64EOCDOffset, SeekOrigin.Begin);
 
                         // read Zip64EOCD
-                        if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(stream, out Zip64EndOfCentralDirectoryRecord record))
+                        if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(stream, bundle, out Zip64EndOfCentralDirectoryRecord record))
                         {
                             throw new InvalidDataException(SR.Zip64EOCDNotWhereExpected);
                         }

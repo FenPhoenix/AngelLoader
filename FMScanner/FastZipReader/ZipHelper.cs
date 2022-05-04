@@ -8,25 +8,33 @@ using System.IO;
 
 namespace FMScanner.FastZipReader
 {
-    /*
-    Yeah... why use multiple BinaryReader wrappers, one for each stream you want to read, each allocating and
-    disposing a zillion times during the course of reading the zip file, when you can just have a set of static
-    methods that take any stream they're passed with no allocations?
-    
-    "Because then it isn't OOP"
-        -literal thing you hear on stackoverflow
-    */
-    internal static class BinRead
+    internal static class ThrowHelper
     {
-        // @THREADING: Not thread safe
-        private static readonly byte[] _buffer = new byte[16];
+        internal static void EndOfFile() => throw new EndOfStreamException("Environment.GetResourceString(\"IO.EOF_ReadBeyondEOF\")");
+    }
+
+    // @MEM / @THREADING (reusable bundle silliness):
+    // We should try to just make the zip archive classes be like the scanner, where it's one object that just
+    // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
+    public sealed class ZipReusableBundle : IDisposable
+    {
+        public readonly SubReadStream ArchiveSubReadStream = new();
+
+        private const int _backwardsSeekingBufferSize = 32;
+        internal const int ThrowAwayBufferSize = 64;
+
+        internal readonly byte[] BackwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
+        internal readonly byte[] ThrowawayBuffer = new byte[ThrowAwayBufferSize];
+        internal readonly byte[] FieldDataSizeOnlyBuffer = new byte[28];
+
+        private readonly byte[] _buffer = new byte[16];
 
         /// <summary>Reads the next byte from the current stream and advances the current position of the stream by one byte.</summary>
         /// <returns>The next byte read from the current stream.</returns>
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public static byte ReadByte(Stream stream)
+        public byte ReadByte(Stream stream)
         {
             // Avoid calling Read() because it allocates a 1-byte buffer every time (ridiculous)
             int num = stream.Read(_buffer, 0, 1);
@@ -39,7 +47,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public static ushort ReadUInt16(Stream stream)
+        public ushort ReadUInt16(Stream stream)
         {
             FillBuffer(stream, 2);
             return (ushort)((uint)_buffer[0] | (uint)_buffer[1] << 8);
@@ -50,7 +58,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public static int ReadInt32(Stream stream)
+        public int ReadInt32(Stream stream)
         {
             FillBuffer(stream, 4);
             return (int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24;
@@ -61,7 +69,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public static uint ReadUInt32(Stream stream)
+        public uint ReadUInt32(Stream stream)
         {
             FillBuffer(stream, 4);
             return (uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
@@ -72,7 +80,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public static long ReadInt64(Stream stream)
+        public long ReadInt64(Stream stream)
         {
             FillBuffer(stream, 8);
             return (long)(uint)((int)_buffer[4] | (int)_buffer[5] << 8 | (int)_buffer[6] << 16 | (int)_buffer[7] << 24) << 32 | (long)(uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
@@ -83,7 +91,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-        public static ulong ReadUInt64(Stream stream)
+        public ulong ReadUInt64(Stream stream)
         {
             FillBuffer(stream, 8);
             return (ulong)(uint)((int)_buffer[4] | (int)_buffer[5] << 8 | (int)_buffer[6] << 16 | (int)_buffer[7] << 24) << 32 | (ulong)(uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
@@ -98,7 +106,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// <paramref name="count" /> is negative.</exception>
-        public static byte[] ReadBytes(Stream stream, int count)
+        public byte[] ReadBytes(Stream stream, int count)
         {
             if (count < 0)
             {
@@ -138,7 +146,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached before <paramref name="numBytes" /> could be read.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">Requested <paramref name="numBytes" /> is larger than the internal buffer size.</exception>
-        private static void FillBuffer(Stream stream, int numBytes)
+        private void FillBuffer(Stream stream, int numBytes)
         {
             if (numBytes < 0 || numBytes > _buffer.Length)
             {
@@ -164,11 +172,8 @@ namespace FMScanner.FastZipReader
                 while (offset < numBytes);
             }
         }
-    }
 
-    internal static class ThrowHelper
-    {
-        internal static void EndOfFile() => throw new EndOfStreamException("Environment.GetResourceString(\"IO.EOF_ReadBeyondEOF\")");
+        public void Dispose() => ArchiveSubReadStream.Dispose();
     }
 
     internal static class ZipHelpers
@@ -214,22 +219,8 @@ namespace FMScanner.FastZipReader
             }
         }
 
-        // Static for memory, one instance is only 48 bytes but infinity billion instances are infinity billion bytes
-        // @THREADING: Not thread safe
-        internal static readonly SubReadStream ArchiveSubReadStream = new();
-
         internal const uint Mask32Bit = 0xFFFFFFFF;
         internal const ushort Mask16Bit = 0xFFFF;
-
-        private const int _backwardsSeekingBufferSize = 32;
-        private const int throwAwayBufferSize = 64;
-
-        // Don't recreate constantly
-        // Statics for ergonomics of calling - they're both tiny so who cares if they stay around forever
-        // @THREADING: Not thread safe
-        private static readonly byte[] _backwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
-        private static readonly byte[] _throwawayBuffer = new byte[throwAwayBufferSize];
-        internal static readonly byte[] FieldDataSizeOnlyBuffer = new byte[28];
 
         /// <summary>
         /// Reads exactly bytesToRead out of stream, unless it is out of bytes
@@ -257,24 +248,24 @@ namespace FMScanner.FastZipReader
         // assumes all bytes of signatureToFind are non zero, looks backwards from current position in stream,
         // if the signature is found then returns true and positions stream at first byte of signature
         // if the signature is not found, returns false
-        internal static bool SeekBackwardsToSignature(Stream stream, uint signatureToFind)
+        internal static bool SeekBackwardsToSignature(Stream stream, uint signatureToFind, ZipReusableBundle bundle)
         {
             int bufferPointer = 0;
             uint currentSignature = 0;
-            Array.Clear(_backwardsSeekingBuffer, 0, _backwardsSeekingBuffer.Length);
+            Array.Clear(bundle.BackwardsSeekingBuffer, 0, bundle.BackwardsSeekingBuffer.Length);
 
             bool outOfBytes = false;
             bool signatureFound = false;
 
             while (!signatureFound && !outOfBytes)
             {
-                outOfBytes = SeekBackwardsAndRead(stream, _backwardsSeekingBuffer, out bufferPointer);
+                outOfBytes = SeekBackwardsAndRead(stream, bundle.BackwardsSeekingBuffer, out bufferPointer);
 
-                Debug.Assert(bufferPointer < _backwardsSeekingBuffer.Length);
+                Debug.Assert(bufferPointer < bundle.BackwardsSeekingBuffer.Length);
 
                 while (bufferPointer >= 0 && !signatureFound)
                 {
-                    currentSignature = (currentSignature << 8) | _backwardsSeekingBuffer[bufferPointer];
+                    currentSignature = (currentSignature << 8) | bundle.BackwardsSeekingBuffer[bufferPointer];
                     if (currentSignature == signatureToFind)
                     {
                         signatureFound = true;
@@ -298,15 +289,15 @@ namespace FMScanner.FastZipReader
         }
 
         // Skip to a further position downstream (without relying on the stream being seekable)
-        internal static void AdvanceToPosition(this Stream stream, long position)
+        internal static void AdvanceToPosition(this Stream stream, long position, ZipReusableBundle bundle)
         {
             long numBytesLeft = position - stream.Position;
             Debug.Assert(numBytesLeft >= 0);
             while (numBytesLeft != 0)
             {
-                Array.Clear(_throwawayBuffer, 0, _throwawayBuffer.Length);
-                int numBytesToSkip = numBytesLeft > throwAwayBufferSize ? throwAwayBufferSize : (int)numBytesLeft;
-                int numBytesActuallySkipped = stream.Read(_throwawayBuffer, 0, numBytesToSkip);
+                Array.Clear(bundle.ThrowawayBuffer, 0, bundle.ThrowawayBuffer.Length);
+                int numBytesToSkip = numBytesLeft > ZipReusableBundle.ThrowAwayBufferSize ? ZipReusableBundle.ThrowAwayBufferSize : (int)numBytesLeft;
+                int numBytesActuallySkipped = stream.Read(bundle.ThrowawayBuffer, 0, numBytesToSkip);
                 if (numBytesActuallySkipped == 0) throw new IOException(SR.UnexpectedEndOfStream);
                 numBytesLeft -= numBytesActuallySkipped;
             }

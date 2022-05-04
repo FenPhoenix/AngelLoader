@@ -744,7 +744,7 @@ namespace AngelLoader
             }
 
             [MustUseReturnValue]
-            static bool AddArchiveExtractedSize(string archivePath, DriveData driveData)
+            static bool AddArchiveExtractedSize(string archivePath, DriveData driveData, ZipReusableBundle bundle)
             {
                 long fmExtractedSize = 0;
                 try
@@ -768,7 +768,7 @@ namespace AngelLoader
 #else
                         if (_extractCts.IsCancellationRequested) return false;
 
-                        driveData.TotalExtractedSizeOfAllFMsForThisDisk += ZipSize.GetTotalUncompressedSize(File.OpenRead(archivePath));
+                        driveData.TotalExtractedSizeOfAllFMsForThisDisk += ZipSize.GetTotalUncompressedSize(File.OpenRead(archivePath), bundle);
 
                         if (_extractCts.IsCancellationRequested) return false;
 #endif
@@ -985,37 +985,40 @@ namespace AngelLoader
                         if (cancel) return false;
                     }
 
-                    FileNameBoth? darkLoaderArchiveFiles = null;
-                    for (int i = 0; i < fmDataList.Length; i++)
+                    using (var bundle = new ZipReusableBundle())
                     {
-                        var fmData = fmDataList[i];
-
-                        if (!driveDataDict.TryGetValue(GetPathRootSafe(fmData.InstBasePath), out DriveData driveData))
+                        FileNameBoth? darkLoaderArchiveFiles = null;
+                        for (int i = 0; i < fmDataList.Length; i++)
                         {
-                            continue;
-                        }
+                            var fmData = fmDataList[i];
 
-                        if (!AddArchiveExtractedSize(fmData.ArchivePath, driveData)) return false;
+                            if (!driveDataDict.TryGetValue(GetPathRootSafe(fmData.InstBasePath), out DriveData driveData))
+                            {
+                                continue;
+                            }
 
-                        if (_extractCts.IsCancellationRequested) return false;
-
-                        var backupFile = GetBackupFile(
-                            fmData.FM,
-                            cachedDarkLoaderFiles: darkLoaderArchiveFiles,
-                            cachedFMArchivePaths: fmArchivePaths);
-
-                        if (_extractCts.IsCancellationRequested) return false;
-
-                        darkLoaderArchiveFiles = backupFile.Cached_DarkLoaderBackups;
-                        fmArchivePaths = backupFile.Cached_NewBackups;
-
-                        if (backupFile.Found)
-                        {
-                            if (!AddArchiveExtractedSize(backupFile.Name, driveData)) return false;
+                            if (!AddArchiveExtractedSize(fmData.ArchivePath, driveData, bundle)) return false;
 
                             if (_extractCts.IsCancellationRequested) return false;
 
-                            fmData.BackupFile = backupFile;
+                            var backupFile = GetBackupFile(
+                                fmData.FM,
+                                cachedDarkLoaderFiles: darkLoaderArchiveFiles,
+                                cachedFMArchivePaths: fmArchivePaths);
+
+                            if (_extractCts.IsCancellationRequested) return false;
+
+                            darkLoaderArchiveFiles = backupFile.Cached_DarkLoaderBackups;
+                            fmArchivePaths = backupFile.Cached_NewBackups;
+
+                            if (backupFile.Found)
+                            {
+                                if (!AddArchiveExtractedSize(backupFile.Name, driveData, bundle)) return false;
+
+                                if (_extractCts.IsCancellationRequested) return false;
+
+                                fmData.BackupFile = backupFile;
+                            }
                         }
                     }
 

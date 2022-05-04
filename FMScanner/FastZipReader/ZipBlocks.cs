@@ -19,26 +19,31 @@ namespace FMScanner.FastZipReader
 
         // shouldn't ever read the byte at position endExtraField
         // assumes we are positioned at the beginning of an extra field subfield
-        internal static bool TryReadBlock(Stream stream, long endExtraField, bool sizeOnly, out ZipGenericExtraField field)
+        internal static bool TryReadBlock(
+            Stream stream,
+            long endExtraField,
+            bool sizeOnly,
+            ZipReusableBundle bundle,
+            out ZipGenericExtraField field)
         {
             field = new ZipGenericExtraField();
 
             // not enough bytes to read tag + size
             if (endExtraField - stream.Position < 4) return false;
 
-            field.Tag = BinRead.ReadUInt16(stream);
-            field.Size = BinRead.ReadUInt16(stream);
+            field.Tag = bundle.ReadUInt16(stream);
+            field.Size = bundle.ReadUInt16(stream);
 
             // not enough bytes to read the data
             if (endExtraField - stream.Position < field.Size) return false;
 
             if (!sizeOnly)
             {
-                field.Data = BinRead.ReadBytes(stream, field.Size);
+                field.Data = bundle.ReadBytes(stream, field.Size);
             }
             else
             {
-                field.Data = ZipHelpers.FieldDataSizeOnlyBuffer;
+                field.Data = bundle.FieldDataSizeOnlyBuffer;
                 int num = stream.Read(field.Data, 0, 28);
                 stream.Seek(field.Size - num, SeekOrigin.Current);
             }
@@ -85,10 +90,16 @@ namespace FMScanner.FastZipReader
             bool readCompressedSize,
             bool readLocalHeaderOffset,
             bool readStartDiskNumber,
-            bool sizeOnly)
+            bool sizeOnly,
+            ZipReusableBundle bundle)
         {
             Zip64ExtraField zip64Field;
-            while (ZipGenericExtraField.TryReadBlock(extraFieldStream, extraFieldStream.Length, sizeOnly, out var currentExtraField))
+            while (ZipGenericExtraField.TryReadBlock(
+                       extraFieldStream,
+                       extraFieldStream.Length,
+                       sizeOnly,
+                       bundle,
+                       out var currentExtraField))
             {
                 if (TryGetZip64BlockFromGenericExtraField(currentExtraField, readUncompressedSize,
                         readCompressedSize, readLocalHeaderOffset, readStartDiskNumber, out zip64Field))
@@ -177,15 +188,18 @@ namespace FMScanner.FastZipReader
 
         internal ulong OffsetOfZip64EOCD;
 
-        internal static bool TryReadBlock(Stream stream, out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
+        internal static bool TryReadBlock(
+            Stream stream,
+            ZipReusableBundle bundle,
+            out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
         {
             zip64EOCDLocator = new Zip64EndOfCentralDirectoryLocator();
 
-            if (BinRead.ReadUInt32(stream) != SignatureConstant) return false;
+            if (bundle.ReadUInt32(stream) != SignatureConstant) return false;
 
-            BinRead.ReadUInt32(stream); // NumberOfDiskWithZip64EOCD
-            zip64EOCDLocator.OffsetOfZip64EOCD = BinRead.ReadUInt64(stream);
-            BinRead.ReadUInt32(stream); // TotalNumberOfDisks
+            bundle.ReadUInt32(stream); // NumberOfDiskWithZip64EOCD
+            zip64EOCDLocator.OffsetOfZip64EOCD = bundle.ReadUInt64(stream);
+            bundle.ReadUInt32(stream); // TotalNumberOfDisks
             return true;
         }
     }
@@ -199,21 +213,24 @@ namespace FMScanner.FastZipReader
         internal ulong NumberOfEntriesTotal;
         internal ulong OffsetOfCentralDirectory;
 
-        internal static bool TryReadBlock(Stream stream, out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
+        internal static bool TryReadBlock(
+            Stream stream,
+            ZipReusableBundle bundle,
+            out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
         {
             zip64EOCDRecord = new Zip64EndOfCentralDirectoryRecord();
 
-            if (BinRead.ReadUInt32(stream) != SignatureConstant) return false;
+            if (bundle.ReadUInt32(stream) != SignatureConstant) return false;
 
-            BinRead.ReadUInt64(stream); // SizeOfThisRecord
-            BinRead.ReadUInt16(stream); // VersionMadeBy
-            BinRead.ReadUInt16(stream); // VersionNeededToExtract
-            zip64EOCDRecord.NumberOfThisDisk = BinRead.ReadUInt32(stream);
-            BinRead.ReadUInt32(stream); // NumberOfDiskWithStartOfCD
-            zip64EOCDRecord.NumberOfEntriesOnThisDisk = BinRead.ReadUInt64(stream);
-            zip64EOCDRecord.NumberOfEntriesTotal = BinRead.ReadUInt64(stream);
-            BinRead.ReadUInt64(stream); // SizeOfCentralDirectory
-            zip64EOCDRecord.OffsetOfCentralDirectory = BinRead.ReadUInt64(stream);
+            bundle.ReadUInt64(stream); // SizeOfThisRecord
+            bundle.ReadUInt16(stream); // VersionMadeBy
+            bundle.ReadUInt16(stream); // VersionNeededToExtract
+            zip64EOCDRecord.NumberOfThisDisk = bundle.ReadUInt32(stream);
+            bundle.ReadUInt32(stream); // NumberOfDiskWithStartOfCD
+            zip64EOCDRecord.NumberOfEntriesOnThisDisk = bundle.ReadUInt64(stream);
+            zip64EOCDRecord.NumberOfEntriesTotal = bundle.ReadUInt64(stream);
+            bundle.ReadUInt64(stream); // SizeOfCentralDirectory
+            zip64EOCDRecord.OffsetOfCentralDirectory = bundle.ReadUInt64(stream);
 
             return true;
         }
@@ -224,17 +241,17 @@ namespace FMScanner.FastZipReader
         private const uint SignatureConstant = 0x04034B50;
 
         // will not throw end of stream exception
-        internal static bool TrySkipBlock(Stream stream)
+        internal static bool TrySkipBlock(Stream stream, ZipReusableBundle bundle)
         {
             const int offsetToFilenameLength = 22; // from the point after the signature
 
-            if (BinRead.ReadUInt32(stream) != SignatureConstant) return false;
+            if (bundle.ReadUInt32(stream) != SignatureConstant) return false;
             if (stream.Length < stream.Position + offsetToFilenameLength) return false;
 
             stream.Seek(offsetToFilenameLength, SeekOrigin.Current);
 
-            ushort filenameLength = BinRead.ReadUInt16(stream);
-            ushort extraFieldLength = BinRead.ReadUInt16(stream);
+            ushort filenameLength = bundle.ReadUInt16(stream);
+            ushort extraFieldLength = bundle.ReadUInt16(stream);
 
             if (stream.Length < stream.Position + filenameLength + extraFieldLength)
             {
@@ -268,34 +285,34 @@ namespace FMScanner.FastZipReader
         // in either case, the zip64 extra field info will be incorporated into other fields
         internal static bool TryReadBlock(
             Stream stream,
-            SubReadStream subStream,
             bool sizeOnly,
+            ZipReusableBundle bundle,
             out ZipCentralDirectoryFileHeader header)
         {
             header = new ZipCentralDirectoryFileHeader();
 
-            if (BinRead.ReadUInt32(stream) != SignatureConstant) return false;
+            if (bundle.ReadUInt32(stream) != SignatureConstant) return false;
 
-            BinRead.ReadByte(stream); // VersionMadeBySpecification
-            header.VersionMadeByCompatibility = BinRead.ReadByte(stream);
-            BinRead.ReadUInt16(stream); // VersionNeededToExtract
-            header.GeneralPurposeBitFlag = BinRead.ReadUInt16(stream);
-            header.CompressionMethod = BinRead.ReadUInt16(stream);
-            header.LastModified = BinRead.ReadUInt32(stream);
-            BinRead.ReadUInt32(stream); // Crc32
-            uint compressedSizeSmall = BinRead.ReadUInt32(stream);
-            uint uncompressedSizeSmall = BinRead.ReadUInt32(stream);
-            header.FilenameLength = BinRead.ReadUInt16(stream);
-            header.ExtraFieldLength = BinRead.ReadUInt16(stream);
-            header.FileCommentLength = BinRead.ReadUInt16(stream);
-            ushort diskNumberStartSmall = BinRead.ReadUInt16(stream);
-            BinRead.ReadUInt16(stream); // InternalFileAttributes
-            BinRead.ReadUInt32(stream); // ExternalFileAttributes
-            uint relativeOffsetOfLocalHeaderSmall = BinRead.ReadUInt32(stream);
+            bundle.ReadByte(stream); // VersionMadeBySpecification
+            header.VersionMadeByCompatibility = bundle.ReadByte(stream);
+            bundle.ReadUInt16(stream); // VersionNeededToExtract
+            header.GeneralPurposeBitFlag = bundle.ReadUInt16(stream);
+            header.CompressionMethod = bundle.ReadUInt16(stream);
+            header.LastModified = bundle.ReadUInt32(stream);
+            bundle.ReadUInt32(stream); // Crc32
+            uint compressedSizeSmall = bundle.ReadUInt32(stream);
+            uint uncompressedSizeSmall = bundle.ReadUInt32(stream);
+            header.FilenameLength = bundle.ReadUInt16(stream);
+            header.ExtraFieldLength = bundle.ReadUInt16(stream);
+            header.FileCommentLength = bundle.ReadUInt16(stream);
+            ushort diskNumberStartSmall = bundle.ReadUInt16(stream);
+            bundle.ReadUInt16(stream); // InternalFileAttributes
+            bundle.ReadUInt32(stream); // ExternalFileAttributes
+            uint relativeOffsetOfLocalHeaderSmall = bundle.ReadUInt32(stream);
 
             if (!sizeOnly)
             {
-                header.Filename = BinRead.ReadBytes(stream, header.FilenameLength);
+                header.Filename = bundle.ReadBytes(stream, header.FilenameLength);
             }
             else
             {
@@ -311,15 +328,16 @@ namespace FMScanner.FastZipReader
 
             long endExtraFields = stream.Position + header.ExtraFieldLength;
 
-            subStream.Set(stream.Position, header.ExtraFieldLength);
+            bundle.ArchiveSubReadStream.Set(stream.Position, header.ExtraFieldLength);
 
             zip64 = Zip64ExtraField.GetJustZip64Block(
-                subStream,
+                bundle.ArchiveSubReadStream,
                 uncompressedSizeInZip64,
                 compressedSizeInZip64,
                 relativeOffsetInZip64,
                 diskNumberStartInZip64,
-                sizeOnly);
+                sizeOnly,
+                bundle);
 
             // There are zip files that have malformed ExtraField blocks in which GetJustZip64Block() silently
             // bails out without reading all the way to the end of the ExtraField block. Thus we must force the
@@ -330,7 +348,7 @@ namespace FMScanner.FastZipReader
             // Buffer alignments...? I dunno. Anyway. Speed.
             // Also maybe not a good idea to use something that's faster when I don't know why it's faster.
             // But my results are the same as the old method, so herpaderp.
-            stream.AdvanceToPosition(endExtraFields + header.FileCommentLength);
+            stream.AdvanceToPosition(endExtraFields + header.FileCommentLength, bundle);
 
             header.UncompressedSize = zip64.UncompressedSize ?? uncompressedSizeSmall;
             header.CompressedSize = zip64.CompressedSize ?? compressedSizeSmall;
@@ -351,19 +369,22 @@ namespace FMScanner.FastZipReader
         internal ushort NumberOfEntriesInTheCentralDirectory;
         internal uint OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
 
-        internal static bool TryReadBlock(Stream stream, out ZipEndOfCentralDirectoryBlock eocdBlock)
+        internal static bool TryReadBlock(
+            Stream stream,
+            ZipReusableBundle bundle,
+            out ZipEndOfCentralDirectoryBlock eocdBlock)
         {
             eocdBlock = new ZipEndOfCentralDirectoryBlock();
-            if (BinRead.ReadUInt32(stream) != SignatureConstant) return false;
+            if (bundle.ReadUInt32(stream) != SignatureConstant) return false;
 
-            eocdBlock.NumberOfThisDisk = BinRead.ReadUInt16(stream);
-            eocdBlock.NumberOfTheDiskWithTheStartOfTheCentralDirectory = BinRead.ReadUInt16(stream);
-            eocdBlock.NumberOfEntriesInTheCentralDirectoryOnThisDisk = BinRead.ReadUInt16(stream);
-            eocdBlock.NumberOfEntriesInTheCentralDirectory = BinRead.ReadUInt16(stream);
-            BinRead.ReadUInt32(stream); // SizeOfCentralDirectory
-            eocdBlock.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = BinRead.ReadUInt32(stream);
+            eocdBlock.NumberOfThisDisk = bundle.ReadUInt16(stream);
+            eocdBlock.NumberOfTheDiskWithTheStartOfTheCentralDirectory = bundle.ReadUInt16(stream);
+            eocdBlock.NumberOfEntriesInTheCentralDirectoryOnThisDisk = bundle.ReadUInt16(stream);
+            eocdBlock.NumberOfEntriesInTheCentralDirectory = bundle.ReadUInt16(stream);
+            bundle.ReadUInt32(stream); // SizeOfCentralDirectory
+            eocdBlock.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = bundle.ReadUInt32(stream);
 
-            ushort commentLength = BinRead.ReadUInt16(stream);
+            ushort commentLength = bundle.ReadUInt16(stream);
             stream.Seek(commentLength, SeekOrigin.Current); // ArchiveComment
 
             return true;

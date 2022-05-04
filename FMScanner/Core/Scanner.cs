@@ -79,6 +79,7 @@ namespace FMScanner
         #region Disposable
 
         private ZipArchiveFast _archive = null!;
+        private readonly ZipReusableBundle _zipBundle;
 
         #endregion
 
@@ -199,6 +200,8 @@ namespace FMScanner
             // strings. So we build the string arrays dynamically only once here. That way we trade perf where it
             // doesn't matter (this once-only build is mere noise) and keep it where it does, and also save file
             // size.
+
+            _zipBundle = new ZipReusableBundle();
 
             _sevenZipExePath = sevenZipExePath;
 
@@ -708,7 +711,7 @@ namespace FMScanner
                 {
                     try
                     {
-                        _archive = new ZipArchiveFast(File.OpenRead(fm.Path));
+                        _archive = new ZipArchiveFast(File.OpenRead(fm.Path), _zipBundle);
 
                         // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
                         // thrown while loading them. If this passes, we're definitely good.
@@ -4007,6 +4010,11 @@ namespace FMScanner
         #endregion
 
         [PublicAPI]
-        public void Dispose() => _archive?.Dispose();
+        public void Dispose()
+        {
+            // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+            _archive?.Dispose();
+            _zipBundle.Dispose();
+        }
     }
 }
