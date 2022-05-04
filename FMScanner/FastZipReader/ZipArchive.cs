@@ -9,72 +9,45 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
+using System.IO.Compression;
+using FMScanner.FastZipReader.Deflate64Managed;
 using JetBrains.Annotations;
 
 namespace FMScanner.FastZipReader
 {
     public sealed class ZipArchiveFast : IDisposable
     {
-        private readonly List<ZipArchiveEntry> _entries;
-        private readonly ReadOnlyCollection<ZipArchiveEntry> _entriesCollection;
-        private bool _readEntries;
+        #region Enums
+
+        internal enum CompressionMethodValues : ushort
+        {
+            Stored = 0x0,
+            Deflate = 0x8,
+            Deflate64 = 0x9,
+            BZip2 = 0xC,
+            LZMA = 0xE
+        }
+
+        #endregion
+
+        // We don't want to bloat the archive class with crap that's only there for error checking purposes.
+        // Since errors should be the rare case, we'll check for errors as we do the initial read, and just
+        // put bad entries in here and check it when we go to open.
+        private Dictionary<ZipArchiveEntry, string>? _unopenableArchives;
+        private Dictionary<ZipArchiveEntry, string> UnopenableArchives => _unopenableArchives ??= new Dictionary<ZipArchiveEntry, string>();
+
+        private List<ZipArchiveEntry>? _entries;
+        private ReadOnlyCollection<ZipArchiveEntry>? _entriesCollection;
         private long _centralDirectoryStart; //only valid after ReadCentralDirectory
         private bool _isDisposed;
         private long _expectedNumberOfEntries;
         private readonly Stream? _backingStream;
-        private Encoding? _entryNameEncoding;
-
-        internal readonly BinaryReader ArchiveReader;
 
         internal readonly Stream ArchiveStream;
 
-        internal uint NumberOfThisDisk;
+        private uint _numberOfThisDisk;
 
-        internal readonly bool DecodeEntryNames;
-
-        // @Fen_added: Instantiate this once and pass it every time, otherwise we're just constructing and GC-ing
-        // a default UTF8Encoding object a bazillion times.
-        internal static readonly Encoding UTF8EncodingNoBOM = new UTF8Encoding();
-
-        internal Encoding? EntryNameEncoding
-        {
-            get { return _entryNameEncoding; }
-
-            private set
-            {
-                // value == null is fine. This means the user does not want to overwrite default encoding picking logic.
-
-                // The Zip file spec [http://www.pkware.com/documents/casestudies/APPNOTE.TXT] specifies a bit in the entry header
-                // (specifically: the language encoding flag (EFS) in the general purpose bit flag of the local file header) that
-                // basically says: UTF8 (1) or CP437 (0). But in reality, tools replace CP437 with "something else that is not UTF8".
-                // For instance, the Windows Shell Zip tool takes "something else" to mean "the local system codepage".
-                // We default to the same behaviour, but we let the user explicitly specify the encoding to use for cases where they
-                // understand their use case well enough.
-                // Since the definition of acceptable encodings for the "something else" case is in reality by convention, it is not
-                // immediately clear, whether non-UTF8 Unicode encodings are acceptable. To determine that we would need to survey
-                // what is currently being done in the field, but we do not have the time for it right now.
-                // So, we artificially disallow non-UTF8 Unicode encodings for now to make sure we are not creating a compat burden
-                // for something other tools do not support. If we realise in future that "something else" should include non-UTF8
-                // Unicode encodings, we can remove this restriction.
-
-                if (value != null &&
-                        (value.Equals(Encoding.BigEndianUnicode)
-                        || value.Equals(Encoding.Unicode)
-#if FEATURE_UTF32
-                        || value.Equals(Encoding.UTF32)
-#endif // FEATURE_UTF32
-#if FEATURE_UTF7
-                        || value.Equals(Encoding.UTF7)
-#endif // FEATURE_UTF7
-                        ))
-                {
-                    throw new ArgumentException(SR.EntryNameEncodingNotSupported, nameof(EntryNameEncoding));
-                }
-
-                _entryNameEncoding = value;
-            }
-        }
+        private readonly bool _decodeEntryNames;
 
         /// <summary>
         /// Initializes a new instance of ZipArchive on the given stream.
@@ -99,9 +72,7 @@ namespace FMScanner.FastZipReader
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            DecodeEntryNames = decodeEntryNames;
-
-            EntryNameEncoding = Encoding.UTF8;
+            _decodeEntryNames = decodeEntryNames;
 
             // Fen's note: Inlined Init() for nullable detection purposes...
             #region Init
@@ -126,13 +97,11 @@ namespace FMScanner.FastZipReader
 
                 ArchiveStream = stream;
 
-                ArchiveReader = new BinaryReader(ArchiveStream, UTF8EncodingNoBOM);
-                _entries = new List<ZipArchiveEntry>();
-                _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
-                _readEntries = false;
+                ZipHelper.ArchiveSubReadStream.SetSuperStream(ArchiveStream);
+
                 _centralDirectoryStart = 0; // invalid until ReadCentralDirectory
                 _isDisposed = false;
-                NumberOfThisDisk = 0; // invalid until ReadCentralDirectory
+                _numberOfThisDisk = 0; // invalid until ReadCentralDirectory
 
                 ReadEndOfCentralDirectory();
             }
@@ -143,6 +112,100 @@ namespace FMScanner.FastZipReader
             }
 
             #endregion
+        }
+
+        /// <summary>
+        /// Opens the entry in Read mode. The returned stream will be readable, and it may or may not be seekable.
+        /// </summary>
+        /// <param name="entry">The entry to open.</param>
+        /// <returns>A Stream that represents the contents of the entry.</returns>
+        /// <exception cref="InvalidDataException">
+        /// The entry is missing from the archive or is corrupt and cannot be read.
+        /// -or-
+        /// The entry has been compressed using a compression method that is not supported.
+        /// </exception>
+        /// <exception cref="ObjectDisposedException">
+        /// The ZipArchive that this entry belongs to has been disposed.
+        /// </exception>
+        public Stream OpenEntry(ZipArchiveEntry entry)
+        {
+            ThrowIfDisposed();
+
+            if (!IsOpenable(entry, out string message)) throw new InvalidDataException(message);
+
+            // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
+
+            ZipHelper.ArchiveSubReadStream.Set((long)entry.StoredOffsetOfCompressedData!, entry.CompressedLength);
+
+            return GetDataDecompressor(entry, ZipHelper.ArchiveSubReadStream);
+        }
+
+        private static Stream GetDataDecompressor(ZipArchiveEntry entry, Stream compressedStreamToRead)
+        {
+            Stream uncompressedStream;
+            switch (entry.CompressionMethod)
+            {
+                case CompressionMethodValues.Deflate:
+                    uncompressedStream = new DeflateStream(compressedStreamToRead, CompressionMode.Decompress);
+                    break;
+                case CompressionMethodValues.Deflate64:
+                    // This is always in decompress-only mode
+                    uncompressedStream = new Deflate64ManagedStream(compressedStreamToRead);
+                    break;
+                case CompressionMethodValues.Stored:
+                default:
+                    // we can assume that only deflate/deflate64/stored are allowed because we assume that
+                    // IsOpenable is checked before this function is called
+                    Debug.Assert(entry.CompressionMethod == CompressionMethodValues.Stored);
+
+                    uncompressedStream = compressedStreamToRead;
+                    break;
+            }
+
+            return uncompressedStream;
+        }
+
+        private bool IsOpenable(ZipArchiveEntry entry, out string message)
+        {
+            message = "";
+
+            if (UnopenableArchives.TryGetValue(entry, out string result))
+            {
+                message = result;
+                return false;
+            }
+
+            if (entry.StoredOffsetOfCompressedData != null)
+            {
+                ArchiveStream.Seek((long)entry.StoredOffsetOfCompressedData, SeekOrigin.Begin);
+                return true;
+            }
+
+            if (entry.OffsetOfLocalHeader > ArchiveStream.Length)
+            {
+                message = SR.LocalFileHeaderCorrupt;
+                return false;
+            }
+
+            ArchiveStream.Seek(entry.OffsetOfLocalHeader, SeekOrigin.Begin);
+            if (!ZipLocalFileHeader.TrySkipBlock(ArchiveStream))
+            {
+                message = SR.LocalFileHeaderCorrupt;
+                return false;
+            }
+
+            // At this point, this is really just caching a FileStream.Position, which does have some logic in
+            // its getter, but probably isn't slow enough to warrant being cached... but I guess ArchiveStream
+            // could be any kind of stream, so better to guarantee performance than to hope for it, I guess.
+            entry.StoredOffsetOfCompressedData ??= ArchiveStream.Position;
+
+            if (entry.StoredOffsetOfCompressedData + entry.CompressedLength > ArchiveStream.Length)
+            {
+                message = SR.LocalFileHeaderCorrupt;
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -158,41 +221,67 @@ namespace FMScanner.FastZipReader
             {
                 ThrowIfDisposed();
 
-                if (!_readEntries)
+                if (_entries == null)
                 {
-                    ReadCentralDirectory();
-                    _readEntries = true;
+                    _entries = new List<ZipArchiveEntry>((int)_expectedNumberOfEntries);
+                    _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
+
+                    #region Read central directory
+
+                    try
+                    {
+                        // assume ReadEndOfCentralDirectory has been called and has populated _centralDirectoryStart
+
+                        ArchiveStream.Seek(_centralDirectoryStart, SeekOrigin.Begin);
+
+                        long numberOfEntries = 0;
+
+                        //read the central directory
+                        while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveStream, ZipHelper.ArchiveSubReadStream, sizeOnly: false, out var currentHeader))
+                        {
+                            var entry = new ZipArchiveEntry(currentHeader);
+                            _entries.Add(entry);
+                            numberOfEntries++;
+
+                            if (currentHeader.DiskNumberStart != _numberOfThisDisk)
+                            {
+                                UnopenableArchives[entry] = SR.SplitSpanned;
+                            }
+                            else
+                            {
+                                CompressionMethodValues compressionMethod = (CompressionMethodValues)currentHeader.CompressionMethod;
+                                if (compressionMethod != CompressionMethodValues.Stored &&
+                                    compressionMethod != CompressionMethodValues.Deflate &&
+                                    compressionMethod != CompressionMethodValues.Deflate64)
+                                {
+                                    switch (compressionMethod)
+                                    {
+                                        case CompressionMethodValues.BZip2:
+                                        case CompressionMethodValues.LZMA:
+                                            UnopenableArchives[entry] = SR.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString());
+                                            break;
+                                        default:
+                                            UnopenableArchives[entry] = SR.UnsupportedCompression;
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (numberOfEntries != _expectedNumberOfEntries)
+                        {
+                            throw new InvalidDataException(SR.NumEntriesWrong);
+                        }
+                    }
+                    catch (EndOfStreamException ex)
+                    {
+                        throw new InvalidDataException(SR.Format(SR.CentralDirectoryInvalid, ex));
+                    }
+
+                    #endregion
                 }
 
-                return _entriesCollection;
-            }
-        }
-
-        private void ReadCentralDirectory()
-        {
-            try
-            {
-                // assume ReadEndOfCentralDirectory has been called and has populated _centralDirectoryStart
-
-                ArchiveStream.Seek(_centralDirectoryStart, SeekOrigin.Begin);
-
-                long numberOfEntries = 0;
-
-                //read the central directory
-                while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveReader, out var currentHeader))
-                {
-                    _entries.Add(new ZipArchiveEntry(this, currentHeader));
-                    numberOfEntries++;
-                }
-
-                if (numberOfEntries != _expectedNumberOfEntries)
-                {
-                    throw new InvalidDataException(SR.NumEntriesWrong);
-                }
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new InvalidDataException(SR.Format(SR.CentralDirectoryInvalid, ex));
+                return _entriesCollection!;
             }
         }
 
@@ -214,7 +303,7 @@ namespace FMScanner.FastZipReader
                 long eocdStart = ArchiveStream.Position;
 
                 // read the EOCD
-                bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(ArchiveReader, out ZipEndOfCentralDirectoryBlock eocd);
+                bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(ArchiveStream, out ZipEndOfCentralDirectoryBlock eocd);
                 Debug.Assert(eocdProper); // we just found this using the signature finder, so it should be okay
 
                 if (eocd.NumberOfThisDisk != eocd.NumberOfTheDiskWithTheStartOfTheCentralDirectory)
@@ -222,7 +311,7 @@ namespace FMScanner.FastZipReader
                     throw new InvalidDataException(SR.SplitSpanned);
                 }
 
-                NumberOfThisDisk = eocd.NumberOfThisDisk;
+                _numberOfThisDisk = eocd.NumberOfThisDisk;
                 _centralDirectoryStart = eocd.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
                 if (eocd.NumberOfEntriesInTheCentralDirectory != eocd.NumberOfEntriesInTheCentralDirectoryOnThisDisk)
                 {
@@ -244,7 +333,7 @@ namespace FMScanner.FastZipReader
                     if (ZipHelper.SeekBackwardsToSignature(ArchiveStream, Zip64EndOfCentralDirectoryLocator.SignatureConstant))
                     {
                         // use locator to get to Zip64EOCD
-                        bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(ArchiveReader, out Zip64EndOfCentralDirectoryLocator locator);
+                        bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(ArchiveStream, out Zip64EndOfCentralDirectoryLocator locator);
                         Debug.Assert(zip64EOCDLocatorProper); // we just found this using the signature finder, so it should be okay
 
                         if (locator.OffsetOfZip64EOCD > long.MaxValue)
@@ -256,12 +345,12 @@ namespace FMScanner.FastZipReader
                         ArchiveStream.Seek(zip64EOCDOffset, SeekOrigin.Begin);
 
                         // read Zip64EOCD
-                        if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(ArchiveReader, out Zip64EndOfCentralDirectoryRecord record))
+                        if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(ArchiveStream, out Zip64EndOfCentralDirectoryRecord record))
                         {
                             throw new InvalidDataException(SR.Zip64EOCDNotWhereExpected);
                         }
 
-                        NumberOfThisDisk = record.NumberOfThisDisk;
+                        _numberOfThisDisk = record.NumberOfThisDisk;
 
                         if (record.NumberOfEntriesTotal > long.MaxValue)
                         {
@@ -298,7 +387,7 @@ namespace FMScanner.FastZipReader
 
         #region Dispose
 
-        internal void ThrowIfDisposed()
+        private void ThrowIfDisposed()
         {
             if (_isDisposed) throw new ObjectDisposedException(GetType().ToString());
         }
@@ -312,8 +401,8 @@ namespace FMScanner.FastZipReader
             if (disposing && !_isDisposed)
             {
                 ArchiveStream.Dispose();
+                ZipHelper.ArchiveSubReadStream.SetSuperStream(null);
                 _backingStream?.Dispose();
-                ArchiveReader?.Dispose();
 
                 _isDisposed = true;
             }

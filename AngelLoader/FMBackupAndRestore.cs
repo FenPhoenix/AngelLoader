@@ -65,7 +65,7 @@ namespace AngelLoader
             internal bool Found;
             internal string Name;
             internal bool DarkLoader;
-            internal List<string>? Cached_DarkLoaderBackups;
+            internal FileNameBoth? Cached_DarkLoaderBackups;
             internal List<string>? Cached_NewBackups;
 
             internal BackupFile()
@@ -90,16 +90,47 @@ namespace AngelLoader
             }
         }
 
+        internal sealed class FileNameBoth
+        {
+            internal readonly List<string> FullPaths;
+            internal readonly List<string> FileNamesMinusSavesSuffix;
+
+            internal FileNameBoth(List<string> fullPaths, List<string> fileNamesMinusSavesSuffix)
+            {
+                FullPaths = fullPaths;
+                FileNamesMinusSavesSuffix = fileNamesMinusSavesSuffix;
+            }
+        }
+
         #region Public methods
 
         internal static BackupFile
         GetBackupFile(
             FanMission fm,
             bool findDarkLoaderOnly = false,
-            List<string>? cachedDarkLoaderFiles = null,
+            FileNameBoth? cachedDarkLoaderFiles = null,
             List<string>? cachedFMArchivePaths = null)
         {
-            static List<string> GetDarkLoaderArchiveFiles() => FastIO.GetFilesTopOnly(Config.DarkLoaderBackupPath, "*.zip");
+            static FileNameBoth GetDarkLoaderArchiveFiles()
+            {
+                var fullPaths = FastIO.GetFilesTopOnly(Config.DarkLoaderBackupPath, "*.zip");
+                var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
+
+                for (int i = 0; i < fullPaths.Count; i++)
+                {
+                    string fullPath = fullPaths[i];
+
+                    string fileNameOnly = fullPath.GetFileNameFast();
+
+                    int index = fileNameOnly.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
+
+                    string fileNameWithTrimmedSavesSuffix = index > -1 ? fileNameOnly.Substring(0, index).Trim() : "";
+
+                    fileNamesMinusSavesSuffix.Add(fileNameWithTrimmedSavesSuffix);
+                }
+
+                return new FileNameBoth(fullPaths, fileNamesMinusSavesSuffix);
+            }
 
             var ret = new BackupFile();
 
@@ -111,23 +142,28 @@ namespace AngelLoader
                 return ret;
             }
 
+            // TODO: Do I need both or is the use of the non-trimmed version a mistake?
+            string fmArchiveNoExt = fm.Archive.RemoveExtension();
+            string fmArchiveNoExtTrimmed = fmArchiveNoExt.Trim();
+
             #region DarkLoader
 
             if (Directory.Exists(Config.DarkLoaderBackupPath))
             {
                 // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
                 // Rather than just using File.Exists()?!
-                foreach (string f in cachedDarkLoaderFiles ??= GetDarkLoaderArchiveFiles())
+                cachedDarkLoaderFiles ??= GetDarkLoaderArchiveFiles();
+                for (int i = 0; i < cachedDarkLoaderFiles.FullPaths.Count; i++)
                 {
-                    string fn = f.GetFileNameFast();
-                    int index = fn.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
-                    if (index == -1) continue;
+                    string f = cachedDarkLoaderFiles.FullPaths[i];
 
-                    string an = fn.Substring(0, index).Trim();
+                    string an = cachedDarkLoaderFiles.FileNamesMinusSavesSuffix[i];
+                    if (an.IsEmpty()) continue;
+
                     // Account for the fact that DarkLoader trims archive names for save backup zips
                     // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
                     // way, so whatever.
-                    if (!an.IsEmpty() && an.PathEqualsI(fm.Archive.RemoveExtension().Trim()))
+                    if (!an.IsEmpty() && an.PathEqualsI(fmArchiveNoExtTrimmed))
                     {
                         ret.Set(true, f, true);
                         if (findDarkLoaderOnly) return DoReturn();
@@ -150,11 +186,13 @@ namespace AngelLoader
             {
                 var bakFiles = new List<FileInfo>();
 
+                // @MEM(GetBackupFile()/AddBakFilesFrom()): We should cache these paths too
+                // It's not as bad as the DarkLoader path, but 21,000+ allocations on a ~1600 FM set for checking
                 void AddBakFilesFrom(string path)
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        string fNoExt = i == 0 ? fm.Archive.RemoveExtension() : fm.InstalledDir;
+                        string fNoExt = i == 0 ? fmArchiveNoExt : fm.InstalledDir;
                         string bakFile = Path.Combine(path, fNoExt + Paths.FMBackupSuffix);
                         if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
                     }

@@ -1,4 +1,4 @@
-﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
+﻿// Enable this (and the one in FMData.cs) to get all features (we use it for testing)
 //#define FMScanner_FullCode
 #define Enable7zReadmeCacheCode
 
@@ -89,11 +89,6 @@ namespace FMScanner
         private readonly List<FileInfoCustom> _fmDirFileInfos = new List<FileInfoCustom>();
 
         private ScanOptions _scanOptions = new ScanOptions();
-
-        // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
-        // fields as much as possible for performance.
-        private RtfToTextConverter? _rtfConverter;
-        private RtfToTextConverter RtfConverter => _rtfConverter ??= new RtfToTextConverter();
 
         private bool _fmIsZip;
         private bool _fmIsSevenZip;
@@ -193,32 +188,48 @@ namespace FMScanner
 #endif
         }
 
+        [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         [PublicAPI]
         public Scanner(string sevenZipExePath)
         {
+            // Perf/size balance: we want to build these strings only once so we don't re-concat them a million
+            // times during the scan, but we also want to lower file size by not having a bunch of duplicate
+            // strings. So we build the string arrays dynamically only once here. That way we trade perf where it
+            // doesn't matter (this once-only build is mere noise) and keep it where it does, and also save file
+            // size.
+
             _sevenZipExePath = sevenZipExePath;
-
-            #region Array construction
-
-            // To reduce duplication, we construct some of the arrays algorithmically.
 
             int langsCount = Languages.Length;
             Languages_FS_Lang_FS = new string[langsCount];
             Languages_FS_Lang_Language_FS = new string[langsCount];
             LanguagesC = new DictionaryI<string>(langsCount);
+            EnglishOnly = new List<string> { Languages[0] };
+
+            FMFiles_SS2MisFiles = new HashSetI(23);
 
             #region FMFiles_TitlesStrLocations
 
+            string strings = "strings";
+            string fs = "/";
+            string title = "title";
+            string titles = title + "s";
+            string str = ".str";
+            string titleStr = title + str;
+            string titlesStr = titles + str;
+
             // Do not change search order: strings/english, strings, strings/[any other language]
-            FMFiles_TitlesStrLocations[0] = "strings/english/titles.str";
-            FMFiles_TitlesStrLocations[1] = "strings/english/title.str";
-            FMFiles_TitlesStrLocations[2] = "strings/titles.str";
-            FMFiles_TitlesStrLocations[3] = "strings/title.str";
+            FMFiles_TitlesStrLocations[0] = strings + fs + Languages[0] + fs + titlesStr;
+            FMFiles_TitlesStrLocations[1] = strings + fs + Languages[0] + fs + titleStr;
+            FMFiles_TitlesStrLocations[2] = strings + fs + titlesStr;
+            FMFiles_TitlesStrLocations[3] = strings + fs + titleStr;
 
             for (int i = 1; i < langsCount; i++)
             {
-                FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + Languages[i] + "/titles.str";
-                FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = "strings/" + Languages[i] + "/title.str";
+                FMFiles_TitlesStrLocations[(i - 1) + 4] = strings + fs + Languages[i] + fs + titlesStr;
+                FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = strings + fs + Languages[i] + fs + titleStr;
             }
 
             #endregion
@@ -228,8 +239,8 @@ namespace FMScanner
             for (int i = 0; i < langsCount; i++)
             {
                 string lang = Languages[i];
-                Languages_FS_Lang_FS[i] = "/" + Languages[i] + "/";
-                Languages_FS_Lang_Language_FS[i] = "/" + Languages[i] + " Language/";
+                Languages_FS_Lang_FS[i] = fs + Languages[i] + fs;
+                Languages_FS_Lang_Language_FS[i] = fs + Languages[i] + " Language" + fs;
 
                 // Lowercase to first-char-uppercase dict: Cheesy hack because it wasn't designed this way.
                 // All lang first chars are lowercase ASCII letters, so just subtract 32 to uppercase them.
@@ -237,6 +248,51 @@ namespace FMScanner
             }
 
             #endregion
+
+            #region SS2 mis files
+
+            string mis = ".mis";
+            string command = "command";
+            string eng = "eng";
+            string hydro = "hydro";
+            string medsci = "medsci";
+            string ops = "ops";
+            string rec = "rec";
+            string rick = "rick";
+
+            // This results in smaller file size than a flat sequence of adds
+            for (int i = 1; i <= 2; i++)
+            {
+                FMFiles_SS2MisFiles.Add(command + i + mis);
+            }
+            FMFiles_SS2MisFiles.Add("earth" + mis);
+            for (int i = 1; i <= 2; i++)
+            {
+                FMFiles_SS2MisFiles.Add(eng + i + mis);
+            }
+            for (int i = 1; i <= 3; i++)
+            {
+                FMFiles_SS2MisFiles.Add(hydro + i + mis);
+            }
+            FMFiles_SS2MisFiles.Add("many" + mis);
+            for (int i = 1; i <= 2; i++)
+            {
+                FMFiles_SS2MisFiles.Add(medsci + i + mis);
+            }
+            for (int i = 1; i <= 4; i++)
+            {
+                FMFiles_SS2MisFiles.Add(ops + i + mis);
+            }
+            for (int i = 1; i <= 3; i++)
+            {
+                FMFiles_SS2MisFiles.Add(rec + i + mis);
+            }
+            for (int i = 1; i <= 3; i++)
+            {
+                FMFiles_SS2MisFiles.Add(rick + i + mis);
+            }
+            FMFiles_SS2MisFiles.Add("shodan" + mis);
+            FMFiles_SS2MisFiles.Add("station" + mis);
 
             #endregion
         }
@@ -341,6 +397,10 @@ namespace FMScanner
 
             var scannedFMDataList = new List<ScannedFMDataAndError>();
 
+            // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
+            // fields as much as possible for performance.
+            var rtfConverter = new RtfToTextConverter();
+
             var progressReport = new ProgressReport();
 
             for (int i = 0; i < missions.Count; i++)
@@ -420,7 +480,7 @@ namespace FMScanner
 
                         try
                         {
-                            scannedFMAndError = ScanCurrentFM(missions[i], tempPath);
+                            scannedFMAndError = ScanCurrentFM(rtfConverter, missions[i], tempPath);
                         }
                         catch (Exception ex)
                         {
@@ -459,7 +519,7 @@ namespace FMScanner
         }
 
         private ScannedFMDataAndError
-        ScanCurrentFM(FMToScan fm, string tempPath)
+        ScanCurrentFM(RtfToTextConverter rtfConverter, FMToScan fm, string tempPath)
         {
 #if DEBUG
             _overallTimer.Restart();
@@ -626,7 +686,7 @@ namespace FMScanner
                 {
                     try
                     {
-                        CopySevenZipReadmesToCacheDir(fm);
+                        CacheReadmes(fm);
                     }
                     catch
                     {
@@ -932,7 +992,7 @@ namespace FMScanner
 
             if (fmIsT3) foreach (NameAndIndex f in t3FMExtrasDirFiles) readmeDirFiles.Add(f);
 
-            ReadAndCacheReadmeFiles(readmeDirFiles);
+            ReadAndCacheReadmeFiles(readmeDirFiles, rtfConverter);
 
             #endregion
 
@@ -1129,7 +1189,7 @@ namespace FMScanner
         }
 
 #if Enable7zReadmeCacheCode
-        private void CopySevenZipReadmesToCacheDir(FMToScan fm)
+        private void CacheReadmes(FMToScan fm)
         {
             string cachePath = fm.CachePath;
 
@@ -1195,8 +1255,6 @@ namespace FMScanner
             }
         }
 #endif
-
-        #region Release date
 
         // TODO: Do some bullshit where we compare the readme date vs. the date in the readme
         // So we can do some guesswork on whether the readme dates are near enough to correct or not
@@ -1285,166 +1343,6 @@ namespace FMScanner
             // If we still don't have anything, give up: we've made a good-faith effort.
             return null;
         }
-
-        private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
-        {
-            // Always false for now, because we only return dates that have month names in them currently
-            // (was I concerned about number-only dates having not enough context to be sure they're dates?)
-            isAmbiguous = false;
-
-            if (_readmeFiles.Count == 0) return null;
-
-            const int maxTopLines = 5;
-
-            foreach (ReadmeInternal r in _readmeFiles)
-            {
-                if (!r.Scan) continue;
-
-                var lines = new List<string>();
-
-                for (int i = 0; i < r.Lines.Count; i++)
-                {
-                    string line = r.Lines[i];
-                    if (!line.IsWhiteSpace()) lines.Add(line);
-                    if (lines.Count == maxTopLines) break;
-                }
-
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    string lineT = lines[i].Trim();
-                    foreach (string item in _monthNamesEnglish)
-                    {
-                        if (lineT.ContainsI(item) && StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
-                        {
-                            return result;
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
-        private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
-        {
-            // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
-            // to guessing about day/month order.
-            if (Regex.Match(dateString, @"[0123456789]{1,2}\.[0123456789]{1,2}\.([0123456789]{4}|[0123456789]{2})").Success)
-            {
-                if (DateTime.TryParseExact(
-                    dateString,
-                    _dateFormatsEuropean,
-                    DateTimeFormatInfo.InvariantInfo,
-                    DateTimeStyles.None,
-                    out DateTime eurDateResult))
-                {
-                    dateTime = eurDateResult;
-                    isAmbiguous = true;
-                    return true;
-                }
-            }
-
-            dateString = Regex.Replace(dateString, @"\s*,\s*", " ");
-            dateString = Regex.Replace(dateString, @"\s+", " ");
-            // Auldale Chess Tournament saying "March ~8, 2006"
-            dateString = Regex.Replace(dateString, @"\s*~\s*", " ");
-            dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
-            dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
-            dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
-            dateString = Regex.Replace(dateString, @"\s*\.\s*", "/");
-
-            // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
-            Match match = DaySuffixesRegex.Match(dateString);
-            if (match.Success)
-            {
-                Group suffix = match.Groups["Suffix"];
-                dateString = dateString.Substring(0, suffix.Index) +
-                             dateString.Substring(suffix.Index + suffix.Length);
-            }
-
-            // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
-            // want to fail, and not assume the current year.
-            bool success = false;
-            bool canBeAmbiguous = false;
-            DateTime? result = null!;
-            for (int i = 0; i < _dateFormats.Length; i++)
-            {
-                var item = _dateFormats[i];
-                success = DateTime.TryParseExact(
-                    dateString,
-                    item.Format,
-                    DateTimeFormatInfo.InvariantInfo,
-                    DateTimeStyles.None,
-                    out DateTime result_);
-                if (success)
-                {
-                    canBeAmbiguous = item.CanBeAmbiguous;
-                    result = result_;
-                    break;
-                }
-            }
-
-            if (!success)
-            {
-                isAmbiguous = false;
-                dateTime = null;
-                return false;
-            }
-
-            if (!checkForAmbiguity || !canBeAmbiguous)
-            {
-                isAmbiguous = false;
-                dateTime = result;
-                return true;
-            }
-
-            isAmbiguous = true;
-            foreach (char c in dateString)
-            {
-                if (c.IsAsciiAlpha())
-                {
-                    isAmbiguous = false;
-                    break;
-                }
-            }
-
-            if (isAmbiguous)
-            {
-                string[] nums = dateString.Split(new[] { ' ', '-', '/' }, StringSplitOptions.RemoveEmptyEntries);
-                if (nums.Length == 3)
-                {
-                    bool unambiguousYearFound = false;
-                    bool unambiguousDayFound = false;
-
-                    for (int i = 0; i < nums.Length; i++)
-                    {
-                        if (int.TryParse(nums[i], out int numInt))
-                        {
-                            switch (numInt)
-                            {
-                                case >= 1000 and <= 9999:
-                                    unambiguousYearFound = true;
-                                    break;
-                                case > 12 and <= 31:
-                                    unambiguousDayFound = true;
-                                    break;
-                            }
-                        }
-                    }
-
-                    if (unambiguousYearFound && unambiguousDayFound)
-                    {
-                        isAmbiguous = false;
-                    }
-                }
-            }
-
-            dateTime = result;
-            return true;
-        }
-
-        #endregion
 
         #region Set tags
 
@@ -1913,7 +1811,7 @@ namespace FMScanner
                 // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
                 if (_fmIsZip)
                 {
-                    using var es = _archive.Entries[missFlag.Index].Open();
+                    using var es = _archive.OpenEntry(_archive.Entries[missFlag.Index]);
                     mfLines = ReadAllLines(es, Encoding.UTF8);
                 }
                 else
@@ -1975,199 +1873,6 @@ namespace FMScanner
             return true;
         }
 
-        private void ReadAndCacheReadmeFiles(List<NameAndIndex> readmeDirFiles)
-        {
-            // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
-            // Treat 'em like plaintext and see how it goes.
-
-            foreach (NameAndIndex readmeFile in readmeDirFiles)
-            {
-                if (!readmeFile.Name.IsValidReadme()) continue;
-
-                ZipArchiveEntry? readmeEntry = null;
-
-                if (_fmIsZip) readmeEntry = _archive.Entries[readmeFile.Index];
-
-                string? fullReadmeFileName = null;
-                FileInfoCustom? readmeFI = null;
-                if (!_fmIsZip && _fmDirFileInfos.Count > 0)
-                {
-                    for (int i = 0; i < _fmDirFileInfos.Count; i++)
-                    {
-                        FileInfoCustom f = _fmDirFileInfos[i];
-                        if (f.Name.PathEqualsI(fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)))
-                        {
-                            readmeFI = f;
-                            break;
-                        }
-                    }
-                }
-
-                int readmeFileLen =
-                    _fmIsZip ? (int)readmeEntry!.Length :
-                    readmeFI != null ? (int)readmeFI.Length :
-                    (int)new FileInfo(fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)).Length;
-
-                string readmeFileOnDisk = "";
-
-                string fileName;
-                DateTime? lastModifiedDate = null;
-                long readmeSize;
-
-                if (_fmIsZip)
-                {
-                    fileName = readmeEntry!.Name;
-                    readmeSize = readmeEntry.Length;
-                }
-                else
-                {
-                    readmeFileOnDisk = fullReadmeFileName ?? Path.Combine(_fmWorkingPath, readmeFile.Name);
-                    FileInfoCustom fi = readmeFI ?? new FileInfoCustom(new FileInfo(readmeFileOnDisk));
-                    fileName = fi.Name;
-                    lastModifiedDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
-                    readmeSize = fi.Length;
-                }
-
-                if (readmeSize == 0) continue;
-
-                bool scanThisReadme = !readmeFile.Name.ExtIsHtml() && readmeFile.Name.IsEnglishReadme();
-
-                // We still add the readme even if we're not going to store nor scan its contents, because we
-                // still may need to look at its last modified date.
-                if (_fmIsZip)
-                {
-                    _readmeFiles.Add(new ReadmeInternal
-                    {
-                        FileName = fileName,
-                        LastModifiedDateRaw = readmeEntry!.LastWriteTime,
-                        Scan = scanThisReadme
-                    });
-                }
-                else
-                {
-                    _readmeFiles.Add(new ReadmeInternal
-                    {
-                        FileName = fileName,
-                        LastModifiedDate = (DateTime)lastModifiedDate!,
-                        Scan = scanThisReadme
-                    });
-                }
-
-                if (!scanThisReadme) continue;
-
-                // try-finally instead of using, because we only want to initialize the readme stream if _fmIsZip
-                Stream? readmeStream = null;
-                try
-                {
-                    if (_fmIsZip)
-                    {
-                        /*
-                         NOTE: We used to copy the entire stream into memory here first, because we needed to
-                         seek. With the new custom RTF converter, we don't need to seek anymore.
-
-                         With the new converter, copying the stream to memory first results in the fastest
-                         performance, but slightly more memory use than the old RichTextBox method.
-
-                         We've instead chosen to go with the buffered read here, which is slightly slower - but
-                         still vastly faster than the old RichTextBox-based converter - and saves a substantial
-                         amount of memory. Any other time I would choose ultimate speed, but RTF files can be
-                         extremely large (due to often containing images), so I'm erring on the side of caution.
-                        */
-                        readmeStream = readmeEntry!.Open();
-                    }
-
-                    // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
-                    // alone.
-                    byte[]? rtfHeader;
-                    using (var br = _fmIsZip
-                        ? new BinaryReader(readmeStream, Encoding.ASCII, leaveOpen: true)
-                        : new BinaryReader(File.OpenRead(readmeFileOnDisk), Encoding.ASCII, leaveOpen: false))
-                    {
-                        // stupid micro-optimization
-                        const int rtfHeaderBytesLength = 6;
-
-                        // Null is a stupid micro-optimization so we don't waste a 6-byte alloc.
-                        rtfHeader = readmeFileLen >= rtfHeaderBytesLength
-                            ? br.ReadBytes(rtfHeaderBytesLength)
-                            : null;
-                    }
-
-                    // file is rtf
-                    if (rtfHeader?.SequenceEqual(RTFHeaderBytes) == true)
-                    {
-                        bool success;
-                        string text;
-                        if (_fmIsZip)
-                        {
-                            readmeStream?.Dispose();
-                            readmeStream = readmeEntry!.Open();
-                            (success, text) = RtfConverter.Convert(readmeStream, readmeFileLen);
-                        }
-                        else
-                        {
-                            using var fs = File.OpenRead(readmeFileOnDisk);
-                            (success, text) = RtfConverter.Convert(fs, readmeFileLen);
-                        }
-
-                        if (success)
-                        {
-                            ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
-                            last.Lines.ClearAndAdd(text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
-                            last.Text = text;
-                        }
-                    }
-                    else // file is plain text
-                    {
-                        if (_fmIsZip)
-                        {
-                            // Plain text, so load the whole thing in one go
-                            readmeStream?.Dispose();
-                            readmeStream = new MemoryStream(readmeFileLen);
-                            using var es = readmeEntry!.Open();
-                            es.CopyTo(readmeStream);
-                        }
-
-                        ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
-                        last.Lines.ClearAndAdd(_fmIsZip
-                            ? ReadAllLinesE(readmeStream!, readmeFileLen, streamIsSeekable: true)
-                            : ReadAllLinesE(readmeFileOnDisk));
-
-                        // Convert GLML files to plaintext by stripping the markup. Fortunately this is extremely
-                        // easy as all tags are of the form [GLWHATEVER][/GLWHATEVER]. Very nice, very simple.
-                        bool extIsGlml = last.FileName.ExtIsGlml();
-                        if (extIsGlml)
-                        {
-                            for (int i = 0; i < last.Lines.Count; i++)
-                            {
-                                var matches = GLMLTagRegex.Matches(last.Lines[i]);
-                                foreach (Match m in matches)
-                                {
-                                    // We put linebreaks in the middle of lines here, but see below for the fixup
-                                    last.Lines[i] = last.Lines[i].Replace(m.Value, m.Value == "[GLNL]" ? "\r\n" : "");
-                                }
-                            }
-                        }
-
-                        last.Text = string.Join("\r\n", last.Lines);
-
-                        if (extIsGlml)
-                        {
-                            // We may have inserted CRLFs into the middle of lines, so re-split the text into
-                            // lines again to ensure no line contains CRLFs (ie. every CRLF will result in a
-                            // separate line).
-                            // This was working before out of sheer luck that [GLNL] tags were only occurring at
-                            // the end of lines, but this isn't technically guaranteed.
-                            last.Lines.ClearAndAdd(last.Text.Split(SA_CRLF, StringSplitOptions.None));
-                        }
-                    }
-                }
-                finally
-                {
-                    readmeStream?.Dispose();
-                }
-            }
-        }
-
         #region Read FM info files
 
         private (string Title, string Author, string Version, DateTime? ReleaseDate)
@@ -2184,7 +1889,7 @@ namespace FMScanner
 
             if (_fmIsZip)
             {
-                using var es = _archive.Entries[file.Index].Open();
+                using var es = _archive.OpenEntry(_archive.Entries[file.Index]);
                 fmInfoXml.Load(es);
             }
             else
@@ -2245,7 +1950,7 @@ namespace FMScanner
             if (_fmIsZip)
             {
                 var e = _archive.Entries[file.Index];
-                using var es = e.Open();
+                using var es = _archive.OpenEntry(e);
                 iniLines = ReadAllLinesE(es, e.Length);
             }
             else
@@ -2425,7 +2130,7 @@ namespace FMScanner
             if (_fmIsZip)
             {
                 var e = _archive.Entries[file.Index];
-                using var es = e.Open();
+                using var es = _archive.OpenEntry(e);
                 lines = ReadAllLinesE(es, e.Length);
             }
             else
@@ -2478,6 +2183,199 @@ namespace FMScanner
         }
 
         #endregion
+
+        private void ReadAndCacheReadmeFiles(List<NameAndIndex> readmeDirFiles, RtfToTextConverter rtfConverter)
+        {
+            // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
+            // Treat 'em like plaintext and see how it goes.
+
+            foreach (NameAndIndex readmeFile in readmeDirFiles)
+            {
+                if (!readmeFile.Name.IsValidReadme()) continue;
+
+                ZipArchiveEntry? readmeEntry = null;
+
+                if (_fmIsZip) readmeEntry = _archive.Entries[readmeFile.Index];
+
+                string? fullReadmeFileName = null;
+                FileInfoCustom? readmeFI = null;
+                if (!_fmIsZip && _fmDirFileInfos.Count > 0)
+                {
+                    for (int i = 0; i < _fmDirFileInfos.Count; i++)
+                    {
+                        FileInfoCustom f = _fmDirFileInfos[i];
+                        if (f.Name.PathEqualsI(fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)))
+                        {
+                            readmeFI = f;
+                            break;
+                        }
+                    }
+                }
+
+                int readmeFileLen =
+                    _fmIsZip ? (int)readmeEntry!.Length :
+                    readmeFI != null ? (int)readmeFI.Length :
+                    (int)new FileInfo(fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)).Length;
+
+                string readmeFileOnDisk = "";
+
+                string fileName;
+                DateTime? lastModifiedDate = null;
+                long readmeSize;
+
+                if (_fmIsZip)
+                {
+                    fileName = readmeEntry!.Name;
+                    readmeSize = readmeEntry.Length;
+                }
+                else
+                {
+                    readmeFileOnDisk = fullReadmeFileName ?? Path.Combine(_fmWorkingPath, readmeFile.Name);
+                    FileInfoCustom fi = readmeFI ?? new FileInfoCustom(new FileInfo(readmeFileOnDisk));
+                    fileName = fi.Name;
+                    lastModifiedDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
+                    readmeSize = fi.Length;
+                }
+
+                if (readmeSize == 0) continue;
+
+                bool scanThisReadme = !readmeFile.Name.ExtIsHtml() && readmeFile.Name.IsEnglishReadme();
+
+                // We still add the readme even if we're not going to store nor scan its contents, because we
+                // still may need to look at its last modified date.
+                if (_fmIsZip)
+                {
+                    _readmeFiles.Add(new ReadmeInternal
+                    {
+                        FileName = fileName,
+                        LastModifiedDateRaw = readmeEntry!.LastWriteTime,
+                        Scan = scanThisReadme
+                    });
+                }
+                else
+                {
+                    _readmeFiles.Add(new ReadmeInternal
+                    {
+                        FileName = fileName,
+                        LastModifiedDate = (DateTime)lastModifiedDate!,
+                        Scan = scanThisReadme
+                    });
+                }
+
+                if (!scanThisReadme) continue;
+
+                // try-finally instead of using, because we only want to initialize the readme stream if _fmIsZip
+                Stream? readmeStream = null;
+                try
+                {
+                    if (_fmIsZip)
+                    {
+                        /*
+                         NOTE: We used to copy the entire stream into memory here first, because we needed to
+                         seek. With the new custom RTF converter, we don't need to seek anymore.
+
+                         With the new converter, copying the stream to memory first results in the fastest
+                         performance, but slightly more memory use than the old RichTextBox method.
+
+                         We've instead chosen to go with the buffered read here, which is slightly slower - but
+                         still vastly faster than the old RichTextBox-based converter - and saves a substantial
+                         amount of memory. Any other time I would choose ultimate speed, but RTF files can be
+                         extremely large (due to often containing images), so I'm erring on the side of caution.
+                        */
+                        readmeStream = _archive.OpenEntry(readmeEntry!);
+                    }
+
+                    // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
+                    // alone.
+                    byte[]? rtfHeader;
+                    using (var br = _fmIsZip
+                        ? new BinaryReader(readmeStream, Encoding.ASCII, leaveOpen: true)
+                        : new BinaryReader(File.OpenRead(readmeFileOnDisk), Encoding.ASCII, leaveOpen: false))
+                    {
+                        // stupid micro-optimization
+                        const int rtfHeaderBytesLength = 6;
+
+                        // Null is a stupid micro-optimization so we don't waste a 6-byte alloc.
+                        rtfHeader = readmeFileLen >= rtfHeaderBytesLength
+                            ? br.ReadBytes(rtfHeaderBytesLength)
+                            : null;
+                    }
+
+                    // file is rtf
+                    if (rtfHeader?.SequenceEqual(RTFHeaderBytes) == true)
+                    {
+                        bool success;
+                        string text;
+                        if (_fmIsZip)
+                        {
+                            readmeStream?.Dispose();
+                            readmeStream = _archive.OpenEntry(readmeEntry!);
+                            (success, text) = rtfConverter.Convert(readmeStream, readmeFileLen);
+                        }
+                        else
+                        {
+                            using var fs = File.OpenRead(readmeFileOnDisk);
+                            (success, text) = rtfConverter.Convert(fs, readmeFileLen);
+                        }
+
+                        if (success)
+                        {
+                            ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
+                            last.Lines.ClearAndAdd(text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
+                            last.Text = text;
+                        }
+                    }
+                    else // file is plain text
+                    {
+                        if (_fmIsZip)
+                        {
+                            // Plain text, so load the whole thing in one go
+                            readmeStream?.Dispose();
+                            readmeStream = new MemoryStream(readmeFileLen);
+                            using var es = _archive.OpenEntry(readmeEntry!);
+                            es.CopyTo(readmeStream);
+                        }
+
+                        ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
+                        last.Lines.ClearAndAdd(_fmIsZip
+                            ? ReadAllLinesE(readmeStream!, readmeFileLen, streamIsSeekable: true)
+                            : ReadAllLinesE(readmeFileOnDisk));
+
+                        // Convert GLML files to plaintext by stripping the markup. Fortunately this is extremely
+                        // easy as all tags are of the form [GLWHATEVER][/GLWHATEVER]. Very nice, very simple.
+                        bool extIsGlml = last.FileName.ExtIsGlml();
+                        if (extIsGlml)
+                        {
+                            for (int i = 0; i < last.Lines.Count; i++)
+                            {
+                                var matches = GLMLTagRegex.Matches(last.Lines[i]);
+                                foreach (Match m in matches)
+                                {
+                                    // We put linebreaks in the middle of lines here, but see below for the fixup
+                                    last.Lines[i] = last.Lines[i].Replace(m.Value, m.Value == "[GLNL]" ? "\r\n" : "");
+                                }
+                            }
+                        }
+
+                        last.Text = string.Join("\r\n", last.Lines);
+
+                        if (extIsGlml)
+                        {
+                            // We may have inserted CRLFs into the middle of lines, so re-split the text into
+                            // lines again to ensure no line contains CRLFs (ie. every CRLF will result in a
+                            // separate line).
+                            // This was working before out of sheer luck that [GLNL] tags were only occurring at
+                            // the end of lines, but this isn't technically guaranteed.
+                            last.Lines.ClearAndAdd(last.Text.Split(SA_CRLF, StringSplitOptions.None));
+                        }
+                    }
+                }
+                finally
+                {
+                    readmeStream?.Dispose();
+                }
+            }
+        }
 
         private string GetValueFromReadme(SpecialLogic specialLogic, List<string>? titles = null, params string[] keys)
         {
@@ -2729,6 +2627,45 @@ namespace FMScanner
             return ret;
         }
 
+        private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
+        {
+            // Always false for now, because we only return dates that have month names in them currently
+            // (was I concerned about number-only dates having not enough context to be sure they're dates?)
+            isAmbiguous = false;
+
+            if (_readmeFiles.Count == 0) return null;
+
+            const int maxTopLines = 5;
+
+            foreach (ReadmeInternal r in _readmeFiles)
+            {
+                if (!r.Scan) continue;
+
+                var lines = new List<string>();
+
+                for (int i = 0; i < r.Lines.Count; i++)
+                {
+                    string line = r.Lines[i];
+                    if (!line.IsWhiteSpace()) lines.Add(line);
+                    if (lines.Count == maxTopLines) break;
+                }
+
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    string lineT = lines[i].Trim();
+                    foreach (string item in _monthNamesEnglish)
+                    {
+                        if (lineT.ContainsI(item) && StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
+                        {
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         #region Title(s) and mission names
 
         // This is kind of just an excuse to say that my scanner can catch the full proper title of Deceptive
@@ -2818,7 +2755,7 @@ namespace FMScanner
             if (_fmIsZip)
             {
                 var e = _archive.Entries[newGameStrFile.Index];
-                using var es = e.Open();
+                using var es = _archive.OpenEntry(e);
                 lines = ReadAllLinesE(es, e.Length);
             }
             else
@@ -2963,7 +2900,7 @@ namespace FMScanner
                 if (_fmIsZip)
                 {
                     var e = _archive.Entries[titlesFile.Index];
-                    using var es = e.Open();
+                    using var es = _archive.OpenEntry(e);
                     titlesStrLines = ReadAllLinesE(es, e.Length);
                 }
                 else
@@ -3593,7 +3530,7 @@ namespace FMScanner
             }
 
             using (var sr = _fmIsZip
-                ? new BinaryReader(misFileZipEntry.Open(), Encoding.ASCII, false)
+                ? new BinaryReader(_archive.OpenEntry(misFileZipEntry), Encoding.ASCII, false)
                 : new BinaryReader(File.OpenRead(misFileOnDisk), Encoding.ASCII, false))
             {
                 for (int i = 0; i < locations.Length; i++)
@@ -3690,7 +3627,7 @@ namespace FMScanner
             {
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
-                using Stream stream = smallestGamFile != null ? gamFileZipEntry.Open() : misFileZipEntry.Open();
+                using Stream stream = smallestGamFile != null ? _archive.OpenEntry(gamFileZipEntry) : _archive.OpenEntry(misFileZipEntry);
                 ret.Game = StreamContainsIdentString(stream, Thief2UniqueString)
                     ? Game.Thief2
                     : Game.Thief1;
@@ -3755,7 +3692,7 @@ namespace FMScanner
             // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
             if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
             {
-                using Stream stream = _fmIsZip ? misFileZipEntry.Open() : File.OpenRead(misFileOnDisk);
+                using Stream stream = _fmIsZip ? _archive.OpenEntry(misFileZipEntry) : File.OpenRead(misFileOnDisk);
                 if (StreamContainsIdentString(stream, MAPPARAM))
                 {
                     ret.Game = Game.SS2;
@@ -3947,6 +3884,125 @@ namespace FMScanner
         }
 
         #endregion
+
+        // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
+        private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
+        {
+            // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
+            // to guessing about day/month order.
+            if (Regex.Match(dateString, @"[0123456789]{1,2}\.[0123456789]{1,2}\.([0123456789]{4}|[0123456789]{2})").Success)
+            {
+                if (DateTime.TryParseExact(
+                    dateString,
+                    _dateFormatsEuropean,
+                    DateTimeFormatInfo.InvariantInfo,
+                    DateTimeStyles.None,
+                    out DateTime eurDateResult))
+                {
+                    dateTime = eurDateResult;
+                    isAmbiguous = true;
+                    return true;
+                }
+            }
+
+            dateString = Regex.Replace(dateString, @"\s*,\s*", " ");
+            dateString = Regex.Replace(dateString, @"\s+", " ");
+            // Auldale Chess Tournament saying "March ~8, 2006"
+            dateString = Regex.Replace(dateString, @"\s*~\s*", " ");
+            dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
+            dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
+            dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
+            dateString = Regex.Replace(dateString, @"\s*\.\s*", "/");
+
+            // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
+            Match match = DaySuffixesRegex.Match(dateString);
+            if (match.Success)
+            {
+                Group suffix = match.Groups["Suffix"];
+                dateString = dateString.Substring(0, suffix.Index) +
+                             dateString.Substring(suffix.Index + suffix.Length);
+            }
+
+            // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
+            // want to fail, and not assume the current year.
+            bool success = false;
+            bool canBeAmbiguous = false;
+            DateTime? result = null!;
+            for (int i = 0; i < _dateFormats.Length; i++)
+            {
+                var item = _dateFormats[i];
+                success = DateTime.TryParseExact(
+                    dateString,
+                    item.Format,
+                    DateTimeFormatInfo.InvariantInfo,
+                    DateTimeStyles.None,
+                    out DateTime result_);
+                if (success)
+                {
+                    canBeAmbiguous = item.CanBeAmbiguous;
+                    result = result_;
+                    break;
+                }
+            }
+
+            if (!success)
+            {
+                isAmbiguous = false;
+                dateTime = null;
+                return false;
+            }
+
+            if (!checkForAmbiguity || !canBeAmbiguous)
+            {
+                isAmbiguous = false;
+                dateTime = result;
+                return true;
+            }
+
+            isAmbiguous = true;
+            foreach (char c in dateString)
+            {
+                if (c.IsAsciiAlpha())
+                {
+                    isAmbiguous = false;
+                    break;
+                }
+            }
+
+            if (isAmbiguous)
+            {
+                string[] nums = dateString.Split(new[] { ' ', '-', '/' }, StringSplitOptions.RemoveEmptyEntries);
+                if (nums.Length == 3)
+                {
+                    bool unambiguousYearFound = false;
+                    bool unambiguousDayFound = false;
+
+                    for (int i = 0; i < nums.Length; i++)
+                    {
+                        if (int.TryParse(nums[i], out int numInt))
+                        {
+                            switch (numInt)
+                            {
+                                case >= 1000 and <= 9999:
+                                    unambiguousYearFound = true;
+                                    break;
+                                case > 12 and <= 31:
+                                    unambiguousDayFound = true;
+                                    break;
+                            }
+                        }
+                    }
+
+                    if (unambiguousYearFound && unambiguousDayFound)
+                    {
+                        isAmbiguous = false;
+                    }
+                }
+            }
+
+            dateTime = result;
+            return true;
+        }
 
         #endregion
 

@@ -736,7 +736,7 @@ namespace AngelLoader.Forms
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
         // of nasty random behavior would happen. Not sure if that was because of something specific I was doing
         // wrong or what, but I have this init method now that comfortably runs after the ctor. Shrug.
-        // MT: On startup only, this is run in parallel with FindFMs.Find()
+        // @THREADING: On startup only, this is run in parallel with FindFMs.Find()
         // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
         public void InitThreadable()
         {

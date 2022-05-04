@@ -24,7 +24,7 @@ namespace AngelLoader
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
         internal static List<int> Find() => FindInternal(startup: false);
 
-        // MT: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
+        // @THREADING: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
         // @CAN_RUN_BEFORE_VIEW_INIT
         private static List<int> FindInternal(bool startup)
@@ -39,12 +39,12 @@ namespace AngelLoader
                 // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from
                 // the list when it's in an indeterminate state (which can cause a selection change (bad) and/or
                 // a visible change of the list (not really bad but unprofessional looking)).
-                // MT: Don't do this on startup because we're running in parallel with the form new/init in that case.
+                // @THREADING: Don't do this on startup because we're running in parallel with the form new/init in that case.
                 Core.View.SetRowCount(0);
             }
 
             // Init or reinit - must be deep-copied or changes propagate back because reference types
-            // MT: This is thread-safe, the view ctor and InitThreadable() doesn't touch it.
+            // @THREADING: This is thread-safe, the view ctor and InitThreadable() doesn't touch it.
             PresetTags.DeepCopyTo(GlobalTags);
 
             #region Back up lists and read FM data file

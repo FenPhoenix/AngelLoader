@@ -8,61 +8,35 @@ using System.IO;
 
 namespace FMScanner.FastZipReader
 {
-    internal sealed class SubReadStream : Stream
+    public sealed class SubReadStream : Stream
     {
-        private readonly long _startInSuperStream;
+        private long _startInSuperStream;
         private long _positionInSuperStream;
-        private readonly long _endInSuperStream;
-        private readonly Stream _superStream;
-        private bool _canRead;
-        private bool _isDisposed;
+        private long _endInSuperStream;
+        private Stream _superStream = null!;
 
-        internal SubReadStream(Stream superStream, long startPosition, long maxLength)
+        public void SetSuperStream(Stream? stream) => _superStream = stream!;
+
+        internal void Set(long startPosition, long maxLength)
         {
             _startInSuperStream = startPosition;
             _positionInSuperStream = startPosition;
             _endInSuperStream = startPosition + maxLength;
-            _superStream = superStream;
-            _canRead = true;
-            _isDisposed = false;
         }
 
-        public override long Length
-        {
-            get
-            {
-                ThrowIfDisposed();
-
-                return _endInSuperStream - _startInSuperStream;
-            }
-        }
+        public override long Length => _endInSuperStream - _startInSuperStream;
 
         public override long Position
         {
-            get
-            {
-                ThrowIfDisposed();
-
-                return _positionInSuperStream - _startInSuperStream;
-            }
-            set
-            {
-                ThrowIfDisposed();
-
-                throw new NotSupportedException(SR.SeekingNotSupported);
-            }
+            get => _positionInSuperStream - _startInSuperStream;
+            set => throw new NotSupportedException(SR.SeekingNotSupported);
         }
 
-        public override bool CanRead => _superStream.CanRead && _canRead;
+        public override bool CanRead => _superStream.CanRead;
 
         public override bool CanSeek => false;
 
         public override bool CanWrite => false;
-
-        private void ThrowIfDisposed()
-        {
-            if (_isDisposed) throw new ObjectDisposedException(GetType().ToString(), SR.HiddenStreamName);
-        }
 
         private void ThrowIfCantRead()
         {
@@ -74,7 +48,6 @@ namespace FMScanner.FastZipReader
             // parameter validation sent to _superStream.Read
             int origCount = count;
 
-            ThrowIfDisposed();
             ThrowIfCantRead();
 
             if (_superStream.Position != _positionInSuperStream)
@@ -98,38 +71,33 @@ namespace FMScanner.FastZipReader
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            ThrowIfDisposed();
-            throw new NotSupportedException(SR.SeekingNotSupported);
-        }
+            ThrowIfCantRead();
 
-        public override void SetLength(long value)
-        {
-            ThrowIfDisposed();
-            throw new NotSupportedException(SR.SetLengthRequiresSeekingAndWriting);
-        }
-
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            ThrowIfDisposed();
-            throw new NotSupportedException(SR.WritingNotSupported);
-        }
-
-        public override void Flush()
-        {
-            ThrowIfDisposed();
-            throw new NotSupportedException(SR.WritingNotSupported);
-        }
-
-        // Close the stream for reading.  Note that this does NOT close the superStream (since
-        // the substream is just 'a chunk' of the super-stream
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && !_isDisposed)
+            if (origin != SeekOrigin.Current)
             {
-                _canRead = false;
-                _isDisposed = true;
+                throw new NotSupportedException(SR.SeekingNotSupported);
             }
-            base.Dispose(disposing);
+
+            if (_superStream.Position != _positionInSuperStream)
+            {
+                _superStream.Seek(_positionInSuperStream, SeekOrigin.Begin);
+            }
+
+            if (_positionInSuperStream + offset > _endInSuperStream)
+            {
+                offset = (int)(_endInSuperStream - _positionInSuperStream);
+            }
+
+            long ret = _superStream.Seek(offset, SeekOrigin.Current);
+
+            _positionInSuperStream += ret;
+            return ret;
         }
+
+        public override void SetLength(long value) => throw new NotSupportedException(SR.SetLengthRequiresSeekingAndWriting);
+
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException(SR.WritingNotSupported);
+
+        public override void Flush() => throw new NotSupportedException(SR.WritingNotSupported);
     }
 }
