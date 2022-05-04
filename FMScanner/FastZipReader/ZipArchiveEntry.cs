@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 namespace FMScanner.FastZipReader
 {
     [PublicAPI]
-    public class ZipArchiveEntry
+    public sealed class ZipArchiveEntry
     {
         #region Fields
 

@@ -18,6 +18,7 @@ namespace FMScanner.FastZipReader
     */
     internal static class BinRead
     {
+        // @THREADING: Not thread safe
         private static readonly byte[] _buffer = new byte[16];
 
         /// <summary>Reads the next byte from the current stream and advances the current position of the stream by one byte.</summary>
@@ -216,6 +217,10 @@ namespace FMScanner.FastZipReader
 
     internal static class ZipHelper
     {
+        // Static for memory, one instance is only 48 bytes but infinity billion instances are infinity billion bytes
+        // @THREADING: Not thread safe
+        internal static readonly SubReadStream ArchiveSubReadStream = new();
+
         internal const uint Mask32Bit = 0xFFFFFFFF;
         internal const ushort Mask16Bit = 0xFFFF;
 
@@ -224,8 +229,10 @@ namespace FMScanner.FastZipReader
 
         // Don't recreate constantly
         // Statics for ergonomics of calling - they're both tiny so who cares if they stay around forever
+        // @THREADING: Not thread safe
         private static readonly byte[] _backwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
         private static readonly byte[] _throwawayBuffer = new byte[throwAwayBufferSize];
+        internal static readonly byte[] FieldDataSizeOnlyBuffer = new byte[28];
 
         /// <summary>
         /// Reads exactly bytesToRead out of stream, unless it is out of bytes
@@ -238,6 +245,10 @@ namespace FMScanner.FastZipReader
 
             while (bytesLeftToRead > 0)
             {
+                // @MEM: FileStream() has an internal buffer that you can't pass in, so it gets recreated ten trillion times
+                // Just reading the zips for total uncompressed size causes ~8MB of allocations in these file
+                // streams, when checking the ~1600 set.
+                // 2041 allocations of (4096 + 12 overhead per array object) = 8,384,428 bytes
                 int bytesRead = stream.Read(buffer, totalBytesRead, bytesLeftToRead);
                 if (bytesRead == 0) throw new IOException(SR.UnexpectedEndOfStream);
 

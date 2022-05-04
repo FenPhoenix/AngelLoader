@@ -8,17 +8,14 @@ using System.IO;
 
 namespace FMScanner.FastZipReader
 {
-    internal sealed class SubReadStream : Stream
+    public sealed class SubReadStream : Stream
     {
         private long _startInSuperStream;
         private long _positionInSuperStream;
         private long _endInSuperStream;
-        private readonly Stream _superStream;
+        private Stream _superStream = null!;
 
-        internal SubReadStream(Stream superStream)
-        {
-            _superStream = superStream;
-        }
+        public void SetSuperStream(Stream? stream) => _superStream = stream!;
 
         internal void Set(long startPosition, long maxLength)
         {
@@ -72,7 +69,30 @@ namespace FMScanner.FastZipReader
             return ret;
         }
 
-        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException(SR.SeekingNotSupported);
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            ThrowIfCantRead();
+
+            if (origin != SeekOrigin.Current)
+            {
+                throw new NotSupportedException(SR.SeekingNotSupported);
+            }
+
+            if (_superStream.Position != _positionInSuperStream)
+            {
+                _superStream.Seek(_positionInSuperStream, SeekOrigin.Begin);
+            }
+
+            if (_positionInSuperStream + offset > _endInSuperStream)
+            {
+                offset = (int)(_endInSuperStream - _positionInSuperStream);
+            }
+
+            long ret = _superStream.Seek(offset, SeekOrigin.Current);
+
+            _positionInSuperStream += ret;
+            return ret;
+        }
 
         public override void SetLength(long value) => throw new NotSupportedException(SR.SetLengthRequiresSeekingAndWriting);
 

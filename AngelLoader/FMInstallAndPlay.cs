@@ -751,7 +751,8 @@ namespace AngelLoader
                 {
                     if (archivePath.ExtIsZip())
                     {
-                        using var archive = new ZipArchiveFast(File.OpenRead(archivePath), decodeEntryNames: false);
+#if false
+                        using var archive = new ZipArchive(File.OpenRead(archivePath), ZipArchiveMode.Read, leaveOpen: false, Encoding.UTF8);
 
                         if (_extractCts.IsCancellationRequested) return false;
 
@@ -764,6 +765,13 @@ namespace AngelLoader
                             fmExtractedSize += entries[entryI].Length;
                         }
                         driveData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
+#else
+                        if (_extractCts.IsCancellationRequested) return false;
+
+                        driveData.TotalExtractedSizeOfAllFMsForThisDisk += ZipSize.GetTotalUncompressedSize(File.OpenRead(archivePath));
+
+                        if (_extractCts.IsCancellationRequested) return false;
+#endif
                     }
                     else
                     {
@@ -977,7 +985,7 @@ namespace AngelLoader
                         if (cancel) return false;
                     }
 
-                    List<string>? darkLoaderArchiveFiles = null;
+                    FileNameBoth? darkLoaderArchiveFiles = null;
                     for (int i = 0; i < fmDataList.Length; i++)
                     {
                         var fmData = fmDataList[i];
@@ -1012,7 +1020,7 @@ namespace AngelLoader
                     }
 
 #if false
-                    // Debug - when testing custom zip reader for identicality
+                    // Debug - when testing custom zip size getter for identicality/performance
                     foreach (var item in driveDataDict)
                     {
                         Trace.WriteLine(item.Value.TotalExtractedSizeOfAllFMsForThisDisk);

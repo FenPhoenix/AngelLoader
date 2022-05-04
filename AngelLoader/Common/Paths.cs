@@ -201,7 +201,7 @@ namespace AngelLoader
             ? PathCombineFast_NoChecks(Startup, "7z64")
             : PathCombineFast_NoChecks(Startup, "7z32");
 
-        internal static string SevenZipExe => PathCombineFast_NoChecks(SevenZipPath, "7z.exe");
+        internal static readonly string SevenZipExe = PathCombineFast_NoChecks(SevenZipPath, "7z.exe");
 
         #region Log files
 

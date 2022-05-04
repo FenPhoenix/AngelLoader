@@ -43,8 +43,6 @@ namespace FMScanner.FastZipReader
         private long _expectedNumberOfEntries;
         private readonly Stream? _backingStream;
 
-        internal readonly SubReadStream ArchiveSubReadStream;
-
         internal readonly Stream ArchiveStream;
 
         private uint _numberOfThisDisk;
@@ -99,7 +97,7 @@ namespace FMScanner.FastZipReader
 
                 ArchiveStream = stream;
 
-                ArchiveSubReadStream = new SubReadStream(ArchiveStream);
+                ZipHelper.ArchiveSubReadStream.SetSuperStream(ArchiveStream);
 
                 _centralDirectoryStart = 0; // invalid until ReadCentralDirectory
                 _isDisposed = false;
@@ -137,9 +135,9 @@ namespace FMScanner.FastZipReader
 
             // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
 
-            ArchiveSubReadStream.Set((long)entry.StoredOffsetOfCompressedData!, entry.CompressedLength);
+            ZipHelper.ArchiveSubReadStream.Set((long)entry.StoredOffsetOfCompressedData!, entry.CompressedLength);
 
-            return GetDataDecompressor(entry, ArchiveSubReadStream);
+            return GetDataDecompressor(entry, ZipHelper.ArchiveSubReadStream);
         }
 
         private static Stream GetDataDecompressor(ZipArchiveEntry entry, Stream compressedStreamToRead)
@@ -239,7 +237,7 @@ namespace FMScanner.FastZipReader
                         long numberOfEntries = 0;
 
                         //read the central directory
-                        while (ZipCentralDirectoryFileHeader.TryReadBlock(this, _decodeEntryNames, out var currentHeader))
+                        while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveStream, ZipHelper.ArchiveSubReadStream, sizeOnly: false, out var currentHeader))
                         {
                             var entry = new ZipArchiveEntry(currentHeader);
                             _entries.Add(entry);
@@ -403,6 +401,7 @@ namespace FMScanner.FastZipReader
             if (disposing && !_isDisposed)
             {
                 ArchiveStream.Dispose();
+                ZipHelper.ArchiveSubReadStream.SetSuperStream(null);
                 _backingStream?.Dispose();
 
                 _isDisposed = true;

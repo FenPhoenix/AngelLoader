@@ -19,7 +19,7 @@ namespace FMScanner.FastZipReader
 
         // shouldn't ever read the byte at position endExtraField
         // assumes we are positioned at the beginning of an extra field subfield
-        internal static bool TryReadBlock(Stream stream, long endExtraField, out ZipGenericExtraField field)
+        internal static bool TryReadBlock(Stream stream, long endExtraField, bool sizeOnly, out ZipGenericExtraField field)
         {
             field = new ZipGenericExtraField();
 
@@ -32,7 +32,17 @@ namespace FMScanner.FastZipReader
             // not enough bytes to read the data
             if (endExtraField - stream.Position < field.Size) return false;
 
-            field.Data = BinRead.ReadBytes(stream, field.Size);
+            if (!sizeOnly)
+            {
+                field.Data = BinRead.ReadBytes(stream, field.Size);
+            }
+            else
+            {
+                field.Data = ZipHelper.FieldDataSizeOnlyBuffer;
+                int num = stream.Read(field.Data, 0, 28);
+                stream.Seek(field.Size - num, SeekOrigin.Current);
+            }
+
             return true;
         }
     }
@@ -69,12 +79,16 @@ namespace FMScanner.FastZipReader
         //
         // If there are more than one Zip64 extra fields, we take the first one that has the expected size
         //
-        internal static Zip64ExtraField GetJustZip64Block(Stream extraFieldStream,
-            bool readUncompressedSize, bool readCompressedSize,
-            bool readLocalHeaderOffset, bool readStartDiskNumber)
+        internal static Zip64ExtraField GetJustZip64Block(
+            Stream extraFieldStream,
+            bool readUncompressedSize,
+            bool readCompressedSize,
+            bool readLocalHeaderOffset,
+            bool readStartDiskNumber,
+            bool sizeOnly)
         {
             Zip64ExtraField zip64Field;
-            while (ZipGenericExtraField.TryReadBlock(extraFieldStream, extraFieldStream.Length, out var currentExtraField))
+            while (ZipGenericExtraField.TryReadBlock(extraFieldStream, extraFieldStream.Length, sizeOnly, out var currentExtraField))
             {
                 if (TryGetZip64BlockFromGenericExtraField(currentExtraField, readUncompressedSize,
                         readCompressedSize, readLocalHeaderOffset, readStartDiskNumber, out zip64Field))
@@ -94,9 +108,12 @@ namespace FMScanner.FastZipReader
             return zip64Field;
         }
 
-        private static bool TryGetZip64BlockFromGenericExtraField(ZipGenericExtraField extraField,
-            bool readUncompressedSize, bool readCompressedSize,
-            bool readLocalHeaderOffset, bool readStartDiskNumber,
+        private static bool TryGetZip64BlockFromGenericExtraField(
+            ZipGenericExtraField extraField,
+            bool readUncompressedSize,
+            bool readCompressedSize,
+            bool readLocalHeaderOffset,
+            bool readStartDiskNumber,
             out Zip64ExtraField zip64Block)
         {
             zip64Block = new Zip64ExtraField
@@ -249,11 +266,13 @@ namespace FMScanner.FastZipReader
 
         // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
         // in either case, the zip64 extra field info will be incorporated into other fields
-        internal static bool TryReadBlock(ZipArchiveFast archive, bool fileNameNeeded, out ZipCentralDirectoryFileHeader header)
+        internal static bool TryReadBlock(
+            Stream stream,
+            SubReadStream subStream,
+            bool sizeOnly,
+            out ZipCentralDirectoryFileHeader header)
         {
             header = new ZipCentralDirectoryFileHeader();
-
-            var stream = archive.ArchiveStream;
 
             if (BinRead.ReadUInt32(stream) != SignatureConstant) return false;
 
@@ -274,7 +293,7 @@ namespace FMScanner.FastZipReader
             BinRead.ReadUInt32(stream); // ExternalFileAttributes
             uint relativeOffsetOfLocalHeaderSmall = BinRead.ReadUInt32(stream);
 
-            if (fileNameNeeded)
+            if (!sizeOnly)
             {
                 header.Filename = BinRead.ReadBytes(stream, header.FilenameLength);
             }
@@ -292,11 +311,15 @@ namespace FMScanner.FastZipReader
 
             long endExtraFields = stream.Position + header.ExtraFieldLength;
 
-            archive.ArchiveSubReadStream.Set(stream.Position, header.ExtraFieldLength);
+            subStream.Set(stream.Position, header.ExtraFieldLength);
 
-            zip64 = Zip64ExtraField.GetJustZip64Block(archive.ArchiveSubReadStream,
-                uncompressedSizeInZip64, compressedSizeInZip64,
-                relativeOffsetInZip64, diskNumberStartInZip64);
+            zip64 = Zip64ExtraField.GetJustZip64Block(
+                subStream,
+                uncompressedSizeInZip64,
+                compressedSizeInZip64,
+                relativeOffsetInZip64,
+                diskNumberStartInZip64,
+                sizeOnly);
 
             // There are zip files that have malformed ExtraField blocks in which GetJustZip64Block() silently
             // bails out without reading all the way to the end of the ExtraField block. Thus we must force the
