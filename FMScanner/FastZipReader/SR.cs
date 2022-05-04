@@ -26,7 +26,6 @@ namespace FMScanner.FastZipReader
         internal static readonly string UnknownState = "Decoder is in some unknown state. This might be caused by corrupted data.";
         internal static readonly string CDCorrupt = "Central Directory corrupt.";
         internal static readonly string CentralDirectoryInvalid = "Central Directory is invalid.";
-        internal static readonly string EntryNameEncodingNotSupported = "The specified entry name encoding is not supported.";
         internal static readonly string EOCDNotFound = "End of Central Directory record could not be found.";
         internal static readonly string FieldTooBigCompressedSize = "Compressed Size cannot be held in an Int64.";
         internal static readonly string FieldTooBigLocalHeaderOffset = "Local Header Offset cannot be held in an Int64.";
@@ -35,7 +34,6 @@ namespace FMScanner.FastZipReader
         internal static readonly string FieldTooBigOffsetToZip64EOCD = "Offset to Zip64 End Of Central Directory record cannot be held in an Int64.";
         internal static readonly string FieldTooBigStartDiskNumber = "Start Disk Number cannot be held in an Int64.";
         internal static readonly string FieldTooBigUncompressedSize = "Uncompressed Size cannot be held in an Int64.";
-        internal static readonly string HiddenStreamName = "A stream from ZipArchiveEntry has been disposed.";
         internal static readonly string LocalFileHeaderCorrupt = "A local file header is corrupt.";
         internal static readonly string NumEntriesWrong = "Number of entries expected in End Of Central Directory does not correspond to number of entries in Central Directory.";
         internal static readonly string ReadingNotSupported = "This stream from ZipArchiveEntry does not support reading.";

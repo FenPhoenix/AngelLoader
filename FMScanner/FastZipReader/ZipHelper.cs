@@ -134,7 +134,7 @@ namespace FMScanner.FastZipReader
             if (length != numArray.Length)
             {
                 byte[] dst = new byte[length];
-                Buffer.BlockCopy((Array)numArray, 0, (Array)dst, 0, length);
+                Buffer.BlockCopy(numArray, 0, dst, 0, length);
                 numArray = dst;
             }
             return numArray;

@@ -324,13 +324,11 @@ namespace FMScanner.FastZipReader
             bool relativeOffsetInZip64 = relativeOffsetOfLocalHeaderSmall == ZipHelpers.Mask32Bit;
             bool diskNumberStartInZip64 = diskNumberStartSmall == ZipHelpers.Mask16Bit;
 
-            Zip64ExtraField zip64;
-
             long endExtraFields = stream.Position + header.ExtraFieldLength;
 
             bundle.ArchiveSubReadStream.Set(stream.Position, header.ExtraFieldLength);
 
-            zip64 = Zip64ExtraField.GetJustZip64Block(
+            Zip64ExtraField zip64 = Zip64ExtraField.GetJustZip64Block(
                 bundle.ArchiveSubReadStream,
                 uncompressedSizeInZip64,
                 compressedSizeInZip64,
