@@ -667,6 +667,8 @@ namespace AngelLoader
 
                 FMsViewList.Add(fm);
             }
+
+            FMsViewList.TrimExcess();
         }
 
         private static void AddReadmeEncodingEntriesToDict(FanMission fm)

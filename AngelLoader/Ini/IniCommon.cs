@@ -96,9 +96,17 @@ namespace AngelLoader
 
         internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)
         {
+            fmsList.Clear();
+
             var iniLines = File_ReadAllLines_List(fileName, Encoding.UTF8);
 
-            if (fmsList.Count > 0) fmsList.Clear();
+            int fmCount = 0;
+            for (int i = 0; i < iniLines.Count; i++)
+            {
+                if (iniLines[i] == "[FM]") fmCount++;
+            }
+
+            fmsList.Capacity = fmCount;
 
             bool fmsListIsEmpty = true;
 

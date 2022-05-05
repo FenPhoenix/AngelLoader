@@ -176,8 +176,10 @@ namespace AngelLoader
 
         #region FM lists
 
-        internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
-        internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
+        // Init to 0 capacity so they don't allocate a 4-byte backing array or whatever, cause we're going to
+        // reallocate them right away anyway.
+        internal static readonly List<FanMission> FMDataIniList = new List<FanMission>(0);
+        internal static readonly List<FanMission> FMsViewList = new List<FanMission>(0);
 
         #endregion
 
