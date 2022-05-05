@@ -907,6 +907,7 @@ namespace AngelLoader
             }
         }
 
+        private static readonly char[] _ca_Space_Tab_Semicolon = { ' ', '\t', ';' };
         internal static bool? GetScreenShotMode(GameIndex gameIndex)
         {
             if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserCfg, out string userCfgFile)) return null;
@@ -920,7 +921,7 @@ namespace AngelLoader
                 string ltNS = RemoveLeadingSemicolons(lt);
                 if (ltNS.StartsWithIPlusWhiteSpace(key_inv_status_height))
                 {
-                    string[] fields = ltNS.Split(new[] { ' ', '\t', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] fields = ltNS.Split(_ca_Space_Tab_Semicolon, StringSplitOptions.RemoveEmptyEntries);
                     ret = fields.Length >= 2 &&
                           int.TryParse(fields[1], out int result) &&
                           result == 0 &&

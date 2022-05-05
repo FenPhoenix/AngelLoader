@@ -2229,7 +2229,7 @@ namespace AngelLoader
 #if false
             static bool SetRegExt(string ext, bool enable)
             {
-                AssertR(ext.Trim('.') == ext, nameof(ext) + " was passed with a dot prefix or suffix");
+                AssertR(ext.Trim(CA_Period) == ext, nameof(ext) + " was passed with a dot prefix or suffix");
 
                 string sfaExtShellPath = @"SOFTWARE\Classes\SystemFileAssociations\." + ext + @"\shell";
                 const string alKeyName = "play_with_angelloader";

@@ -2324,7 +2324,7 @@ namespace FMScanner
                         if (success)
                         {
                             ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
-                            last.Lines.ClearAndAdd(text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
+                            last.Lines.ClearAndAdd(text.Split(CRLF_CR_LF, StringSplitOptions.None));
                             last.Text = text;
                         }
                     }

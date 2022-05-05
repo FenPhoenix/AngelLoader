@@ -298,7 +298,7 @@ namespace AngelLoader
             }
 
             string ct = _colorTableSB.ToString();
-            string[] entries = ct.Split(';');
+            string[] entries = ct.Split(CA_Semicolon);
 
             int realEntryCount = entries.Length;
             if (entries.Length == 0)
