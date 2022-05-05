@@ -163,60 +163,95 @@ namespace AngelLoader
 
         #region FMData
 
+        private static bool SegmentEquals(this string first, int start, int end, string second, FanMission fm)
+        {
+            int secondLen = second.Length;
+            if ((end - start) < secondLen - 1) return false;
+
+            int i = start;
+            int i2 = 0;
+            while (i < end && i2 < secondLen)
+            {
+                char c = first[i];
+                char c2 = second[i2];
+
+                if (c is ',')
+                {
+                    i++;
+                    continue;
+                }
+                else if (c == ' ' || c != c2)
+                {
+                    return false;
+                }
+
+                i++;
+                i2++;
+            }
+            return true;
+        }
+
         private static void FillFMHasXFields(FanMission fm, string fieldsString)
         {
-            string[] fields = fieldsString.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
-
             // Resources must be cleared here
             fm.Resources = CustomResources.None;
 
-            if (fields.Length > 0 && fields[0].EqualsI(nameof(CustomResources.None))) return;
+            int curStart = 0;
 
-            for (int i = 0; i < fields.Length; i++)
+            int len = fieldsString.Length;
+
+            for (int i = 0; i < len; i++)
             {
-                string field = fields[i];
+                char c = fieldsString[i];
 
-                // Need this if block, because we're not iterating through all fields, so can't just have a flat
-                // block of fm.HasX = field.EqualsI(X);
-                if (field.EqualsI(nameof(CustomResources.Map)))
+                if (c == ',' || i == len - 1)
                 {
-                    SetFMResource(fm, CustomResources.Map, true);
-                }
-                else if (field.EqualsI(nameof(CustomResources.Automap)))
-                {
-                    SetFMResource(fm, CustomResources.Automap, true);
-                }
-                else if (field.EqualsI(nameof(CustomResources.Scripts)))
-                {
-                    SetFMResource(fm, CustomResources.Scripts, true);
-                }
-                else if (field.EqualsI(nameof(CustomResources.Textures)))
-                {
-                    SetFMResource(fm, CustomResources.Textures, true);
-                }
-                else if (field.EqualsI(nameof(CustomResources.Sounds)))
-                {
-                    SetFMResource(fm, CustomResources.Sounds, true);
-                }
-                else if (field.EqualsI(nameof(CustomResources.Objects)))
-                {
-                    SetFMResource(fm, CustomResources.Objects, true);
-                }
-                else if (field.EqualsI(nameof(CustomResources.Creatures)))
-                {
-                    SetFMResource(fm, CustomResources.Creatures, true);
-                }
-                else if (field.EqualsI(nameof(CustomResources.Motions)))
-                {
-                    SetFMResource(fm, CustomResources.Motions, true);
-                }
-                else if (field.EqualsI(nameof(CustomResources.Movies)))
-                {
-                    SetFMResource(fm, CustomResources.Movies, true);
-                }
-                else if (field.EqualsI(nameof(CustomResources.Subtitles)))
-                {
-                    SetFMResource(fm, CustomResources.Subtitles, true);
+                    if (curStart == 0 && fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.None), fm))
+                    {
+                        return;
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Map), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Map, true);
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Automap), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Automap, true);
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Scripts), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Scripts, true);
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Textures), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Textures, true);
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Sounds), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Sounds, true);
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Objects), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Objects, true);
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Creatures), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Creatures, true);
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Motions), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Motions, true);
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Movies), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Movies, true);
+                    }
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Subtitles), fm))
+                    {
+                        SetFMResource(fm, CustomResources.Subtitles, true);
+                    }
+
+                    curStart = i;
                 }
             }
         }
