@@ -561,7 +561,10 @@ namespace FenGen
                     {
                         w.WL("if (" + objDotField + ")");
                         w.WL("{");
-                        swlSBAppend(fieldIniName, objDotField, toString);
+                        // For bools, there's only two possible values and if we're not writing it out if it's
+                        // false, we know if we ARE writing it out then it can only be true, so just put a string
+                        // literal in there and don't do ToString() (mem, perf)
+                        w.WL("sb.AppendLine(\"" + fieldIniName + "=True\");");
                         w.WL("}");
                     }
                 }

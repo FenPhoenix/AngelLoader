@@ -321,18 +321,15 @@ namespace AngelLoader
 
                 if (fm.NoArchive)
                 {
-                    sb.Append("NoArchive=");
-                    sb.AppendLine(fm.NoArchive.ToString());
+                    sb.AppendLine("NoArchive=True");
                 }
                 if (fm.MarkedScanned)
                 {
-                    sb.Append("MarkedScanned=");
-                    sb.AppendLine(fm.MarkedScanned.ToString());
+                    sb.AppendLine("MarkedScanned=True");
                 }
                 if (fm.Pinned)
                 {
-                    sb.Append("Pinned=");
-                    sb.AppendLine(fm.Pinned.ToString());
+                    sb.AppendLine("Pinned=True");
                 }
                 if (!string.IsNullOrEmpty(fm.Archive))
                 {
@@ -381,13 +378,11 @@ namespace AngelLoader
                 }
                 if (fm.Installed)
                 {
-                    sb.Append("Installed=");
-                    sb.AppendLine(fm.Installed.ToString());
+                    sb.AppendLine("Installed=True");
                 }
                 if (fm.NoReadmes)
                 {
-                    sb.Append("NoReadmes=");
-                    sb.AppendLine(fm.NoReadmes.ToString());
+                    sb.AppendLine("NoReadmes=True");
                 }
                 if (!string.IsNullOrEmpty(fm.SelectedReadme))
                 {
@@ -432,8 +427,7 @@ namespace AngelLoader
                 }
                 if (fm.FinishedOnUnknown)
                 {
-                    sb.Append("FinishedOnUnknown=");
-                    sb.AppendLine(fm.FinishedOnUnknown.ToString());
+                    sb.AppendLine("FinishedOnUnknown=True");
                 }
                 if (!string.IsNullOrEmpty(fm.Comment))
                 {
@@ -472,8 +466,7 @@ namespace AngelLoader
 #endif
                 if (fm.LangsScanned)
                 {
-                    sb.Append("LangsScanned=");
-                    sb.AppendLine(fm.LangsScanned.ToString());
+                    sb.AppendLine("LangsScanned=True");
                 }
                 if (!string.IsNullOrEmpty(fm.Langs))
                 {
