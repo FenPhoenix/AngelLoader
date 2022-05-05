@@ -13,8 +13,6 @@
             this.Install_ConfirmMultipleOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmAlwaysRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.ConfirmBeforeInstallLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.OSContextMenuGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.ShowCommandsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.PlayFMOnDCOrEnterGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.WebSearchGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -34,7 +32,6 @@
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.InstallingFMsGroupBox.SuspendLayout();
-            this.OSContextMenuGroupBox.SuspendLayout();
             this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
             this.WebSearchGroupBox.SuspendLayout();
             this.UninstallingFMsGroupBox.SuspendLayout();
@@ -45,14 +42,13 @@
             // 
             this.PagePanel.AutoScroll = true;
             this.PagePanel.Controls.Add(this.InstallingFMsGroupBox);
-            this.PagePanel.Controls.Add(this.OSContextMenuGroupBox);
             this.PagePanel.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
             this.PagePanel.Controls.Add(this.WebSearchGroupBox);
             this.PagePanel.Controls.Add(this.UninstallingFMsGroupBox);
             this.PagePanel.Controls.Add(this.FMFileConversionGroupBox);
             this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagePanel.Size = new System.Drawing.Size(440, 638);
+            this.PagePanel.Size = new System.Drawing.Size(440, 575);
             this.PagePanel.TabIndex = 0;
             // 
             // InstallingFMsGroupBox
@@ -97,26 +93,6 @@
             this.ConfirmBeforeInstallLabel.AutoSize = true;
             this.ConfirmBeforeInstallLabel.Location = new System.Drawing.Point(16, 24);
             this.ConfirmBeforeInstallLabel.TabIndex = 0;
-            // 
-            // OSContextMenuGroupBox
-            // 
-            this.OSContextMenuGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.OSContextMenuGroupBox.Controls.Add(this.ShowCommandsCheckBox);
-            this.OSContextMenuGroupBox.Location = new System.Drawing.Point(8, 572);
-            this.OSContextMenuGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-            this.OSContextMenuGroupBox.Size = new System.Drawing.Size(424, 56);
-            this.OSContextMenuGroupBox.TabIndex = 5;
-            this.OSContextMenuGroupBox.TabStop = false;
-            this.OSContextMenuGroupBox.Visible = false;
-            // 
-            // ShowCommandsCheckBox
-            // 
-            this.ShowCommandsCheckBox.AutoSize = true;
-            this.ShowCommandsCheckBox.Checked = true;
-            this.ShowCommandsCheckBox.Location = new System.Drawing.Point(16, 24);
-            this.ShowCommandsCheckBox.TabIndex = 0;
-            this.ShowCommandsCheckBox.UseVisualStyleBackColor = true;
             // 
             // PlayFMOnDCOrEnterGroupBox
             // 
@@ -278,12 +254,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
-            this.Size = new System.Drawing.Size(440, 638);
+            this.Size = new System.Drawing.Size(440, 575);
             this.PagePanel.ResumeLayout(false);
             this.InstallingFMsGroupBox.ResumeLayout(false);
             this.InstallingFMsGroupBox.PerformLayout();
-            this.OSContextMenuGroupBox.ResumeLayout(false);
-            this.OSContextMenuGroupBox.PerformLayout();
             this.PlayFMOnDCOrEnterGroupBox.ResumeLayout(false);
             this.PlayFMOnDCOrEnterGroupBox.PerformLayout();
             this.WebSearchGroupBox.ResumeLayout(false);

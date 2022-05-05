@@ -8,21 +8,17 @@
 */
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using JetBrains.Annotations;
-using Microsoft.Win32;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
@@ -37,7 +33,7 @@ namespace AngelLoader
         // it's null. But if we check it from another thread there'll be a race condition. Figure something out?
         internal static IView View = null!;
 
-        internal static async void Init(ReadOnlyCollection<string> args)
+        internal static async void Init()
         {
             bool openSettings = false;
             // This is if we have no config file; in that case we assume we're starting for the first time ever
@@ -130,8 +126,6 @@ namespace AngelLoader
                     }
                     Ini.AddLanguageFromFile(f, Config.LanguageNames);
                 }
-
-                AddUsToWindowsContextMenu(Config.ShowOSContextMenuCommands);
             }
 
             if (!openSettings)
@@ -435,8 +429,6 @@ namespace AngelLoader
             Config.HideExitButton = outConfig.HideExitButton;
 
             Config.ReadmeUseFixedWidthFont = outConfig.ReadmeUseFixedWidthFont;
-
-            Config.ShowOSContextMenuCommands = outConfig.ShowOSContextMenuCommands;
 
             #endregion
 
@@ -2094,7 +2086,7 @@ namespace AngelLoader
 
         #endregion
 
-        #region Explorer menu / command line
+        #region Command line
 
         public static void ActivateMainView()
         {
@@ -2102,296 +2094,6 @@ namespace AngelLoader
             {
                 View.ActivateThisInstance();
             }
-        }
-
-#if false
-        // @!vNext(HandleCommandLineArgs): Finalize this and take care of any notes and todos
-        public static async Task HandleCommandLineArgs(ReadOnlyCollection<string> args)
-        {
-            using var mutex = new Mutex(true, AppGuid, out bool createdNew);
-            if (!createdNew) return;
-
-            Trace.WriteLine("Activated!");
-            Trace.WriteLine("Command line:");
-            foreach (string item in args)
-            {
-                Trace.WriteLine(item);
-            }
-
-            if (View == null! || args.Count < 2) return;
-
-            switch (args[0])
-            {
-#if false
-                case "-adda":
-                    // Add archives to list
-                    string[] fmArchives = new string[args.Count - 1];
-                    for (int i = 1; i < args.Count; i++)
-                    {
-                        fmArchives[i - 1] = args[i];
-                    }
-                    await View.AddFMs(fmArchives);
-                    break;
-#endif
-                case "-play" when args.Count == 2:
-                    // Add archive, install, and play (single only)
-                    string fullPath = args[1];
-
-                    if (!fullPath.ExtIsArchive()) return;
-
-                    if (PathContainsUnsupportedProgramFilesFolder(fullPath, out string progFilesPath))
-                    {
-                        string message = "This path contains '" + progFilesPath +
-                                         "' which is an unsupported path for 32-bit apps.\r\n\r\n" +
-                                         "The passed path was:\r\n\r\n" +
-                                         fullPath + "\r\n\r\n";
-                        Log(message, stackTrace: true);
-                        Dialogs.ShowError(message);
-                        return;
-                    }
-
-                    string archive;
-                    try
-                    {
-                        archive = Path.GetFileName(fullPath);
-                    }
-                    catch
-                    {
-                        return;
-                    }
-                    /*
-                    @CMDLINE: Situations to handle for playing an FM:
-                    -Say our FM is not in the list, so we add it. We auto-scan it, but the user clicks Cancel.
-                    Now we don't know what game type it is, so we can't install it.
-                    -We add the FM, scan it, and the game type is a game that isn't installed.
-                    */
-                    static FanMission? GetFMInViewList(string archive)
-                    {
-                        return FMsViewList.FirstOrDefault(x => x.Archive.EqualsI(archive) && !x.MarkedUnavailable);
-                    }
-
-                    FanMission? fm = GetFMInViewList(archive);
-                    if (fm == null)
-                    {
-                        string archiveInArchiveDir = FMArchives.FindFirstMatch(archive);
-                        if (archiveInArchiveDir.IsEmpty())
-                        {
-                            if (!await View.AddFMs(new[] { archive })) return;
-                            fm = GetFMInViewList(archive);
-                            if (fm == null)
-                            {
-                                Dialogs.ShowError("FM added, but was not in \"available\" subset of view list even after adding and refreshing list from disk.");
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            await RefreshFMsListFromDisk();
-                            fm = GetFMInViewList(archive);
-                            if (fm == null)
-                            {
-                                Dialogs.ShowError("FM found on disk, but was not in \"available\" subset of view list even after refreshing list from disk.");
-                                return;
-                            }
-                        }
-                    }
-
-                    await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
-                    break;
-            }
-        }
-#endif
-
-        /*
-        @!vNext: TODO(AddUsToWindowsContextMenu):
-        -Decide if we want options for "Play with AL", "Install with AL", "Add to list" etc.
-        -Test with non-admin, and on Win7.
-
-        Issues:
-        -With our simple registry-based approach, we can't tell Windows to batch multiple files and send them all
-         at once. We get one copy of the app started for each file.
-         We would need a shell extension for that, and we would want to write it native for perf and lightness
-         (official word is that .NET-based shell extensions are not recommended).
-         Also shell extensions apparently get perma-loaded by Windows and therefore presumably couldn't be over-
-         written(?) So extracting new versions to AL's dir would produce an error for the shell extension file?
-         Maybe you're supposed to put it in some central location. Don't know. Not looked into it that much yet.
-        -If the user deletes AL from disk, the menu options will remain unless they were to first open the app
-         and turn them off, THEN delete the app. That's not such a nice result. If the user wanted them gone they'd
-         have to put AL back in a folder, go give it its required settings and then turn the menu commands off.
-         If we were an installable app with an uninstaller, we could just remove the menu commands within the
-         uninstaller. But maybe we shouldn't do this in our current state...? Should we disable this altogether
-         or make it be off by default with a message about this quirk and users can still turn it on if they want?
-        */
-        internal static bool AddUsToWindowsContextMenu(bool enable)
-        {
-            return false;
-
-#if false
-            static bool SetRegExt(string ext, bool enable)
-            {
-                AssertR(ext.Trim(CA_Period) == ext, nameof(ext) + " was passed with a dot prefix or suffix");
-
-                string sfaExtShellPath = @"SOFTWARE\Classes\SystemFileAssociations\." + ext + @"\shell";
-                const string alKeyName = "play_with_angelloader";
-                string alKeyPath = sfaExtShellPath + @"\" + alKeyName;
-
-            #region Local functions
-
-                static RegistryKey? CreateSubKey(string path)
-                {
-                    RegistryKey? key = null;
-                    try
-                    {
-                        key = Registry.CurrentUser.CreateSubKey(path, writable: true);
-                    }
-                    catch (SecurityException ex)
-                    {
-                        Log("Could not create key: " + path + "\r\n" +
-                            "The user does not have the permissions required to create or open the registry key.",
-                            ex);
-                    }
-                    catch (UnauthorizedAccessException ex)
-                    {
-                        Log("Could not create key: " + path + "\r\n" +
-                            "The registry key cannot be written to. The user may not have the necessary access rights.",
-                            ex);
-                    }
-                    catch (IOException ex)
-                    {
-                        Log("Could not create key: " + path + "\r\n" +
-                            "An I/O exception occurred.",
-                            ex);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Could not create key: " + path, ex);
-                    }
-
-                    if (key == null)
-                    {
-                        Dialogs.ShowError(ErrorText.UnableToAddItemsToExplorerMenu);
-                    }
-
-                    return key;
-                }
-
-                static bool SetValue(RegistryKey key, string name, object value)
-                {
-                    try
-                    {
-                        key.SetValue(name, value);
-                    }
-                    catch (SecurityException ex)
-                    {
-                        Log("Could not create Explorer context menu item(s)", ex);
-                        Dialogs.ShowError(ErrorText.UnableToAddItemsToExplorerMenu);
-                        return false;
-                    }
-
-                    return true;
-                }
-
-                static bool DeleteKey(string sfaExtShellPath, string alKeyPath, bool silentCleanupMode = false)
-                {
-                    RegistryKey? alKey = null;
-                    try
-                    {
-                        try
-                        {
-                            alKey = Registry.CurrentUser.OpenSubKey(sfaExtShellPath, writable: true);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log("Could not open key: " + sfaExtShellPath, ex);
-                        }
-                        if (alKey == null)
-                        {
-                            if (!silentCleanupMode)
-                            {
-                                Dialogs.ShowError(ErrorText.UnableToRemoveItemsFromExplorerMenu);
-                            }
-                            return false;
-                        }
-
-                        try
-                        {
-                            alKey.DeleteSubKeyTree(alKeyName, throwOnMissingSubKey: false);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log("Could not delete SubKeyTree: " + alKeyPath, ex);
-                            if (!silentCleanupMode)
-                            {
-                                Dialogs.ShowError(ErrorText.UnableToRemoveItemsFromExplorerMenu);
-                            }
-                            return false;
-                        }
-
-                        return !silentCleanupMode;
-                    }
-                    finally
-                    {
-                        alKey?.Dispose();
-                    }
-                }
-
-                bool Cleanup() => DeleteKey(sfaExtShellPath, alKeyPath, silentCleanupMode: true);
-
-            #endregion
-
-                if (enable)
-                {
-                    string appPathAndExe = Path.Combine(Paths.Startup, Paths.AppFileName);
-
-                    RegistryKey? alKey = null;
-                    try
-                    {
-                        alKey = CreateSubKey(alKeyPath);
-                        if (alKey == null ||
-                            !SetValue(alKey, "", LText.ShellContextMenu.Play) ||
-                            !SetValue(alKey, "Icon", appPathAndExe) ||
-                            // Note: MultiSelectModel is only to do with how many files can be selected and still
-                            // have the context menu option show up. It is NOT, unfortunately, to do with how
-                            // files actually get SENT to the app, which as far as I can tell are always passed
-                            // one at a time, with one new instance per file. Ugh. If we wanted proper multi-file
-                            // batch loading, it looks like it's still shell extension town for us.
-                            // We say "Single" for play for obvious reasons, but if we wanted to add "Add to set"
-                            // later then we would want to support multiple at once, so yeah.
-                            !SetValue(alKey, "MultiSelectModel", "Single"))
-                        {
-                            return Cleanup();
-                        }
-                    }
-                    finally
-                    {
-                        alKey?.Dispose();
-                    }
-
-                    RegistryKey? cmdKey = null;
-                    try
-                    {
-                        cmdKey = CreateSubKey(alKeyPath + @"\command");
-                        if (cmdKey == null ||
-                            !SetValue(cmdKey, "", "\"" + appPathAndExe + "\" -play \"%1\""))
-                        {
-                            return Cleanup();
-                        }
-
-                        return true;
-                    }
-                    finally
-                    {
-                        cmdKey?.Dispose();
-                    }
-                }
-                else
-                {
-                    return DeleteKey(sfaExtShellPath, alKeyPath);
-                }
-            }
-
-            return SetRegExt("zip", enable) && SetRegExt("7z", enable);
-#endif
         }
 
         #endregion

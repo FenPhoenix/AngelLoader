@@ -37,8 +37,6 @@ namespace AngelLoader.Forms
             this.Install_ConfirmMultipleOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmAlwaysRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.ConfirmBeforeInstallLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.OSContextMenuGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.ShowCommandsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.PlayFMOnDCOrEnterGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.WebSearchGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -58,7 +56,6 @@ namespace AngelLoader.Forms
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.InstallingFMsGroupBox.SuspendLayout();
-            this.OSContextMenuGroupBox.SuspendLayout();
             this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
             this.WebSearchGroupBox.SuspendLayout();
             this.UninstallingFMsGroupBox.SuspendLayout();
@@ -69,7 +66,6 @@ namespace AngelLoader.Forms
             // 
             this.PagePanel.AutoScroll = true;
             this.PagePanel.Controls.Add(this.InstallingFMsGroupBox);
-            this.PagePanel.Controls.Add(this.OSContextMenuGroupBox);
             this.PagePanel.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
             this.PagePanel.Controls.Add(this.WebSearchGroupBox);
             this.PagePanel.Controls.Add(this.UninstallingFMsGroupBox);
@@ -78,7 +74,7 @@ namespace AngelLoader.Forms
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 638);
+            this.PagePanel.Size = new System.Drawing.Size(440, 575);
             this.PagePanel.TabIndex = 0;
             // 
             // InstallingFMsGroupBox
@@ -137,32 +133,6 @@ namespace AngelLoader.Forms
             this.ConfirmBeforeInstallLabel.Size = new System.Drawing.Size(121, 13);
             this.ConfirmBeforeInstallLabel.TabIndex = 0;
             this.ConfirmBeforeInstallLabel.Text = "Confirm before installing:";
-            // 
-            // OSContextMenuGroupBox
-            // 
-            this.OSContextMenuGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.OSContextMenuGroupBox.Controls.Add(this.ShowCommandsCheckBox);
-            this.OSContextMenuGroupBox.Location = new System.Drawing.Point(8, 572);
-            this.OSContextMenuGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-            this.OSContextMenuGroupBox.Name = "OSContextMenuGroupBox";
-            this.OSContextMenuGroupBox.Size = new System.Drawing.Size(424, 56);
-            this.OSContextMenuGroupBox.TabIndex = 5;
-            this.OSContextMenuGroupBox.TabStop = false;
-            this.OSContextMenuGroupBox.Text = "File context menu";
-            this.OSContextMenuGroupBox.Visible = false;
-            // 
-            // ShowCommandsCheckBox
-            // 
-            this.ShowCommandsCheckBox.AutoSize = true;
-            this.ShowCommandsCheckBox.Checked = true;
-            this.ShowCommandsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowCommandsCheckBox.Location = new System.Drawing.Point(16, 24);
-            this.ShowCommandsCheckBox.Name = "ShowCommandsCheckBox";
-            this.ShowCommandsCheckBox.Size = new System.Drawing.Size(107, 17);
-            this.ShowCommandsCheckBox.TabIndex = 0;
-            this.ShowCommandsCheckBox.Text = "Show commands";
-            this.ShowCommandsCheckBox.UseVisualStyleBackColor = true;
             // 
             // PlayFMOnDCOrEnterGroupBox
             // 
@@ -367,12 +337,10 @@ namespace AngelLoader.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "OtherPage";
-            this.Size = new System.Drawing.Size(440, 638);
+            this.Size = new System.Drawing.Size(440, 575);
             this.PagePanel.ResumeLayout(false);
             this.InstallingFMsGroupBox.ResumeLayout(false);
             this.InstallingFMsGroupBox.PerformLayout();
-            this.OSContextMenuGroupBox.ResumeLayout(false);
-            this.OSContextMenuGroupBox.PerformLayout();
             this.PlayFMOnDCOrEnterGroupBox.ResumeLayout(false);
             this.PlayFMOnDCOrEnterGroupBox.PerformLayout();
             this.WebSearchGroupBox.ResumeLayout(false);
@@ -405,8 +373,6 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.DarkCheckBox ConvertOGGsToWAVsOnInstallCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox ConvertWAVsTo16BitOnInstallCheckBox;
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
-        internal CustomControls.DarkGroupBox OSContextMenuGroupBox;
-        internal CustomControls.DarkCheckBox ShowCommandsCheckBox;
         internal CustomControls.DarkGroupBox InstallingFMsGroupBox;
         internal CustomControls.DarkRadioButton Install_ConfirmNeverRadioButton;
         internal CustomControls.DarkRadioButton Install_ConfirmMultipleOnlyRadioButton;

@@ -55,9 +55,6 @@ namespace AngelLoader.DataClasses
         internal readonly ScanAllFMsBox_Class ScanAllFMsBox = new ScanAllFMsBox_Class();
         internal readonly CharacterEncoding_Class CharacterEncoding = new CharacterEncoding_Class();
         internal readonly AddFMsToSet_Class AddFMsToSet = new AddFMsToSet_Class();
-#if false
-        internal readonly ShellContextMenu_Class ShellContextMenu = new ShellContextMenu_Class();
-#endif
 
         internal sealed class Meta_Class
         {
@@ -716,12 +713,6 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Other_ConfirmPlayOnDCOrEnter = "Play FM on double-click / Enter";
             internal readonly string Other_ConfirmPlayOnDCOrEnter_Ask = "Ask for confirmation";
-#if false
-            // @!vNext("File context menu" etc. strings): Figure out how to make these clear what they are to users
-            [FenGenBlankLine]
-            internal readonly string Other_FileContextMenu = "File context menu";
-            internal readonly string Other_FileContextMenu_ShowCommands = "Show commands";
-#endif
         }
 
         internal sealed class DateFilterBox_Class
@@ -842,15 +833,5 @@ namespace AngelLoader.DataClasses
             internal readonly string AddFMs_Dialog_ChooseArchiveDir = "You have multiple FM archive directories. Please choose one to copy these FMs to.";
             internal readonly string AddFM_Add = "Add";
         }
-
-#if false
-        internal sealed class ShellContextMenu_Class
-        {
-            [FenGenComment(
-                "This appears in the context menu when the user right-clicks a supported FM archive file,",
-                "for example, a .zip file.")]
-            internal readonly string Play = "Play with AngelLoader";
-        }
-#endif
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -76,7 +75,7 @@ namespace AngelLoader
 
                 #endregion
 
-                Application.Run(new AppContext(eventArgs.CommandLine));
+                Application.Run(new AppContext());
 
                 return false;
             }
@@ -87,15 +86,12 @@ namespace AngelLoader
                 // https://github.com/microsoft/wpf-samples/tree/main/Application%20Management/SingleInstanceDetection
                 base.OnStartupNextInstance(eventArgs);
                 Core.ActivateMainView();
-#if false
-                await Core.HandleCommandLineArgs(eventArgs.CommandLine);
-#endif
             }
         }
 
         private sealed class AppContext : ApplicationContext
         {
-            internal AppContext(ReadOnlyCollection<string> args) => Core.Init(args);
+            internal AppContext() => Core.Init();
         }
     }
 }
