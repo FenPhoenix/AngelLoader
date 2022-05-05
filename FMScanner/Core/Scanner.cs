@@ -3974,7 +3974,7 @@ namespace FMScanner
 
             if (isAmbiguous)
             {
-                string[] nums = dateString.Split(new[] { ' ', '-', '/' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] nums = dateString.Split(CA_DataSeparators, StringSplitOptions.RemoveEmptyEntries);
                 if (nums.Length == 3)
                 {
                     bool unambiguousYearFound = false;

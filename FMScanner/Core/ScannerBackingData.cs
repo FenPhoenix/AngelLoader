@@ -134,6 +134,7 @@ namespace FMScanner
         private readonly char[] CA_Hyphen = { '-' };
         private readonly char[] CA_DoubleQuote = { '\"' };
         private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
+        private readonly char[] CA_DataSeparators = { ' ', '-', '/' };
         private readonly string[] SA_CRLF = { "\r\n" };
         private readonly string[] SA_DoubleSpaces = { "  " };
         private readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
@@ -144,7 +145,7 @@ namespace FMScanner
         #region Field detect strings
 
         private readonly string[] SA_TitleDetect =
-        {
+            {
             "Title of the Mission", "Title of the mission",
             "Title", "Mission Title", "Mission title", "Mission Name", "Mission name", "Level Name",
             "Level name", "Mission:", "Mission ", "Campaign Title", "Campaign title",
