@@ -313,9 +313,7 @@ namespace AngelLoader
 
         private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)
         {
-            // Averaged over the 1573 FMs in my FMData.ini file (in new HasResources format)
-            const int averageFMEntryCharCount = 378;
-            var sb = new StringBuilder(averageFMEntryCharCount * fmDataList.Count);
+            var sb = new StringBuilder();
 
             foreach (FanMission fm in fmDataList)
             {

@@ -136,37 +136,37 @@ namespace FenGen
                                 field.DoNotTrimValue = true;
                                 break;
                             case GenAttributes.FenGenNumericEmpty:
-                                {
-                                    CheckParamCount(attr, 1);
+                            {
+                                CheckParamCount(attr, 1);
 
-                                    // Have to do this ridiculous method of getting the value, because if the value is
-                                    // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
-                                    // number. But ToString() gives us the string version of the entire number. Argh...
-                                    string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
-                                    long.TryParse(val, out long result);
-                                    field.NumericEmpty = result;
-                                    break;
-                                }
+                                // Have to do this ridiculous method of getting the value, because if the value is
+                                // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
+                                // number. But ToString() gives us the string version of the entire number. Argh...
+                                string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
+                                long.TryParse(val, out long result);
+                                field.NumericEmpty = result;
+                                break;
+                            }
                             case GenAttributes.FenGenListType:
-                                {
-                                    CheckParamCount(attr, 1);
+                            {
+                                CheckParamCount(attr, 1);
 
-                                    string val = GetStringValue(attr);
+                                string val = GetStringValue(attr);
 
-                                    FieldInfo? enumField = typeof(ListType).GetField(val, _bFlagsEnum);
-                                    if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
-                                    break;
-                                }
+                                FieldInfo? enumField = typeof(ListType).GetField(val, _bFlagsEnum);
+                                if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
+                                break;
+                            }
                             case GenAttributes.FenGenListDistinctType:
-                                {
-                                    CheckParamCount(attr, 1);
+                            {
+                                CheckParamCount(attr, 1);
 
-                                    string val = GetStringValue(attr);
+                                string val = GetStringValue(attr);
 
-                                    FieldInfo? enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
-                                    if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
-                                    break;
-                                }
+                                FieldInfo? enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
+                                if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
+                                break;
+                            }
                             case GenAttributes.FenGenIniName:
                                 CheckParamCount(attr, 1);
 
@@ -470,9 +470,7 @@ namespace FenGen
             {
                 "private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)",
                 "{",
-                "    // Averaged over the 1573 FMs in my FMData.ini file (in new HasResources format)",
-                "    const int averageFMEntryCharCount = 378;",
-                "    var sb = new StringBuilder(averageFMEntryCharCount * fmDataList.Count);",
+                "    var sb = new StringBuilder();",
                 "",
                 "    foreach (FanMission fm in fmDataList)",
                 "    {",
