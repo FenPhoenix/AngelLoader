@@ -67,6 +67,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
 using static AL_Common.Common;
+using static AL_Common.RTFParserBase;
 
 namespace FMScanner
 {

@@ -1,4 +1,8 @@
-﻿using System;
+﻿// @MEM(rtf):
+// We're going to keep a lot of stuff static here, since we have to run the color table parser on every RTF load
+// in dark mode, and we don't want to instantiate for example the entire symbol table over and over.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
@@ -9,24 +13,24 @@ namespace AL_Common
     {
         #region Constants
 
-        private const int _maxScopes = 100;
-        protected const int _keywordMaxLen = 32;
+        public const int MaxScopes = 100;
+        public const int KeywordMaxLen = 32;
         // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
-        private const int _paramMaxLen = 10;
+        public const int ParamMaxLen = 10;
 
         #endregion
 
         #region Classes
 
-        protected sealed class ScopeStack
+        public sealed class ScopeStack
         {
             private readonly Scope[] _scopesArray;
             public int Count;
 
             public ScopeStack()
             {
-                _scopesArray = new Scope[_maxScopes];
-                for (int i = 0; i < _maxScopes; i++)
+                _scopesArray = new Scope[MaxScopes];
+                for (int i = 0; i < MaxScopes; i++)
                 {
                     _scopesArray[i] = new Scope();
                 }
@@ -42,7 +46,7 @@ namespace AL_Common
                 nextScope.InFontTable = currentScope.InFontTable;
                 nextScope.SymbolFont = currentScope.SymbolFont;
 
-                Array.Copy(currentScope.Properties, 0, nextScope.Properties, 0, _propertiesLen);
+                Array.Copy(currentScope.Properties, 0, nextScope.Properties, 0, PropertiesLen);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -52,14 +56,14 @@ namespace AL_Common
             public void ClearFast() => Count = 0;
         }
 
-        protected sealed class Scope
+        public sealed class Scope
         {
             public RtfDestinationState RtfDestinationState;
             public RtfInternalState RtfInternalState;
             public bool InFontTable;
             public SymbolFont SymbolFont;
 
-            public readonly int[] Properties = new int[_propertiesLen];
+            public readonly int[] Properties = new int[PropertiesLen];
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void DeepCopyTo(Scope dest)
@@ -69,7 +73,7 @@ namespace AL_Common
                 dest.InFontTable = InFontTable;
                 dest.SymbolFont = SymbolFont;
 
-                Array.Copy(Properties, 0, dest.Properties, 0, _propertiesLen);
+                Array.Copy(Properties, 0, dest.Properties, 0, PropertiesLen);
             }
 
             public void Reset()
@@ -104,7 +108,7 @@ namespace AL_Common
         /// </para>
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        protected sealed class ListFast<T>
+        public sealed class ListFast<T>
         {
             public T[] ItemsArray;
             private int _itemsArrayLength;
@@ -188,7 +192,7 @@ namespace AL_Common
             }
         }
 
-        protected sealed class Symbol
+        public sealed class Symbol
         {
             public readonly string Keyword;
             public readonly int DefaultParam;
@@ -209,7 +213,7 @@ namespace AL_Common
             }
         }
 
-        protected sealed class SymbolDict
+        public sealed class SymbolDict
         {
             /* ANSI-C code produced by gperf version 3.1 */
             /* Command-line: gperf --output-file='C:\\gperf_out.txt' -t 'C:\\gperf_in.txt'  */
@@ -595,7 +599,7 @@ namespace AL_Common
 
         #region Enums
 
-        protected enum SpecialType
+        public enum SpecialType
         {
             HeaderCodePage,
             DefaultFont,
@@ -609,7 +613,7 @@ namespace AL_Common
             ColorTable
         }
 
-        protected enum KeywordType
+        public enum KeywordType
         {
             Character,
             Property,
@@ -617,22 +621,22 @@ namespace AL_Common
             Special
         }
 
-        protected enum DestinationType
+        public enum DestinationType
         {
             FieldInstruction,
             IgnoreButDontSkipGroup,
             Skip
         }
 
-        private const int _propertiesLen = 3;
-        protected enum Property
+        public const int PropertiesLen = 3;
+        public enum Property
         {
             Hidden,
             UnicodeCharSkipCount,
             FontNum
         }
 
-        protected enum SymbolFont
+        public enum SymbolFont
         {
             None,
             Symbol,
@@ -640,20 +644,20 @@ namespace AL_Common
             Webdings
         }
 
-        protected enum RtfDestinationState
+        public enum RtfDestinationState
         {
             Normal,
             Skip
         }
 
-        protected enum RtfInternalState
+        public enum RtfInternalState
         {
             Normal,
             Binary,
             HexEncodedChar
         }
 
-        protected enum Error
+        public enum Error
         {
             /// <summary>
             /// No error.
@@ -701,19 +705,19 @@ namespace AL_Common
 
         #region Resettables
 
-        protected readonly ListFast<char> _keyword = new ListFast<char>(_keywordMaxLen);
+        public static readonly ListFast<char> _keyword = new ListFast<char>(KeywordMaxLen);
 
         protected int _binaryCharsLeftToSkip;
         protected int _unicodeCharsLeftToSkip;
 
         protected bool _skipDestinationIfUnknown;
 
-        protected readonly SymbolDict _symbolTable = new SymbolDict();
+        public static readonly SymbolDict _symbolTable = new SymbolDict();
 
         // Highest measured was 10
-        protected readonly ScopeStack _scopeStack = new ScopeStack();
+        public static readonly ScopeStack _scopeStack = new ScopeStack();
 
-        protected readonly Scope _currentScope = new Scope();
+        public static readonly Scope _currentScope = new Scope();
 
         // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
         protected int _groupCount;
@@ -865,7 +869,7 @@ namespace AL_Common
         protected Error PushScope()
         {
             // Don't wait for out-of-memory; just put a sane cap on it.
-            if (_scopeStack.Count >= _maxScopes) return Error.StackOverflow;
+            if (_scopeStack.Count >= MaxScopes) return Error.StackOverflow;
 
             _scopeStack.Push(_currentScope);
 
@@ -914,12 +918,12 @@ namespace AL_Common
 
             int i;
             bool eof = false;
-            for (i = 0; i < _keywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
+            for (i = 0; i < KeywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
                 _keyword.AddFast(ch);
             }
-            if (i > _keywordMaxLen) return Error.KeywordTooLong;
+            if (i > KeywordMaxLen) return Error.KeywordTooLong;
 
             if (ch == '-')
             {
@@ -932,7 +936,7 @@ namespace AL_Common
                 hasParam = true;
 
                 // Parse param in real-time to avoid doing a second loop over
-                for (i = 0; i < _paramMaxLen && ch.IsAsciiNumeric(); i++, eof = !GetNextChar(out ch))
+                for (i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, eof = !GetNextChar(out ch))
                 {
                     if (eof) return Error.EndOfFile;
                     param += ch - '0';
@@ -941,7 +945,7 @@ namespace AL_Common
                 // Undo the last multiply just one time to avoid checking if we should do it every time through
                 // the loop
                 param /= 10;
-                if (i > _paramMaxLen) return Error.ParameterTooLong;
+                if (i > ParamMaxLen) return Error.ParameterTooLong;
 
                 if (negateParam) param = -param;
             }
