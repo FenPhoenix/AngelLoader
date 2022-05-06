@@ -18,7 +18,7 @@ namespace AngelLoader
             Thief2,
             Thief3,
             SS2
-        };
+        }
 
         #region Per-game constants
 

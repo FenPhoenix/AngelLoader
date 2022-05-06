@@ -193,12 +193,27 @@ namespace AngelLoader
 
         #endregion
 
+        #region Language support
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Class)]
+        internal sealed class FenGenLanguageSupportDestClassAttribute : Attribute { }
+
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Enum)]
         internal sealed class FenGenLanguageEnumAttribute : Attribute
         {
             internal FenGenLanguageEnumAttribute(string languageIndexEnumName) { }
         }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field)]
+        internal sealed class FenGenLanguageAttribute : Attribute
+        {
+            internal FenGenLanguageAttribute(string langCodes, string translatedName) { }
+        }
+
+        #endregion
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]

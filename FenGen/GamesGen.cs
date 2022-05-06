@@ -76,21 +76,6 @@ namespace FenGen
         {
             #region Local functions
 
-            static void WriteBody(CodeWriters.IndentingWriter w, List<string> list, bool addQuotes = false)
-            {
-                string quote = addQuotes ? "\"" : "";
-
-                w.WL("{");
-                for (int i = 0; i < list.Count; i++)
-                {
-                    string item = list[i];
-                    string suffix = i < list.Count - 1 ? "," : "";
-                    w.WL(quote + item + quote + suffix);
-                }
-                w.WL("};");
-                w.WL();
-            }
-
             #endregion
 
             var w = GetWriterForClass(destFile, GenAttributes.FenGenGameSupportMainGenDestClass);
@@ -105,17 +90,17 @@ namespace FenGen
             w.WL("// This is sequential so we can use it as an indexer into any same-ordered array. That way, we can avoid");
             w.WL("// having to specify games individually everywhere throughout the code, and instead just do a loop and");
             w.WL("// have it all done implicitly wherever it needs to be done.");
-            w.WL("public enum " + Cache.GamesEnum.GameIndexName + " : uint");
-            WriteBody(w, gameNames);
+            w.WL("public enum " + gameIndexName + " : uint");
+            WriteListBody(w, gameNames, isEnum: true);
 
             w.WL("#region Per-game constants");
             w.WL();
 
             w.WL("private static readonly string[] _gamePrefixes =");
-            WriteBody(w, Cache.GamesEnum.GamePrefixes, addQuotes: true);
+            WriteListBody(w, Cache.GamesEnum.GamePrefixes, addQuotes: true);
 
             w.WL("private static readonly string[] _steamAppIds =");
-            WriteBody(w, Cache.GamesEnum.SteamIds, addQuotes: true);
+            WriteListBody(w, Cache.GamesEnum.SteamIds, addQuotes: true);
 
             w.WL("public static string GetGamePrefix(" + gameIndexName + " index) => _gamePrefixes[(int)index];");
             w.WL();

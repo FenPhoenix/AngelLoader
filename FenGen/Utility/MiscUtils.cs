@@ -23,6 +23,49 @@ namespace FenGen
 
         #region Common gen utils
 
+        internal static void WriteListBody(
+            CodeWriters.IndentingWriter w,
+            List<string> list,
+            bool addQuotes = false,
+            bool isEnum = false)
+        {
+            string quote = addQuotes ? "\"" : "";
+
+            w.WL("{");
+            for (int i = 0; i < list.Count; i++)
+            {
+                string item = list[i];
+                string suffix = i < list.Count - 1 ? "," : "";
+                w.WL(quote + item + quote + suffix);
+            }
+            w.WL("}" + (isEnum ? "" : ";"));
+            w.WL();
+        }
+
+        internal static void WriteDictionaryBody(
+            CodeWriters.IndentingWriter w,
+            List<string> keys,
+            List<string> values,
+            bool keysQuoted = false,
+            bool valuesQuoted = false)
+        {
+            string keyQuote = keysQuoted ? "\"" : "";
+            string valueQuote = valuesQuoted ? "\"" : "";
+
+            w.WL("{");
+            for (int i = 0; i < keys.Count; i++)
+            {
+                //string item = list[i];
+                string key = keys[i];
+                string value = values[i];
+                string suffix = i < keys.Count - 1 ? "," : "";
+                //w.WL(quote + item + quote + suffix);
+                w.WL("{ " + keyQuote + key + keyQuote + ", " + valueQuote + value + valueQuote + " }" + suffix);
+            }
+            w.WL("};");
+            w.WL();
+        }
+
         private static (string CodeBlock, bool FileScopedNamespace)
         GetCodeBlock(string file, string genAttr)
         {

@@ -1,4 +1,4 @@
-﻿#define FenGen_GameSupport
+﻿#define FenGen_GameSupportSource
 
 using System;
 using AngelLoader.DataClasses;
