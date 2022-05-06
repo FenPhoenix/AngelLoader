@@ -60,6 +60,7 @@ Other:
 */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -69,7 +70,7 @@ using static AL_Common.Common;
 
 namespace FMScanner
 {
-    public sealed class RtfToTextConverter : AL_Common.RTFParserBase
+    public sealed partial class RtfToTextConverter
     {
         #region Constants
 
@@ -92,11 +93,11 @@ namespace FMScanner
         private void ResetStream(Stream stream, long streamLength)
         {
             _stream = stream;
-            base.ResetStreamBase(streamLength);
+            ResetStreamBase(streamLength);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override byte StreamReadByte()
+        private byte StreamReadByte()
         {
             _bufferPos++;
             if (_bufferPos == _bufferLen)
@@ -111,17 +112,53 @@ namespace FMScanner
 
         #region Classes
 
-        private sealed class DictWithTopItem<TKey, TValue> : Dictionary<TKey, TValue>
+        private sealed class DictWithTopItem : Dictionary<int, FontEntry>
         {
-            internal TValue Top = default!;
+            private readonly FontEntry?[] _array = new FontEntry?[_switchPoint];
 
+            // Based on my ~540 file set (which is most if not all the known ones as of 2022-05-06), this is
+            // about the ideal cutoff point. Any higher doesn't help us much until we get to ~30,000, and that's
+            // 30,000 * 12 bytes per object = 360,000 bytes. 1700 * 12 = 20400, much nicer.
+            private const int _switchPoint = 1700;
+
+            internal FontEntry Top = default!;
             internal DictWithTopItem(int capacity) : base(capacity) { }
 
+            internal new int Count;
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal new void Add(TKey key, TValue value)
+            internal new void Add(int key, FontEntry value)
             {
                 Top = value;
-                base[key] = value;
+                if (key >= _switchPoint)
+                {
+                    base[key] = value;
+                }
+                else
+                {
+                    _array[key] = value;
+                }
+                Count++;
+            }
+
+            internal new void Clear()
+            {
+                base.Clear();
+                Array.Clear(_array, 0, _array.Length);
+                Count = 0;
+            }
+
+            internal new bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
+            {
+                if (key > _switchPoint)
+                {
+                    return base.TryGetValue(key, out value);
+                }
+                else
+                {
+                    value = _array[key];
+                    return value != null;
+                }
             }
         }
 
@@ -966,7 +1003,7 @@ namespace FMScanner
         // Highest measured was 131
         // Fonts can specify themselves as whatever number they want, so we can't just count by index
         // eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
-        private readonly DictWithTopItem<int, FontEntry> _fontEntries = new DictWithTopItem<int, FontEntry>(150);
+        private readonly DictWithTopItem _fontEntries = new(150);
         /*
         Per spec, if we see a \uN keyword whose N falls within the range of 0xF020 to 0xF0FF, we're supposed to
         subtract 0xF000 and then find the last used font whose charset is 2 (codepage 42) and use its symbol font
@@ -1061,7 +1098,7 @@ namespace FMScanner
 
         private void Reset(Stream stream, long streamLength)
         {
-            base.ResetBase();
+            ResetBase();
 
             #region Fixed-size fields
 
@@ -1170,7 +1207,7 @@ namespace FMScanner
 
         #region Act on keywords
 
-        protected override Error DispatchKeyword(int param, bool hasParam)
+        private Error DispatchKeyword(int param, bool hasParam)
         {
             if (!_symbolTable.TryGetValue(_keyword, out Symbol? symbol))
             {
@@ -1334,7 +1371,7 @@ namespace FMScanner
                     _fontEntries.Add(val, new FontEntry());
                     return Error.OK;
                 }
-                else if (_fontEntries.TryGetValue(val, out FontEntry fontEntry))
+                else if (_fontEntries.TryGetValue(val, out FontEntry? fontEntry))
                 {
                     if (fontEntry.CodePage == 42)
                     {
@@ -1915,7 +1952,7 @@ namespace FMScanner
                 if (_currentScope.SymbolFont == SymbolFont.None &&
                     _currentScope.Properties[(int)Property.FontNum] == -1 &&
                     _header.DefaultFontNum > -1 &&
-                    _fontEntries.TryGetValue(_header.DefaultFontNum, out FontEntry fontEntry))
+                    _fontEntries.TryGetValue(_header.DefaultFontNum, out FontEntry? fontEntry))
                 {
                     _currentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
                 }
