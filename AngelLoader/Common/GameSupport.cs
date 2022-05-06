@@ -21,7 +21,7 @@ namespace AngelLoader
         [Flags, FenGenGameEnum(gameIndexEnumName: "GameIndex")]
         public enum Game : uint
         {
-            [FenGenNotAGameType]
+            [FenGenIgnore]
             Null = 0,
 
             // Known/supported games
@@ -37,7 +37,7 @@ namespace AngelLoader
             [FenGenGame(prefix: "SS2", steamId: "238210")]
             SS2 = 8,
 
-            [FenGenNotAGameType]
+            [FenGenIgnore]
             Unsupported = 16
         }
 

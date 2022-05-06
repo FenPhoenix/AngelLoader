@@ -119,7 +119,6 @@ namespace FenGen
         #region Game support
 
         internal const string FenGenGameEnum = nameof(FenGenGameEnum);
-        internal const string FenGenNotAGameType = nameof(FenGenNotAGameType);
         internal const string FenGenGameSupportMainGenDestClass = nameof(FenGenGameSupportMainGenDestClass);
         internal const string FenGenGame = nameof(FenGenGame);
 

@@ -40,7 +40,7 @@ namespace FenGen
                 var member = gameEnum.Members[i];
                 string memberName = member.Identifier.ToString();
                 ret.GameEnumNames.Add(memberName);
-                if (!HasAttribute(member, GenAttributes.FenGenNotAGameType))
+                if (!HasAttribute(member, GenAttributes.FenGenIgnore))
                 {
                     ret.GameIndexEnumNames.Add(memberName);
 

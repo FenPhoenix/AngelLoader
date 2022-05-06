@@ -191,10 +191,6 @@ namespace AngelLoader
             internal FenGenGameAttribute(string prefix, string steamId) { }
         }
 
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Field)]
-        internal sealed class FenGenNotAGameTypeAttribute : Attribute { }
-
         #endregion
 
         [Conditional("compile_FenGen_attributes")]
