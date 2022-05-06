@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
@@ -110,12 +109,10 @@ namespace AL_Common
             public T[] ItemsArray;
             private int _itemsArrayLength;
 
-#pragma warning disable IDE0032
-            private int _size;
-
-            [SuppressMessage("ReSharper", "ConvertToAutoPropertyWithPrivateSetter")]
-            public int Count => _size;
-#pragma warning restore IDE0032
+            /// <summary>
+            /// Do not set from outside. Properties are slow.
+            /// </summary>
+            public int Count;
 
             public ListFast(int capacity)
             {
@@ -126,12 +123,24 @@ namespace AL_Common
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Add(T item)
             {
-                if (_size == _itemsArrayLength) EnsureCapacity(_size + 1);
-                ItemsArray[_size++] = item;
+                if (Count == _itemsArrayLength) EnsureCapacity(Count + 1);
+                ItemsArray[Count++] = item;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void AddFast(T item) => ItemsArray[_size++] = item;
+            public void AddRange(T[] items, int count)
+            {
+                EnsureCapacity(Count + count);
+                // We usually add small enough arrays that a loop is faster
+                for (int i = 0; i < count; i++)
+                {
+                    ItemsArray[Count + i] = items[i];
+                }
+                Count += count;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void AddFast(T item) => ItemsArray[Count++] = item;
 
             /*
             Honestly, for fixed-size value types, doing an Array.Clear() is completely unnecessary. For reference
@@ -144,7 +153,7 @@ namespace AL_Common
             /// Just sets <see cref="Count"/> to 0. Doesn't zero out the array or do anything else whatsoever.
             /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void ClearFast() => _size = 0;
+            public void ClearFast() => Count = 0;
 
             [PublicAPI]
             public int Capacity
@@ -156,7 +165,7 @@ namespace AL_Common
                     if (value > 0)
                     {
                         T[] objArray = new T[value];
-                        if (_size > 0) Array.Copy(ItemsArray, 0, objArray, 0, _size);
+                        if (Count > 0) Array.Copy(ItemsArray, 0, objArray, 0, Count);
                         ItemsArray = objArray;
                         _itemsArrayLength = value;
                     }
@@ -546,6 +555,42 @@ namespace AL_Common
             }
         }
 
+        public sealed class StackFast<T>
+        {
+            private T[] _array;
+            private int _capacity;
+
+            public StackFast(int capacity)
+            {
+                _array = new T[capacity];
+                _capacity = capacity;
+                Count = 0;
+            }
+
+            /// <summary>
+            /// Do not set from outside. Properties are slow.
+            /// </summary>
+            public int Count;
+
+            /// <summary>Just sets <see cref="T:Count"/> to 0.</summary>
+            public void ClearFast() => Count = 0;
+
+            public T Pop() => _array[--Count];
+
+            public void Push(T item)
+            {
+                if (Count == _capacity)
+                {
+                    int capacity = _array.Length == 0 ? 4 : 2 * _array.Length;
+                    T[] destinationArray = new T[capacity];
+                    Array.Copy(_array, 0, destinationArray, 0, Count);
+                    _array = destinationArray;
+                    _capacity = capacity;
+                }
+                _array[Count++] = item;
+            }
+        }
+
         #endregion
 
         #region Enums
@@ -728,7 +773,7 @@ namespace AL_Common
         We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
         rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
         */
-        private readonly Stack<char> _unGetBuffer = new Stack<char>(5);
+        private readonly StackFast<char> _unGetBuffer = new StackFast<char>(100);
         private bool _unGetBufferEmpty = true;
 
         /// <summary>
@@ -808,7 +853,7 @@ namespace AL_Common
             // Don't clear the buffer; we don't need to and it wastes time
             _bufferPos = _bufferLen - 1;
 
-            _unGetBuffer.Clear();
+            _unGetBuffer.ClearFast();
             _unGetBufferEmpty = true;
         }
 

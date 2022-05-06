@@ -76,7 +76,7 @@ namespace FMScanner
         private const int _windows1252 = 1252;
         private const int _shiftJisWin = 932;
         private const char _unicodeUnknown_Char = '\u25A1';
-        private const string _unicodeUnknown_String = "\u25A1";
+        private readonly char[] _unicodeUnknownCharArray = { _unicodeUnknown_Char };
 
         #endregion
 
@@ -994,6 +994,15 @@ namespace FMScanner
 
         #endregion
 
+        #region Reusable buffers
+
+        private readonly byte[] _byteBuffer1 = new byte[1];
+        private readonly byte[] _byteBuffer4 = new byte[4];
+        private readonly char[] _charBuffer1 = new char[1];
+        private readonly char[] _charBuffer2 = new char[2];
+
+        #endregion
+
         #region Cached encodings
 
         // DON'T reset this. We want to build up a dictionary of encodings and amortize it over the entire list
@@ -1034,6 +1043,7 @@ namespace FMScanner
 #if ReleaseRTFTest || DebugRTFTest
             Error error = ParseRtf();
             return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : throw new Exception("RTF converter error: " + error);
+            //return error == Error.OK ? (true, "") : throw new Exception("RTF converter error: " + error);
 #else
             try
             {
@@ -1113,13 +1123,13 @@ namespace FMScanner
                     case '{':
                         // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
                         if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
-                        if (_unicodeBuffer.Count > 0) ParseUnicodeIfAnyInBuffer();
+                        if (_unicodeBuffer.Count > 0) ParseUnicode();
                         if ((ec = PushScope()) != Error.OK) return ec;
                         break;
                     case '}':
                         // ditto the above
                         if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
-                        if (_unicodeBuffer.Count > 0) ParseUnicodeIfAnyInBuffer();
+                        if (_unicodeBuffer.Count > 0) ParseUnicode();
                         if ((ec = PopScope()) != Error.OK) return ec;
                         break;
                     case '\\':
@@ -1136,7 +1146,7 @@ namespace FMScanner
                         // It's a Unicode barrier, so parse the Unicode here.
                         if (_unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
                         {
-                            ParseUnicodeIfAnyInBuffer();
+                            ParseUnicode();
                         }
 
                         switch (_currentScope.RtfInternalState)
@@ -1201,7 +1211,7 @@ namespace FMScanner
             if (symbol.Index != (int)SpecialType.UnicodeChar &&
                 _unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
             {
-                ParseUnicodeIfAnyInBuffer();
+                ParseUnicode();
             }
 
             _skipDestinationIfUnknown = false;
@@ -1258,15 +1268,14 @@ namespace FMScanner
                     // If our code point has been through a font translation table, it may be longer than 2 bytes.
                     if (param > 0xFFFF)
                     {
-                        string? charsAsStr = ConvertFromUtf32(param);
-                        if (charsAsStr == null)
+                        char[]? chars = ConvertFromUtf32(param);
+                        if (chars == null)
                         {
                             _unicodeBuffer.Add(_unicodeUnknown_Char);
                         }
                         else
                         {
-                            _unicodeBuffer.Add(charsAsStr[0]);
-                            _unicodeBuffer.Add(charsAsStr[1]);
+                            _unicodeBuffer.AddRange(chars, 2);
                         }
                     }
                     else
@@ -1401,12 +1410,12 @@ namespace FMScanner
             // If multiple hex chars are directly after another (eg. \'81\'63) then they may be representing one
             // multibyte character (or not, they may also just be two single-byte chars in a row). To deal with
             // this, we have to put all contiguous hex chars into a buffer and when the run ends, we just pass
-            // the buffer to the current encoding's byte-to-string decoder and get our correct result.
+            // the buffer to the current encoding's byte-to-char decoder and get our correct result.
 
             _hexBuffer.ClearFast();
 
-        // Quick-n-dirty goto for now. TODO: Make this better or something
-        restartButDontClearBuffer:
+            // Quick-n-dirty goto for now. TODO: Make this better or something
+            restartButDontClearBuffer:
 
             b = (byte)(b << 4);
 
@@ -1497,10 +1506,10 @@ namespace FMScanner
             }
             else
             {
-                string finalChar;
+                char[] finalChars;
                 if (!success)
                 {
-                    finalChar = _unicodeUnknown_String;
+                    finalChars = _unicodeUnknownCharArray;
                 }
                 else
                 {
@@ -1510,32 +1519,32 @@ namespace FMScanner
 
                         if (fontEntry == null)
                         {
-                            GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChar);
-                            if (finalChar.IsEmpty()) finalChar = _unicodeUnknown_String;
+                            GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChars);
+                            if (finalChars.Length == 0) finalChars = _unicodeUnknownCharArray;
                         }
                         else
                         {
                             if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _wingdingsChars))
                             {
-                                GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChar);
+                                GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChars);
                             }
                             else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _webdingsChars))
                             {
-                                GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChar);
+                                GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChars);
                             }
                             else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _symbolChars))
                             {
-                                GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChar);
+                                GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChars);
                             }
                             else
                             {
                                 try
                                 {
-                                    finalChar = enc?.GetString(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknown_String;
+                                    finalChars = enc?.GetChars(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknownCharArray;
                                 }
                                 catch
                                 {
-                                    finalChar = _unicodeUnknown_String;
+                                    finalChars = _unicodeUnknownCharArray;
                                 }
                             }
                         }
@@ -1544,16 +1553,16 @@ namespace FMScanner
                     {
                         try
                         {
-                            finalChar = enc?.GetString(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknown_String;
+                            finalChars = enc?.GetChars(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknownCharArray;
                         }
                         catch
                         {
-                            finalChar = _unicodeUnknown_String;
+                            finalChars = _unicodeUnknownCharArray;
                         }
                     }
                 }
 
-                PutChar(finalChar);
+                PutChars(finalChars, finalChars.Length);
             }
 
             return ResetBufferAndStateAndReturn();
@@ -1571,47 +1580,36 @@ namespace FMScanner
         here. So we mix this in with the regular parser and just accept the less followable logic as a lesser
         cost than the alternative.
         */
-        private void ParseUnicodeIfAnyInBuffer()
+        private void ParseUnicode()
         {
-            string finalString = new string(_unicodeBuffer.ItemsArray, 0, _unicodeBuffer.Count);
+            #region Handle surrogate pairs and fix up bad Unicode
 
-            _unicodeBuffer.ClearFast();
-
-            #region Fix up bad Unicode
-
-            // We can't just pass a char array, because then the validation won't work. We have to convert to
-            // string first. Fortunately, this loses no time because we have to do the conversion anyway, and we
-            // don't even touch the string unless there's a problem, which means no extra allocations if everything
-            // is valid.
-            StringBuilder? sb = null;
-
-            for (int i = 0; i < finalString.Length; i++)
+            for (int i = 0; i < _unicodeBuffer.Count; i++)
             {
-                // We need to use (str, i) instead of (str[i]) because the validation check doesn't work if
-                // we do the latter. Unfortunately we need to take some boneheaded pointless null and length
-                // checks, because we can't pull this method out and customize it, because it calls a goddamn
-                // internal method. Access levels... hooray, you're slow and you can't do crap about it.
+                char c = _unicodeBuffer.ItemsArray[i];
 
-                // This won't throw because str is not null and index is within it
-                UnicodeCategory uc = char.GetUnicodeCategory(finalString, i);
-
-                if (uc is UnicodeCategory.Surrogate or UnicodeCategory.OtherNotAssigned)
+                if (char.IsHighSurrogate(c))
                 {
-                    // Don't even instantiate our StringBuilder unless there's a problem
-                    sb ??= new StringBuilder(finalString);
-                    sb[i] = _unicodeUnknown_Char;
+                    if (i < _unicodeBuffer.Count - 1 && char.IsLowSurrogate(_unicodeBuffer.ItemsArray[i + 1]))
+                    {
+                        i++;
+                    }
+                    else
+                    {
+                        _unicodeBuffer.ItemsArray[i] = _unicodeUnknown_Char;
+                    }
                 }
-
-                // We can do (str[i]) here because (str, i) is literally just a wrapper that can throw.
-                if (char.IsHighSurrogate(finalString[i])) i++;
+                else if (char.IsLowSurrogate(c) || char.GetUnicodeCategory(c) is UnicodeCategory.OtherNotAssigned)
+                {
+                    _unicodeBuffer.ItemsArray[i] = _unicodeUnknown_Char;
+                }
             }
-
-            // Likewise, don't even change the string at all unless we have to
-            if (sb != null) finalString = sb.ToString();
 
             #endregion
 
-            PutChar(finalString);
+            PutChars(_unicodeBuffer.ItemsArray, _unicodeBuffer.Count);
+
+            _unicodeBuffer.ClearFast();
         }
 
         /*
@@ -1747,7 +1745,7 @@ namespace FMScanner
             const int maxParams = 6;
             const int useCurrentScopeCodePage = -1;
 
-            string finalChar = "";
+            char[] finalChars = Array.Empty<char>();
 
             #region Parse params
 
@@ -1765,7 +1763,7 @@ namespace FMScanner
                 // "Interprets text in field-argument as the value of an ANSI character."
                 if (ch == 'a')
                 {
-                    finalChar = GetCharFromCodePage(_windows1252, codePoint);
+                    finalChars = GetCharFromCodePage(_windows1252, codePoint);
                     break;
                 }
                 /*
@@ -1776,12 +1774,12 @@ namespace FMScanner
                 */
                 else if (ch == 'j')
                 {
-                    finalChar = GetCharFromCodePage(_shiftJisWin, codePoint);
+                    finalChars = GetCharFromCodePage(_shiftJisWin, codePoint);
                     break;
                 }
                 else if (ch == 'u')
                 {
-                    finalChar = ConvertFromUtf32(codePoint) ?? _unicodeUnknown_String;
+                    finalChars = ConvertFromUtf32(codePoint) ?? _unicodeUnknownCharArray;
                     break;
                 }
                 /*
@@ -1810,7 +1808,7 @@ namespace FMScanner
                     }
                     else if (IsSeparatorChar(ch))
                     {
-                        finalChar = GetCharFromCodePage(useCurrentScopeCodePage, codePoint);
+                        finalChars = GetCharFromCodePage(useCurrentScopeCodePage, codePoint);
                         break;
                     }
                     else if (ch == ' ')
@@ -1821,7 +1819,7 @@ namespace FMScanner
                         }
                         else if (ch != '\"')
                         {
-                            finalChar = GetCharFromCodePage(useCurrentScopeCodePage, codePoint);
+                            finalChars = GetCharFromCodePage(useCurrentScopeCodePage, codePoint);
                             break;
                         }
 
@@ -1840,17 +1838,17 @@ namespace FMScanner
                         // Just hardcoding the three most common fonts here, because there's only so far you
                         // really want to go down this path.
                         if (SeqEqual(_fldinstSymbolFontName, _symbolChars) &&
-                            !GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChar))
+                            !GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChars))
                         {
                             return RewindAndSkipGroup(ch);
                         }
                         else if (SeqEqual(_fldinstSymbolFontName, _wingdingsChars) &&
-                                 !GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChar))
+                                 !GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChars))
                         {
                             return RewindAndSkipGroup(ch);
                         }
                         else if (SeqEqual(_fldinstSymbolFontName, _webdingsChars) &&
-                                 !GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChar))
+                                 !GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChars))
                         {
                             return RewindAndSkipGroup(ch);
                         }
@@ -1894,7 +1892,7 @@ namespace FMScanner
 
             #endregion
 
-            if (finalChar != "") PutChar(finalChar);
+            if (finalChars.Length > 0) PutChars(finalChars, finalChars.Length);
 
             return RewindAndSkipGroup(ch);
         }
@@ -1906,7 +1904,6 @@ namespace FMScanner
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Error PutChar(char ch)
         {
-            //Trace.Write(ch.ToString());
             if (ch != '\0' &&
                 _currentScope.Properties[(int)Property.Hidden] == 0 &&
                 !_currentScope.InFontTable)
@@ -1934,12 +1931,9 @@ namespace FMScanner
                         SymbolFont.Webdings => _webdingsFontToUnicode
                     };
 #pragma warning restore 8509
-                    if (GetCharFromConversionList(ch, fontTable, out string result))
+                    if (GetCharFromConversionList(ch, fontTable, out char[] result))
                     {
-                        for (int i = 0; i < result.Length; i++)
-                        {
-                            _plainText.Add(result[i]);
-                        }
+                        _plainText.AddRange(result, result.Length);
                     }
                 }
                 else
@@ -1950,21 +1944,16 @@ namespace FMScanner
             return Error.OK;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Error PutChar(string ch)
+        private Error PutChars(char[] ch, int count)
         {
             // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
             // need to duplicate any of the bare-char symbol font stuff here.
 
-            //Trace.Write(ch);
-            if (ch != "\0" &&
+            if (!(count == 1 && ch[0] == '\0') &&
                 _currentScope.Properties[(int)Property.Hidden] == 0 &&
                 !_currentScope.InFontTable)
             {
-                for (int i = 0; i < ch.Length; i++)
-                {
-                    _plainText.Add(ch[i]);
-                }
+                _plainText.AddRange(ch, count);
             }
             return Error.OK;
         }
@@ -1979,24 +1968,27 @@ namespace FMScanner
         private static bool IsSeparatorChar(char ch) => ch is '\\' or '{' or '}';
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string GetCharFromCodePage(int codePage, int codePoint)
+        private unsafe char[] GetCharFromCodePage(int codePage, int codePoint)
         {
-            byte[] bytes = BitConverter.GetBytes(codePoint);
+            // BitConverter.GetBytes() does this, but it allocates a temp array every time.
+            // I think I understand the general idea here but like yeah
+            fixed (byte* numPtr = _byteBuffer4) *(int*)numPtr = codePoint;
+
             try
             {
                 if (codePage > -1)
                 {
-                    return GetEncodingFromCachedList(codePage).GetString(bytes);
+                    return GetEncodingFromCachedList(codePage).GetChars(_byteBuffer4);
                 }
                 else
                 {
                     (bool success, _, Encoding? enc, _) = GetCurrentEncoding();
-                    return success && enc != null ? enc.GetString(bytes) : _unicodeUnknown_String;
+                    return success && enc != null ? enc.GetChars(_byteBuffer4) : _unicodeUnknownCharArray;
                 }
             }
             catch
             {
-                return _unicodeUnknown_String;
+                return _unicodeUnknownCharArray;
             }
         }
 
@@ -2095,26 +2087,27 @@ namespace FMScanner
             : SymbolFont.None;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out string finalChar)
+        private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out char[] finalChars)
         {
             if (codePoint is >= 0x20 and <= 0xFF)
             {
-                finalChar = ConvertFromUtf32(_fontTable[codePoint - 0x20]) ?? _unicodeUnknown_String;
+                finalChars = ConvertFromUtf32(_fontTable[codePoint - 0x20]) ?? _unicodeUnknownCharArray;
             }
             else
             {
                 if (codePoint > 255)
                 {
-                    finalChar = "";
+                    finalChars = Array.Empty<char>();
                     return false;
                 }
                 try
                 {
-                    finalChar = GetEncodingFromCachedList(_windows1252).GetString(new[] { (byte)codePoint });
+                    _byteBuffer1[0] = (byte)codePoint;
+                    finalChars = GetEncodingFromCachedList(_windows1252).GetChars(_byteBuffer1);
                 }
                 catch
                 {
-                    finalChar = _unicodeUnknown_String;
+                    finalChars = _unicodeUnknownCharArray;
                 }
             }
 
@@ -2186,26 +2179,24 @@ namespace FMScanner
         /// Copy of framework version but with a fast null return on fail instead of the infernal exception-throwing.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string? ConvertFromUtf32(int utf32)
+        private char[]? ConvertFromUtf32(int utf32)
         {
             if (utf32 is < 0 or > 1114111 or (>= 55296 and <= 57343))
             {
                 return null;
             }
 
-            // ALLOC: ConvertFromUtf32: char.ToString()
-            // This one needs to happen sooner or later anyway, and it's only max 2 chars
-            if (utf32 < 65536) return char.ToString((char)utf32);
+            if (utf32 < 65536)
+            {
+                _charBuffer1[0] = (char)utf32;
+                return _charBuffer1;
+            }
 
             utf32 -= 65536;
 
-            // ALLOC: ConvertFromUtf32: return new string(new char[2])
-            // Small enough not to even bother caching it
-            return new string(new[]
-            {
-                (char)((utf32 / 1024) + 55296),
-                (char)((utf32 % 1024) + 56320)
-            });
+            _charBuffer2[0] = (char)((utf32 / 1024) + 55296);
+            _charBuffer2[1] = (char)((utf32 % 1024) + 56320);
+            return _charBuffer2;
         }
 
         /// <summary>
