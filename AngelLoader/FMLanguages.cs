@@ -12,6 +12,52 @@ namespace AngelLoader
 {
     internal static class FMLanguages
     {
+        internal enum Language : uint
+        {
+            Default = 0,
+            English = 1,
+            Czech = 2,
+            Dutch = 4,
+            French = 8,
+            German = 16,
+            Hungarian = 32,
+            Italian = 64,
+            Japanese = 128,
+            Polish = 256,
+            Russian = 512,
+            Spanish = 1024
+        }
+
+        internal enum LanguageIndex : uint
+        {
+            English,
+            Czech,
+            Dutch,
+            French,
+            German,
+            Hungarian,
+            Italian,
+            Japanese,
+            Polish,
+            Russian,
+            Spanish
+        }
+
+        internal static DictionaryI<Language> LangStringsToEnums = new(11)
+        {
+            { "english", Language.English },
+            { "czech", Language.Czech },
+            { "dutch", Language.Dutch },
+            { "french", Language.French },
+            { "german", Language.German },
+            { "hungarian", Language.Hungarian },
+            { "italian", Language.Italian },
+            { "japanese", Language.Japanese },
+            { "polish", Language.Polish },
+            { "russian", Language.Russian },
+            { "spanish", Language.Spanish }
+        };
+
         // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
         // Immediate use, so don't bother lazy-loading
         private static readonly string[]
