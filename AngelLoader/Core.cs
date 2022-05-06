@@ -1309,6 +1309,20 @@ namespace AngelLoader
                 str.ContainsI("objectives") ||
                 str.ContainsI("hint");
 
+            static bool EndsWithLangCode(string fn_orig, string[] langCodes)
+            {
+                for (int i = 0; i < langCodes.Length; i++)
+                {
+                    string langCode = langCodes[i];
+                    if (fn_orig.EndsWithI("_" + langCode) ||
+                        fn_orig.EndsWithI("-" + langCode))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             #endregion
 
             bool allEqual = true;
@@ -1331,10 +1345,7 @@ namespace AngelLoader
             {
                 // Because we allow arbitrary languages, it's theoretically possible to get one that doesn't have
                 // a language code.
-                bool langCodeExists = FMLanguages.LangCodes.TryGetValue(Config.Language, out string langCode);
-                langCode ??= "";
-                bool altLangCodeExists = FMLanguages.AltLangCodes.TryGetValue(langCode, out string altLangCode);
-                altLangCode ??= "";
+                bool langCodesExist = FMLanguages.LangCodes.TryGetValue(Config.Language, out string[] langCodes);
 
                 var safeReadmes = new List<string>(readmeFiles.Count);
                 foreach (string rf in readmeFiles)
@@ -1353,13 +1364,9 @@ namespace AngelLoader
                         fn.EqualsI("Entry") || fn.EqualsI("EntryEn") || fn.EqualsI("EntryEng") ||
                         fn.EqualsI("English") ||
                         // end original English-favoring section
-                        (langCodeExists &&
+                        (langCodesExist &&
                          !ContainsUnsafeOrJunkPhrase(fn) &&
-                         (fn_orig.EndsWithI("_" + langCode) ||
-                          fn_orig.EndsWithI("-" + langCode) ||
-                          (altLangCodeExists &&
-                           (fn_orig.EndsWithI("_" + altLangCode) ||
-                            fn_orig.EndsWithI("-" + altLangCode))))) ||
+                         EndsWithLangCode(fn_orig, langCodes!)) ||
                         (fn.StartsWithI(StripPunctuation(fmTitle)) && !ContainsUnsafeOrJunkPhrase(fn)) ||
                         (fn.EndsWithI("Readme") && !ContainsUnsafePhrase(fn)))
                     {
@@ -1386,12 +1393,7 @@ namespace AngelLoader
                     foreach (string sr in safeReadmes)
                     {
                         string srNoExt = Path.GetFileNameWithoutExtension(sr);
-                        if (langCodeExists &&
-                            (srNoExt.EndsWithI("_" + langCode) ||
-                             srNoExt.EndsWithI("-" + langCode) ||
-                             (altLangCodeExists &&
-                              (srNoExt.EndsWithI("_" + altLangCode) ||
-                               srNoExt.EndsWithI("-" + altLangCode)))))
+                        if (langCodesExist && EndsWithLangCode(srNoExt, langCodes!))
                         {
                             safeReadmes.Remove(sr);
                             safeReadmes.Insert(0, sr);

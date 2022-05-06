@@ -1,12 +1,7 @@
 #define FenGen_LanguageSupportDest
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static AngelLoader.FenGenAttributes;
 using static AL_Common.Common;
+using static AngelLoader.FenGenAttributes;
 
 namespace AngelLoader
 {
@@ -28,21 +23,66 @@ namespace AngelLoader
             Polish,
             Russian,
             Spanish
+        }
+
+        public static HashSetI LangsHash = new HashSetI(11)
+        {
+            "english",
+            "czech",
+            "dutch",
+            "french",
+            "german",
+            "hungarian",
+            "italian",
+            "japanese",
+            "polish",
+            "russian",
+            "spanish"
         };
 
         public static DictionaryI<LanguageIndex> LangStringsToEnums = new(11)
         {
-            { "English", LanguageIndex.English },
-            { "Czech", LanguageIndex.Czech },
-            { "Dutch", LanguageIndex.Dutch },
-            { "French", LanguageIndex.French },
-            { "German", LanguageIndex.German },
-            { "Hungarian", LanguageIndex.Hungarian },
-            { "Italian", LanguageIndex.Italian },
-            { "Japanese", LanguageIndex.Japanese },
-            { "Polish", LanguageIndex.Polish },
-            { "Russian", LanguageIndex.Russian },
-            { "Spanish", LanguageIndex.Spanish }
+            { "english", LanguageIndex.English },
+            { "czech", LanguageIndex.Czech },
+            { "dutch", LanguageIndex.Dutch },
+            { "french", LanguageIndex.French },
+            { "german", LanguageIndex.German },
+            { "hungarian", LanguageIndex.Hungarian },
+            { "italian", LanguageIndex.Italian },
+            { "japanese", LanguageIndex.Japanese },
+            { "polish", LanguageIndex.Polish },
+            { "russian", LanguageIndex.Russian },
+            { "spanish", LanguageIndex.Spanish }
+        };
+
+        public static DictionaryI<string[]> LangCodes = new DictionaryI<string[]>(11)
+        {
+            { "english", new[] { "en" } },
+            { "czech", new[] { "cz" } },
+            { "dutch", new[] { "nl" } },
+            { "french", new[] { "fr" } },
+            { "german", new[] { "de" } },
+            { "hungarian", new[] { "hu" } },
+            { "italian", new[] { "it" } },
+            { "japanese", new[] { "ja", "jp" } },
+            { "polish", new[] { "pl" } },
+            { "russian", new[] { "ru" } },
+            { "spanish", new[] { "es" } }
+        };
+
+        public static DictionaryI<string> LangTranslatedNames = new DictionaryI<string>(11)
+        {
+            { "english", "English" },
+            { "czech", "Čeština" },
+            { "dutch", "Nederlands" },
+            { "french", "Français" },
+            { "german", "Deutsch" },
+            { "hungarian", "Magyar" },
+            { "italian", "Italiano" },
+            { "japanese", "日本語" },
+            { "polish", "Polski" },
+            { "russian", "Русский" },
+            { "spanish", "Español" }
         };
 
         #endregion

@@ -71,29 +71,21 @@ namespace AngelLoader
 
         internal const string DefaultLangKey = "default";
 
-        private static DictionaryI<string>? _langCodes;
-        internal static DictionaryI<string>
-        LangCodes => _langCodes ??= new DictionaryI<string>(11)
+        private static DictionaryI<string[]>? _langCodes;
+        internal static DictionaryI<string[]>
+        LangCodes => _langCodes ??= new DictionaryI<string[]>(11)
         {
-            { "english", "en" },
-            { "czech", "cz" },
-            { "dutch", "nl" },
-            { "french", "fr" },
-            { "german", "de" },
-            { "hungarian", "hu" },
-            { "italian", "it" },
-            { "japanese", "ja" },
-            { "polish", "pl" },
-            { "russian", "ru" },
-            { "spanish", "es" }
-        };
-
-        private static DictionaryI<string>? _altLangCodes;
-        internal static DictionaryI<string>
-        AltLangCodes => _altLangCodes ??= new DictionaryI<string>(2)
-        {
-            { "en", "eng" },
-            { "ja", "jp" }
+            { "english", new[] { "en", "eng" } },
+            { "czech", new[] { "cz" } },
+            { "dutch", new[] { "nl" } },
+            { "french", new[] { "fr" } },
+            { "german", new[] { "de" } },
+            { "hungarian", new[] { "hu" } },
+            { "italian", new[] { "it" } },
+            { "japanese", new[] { "ja", "jp" } },
+            { "polish", new[] { "pl" } },
+            { "russian", new[] { "ru" } },
+            { "spanish", new[] { "es" } }
         };
 
         // For manual selection of language for playing an FM
