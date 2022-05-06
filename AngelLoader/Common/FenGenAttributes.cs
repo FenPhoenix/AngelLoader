@@ -198,6 +198,13 @@ namespace AngelLoader
         #endregion
 
         [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Enum)]
+        internal sealed class FenGenLanguageEnumAttribute : Attribute
+        {
+            internal FenGenLanguageEnumAttribute(string languageIndexEnumName) { }
+        }
+
+        [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
         internal sealed class FenGenBuildDateDestClassAttribute : Attribute { }
 

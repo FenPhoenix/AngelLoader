@@ -4,6 +4,7 @@ using System.IO;
 using AngelLoader.DataClasses;
 using SevenZip;
 using static AL_Common.Common;
+using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -12,8 +13,10 @@ namespace AngelLoader
 {
     internal static class FMLanguages
     {
+        [Flags, FenGenLanguageEnum("LanguageIndex")]
         internal enum Language : uint
         {
+            [FenGenIgnore]
             Default = 0,
             English = 1,
             Czech = 2,
