@@ -35,5 +35,24 @@ namespace AngelLoader
             [FenGenLanguage("es", "Español")]
             Spanish = 1024
         }
+
+        // @LANGS: Temporary! Eventually we won't need this old Supported string array.
+        // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
+        // Immediate use, so don't bother lazy-loading
+        public static readonly string[]
+        Supported =
+        {
+            "english", // en, eng (must be first)
+            "czech", // cz
+            "dutch", // nl
+            "french", // fr
+            "german", // de
+            "hungarian", // hu
+            "italian", // it
+            "japanese", // ja, jp
+            "polish", // pl
+            "russian", // ru
+            "spanish" // es
+        };
     }
 }

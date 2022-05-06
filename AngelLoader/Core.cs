@@ -1345,7 +1345,7 @@ namespace AngelLoader
             {
                 // Because we allow arbitrary languages, it's theoretically possible to get one that doesn't have
                 // a language code.
-                bool langCodesExist = FMLanguages.LangCodes.TryGetValue(Config.Language, out string[] langCodes);
+                bool langCodesExist = LanguageSupport.LangCodes.TryGetValue(Config.Language, out string[] langCodes);
 
                 var safeReadmes = new List<string>(readmeFiles.Count);
                 foreach (string rf in readmeFiles)
@@ -1869,7 +1869,7 @@ namespace AngelLoader
                 for (int i = 0; i < sortedLangs.Count; i++)
                 {
                     string langLower = sortedLangs[i].ToLowerInvariant();
-                    View.AddLanguageToList(langLower, FMLanguages.Translated[langLower]);
+                    View.AddLanguageToList(langLower, LanguageSupport.LangTranslatedNames[langLower]);
 
                     // Rewrite the FM's lang string for cleanliness, in case it contains unsupported langs or
                     // other nonsense

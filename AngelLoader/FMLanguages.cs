@@ -12,99 +12,9 @@ namespace AngelLoader
 {
     internal static class FMLanguages
     {
-        //internal enum LanguageIndex : uint
-        //{
-        //    English,
-        //    Czech,
-        //    Dutch,
-        //    French,
-        //    German,
-        //    Hungarian,
-        //    Italian,
-        //    Japanese,
-        //    Polish,
-        //    Russian,
-        //    Spanish
-        //}
-
-        //internal static DictionaryI<Language> LangStringsToEnums = new(11)
-        //{
-        //    { "english", Language.English },
-        //    { "czech", Language.Czech },
-        //    { "dutch", Language.Dutch },
-        //    { "french", Language.French },
-        //    { "german", Language.German },
-        //    { "hungarian", Language.Hungarian },
-        //    { "italian", Language.Italian },
-        //    { "japanese", Language.Japanese },
-        //    { "polish", Language.Polish },
-        //    { "russian", Language.Russian },
-        //    { "spanish", Language.Spanish }
-        //};
-
-        // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
-        // Immediate use, so don't bother lazy-loading
-        private static readonly string[]
-        Supported =
-        {
-            "english",    // en, eng (must be first)
-            "czech",      // cz
-            "dutch",      // nl
-            "french",     // fr
-            "german",     // de
-            "hungarian",  // hu
-            "italian",    // it
-            "japanese",   // ja, jp
-            "polish",     // pl
-            "russian",    // ru
-            "spanish"     // es
-        };
-
-        private static readonly HashSetI SupportedHash;
-
-        static FMLanguages()
-        {
-            SupportedHash = Supported.ToHashSetI();
-        }
-
         #region Public fields
 
         internal const string DefaultLangKey = "default";
-
-        private static DictionaryI<string[]>? _langCodes;
-        internal static DictionaryI<string[]>
-        LangCodes => _langCodes ??= new DictionaryI<string[]>(11)
-        {
-            { "english", new[] { "en", "eng" } },
-            { "czech", new[] { "cz" } },
-            { "dutch", new[] { "nl" } },
-            { "french", new[] { "fr" } },
-            { "german", new[] { "de" } },
-            { "hungarian", new[] { "hu" } },
-            { "italian", new[] { "it" } },
-            { "japanese", new[] { "ja", "jp" } },
-            { "polish", new[] { "pl" } },
-            { "russian", new[] { "ru" } },
-            { "spanish", new[] { "es" } }
-        };
-
-        // For manual selection of language for playing an FM
-        // Immediate use, so don't bother lazy-loading
-        internal static readonly DictionaryI<string>
-        Translated = new DictionaryI<string>(11)
-        {
-            { "english", "English" },
-            { "czech", "Čeština" },
-            { "dutch", "Nederlands" },
-            { "french", "Français" },
-            { "german", "Deutsch" },
-            { "hungarian", "Magyar" },
-            { "italian", "Italiano" },
-            { "japanese", "日本語" },
-            { "polish", "Polski" },
-            { "russian", "Русский" },
-            { "spanish", "Español" }
-        };
 
         #endregion
 
@@ -112,15 +22,15 @@ namespace AngelLoader
 
         internal static List<string> SortLangsToSpec(HashSetI langsHash)
         {
-            var ret = new List<string>(Supported.Length);
+            var ret = new List<string>(LanguageSupport.Supported.Length);
 
             // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
             // (matching FMSel behavior)
             if (langsHash.Count > 0)
             {
-                for (int i = 0; i < Supported.Length; i++)
+                for (int i = 0; i < LanguageSupport.Supported.Length; i++)
                 {
-                    string sl = Supported[i];
+                    string sl = LanguageSupport.Supported[i];
                     if (langsHash.Contains(sl)) ret.Add(sl);
                 }
             }
@@ -265,13 +175,13 @@ namespace AngelLoader
 
             #endregion
 
-            var langsFoundList = new HashSetI(Supported.Length);
+            var langsFoundList = new HashSetI(LanguageSupport.Supported.Length);
 
             while (searchList.Count > 0)
             {
                 string bdPath = searchList[searchList.Count - 1];
                 searchList.RemoveAt(searchList.Count - 1);
-                bool englishFound = FastIO.SearchDirForLanguages(SupportedHash, bdPath, searchList, langsFoundList, earlyOutOnEnglish);
+                bool englishFound = FastIO.SearchDirForLanguages(LanguageSupport.LangsHash, bdPath, searchList, langsFoundList, earlyOutOnEnglish);
                 // Matching FMSel behavior: early-out on English
                 if (earlyOutOnEnglish && englishFound) return new List<string> { "English" };
             }
@@ -289,12 +199,12 @@ namespace AngelLoader
             string archivePath = FMArchives.FindFirstMatch(archiveName);
             if (archivePath.IsEmpty()) return failed;
 
-            var ret = new List<string>(Supported.Length);
+            var ret = new List<string>(LanguageSupport.Supported.Length);
 
-            bool[] FoundLangInArchive = new bool[Supported.Length];
+            bool[] FoundLangInArchive = new bool[LanguageSupport.Supported.Length];
             // Pre-concat each string only once for perf
-            string[] SLangsFSPrefixed = new string[Supported.Length];
-            for (int i = 0; i < Supported.Length; i++) SLangsFSPrefixed[i] = "/" + Supported[i];
+            string[] SLangsFSPrefixed = new string[LanguageSupport.Supported.Length];
+            for (int i = 0; i < LanguageSupport.Supported.Length; i++) SLangsFSPrefixed[i] = "/" + LanguageSupport.Supported[i];
 
             FMScanner.FastZipReader.ZipArchiveFast? zipArchive = null;
             SevenZipExtractor? sevenZipArchive = null;
@@ -321,9 +231,9 @@ namespace AngelLoader
                         // For some reason ArchiveFileData[i].FileName is like 20x faster than ArchiveFileNames[i]
                         : sevenZipArchive!.ArchiveFileData[i].FileName.ToForwardSlashes();
 
-                    for (int j = 0; j < Supported.Length; j++)
+                    for (int j = 0; j < LanguageSupport.Supported.Length; j++)
                     {
-                        string sl = Supported[j];
+                        string sl = LanguageSupport.Supported[j];
                         if (!FoundLangInArchive[j])
                         {
                             // Do as few string operations as humanly possible

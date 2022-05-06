@@ -122,6 +122,9 @@ namespace AngelLoader.DataClasses
             set => _selectedLang = value.ToLowerInvariant();
         }
 
+        //internal LanguageSupport.Language LangsE = LanguageSupport.Language.Default;
+        //internal LanguageSupport.Language SelectedLangE = LanguageSupport.Language.Default;
+
         [FenGenIgnore]
         internal readonly FMCategoriesCollection Tags = new FMCategoriesCollection();
         internal string TagsString = "";
