@@ -151,7 +151,6 @@ namespace FenGen
             Config,
             Language,
             LanguageAndAlsoCreateTestIni,
-            EnableLangReflectionStyleGen,
             GameSupport,
             ExcludeResx,
             RestoreResx,
@@ -163,16 +162,15 @@ namespace FenGen
         private static readonly Dictionary<string, GenType>
         _argToTaskMap = new Dictionary<string, GenType>
         {
-            { "-fmdata", GenType.FMData },
-            { "-language", GenType.Language },
-            { "-language_t", GenType.LanguageAndAlsoCreateTestIni },
-            { "-enable_lang_reflection_style_gen", GenType.EnableLangReflectionStyleGen },
-            { "-game_support", GenType.GameSupport },
-            { "-exclude_resx", GenType.ExcludeResx },
-            { "-restore_resx", GenType.RestoreResx },
-            { "-add_build_date", GenType.AddBuildDate },
-            { "-remove_build_date", GenType.RemoveBuildDate },
-            { "-gen_slim_designer_files", GenType.GenSlimDesignerFiles }
+            { "-fmd", GenType.FMData },
+            { "-lang", GenType.Language },
+            { "-lang_t", GenType.LanguageAndAlsoCreateTestIni },
+            { "-game", GenType.GameSupport },
+            { "-resx_e", GenType.ExcludeResx },
+            { "-resx_r", GenType.RestoreResx },
+            { "-bd", GenType.AddBuildDate },
+            { "-bd_r", GenType.RemoveBuildDate },
+            { "-des", GenType.GenSlimDesignerFiles }
         };
 
         // Only used for debug, so we can explicitly place test arguments into the set
@@ -388,8 +386,7 @@ namespace FenGen
                     destFile: taggedFilesDict[GenFileTags.LocalizationDest],
                     perGameLangGetterDestFile: taggedFilesDict![GenFileTags.LocalizedGameNameGetterDest],
                     langIniFile: englishIni,
-                    testLangIniFile: testLangIni,
-                    writeReflectionStyle: GenTaskActive(GenType.EnableLangReflectionStyleGen));
+                    testLangIniFile: testLangIni);
 
                 LanguageSupport.Generate(
                     source: taggedFilesDict[GenFileTags.LanguageSupportSource],

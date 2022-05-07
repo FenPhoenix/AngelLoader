@@ -16,7 +16,7 @@ set "FenGen=%TargetDir%FenGen.exe"
 
 rem Run the resx exclude BEFORE AngelLoader even gets to its build (and AFTER FenGen has already been built).
 rem That way we should end up with a proper project file and no "sometimes works, sometimes doesn't" mess.
-set fenGenArgs=-exclude_resx
+set fenGenArgs=-resx_e
 
 %FenGen% %fenGenArgs%
 rem ---

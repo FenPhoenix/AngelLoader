@@ -31,12 +31,11 @@ namespace FenGen
             string destFile,
             string perGameLangGetterDestFile,
             string langIniFile,
-            string testLangIniFile,
-            bool writeReflectionStyle)
+            string testLangIniFile)
         {
             var (langClassName, sections, classNames, perGameSets) = ReadSource(sourceFile);
 
-            WriteDest(langClassName, sections, classNames, destFile, writeReflectionStyle);
+            WriteDest(langClassName, sections, classNames, destFile);
             WritePerGameStringGetterFile(perGameLangGetterDestFile, perGameSets);
             WriteIniFile(langIniFile, sections);
             if (!testLangIniFile.IsEmpty())
@@ -205,8 +204,7 @@ namespace FenGen
             string langClassName,
             List<IniSection> sections,
             List<string> classNames,
-            string destFile,
-            bool writeReflectionStyle)
+            string destFile)
         {
             var w = GetWriterForClass(destFile, GenAttributes.FenGenLocalizationDestClass);
 
@@ -214,30 +212,27 @@ namespace FenGen
             w.WL("[MustUseReturnValue]");
             w.WL("internal static " + langClassName + " ReadLocalizationIni(string file)");
             w.WL("{");
-            if (writeReflectionStyle)
-            {
-                w.WL("#region Dictionary setup");
-                w.WL();
-                w.WL("const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;");
-                w.WL();
+            w.WL("#region Dictionary setup");
+            w.WL();
+            w.WL("const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;");
+            w.WL();
 
-                for (int i = 0; i < sections.Count; i++)
-                {
-                    IniSection section = sections[i];
-                    string dictName = section.Name + "_Dict";
-                    string langSubclass = langClassName + "." + classNames[i];
-                    string curFieldsName = section.Name.FirstCharToLower() + "Fields";
-                    w.WL("var " + curFieldsName + " = typeof(" + langSubclass + ").GetFields(_bfLText);");
-                    w.WL("var " + dictName + " = new Dictionary<string, FieldInfo>(" + curFieldsName + ".Length);");
-                    w.WL("foreach (var f in " + curFieldsName + ")");
-                    w.WL("{");
-                    w.WL(dictName + ".Add(f.Name, f);");
-                    w.WL("}");
-                }
-                w.WL();
-                w.WL("#endregion");
-                w.WL();
+            for (int i = 0; i < sections.Count; i++)
+            {
+                IniSection section = sections[i];
+                string dictName = section.Name + "_Dict";
+                string langSubclass = langClassName + "." + classNames[i];
+                string curFieldsName = section.Name.FirstCharToLower() + "Fields";
+                w.WL("var " + curFieldsName + " = typeof(" + langSubclass + ").GetFields(_bfLText);");
+                w.WL("var " + dictName + " = new Dictionary<string, FieldInfo>(" + curFieldsName + ".Length);");
+                w.WL("foreach (var f in " + curFieldsName + ")");
+                w.WL("{");
+                w.WL(dictName + ".Add(f.Name, f);");
+                w.WL("}");
             }
+            w.WL();
+            w.WL("#endregion");
+            w.WL();
             w.WL("var ret = new " + langClassName + "();");
             w.WL("var lines = AL_Common.Common.File_ReadAllLines_List(file, Encoding.UTF8);");
             w.WL("int linesLength = lines.Count;");
@@ -256,31 +251,15 @@ namespace FenGen
                 w.WL("int ltLength;");
                 w.WL("string lt = lines[i + 1].TrimStart();");
 
-                if (writeReflectionStyle)
-                {
-                    w.WL("int eqIndex = lt.IndexOf('=');");
-                    w.WL("if (eqIndex > -1)");
-                    w.WL("{");
-                    w.WL("string key = lt.Substring(0, eqIndex);");
-                    w.WL("if (" + section.Name + "_Dict.TryGetValue(key, out FieldInfo value))");
-                    w.WL("{");
-                    w.WL("value.SetValue(ret." + section.Name + ", lt.Substring(eqIndex + 1));");
-                    w.WL("}");
-                    w.WL("}");
-                }
-                else
-                {
-                    bool keysElseIf = false;
-                    foreach (IniItem item in section)
-                    {
-                        if (item.Key.IsEmpty()) continue;
-                        w.WL((keysElseIf ? "else " : "") + "if (lt.StartsWithFast_NoNullChecks(\"" + item.Key + "=\"))");
-                        w.WL("{");
-                        w.WL("ret." + section.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
-                        w.WL("}");
-                        keysElseIf = true;
-                    }
-                }
+                w.WL("int eqIndex = lt.IndexOf('=');");
+                w.WL("if (eqIndex > -1)");
+                w.WL("{");
+                w.WL("string key = lt.Substring(0, eqIndex);");
+                w.WL("if (" + section.Name + "_Dict.TryGetValue(key, out FieldInfo value))");
+                w.WL("{");
+                w.WL("value.SetValue(ret." + section.Name + ", lt.Substring(eqIndex + 1));");
+                w.WL("}");
+                w.WL("}");
 
                 // Line is only start-trimmed, so don't check for last char being ']' because last char could be
                 // whitespace
