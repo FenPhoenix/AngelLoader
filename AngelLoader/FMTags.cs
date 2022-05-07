@@ -168,13 +168,14 @@ namespace AngelLoader
             return list;
         }
 
-        private static readonly StringBuilder _tagsToStringSB = new(100);
+        private const int _tagsToStringSBInitialCapacity = 100;
+        private static readonly StringBuilder _tagsToStringSB = new(_tagsToStringSBInitialCapacity);
         internal static string TagsToString(FMCategoriesCollection tagsList, bool writeEmptyCategories)
         {
             if (_tagsToStringSB.Capacity > ByteSize.KB * 10)
             {
                 _tagsToStringSB.Clear();
-                _tagsToStringSB.Capacity = 0;
+                _tagsToStringSB.Capacity = _tagsToStringSBInitialCapacity;
             }
 
             for (int i = 0; i < tagsList.Count; i++)
