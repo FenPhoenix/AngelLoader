@@ -269,6 +269,7 @@ namespace AngelLoader
 
         #endregion
 
+        // @MEM(Color table parser): We could still reduce allocations in here a bit more (but by making the code even more terrible)
         private Error ParseAndBuildColorTable()
         {
             var _colorTableSB = new StringBuilder(4096);

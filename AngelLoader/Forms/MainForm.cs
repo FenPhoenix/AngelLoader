@@ -3960,6 +3960,7 @@ namespace AngelLoader.Forms
 
         #region FMsDGV event handlers
 
+        // @MEM(CellValueNeeded): ehhh, you know...
         private void FMsDGV_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
             if (CellValueNeededDisabled) return;

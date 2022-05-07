@@ -14,6 +14,8 @@ namespace AngelLoader
 {
     internal static class GLMLConversion
     {
+        // @MEM(GLMLConversion): We could compare the SBs char-wise and avoid the ToString()s
+        // ...but we already allocate great swaths of crap in here anyway...
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         [SuppressMessage("ReSharper", "CommentTypo")]
         internal static string GLMLToRTF(byte[] glmlBytes, bool darkModeEnabled)
