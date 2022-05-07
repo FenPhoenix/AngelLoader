@@ -99,6 +99,14 @@ namespace FenGen
             w.WL("public static HashSetI LangsHash = new HashSetI(" + count + ")");
             WriteListBody(w, langEnum.LangIndexEnumNamesLowercase, addQuotes: true);
 
+            w.WL("public static string[] FSPrefixedLangs =");
+            var fsPrefixedList = new List<string>(count);
+            for (int i = 0; i < count; i++)
+            {
+                fsPrefixedList.Add("/" + langEnum.LangIndexEnumNames[i].ToLowerInvariant());
+            }
+            WriteListBody(w, fsPrefixedList, addQuotes: true);
+
             w.WL("public static DictionaryI<" + langEnum.Name + "> LangStringsToEnums = new(" + count + ")");
             var values = new List<string>(count);
             foreach (var lang in langEnum.LangIndexEnumNames)

@@ -202,9 +202,6 @@ namespace AngelLoader
             var ret = new List<string>(LanguageSupport.Supported.Length);
 
             bool[] FoundLangInArchive = new bool[LanguageSupport.Supported.Length];
-            // Pre-concat each string only once for perf
-            string[] SLangsFSPrefixed = new string[LanguageSupport.Supported.Length];
-            for (int i = 0; i < LanguageSupport.Supported.Length; i++) SLangsFSPrefixed[i] = "/" + LanguageSupport.Supported[i];
 
             FMScanner.FastZipReader.ZipArchiveFast? zipArchive = null;
             SevenZipExtractor? sevenZipArchive = null;
@@ -237,7 +234,7 @@ namespace AngelLoader
                         if (!FoundLangInArchive[j])
                         {
                             // Do as few string operations as humanly possible
-                            int index = fn.IndexOf(SLangsFSPrefixed[j], StringComparison.OrdinalIgnoreCase);
+                            int index = fn.IndexOf(LanguageSupport.FSPrefixedLangs[j], StringComparison.OrdinalIgnoreCase);
                             if (index < 1) continue;
 
                             if ((fn.Length > index + sl.Length + 1 && fn[index + sl.Length + 1] == '/') ||

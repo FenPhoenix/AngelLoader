@@ -40,6 +40,21 @@ namespace AngelLoader
             "spanish"
         };
 
+        public static string[] FSPrefixedLangs =
+        {
+            "/english",
+            "/czech",
+            "/dutch",
+            "/french",
+            "/german",
+            "/hungarian",
+            "/italian",
+            "/japanese",
+            "/polish",
+            "/russian",
+            "/spanish"
+        };
+
         public static DictionaryI<Language> LangStringsToEnums = new(11)
         {
             { "english", Language.English },
