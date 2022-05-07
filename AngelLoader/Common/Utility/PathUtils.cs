@@ -58,16 +58,6 @@ namespace AngelLoader
             }
         }
 
-        #region Forward/backslash conversion
-
-        internal static string ToForwardSlashes(this string value) => value.Replace('\\', '/');
-
-        internal static string ToBackSlashes(this string value) => value.Replace('/', '\\');
-
-        internal static string ToSystemDirSeps(this string value) => value.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
-
-        #endregion
-
         #region Get file / dir names
 
         /// <summary>

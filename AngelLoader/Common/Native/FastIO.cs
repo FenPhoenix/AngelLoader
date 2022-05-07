@@ -181,7 +181,7 @@ namespace AngelLoader
 #if false
         internal static bool AnyFilesInDir(string path)
         {
-            path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
+            path = path.ToBackSlashes().TrimEnd(CA_Backslash);
 
             bool pathContainsInvalidChars = false;
             char[] invalidChars = Path.GetInvalidPathChars();

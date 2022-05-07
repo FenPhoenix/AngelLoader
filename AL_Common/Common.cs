@@ -338,6 +338,16 @@ namespace AL_Common
 
         #region File/Path
 
+        #region Forward/backslash conversion
+
+        public static string ToForwardSlashes(this string value) => value.Replace('\\', '/');
+
+        public static string ToBackSlashes(this string value) => value.Replace('/', '\\');
+
+        public static string ToSystemDirSeps(this string value) => value.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+
+        #endregion
+
         #region ReadAllLines
 
         // Return the original lists to avoid the wasteful and useless allocation of the array conversion that
@@ -404,7 +414,7 @@ namespace AL_Common
         // Not like any OS is likely to use anything other than '/' or '\' anyway.
 
         // We hope not to have to call this too often, but it's here as a fallback.
-        public static string CanonicalizePath(string value) => value.Replace('/', '\\');
+        public static string CanonicalizePath(string value) => value.ToBackSlashes();
 
         /// <summary>
         /// Returns true if <paramref name="value"/> contains either directory separator character.
