@@ -190,7 +190,6 @@ namespace AngelLoader
                 return false;
             }
 
-            // @MEM: We could compare the StringBuilder char by char to avoid the ToString() allocation
             static StringBuilder GetProcessPath(int procId, StringBuilder buffer)
             {
                 // Recycle the buffer - avoids GC house party
