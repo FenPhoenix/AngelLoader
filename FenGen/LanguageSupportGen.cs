@@ -99,11 +99,11 @@ namespace FenGen
             w.WL("public static HashSetI LangsHash = new HashSetI(" + count + ")");
             WriteListBody(w, langEnum.LangIndexEnumNamesLowercase, addQuotes: true);
 
-            w.WL("public static DictionaryI<" + langEnum.LanguageIndexName + "> LangStringsToEnums = new(" + count + ")");
+            w.WL("public static DictionaryI<" + langEnum.Name + "> LangStringsToEnums = new(" + count + ")");
             var values = new List<string>(count);
             foreach (var lang in langEnum.LangIndexEnumNames)
             {
-                values.Add(langEnum.LanguageIndexName + "." + lang);
+                values.Add(langEnum.Name + "." + lang);
             }
             WriteDictionaryBody(w, langEnum.LangIndexEnumNamesLowercase, values, keysQuoted: true);
 

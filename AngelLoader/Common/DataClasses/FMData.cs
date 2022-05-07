@@ -122,8 +122,38 @@ namespace AngelLoader.DataClasses
             set => _selectedLang = value.ToLowerInvariant();
         }
 
-        //internal LanguageSupport.Language LangsE = LanguageSupport.Language.Default;
-        //internal LanguageSupport.Language SelectedLangE = LanguageSupport.Language.Default;
+        /*
+        The plan is to do like this...
+
+        string[] langs = valTrimmed.Split(AL_Common.Common.CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < langs.Length; i++)
+        {
+            langs[i] = langs[i].Trim().ToLowerInvariant();
+            if (LanguageSupport.LangStringsToEnums.TryGetValue(langs[i], out LanguageSupport.Language index))
+            {
+                fm.LangsE |= index;
+            }
+        }
+
+        ... except in a no-alloc version. The plan:
+
+        -Generate a perfect hash for the keyword set
+
+        Then in the FMData.ini reader:
+                
+        -Loop:
+         -Get start and end indexes of next comma-separated item (whitespace ignored)
+         -Iterate the section of the string, replacing-in-place all ASCII uppercase chars to lowercase, and if
+          any non-ASCII are found, reject the item and move on to the next
+         -Pass line with start and end indexes to perfect hash lookup function, where since it's guaranteed to be
+          lowercase and the Hash function can just take the start and length, it will work just like normal
+         -If we get a value back, fm.LangsE |= value
+        */
+
+        [FenGenIgnore]
+        internal LanguageSupport.Language LangsE = LanguageSupport.Language.Default;
+        [FenGenIgnore]
+        internal LanguageSupport.Language SelectedLangE = LanguageSupport.Language.Default;
 
         [FenGenIgnore]
         internal readonly FMCategoriesCollection Tags = new FMCategoriesCollection();

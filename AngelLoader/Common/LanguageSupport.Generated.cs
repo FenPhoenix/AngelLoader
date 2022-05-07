@@ -40,19 +40,19 @@ namespace AngelLoader
             "spanish"
         };
 
-        public static DictionaryI<LanguageIndex> LangStringsToEnums = new(11)
+        public static DictionaryI<Language> LangStringsToEnums = new(11)
         {
-            { "english", LanguageIndex.English },
-            { "czech", LanguageIndex.Czech },
-            { "dutch", LanguageIndex.Dutch },
-            { "french", LanguageIndex.French },
-            { "german", LanguageIndex.German },
-            { "hungarian", LanguageIndex.Hungarian },
-            { "italian", LanguageIndex.Italian },
-            { "japanese", LanguageIndex.Japanese },
-            { "polish", LanguageIndex.Polish },
-            { "russian", LanguageIndex.Russian },
-            { "spanish", LanguageIndex.Spanish }
+            { "english", Language.English },
+            { "czech", Language.Czech },
+            { "dutch", Language.Dutch },
+            { "french", Language.French },
+            { "german", Language.German },
+            { "hungarian", Language.Hungarian },
+            { "italian", Language.Italian },
+            { "japanese", Language.Japanese },
+            { "polish", Language.Polish },
+            { "russian", Language.Russian },
+            { "spanish", Language.Spanish }
         };
 
         public static DictionaryI<string[]> LangCodes = new DictionaryI<string[]>(11)
