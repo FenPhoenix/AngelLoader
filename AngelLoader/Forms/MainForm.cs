@@ -4481,12 +4481,18 @@ namespace AngelLoader.Forms
             }
         }
 
+        // Cache visible state because calling Visible redoes the work even if the value is the same
+        private bool _readmeControlsOtherThanComboBoxVisible;
         private void ShowReadmeControls(bool enabled)
         {
             ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
-            foreach (DarkButton button in _readmeControlButtons)
+            if (enabled != _readmeControlsOtherThanComboBoxVisible)
             {
-                button.Visible = enabled;
+                foreach (DarkButton button in _readmeControlButtons)
+                {
+                    button.Visible = enabled;
+                }
+                _readmeControlsOtherThanComboBoxVisible = enabled;
             }
         }
 
