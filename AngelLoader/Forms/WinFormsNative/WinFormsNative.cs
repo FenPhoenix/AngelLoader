@@ -69,6 +69,9 @@ namespace AngelLoader.Forms.WinFormsNative
             [In, Out] POINT pt,
             int cPoints);
 
+        // Since we know the UI will only ever run on one thread, we can just have one global POINT class and
+        // just let anyone populate and use it randomly whenever. It can never be accessed by two things at once
+        // because everyone is on one thread.
         private static readonly POINT _globalNativePoint = new();
 
         public static Point GetCursorPosition_Fast()
