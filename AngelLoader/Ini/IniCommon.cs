@@ -171,27 +171,26 @@ namespace AngelLoader
 
         #region FMData
 
-        private static bool SegmentEquals(this string first, int start, int end, string second, FanMission fm)
+        private static bool SegmentEquals(this string first, int start, int end, string second)
         {
+            for (; start < end; start++)
+            {
+                if (!char.IsWhiteSpace(first[start])) break;
+            }
+
+            for (; end >= start; end--)
+            {
+                if (!char.IsWhiteSpace(first[end])) break;
+            }
+
             int secondLen = second.Length;
             if ((end - start) < secondLen - 1) return false;
 
             int i = start;
             int i2 = 0;
-            while (i < end && i2 < secondLen)
+            while (i < end && i2 < secondLen - 1)
             {
-                char c = first[i];
-                char c2 = second[i2];
-
-                if (c is ',')
-                {
-                    i++;
-                    continue;
-                }
-                else if (c == ' ' || c != c2)
-                {
-                    return false;
-                }
+                if (first[i] != second[i2]) return false;
 
                 i++;
                 i2++;
@@ -214,52 +213,52 @@ namespace AngelLoader
 
                 if (c == ',' || i == len - 1)
                 {
-                    if (curStart == 0 && fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.None), fm))
+                    if (curStart == 0 && fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.None)))
                     {
                         return;
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Map), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Map)))
                     {
                         SetFMResource(fm, CustomResources.Map, true);
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Automap), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Automap)))
                     {
                         SetFMResource(fm, CustomResources.Automap, true);
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Scripts), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Scripts)))
                     {
                         SetFMResource(fm, CustomResources.Scripts, true);
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Textures), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Textures)))
                     {
                         SetFMResource(fm, CustomResources.Textures, true);
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Sounds), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Sounds)))
                     {
                         SetFMResource(fm, CustomResources.Sounds, true);
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Objects), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Objects)))
                     {
                         SetFMResource(fm, CustomResources.Objects, true);
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Creatures), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Creatures)))
                     {
                         SetFMResource(fm, CustomResources.Creatures, true);
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Motions), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Motions)))
                     {
                         SetFMResource(fm, CustomResources.Motions, true);
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Movies), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Movies)))
                     {
                         SetFMResource(fm, CustomResources.Movies, true);
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Subtitles), fm))
+                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Subtitles)))
                     {
                         SetFMResource(fm, CustomResources.Subtitles, true);
                     }
 
-                    curStart = i;
+                    curStart = i + 1;
                 }
             }
         }

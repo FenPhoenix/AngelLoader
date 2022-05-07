@@ -104,6 +104,18 @@ namespace AL_Common
 
         #region String
 
+        public static unsafe void ReplaceCharInPlace(string value, char oldChar, char newChar)
+        {
+            fixed (char* chars = value)
+            {
+                int len = value.Length;
+                for (int i = 0; i < len; i++)
+                {
+                    if (chars[i] == oldChar) chars[i] = newChar;
+                }
+            }
+        }
+
         #region ASCII-specific
 
         [PublicAPI]
