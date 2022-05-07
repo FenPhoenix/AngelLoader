@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using static AL_Common.Common;
@@ -167,25 +168,44 @@ namespace AngelLoader
             return list;
         }
 
+        private static readonly StringBuilder _tagsToStringSB = new(100);
         internal static string TagsToString(FMCategoriesCollection tagsList, bool writeEmptyCategories)
         {
-            var intermediateTagsList = new List<string>();
-            foreach (CatAndTagsList item in tagsList)
+            if (_tagsToStringSB.Capacity > ByteSize.KB * 10)
             {
+                _tagsToStringSB.Clear();
+                _tagsToStringSB.Capacity = 0;
+            }
+
+            for (int i = 0; i < tagsList.Count; i++)
+            {
+                var item = tagsList[i];
                 if (item.Tags.Count == 0 && writeEmptyCategories)
                 {
-                    intermediateTagsList.Add(item.Category + ":");
+                    _tagsToStringSB.Append(item.Category).Append(':').Append(',');
                 }
                 else
                 {
-                    foreach (string tag in item.Tags)
+                    for (int j = 0; j < item.Tags.Count; j++)
                     {
-                        intermediateTagsList.Add(item.Category + ":" + tag);
+                        string tag = item.Tags[j];
+                        _tagsToStringSB.Append(item.Category).Append(':').Append(tag).Append(',');
                     }
                 }
             }
 
-            return string.Join(",", intermediateTagsList);
+            // Cheap and easy to understand
+            if (_tagsToStringSB.Length > 0 &&
+                _tagsToStringSB[_tagsToStringSB.Length - 1] == ',')
+            {
+                _tagsToStringSB.Remove(_tagsToStringSB.Length - 1, 1);
+            }
+
+            string ret = _tagsToStringSB.ToString();
+
+            _tagsToStringSB.Clear();
+
+            return ret;
         }
 
         // Update fm.TagsString here. We keep TagsString around because when we're reading, writing, and merging
