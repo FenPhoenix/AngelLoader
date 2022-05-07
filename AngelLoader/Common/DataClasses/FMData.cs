@@ -148,6 +148,11 @@ namespace AngelLoader.DataClasses
          -Pass line with start and end indexes to perfect hash lookup function, where since it's guaranteed to be
           lowercase and the Hash function can just take the start and length, it will work just like normal
          -If we get a value back, fm.LangsE |= value
+
+        EDIT 2022-05-07:
+        No that in-place thing is dumb, we can just check the string is ascii lowercase, and if isn't, we can
+        just fall back to taking a ToLowerInvariant() allocation once, and then when we write the langs out
+        they WILL be ascii lowercase only, so we won't take the allocation again.
         */
 
         [FenGenIgnore]
