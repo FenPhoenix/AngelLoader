@@ -179,7 +179,7 @@ namespace AngelLoader
                 return t2MPExe = t2Path.IsEmpty() ? "" : Path.Combine(t2Path, Paths.T2MPExe);
             }
 
-            static bool AnyGameRunning(string path)
+            static bool AnyGameRunning(StringBuilder path)
             {
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
@@ -191,7 +191,7 @@ namespace AngelLoader
             }
 
             // @MEM: We could compare the StringBuilder char by char to avoid the ToString() allocation
-            static string GetProcessPath(int procId, StringBuilder buffer)
+            static StringBuilder GetProcessPath(int procId, StringBuilder buffer)
             {
                 // Recycle the buffer - avoids GC house party
                 buffer.Clear();
@@ -200,9 +200,9 @@ namespace AngelLoader
                 if (!hProc.IsInvalid)
                 {
                     int size = buffer.Capacity;
-                    if (QueryFullProcessImageName(hProc, 0, buffer, ref size)) return buffer.ToString();
+                    if (QueryFullProcessImageName(hProc, 0, buffer, ref size)) return buffer;
                 }
-                return "";
+                return buffer.Clear();
             }
 
             #endregion
@@ -219,8 +219,8 @@ namespace AngelLoader
                 {
                     try
                     {
-                        string fn = GetProcessPath(proc.Id, buffer);
-                        if (!fn.IsEmpty() &&
+                        var fn = GetProcessPath(proc.Id, buffer);
+                        if (fn.Length > 0 &&
                             ((checkAllGames &&
                               (AnyGameRunning(fn) ||
                                (!T2MPExe().IsEmpty() && fn.PathEqualsI(T2MPExe())))) ||
