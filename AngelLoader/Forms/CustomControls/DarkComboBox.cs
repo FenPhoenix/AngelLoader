@@ -167,7 +167,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            if (!ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            if (!ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position)))
             {
                 SetButtonState(DarkControlState.Normal);
             }
@@ -185,7 +185,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            SetButtonState(ClientRectangle.Contains(PointToClient(Cursor.Position))
+            SetButtonState(ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position))
                 ? DarkControlState.Hover
                 : DarkControlState.Normal);
         }
@@ -196,7 +196,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            SetButtonState(ClientRectangle.Contains(PointToClient(Cursor.Position))
+            SetButtonState(ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position))
                 ? DarkControlState.Hover
                 : DarkControlState.Normal);
         }
@@ -367,7 +367,7 @@ namespace AngelLoader.Forms.CustomControls
             // appears fully on-screen
             if (m.Msg == Native.WM_CTLCOLORLISTBOX)
             {
-                Point p = PointToScreen(new Point(0, Height));
+                Point p = this.PointToScreen_Fast(new Point(0, Height));
 
                 int screenWidth = Screen.FromControl(this).Bounds.Width;
                 bool alignRight = p.X + DropDownWidth > screenWidth;

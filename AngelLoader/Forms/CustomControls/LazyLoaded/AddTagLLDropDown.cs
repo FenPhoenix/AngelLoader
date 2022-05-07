@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -67,7 +68,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             foreach (string item in list) _listBox.Items.Add(item);
             _listBox.EndUpdate();
 
-            Point p = _owner.PointToClient(_owner.AddTagTextBox.PointToScreen(new Point(0, 0)));
+            Point p = _owner.PointToClient_Fast(_owner.AddTagTextBox.PointToScreen_Fast(new Point(0, 0)));
             _listBox.Location = p with { Y = p.Y + _owner.AddTagTextBox.Height };
             _listBox.Size = new Size(Math.Max(_owner.AddTagTextBox.Width, 256), 225);
 

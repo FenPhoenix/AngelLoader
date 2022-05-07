@@ -60,7 +60,7 @@ namespace AngelLoader.Forms.CustomControls
             if (!_darkModeEnabled) return;
 
             var (_, buttonRect) = GetDTPInfoAndButtonRect();
-            bool newMouseOverButton = buttonRect.Contains(PointToClient(Cursor.Position));
+            bool newMouseOverButton = buttonRect.Contains(this.PointToClient_Fast(Cursor.Position));
 
             if (newMouseOverButton != _mouseOverButton)
             {

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -269,7 +270,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_spacePressed) return;
 
-            if (!ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            if (!ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position)))
             {
                 SetButtonState(DarkControlState.Normal);
             }
@@ -292,7 +293,7 @@ namespace AngelLoader.Forms.CustomControls
 
             _spacePressed = false;
 
-            SetButtonState(!ClientRectangle.Contains(PointToClient(Cursor.Position))
+            SetButtonState(!ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position))
                 ? DarkControlState.Normal
                 : DarkControlState.Hover);
         }
@@ -320,7 +321,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 _spacePressed = false;
 
-                SetButtonState(!ClientRectangle.Contains(PointToClient(Cursor.Position))
+                SetButtonState(!ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position))
                     ? DarkControlState.Normal
                     : DarkControlState.Hover);
             }

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -290,8 +291,8 @@ namespace AngelLoader.Forms.CustomControls
             if (!IsSplitterFixed && _sibling != null)
             {
                 int sibCursorPos = IsMain()
-                    ? _sibling.Panel1.PointToClient(Cursor.Position with { Y = 0 }).X
-                    : _sibling.Panel1.PointToClient(Cursor.Position with { X = 0 }).Y;
+                    ? _sibling.Panel1.PointToClient_Fast(Cursor.Position).X
+                    : _sibling.Panel1.PointToClient_Fast(Cursor.Position).Y;
 
                 int sibSplitterPos = IsMain()
                     ? _sibling.Panel1.Width

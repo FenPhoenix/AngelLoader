@@ -31,6 +31,8 @@ visible selection change/flickering etc.
 It's conceptually much cleaner to use this method, but we would then have to hack around this infuriating unwanted
 behavior that comes part and parcel with what should be a simple #$@!ing property flip.
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
+
+@MEM: Cursor.Position POINT
 */
 
 using System;
@@ -2393,7 +2395,7 @@ namespace AngelLoader.Forms
 
                 using (var f = new FilterDateForm(title, fromDate, toDate))
                 {
-                    f.Location = FilterBarFLP.PointToScreen(new Point(
+                    f.Location = FilterBarFLP.PointToScreen_Fast(new Point(
                         FilterIconButtonsToolStrip.Location.X + button.Bounds.X,
                         FilterIconButtonsToolStrip.Location.Y + button.Bounds.Y + button.Height));
 
@@ -2420,7 +2422,7 @@ namespace AngelLoader.Forms
                 using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
                 {
                     f.Location =
-                        FilterBarFLP.PointToScreen(new Point(
+                        FilterBarFLP.PointToScreen_Fast(new Point(
                             FilterIconButtonsToolStrip.Location.X +
                             FilterByRatingButton.Bounds.X,
                             FilterIconButtonsToolStrip.Location.Y +

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -173,7 +174,7 @@ namespace AngelLoader.Forms.CustomControls
 
             g.FillRectangle(DarkColors.HeaderBackgroundBrush, clipRect);
 
-            Point mousePos = Controls[0].PointToClient(Cursor.Position);
+            Point mousePos = Controls[0].PointToClient_Fast(Cursor.Position);
 
             var upArea = new Rectangle(0, 0, clipRect.Width, clipRect.Height / 2);
             bool upHot = upArea.Contains(mousePos);

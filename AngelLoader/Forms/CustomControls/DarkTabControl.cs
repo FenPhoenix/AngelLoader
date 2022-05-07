@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
@@ -179,7 +180,7 @@ namespace AngelLoader.Forms.CustomControls
 
                         var backColorBrush = focused
                             ? DarkColors.LightBackgroundBrush
-                            : Enabled && tabRect.Contains(PointToClient(Cursor.Position))
+                            : Enabled && tabRect.Contains(this.PointToClient_Fast(Cursor.Position))
                             ? DarkColors.Fen_HotTabBackgroundBrush
                             : DarkColors.Fen_DeselectedTabBackgroundBrush;
 

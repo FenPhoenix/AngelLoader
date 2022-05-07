@@ -203,7 +203,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void EnterReaderMode()
         {
-            _cursorScrollBounds.Location = Point.Subtract(PointToClient(MousePosition), new Size(_cursorScrollBounds.Width / 2, _cursorScrollBounds.Height / 2));
+            _cursorScrollBounds.Location = Point.Subtract(this.PointToClient_Fast(MousePosition), new Size(_cursorScrollBounds.Width / 2, _cursorScrollBounds.Height / 2));
 
             Native.SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
             _autoScrollTimer.Start();
@@ -287,7 +287,7 @@ namespace AngelLoader.Forms.CustomControls
                 // seems to allow for a smoother acceleration curve (I feel like I notice some minor chunkiness
                 // if I use dy)
                 int cursY = Cursor.Position.Y;
-                int origY = PointToScreen(_cursorScrollBounds.Location).Y + (_cursorScrollBounds.Height / 2);
+                int origY = this.PointToScreen_Fast(_cursorScrollBounds.Location).Y + (_cursorScrollBounds.Height / 2);
                 int delta = cursY < origY ? origY - cursY : cursY - origY;
 
                 // Exponential scroll like most apps do - somewhat arbitrary values but has a decent feel.
