@@ -1231,6 +1231,8 @@ namespace AngelLoader
 
             int headerLen = RTFHeaderBytes.Length;
 
+            RTFHeaderBuffer.Clear();
+
             // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
             using (var fs = File.OpenRead(readmeOnDisk))
             {
@@ -1238,8 +1240,7 @@ namespace AngelLoader
                 // end up with an "unable to load readme" error.
                 if (fs.Length >= headerLen)
                 {
-                    using var br = new BinaryReader(fs, Encoding.ASCII);
-                    _ = br.Read(RTFHeaderBuffer.Cleared(), 0, headerLen);
+                    _ = fs.Read(RTFHeaderBuffer, 0, headerLen);
                 }
             }
 
@@ -1378,6 +1379,8 @@ namespace AngelLoader
                 {
                     safeReadmes.Sort(Comparers.FileNameNoExt);
 
+                    // @MEM(safe readme detect): I almost just want to leave this in...
+                    // since this method will only be called the first time an FM is loaded...
                     foreach (string item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
                     {
                         foreach (string sr in safeReadmes)
