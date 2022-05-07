@@ -286,7 +286,7 @@ namespace AngelLoader.Forms.CustomControls
                 // Could be placebo, but using actual cursor delta rather than dy (which is a much smaller value)
                 // seems to allow for a smoother acceleration curve (I feel like I notice some minor chunkiness
                 // if I use dy)
-                int cursY = Cursor.Position.Y;
+                int cursY = Native.GetCursorPosition_Fast().Y;
                 int origY = this.PointToScreen_Fast(_cursorScrollBounds.Location).Y + (_cursorScrollBounds.Height / 2);
                 int delta = cursY < origY ? origY - cursY : cursY - origY;
 

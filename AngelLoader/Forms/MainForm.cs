@@ -31,8 +31,6 @@ visible selection change/flickering etc.
 It's conceptually much cleaner to use this method, but we would then have to hack around this infuriating unwanted
 behavior that comes part and parcel with what should be a simple #$@!ing property flip.
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
-
-@MEM: Cursor.Position POINT
 */
 
 using System;
@@ -4430,7 +4428,7 @@ namespace AngelLoader.Forms
         // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
         internal void ReadmeArea_MouseLeave(object sender, EventArgs e)
         {
-            IntPtr hWnd = Native.WindowFromPoint(Cursor.Position);
+            IntPtr hWnd = Native.WindowFromPoint(Native.GetCursorPosition_Fast());
             if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
         }
 

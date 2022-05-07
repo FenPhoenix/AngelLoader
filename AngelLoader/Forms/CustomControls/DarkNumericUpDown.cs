@@ -174,7 +174,7 @@ namespace AngelLoader.Forms.CustomControls
 
             g.FillRectangle(DarkColors.HeaderBackgroundBrush, clipRect);
 
-            Point mousePos = Controls[0].PointToClient_Fast(Cursor.Position);
+            Point mousePos = Controls[0].PointToClient_Fast(Native.GetCursorPosition_Fast());
 
             var upArea = new Rectangle(0, 0, clipRect.Width, clipRect.Height / 2);
             bool upHot = upArea.Contains(mousePos);

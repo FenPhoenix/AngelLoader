@@ -180,7 +180,7 @@ namespace AngelLoader.Forms.CustomControls
 
                         var backColorBrush = focused
                             ? DarkColors.LightBackgroundBrush
-                            : Enabled && tabRect.Contains(this.PointToClient_Fast(Cursor.Position))
+                            : Enabled && tabRect.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
                             ? DarkColors.Fen_HotTabBackgroundBrush
                             : DarkColors.Fen_DeselectedTabBackgroundBrush;
 

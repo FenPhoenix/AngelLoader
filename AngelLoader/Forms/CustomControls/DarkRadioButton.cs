@@ -191,7 +191,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_spacePressed) return;
 
-            if (!ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position)))
+            if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
             {
                 SetControlState(DarkControlState.Normal);
             }
@@ -214,7 +214,7 @@ namespace AngelLoader.Forms.CustomControls
 
             _spacePressed = false;
 
-            SetControlState(!ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position))
+            SetControlState(!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
                 ? DarkControlState.Normal
                 : DarkControlState.Hover);
         }

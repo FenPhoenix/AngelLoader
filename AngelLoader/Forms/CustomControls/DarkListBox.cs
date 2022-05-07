@@ -311,7 +311,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             m.LParam = Native.MAKELPARAM(2, Native.SignedHIWORD(m.LParam));
 
-            var modCursorPos = new Point(2, this.PointToClient_Fast(Cursor.Position).Y);
+            var modCursorPos = new Point(2, this.PointToClient_Fast(Native.GetCursorPosition_Fast()).Y);
 
             ListViewHitTestInfo hitTest = HitTest(modCursorPos);
 

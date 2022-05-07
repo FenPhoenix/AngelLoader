@@ -168,7 +168,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            if (!ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position)))
+            if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
             {
                 SetButtonState(DarkControlState.Normal);
             }
@@ -186,7 +186,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            SetButtonState(ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position))
+            SetButtonState(ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
                 ? DarkControlState.Hover
                 : DarkControlState.Normal);
         }
@@ -197,7 +197,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!_darkModeEnabled) return;
 
-            SetButtonState(ClientRectangle.Contains(this.PointToClient_Fast(Cursor.Position))
+            SetButtonState(ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
                 ? DarkControlState.Hover
                 : DarkControlState.Normal);
         }

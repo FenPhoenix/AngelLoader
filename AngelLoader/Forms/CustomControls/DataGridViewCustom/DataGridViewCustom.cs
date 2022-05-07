@@ -697,7 +697,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 int displayIndex = Columns[e.ColumnIndex].DisplayIndex;
 
-                bool mouseOver = e.CellBounds.Contains(this.PointToClient_Fast(Cursor.Position));
+                bool mouseOver = e.CellBounds.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()));
 
                 // If we wanted to match classic mode, this is what we would use to start with
                 /*
