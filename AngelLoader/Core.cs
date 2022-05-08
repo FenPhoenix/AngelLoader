@@ -1871,7 +1871,7 @@ namespace AngelLoader
                 {
                     LanguageIndex index = (LanguageIndex)i;
                     Language language = LanguageIndexToLanguage(index);
-                    if (fm.LangsE.HasFlagFast(language))
+                    if (fm.Langs.HasFlagFast(language))
                     {
                         string langStr = GetLanguageString(index);
                         View.AddLanguageToList(langStr, LangTranslatedNames[langStr]);
@@ -1879,7 +1879,7 @@ namespace AngelLoader
                 }
             }
 
-            fm.SelectedLangE = View.SetSelectedLanguage(fm.SelectedLangE);
+            fm.SelectedLang = View.SetSelectedLanguage(fm.SelectedLang);
         }
 
         internal static void UpdateFMSelectedLanguage()
@@ -1887,7 +1887,7 @@ namespace AngelLoader
             FanMission? fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
-            fm.SelectedLangE = View.GetMainSelectedLanguage();
+            fm.SelectedLang = View.GetMainSelectedLanguage();
             Ini.WriteFullFMDataIni();
         }
 

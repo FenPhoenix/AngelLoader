@@ -143,7 +143,7 @@ namespace AngelLoader
                     string lang = langs[i];
                     if (LangStringsToEnums.TryGetValue(lang, out Language language))
                     {
-                        fm.LangsE |= language;
+                        fm.Langs |= language;
                     }
                 }
             }

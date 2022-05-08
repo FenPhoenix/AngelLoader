@@ -114,15 +114,6 @@ namespace AngelLoader.DataClasses
         // them on ini read/write.
 
         internal bool LangsScanned;
-        //[FenGenIgnore]
-        //internal string Langs = "";
-        //[FenGenIgnore]
-        //private string _selectedLang = "";
-        //internal string SelectedLang
-        //{
-        //    get => _selectedLang;
-        //    set => _selectedLang = value.ToLowerInvariant();
-        //}
 
         /*
         The plan is to do like this...
@@ -157,12 +148,10 @@ namespace AngelLoader.DataClasses
         they WILL be ascii lowercase only, so we won't take the allocation again.
         */
 
-        [FenGenIniName("Langs")]
-        internal Language LangsE = Language.Default;
+        internal Language Langs = Language.Default;
 
-        [FenGenIniName("SelectedLang")]
         [FenGenFlagsSingleAssignment]
-        internal Language SelectedLangE = Language.Default;
+        internal Language SelectedLang = Language.Default;
 
         [FenGenIgnore]
         internal readonly FMCategoriesCollection Tags = new FMCategoriesCollection();

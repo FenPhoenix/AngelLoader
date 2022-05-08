@@ -191,7 +191,7 @@ namespace AngelLoader
                 langs[i] = langs[i].Trim();
                 if (LangStringsToEnums.TryGetValue(langs[i], out var result))
                 {
-                    fm.LangsE |= result;
+                    fm.Langs |= result;
                 }
             }
         }
@@ -200,7 +200,7 @@ namespace AngelLoader
         {
             if (LangStringsToEnums.TryGetValue(valTrimmed, out var result))
             {
-                fm.SelectedLangE = result;
+                fm.SelectedLang = result;
             }
         }
 
@@ -481,12 +481,12 @@ namespace AngelLoader
                 {
                     sb.AppendLine("LangsScanned=True");
                 }
-                if (fm.LangsE != 0)
+                if (fm.Langs != 0)
                 {
                     sb.Append("Langs=");
-                    CommaCombineLanguageFlags(sb, fm.LangsE);
+                    CommaCombineLanguageFlags(sb, fm.Langs);
                 }
-                switch (fm.SelectedLangE)
+                switch (fm.SelectedLang)
                 {
                     // Much faster to do this than Enum.ToString()
                     case Language.English:
