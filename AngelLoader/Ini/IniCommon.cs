@@ -138,14 +138,12 @@ namespace AngelLoader
                     // Or half or something, cause valTrimmed and valRaw will almost always be the same reference.
                     // Downside, I add new fields to the FM class somewhat more frequently than the other perfect
                     // hashes, and regenerating is a pain (it's only semi-automated).
-                    // @MEM(FMData read): don't pass the two val values all the time, but rather:
-                    // check if the action is the Comment setter, and pass raw; otherwise pass trimmed.
                     string key = lineTS.Substring(0, eqIndex);
-                    string valRaw = lineTS.Substring(eqIndex + 1);
-                    string valTrimmed = valRaw.Trim();
+                    string val = lineTS.Substring(eqIndex + 1);
                     if (_actionDict_FMData.TryGetValue(key, out var action))
                     {
-                        action.Invoke(fmsList[fmsList.Count - 1], valTrimmed, valRaw);
+                        if (action != FMData_Comment_Set) val = val.Trim();
+                        action.Invoke(fmsList[fmsList.Count - 1], val);
                     }
                 }
             }

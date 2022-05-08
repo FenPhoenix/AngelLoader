@@ -228,8 +228,7 @@ namespace FenGen
                     ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                     : "";
 
-            const string valTrimmed = "valTrimmed";
-            const string valRaw = "valRaw";
+            const string val = "val";
 
             w.WL("#region Generated code for reader");
             w.WL();
@@ -244,9 +243,7 @@ namespace FenGen
 
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
-                string valVar = field.DoNotTrimValue ? valRaw : valTrimmed;
-
-                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + valTrimmed + ", string " + valRaw + ")");
+                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ")");
                 w.WL("{");
 
                 if (field.Type.StartsWith("List<"))
@@ -256,7 +253,7 @@ namespace FenGen
                     var ldt = field.ListDistinctType;
 
                     string varToAdd = listType == "string" && field.ListType == ListType.MultipleLines
-                        ? valTrimmed
+                        ? val
                         : "result";
 
                     string ignoreCaseString = ldt == ListDistinctType.CaseInsensitive && listType == "string"
@@ -274,7 +271,7 @@ namespace FenGen
                     {
                         if (field.ListType == ListType.MultipleLines)
                         {
-                            w.WL("if (!string.IsNullOrEmpty(" + valTrimmed + "))");
+                            w.WL("if (!string.IsNullOrEmpty(" + val + "))");
                             w.WL("{");
                             w.WL(objListSet);
                             w.WL("}");
@@ -282,7 +279,7 @@ namespace FenGen
                         else
                         {
                             w.WL(objDotField + ".Clear();");
-                            w.WL("string[] items = " + valTrimmed + ".Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
+                            w.WL("string[] items = " + val + ".Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
                             w.WL("for (int a = 0; a < items.Length; a++)");
                             w.WL("{");
                             w.WL("string result = items[a].Trim();");
@@ -299,7 +296,7 @@ namespace FenGen
                             w.WL("{");
                             w.WL(objDotField + " = new List<" + listType + ">();");
                             w.WL("}");
-                            w.WL("bool success = " + listType + ".TryParse(" + valTrimmed + ", " + floatArgs + "out " + listType + " result);");
+                            w.WL("bool success = " + listType + ".TryParse(" + val + ", " + floatArgs + "out " + listType + " result);");
                             w.WL("if(success)");
                             w.WL("{");
                             w.WL(objListSet);
@@ -308,7 +305,7 @@ namespace FenGen
                         else
                         {
                             w.WL(objDotField + ".Clear();");
-                            w.WL("string[] items = " + valTrimmed + ".Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
+                            w.WL("string[] items = " + val + ".Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
                             w.WL("for (int a = 0; a < items.Length; a++)");
                             w.WL("{");
                             w.WL("items[a] = items[a].Trim();");
@@ -323,27 +320,27 @@ namespace FenGen
                 }
                 else if (field.Type == "string")
                 {
-                    w.WL(objDotField + " = " + valVar + ";");
+                    w.WL(objDotField + " = " + val + ";");
                 }
                 else if (field.Type == "bool")
                 {
-                    w.WL(objDotField + " = " + valTrimmed + ".EqualsTrue();");
+                    w.WL(objDotField + " = " + val + ".EqualsTrue();");
                 }
                 else if (field.Type == "bool?")
                 {
-                    w.WL(objDotField + " = !string.IsNullOrEmpty(" + valTrimmed + ") ? " + valTrimmed + ".EqualsTrue() : (bool?)null;");
+                    w.WL(objDotField + " = !string.IsNullOrEmpty(" + val + ") ? " + val + ".EqualsTrue() : (bool?)null;");
                 }
                 else if (_numericTypes.Contains(field.Type))
                 {
                     string floatArgs = GetFloatArgsRead(field.Type);
                     if (field.NumericEmpty != null && field.NumericEmpty != 0)
                     {
-                        w.WL("bool success = " + field.Type + ".TryParse(" + valTrimmed + ", " + floatArgs + "out " + field.Type + " result);");
+                        w.WL("bool success = " + field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
                         w.WL(objDotField + " = success ? result : " + field.NumericEmpty + ";");
                     }
                     else
                     {
-                        w.WL(field.Type + ".TryParse(" + valTrimmed + ", " + floatArgs + "out " + field.Type + " result);");
+                        w.WL(field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
                         w.WL(objDotField + " = result;");
                     }
                 }
@@ -352,7 +349,7 @@ namespace FenGen
                 {
                     string floatArgs = GetFloatArgsRead(field.Type);
                     string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
-                    w.WL("bool success = " + ftNonNull + ".TryParse(" + valTrimmed + ", " + floatArgs + "out " + ftNonNull + " result);");
+                    w.WL("bool success = " + ftNonNull + ".TryParse(" + val + ", " + floatArgs + "out " + ftNonNull + " result);");
                     w.WL("if (success)");
                     w.WL("{");
                     w.WL(objDotField + " = result;");
@@ -370,7 +367,7 @@ namespace FenGen
                     {
                         string ifType = gi > 1 ? "else if" : "if";
                         string gameDotGameType = gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi];
-                        w.WL(ifType + " (" + valTrimmed + ".EqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
+                        w.WL(ifType + " (" + val + ".EqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
                         w.WL("{");
                         w.WL(objDotField + " = " + gameDotGameType + ";");
                         w.WL("}");
@@ -385,35 +382,35 @@ namespace FenGen
                     var le = Cache.LangsEnum;
                     if (field.IsEnumAndSingleAssignment)
                     {
-                        w.WL("if (" + le.StringToEnumDictName + ".TryGetValue(" + valTrimmed + ", out var result))");
+                        w.WL("if (" + le.StringToEnumDictName + ".TryGetValue(" + val + ", out var result))");
                         w.WL("{");
                         w.WL(objDotField + " = result;");
                         w.WL("}");
                     }
                     else
                     {
-                        w.WL("SetFMLanguages(" + obj + ", " + valTrimmed + ");");
+                        w.WL("SetFMLanguages(" + obj + ", " + val + ");");
                     }
                 }
                 else if (field.Type == "ExpandableDate")
                 {
-                    w.WL(objDotField + ".UnixDateString = " + valTrimmed + ";");
+                    w.WL(objDotField + ".UnixDateString = " + val + ";");
                 }
                 else if (field.Type == "DateTime?")
                 {
                     w.WL("// PERF: Don't convert to local here; do it at display-time");
-                    w.WL(objDotField + " = ConvertHexUnixDateToDateTime(" + valTrimmed + ", convertToLocal: " +
+                    w.WL(objDotField + " = ConvertHexUnixDateToDateTime(" + val + ", convertToLocal: " +
                          (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
                 }
                 else if (field.Type == "CustomResources")
                 {
                     // Totally shouldn't be hardcoded...
-                    w.WL(obj + ".ResourcesScanned = !" + valTrimmed + ".EqualsI(\"NotScanned\");");
-                    w.WL("FillFMHasXFields(" + obj + ", " + valTrimmed + ");");
+                    w.WL(obj + ".ResourcesScanned = !" + val + ".EqualsI(\"NotScanned\");");
+                    w.WL("FillFMHasXFields(" + obj + ", " + val + ");");
                 }
                 else if (field.Type == "DisableModsSwitches")
                 {
-                    w.WL("FillDisableModsSwitches(" + obj + ", " + valTrimmed + ");");
+                    w.WL("FillDisableModsSwitches(" + obj + ", " + val + ");");
                 }
 
                 w.WL("}"); // end of setter method
@@ -438,9 +435,9 @@ namespace FenGen
             w.WL();
             foreach (string item in customResourceFieldNames)
             {
-                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + valTrimmed + ", string " + valRaw + ")");
+                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ")");
                 w.WL("{");
-                w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + valTrimmed + ".EqualsTrue());");
+                w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EqualsTrue());");
                 w.WL("    " + obj + ".ResourcesScanned = true;");
                 w.WL("}");
                 w.WL();
@@ -454,7 +451,7 @@ namespace FenGen
                 dictFields.Add(new Field { Name = item });
             }
 
-            w.WL("private static readonly Dictionary<string, Action<FanMission, string, string>> _actionDict_FMData = new()");
+            w.WL("private static readonly Dictionary<string, Action<FanMission, string>> _actionDict_FMData = new()");
             w.WL("{");
             for (int i = 0; i < dictFields.Count; i++)
             {
