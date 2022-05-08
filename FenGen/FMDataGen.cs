@@ -25,6 +25,7 @@ namespace FenGen
             internal bool DoNotTrimValue;
             internal bool DoNotConvertDateTimeToLocal;
             internal bool DoNotWrite;
+            internal bool IsEnumAndSingleAssignment;
         }
 
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
@@ -128,6 +129,9 @@ namespace FenGen
                                 return;
                             case GenAttributes.FenGenDoNotWrite:
                                 field.DoNotWrite = true;
+                                break;
+                            case GenAttributes.FenGenFlagsSingleAssignment:
+                                field.IsEnumAndSingleAssignment = true;
                                 break;
                             case GenAttributes.FenGenDoNotConvertDateTimeToLocal:
                                 field.DoNotConvertDateTimeToLocal = true;
@@ -376,6 +380,29 @@ namespace FenGen
                     w.WL(objDotField + " = " + gamesEnum.Name + "." + gamesEnum.GameEnumNames[0] + ";");
                     w.WL("}");
                 }
+                else if (field.Type == Cache.LangsEnum.Name)
+                {
+                    var le = Cache.LangsEnum;
+                    if (field.IsEnumAndSingleAssignment)
+                    {
+                        w.WL("if (" + le.StringToEnumDictName + ".TryGetValue(" + valTrimmed + ", out var result))");
+                        w.WL("{");
+                        w.WL(objDotField + " = result;");
+                        w.WL("}");
+                    }
+                    else
+                    {
+                        w.WL("string[] langs = " + valTrimmed + ".Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
+                        w.WL("for (int i = 0; i < langs.Length; i++)");
+                        w.WL("{");
+                        w.WL("langs[i] = langs[i].Trim();");
+                        w.WL("if (" + le.StringToEnumDictName + ".TryGetValue(langs[i], out var result))");
+                        w.WL("{");
+                        w.WL(objDotField + " |= result;");
+                        w.WL("}");
+                        w.WL("}");
+                    }
+                }
                 else if (field.Type == "ExpandableDate")
                 {
                     w.WL(objDotField + ".UnixDateString = " + valTrimmed + ";");
@@ -463,6 +490,36 @@ namespace FenGen
 
         private static void WriteWriter(CodeWriters.IndentingWriter w, string obj, FieldList fields)
         {
+            static void WriteEnumSingle(
+                CodeWriters.IndentingWriter writer,
+                bool writeEmptyValues,
+                string enumName,
+                string fieldName,
+                List<string> enumNames)
+            {
+                writer.WL("switch (fm." + fieldName + ")");
+                writer.WL("{");
+                for (int gi = 1; gi < enumNames.Count; gi++)
+                {
+                    if (gi == 1) writer.WL("// Much faster to do this than Enum.ToString()");
+                    writer.WL("case " + enumName + "." + enumNames[gi] + ":");
+                    writer.WL("sb.AppendLine(\"" + enumName + "=" + enumNames[gi] + "\");");
+                    writer.WL("break;");
+                }
+                string enumDotEnumTypeZero = enumName + "." + enumNames[0];
+                if (writeEmptyValues)
+                {
+                    writer.WL("case " + enumDotEnumTypeZero + ":");
+                    writer.WL("sb.AppendLine(\"" + enumName + "=" + enumDotEnumTypeZero + "\");");
+                    writer.WL("break;");
+                }
+                else
+                {
+                    writer.WL("// Don't handle " + enumDotEnumTypeZero + " because we don't want to write out defaults");
+                }
+                writer.WL("}");
+            }
+
             w.WL("#region Generated code for writer");
             w.WL();
 
@@ -615,29 +672,34 @@ namespace FenGen
                 }
                 else if (field.Type == Cache.GamesEnum.Name)
                 {
-                    var gamesEnum = Cache.GamesEnum;
-
-                    w.WL("switch (fm." + gamesEnum.Name + ")");
-                    w.WL("{");
-                    for (int gi = 1; gi < gamesEnum.GameEnumNames.Count; gi++)
+                    WriteEnumSingle(
+                        writer: w,
+                        writeEmptyValues: fields.WriteEmptyValues,
+                        enumName: Cache.GamesEnum.Name,
+                        fieldName: field.Name,
+                        enumNames: Cache.GamesEnum.GameEnumNames);
+                }
+                else if (field.Type == Cache.LangsEnum.Name)
+                {
+                    if (field.IsEnumAndSingleAssignment)
                     {
-                        if (gi == 1) w.WL("// Much faster to do this than Enum.ToString()");
-                        w.WL("case " + gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi] + ":");
-                        w.WL("sb.AppendLine(\"" + gamesEnum.Name + "=" + gamesEnum.GameEnumNames[gi] + "\");");
-                        w.WL("break;");
-                    }
-                    string gameDotGameTypeZero = gamesEnum.Name + "." + gamesEnum.GameEnumNames[0];
-                    if (fields.WriteEmptyValues)
-                    {
-                        w.WL("case " + gameDotGameTypeZero + ":");
-                        w.WL("sb.AppendLine(\"" + gamesEnum.Name + "=" + gameDotGameTypeZero + "\");");
-                        w.WL("break;");
+                        WriteEnumSingle(
+                            writer: w,
+                            writeEmptyValues: fields.WriteEmptyValues,
+                            enumName: Cache.LangsEnum.Name,
+                            fieldName: field.Name,
+                            enumNames: Cache.LangsEnum.LangEnumNames);
                     }
                     else
                     {
-                        w.WL("// Don't handle " + gameDotGameTypeZero + " because we don't want to write out defaults");
+                        if (!fields.WriteEmptyValues)
+                        {
+                            w.WL("if (" + objDotField + " != 0)");
+                            w.WL("{");
+                            w.WL("CommaCombineLanguageFlags(sb, " + objDotField + ");");
+                            w.WL("}");
+                        }
                     }
-                    w.WL("}");
                 }
                 else if (field.Type == "ExpandableDate")
                 {

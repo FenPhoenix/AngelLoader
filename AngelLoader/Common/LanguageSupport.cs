@@ -5,6 +5,10 @@ using static AngelLoader.FenGenAttributes;
 
 namespace AngelLoader
 {
+    // @LANGS: We probably won't need a couple of the things in the genned version.
+    // But we won't see if they aren't used because the file is marked Generated and won't be analyzed.
+    // So we have to go through manually.
+    // @LANGS: We need to change the string.Split() in FMData.Generated.cs to the alloc-free version detailed in FMData.cs
     public static partial class LanguageSupport
     {
         [Flags, FenGenLanguageEnum(languageIndexEnumName: "LanguageIndex")]
@@ -35,24 +39,5 @@ namespace AngelLoader
             [FenGenLanguage("es", "Español")]
             Spanish = 1024
         }
-
-        // @LANGS: Temporary! Eventually we won't need this old Supported string array.
-        // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
-        // Immediate use, so don't bother lazy-loading
-        public static readonly string[]
-        Supported =
-        {
-            "english", // en, eng (must be first)
-            "czech", // cz
-            "dutch", // nl
-            "french", // fr
-            "german", // de
-            "hungarian", // hu
-            "italian", // it
-            "japanese", // ja, jp
-            "polish", // pl
-            "russian", // ru
-            "spanish" // es
-        };
     }
 }

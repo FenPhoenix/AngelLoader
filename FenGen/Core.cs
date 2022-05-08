@@ -69,6 +69,7 @@ namespace FenGen
     internal sealed class LanguageSourceEnum
     {
         internal string Name = "";
+        internal string StringToEnumDictName = "";
         internal string LanguageIndexName = "";
         internal readonly List<string> LangEnumNames = new List<string>();
         internal readonly List<string> LangIndexEnumNames = new List<string>();
@@ -132,6 +133,8 @@ namespace FenGen
         internal const string FenGenDoNotConvertDateTimeToLocal = nameof(FenGenDoNotConvertDateTimeToLocal);
 
         #endregion
+
+        internal const string FenGenFlagsSingleAssignment = nameof(FenGenFlagsSingleAssignment);
 
         #region Localizable text
 

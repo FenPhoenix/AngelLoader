@@ -8,8 +8,10 @@ using System.IO;
 using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
+using static AL_Common.Common;
 using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
+using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader
@@ -183,12 +185,23 @@ namespace AngelLoader
 
         private static void FMData_Langs_Set(FanMission fm, string valTrimmed, string valRaw)
         {
-            fm.Langs = valTrimmed;
+            string[] langs = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < langs.Length; i++)
+            {
+                langs[i] = langs[i].Trim();
+                if (LangStringsToEnums.TryGetValue(langs[i], out var result))
+                {
+                    fm.LangsE |= result;
+                }
+            }
         }
 
         private static void FMData_SelectedLang_Set(FanMission fm, string valTrimmed, string valRaw)
         {
-            fm.SelectedLang = valTrimmed;
+            if (LangStringsToEnums.TryGetValue(valTrimmed, out var result))
+            {
+                fm.SelectedLangE = result;
+            }
         }
 
         private static void FMData_TagsString_Set(FanMission fm, string valTrimmed, string valRaw)
@@ -468,15 +481,47 @@ namespace AngelLoader
                 {
                     sb.AppendLine("LangsScanned=True");
                 }
-                if (!string.IsNullOrEmpty(fm.Langs))
+                if (fm.LangsE != 0)
                 {
-                    sb.Append("Langs=");
-                    sb.AppendLine(fm.Langs);
+                    CommaCombineLanguageFlags(sb, fm.LangsE);
                 }
-                if (!string.IsNullOrEmpty(fm.SelectedLang))
+                switch (fm.SelectedLangE)
                 {
-                    sb.Append("SelectedLang=");
-                    sb.AppendLine(fm.SelectedLang);
+                    // Much faster to do this than Enum.ToString()
+                    case Language.English:
+                        sb.AppendLine("Language=English");
+                        break;
+                    case Language.Czech:
+                        sb.AppendLine("Language=Czech");
+                        break;
+                    case Language.Dutch:
+                        sb.AppendLine("Language=Dutch");
+                        break;
+                    case Language.French:
+                        sb.AppendLine("Language=French");
+                        break;
+                    case Language.German:
+                        sb.AppendLine("Language=German");
+                        break;
+                    case Language.Hungarian:
+                        sb.AppendLine("Language=Hungarian");
+                        break;
+                    case Language.Italian:
+                        sb.AppendLine("Language=Italian");
+                        break;
+                    case Language.Japanese:
+                        sb.AppendLine("Language=Japanese");
+                        break;
+                    case Language.Polish:
+                        sb.AppendLine("Language=Polish");
+                        break;
+                    case Language.Russian:
+                        sb.AppendLine("Language=Russian");
+                        break;
+                    case Language.Spanish:
+                        sb.AppendLine("Language=Spanish");
+                        break;
+                        // Don't handle Language.Default because we don't want to write out defaults
                 }
                 if (!string.IsNullOrEmpty(fm.TagsString))
                 {

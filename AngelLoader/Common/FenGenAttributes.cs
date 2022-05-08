@@ -21,6 +21,10 @@ namespace AngelLoader
         // -Conditionals are literals instead of a constant, because a constant would add something to the exe
         //  but we don't want anything extra at all.
 
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+        internal sealed class FenGenFlagsSingleAssignment : Attribute { }
+
         #region Serialization
 
         [Conditional("compile_FenGen_attributes")]

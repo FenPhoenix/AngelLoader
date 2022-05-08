@@ -22,15 +22,15 @@ namespace AngelLoader
 
         internal static List<string> SortLangsToSpec(HashSetI langsHash)
         {
-            var ret = new List<string>(LanguageSupport.Supported.Length);
+            var ret = new List<string>(LanguageSupport.SupportedLanguages.Length);
 
             // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
             // (matching FMSel behavior)
             if (langsHash.Count > 0)
             {
-                for (int i = 0; i < LanguageSupport.Supported.Length; i++)
+                for (int i = 0; i < LanguageSupport.SupportedLanguages.Length; i++)
                 {
-                    string sl = LanguageSupport.Supported[i];
+                    string sl = LanguageSupport.SupportedLanguages[i];
                     if (langsHash.Contains(sl)) ret.Add(sl);
                 }
             }
@@ -175,7 +175,7 @@ namespace AngelLoader
 
             #endregion
 
-            var langsFoundList = new HashSetI(LanguageSupport.Supported.Length);
+            var langsFoundList = new HashSetI(LanguageSupport.SupportedLanguages.Length);
 
             while (searchList.Count > 0)
             {
@@ -199,9 +199,9 @@ namespace AngelLoader
             string archivePath = FMArchives.FindFirstMatch(archiveName);
             if (archivePath.IsEmpty()) return failed;
 
-            var ret = new List<string>(LanguageSupport.Supported.Length);
+            var ret = new List<string>(LanguageSupport.SupportedLanguages.Length);
 
-            bool[] FoundLangInArchive = new bool[LanguageSupport.Supported.Length];
+            bool[] FoundLangInArchive = new bool[LanguageSupport.SupportedLanguages.Length];
 
             FMScanner.FastZipReader.ZipArchiveFast? zipArchive = null;
             SevenZipExtractor? sevenZipArchive = null;
@@ -228,9 +228,9 @@ namespace AngelLoader
                         // For some reason ArchiveFileData[i].FileName is like 20x faster than ArchiveFileNames[i]
                         : sevenZipArchive!.ArchiveFileData[i].FileName.ToForwardSlashes();
 
-                    for (int j = 0; j < LanguageSupport.Supported.Length; j++)
+                    for (int j = 0; j < LanguageSupport.SupportedLanguages.Length; j++)
                     {
-                        string sl = LanguageSupport.Supported[j];
+                        string sl = LanguageSupport.SupportedLanguages[j];
                         if (!FoundLangInArchive[j])
                         {
                             // Do as few string operations as humanly possible

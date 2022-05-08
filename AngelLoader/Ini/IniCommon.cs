@@ -9,6 +9,7 @@ using System.Threading;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
+using static AngelLoader.LanguageSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
@@ -460,6 +461,22 @@ namespace AngelLoader
             }
 
             sb.AppendLine();
+        }
+
+        private static void CommaCombineLanguageFlags(StringBuilder sb, Language languages)
+        {
+            bool notEmpty = false;
+            for (int i = 0; i < SupportedLanguageCount; i++)
+            {
+                LanguageIndex languageIndex = (LanguageIndex)i;
+                Language language = LanguageIndexToLanguage(languageIndex);
+                if (languages.HasFlagFast(language))
+                {
+                    if (notEmpty) sb.Append(',');
+                    sb.Append(SupportedLanguages[i]);
+                    notEmpty = true;
+                }
+            }
         }
 
         private static void CommaCombineFinishedStates(StringBuilder sb, FinishedState finished)

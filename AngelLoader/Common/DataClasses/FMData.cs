@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using static AL_Common.Common;
 using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
+using static AngelLoader.LanguageSupport;
 
 namespace AngelLoader.DataClasses
 {
@@ -113,14 +114,15 @@ namespace AngelLoader.DataClasses
         // them on ini read/write.
 
         internal bool LangsScanned;
-        internal string Langs = "";
-        [FenGenIgnore]
-        private string _selectedLang = "";
-        internal string SelectedLang
-        {
-            get => _selectedLang;
-            set => _selectedLang = value.ToLowerInvariant();
-        }
+        //[FenGenIgnore]
+        //internal string Langs = "";
+        //[FenGenIgnore]
+        //private string _selectedLang = "";
+        //internal string SelectedLang
+        //{
+        //    get => _selectedLang;
+        //    set => _selectedLang = value.ToLowerInvariant();
+        //}
 
         /*
         The plan is to do like this...
@@ -155,10 +157,12 @@ namespace AngelLoader.DataClasses
         they WILL be ascii lowercase only, so we won't take the allocation again.
         */
 
-        [FenGenIgnore]
-        internal LanguageSupport.Language LangsE = LanguageSupport.Language.Default;
-        [FenGenIgnore]
-        internal LanguageSupport.Language SelectedLangE = LanguageSupport.Language.Default;
+        [FenGenIniName("Langs")]
+        internal Language LangsE = Language.Default;
+
+        [FenGenIniName("SelectedLang")]
+        [FenGenFlagsSingleAssignment]
+        internal Language SelectedLangE = Language.Default;
 
         [FenGenIgnore]
         internal readonly FMCategoriesCollection Tags = new FMCategoriesCollection();
