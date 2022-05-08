@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using static AL_Common.Common;
@@ -26,7 +27,19 @@ namespace AngelLoader
         }
 
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-        internal static List<int> Find() => FindInternal(startup: false);
+        internal static List<int> Find()
+        {
+            try
+            {
+                // Just paranoia, move along
+                if (Core.View != null!) Core.View.Cursor = Cursors.WaitCursor;
+                return FindInternal(startup: false);
+            }
+            finally
+            {
+                if (Core.View != null!) Core.View.Cursor = Cursors.Default;
+            }
+        }
 
         // @THREADING: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
