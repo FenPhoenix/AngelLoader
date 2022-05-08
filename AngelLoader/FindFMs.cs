@@ -11,6 +11,10 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
+    // @MEM/@PERF_TODO(FindFMs): Implement the thing where we sort archives and sort FanMissions by archive
+    // and do a SequenceEqual to see if anything has actually changed, so we can skip the entire noob garbage
+    // FM merging procedure if we don't have any new ones.
+    // Installed dirs too, same thing.
     internal static class FindFMs
     {
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
