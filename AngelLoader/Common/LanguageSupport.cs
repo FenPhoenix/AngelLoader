@@ -5,10 +5,6 @@ using static AngelLoader.FenGenAttributes;
 
 namespace AngelLoader
 {
-    // @LANGS: We probably won't need a couple of the things in the genned version.
-    // But we won't see if they aren't used because the file is marked Generated and won't be analyzed.
-    // So we have to go through manually.
-    // @LANGS: We need to change the string.Split() in FMData.Generated.cs to the alloc-free version detailed in FMData.cs
     public static partial class LanguageSupport
     {
         [Flags, FenGenLanguageEnum(languageIndexEnumName: "LanguageIndex")]
