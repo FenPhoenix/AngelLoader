@@ -52,6 +52,7 @@ using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
+using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -5152,9 +5153,17 @@ namespace AngelLoader.Forms
 
         public void AddLanguageToList(string backingItem, string item) => EditFMLanguageComboBox.AddFullItem(backingItem, item);
 
-        public string? GetMainSelectedLanguage()
+        public Language GetMainSelectedLanguage()
         {
-            return EditFMLanguageComboBox.SelectedIndex == -1 ? null : EditFMLanguageComboBox.SelectedBackingItem();
+            if (EditFMLanguageComboBox.SelectedIndex <= 0)
+            {
+                return Language.Default;
+            }
+            else
+            {
+                string backingItem = EditFMLanguageComboBox.SelectedBackingItem();
+                return LangStringsToEnums.TryGetValue(backingItem, out Language language) ? language : Language.Default;
+            }
         }
 
         /// <summary>
@@ -5162,17 +5171,29 @@ namespace AngelLoader.Forms
         /// </summary>
         /// <param name="language"></param>
         /// <returns>The selected backing string, or null if a match was not found.</returns>
-        public string? SetSelectedLanguage(string language)
+        public Language SetSelectedLanguage(Language language)
         {
             if (EditFMLanguageComboBox.Items.Count == 0)
             {
-                return null;
+                return Language.Default;
             }
             else
             {
-                int index = EditFMLanguageComboBox.BackingItems.FindIndex(x => x.EqualsI(language));
-                EditFMLanguageComboBox.SelectedIndex = index == -1 ? 0 : index;
-                return EditFMLanguageComboBox.SelectedBackingItem();
+                if (language == Language.Default)
+                {
+                    EditFMLanguageComboBox.SelectedIndex = 0;
+                }
+                else
+                {
+                    int index = EditFMLanguageComboBox.BackingItems.FindIndex(x => x.EqualsI(GetLanguageStringUnsafe(language)));
+                    EditFMLanguageComboBox.SelectedIndex = index == -1 ? 0 : index;
+                }
+
+                return EditFMLanguageComboBox.SelectedIndex == 0
+                    ? Language.Default
+                    : LangStringsToEnums.TryGetValue(EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
+                        ? returnLanguage
+                        : Language.Default;
             }
         }
 

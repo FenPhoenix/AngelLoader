@@ -19,6 +19,7 @@ using SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.FMBackupAndRestore;
 using static AngelLoader.GameSupport;
+using static AngelLoader.LanguageSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
@@ -305,7 +306,7 @@ namespace AngelLoader
             }
             else if (GameIsDark(fm.Game))
             {
-                bool langIsDefault = fm.SelectedLang.EqualsI(FMLanguages.DefaultLangKey);
+                bool langIsDefault = fm.SelectedLangE == Language.Default;
                 if (langIsDefault)
                 {
                     // For Dark, we have to do this semi-manual stuff.
@@ -313,11 +314,11 @@ namespace AngelLoader
                 }
                 else
                 {
-                    sLanguage = fm.SelectedLang;
+                    sLanguage = GetLanguageStringUnsafe(fm.SelectedLangE);
                     bForceLanguage = true;
                 }
 
-                GameConfigFiles.SetCamCfgLanguage(gamePath, langIsDefault ? "" : fm.SelectedLang);
+                GameConfigFiles.SetCamCfgLanguage(gamePath, langIsDefault ? "" : GetLanguageStringUnsafe(fm.SelectedLangE));
             }
 
             // For Thief 3, Sneaky Upgrade does the entire language thing for me, Builder bless snobel once again.

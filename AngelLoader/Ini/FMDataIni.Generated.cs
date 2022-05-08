@@ -483,43 +483,44 @@ namespace AngelLoader
                 }
                 if (fm.LangsE != 0)
                 {
+                    sb.Append("Langs=");
                     CommaCombineLanguageFlags(sb, fm.LangsE);
                 }
                 switch (fm.SelectedLangE)
                 {
                     // Much faster to do this than Enum.ToString()
                     case Language.English:
-                        sb.AppendLine("Language=English");
+                        sb.AppendLine("SelectedLang=english");
                         break;
                     case Language.Czech:
-                        sb.AppendLine("Language=Czech");
+                        sb.AppendLine("SelectedLang=czech");
                         break;
                     case Language.Dutch:
-                        sb.AppendLine("Language=Dutch");
+                        sb.AppendLine("SelectedLang=dutch");
                         break;
                     case Language.French:
-                        sb.AppendLine("Language=French");
+                        sb.AppendLine("SelectedLang=french");
                         break;
                     case Language.German:
-                        sb.AppendLine("Language=German");
+                        sb.AppendLine("SelectedLang=german");
                         break;
                     case Language.Hungarian:
-                        sb.AppendLine("Language=Hungarian");
+                        sb.AppendLine("SelectedLang=hungarian");
                         break;
                     case Language.Italian:
-                        sb.AppendLine("Language=Italian");
+                        sb.AppendLine("SelectedLang=italian");
                         break;
                     case Language.Japanese:
-                        sb.AppendLine("Language=Japanese");
+                        sb.AppendLine("SelectedLang=japanese");
                         break;
                     case Language.Polish:
-                        sb.AppendLine("Language=Polish");
+                        sb.AppendLine("SelectedLang=polish");
                         break;
                     case Language.Russian:
-                        sb.AppendLine("Language=Russian");
+                        sb.AppendLine("SelectedLang=russian");
                         break;
                     case Language.Spanish:
-                        sb.AppendLine("Language=Spanish");
+                        sb.AppendLine("SelectedLang=spanish");
                         break;
                         // Don't handle Language.Default because we don't want to write out defaults
                 }

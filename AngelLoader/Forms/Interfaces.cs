@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -362,8 +363,10 @@ namespace AngelLoader.Forms
         string GetFMCommentText();
         void ClearLanguagesList();
         void AddLanguageToList(string backingItem, string item);
-        string? SetSelectedLanguage(string language);
-        string? GetMainSelectedLanguage();
+        // @LANGS(backing items): We could allow the backing items to be enum values
+        // That way we don't even have to store the lang strings in the combobox backing list
+        Language SetSelectedLanguage(Language language);
+        Language GetMainSelectedLanguage();
         void SetPlayOriginalGameControlsState();
         void ClearReadmesList();
         void UpdateAllFMUIDataExceptReadme(FanMission fm);

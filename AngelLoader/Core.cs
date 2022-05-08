@@ -21,6 +21,7 @@ using AngelLoader.Forms;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
+using static AngelLoader.LanguageSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
@@ -1346,7 +1347,7 @@ namespace AngelLoader
             {
                 // Because we allow arbitrary languages, it's theoretically possible to get one that doesn't have
                 // a language code.
-                bool langCodesExist = LanguageSupport.LangCodes.TryGetValue(Config.Language, out string[] langCodes);
+                bool langCodesExist = LangCodes.TryGetValue(Config.Language, out string[] langCodes);
 
                 var safeReadmes = new List<string>(readmeFiles.Count);
                 foreach (string rf in readmeFiles)
@@ -1866,25 +1867,19 @@ namespace AngelLoader
 
                 if (doScan) FMLanguages.FillFMSupportedLangs(fm);
 
-                var langs = fm.Langs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
-                var sortedLangs = doScan ? langs : FMLanguages.SortLangsToSpec(langs.ToHashSetI());
-                fm.Langs = "";
-                for (int i = 0; i < sortedLangs.Count; i++)
+                for (int i = 0; i < SupportedLanguageCount; i++)
                 {
-                    string langLower = sortedLangs[i].ToLowerInvariant();
-                    View.AddLanguageToList(langLower, LanguageSupport.LangTranslatedNames[langLower]);
-
-                    // Rewrite the FM's lang string for cleanliness, in case it contains unsupported langs or
-                    // other nonsense
-                    if (!langLower.EqualsI(FMLanguages.DefaultLangKey))
+                    LanguageIndex index = (LanguageIndex)i;
+                    Language language = LanguageIndexToLanguage(index);
+                    if (fm.LangsE.HasFlagFast(language))
                     {
-                        if (!fm.Langs.IsEmpty()) fm.Langs += ",";
-                        fm.Langs += langLower;
+                        string langStr = GetLanguageString(index);
+                        View.AddLanguageToList(langStr, LangTranslatedNames[langStr]);
                     }
                 }
             }
 
-            fm.SelectedLang = View.SetSelectedLanguage(fm.SelectedLang) ?? FMLanguages.DefaultLangKey;
+            fm.SelectedLangE = View.SetSelectedLanguage(fm.SelectedLangE);
         }
 
         internal static void UpdateFMSelectedLanguage()
@@ -1892,7 +1887,7 @@ namespace AngelLoader
             FanMission? fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
-            fm.SelectedLang = View.GetMainSelectedLanguage() ?? FMLanguages.DefaultLangKey;
+            fm.SelectedLangE = View.GetMainSelectedLanguage();
             Ini.WriteFullFMDataIni();
         }
 

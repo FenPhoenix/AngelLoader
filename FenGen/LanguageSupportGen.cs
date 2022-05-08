@@ -177,6 +177,11 @@ namespace FenGen
 
             #endregion
 
+            w.WL("public static string GetLanguageString(LanguageIndex index) => SupportedLanguages[(uint)index];");
+            w.WL();
+            w.WL("public static string GetLanguageStringUnsafe(Language language) => SupportedLanguages[(uint)LanguageToLanguageIndex(language)];");
+            w.WL();
+
             w.WL("#endregion");
 
             w.CloseClassAndNamespace();

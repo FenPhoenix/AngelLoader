@@ -5,6 +5,7 @@ using AngelLoader.DataClasses;
 using SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
+using static AngelLoader.LanguageSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
@@ -20,17 +21,17 @@ namespace AngelLoader
 
         #region Methods
 
-        internal static List<string> SortLangsToSpec(HashSetI langsHash)
+        private static List<string> SortLangsToSpec(HashSetI langsHash)
         {
-            var ret = new List<string>(LanguageSupport.SupportedLanguages.Length);
+            var ret = new List<string>(SupportedLanguages.Length);
 
             // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
             // (matching FMSel behavior)
             if (langsHash.Count > 0)
             {
-                for (int i = 0; i < LanguageSupport.SupportedLanguages.Length; i++)
+                for (int i = 0; i < SupportedLanguages.Length; i++)
                 {
-                    string sl = LanguageSupport.SupportedLanguages[i];
+                    string sl = SupportedLanguages[i];
                     if (langsHash.Contains(sl)) ret.Add(sl);
                 }
             }
@@ -137,8 +138,14 @@ namespace AngelLoader
 
             if (langs.Count > 0)
             {
-                langs = SortLangsToSpec(langs.ToHashSetI());
-                fm.Langs = string.Join(",", langs);
+                for (int i = 0; i < langs.Count; i++)
+                {
+                    string lang = langs[i];
+                    if (LangStringsToEnums.TryGetValue(lang, out Language language))
+                    {
+                        fm.LangsE |= language;
+                    }
+                }
             }
 
             fm.LangsScanned = true;
@@ -175,13 +182,13 @@ namespace AngelLoader
 
             #endregion
 
-            var langsFoundList = new HashSetI(LanguageSupport.SupportedLanguages.Length);
+            var langsFoundList = new HashSetI(SupportedLanguages.Length);
 
             while (searchList.Count > 0)
             {
                 string bdPath = searchList[searchList.Count - 1];
                 searchList.RemoveAt(searchList.Count - 1);
-                bool englishFound = FastIO.SearchDirForLanguages(LanguageSupport.LangsHash, bdPath, searchList, langsFoundList, earlyOutOnEnglish);
+                bool englishFound = FastIO.SearchDirForLanguages(LangsHash, bdPath, searchList, langsFoundList, earlyOutOnEnglish);
                 // Matching FMSel behavior: early-out on English
                 if (earlyOutOnEnglish && englishFound) return new List<string> { "English" };
             }
@@ -199,9 +206,9 @@ namespace AngelLoader
             string archivePath = FMArchives.FindFirstMatch(archiveName);
             if (archivePath.IsEmpty()) return failed;
 
-            var ret = new List<string>(LanguageSupport.SupportedLanguages.Length);
+            var ret = new List<string>(SupportedLanguages.Length);
 
-            bool[] FoundLangInArchive = new bool[LanguageSupport.SupportedLanguages.Length];
+            bool[] FoundLangInArchive = new bool[SupportedLanguages.Length];
 
             FMScanner.FastZipReader.ZipArchiveFast? zipArchive = null;
             SevenZipExtractor? sevenZipArchive = null;
@@ -228,13 +235,13 @@ namespace AngelLoader
                         // For some reason ArchiveFileData[i].FileName is like 20x faster than ArchiveFileNames[i]
                         : sevenZipArchive!.ArchiveFileData[i].FileName.ToForwardSlashes();
 
-                    for (int j = 0; j < LanguageSupport.SupportedLanguages.Length; j++)
+                    for (int j = 0; j < SupportedLanguages.Length; j++)
                     {
-                        string sl = LanguageSupport.SupportedLanguages[j];
+                        string sl = SupportedLanguages[j];
                         if (!FoundLangInArchive[j])
                         {
                             // Do as few string operations as humanly possible
-                            int index = fn.IndexOf(LanguageSupport.FSPrefixedLangs[j], StringComparison.OrdinalIgnoreCase);
+                            int index = fn.IndexOf(FSPrefixedLangs[j], StringComparison.OrdinalIgnoreCase);
                             if (index < 1) continue;
 
                             if ((fn.Length > index + sl.Length + 1 && fn[index + sl.Length + 1] == '/') ||

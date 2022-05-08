@@ -477,6 +477,8 @@ namespace AngelLoader
                     notEmpty = true;
                 }
             }
+
+            sb.AppendLine();
         }
 
         private static void CommaCombineFinishedStates(StringBuilder sb, FinishedState finished)

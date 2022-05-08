@@ -488,14 +488,16 @@ namespace FenGen
             w.WL("#endregion");
         }
 
+        // @LANGS: Carry as much data from the source enum as you can: type (uint) etc.
         private static void WriteWriter(CodeWriters.IndentingWriter w, string obj, FieldList fields)
         {
             static void WriteEnumSingle(
                 CodeWriters.IndentingWriter writer,
-                bool writeEmptyValues,
                 string enumName,
                 string fieldName,
-                List<string> enumNames)
+                string fieldIniName,
+                List<string> enumNames,
+                bool writeValuesLowercase = false)
             {
                 writer.WL("switch (fm." + fieldName + ")");
                 writer.WL("{");
@@ -503,20 +505,11 @@ namespace FenGen
                 {
                     if (gi == 1) writer.WL("// Much faster to do this than Enum.ToString()");
                     writer.WL("case " + enumName + "." + enumNames[gi] + ":");
-                    writer.WL("sb.AppendLine(\"" + enumName + "=" + enumNames[gi] + "\");");
+                    writer.WL("sb.AppendLine(\"" + fieldIniName + "=" + (writeValuesLowercase ? enumNames[gi].ToLowerInvariant() : enumNames[gi]) + "\");");
                     writer.WL("break;");
                 }
                 string enumDotEnumTypeZero = enumName + "." + enumNames[0];
-                if (writeEmptyValues)
-                {
-                    writer.WL("case " + enumDotEnumTypeZero + ":");
-                    writer.WL("sb.AppendLine(\"" + enumName + "=" + enumDotEnumTypeZero + "\");");
-                    writer.WL("break;");
-                }
-                else
-                {
-                    writer.WL("// Don't handle " + enumDotEnumTypeZero + " because we don't want to write out defaults");
-                }
+                writer.WL("// Don't handle " + enumDotEnumTypeZero + " because we don't want to write out defaults");
                 writer.WL("}");
             }
 
@@ -674,8 +667,8 @@ namespace FenGen
                 {
                     WriteEnumSingle(
                         writer: w,
-                        writeEmptyValues: fields.WriteEmptyValues,
                         enumName: Cache.GamesEnum.Name,
+                        fieldIniName: fieldIniName,
                         fieldName: field.Name,
                         enumNames: Cache.GamesEnum.GameEnumNames);
                 }
@@ -685,10 +678,11 @@ namespace FenGen
                     {
                         WriteEnumSingle(
                             writer: w,
-                            writeEmptyValues: fields.WriteEmptyValues,
                             enumName: Cache.LangsEnum.Name,
                             fieldName: field.Name,
-                            enumNames: Cache.LangsEnum.LangEnumNames);
+                            fieldIniName: fieldIniName,
+                            enumNames: Cache.LangsEnum.LangEnumNames,
+                            writeValuesLowercase: true);
                     }
                     else
                     {
@@ -696,6 +690,7 @@ namespace FenGen
                         {
                             w.WL("if (" + objDotField + " != 0)");
                             w.WL("{");
+                            w.WL("sb.Append(\"" + fieldIniName + "=\");");
                             w.WL("CommaCombineLanguageFlags(sb, " + objDotField + ");");
                             w.WL("}");
                         }
