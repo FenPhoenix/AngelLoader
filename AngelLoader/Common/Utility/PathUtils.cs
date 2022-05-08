@@ -17,6 +17,7 @@ namespace AngelLoader
             return relativePath.IsEmpty() ? basePath : Path.GetFullPath(Path.Combine(basePath, relativePath));
         }
 
+        // @X64: We won't need this Program Files thing on x64
         internal static bool PathContainsUnsupportedProgramFilesFolder(string fullPath, out string programFilesPathName)
         {
             // If we're 32/32, then "Program Files" actually IS correct (it's the only one in that case)
