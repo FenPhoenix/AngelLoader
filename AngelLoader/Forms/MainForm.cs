@@ -3324,28 +3324,28 @@ namespace AngelLoader.Forms
 
             AddTagLLMenu.Menu.Items.Clear();
 
-            var addTagMenuItems = new List<ToolStripItem>(GlobalTags.Count);
-            foreach (CatAndTagsList item in GlobalTags)
+            var addTagMenuItems = new ToolStripItem[GlobalTags.Count];
+            for (int i = 0; i < GlobalTags.Count; i++)
             {
+                CatAndTagsList item = GlobalTags[i];
+
                 if (item.Tags.Count == 0)
                 {
                     var catItem = new ToolStripMenuItemWithBackingText(item.Category + ":") { Tag = LoadType.Lazy };
                     catItem.Click += AddTagMenuEmptyItem_Click;
-                    addTagMenuItems.Add(catItem);
+                    addTagMenuItems[i] = catItem;
                 }
                 else
                 {
                     var catItem = new ToolStripMenuItemWithBackingText(item.Category) { Tag = LoadType.Lazy };
-                    addTagMenuItems.Add(catItem);
-
-                    var last = addTagMenuItems[addTagMenuItems.Count - 1];
+                    addTagMenuItems[i] = catItem;
 
                     if (item.Category != PresetTags.MiscCategory)
                     {
                         var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory) { Tag = LoadType.Lazy };
                         customItem.Click += AddTagMenuCustomItem_Click;
-                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(customItem);
-                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(new ToolStripSeparator { Tag = LoadType.Lazy });
+                        catItem.DropDownItems.Add(customItem);
+                        catItem.DropDownItems.Add(new ToolStripSeparator { Tag = LoadType.Lazy });
                     }
 
                     foreach (string tag in item.Tags)
@@ -3356,12 +3356,12 @@ namespace AngelLoader.Forms
                             ? AddTagMenuMiscItem_Click
                             : AddTagMenuItem_Click;
 
-                        ((ToolStripMenuItemWithBackingText)last).DropDownItems.Add(tagItem);
+                        catItem.DropDownItems.Add(tagItem);
                     }
                 }
             }
 
-            AddTagLLMenu.AddRange(addTagMenuItems.ToArray());
+            AddTagLLMenu.AddRange(addTagMenuItems);
 
             ShowMenu(AddTagLLMenu.Menu, AddTagFromListButton, MenuPos.LeftDown);
         }
