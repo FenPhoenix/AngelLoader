@@ -80,8 +80,6 @@ namespace AL_Common
             (byte)'1'
         };
 
-        public static readonly byte[] RTFHeaderBuffer = new byte[RTFHeaderBytes.Length];
-
         #region Preset char arrays
 
         // Perf, for passing to Split(), Trim() etc. so we don't allocate all the time

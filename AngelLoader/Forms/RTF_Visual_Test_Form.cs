@@ -76,6 +76,8 @@ namespace AngelLoader.Forms
                 .GetFiles(FMsCacheDir, "*", SearchOption.AllDirectories)
                 .Where(x => x.EndsWithI(".rtf") || x.EndsWithI(".txt")).ToList();
 
+            byte[] rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
+
             for (int i = 0; i < rtfFiles.Count; i++)
             {
                 string file = rtfFiles[i];
@@ -87,11 +89,11 @@ namespace AngelLoader.Forms
                     if (fs.Length >= headerLen)
                     {
                         using var br = new BinaryReader(fs, Encoding.ASCII);
-                        _ = br.Read(RTFHeaderBuffer.Cleared(), 0, headerLen);
+                        _ = br.Read(rtfHeaderBuffer, 0, headerLen);
                     }
                 }
 
-                if (!RTFHeaderBuffer.SequenceEqual(RTFHeaderBytes))
+                if (!rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes))
                 {
                     rtfFiles.RemoveAt(i);
                     i--;

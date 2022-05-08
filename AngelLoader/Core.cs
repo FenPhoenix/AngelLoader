@@ -1216,6 +1216,7 @@ namespace AngelLoader
                 ? Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
 
+        private static readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
         private static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
         {
@@ -1232,7 +1233,7 @@ namespace AngelLoader
 
             int headerLen = RTFHeaderBytes.Length;
 
-            RTFHeaderBuffer.Clear();
+            _rtfHeaderBuffer.Clear();
 
             // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
             using (var fs = File.OpenRead(readmeOnDisk))
@@ -1241,11 +1242,11 @@ namespace AngelLoader
                 // end up with an "unable to load readme" error.
                 if (fs.Length >= headerLen)
                 {
-                    _ = fs.Read(RTFHeaderBuffer, 0, headerLen);
+                    _ = fs.Read(_rtfHeaderBuffer, 0, headerLen);
                 }
             }
 
-            var readmeType = RTFHeaderBuffer.SequenceEqual(RTFHeaderBytes) ? ReadmeType.RichText : ReadmeType.PlainText;
+            var readmeType = _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes) ? ReadmeType.RichText : ReadmeType.PlainText;
 
             return (readmeOnDisk, readmeType);
         }
