@@ -23,13 +23,13 @@ namespace AngelLoader
 
         private static List<string> SortLangsToSpec(HashSetI langsHash)
         {
-            var ret = new List<string>(SupportedLanguages.Length);
+            var ret = new List<string>(SupportedLanguageCount);
 
             // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
             // (matching FMSel behavior)
             if (langsHash.Count > 0)
             {
-                for (int i = 0; i < SupportedLanguages.Length; i++)
+                for (int i = 0; i < SupportedLanguageCount; i++)
                 {
                     string sl = SupportedLanguages[i];
                     if (langsHash.Contains(sl)) ret.Add(sl);
@@ -182,7 +182,7 @@ namespace AngelLoader
 
             #endregion
 
-            var langsFoundList = new HashSetI(SupportedLanguages.Length);
+            var langsFoundList = new HashSetI(SupportedLanguageCount);
 
             while (searchList.Count > 0)
             {
@@ -206,9 +206,9 @@ namespace AngelLoader
             string archivePath = FMArchives.FindFirstMatch(archiveName);
             if (archivePath.IsEmpty()) return failed;
 
-            var ret = new List<string>(SupportedLanguages.Length);
+            var ret = new List<string>(SupportedLanguageCount);
 
-            bool[] FoundLangInArchive = new bool[SupportedLanguages.Length];
+            bool[] FoundLangInArchive = new bool[SupportedLanguageCount];
 
             FMScanner.FastZipReader.ZipArchiveFast? zipArchive = null;
             SevenZipExtractor? sevenZipArchive = null;
@@ -235,7 +235,7 @@ namespace AngelLoader
                         // For some reason ArchiveFileData[i].FileName is like 20x faster than ArchiveFileNames[i]
                         : sevenZipArchive!.ArchiveFileData[i].FileName.ToForwardSlashes();
 
-                    for (int j = 0; j < SupportedLanguages.Length; j++)
+                    for (int j = 0; j < SupportedLanguageCount; j++)
                     {
                         string sl = SupportedLanguages[j];
                         if (!FoundLangInArchive[j])
