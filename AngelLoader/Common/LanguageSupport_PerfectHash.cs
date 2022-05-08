@@ -1,5 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using AngelLoader.DataClasses;
 
 namespace AngelLoader
 {
@@ -76,34 +76,38 @@ namespace AngelLoader
         };
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint Hash(string str, int len) => ((uint)len) + asso_values[str[0]];
+        private static uint Hash(string str, int start, int len)
+        {
+            uint hval = (uint)len;
+            return hval + asso_values[str[start]];
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool SeqEqual(string seq1, int seq1Start, int seq1Length, string seq2)
         {
             if (seq1Length != seq2.Length) return false;
 
-            for (int ci = seq1Start; ci < seq1Length; ci++)
+            for (int seq1i = seq1Start, seq2i = 0; seq1i < seq1Start + seq1Length; seq1i++, seq2i++)
             {
-                if (seq1[ci] != seq2[ci]) return false;
+                if (seq1[seq1i] != seq2[seq2i]) return false;
             }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryGetValue(string str, int start, int end, [NotNullWhen(true)] out Language? result)
+        public static bool Langs_TryGetValue(FanMission fm, string str, int start, int end, out Language result)
         {
             int len = end - start;
             if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
             {
-                uint key = Hash(str, len);
+                uint key = Hash(str, start, len);
 
                 if (key <= MAX_HASH_VALUE)
                 {
                     LangNameAndEnumField? language = _perfectHash_LangList[key];
                     if (language == null)
                     {
-                        result = null;
+                        result = Language.Default;
                         return false;
                     }
 
@@ -115,7 +119,7 @@ namespace AngelLoader
                 }
             }
 
-            result = null;
+            result = Language.Default;
             return false;
         }
     }

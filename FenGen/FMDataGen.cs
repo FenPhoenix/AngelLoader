@@ -246,7 +246,7 @@ namespace FenGen
 
                 string valVar = field.DoNotTrimValue ? valRaw : valTrimmed;
 
-                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission fm, string " + valTrimmed + ", string " + valRaw + ")");
+                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + valTrimmed + ", string " + valRaw + ")");
                 w.WL("{");
 
                 if (field.Type.StartsWith("List<"))
@@ -392,15 +392,7 @@ namespace FenGen
                     }
                     else
                     {
-                        w.WL("string[] langs = " + valTrimmed + ".Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
-                        w.WL("for (int i = 0; i < langs.Length; i++)");
-                        w.WL("{");
-                        w.WL("langs[i] = langs[i].Trim();");
-                        w.WL("if (" + le.StringToEnumDictName + ".TryGetValue(langs[i], out var result))");
-                        w.WL("{");
-                        w.WL(objDotField + " |= result;");
-                        w.WL("}");
-                        w.WL("}");
+                        w.WL("SetFMLanguages(" + obj + ", " + valTrimmed + ");");
                     }
                 }
                 else if (field.Type == "ExpandableDate")
@@ -417,11 +409,11 @@ namespace FenGen
                 {
                     // Totally shouldn't be hardcoded...
                     w.WL(obj + ".ResourcesScanned = !" + valTrimmed + ".EqualsI(\"NotScanned\");");
-                    w.WL("FillFMHasXFields(fm, " + valTrimmed + ");");
+                    w.WL("FillFMHasXFields(" + obj + ", " + valTrimmed + ");");
                 }
                 else if (field.Type == "DisableModsSwitches")
                 {
-                    w.WL("FillDisableModsSwitches(fm, " + valTrimmed + ");");
+                    w.WL("FillDisableModsSwitches(" + obj + ", " + valTrimmed + ");");
                 }
 
                 w.WL("}"); // end of setter method
@@ -446,10 +438,10 @@ namespace FenGen
             w.WL();
             foreach (string item in customResourceFieldNames)
             {
-                w.WL("private static void FMData_" + item + "_Set(FanMission fm, string " + valTrimmed + ", string " + valRaw + ")");
+                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + valTrimmed + ", string " + valRaw + ")");
                 w.WL("{");
-                w.WL("    SetFMResource(fm, CustomResources." + item.Substring(3) + ", " + valTrimmed + ".EqualsTrue());");
-                w.WL("    fm.ResourcesScanned = true;");
+                w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + valTrimmed + ".EqualsTrue());");
+                w.WL("    " + obj + ".ResourcesScanned = true;");
                 w.WL("}");
                 w.WL();
             }
@@ -493,13 +485,14 @@ namespace FenGen
         {
             static void WriteEnumSingle(
                 CodeWriters.IndentingWriter writer,
+                string obj,
                 string enumName,
                 string fieldName,
                 string fieldIniName,
                 List<string> enumNames,
                 bool writeValuesLowercase = false)
             {
-                writer.WL("switch (fm." + fieldName + ")");
+                writer.WL("switch (" + obj + "." + fieldName + ")");
                 writer.WL("{");
                 for (int gi = 1; gi < enumNames.Count; gi++)
                 {
@@ -522,7 +515,7 @@ namespace FenGen
                 "{",
                 "    var sb = new StringBuilder();",
                 "",
-                "    foreach (FanMission fm in fmDataList)",
+                "    foreach (FanMission " + obj + " in fmDataList)",
                 "    {",
                 "        sb.AppendLine(\"[FM]\");",
                 ""
@@ -667,6 +660,7 @@ namespace FenGen
                 {
                     WriteEnumSingle(
                         writer: w,
+                        obj: obj,
                         enumName: Cache.GamesEnum.Name,
                         fieldIniName: fieldIniName,
                         fieldName: field.Name,
@@ -678,6 +672,7 @@ namespace FenGen
                     {
                         WriteEnumSingle(
                             writer: w,
+                            obj: obj,
                             enumName: Cache.LangsEnum.Name,
                             fieldName: field.Name,
                             fieldIniName: fieldIniName,
@@ -732,24 +727,24 @@ namespace FenGen
                 else if (field.Type == "CustomResources")
                 {
                     w.WL("#if write_old_resources_style");
-                    w.WL("if (fm.ResourcesScanned)");
+                    w.WL("if (" + obj + ".ResourcesScanned)");
                     w.WL("{");
-                    w.WL("sb.AppendLine(\"HasMap=\" + FMHasResource(fm, CustomResources.Map).ToString());");
-                    w.WL("sb.AppendLine(\"HasAutomap=\" + FMHasResource(fm, CustomResources.Automap).ToString());");
-                    w.WL("sb.AppendLine(\"HasScripts=\" + FMHasResource(fm, CustomResources.Scripts).ToString());");
-                    w.WL("sb.AppendLine(\"HasTextures=\" + FMHasResource(fm, CustomResources.Textures).ToString());");
-                    w.WL("sb.AppendLine(\"HasSounds=\" + FMHasResource(fm, CustomResources.Sounds).ToString());");
-                    w.WL("sb.AppendLine(\"HasObjects=\" + FMHasResource(fm, CustomResources.Objects).ToString());");
-                    w.WL("sb.AppendLine(\"HasCreatures=\" + FMHasResource(fm, CustomResources.Creatures).ToString());");
-                    w.WL("sb.AppendLine(\"HasMotions=\" + FMHasResource(fm, CustomResources.Motions).ToString());");
-                    w.WL("sb.AppendLine(\"HasMovies=\" + FMHasResource(fm, CustomResources.Movies).ToString());");
-                    w.WL("sb.AppendLine(\"HasSubtitles=\" + FMHasResource(fm, CustomResources.Subtitles).ToString());");
+                    w.WL("sb.AppendLine(\"HasMap=\" + FMHasResource(" + obj + ", CustomResources.Map).ToString());");
+                    w.WL("sb.AppendLine(\"HasAutomap=\" + FMHasResource(" + obj + ", CustomResources.Automap).ToString());");
+                    w.WL("sb.AppendLine(\"HasScripts=\" + FMHasResource(" + obj + ", CustomResources.Scripts).ToString());");
+                    w.WL("sb.AppendLine(\"HasTextures=\" + FMHasResource(" + obj + ", CustomResources.Textures).ToString());");
+                    w.WL("sb.AppendLine(\"HasSounds=\" + FMHasResource(" + obj + ", CustomResources.Sounds).ToString());");
+                    w.WL("sb.AppendLine(\"HasObjects=\" + FMHasResource(" + obj + ", CustomResources.Objects).ToString());");
+                    w.WL("sb.AppendLine(\"HasCreatures=\" + FMHasResource(" + obj + ", CustomResources.Creatures).ToString());");
+                    w.WL("sb.AppendLine(\"HasMotions=\" + FMHasResource(" + obj + ", CustomResources.Motions).ToString());");
+                    w.WL("sb.AppendLine(\"HasMovies=\" + FMHasResource(" + obj + ", CustomResources.Movies).ToString());");
+                    w.WL("sb.AppendLine(\"HasSubtitles=\" + FMHasResource(" + obj + ", CustomResources.Subtitles).ToString());");
                     w.WL("}");
                     w.WL("#else");
                     w.WL("sb.Append(\"" + fieldIniName + "=\");");
-                    w.WL("if (fm.ResourcesScanned)");
+                    w.WL("if (" + obj + ".ResourcesScanned)");
                     w.WL("{");
-                    w.WL("CommaCombineHasXFields(fm, sb);");
+                    w.WL("CommaCombineHasXFields(" + obj + ", sb);");
                     w.WL("}");
                     w.WL("else");
                     w.WL("{");
@@ -762,14 +757,14 @@ namespace FenGen
                     if (fields.WriteEmptyValues)
                     {
                         w.WL("sb.Append(\"" + fieldIniName + "=\");");
-                        w.WL("CommaCombineDisableModsSwitches(fm, sb);");
+                        w.WL("CommaCombineDisableModsSwitches(" + obj + ", sb);");
                     }
                     else
                     {
                         w.WL("if(" + objDotField + " != DisableModsSwitches.None)");
                         w.WL("{");
                         w.WL("sb.Append(\"" + fieldIniName + "=\");");
-                        w.WL("CommaCombineDisableModsSwitches(fm, sb);");
+                        w.WL("CommaCombineDisableModsSwitches(" + obj + ", sb);");
                         w.WL("}");
                     }
                 }

@@ -172,6 +172,36 @@ namespace AngelLoader
 
         #region FMData
 
+        // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.
+        // We don't write out whitespace between them anyway.
+        private static void SetFMLanguages(FanMission fm, string langsString)
+        {
+            fm.Langs = Language.Default;
+
+            int len = langsString.Length;
+
+            int curStart = 0;
+
+            for (int i = 0; i < len; i++)
+            {
+                char c = langsString[i];
+
+                if (c == ',' || i == len - 1)
+                {
+                    int end = i;
+
+                    if (end == len - 1) end++;
+
+                    if (end - curStart > 0 && Langs_TryGetValue(fm, langsString, curStart, end, out Language result))
+                    {
+                        fm.Langs |= result;
+                    }
+
+                    curStart = i + 1;
+                }
+            }
+        }
+
         private static bool SegmentEquals(this string first, int start, int end, string second)
         {
             for (; start < end; start++)

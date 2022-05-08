@@ -185,15 +185,7 @@ namespace AngelLoader
 
         private static void FMData_Langs_Set(FanMission fm, string valTrimmed, string valRaw)
         {
-            string[] langs = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < langs.Length; i++)
-            {
-                langs[i] = langs[i].Trim();
-                if (LangStringsToEnums.TryGetValue(langs[i], out var result))
-                {
-                    fm.Langs |= result;
-                }
-            }
+            SetFMLanguages(fm, valTrimmed);
         }
 
         private static void FMData_SelectedLang_Set(FanMission fm, string valTrimmed, string valRaw)
