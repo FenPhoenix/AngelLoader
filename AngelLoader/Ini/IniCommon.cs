@@ -176,6 +176,9 @@ namespace AngelLoader
         // We don't write out whitespace between them anyway.
         private static void SetFMLanguages(FanMission fm, string langsString)
         {
+            // It's always supposed to be ascii lowercase, so only take the allocation if it's not
+            if (!langsString.IsAsciiLower()) langsString = langsString.ToLowerInvariant();
+
             fm.Langs = Language.Default;
 
             int len = langsString.Length;

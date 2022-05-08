@@ -118,38 +118,41 @@ namespace AL_Common
 
         #region ASCII-specific
 
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAsciiUpper(this char c) => c is >= 'A' and <= 'Z';
 
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAsciiLower(this char c) => c is >= 'a' and <= 'z';
 
-        [PublicAPI]
         public static bool EqualsIAscii(this char char1, char char2) =>
             char1 == char2 ||
             (char1.IsAsciiUpper() && char2.IsAsciiLower() && char1 == char2 - 32) ||
             (char1.IsAsciiLower() && char2.IsAsciiUpper() && char1 == char2 + 32);
 
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAsciiAlpha(this char c) => c.IsAsciiUpper() || c.IsAsciiLower();
 
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAsciiNumeric(this char c) => c is >= '0' and <= '9';
 
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAsciiAlphanumeric(this char c) => c.IsAsciiAlpha() || c.IsAsciiNumeric();
 
-        [PublicAPI]
         public static bool IsAsciiAlphaUpper(this string str)
         {
             for (int i = 0; i < str.Length; i++)
             {
                 if (!str[i].IsAsciiUpper()) return false;
+            }
+            return true;
+        }
+
+        public static bool IsAsciiLower(this string str)
+        {
+            for (int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+                if (c > 127 || (c is >= 'A' and <= 'Z')) return false;
             }
             return true;
         }
@@ -192,7 +195,6 @@ namespace AL_Common
 
         public static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
 
-        [PublicAPI]
         public static bool Contains(this string value, string substring, StringComparison comparison) =>
             !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
 
@@ -202,7 +204,6 @@ namespace AL_Common
         /// <param name="value"></param>
         /// <param name="substring"></param>
         /// <returns></returns>
-        [PublicAPI]
         public static bool ContainsI(this string value, string substring) => value.Contains(substring, OrdinalIgnoreCase);
 
         /// <summary>
@@ -684,7 +685,6 @@ namespace AL_Common
         /// <param name="first"></param>
         /// <param name="second"></param>
         /// <returns></returns>
-        [PublicAPI]
         public static bool PathEqualsI_Dir(this string first, string second) => first.TrimEnd(CA_BS_FS).PathEqualsI(second.TrimEnd(CA_BS_FS));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

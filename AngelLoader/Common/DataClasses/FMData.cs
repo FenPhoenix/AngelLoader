@@ -115,39 +115,6 @@ namespace AngelLoader.DataClasses
 
         internal bool LangsScanned;
 
-        /*
-        The plan is to do like this...
-
-        string[] langs = valTrimmed.Split(AL_Common.Common.CA_Comma, StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < langs.Length; i++)
-        {
-            langs[i] = langs[i].Trim().ToLowerInvariant();
-            if (LanguageSupport.LangStringsToEnums.TryGetValue(langs[i], out LanguageSupport.Language index))
-            {
-                fm.LangsE |= index;
-            }
-        }
-
-        ... except in a no-alloc version. The plan:
-
-        -Generate a perfect hash for the keyword set
-
-        Then in the FMData.ini reader:
-                
-        -Loop:
-         -Get start and end indexes of next comma-separated item (whitespace ignored)
-         -Iterate the section of the string, replacing-in-place all ASCII uppercase chars to lowercase, and if
-          any non-ASCII are found, reject the item and move on to the next
-         -Pass line with start and end indexes to perfect hash lookup function, where since it's guaranteed to be
-          lowercase and the Hash function can just take the start and length, it will work just like normal
-         -If we get a value back, fm.LangsE |= value
-
-        EDIT 2022-05-07:
-        No that in-place thing is dumb, we can just check the string is ascii lowercase, and if isn't, we can
-        just fall back to taking a ToLowerInvariant() allocation once, and then when we write the langs out
-        they WILL be ascii lowercase only, so we won't take the allocation again.
-        */
-
         internal Language Langs = Language.Default;
 
         [FenGenFlagsSingleAssignment]
