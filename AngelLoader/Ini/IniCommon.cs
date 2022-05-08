@@ -133,6 +133,13 @@ namespace AngelLoader
                 int eqIndex = lineTS.IndexOf('=');
                 if (eqIndex > -1)
                 {
+                    // @MEM(FMData read): There's a huge amount of Substring() calls coming from here for large FM sets.
+                    // We could do another perfect hash for the key lookup and save a third of the allocations.
+                    // Or half or something, cause valTrimmed and valRaw will almost always be the same reference.
+                    // Downside, I add new fields to the FM class somewhat more frequently than the other perfect
+                    // hashes, and regenerating is a pain (it's only semi-automated).
+                    // @MEM(FMData read): don't pass the two val values all the time, but rather:
+                    // check if the action is the Comment setter, and pass raw; otherwise pass trimmed.
                     string key = lineTS.Substring(0, eqIndex);
                     string valRaw = lineTS.Substring(eqIndex + 1);
                     string valTrimmed = valRaw.Trim();
