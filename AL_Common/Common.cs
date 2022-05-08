@@ -1001,6 +1001,8 @@ namespace AL_Common
 
 #endif
 
+#if false
+
         /// <summary>
         /// What it says
         /// </summary>
@@ -1033,6 +1035,8 @@ namespace AL_Common
 
             return (false, -1, -1);
         }
+
+#endif
 
         // Array version
         public static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)

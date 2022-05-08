@@ -70,7 +70,7 @@ namespace AngelLoader.DataClasses
 
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
-    internal enum ConfirmBeforeInstall { Always, OnlyForMultiple, Never };
+    internal enum ConfirmBeforeInstall { Always, OnlyForMultiple, Never }
 
     public enum VisualTheme { Classic, Dark }
 

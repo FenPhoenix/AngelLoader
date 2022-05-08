@@ -1210,7 +1210,7 @@ namespace FMScanner
 
         private Error DispatchKeyword(int param, bool hasParam)
         {
-            if (!_symbolTable.TryGetValue(_keyword, out Symbol? symbol))
+            if (!Symbols.TryGetValue(_keyword, out Symbol? symbol))
             {
                 // If this is a new destination
                 if (_skipDestinationIfUnknown)

@@ -91,7 +91,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                GameMenuItems[i].Text = GameSupport.GetLocalizedGameName((GameIndex)i);
+                GameMenuItems[i].Text = GetLocalizedGameName((GameIndex)i);
             }
             Thief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer;
         }

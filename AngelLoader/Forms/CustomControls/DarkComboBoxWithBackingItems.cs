@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -7,6 +8,7 @@ namespace AngelLoader.Forms.CustomControls
         // Cache visible state because calling Visible redoes the work even if the value is the same
         private bool _visibleCached = true;
 
+        [PublicAPI]
         public new bool Visible
         {
             get => base.Visible;
@@ -18,6 +20,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        [PublicAPI]
         public new void Show()
         {
             if (_visibleCached) return;
@@ -25,6 +28,7 @@ namespace AngelLoader.Forms.CustomControls
             base.Show();
         }
 
+        [PublicAPI]
         public new void Hide()
         {
             if (!_visibleCached) return;

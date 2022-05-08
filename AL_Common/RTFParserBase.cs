@@ -712,7 +712,7 @@ namespace AL_Common
 
         protected bool _skipDestinationIfUnknown;
 
-        public static readonly SymbolDict _symbolTable = new SymbolDict();
+        public static readonly SymbolDict Symbols = new SymbolDict();
 
         // Highest measured was 10
         public static readonly ScopeStack _scopeStack = new ScopeStack();

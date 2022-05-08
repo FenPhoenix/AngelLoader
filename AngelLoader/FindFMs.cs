@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using static AL_Common.Common;

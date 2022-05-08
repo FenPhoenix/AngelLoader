@@ -106,7 +106,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// <paramref name="count" /> is negative.</exception>
-        public byte[] ReadBytes(Stream stream, int count)
+        public static byte[] ReadBytes(Stream stream, int count)
         {
             if (count < 0)
             {
@@ -128,7 +128,9 @@ namespace FMScanner.FastZipReader
                     count -= num;
                 }
                 else
+                {
                     break;
+                }
             }
             while (count > 0);
             if (length != numArray.Length)

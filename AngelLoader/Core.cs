@@ -1408,7 +1408,7 @@ namespace AngelLoader
                     foreach (string sr in safeReadmes)
                     {
                         string srNoExt = Path.GetFileNameWithoutExtension(sr);
-                        if (langCodesExist && EndsWithLangCode(srNoExt, langCodes!))
+                        if (langCodesExist && EndsWithLangCode(srNoExt, langCodes))
                         {
                             safeReadmes.Remove(sr);
                             safeReadmes.Insert(0, sr);

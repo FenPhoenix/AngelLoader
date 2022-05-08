@@ -428,7 +428,7 @@ namespace FenGen
                 Language.Generate(
                     sourceFile: taggedFilesDict[GenFileTags.LocalizationSource],
                     destFile: taggedFilesDict[GenFileTags.LocalizationDest],
-                    perGameLangGetterDestFile: taggedFilesDict![GenFileTags.LocalizedGameNameGetterDest],
+                    perGameLangGetterDestFile: taggedFilesDict[GenFileTags.LocalizedGameNameGetterDest],
                     langIniFile: englishIni,
                     testLangIniFile: testLangIni);
 
@@ -470,8 +470,7 @@ namespace FenGen
             {
                 using var sr = new StreamReader(f);
 
-                string? line;
-                while ((line = sr.ReadLine()) != null)
+                while (sr.ReadLine() is { } line)
                 {
                     string lts = line.TrimStart();
                     if (lts.IsWhiteSpace() || lts.StartsWith("//")) continue;

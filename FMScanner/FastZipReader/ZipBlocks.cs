@@ -39,7 +39,7 @@ namespace FMScanner.FastZipReader
 
             if (!sizeOnly)
             {
-                field.Data = bundle.ReadBytes(stream, field.Size);
+                field.Data = ZipReusableBundle.ReadBytes(stream, field.Size);
             }
             else
             {
@@ -267,8 +267,6 @@ namespace FMScanner.FastZipReader
     internal struct ZipCentralDirectoryFileHeader
     {
         private const uint SignatureConstant = 0x02014B50;
-        internal byte VersionMadeByCompatibility;
-        internal ushort GeneralPurposeBitFlag;
         internal ushort CompressionMethod;
         internal uint LastModified;
         internal long CompressedSize;
@@ -294,9 +292,9 @@ namespace FMScanner.FastZipReader
             if (bundle.ReadUInt32(stream) != SignatureConstant) return false;
 
             bundle.ReadByte(stream); // VersionMadeBySpecification
-            header.VersionMadeByCompatibility = bundle.ReadByte(stream);
+            bundle.ReadByte(stream); // VersionMadeByCompatibility
             bundle.ReadUInt16(stream); // VersionNeededToExtract
-            header.GeneralPurposeBitFlag = bundle.ReadUInt16(stream);
+            bundle.ReadUInt16(stream); // GeneralPurposeBitFlag
             header.CompressionMethod = bundle.ReadUInt16(stream);
             header.LastModified = bundle.ReadUInt32(stream);
             bundle.ReadUInt32(stream); // Crc32
@@ -312,7 +310,7 @@ namespace FMScanner.FastZipReader
 
             if (!sizeOnly)
             {
-                header.Filename = bundle.ReadBytes(stream, header.FilenameLength);
+                header.Filename = ZipReusableBundle.ReadBytes(stream, header.FilenameLength);
             }
             else
             {
