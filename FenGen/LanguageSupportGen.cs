@@ -11,26 +11,16 @@ namespace FenGen
 {
     internal static class LanguageSupport
     {
-        private sealed class LanguageEnum
+        internal static LanguageSourceEnum FillLangsEnum(string file) => ReadSourceFile(file);
+
+        internal static void Generate(string destFile)
         {
-            internal string Name = "";
-            internal string LanguageIndexName = "";
-            internal readonly List<string> LangEnumNames = new List<string>();
-            internal readonly List<string> LangIndexEnumNames = new List<string>();
-            internal readonly List<string> LangIndexEnumNamesLowercase = new List<string>();
-            internal readonly List<string> LangCodes = new List<string>();
-            internal readonly List<string> LangTranslatedNames = new List<string>();
+            WriteDestFile(destFile);
         }
 
-        internal static void Generate(string source, string dest)
+        private static LanguageSourceEnum ReadSourceFile(string file)
         {
-            var langEnum = ReadSourceFile(source);
-            WriteDestFile(dest, langEnum);
-        }
-
-        private static LanguageEnum ReadSourceFile(string file)
-        {
-            var ret = new LanguageEnum();
+            var ret = new LanguageSourceEnum();
 
             string code = File.ReadAllText(file);
             SyntaxTree tree = ParseTextFast(code);
@@ -84,9 +74,11 @@ namespace FenGen
             return ret;
         }
 
-        private static void WriteDestFile(string destFile, LanguageEnum langEnum)
+        private static void WriteDestFile(string destFile)
         {
             var w = GetWriterForClass(destFile, GenAttributes.FenGenLanguageSupportDestClass);
+
+            var langEnum = Cache.LangsEnum;
 
             int count = langEnum.LangIndexEnumNames.Count;
 

@@ -66,23 +66,51 @@ namespace FenGen
         internal readonly List<string> SteamIds = new List<string>();
     }
 
+    internal sealed class LanguageSourceEnum
+    {
+        internal string Name = "";
+        internal string LanguageIndexName = "";
+        internal readonly List<string> LangEnumNames = new List<string>();
+        internal readonly List<string> LangIndexEnumNames = new List<string>();
+        internal readonly List<string> LangIndexEnumNamesLowercase = new List<string>();
+        internal readonly List<string> LangCodes = new List<string>();
+        internal readonly List<string> LangTranslatedNames = new List<string>();
+    }
+
     // NOTE: Nasty global state that's really just here to avoid over-parameterization.
     internal static class Cache
     {
+        #region Games
+
         private static string _gameSupportFile = "";
         internal static void SetGameSupportFile(string file) => _gameSupportFile = file;
         private static GameSourceEnum? _gamesEnum;
         internal static GameSourceEnum GamesEnum => _gamesEnum ??= Games.FillGamesEnum(_gameSupportFile);
 
+        #endregion
+
+        #region Language support
+
+        private static string _langsSupportFile = "";
+        internal static void SetLangSupportFile(string file) => _langsSupportFile = file;
+        private static LanguageSourceEnum? _languageEnum;
+        internal static LanguageSourceEnum LangsEnum => _languageEnum ??= LanguageSupport.FillLangsEnum(_langsSupportFile);
+
+        #endregion
+
         private static List<string>? _csFiles;
         internal static List<string> CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories).ToList();
 
-        internal static readonly List<string> DesignerCSFiles = new List<string>();
+        internal static readonly List<string> DesignerCSFiles = new();
 
         internal static void Clear()
         {
             _gameSupportFile = "";
             _gamesEnum = null;
+
+            _langsSupportFile = "";
+            _languageEnum = null;
+
             _csFiles = null;
             DesignerCSFiles.Clear();
         }
@@ -307,6 +335,15 @@ namespace FenGen
             bool gameSupportRequested = GenTaskActive(GenType.FMData) ||
                                         GenTaskActive(GenType.GameSupport) ||
                                         LangTaskActive();
+
+            // Just always do it...
+            bool langSupportRequested = true;
+
+            if (langSupportRequested)
+            {
+                genFileTags.Add(GenFileTags.LanguageSupportSource);
+            }
+
             if (gameSupportRequested)
             {
                 genFileTags.Add(GenFileTags.GameSupportSource);
@@ -341,12 +378,16 @@ namespace FenGen
             var taggedFilesDict = new Dictionary<string, string>();
             if (forceFindRequiredFiles || genFileTags.Count > 0)
             {
-                taggedFilesDict = FindRequiredCodeFiles(genFileTags);
+                taggedFilesDict = FindRequiredCodeFiles(genFileTags.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
             }
 
             if (gameSupportRequested)
             {
                 Cache.SetGameSupportFile(taggedFilesDict[GenFileTags.GameSupportSource]);
+            }
+            if (langSupportRequested)
+            {
+                Cache.SetLangSupportFile(taggedFilesDict[GenFileTags.LanguageSupportSource]);
             }
 
             if (GenTaskActive(GenType.FMData))
@@ -388,9 +429,7 @@ namespace FenGen
                     langIniFile: englishIni,
                     testLangIniFile: testLangIni);
 
-                LanguageSupport.Generate(
-                    source: taggedFilesDict[GenFileTags.LanguageSupportSource],
-                    dest: taggedFilesDict[GenFileTags.LanguageSupportDest]);
+                LanguageSupport.Generate(destFile: taggedFilesDict[GenFileTags.LanguageSupportDest]);
             }
             if (GenTaskActive(GenType.GameSupport))
             {
