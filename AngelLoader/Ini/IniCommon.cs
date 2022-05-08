@@ -192,7 +192,7 @@ namespace AngelLoader
 
                     if (end == len - 1) end++;
 
-                    if (end - curStart > 0 && Langs_TryGetValue(fm, langsString, curStart, end, out Language result))
+                    if (end - curStart > 0 && Langs_TryGetValue(langsString, curStart, end, out Language result))
                     {
                         fm.Langs |= result;
                     }

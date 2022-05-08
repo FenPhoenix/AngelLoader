@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using AngelLoader.DataClasses;
 
 namespace AngelLoader
 {
@@ -94,8 +93,7 @@ namespace AngelLoader
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Langs_TryGetValue(FanMission fm, string str, int start, int end, out Language result)
+        public static bool Langs_TryGetValue(string str, int start, int end, out Language result)
         {
             int len = end - start;
             if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)

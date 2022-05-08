@@ -97,10 +97,7 @@ namespace FenGen
             w.WL("public static readonly string[] SupportedLanguages =");
             WriteListBody(w, langEnum.LangIndexEnumNamesLowercase, addQuotes: true);
 
-            w.WL("public static HashSetI LangsHash = new HashSetI(" + count + ")");
-            WriteListBody(w, langEnum.LangIndexEnumNamesLowercase, addQuotes: true);
-
-            w.WL("public static string[] FSPrefixedLangs =");
+            w.WL("public static readonly string[] FSPrefixedLangs =");
             var fsPrefixedList = new List<string>(count);
             for (int i = 0; i < count; i++)
             {
@@ -129,11 +126,11 @@ namespace FenGen
                 value += "}";
                 codeValues.Add(value);
             }
-            w.WL("public static DictionaryI<string[]> LangCodes = new DictionaryI<string[]>(" + count + ")");
-            WriteDictionaryBody(w, langEnum.LangIndexEnumNamesLowercase, codeValues, keysQuoted: true, valuesQuoted: false);
+            w.WL("public static string[][] LangCodes =");
+            WriteListBody(w, codeValues);
 
-            w.WL("public static DictionaryI<string> LangTranslatedNames = new DictionaryI<string>(" + count + ")");
-            WriteDictionaryBody(w, langEnum.LangIndexEnumNamesLowercase, langEnum.LangTranslatedNames, keysQuoted: true, valuesQuoted: true);
+            w.WL("public static string[] LangTranslatedNames =");
+            WriteListBody(w, langEnum.LangTranslatedNames, addQuotes: true);
 
             #region LanguageToLanguageIndex
 

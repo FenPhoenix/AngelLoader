@@ -188,7 +188,7 @@ namespace AngelLoader
             {
                 string bdPath = searchList[searchList.Count - 1];
                 searchList.RemoveAt(searchList.Count - 1);
-                bool englishFound = FastIO.SearchDirForLanguages(LangsHash, bdPath, searchList, langsFoundList, earlyOutOnEnglish);
+                bool englishFound = FastIO.SearchDirForLanguages(bdPath, searchList, langsFoundList, earlyOutOnEnglish);
                 // Matching FMSel behavior: early-out on English
                 if (earlyOutOnEnglish && englishFound) return new List<string> { "English" };
             }

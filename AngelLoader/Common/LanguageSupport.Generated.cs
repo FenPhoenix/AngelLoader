@@ -43,22 +43,7 @@ namespace AngelLoader
             "spanish"
         };
 
-        public static HashSetI LangsHash = new HashSetI(11)
-        {
-            "english",
-            "czech",
-            "dutch",
-            "french",
-            "german",
-            "hungarian",
-            "italian",
-            "japanese",
-            "polish",
-            "russian",
-            "spanish"
-        };
-
-        public static string[] FSPrefixedLangs =
+        public static readonly string[] FSPrefixedLangs =
         {
             "/english",
             "/czech",
@@ -88,34 +73,34 @@ namespace AngelLoader
             { "spanish", Language.Spanish }
         };
 
-        public static DictionaryI<string[]> LangCodes = new DictionaryI<string[]>(11)
+        public static string[][] LangCodes =
         {
-            { "english", new[] { "en" } },
-            { "czech", new[] { "cz" } },
-            { "dutch", new[] { "nl" } },
-            { "french", new[] { "fr" } },
-            { "german", new[] { "de" } },
-            { "hungarian", new[] { "hu" } },
-            { "italian", new[] { "it" } },
-            { "japanese", new[] { "ja", "jp" } },
-            { "polish", new[] { "pl" } },
-            { "russian", new[] { "ru" } },
-            { "spanish", new[] { "es" } }
+            new[] { "en" },
+            new[] { "cz" },
+            new[] { "nl" },
+            new[] { "fr" },
+            new[] { "de" },
+            new[] { "hu" },
+            new[] { "it" },
+            new[] { "ja", "jp" },
+            new[] { "pl" },
+            new[] { "ru" },
+            new[] { "es" }
         };
 
-        public static DictionaryI<string> LangTranslatedNames = new DictionaryI<string>(11)
+        public static string[] LangTranslatedNames =
         {
-            { "english", "English" },
-            { "czech", "Čeština" },
-            { "dutch", "Nederlands" },
-            { "french", "Français" },
-            { "german", "Deutsch" },
-            { "hungarian", "Magyar" },
-            { "italian", "Italiano" },
-            { "japanese", "日本語" },
-            { "polish", "Polski" },
-            { "russian", "Русский" },
-            { "spanish", "Español" }
+            "English",
+            "Čeština",
+            "Nederlands",
+            "Français",
+            "Deutsch",
+            "Magyar",
+            "Italiano",
+            "日本語",
+            "Polski",
+            "Русский",
+            "Español"
         };
 
         /// <summary>

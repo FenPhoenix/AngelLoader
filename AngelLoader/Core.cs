@@ -1347,7 +1347,7 @@ namespace AngelLoader
             {
                 // Because we allow arbitrary languages, it's theoretically possible to get one that doesn't have
                 // a language code.
-                bool langCodesExist = LangCodes.TryGetValue(Config.Language, out string[] langCodes);
+                bool langCodesExist = TryGetLanguageCodes(Config.Language, out string[] langCodes);
 
                 var safeReadmes = new List<string>(readmeFiles.Count);
                 foreach (string rf in readmeFiles)
@@ -1368,7 +1368,7 @@ namespace AngelLoader
                         // end original English-favoring section
                         (langCodesExist &&
                          !ContainsUnsafeOrJunkPhrase(fn) &&
-                         EndsWithLangCode(fn_orig, langCodes!)) ||
+                         EndsWithLangCode(fn_orig, langCodes)) ||
                         (fn.StartsWithI(StripPunctuation(fmTitle)) && !ContainsUnsafeOrJunkPhrase(fn)) ||
                         (fn.EndsWithI("Readme") && !ContainsUnsafePhrase(fn)))
                     {
@@ -1874,7 +1874,7 @@ namespace AngelLoader
                     if (fm.Langs.HasFlagFast(language))
                     {
                         string langStr = GetLanguageString(index);
-                        View.AddLanguageToList(langStr, LangTranslatedNames[langStr]);
+                        View.AddLanguageToList(langStr, GetTranslatedLanguageName(index));
                     }
                 }
             }
