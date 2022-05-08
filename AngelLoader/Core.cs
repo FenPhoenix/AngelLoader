@@ -724,12 +724,22 @@ namespace AngelLoader
         public static async Task RefreshFMsListFromDisk()
         {
             SelectedFM? selFM = View.GetMainSelectedFMPosInfo();
-            using (new DisableEvents(View))
+            // Cursor here instead of in Find(), so we can keep it over the case where we load an RTF
+            // readme and it also sets the wait cursor, to avoid flickering it on and off twice.
+            try
             {
-                var fmsViewListUnscanned = FindFMs.Find();
-                if (fmsViewListUnscanned.Count > 0) await FMScan.ScanNewFMs(fmsViewListUnscanned);
+                View.Cursor = Cursors.WaitCursor;
+                using (new DisableEvents(View))
+                {
+                    var fmsViewListUnscanned = FindFMs.Find();
+                    if (fmsViewListUnscanned.Count > 0) await FMScan.ScanNewFMs(fmsViewListUnscanned);
+                }
+                await View.SortAndSetFilter(selFM, forceDisplayFM: true);
             }
-            await View.SortAndSetFilter(selFM, forceDisplayFM: true);
+            finally
+            {
+                View.Cursor = Cursors.Default;
+            }
         }
 
         internal static bool FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
