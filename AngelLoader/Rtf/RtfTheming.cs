@@ -11,6 +11,11 @@ namespace AngelLoader
     {
         #region Private fields
 
+        // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't
+        // want to make a new one every time.
+        private static RtfColorTableParser? _rtfColorTableParser;
+        private static RtfColorTableParser RTFColorTableParser => _rtfColorTableParser ??= new RtfColorTableParser();
+
         #region RTF text coloring byte array nonsense
 
         private static readonly byte[] _colortbl =
@@ -183,8 +188,7 @@ namespace AngelLoader
             // Avoid allocations as much as possible here, because glibly converting back and forth between lists
             // and arrays for our readme bytes is going to blow out memory.
 
-            var parser = new RtfColorTableParser();
-            (bool success, List<Color>? colorTable, _, int _) = parser.GetColorTable(currentReadmeBytes);
+            (bool success, List<Color>? colorTable, _, int _) = RTFColorTableParser.GetColorTable(currentReadmeBytes);
 
             int colorTableEntryLength = 0;
 
