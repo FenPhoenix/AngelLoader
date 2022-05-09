@@ -265,8 +265,8 @@ namespace AngelLoader.Forms
 
         #region SetProgressBoxState
 
-        private static readonly Action<MainForm, bool?, ProgressSizeMode?, string?, string?, int?, ProgressType?, string?, int?,
-                ProgressType?, ProgressCancelType?, Action?>
+        private static readonly Action<MainForm, bool?, ProgressSizeMode?, string?, string?, int?, ProgressType?,
+                string?, int?, ProgressType?, ProgressCancelType?, Action?>
             SetProgressBoxState_Action =
                 (view, visible, size, mainMessage1, mainMessage2, mainPercent, mainProgressType, subMessage,
                     subPercent, subProgressType, cancelType, cancelAction) =>
@@ -325,7 +325,7 @@ namespace AngelLoader.Forms
             view.ProgressBox!.HideThis();
         };
 
-        public void HideProgressBox() => Invoke(HideProgressBox_Action);
+        public void HideProgressBox() => Invoke(HideProgressBox_Action, this);
 
         #endregion
     }
