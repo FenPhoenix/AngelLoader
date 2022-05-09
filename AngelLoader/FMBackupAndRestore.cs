@@ -184,16 +184,19 @@ namespace AngelLoader
 
             if (ret.Name.IsEmpty())
             {
+                // This is as much as we can cache unfortunately. Every FM's name will be different each call
+                // so we can't cache the combined config path and FM name with backup extension. But at least
+                // we can cache just the FM name with backup extension, so it's better than nothing.
+                string fmArchivePlusBackupExt = fmArchiveNoExt + Paths.FMBackupSuffix;
+                string fmInstalledDirPlusBackupExt = fm.InstalledDir + Paths.FMBackupSuffix;
                 var bakFiles = new List<FileInfo>();
 
-                // @MEM(GetBackupFile()/AddBakFilesFrom()): We should cache these paths too
-                // It's not as bad as the DarkLoader path, but 21,000+ allocations on a ~1600 FM set for checking
                 void AddBakFilesFrom(string path)
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        string fNoExt = i == 0 ? fmArchiveNoExt : fm.InstalledDir;
-                        string bakFile = Path.Combine(path, fNoExt + Paths.FMBackupSuffix);
+                        string fNoExt = i == 0 ? fmArchivePlusBackupExt : fmInstalledDirPlusBackupExt;
+                        string bakFile = Path.Combine(path, fNoExt);
                         if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
                     }
                 }
