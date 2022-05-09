@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using JetBrains.Annotations;
 using static AL_Common.Common;
@@ -10,6 +11,8 @@ namespace Fen7z
 {
     public static class Fen7z
     {
+        private static readonly Regex _uncompressedSizeRegex = new(@"(?<USize>[0123456789]+)\s+[0123456789]+\s+[0123456789]+\s+file", RegexOptions.Compiled);
+
         [PublicAPI]
         public sealed class ProgressReport
         {
@@ -56,6 +59,8 @@ namespace Fen7z
             public int? ExitCodeInt;
             public bool Canceled;
 
+            public ulong UncompressedSize;
+
             public override string ToString() =>
                 ErrorOccurred
                     ? "Error in 7z.exe extraction:\r\n"
@@ -83,6 +88,7 @@ namespace Fen7z
         /// <param name="fileNamesList"></param>
         /// <param name="cancellationToken"></param>
         /// <param name="progress"></param>
+        /// <param name="justReturnUncompressedSize">Quick hack to just return the uncompressed size of an archive. Pass blanks on all unrelated fields.</param>
         /// <returns></returns>
         public static Result Extract(
             string sevenZipWorkingPath,
@@ -91,13 +97,14 @@ namespace Fen7z
             string outputPath,
             int entriesCount,
             string listFile,
-            List<string> fileNamesList,
+            List<string>? fileNamesList,
             CancellationToken? cancellationToken = null,
-            IProgress<ProgressReport>? progress = null)
+            IProgress<ProgressReport>? progress = null,
+            bool justReturnUncompressedSize = false)
         {
-            bool selectiveFiles = !listFile.IsWhiteSpace() && fileNamesList.Count > 0;
+            bool selectiveFiles = !justReturnUncompressedSize && !listFile.IsWhiteSpace() && fileNamesList?.Count > 0;
 
-            if (selectiveFiles)
+            if (selectiveFiles && fileNamesList != null)
             {
                 try
                 {
@@ -131,11 +138,18 @@ namespace Fen7z
                 // -y    = Say yes to all prompts automatically
                 // -bsp1 = Redirect progress information to stdout stream
                 // -bb1  = Show names of processed files in log (needed for smooth reporting of entries done count)
-                p.StartInfo.Arguments = "x \"" + archivePath + "\" -o\"" + outputPath + "\" "
-                                        + (selectiveFiles ? "@\"" + listFile + "\" " : "")
-                                        + "-aoa -y -bsp1 -bb1";
+                p.StartInfo.Arguments =
+                    justReturnUncompressedSize
+                        ? "l \"" + archivePath + "\" -bsp1"
+                        : "x \"" + archivePath + "\" -o\"" + outputPath + "\" "
+                          + (selectiveFiles ? "@\"" + listFile + "\" " : "")
+                          + "-aoa -y -bsp1 -bb1";
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.UseShellExecute = false;
+
+                ulong uncompressedSize = 0;
+
+                int dashLineCount = 0;
 
                 p.OutputDataReceived += (sender, e) =>
                 {
@@ -164,16 +178,30 @@ namespace Fen7z
                         return;
                     }
 
-                    if (e.Data.IsEmpty() || report.Canceling || progress == null) return;
-
+                    if (e.Data.IsEmpty() || report.Canceling || (!justReturnUncompressedSize && progress == null)) return;
                     try
                     {
-                        using var sr = new StringReader(e.Data);
-                        string? line;
-                        while ((line = sr.ReadLine()) != null)
-                        {
-                            string lineT = line.Trim();
+                        string lineT = e.Data.Trim();
 
+                        if (justReturnUncompressedSize)
+                        {
+                            if (dashLineCount == 2)
+                            {
+                                var m = _uncompressedSizeRegex.Match(lineT);
+                                if (m.Success && ulong.TryParse(m.Groups["USize"].Value, out ulong result))
+                                {
+                                    uncompressedSize += result;
+                                }
+                                return;
+                            }
+
+                            if (lineT == "------------------- ----- ------------ ------------  ------------------------")
+                            {
+                                dashLineCount++;
+                            }
+                        }
+                        else
+                        {
                             int pi = lineT.IndexOf('%');
                             if (pi > -1)
                             {
@@ -217,6 +245,7 @@ namespace Fen7z
                 (result.ExitCode, result.ExitCodeInt, result.Exception) = GetExitCode(p);
                 result.Canceled = canceled || result.ExitCode == SevenZipExitCode.UserStopped;
                 result.ErrorText = errorText;
+                result.UncompressedSize = uncompressedSize;
 
                 return result;
             }
@@ -259,7 +288,7 @@ namespace Fen7z
 
                     p.Dispose();
                 }
-                if (selectiveFiles)
+                if (selectiveFiles && !listFile.IsEmpty())
                 {
                     try
                     {

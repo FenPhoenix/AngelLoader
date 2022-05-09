@@ -776,6 +776,7 @@ namespace AngelLoader
                     }
                     else
                     {
+#if false
                         using var archive = new SevenZipExtractor(archivePath);
 
                         if (_extractCts.IsCancellationRequested) return false;
@@ -783,8 +784,6 @@ namespace AngelLoader
                         // UnpackedSize doesn't work unless you call Check() first, but that takes forever.
                         // Iterating the entries is fast(ish). Size property is uncompressed size, tested and
                         // confirmed.
-                        // @MULTISEL(Install/7z size check): To be faster, we should write custom 7z reader code
-                        // to just get the unpacked sizes and ignore everything else (no expensive date conversions etc.)
                         var entries = archive.ArchiveFileData;
 
                         if (_extractCts.IsCancellationRequested) return false;
@@ -794,6 +793,34 @@ namespace AngelLoader
                             fmExtractedSize += (long)entries[entryI].Size;
                         }
                         driveData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
+#else
+                        if (_extractCts.IsCancellationRequested) return false;
+
+                        var result = Fen7z.Fen7z.Extract(
+                            sevenZipWorkingPath: Paths.SevenZipPath,
+                            sevenZipPathAndExe: Paths.SevenZipExe,
+                            archivePath: archivePath,
+                            outputPath: "",
+                            entriesCount: 0,
+                            listFile: "",
+                            fileNamesList: null,
+                            cancellationToken: _extractCts.Token,
+                            progress: null,
+                            justReturnUncompressedSize: true
+                        );
+
+                        if (_extractCts.IsCancellationRequested) return false;
+
+                        if (result.ErrorOccurred)
+                        {
+                            driveData.TotalExtractedSizeCalcSuccessful = false;
+                            driveData.TotalExtractedSizeOfAllFMsForThisDisk = 0;
+                        }
+                        else
+                        {
+                            driveData.TotalExtractedSizeOfAllFMsForThisDisk += (long)result.UncompressedSize;
+                        }
+#endif
                     }
                 }
                 catch
