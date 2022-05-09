@@ -453,6 +453,7 @@ namespace AngelLoader
                     int yExtIndex = y.LastIndexOf('.');
                     int maxLength =
                         xExtIndex == -1 && yExtIndex == -1 ? Math.Max(x.Length, y.Length) :
+                        xExtIndex > -1 && yExtIndex > -1 ? Math.Min(xExtIndex, yExtIndex) :
                         xExtIndex > -1 ? xExtIndex : yExtIndex;
                     return string.Compare(x, 0, y, 0, maxLength, StringComparison.OrdinalIgnoreCase);
                 }
