@@ -555,15 +555,17 @@ namespace AL_Common
             }
         }
 
-        public sealed class StackFast<T>
+        public sealed class UnGetStack
         {
-            private T[] _array;
+            private char[] _array;
             private int _capacity;
 
-            public StackFast(int capacity)
+            private const int _resetCapacity = 100;
+
+            public UnGetStack()
             {
-                _array = new T[capacity];
-                _capacity = capacity;
+                _array = new char[_resetCapacity];
+                _capacity = _resetCapacity;
                 Count = 0;
             }
 
@@ -572,17 +574,24 @@ namespace AL_Common
             /// </summary>
             public int Count;
 
-            /// <summary>Just sets <see cref="T:Count"/> to 0.</summary>
-            public void ClearFast() => Count = 0;
+            public void Clear()
+            {
+                if (_capacity > _resetCapacity)
+                {
+                    _array = new char[_resetCapacity];
+                    _capacity = _resetCapacity;
+                }
+                Count = 0;
+            }
 
-            public T Pop() => _array[--Count];
+            public char Pop() => _array[--Count];
 
-            public void Push(T item)
+            public void Push(char item)
             {
                 if (Count == _capacity)
                 {
                     int capacity = _array.Length == 0 ? 4 : 2 * _array.Length;
-                    T[] destinationArray = new T[capacity];
+                    char[] destinationArray = new char[capacity];
                     Array.Copy(_array, 0, destinationArray, 0, Count);
                     _array = destinationArray;
                     _capacity = capacity;
@@ -775,7 +784,7 @@ namespace AL_Common
         We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
         rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
         */
-        private readonly StackFast<char> _unGetBuffer = new StackFast<char>(100);
+        private readonly UnGetStack _unGetBuffer = new UnGetStack();
         private bool _unGetBufferEmpty = true;
 
         /// <summary>
@@ -855,7 +864,7 @@ namespace AL_Common
             // Don't clear the buffer; we don't need to and it wastes time
             _bufferPos = _bufferLen - 1;
 
-            _unGetBuffer.ClearFast();
+            _unGetBuffer.Clear();
             _unGetBufferEmpty = true;
         }
 

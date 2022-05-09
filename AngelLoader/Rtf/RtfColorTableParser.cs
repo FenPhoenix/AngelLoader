@@ -17,21 +17,20 @@ namespace AngelLoader
     {
         #region Private fields
 
-        private byte[] _stream = null!;
+        private byte[] _byteArray = null!;
 
         #endregion
 
         #region Stream
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ResetStream(byte[] stream)
+        private void ResetStream(byte[] byteArray)
         {
-            _stream = stream;
-            base.ResetStreamBase(stream.Length);
+            _byteArray = byteArray;
+            base.ResetStreamBase(byteArray.Length);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override byte StreamReadByte() => _stream[(int)CurrentPos];
+        protected override byte StreamReadByte() => _byteArray[(int)CurrentPos];
 
         #endregion
 
@@ -47,12 +46,14 @@ namespace AngelLoader
 
         [PublicAPI]
         public (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex)
-        GetColorTable(byte[] stream)
+        GetColorTable(byte[] byteArray)
         {
-            Reset(stream);
-
             try
             {
+                // Reset before because at least one thing (current scope) needs it in order to be in a valid
+                // state to start with
+                Reset(byteArray);
+
                 Error error = ParseRtf();
                 return error == Error.OK
                     ? (true, ColorTable: _colorTable, ColorTableStartIndex: _colorTableStartIndex,
@@ -64,11 +65,16 @@ namespace AngelLoader
             {
                 return (false, _colorTable, _colorTableStartIndex, _colorTableEndIndex);
             }
+            finally
+            {
+                // Reset after so we don't carry around any waste after running
+                Reset(byteArray);
+            }
         }
 
         #endregion
 
-        private void Reset(byte[] stream)
+        private void Reset(byte[] byteArray)
         {
             base.ResetBase();
 
@@ -81,12 +87,7 @@ namespace AngelLoader
 
             _colorTable = null;
 
-            // This one has the seek-back buffer (a Stack<char>) which is technically eligible for deallocation,
-            // even though in practice I think it's guaranteed never to have more than like 5 chars in it maybe?
-            // Again, it's a stack so we can't check its capacity. But... meh. See above.
-            // Not way into the idea of making another custom type where the only difference is we can access a
-            // frigging internal variable, gonna be honest.
-            ResetStream(stream);
+            ResetStream(byteArray);
         }
 
         private bool _exiting;
