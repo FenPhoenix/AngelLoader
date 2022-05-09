@@ -58,6 +58,7 @@ namespace AngelLoader.DataClasses
         // @DIRSEP: Always backslashes for backward compatibility and prevention of find misses in readme chooser box
         internal string SelectedReadme { get => _selectedReadme; set => _selectedReadme = value.ToBackSlashes(); }
 
+        // @MEM: Look into these
         [FenGenIgnore]
         internal readonly DictionaryI<int> ReadmeCodePages = new DictionaryI<int>();
         [FenGenIniName("ReadmeEncoding")]
