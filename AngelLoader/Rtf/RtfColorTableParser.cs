@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -17,11 +18,12 @@ namespace AngelLoader
     {
         #region Private fields
 
-        private byte[] _byteArray = null!;
+        private byte[] _byteArray = Array.Empty<byte>();
 
         #endregion
 
         #region Stream
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ResetStream(byte[] byteArray)
         {
@@ -39,6 +41,7 @@ namespace AngelLoader
         private List<Color>? _colorTable;
         private int _colorTableStartIndex;
         private int _colorTableEndIndex;
+        private bool _exiting;
 
         #endregion
 
@@ -78,10 +81,13 @@ namespace AngelLoader
         {
             base.ResetBase();
 
+            _byteArray = Array.Empty<byte>();
+
             #region Fixed-size fields
 
             _colorTableStartIndex = 0;
             _colorTableEndIndex = 0;
+            _exiting = false;
 
             #endregion
 
@@ -89,8 +95,6 @@ namespace AngelLoader
 
             ResetStream(byteArray);
         }
-
-        private bool _exiting;
 
         private Error ParseRtf()
         {
