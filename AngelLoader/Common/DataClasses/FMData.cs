@@ -16,7 +16,7 @@ namespace AngelLoader.DataClasses
         -I told myself to version-header ini files right from the start, but I didn't. Meh.
     */
 
-    [FenGenFMDataSourceClass(writeEmptyValues: false)]
+    [FenGenFMDataSourceClass]
     public sealed class FanMission
     {
         // Cached value to avoid doing the expensive check every startup. If a matching archive is found in the

@@ -29,14 +29,7 @@ namespace AngelLoader
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
-        internal sealed class FenGenFMDataSourceClassAttribute : Attribute
-        {
-            /// <param name="writeEmptyValues">
-            /// Specifies whether empty values will be written to the ini.
-            /// What constitutes "empty" will vary depending on type.
-            /// </param>
-            internal FenGenFMDataSourceClassAttribute(bool writeEmptyValues) { }
-        }
+        internal sealed class FenGenFMDataSourceClassAttribute : Attribute { }
 
         /// <summary>
         /// This attribute should be placed on the FMData ini read/write class. Only one instance of this
@@ -72,8 +65,7 @@ namespace AngelLoader
 
         /// <summary>
         /// Specifies a number to be considered "empty" for the purposes of writeout. Empty values will not be
-        /// written to the ini file when <see cref="FenGenFMDataSourceClassAttribute"/>'s writeEmptyValues
-        /// parameter is set to <see langword="false"/>.
+        /// written to the ini file.
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]

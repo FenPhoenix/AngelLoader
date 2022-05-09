@@ -31,7 +31,6 @@ namespace FenGen
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         private sealed class FieldList : List<Field>
         {
-            internal bool WriteEmptyValues;
             //internal string Version;
         }
 
@@ -102,6 +101,11 @@ namespace FenGen
 
             static void CheckParamCount(AttributeSyntax attr, int count)
             {
+                if (count == 0 && (attr.ArgumentList == null || attr.ArgumentList.Arguments.Count == 0))
+                {
+                    return;
+                }
+
                 if (attr.ArgumentList == null || attr.ArgumentList.Arguments.Count != count)
                 {
                     ThrowErrorAndTerminate(attr.Name + " has wrong number of parameters.");
@@ -189,15 +193,9 @@ namespace FenGen
             var (member, classAttr) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenFMDataSourceClass);
             var fmDataClass = (ClassDeclarationSyntax)member;
 
-            CheckParamCount(classAttr, 1);
+            CheckParamCount(classAttr, 0);
 
-            var fields = new FieldList
-            {
-                WriteEmptyValues =
-                    (bool)((LiteralExpressionSyntax)classAttr.ArgumentList!.Arguments[0].Expression)
-                    .Token
-                    .Value!
-            };
+            var fields = new FieldList();
 
             foreach (SyntaxNode item in fmDataClass.ChildNodes())
             {
@@ -422,10 +420,6 @@ namespace FenGen
                     w.WL(obj + ".ResourcesScanned = !" + val + ".EqualsI(\"NotScanned\");");
                     w.WL("FillFMHasXFields(" + obj + ", " + val + ");");
                 }
-                else if (field.Type == "DisableModsSwitches")
-                {
-                    w.WL("FillDisableModsSwitches(" + obj + ", " + val + ");");
-                }
 
                 w.WL("}"); // end of setter method
                 w.WL();
@@ -571,21 +565,7 @@ namespace FenGen
                         w.WL("foreach (" + foreachType + " s in " + objDotField + ")");
                         w.WL("{");
 
-                        //if (Fields.WriteEmptyValues)
-#if true
-                        {
-                            swlSBAppend(fieldIniName, "s", !listTypeIsString ? toString : "");
-                        }
-                        // Disabled for now, for AngelLoader-specific perf
-#else
-                        {
-                            w.WL("if (!string.IsNullOrEmpty(s))");
-                            w.WL("{");
-                            w.WL("sb.AppendLine(\"" + fieldIniName + "=\" + s);");
-                            w.WL("}");
-                        }
-#endif
-
+                        swlSBAppend(fieldIniName, "s", !listTypeIsString ? toString : "");
                         w.WL("}");
                     }
                     else
@@ -596,53 +576,32 @@ namespace FenGen
                 }
                 else if (field.Type == "string")
                 {
-                    if (fields.WriteEmptyValues)
-                    {
-                        swlSBAppend(fieldIniName, objDotField);
-                    }
-                    else
-                    {
-                        w.WL("if (!string.IsNullOrEmpty(" + objDotField + "))");
-                        w.WL("{");
-                        swlSBAppend(fieldIniName, objDotField);
-                        w.WL("}");
-                    }
+                    w.WL("if (!string.IsNullOrEmpty(" + objDotField + "))");
+                    w.WL("{");
+                    swlSBAppend(fieldIniName, objDotField);
+                    w.WL("}");
                 }
                 else if (field.Type == "bool")
                 {
-                    if (fields.WriteEmptyValues)
-                    {
-                        swlSBAppend(fieldIniName, objDotField, toString);
-                    }
-                    else
-                    {
-                        w.WL("if (" + objDotField + ")");
-                        w.WL("{");
-                        // For bools, there's only two possible values and if we're not writing it out if it's
-                        // false, we know if we ARE writing it out then it can only be true, so just put a string
-                        // literal in there and don't do ToString() (mem, perf)
-                        w.WL("sb.AppendLine(\"" + fieldIniName + "=True\");");
-                        w.WL("}");
-                    }
+                    w.WL("if (" + objDotField + ")");
+                    w.WL("{");
+                    // For bools, there's only two possible values and if we're not writing it out if it's
+                    // false, we know if we ARE writing it out then it can only be true, so just put a string
+                    // literal in there and don't do ToString() (mem, perf)
+                    w.WL("sb.AppendLine(\"" + fieldIniName + "=True\");");
+                    w.WL("}");
                 }
                 else if (field.Type == "bool?")
                 {
-                    if (fields.WriteEmptyValues)
-                    {
-                        swlSBAppend(fieldIniName, objDotField, toString);
-                    }
-                    else
-                    {
-                        w.WL("if (" + objDotField + " != null)");
-                        w.WL("{");
-                        swlSBAppend(fieldIniName, obj, toString);
-                        w.WL("}");
-                    }
+                    w.WL("if (" + objDotField + " != null)");
+                    w.WL("{");
+                    swlSBAppend(fieldIniName, obj, toString);
+                    w.WL("}");
                 }
                 else if (_numericTypes.Contains(field.Type))
                 {
                     string floatArgs = GetFloatArgsWrite(field.Type);
-                    if (!fields.WriteEmptyValues && field.NumericEmpty != null)
+                    if (field.NumericEmpty != null)
                     {
                         w.WL("if (" + objDotField + " != " + field.NumericEmpty + ")");
                         w.WL("{");
@@ -658,17 +617,10 @@ namespace FenGen
                          _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
                 {
                     string floatArgs = GetFloatArgsWrite(field.Type);
-                    if (fields.WriteEmptyValues)
-                    {
-                        swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
-                    }
-                    else
-                    {
-                        w.WL("if (" + objDotField + " != null)");
-                        w.WL("{");
-                        swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
-                        w.WL("}");
-                    }
+                    w.WL("if (" + objDotField + " != null)");
+                    w.WL("{");
+                    swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
+                    w.WL("}");
                 }
                 else if (field.Type == Cache.GamesEnum.Name)
                 {
@@ -695,29 +647,19 @@ namespace FenGen
                     }
                     else
                     {
-                        if (!fields.WriteEmptyValues)
-                        {
-                            w.WL("if (" + objDotField + " != 0)");
-                            w.WL("{");
-                            w.WL("sb.Append(\"" + fieldIniName + "=\");");
-                            w.WL("CommaCombineLanguageFlags(sb, " + objDotField + ");");
-                            w.WL("}");
-                        }
+                        w.WL("if (" + objDotField + " != 0)");
+                        w.WL("{");
+                        w.WL("sb.Append(\"" + fieldIniName + "=\");");
+                        w.WL("CommaCombineLanguageFlags(sb, " + objDotField + ");");
+                        w.WL("}");
                     }
                 }
                 else if (field.Type == "ExpandableDate")
                 {
-                    if (fields.WriteEmptyValues)
-                    {
-                        swlSBAppend(fieldIniName, objDotField, unixDateString);
-                    }
-                    else
-                    {
-                        w.WL("if (!string.IsNullOrEmpty(" + objDotField + ".UnixDateString))");
-                        w.WL("{");
-                        swlSBAppend(fieldIniName, objDotField, unixDateString);
-                        w.WL("}");
-                    }
+                    w.WL("if (!string.IsNullOrEmpty(" + objDotField + ".UnixDateString))");
+                    w.WL("{");
+                    swlSBAppend(fieldIniName, objDotField, unixDateString);
+                    w.WL("}");
                 }
                 else if (field.Type == "DateTime?")
                 {
@@ -726,17 +668,10 @@ namespace FenGen
                         ? "new DateTimeOffset((DateTime)" + objDotField + ").ToUnixTimeSeconds().ToString(\"X\")"
                         : "new DateTimeOffset(((DateTime)" + objDotField + ").ToLocalTime()).ToUnixTimeSeconds().ToString(\"X\")";
 
-                    if (fields.WriteEmptyValues)
-                    {
-                        swlSBAppend(fieldIniName, val);
-                    }
-                    else
-                    {
-                        w.WL("if (" + objDotField + " != null)");
-                        w.WL("{");
-                        swlSBAppend(fieldIniName, val);
-                        w.WL("}");
-                    }
+                    w.WL("if (" + objDotField + " != null)");
+                    w.WL("{");
+                    swlSBAppend(fieldIniName, val);
+                    w.WL("}");
                 }
                 else if (field.Type == "CustomResources")
                 {
@@ -765,22 +700,6 @@ namespace FenGen
                     w.WL("sb.AppendLine(\"NotScanned\");");
                     w.WL("}");
                     w.WL("#endif");
-                }
-                else if (field.Type == "DisableModsSwitches")
-                {
-                    if (fields.WriteEmptyValues)
-                    {
-                        w.WL("sb.Append(\"" + fieldIniName + "=\");");
-                        w.WL("CommaCombineDisableModsSwitches(" + obj + ", sb);");
-                    }
-                    else
-                    {
-                        w.WL("if(" + objDotField + " != DisableModsSwitches.None)");
-                        w.WL("{");
-                        w.WL("sb.Append(\"" + fieldIniName + "=\");");
-                        w.WL("CommaCombineDisableModsSwitches(" + obj + ", sb);");
-                        w.WL("}");
-                    }
                 }
             }
 
