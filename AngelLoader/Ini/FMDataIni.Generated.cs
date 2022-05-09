@@ -26,36 +26,43 @@ namespace AngelLoader
 
         private static void FMData_NoArchive_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.NoArchive = val.EqualsTrue();
         }
 
         private static void FMData_MarkedScanned_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.MarkedScanned = val.EqualsTrue();
         }
 
         private static void FMData_Pinned_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.Pinned = val.EqualsTrue();
         }
 
         private static void FMData_Archive_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.Archive = val;
         }
 
         private static void FMData_InstalledDir_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.InstalledDir = val;
         }
 
         private static void FMData_Title_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.Title = val;
         }
 
         private static void FMData_AltTitles_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             if (!string.IsNullOrEmpty(val))
             {
                 fm.AltTitles.Add(val);
@@ -64,11 +71,13 @@ namespace AngelLoader
 
         private static void FMData_Author_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.Author = val;
         }
 
         private static void FMData_Game_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             if (val.EqualsI("Thief1"))
             {
                 fm.Game = Game.Thief1;
@@ -97,21 +106,25 @@ namespace AngelLoader
 
         private static void FMData_Installed_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.Installed = val.EqualsTrue();
         }
 
         private static void FMData_NoReadmes_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.NoReadmes = val.EqualsTrue();
         }
 
         private static void FMData_SelectedReadme_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.SelectedReadme = val;
         }
 
         private static void FMData_ReadmeEncoding_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             if (!string.IsNullOrEmpty(val))
             {
                 fm.ReadmeAndCodePageEntries.Add(val);
@@ -120,76 +133,90 @@ namespace AngelLoader
 
         private static void FMData_SizeBytes_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             ulong.TryParse(val, out ulong result);
             fm.SizeBytes = result;
         }
 
         private static void FMData_Rating_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             bool success = int.TryParse(val, out int result);
             fm.Rating = success ? result : -1;
         }
 
         private static void FMData_ReleaseDate_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.ReleaseDate.UnixDateString = val;
         }
 
         private static void FMData_LastPlayed_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.LastPlayed.UnixDateString = val;
         }
 
         private static void FMData_DateAdded_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             // PERF: Don't convert to local here; do it at display-time
             fm.DateAdded = ConvertHexUnixDateToDateTime(val, convertToLocal: false);
         }
 
         private static void FMData_FinishedOn_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             uint.TryParse(val, out uint result);
             fm.FinishedOn = result;
         }
 
         private static void FMData_FinishedOnUnknown_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.FinishedOnUnknown = val.EqualsTrue();
         }
 
         private static void FMData_Comment_Set(FanMission fm, string val)
         {
+            // We require this value to be untrimmed
             fm.Comment = val;
         }
 
         private static void FMData_DisabledMods_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.DisabledMods = val;
         }
 
         private static void FMData_DisableAllMods_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.DisableAllMods = val.EqualsTrue();
         }
 
         private static void FMData_HasResources_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.ResourcesScanned = !val.EqualsI("NotScanned");
             FillFMHasXFields(fm, val);
         }
 
         private static void FMData_LangsScanned_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.LangsScanned = val.EqualsTrue();
         }
 
         private static void FMData_Langs_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             SetFMLanguages(fm, val);
         }
 
         private static void FMData_SelectedLang_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             if (LangStringsToEnums.TryGetValue(val, out var result))
             {
                 fm.SelectedLang = result;
@@ -198,6 +225,7 @@ namespace AngelLoader
 
         private static void FMData_TagsString_Set(FanMission fm, string val)
         {
+            val = val.Trim();
             fm.TagsString = val;
         }
 

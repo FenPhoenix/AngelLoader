@@ -21,6 +21,7 @@
     <Version>1.5.4</Version>
     <AssemblyVersion>1.5.4</AssemblyVersion>
     <FileVersion>1.5.4</FileVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">

@@ -246,6 +246,15 @@ namespace FenGen
                 w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ")");
                 w.WL("{");
 
+                if (!field.DoNotTrimValue)
+                {
+                    w.WL(val + " = " + val + ".Trim();");
+                }
+                else
+                {
+                    w.WL("// We require this value to be untrimmed");
+                }
+
                 if (field.Type.StartsWith("List<"))
                 {
                     string listType = field.Type.Substring(field.Type.IndexOf('<')).TrimStart('<').TrimEnd('>');

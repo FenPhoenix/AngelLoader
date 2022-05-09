@@ -95,7 +95,7 @@ namespace AngelLoader
             }
         }
 
-        internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)
+        internal static unsafe void ReadFMDataIni(string fileName, List<FanMission> fmsList)
         {
             fmsList.Clear();
 
@@ -133,17 +133,13 @@ namespace AngelLoader
                 int eqIndex = lineTS.IndexOf('=');
                 if (eqIndex > -1)
                 {
-                    // @MEM(FMData read): There's a huge amount of Substring() calls coming from here for large FM sets.
-                    // We could do another perfect hash for the key lookup and save a third of the allocations.
-                    // Or half or something, cause valTrimmed and valRaw will almost always be the same reference.
-                    // Downside, I add new fields to the FM class somewhat more frequently than the other perfect
-                    // hashes, and regenerating is a pain (it's only semi-automated).
-                    string key = lineTS.Substring(0, eqIndex);
-                    string val = lineTS.Substring(eqIndex + 1);
-                    if (_actionDict_FMData.TryGetValue(key, out var action))
+                    // @MEM(FMData read): Some of these values are going to be bools or other knowable values
+                    // So we can avoid a Substring by just making an EndsWithTrue() method and passing the whole
+                    // string (or other appropriate end-of-string parser)
+                    if (FMDataKeyLookup.TryGetValue(lineTS, eqIndex, out var action))
                     {
-                        if (action != FMData_Comment_Set) val = val.Trim();
-                        action.Invoke(fmsList[fmsList.Count - 1], val);
+                        string val = lineTS.Substring(eqIndex + 1);
+                        action(fmsList[fmsList.Count - 1], val);
                     }
                 }
             }
