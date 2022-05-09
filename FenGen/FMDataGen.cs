@@ -425,7 +425,7 @@ namespace FenGen
                     var le = Cache.LangsEnum;
                     if (field.IsEnumAndSingleAssignment)
                     {
-                        w.WL("if (" + le.StringToEnumDictName + ".TryGetValue(" + val + ", out var result))");
+                        w.WL("if (Langs_TryGetValue(" + val + ", out var result))");
                         w.WL("{");
                         w.WL(objDotField + " = result;");
                         w.WL("}");

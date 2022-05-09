@@ -36,13 +36,13 @@ namespace AngelLoader
             Spanish = 1024
         }
 
-        public static bool LanguageIsSupported(string language) => LangStringsToEnums.ContainsKey(language);
+        public static bool LanguageIsSupported(string language) => Langs_TryGetValue(language, out _);
 
         public static string GetTranslatedLanguageName(LanguageIndex index) => LangTranslatedNames[(int)index];
 
         public static bool TryGetLanguageCodes(string language, out string[] languageCodes)
         {
-            if (LangStringsToEnums.TryGetValue(language, out Language result))
+            if (Langs_TryGetValue(language, out Language result))
             {
                 languageCodes = LangCodes[(int)LanguageToLanguageIndex(result)];
                 return true;

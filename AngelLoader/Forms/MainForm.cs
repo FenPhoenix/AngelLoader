@@ -5164,7 +5164,7 @@ namespace AngelLoader.Forms
             else
             {
                 string backingItem = EditFMLanguageComboBox.SelectedBackingItem();
-                return LangStringsToEnums.TryGetValue(backingItem, out Language language) ? language : Language.Default;
+                return Langs_TryGetValue(backingItem, out Language language) ? language : Language.Default;
             }
         }
 
@@ -5193,7 +5193,7 @@ namespace AngelLoader.Forms
 
                 return EditFMLanguageComboBox.SelectedIndex == 0
                     ? Language.Default
-                    : LangStringsToEnums.TryGetValue(EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
+                    : Langs_TryGetValue(EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
                         ? returnLanguage
                         : Language.Default;
             }

@@ -100,6 +100,8 @@ namespace AngelLoader
             return true;
         }
 
+        public static bool Langs_TryGetValue(string str, out Language result) => Langs_TryGetValue(str, 0, str.Length, out result);
+
         public static bool Langs_TryGetValue(string str, int start, int end, out Language result)
         {
             int len = end - start;

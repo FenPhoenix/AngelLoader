@@ -233,7 +233,7 @@ namespace AngelLoader
         {
             val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            if (LangStringsToEnums.TryGetValue(val, out var result))
+            if (Langs_TryGetValue(val, out var result))
             {
                 fm.SelectedLang = result;
             }
