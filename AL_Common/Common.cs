@@ -187,15 +187,14 @@ namespace AL_Common
 
         public static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
-        // @MEM: Check to see we're directly after the =
-        public static bool EndEqualsTrue(this string value)
+        public static bool EndEqualsTrue(this string value, int indexAfterEq)
         {
-            int len = value.Length;
-            return len >= 4 &&
-                   (value[len - 4] == 'T' || value[len - 4] == 't') &&
-                   (value[len - 3] == 'R' || value[len - 3] == 'r') &&
-                   (value[len - 2] == 'U' || value[len - 2] == 'u') &&
-                   (value[len - 1] == 'E' || value[len - 1] == 'e');
+            int valueLen = value.Length;
+            return valueLen - indexAfterEq == 4 &&
+                   (value[valueLen - 4] == 'T' || value[valueLen - 4] == 't') &&
+                   (value[valueLen - 3] == 'R' || value[valueLen - 3] == 'r') &&
+                   (value[valueLen - 2] == 'U' || value[valueLen - 2] == 'u') &&
+                   (value[valueLen - 1] == 'E' || value[valueLen - 1] == 'e');
         }
 
         #endregion

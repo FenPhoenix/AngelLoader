@@ -353,7 +353,7 @@ namespace FenGen
                 }
                 else if (field.Type == "bool")
                 {
-                    w.WL(objDotField + " = " + val + ".EndEqualsTrue();");
+                    w.WL(objDotField + " = " + val + ".EndEqualsTrue(eqIndex + 1);");
                 }
                 else if (field.Type == "bool?")
                 {
@@ -476,7 +476,7 @@ namespace FenGen
             {
                 w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
                 w.WL("{");
-                w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue());");
+                w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(eqIndex + 1));");
                 w.WL("    " + obj + ".ResourcesScanned = true;");
                 w.WL("}");
                 w.WL();
