@@ -109,10 +109,6 @@ namespace AngelLoader.DataClasses
         [FenGenIniName("HasResources")]
         internal CustomResources Resources = CustomResources.None;
 
-        // TODO(FMData): Langs could be made into enums and flags, because we only support specific ones.
-        // This would save a lot of memory from not having them all be strings, in exchange for having to convert
-        // them on ini read/write.
-
         internal bool LangsScanned;
 
         internal Language Langs = Language.Default;
