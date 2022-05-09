@@ -133,8 +133,11 @@ namespace AngelLoader
                 int eqIndex = lineTS.IndexOf('=');
                 if (eqIndex > -1)
                 {
-                    // @MEM(FMData read): All knowable values should avoid being trimmed
-                    // bools are already done, but now we need the other knowable-value types!
+                    // @MEM(FMData read): Knowable values left:
+                    // -Game
+                    // -Resources
+                    // -Langs (we do an alloc-free parse on the value itself, but we still substring the value)
+                    // -SelectedLang
                     if (FMDataKeyLookup.TryGetValue(lineTS, eqIndex, out var action))
                     {
                         // If the value is an arbitrary string or other unknowable type, then we need to split
@@ -315,6 +318,8 @@ namespace AngelLoader
         #endregion
 
         #region FMData
+
+        // @MEM: Use this or something like it for SelectedLang too
 
         // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.
         // We don't write out whitespace between them anyway.
