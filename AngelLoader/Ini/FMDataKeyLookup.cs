@@ -92,9 +92,9 @@ namespace AngelLoader
             private sealed unsafe class NameAndAction
             {
                 internal readonly string Name;
-                internal readonly delegate*<FanMission, string, void> Action;
+                internal readonly delegate*<FanMission, string, int, void> Action;
 
-                internal NameAndAction(string name, delegate*<FanMission, string, void> action)
+                internal NameAndAction(string name, delegate*<FanMission, string, int, void> action)
                 {
                     Name = name;
                     Action = action;
@@ -217,7 +217,7 @@ namespace AngelLoader
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static unsafe bool TryGetValue(string str, int len, out delegate*<FanMission, string, void> result)
+            public static unsafe bool TryGetValue(string str, int len, out delegate*<FanMission, string, int, void> result)
             {
                 if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
                 {

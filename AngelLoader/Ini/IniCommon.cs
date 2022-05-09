@@ -133,13 +133,15 @@ namespace AngelLoader
                 int eqIndex = lineTS.IndexOf('=');
                 if (eqIndex > -1)
                 {
-                    // @MEM(FMData read): Some of these values are going to be bools or other knowable values
-                    // So we can avoid a Substring by just making an EndsWithTrue() method and passing the whole
-                    // string (or other appropriate end-of-string parser)
+                    // @MEM(FMData read): All knowable values should avoid being trimmed
+                    // bools are already done, but now we need the other knowable-value types!
                     if (FMDataKeyLookup.TryGetValue(lineTS, eqIndex, out var action))
                     {
-                        string val = lineTS.Substring(eqIndex + 1);
-                        action(fmsList[fmsList.Count - 1], val);
+                        // If the value is an arbitrary string or other unknowable type, then we need to split
+                        // the string so the value part can go in the FM field. But if the value is a knowable
+                        // type, then we don't need to split the string, we can just parse the value section.
+                        // This slashes our allocation count WAY down.
+                        action(fmsList[fmsList.Count - 1], lineTS, eqIndex);
                     }
                 }
             }

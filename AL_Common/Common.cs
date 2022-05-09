@@ -187,6 +187,16 @@ namespace AL_Common
 
         public static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
+        public static bool EndEqualsTrue(this string value)
+        {
+            int len = value.Length;
+            return len >= 4 &&
+                   (value[len - 4] == 'T' || value[len - 4] == 't') &&
+                   (value[len - 3] == 'R' || value[len - 3] == 'r') &&
+                   (value[len - 2] == 'U' || value[len - 2] == 'u') &&
+                   (value[len - 1] == 'E' || value[len - 1] == 'e');
+        }
+
         #endregion
 
         #region Contains

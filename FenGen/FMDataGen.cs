@@ -243,8 +243,13 @@ namespace FenGen
 
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
-                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ")");
+                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
                 w.WL("{");
+
+                if (field.Type != "bool")
+                {
+                    w.WL(val + " = " + val + ".Substring(eqIndex + 1);");
+                }
 
                 if (!field.DoNotTrimValue)
                 {
@@ -333,7 +338,7 @@ namespace FenGen
                 }
                 else if (field.Type == "bool")
                 {
-                    w.WL(objDotField + " = " + val + ".EqualsTrue();");
+                    w.WL(objDotField + " = " + val + ".EndEqualsTrue();");
                 }
                 else if (field.Type == "bool?")
                 {
@@ -444,9 +449,9 @@ namespace FenGen
             w.WL();
             foreach (string item in customResourceFieldNames)
             {
-                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ")");
+                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
                 w.WL("{");
-                w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EqualsTrue());");
+                w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue());");
                 w.WL("    " + obj + ".ResourcesScanned = true;");
                 w.WL("}");
                 w.WL();
