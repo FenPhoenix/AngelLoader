@@ -433,14 +433,30 @@ namespace AngelLoader
 
         internal sealed class FileNameNoExtComparer : IComparer<string>
         {
-            public int Compare(string x, string y) =>
-                x == y ? 0 :
-                x.IsEmpty() ? -1 :
-                y.IsEmpty() ? 1 :
-                string.Compare(
-                    Path.GetFileNameWithoutExtension(x),
-                    Path.GetFileNameWithoutExtension(y),
-                    StringComparison.OrdinalIgnoreCase);
+            public int Compare(string x, string y)
+            {
+                if (x == y)
+                {
+                    return 0;
+                }
+                else if (x.IsEmpty())
+                {
+                    return -1;
+                }
+                else if (y.IsEmpty())
+                {
+                    return 1;
+                }
+                else
+                {
+                    int xExtIndex = x.LastIndexOf('.');
+                    int yExtIndex = y.LastIndexOf('.');
+                    int maxLength =
+                        xExtIndex == -1 && yExtIndex == -1 ? Math.Max(x.Length, y.Length) :
+                        xExtIndex > -1 ? xExtIndex : yExtIndex;
+                    return string.Compare(x, 0, y, 0, maxLength, StringComparison.OrdinalIgnoreCase);
+                }
+            }
         }
 
         #endregion
