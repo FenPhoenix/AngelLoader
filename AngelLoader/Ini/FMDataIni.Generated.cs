@@ -293,6 +293,8 @@ namespace AngelLoader
 
         #endregion
 
+        // Source dictionary for manual conversion - until we can get better gperf automation going
+#if false
         private static readonly Dictionary<string, Action<FanMission, string>> _actionDict_FMData = new()
         {
             { "NoArchive", FMData_NoArchive_Set },
@@ -339,6 +341,7 @@ namespace AngelLoader
 
             #endregion
         };
+#endif
 
         #endregion
 

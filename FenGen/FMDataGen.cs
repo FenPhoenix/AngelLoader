@@ -460,6 +460,8 @@ namespace FenGen
                 dictFields.Add(new Field { Name = item });
             }
 
+            w.WL("// Source dictionary for manual conversion - until we can get better gperf automation going");
+            w.WL("#if false");
             w.WL("private static readonly Dictionary<string, Action<FanMission, string>> _actionDict_FMData = new()");
             w.WL("{");
             for (int i = 0; i < dictFields.Count; i++)
@@ -482,6 +484,7 @@ namespace FenGen
                 }
             }
             w.WL("};");
+            w.WL("#endif");
             w.WL();
             w.WL("#endregion");
         }
