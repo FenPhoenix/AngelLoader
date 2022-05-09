@@ -117,6 +117,8 @@ namespace AngelLoader
                     int aLen = a.Length;
 
                     // Avoid concats for perf
+                    // @MEM(Title compare): If we can find the index past the last article, we can pass it to string.Compare()
+                    // to avoid these substrings (which are a lot of allocations)
                     if (!xArticleSet && xTitle.StartsWithIPlusWhiteSpace(a, aLen))
                     {
                         xTitle = xTitle.Substring(aLen + 1);
