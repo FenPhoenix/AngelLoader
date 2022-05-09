@@ -1,8 +1,4 @@
-﻿// @MEM(rtf):
-// We're going to keep a lot of stuff static here, since we have to run the color table parser on every RTF load
-// in dark mode, and we don't want to instantiate for example the entire symbol table over and over.
-
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
@@ -13,24 +9,24 @@ namespace AL_Common
     {
         #region Constants
 
-        public const int MaxScopes = 100;
-        public const int KeywordMaxLen = 32;
+        private const int _maxScopes = 100;
+        protected const int _keywordMaxLen = 32;
         // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
-        public const int ParamMaxLen = 10;
+        private const int _paramMaxLen = 10;
 
         #endregion
 
         #region Classes
 
-        public sealed class ScopeStack
+        protected sealed class ScopeStack
         {
             private readonly Scope[] _scopesArray;
             public int Count;
 
             public ScopeStack()
             {
-                _scopesArray = new Scope[MaxScopes];
-                for (int i = 0; i < MaxScopes; i++)
+                _scopesArray = new Scope[_maxScopes];
+                for (int i = 0; i < _maxScopes; i++)
                 {
                     _scopesArray[i] = new Scope();
                 }
@@ -46,7 +42,7 @@ namespace AL_Common
                 nextScope.InFontTable = currentScope.InFontTable;
                 nextScope.SymbolFont = currentScope.SymbolFont;
 
-                Array.Copy(currentScope.Properties, 0, nextScope.Properties, 0, PropertiesLen);
+                Array.Copy(currentScope.Properties, 0, nextScope.Properties, 0, _propertiesLen);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -56,14 +52,14 @@ namespace AL_Common
             public void ClearFast() => Count = 0;
         }
 
-        public sealed class Scope
+        protected sealed class Scope
         {
             public RtfDestinationState RtfDestinationState;
             public RtfInternalState RtfInternalState;
             public bool InFontTable;
             public SymbolFont SymbolFont;
 
-            public readonly int[] Properties = new int[PropertiesLen];
+            public readonly int[] Properties = new int[_propertiesLen];
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void DeepCopyTo(Scope dest)
@@ -73,7 +69,7 @@ namespace AL_Common
                 dest.InFontTable = InFontTable;
                 dest.SymbolFont = SymbolFont;
 
-                Array.Copy(Properties, 0, dest.Properties, 0, PropertiesLen);
+                Array.Copy(Properties, 0, dest.Properties, 0, _propertiesLen);
             }
 
             public void Reset()
@@ -108,7 +104,7 @@ namespace AL_Common
         /// </para>
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public sealed class ListFast<T>
+        protected sealed class ListFast<T>
         {
             public T[] ItemsArray;
             private int _itemsArrayLength;
@@ -192,7 +188,7 @@ namespace AL_Common
             }
         }
 
-        public sealed class Symbol
+        protected sealed class Symbol
         {
             public readonly string Keyword;
             public readonly int DefaultParam;
@@ -213,7 +209,7 @@ namespace AL_Common
             }
         }
 
-        public sealed class SymbolDict
+        protected sealed class SymbolDict
         {
             /* ANSI-C code produced by gperf version 3.1 */
             /* Command-line: gperf --output-file='C:\\gperf_out.txt' -t 'C:\\gperf_in.txt'  */
@@ -599,7 +595,7 @@ namespace AL_Common
 
         #region Enums
 
-        public enum SpecialType
+        protected enum SpecialType
         {
             HeaderCodePage,
             DefaultFont,
@@ -613,7 +609,7 @@ namespace AL_Common
             ColorTable
         }
 
-        public enum KeywordType
+        protected enum KeywordType
         {
             Character,
             Property,
@@ -621,22 +617,22 @@ namespace AL_Common
             Special
         }
 
-        public enum DestinationType
+        protected enum DestinationType
         {
             FieldInstruction,
             IgnoreButDontSkipGroup,
             Skip
         }
 
-        public const int PropertiesLen = 3;
-        public enum Property
+        private const int _propertiesLen = 3;
+        protected enum Property
         {
             Hidden,
             UnicodeCharSkipCount,
             FontNum
         }
 
-        public enum SymbolFont
+        protected enum SymbolFont
         {
             None,
             Symbol,
@@ -644,20 +640,20 @@ namespace AL_Common
             Webdings
         }
 
-        public enum RtfDestinationState
+        protected enum RtfDestinationState
         {
             Normal,
             Skip
         }
 
-        public enum RtfInternalState
+        protected enum RtfInternalState
         {
             Normal,
             Binary,
             HexEncodedChar
         }
 
-        public enum Error
+        protected enum Error
         {
             /// <summary>
             /// No error.
@@ -705,19 +701,21 @@ namespace AL_Common
 
         #region Resettables
 
-        public static readonly ListFast<char> _keyword = new ListFast<char>(KeywordMaxLen);
+        protected readonly ListFast<char> _keyword = new ListFast<char>(_keywordMaxLen);
 
         protected int _binaryCharsLeftToSkip;
         protected int _unicodeCharsLeftToSkip;
 
         protected bool _skipDestinationIfUnknown;
 
-        public static readonly SymbolDict Symbols = new SymbolDict();
+        // Static - otherwise the color table parser instantiates this huge thing every RTF readme in dark mode!
+        // Also it's readonly so it's thread-safe anyway.
+        protected static readonly SymbolDict Symbols = new SymbolDict();
 
         // Highest measured was 10
-        public static readonly ScopeStack _scopeStack = new ScopeStack();
+        protected readonly ScopeStack _scopeStack = new ScopeStack();
 
-        public static readonly Scope _currentScope = new Scope();
+        protected readonly Scope _currentScope = new Scope();
 
         // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
         protected int _groupCount;
@@ -869,7 +867,7 @@ namespace AL_Common
         protected Error PushScope()
         {
             // Don't wait for out-of-memory; just put a sane cap on it.
-            if (_scopeStack.Count >= MaxScopes) return Error.StackOverflow;
+            if (_scopeStack.Count >= _maxScopes) return Error.StackOverflow;
 
             _scopeStack.Push(_currentScope);
 
@@ -918,12 +916,12 @@ namespace AL_Common
 
             int i;
             bool eof = false;
-            for (i = 0; i < KeywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
+            for (i = 0; i < _keywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
             {
                 if (eof) return Error.EndOfFile;
                 _keyword.AddFast(ch);
             }
-            if (i > KeywordMaxLen) return Error.KeywordTooLong;
+            if (i > _keywordMaxLen) return Error.KeywordTooLong;
 
             if (ch == '-')
             {
@@ -936,7 +934,7 @@ namespace AL_Common
                 hasParam = true;
 
                 // Parse param in real-time to avoid doing a second loop over
-                for (i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, eof = !GetNextChar(out ch))
+                for (i = 0; i < _paramMaxLen && ch.IsAsciiNumeric(); i++, eof = !GetNextChar(out ch))
                 {
                     if (eof) return Error.EndOfFile;
                     param += ch - '0';
@@ -945,7 +943,7 @@ namespace AL_Common
                 // Undo the last multiply just one time to avoid checking if we should do it every time through
                 // the loop
                 param /= 10;
-                if (i > ParamMaxLen) return Error.ParameterTooLong;
+                if (i > _paramMaxLen) return Error.ParameterTooLong;
 
                 if (negateParam) param = -param;
             }

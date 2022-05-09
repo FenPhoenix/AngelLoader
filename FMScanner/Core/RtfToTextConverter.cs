@@ -67,11 +67,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
 using static AL_Common.Common;
-using static AL_Common.RTFParserBase;
 
 namespace FMScanner
 {
-    public sealed partial class RtfToTextConverter
+    public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     {
         #region Constants
 
@@ -94,11 +93,11 @@ namespace FMScanner
         private void ResetStream(Stream stream, long streamLength)
         {
             _stream = stream;
-            ResetStreamBase(streamLength);
+            base.ResetStreamBase(streamLength);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private byte StreamReadByte()
+        protected override byte StreamReadByte()
         {
             _bufferPos++;
             if (_bufferPos == _bufferLen)
@@ -1099,7 +1098,7 @@ namespace FMScanner
 
         private void Reset(Stream stream, long streamLength)
         {
-            ResetBase();
+            base.ResetBase();
 
             #region Fixed-size fields
 
@@ -1208,7 +1207,7 @@ namespace FMScanner
 
         #region Act on keywords
 
-        private Error DispatchKeyword(int param, bool hasParam)
+        protected override Error DispatchKeyword(int param, bool hasParam)
         {
             if (!Symbols.TryGetValue(_keyword, out Symbol? symbol))
             {
