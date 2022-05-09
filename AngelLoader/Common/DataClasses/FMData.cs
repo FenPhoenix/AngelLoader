@@ -65,11 +65,13 @@ namespace AngelLoader.DataClasses
         internal readonly List<string> ReadmeAndCodePageEntries = new List<string>();
 
         [FenGenNumericEmpty(0)]
+        [FenGenMaxDigits(20)]
         internal ulong SizeBytes = 0;
 
         [FenGenIgnore]
         private int _rating = -1;
         [FenGenNumericEmpty(-1)]
+        [FenGenMaxDigits(2)]
         internal int Rating { get => _rating; set => _rating = value.Clamp(-1, 10); }
 
         internal readonly ExpandableDate ReleaseDate = new ExpandableDate();
@@ -88,6 +90,7 @@ namespace AngelLoader.DataClasses
         // ReSharper disable once RedundantDefaultMemberInitializer
         private uint _finishedOn = 0;
         [FenGenNumericEmpty(0)]
+        [FenGenMaxDigits(2)]
         internal uint FinishedOn { get => _finishedOn; set => _finishedOn = value.Clamp(0u, 15u); }
         internal bool FinishedOnUnknown;
 

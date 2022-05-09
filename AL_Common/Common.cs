@@ -187,6 +187,7 @@ namespace AL_Common
 
         public static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
+        // @MEM: Check to see we're directly after the =
         public static bool EndEqualsTrue(this string value)
         {
             int len = value.Length;

@@ -141,17 +141,15 @@ namespace AngelLoader
 
         private static void FMData_SizeBytes_Set(FanMission fm, string val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            ulong.TryParse(val, out ulong result);
+            TryParseULongFromEnd(val, eqIndex + 1, 20, out ulong result);
             fm.SizeBytes = result;
         }
 
         private static void FMData_Rating_Set(FanMission fm, string val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            bool success = int.TryParse(val, out int result);
+            bool success = TryParseIntFromEnd(val, eqIndex + 1, 2, out int result);
             fm.Rating = success ? result : -1;
         }
 
@@ -179,9 +177,8 @@ namespace AngelLoader
 
         private static void FMData_FinishedOn_Set(FanMission fm, string val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            uint.TryParse(val, out uint result);
+            TryParseUIntFromEnd(val, eqIndex + 1, 2, out uint result);
             fm.FinishedOn = result;
         }
 

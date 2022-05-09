@@ -22,6 +22,7 @@ namespace FenGen
             internal ListType ListType = ListType.MultipleLines;
             internal ListDistinctType ListDistinctType = ListDistinctType.None;
             internal long? NumericEmpty;
+            internal int? MaxDigits;
             internal bool DoNotTrimValue;
             internal bool DoNotConvertDateTimeToLocal;
             internal bool DoNotWrite;
@@ -155,6 +156,14 @@ namespace FenGen
                                 field.NumericEmpty = result;
                                 break;
                             }
+                            case GenAttributes.FenGenMaxDigits:
+                            {
+                                CheckParamCount(attr, 1);
+                                string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
+                                int.TryParse(val, out int result);
+                                field.MaxDigits = result > 0 ? result : null;
+                                break;
+                            }
                             case GenAttributes.FenGenListType:
                             {
                                 CheckParamCount(attr, 1);
@@ -244,7 +253,15 @@ namespace FenGen
                 w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
                 w.WL("{");
 
-                if (field.Type != "bool")
+                string parseMethodName = field.Type switch
+                {
+                    "int" => "TryParseIntFromEnd",
+                    "uint" => "TryParseUIntFromEnd",
+                    "ulong" => "TryParseULongFromEnd",
+                    _ => ""
+                };
+
+                if (field.Type != "bool" && parseMethodName.IsEmpty())
                 {
                     w.WL(val + " = " + val + ".Substring(eqIndex + 1);");
                 }
@@ -347,12 +364,26 @@ namespace FenGen
                     string floatArgs = GetFloatArgsRead(field.Type);
                     if (field.NumericEmpty != null && field.NumericEmpty != 0)
                     {
-                        w.WL("bool success = " + field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
+                        if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
+                        {
+                            w.WL("bool success = " + parseMethodName + "(" + val + ", eqIndex + 1, " + field.MaxDigits + ", out " + field.Type + " result);");
+                        }
+                        else
+                        {
+                            w.WL("bool success = " + field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
+                        }
                         w.WL(objDotField + " = success ? result : " + field.NumericEmpty + ";");
                     }
                     else
                     {
-                        w.WL(field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
+                        if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
+                        {
+                            w.WL(parseMethodName + "(" + val + ", eqIndex + 1, " + field.MaxDigits + ", out " + field.Type + " result);");
+                        }
+                        else
+                        {
+                            w.WL(field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
+                        }
                         w.WL(objDotField + " = result;");
                     }
                 }

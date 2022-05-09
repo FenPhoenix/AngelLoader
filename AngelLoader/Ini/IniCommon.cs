@@ -173,6 +173,147 @@ namespace AngelLoader
 
         #region Helpers
 
+        #region Positive integral value parsers
+
+        // Parses from the "value" section of the string - no substring allocation needed
+
+        private static bool TryParseIntFromEnd(string str, int indexPastEq, int maxDigits, out int result)
+        {
+            const int intMaxDigits = 10;
+
+            result = 0;
+
+            int strLen = str.Length;
+
+            if (indexPastEq >= strLen ||
+                strLen - indexPastEq > intMaxDigits ||
+                strLen > indexPastEq + maxDigits)
+            {
+                return false;
+            }
+
+            try
+            {
+                int end = Math.Min(strLen, indexPastEq + maxDigits);
+                for (int i = indexPastEq; i < end; i++)
+                {
+                    char c = str[i];
+                    if (c.IsAsciiNumeric())
+                    {
+                        checked
+                        {
+                            result *= 10;
+                            result += c - '0';
+                        }
+                    }
+                    else
+                    {
+                        result = 0;
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                result = 0;
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool TryParseULongFromEnd(string str, int indexPastEq, int maxDigits, out ulong result)
+        {
+            const int ulongMaxDigits = 20;
+
+            result = 0;
+
+            int strLen = str.Length;
+
+            if (indexPastEq >= strLen ||
+                strLen - indexPastEq > ulongMaxDigits ||
+                strLen > indexPastEq + maxDigits)
+            {
+                return false;
+            }
+
+            try
+            {
+                int end = Math.Min(strLen, indexPastEq + maxDigits);
+                for (int i = indexPastEq; i < end; i++)
+                {
+                    char c = str[i];
+                    if (c.IsAsciiNumeric())
+                    {
+                        checked
+                        {
+                            result *= 10;
+                            result += (ulong)(c - '0');
+                        }
+                    }
+                    else
+                    {
+                        result = 0;
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                result = 0;
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool TryParseUIntFromEnd(string str, int indexPastEq, int maxDigits, out uint result)
+        {
+            const int uintMaxDigits = 10;
+
+            result = 0;
+
+            int strLen = str.Length;
+
+            if (indexPastEq >= strLen ||
+                strLen - indexPastEq > uintMaxDigits ||
+                strLen > indexPastEq + maxDigits)
+            {
+                return false;
+            }
+
+            try
+            {
+                int end = Math.Min(strLen, indexPastEq + maxDigits);
+                for (int i = indexPastEq; i < end; i++)
+                {
+                    char c = str[i];
+                    if (c.IsAsciiNumeric())
+                    {
+                        checked
+                        {
+                            result *= 10;
+                            result += (uint)(c - '0');
+                        }
+                    }
+                    else
+                    {
+                        result = 0;
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                result = 0;
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion
+
         #region FMData
 
         // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.

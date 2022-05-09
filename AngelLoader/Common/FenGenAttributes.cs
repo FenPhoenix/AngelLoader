@@ -74,6 +74,13 @@ namespace AngelLoader
             internal FenGenNumericEmptyAttribute(long value) { }
         }
 
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal sealed class FenGenMaxDigitsAttribute : Attribute
+        {
+            internal FenGenMaxDigitsAttribute(int value) { }
+        }
+
         /// <summary>
         /// List type can be "MultipleLines" or "CommaSeparated".
         /// </summary>
