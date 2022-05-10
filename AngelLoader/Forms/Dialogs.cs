@@ -207,21 +207,21 @@ namespace AngelLoader.Forms
             string message,
             string title,
             MessageBoxIcon icon = MessageBoxIcon.Warning) => InvokeIfViewExists(() =>
-        {
-            if (Config.DarkMode)
             {
-                using var d = new DarkTaskDialog(
-                    message: message,
-                    title: title,
-                    icon: icon,
-                    yesText: LText.Global.OK,
-                    defaultButton: DarkTaskDialog.Button.Yes);
-                d.ShowDialogDark();
-            }
-            else
-            {
-                MessageBox.Show(message, title, MessageBoxButtons.OK, icon);
-            }
-        });
+                if (Config.DarkMode)
+                {
+                    using var d = new DarkTaskDialog(
+                        message: message,
+                        title: title,
+                        icon: icon,
+                        yesText: LText.Global.OK,
+                        defaultButton: DarkTaskDialog.Button.Yes);
+                    d.ShowDialogDark();
+                }
+                else
+                {
+                    MessageBox.Show(message, title, MessageBoxButtons.OK, icon);
+                }
+            });
     }
 }
