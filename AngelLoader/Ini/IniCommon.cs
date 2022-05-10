@@ -14,6 +14,8 @@ using static AngelLoader.LanguageSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
+// @MEM(FMData.ini writer): We should write to the stream per FM, not make a huge 1MB+ StringBuilder with literally everything
+
 namespace AngelLoader
 {
     internal static partial class Ini
@@ -102,7 +104,7 @@ namespace AngelLoader
 
             //var iniLines = File_ReadAllLines_List(fileName, Encoding.UTF8);
             using var fs = File.OpenRead(fileName);
-            using var sr = new StreamReader_Fast(fs, Encoding.UTF8);
+            using var sr = new StreamReader_Fast(fs, Encoding.UTF8, 1024);
 
             //int fmCount = 0;
             //for (int i = 0; i < iniLines.Count; i++)

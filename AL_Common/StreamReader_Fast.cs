@@ -26,7 +26,7 @@ namespace AL_Common
         private Decoder _decoder;
         private byte[] _byteBuffer;
         private char[] _charBuffer;
-        private readonly StringBuilder _sb = new();
+        private readonly StringBuilder _sb;
         private readonly byte[] _preamble;   // Encoding's preamble, which identifies this encoding.
         private int _charPos;
         private int _charLen;
@@ -54,23 +54,23 @@ namespace AL_Common
         // but this type is serializable, and this field's name was _closable.
         private readonly bool _closable;  // Whether to close the underlying stream.
 
-        public StreamReader_Fast(Stream stream)
-            : this(stream, true)
+        public StreamReader_Fast(Stream stream, int initialSBCapacity)
+            : this(stream, true, initialSBCapacity)
         {
         }
 
-        public StreamReader_Fast(Stream stream, bool detectEncodingFromByteOrderMarks)
-            : this(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks, DefaultBufferSize, false)
+        public StreamReader_Fast(Stream stream, bool detectEncodingFromByteOrderMarks, int initialSBCapacity)
+            : this(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks, DefaultBufferSize, false, initialSBCapacity)
         {
         }
 
-        public StreamReader_Fast(Stream stream, Encoding encoding)
-            : this(stream, encoding, true, DefaultBufferSize, false)
+        public StreamReader_Fast(Stream stream, Encoding encoding, int initialSBCapacity)
+            : this(stream, encoding, true, DefaultBufferSize, false, initialSBCapacity)
         {
         }
 
-        public StreamReader_Fast(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks)
-            : this(stream, encoding, detectEncodingFromByteOrderMarks, DefaultBufferSize, false)
+        public StreamReader_Fast(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, int initialSBCapacity)
+            : this(stream, encoding, detectEncodingFromByteOrderMarks, DefaultBufferSize, false, initialSBCapacity)
         {
         }
 
@@ -84,12 +84,12 @@ namespace AL_Common
         // unicode, and big endian unicode text, but that's it.  If neither
         // of those three match, it will use the Encoding you provided.
         // 
-        public StreamReader_Fast(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, int bufferSize)
-            : this(stream, encoding, detectEncodingFromByteOrderMarks, bufferSize, false)
+        public StreamReader_Fast(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, int bufferSize, int initialSBCapacity)
+            : this(stream, encoding, detectEncodingFromByteOrderMarks, bufferSize, false, initialSBCapacity)
         {
         }
 
-        public StreamReader_Fast(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, int bufferSize, bool leaveOpen)
+        public StreamReader_Fast(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, int bufferSize, bool leaveOpen, int initialSBCapacity)
         {
             if (!stream.CanRead)
             {
@@ -100,6 +100,7 @@ namespace AL_Common
                 throw new ArgumentOutOfRangeException(nameof(bufferSize), "Argument out of range");
             }
 
+            _sb = new StringBuilder(initialSBCapacity);
             this._stream = stream;
             this._encoding = encoding;
             _decoder = encoding.GetDecoder();
