@@ -88,7 +88,6 @@ namespace AngelLoader
                 try
                 {
                     Ini.ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
-                    throw new Exception("");
                 }
                 catch (Exception ex)
                 {
