@@ -131,12 +131,8 @@ namespace AngelLoader
 
         private static void FMData_ReadmeEncoding_Set(FanMission fm, string val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            if (!string.IsNullOrEmpty(val))
-            {
-                fm.ReadmeAndCodePageEntries.Add(val);
-            }
+            AddReadmeEncoding(fm, val, eqIndex + 1);
         }
 
         private static void FMData_SizeBytes_Set(FanMission fm, string val, int eqIndex)
@@ -442,10 +438,10 @@ namespace AngelLoader
                     sb.Append("SelectedReadme=");
                     sb.AppendLine(fm.SelectedReadme);
                 }
-                foreach (string s in fm.ReadmeAndCodePageEntries)
+                foreach (var item in fm.ReadmeCodePages)
                 {
                     sb.Append("ReadmeEncoding=");
-                    sb.AppendLine(s);
+                    sb.Append(item.Key).Append(',').AppendLine(item.Value.ToString());
                 }
                 if (fm.SizeBytes != 0)
                 {

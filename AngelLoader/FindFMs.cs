@@ -667,35 +667,10 @@ namespace AngelLoader
                 fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
                 FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
 
-                AddReadmeEncodingEntriesToDict(fm);
-
                 FMsViewList.Add(fm);
             }
 
             FMsViewList.TrimExcess();
-        }
-
-        private static void AddReadmeEncodingEntriesToDict(FanMission fm)
-        {
-            for (int i = 0; i < fm.ReadmeAndCodePageEntries.Count; i++)
-            {
-                string entry = fm.ReadmeAndCodePageEntries[i];
-
-                int lastIndexOfComma = entry.LastIndexOf(',');
-                if (lastIndexOfComma == -1) continue;
-
-                string readme = entry.Substring(0, lastIndexOfComma);
-                string codePageStr = entry.Substring(lastIndexOfComma + 1);
-
-                // 0 = default, we don't want to handle "default" as it's not a specific code page
-                if (readme.IsEmpty() || !int.TryParse(codePageStr, out int result) || result <= 0)
-                {
-                    continue;
-                }
-
-                // @DIRSEP: Backslashes to match the format of SelectedReadme
-                fm.ReadmeCodePages[readme.ToBackSlashes()] = result;
-            }
         }
     }
 }

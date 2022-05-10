@@ -24,9 +24,11 @@ namespace FenGen
             internal long? NumericEmpty;
             internal int? MaxDigits;
             internal bool DoNotTrimValue;
+            internal bool DoNotSubstring;
             internal bool DoNotConvertDateTimeToLocal;
             internal bool DoNotWrite;
             internal bool IsEnumAndSingleAssignment;
+            internal bool IsReadmeEncoding;
         }
 
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
@@ -138,11 +140,17 @@ namespace FenGen
                             case GenAttributes.FenGenFlagsSingleAssignment:
                                 field.IsEnumAndSingleAssignment = true;
                                 break;
+                            case GenAttributes.FenGenReadmeEncoding:
+                                field.IsReadmeEncoding = true;
+                                break;
                             case GenAttributes.FenGenDoNotConvertDateTimeToLocal:
                                 field.DoNotConvertDateTimeToLocal = true;
                                 break;
                             case GenAttributes.FenGenDoNotTrimValue:
                                 field.DoNotTrimValue = true;
+                                break;
+                            case GenAttributes.FenGenDoNotSubstring:
+                                field.DoNotSubstring = true;
                                 break;
                             case GenAttributes.FenGenNumericEmpty:
                             {
@@ -261,7 +269,7 @@ namespace FenGen
                     _ => ""
                 };
 
-                if (field.Type != "bool" && parseMethodName.IsEmpty())
+                if (field.Type != "bool" && parseMethodName.IsEmpty() && !field.DoNotSubstring)
                 {
                     w.WL(val + " = " + val + ".Substring(eqIndex + 1);");
                 }
@@ -275,7 +283,11 @@ namespace FenGen
                     w.WL("// We require this value to be untrimmed");
                 }
 
-                if (field.Type.StartsWith("List<"))
+                if (field.IsReadmeEncoding)
+                {
+                    w.WL("AddReadmeEncoding(" + obj + ", " + val + ", eqIndex + 1);");
+                }
+                else if (field.Type.StartsWith("List<"))
                 {
                     string listType = field.Type.Substring(field.Type.IndexOf('<')).TrimStart('<').TrimEnd('>');
 
@@ -587,7 +599,15 @@ namespace FenGen
                     w.WL("sb.AppendLine(" + value + suffix + ");");
                 }
 
-                if (field.Type.StartsWith("List<"))
+                if (field.IsReadmeEncoding)
+                {
+                    w.WL("foreach (var item in " + objDotField + ")");
+                    w.WL("{");
+                    w.WL("sb.Append(\"" + fieldIniName + "=\");");
+                    w.WL("sb.Append(item.Key).Append(',').AppendLine(item.Value.ToString());");
+                    w.WL("}");
+                }
+                else if (field.Type.StartsWith("List<"))
                 {
                     bool listTypeIsString = field.Type == "List<string>";
                     if (field.ListType == ListType.MultipleLines)

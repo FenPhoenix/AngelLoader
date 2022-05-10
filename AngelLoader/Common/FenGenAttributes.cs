@@ -22,6 +22,15 @@ namespace AngelLoader
         //  but we don't want anything extra at all.
 
         [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal sealed class FenGenReadmeEncodingAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal sealed class FenGenDoNotSubstringAttribute : Attribute { }
+
+
+        [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
         internal sealed class FenGenFlagsSingleAssignment : Attribute { }
 

@@ -1783,11 +1783,6 @@ namespace AngelLoader
         private static void UpdateFMReadmeCodePages(FanMission fm, int codePage)
         {
             fm.ReadmeCodePages[fm.SelectedReadme] = codePage;
-            fm.ReadmeAndCodePageEntries.Clear();
-            foreach (var item in fm.ReadmeCodePages)
-            {
-                fm.ReadmeAndCodePageEntries.Add(item.Key + "," + item.Value);
-            }
         }
 
         internal static async Task PinOrUnpinFM(bool pin)

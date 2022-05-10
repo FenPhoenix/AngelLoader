@@ -317,6 +317,23 @@ namespace AngelLoader
 
         #endregion
 
+        private static void AddReadmeEncoding(FanMission fm, string line, int indexAfterEq)
+        {
+            int lastIndexOfComma = line.LastIndexOf(',');
+
+            if (lastIndexOfComma > -1 &&
+                TryParseIntFromEnd(line, lastIndexOfComma + 1, 10, out int result) &&
+                // 0 = default, we don't want to handle "default" as it's not a specific code page
+                result > 0)
+            {
+                string readme = line.Substring(indexAfterEq, lastIndexOfComma - indexAfterEq);
+                if (!readme.IsEmpty())
+                {
+                    fm.ReadmeCodePages[readme.ToBackSlashes()] = result;
+                }
+            }
+        }
+
         #region FMData
 
         // @MEM: Use this or something like it for SelectedLang too
