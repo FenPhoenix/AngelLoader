@@ -395,6 +395,9 @@ namespace AngelLoader
         }
 
         // @BigO(FindFMs.SetInstalledNames())
+        // This is extremely tricky to try to do with hash tables... Because the FM needs to have its installed
+        // dir modified during the loop, whereas if we store the names in a Dictionary<string, FanMission> then
+        // those wouldn't get updated. Maybe we need to like remove the dict items as we handle them or something...?
         private static void SetInstalledNames()
         {
             // Fill in empty installed dir names, making sure to check for and handle truncated name collisions
