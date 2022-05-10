@@ -154,7 +154,7 @@ namespace AL_Common
             return true;
         }
 
-        public static bool IsAsciiLower(this string str)
+        public static bool IsAsciiLower(this StringBuilder str)
         {
             for (int i = 0; i < str.Length; i++)
             {
@@ -195,6 +195,17 @@ namespace AL_Common
         public static bool EqualsI(this string first, string second) => first.Equals(second, OrdinalIgnoreCase);
 
         public static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
+
+        // @MEM: We'll eventually have Games look up in a perfect hash I guess
+        public static bool EqualsAscii(this StringBuilder sb, string value)
+        {
+            if (sb.Length != value.Length) return false;
+            for (int i = 0; i < sb.Length; i++)
+            {
+                if (sb[i] != value[i]) return false;
+            }
+            return true;
+        }
 
         public static bool EndEqualsTrue(this StringBuilder value, int indexAfterEq)
         {
@@ -455,6 +466,11 @@ namespace AL_Common
         public static string Substring(this StringBuilder sb, int startIndex)
         {
             return sb.ToString(startIndex, sb.Length - startIndex);
+        }
+
+        public static StringBuilder Substring_SB(this StringBuilder sb, int startIndex)
+        {
+            return sb.Remove(0, startIndex);
         }
 
         public static string Substring(this StringBuilder sb, int startIndex, int length)

@@ -141,10 +141,9 @@ namespace AngelLoader
                 if (eqIndex > -1)
                 {
                     // @MEM(FMData read): Knowable values left:
-                    // -Game
-                    // -Resources
-                    // -Langs (we do an alloc-free parse on the value itself, but we still substring the value)
-                    // -SelectedLang
+                    // -Game (we don't take an allocation, but it's an if statement when it should be a ph lookup)
+                    // -TagsString (we should just put them straight into the tags collection,
+                    //  because we do that anyway on FM find!
                     if (FMDataKeyLookup.TryGetValue(lineTS, eqIndex, out var action))
                     {
                         // If the value is an arbitrary string or other unknowable type, then we need to split
@@ -343,14 +342,16 @@ namespace AngelLoader
 
         #region FMData
 
-        // @MEM: Use this or something like it for SelectedLang too
-
         // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.
         // We don't write out whitespace between them anyway.
-        private static void SetFMLanguages(FanMission fm, string langsString)
+        private static void SetFMLanguages(FanMission fm, StringBuilder langsString)
         {
             // It's always supposed to be ascii lowercase, so only take the allocation if it's not
-            if (!langsString.IsAsciiLower()) langsString = langsString.ToLowerInvariant();
+            if (!langsString.IsAsciiLower())
+            {
+                string temp = langsString.ToString().ToLowerInvariant();
+                langsString = new StringBuilder(temp);
+            }
 
             fm.Langs = Language.Default;
 

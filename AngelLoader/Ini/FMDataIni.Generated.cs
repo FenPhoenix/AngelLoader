@@ -82,25 +82,25 @@ namespace AngelLoader
 
         private static void FMData_Game_Set(FanMission fm, StringBuilder val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
+            val = val.Substring_SB(eqIndex + 1);
             val = val.Trim();
-            if (val.EqualsI("Thief1"))
+            if (val.EqualsAscii("Thief1"))
             {
                 fm.Game = Game.Thief1;
             }
-            else if (val.EqualsI("Thief2"))
+            else if (val.EqualsAscii("Thief2"))
             {
                 fm.Game = Game.Thief2;
             }
-            else if (val.EqualsI("Thief3"))
+            else if (val.EqualsAscii("Thief3"))
             {
                 fm.Game = Game.Thief3;
             }
-            else if (val.EqualsI("SS2"))
+            else if (val.EqualsAscii("SS2"))
             {
                 fm.Game = Game.SS2;
             }
-            else if (val.EqualsI("Unsupported"))
+            else if (val.EqualsAscii("Unsupported"))
             {
                 fm.Game = Game.Unsupported;
             }
@@ -206,7 +206,7 @@ namespace AngelLoader
 
         private static void FMData_HasResources_Set(FanMission fm, StringBuilder val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
+            val = val.Substring_SB(eqIndex + 1);
             val = val.Trim();
             fm.ResourcesScanned = !val.EqualsIAscii("NotScanned");
             FillFMHasXFields(fm, val);
@@ -220,16 +220,16 @@ namespace AngelLoader
 
         private static void FMData_Langs_Set(FanMission fm, StringBuilder val, int eqIndex)
         {
-            string valStr = val.Substring(eqIndex +1).ToString();
-            valStr = valStr.Trim();
-            SetFMLanguages(fm, valStr);
+            val = val.Substring_SB(eqIndex + 1);
+            val = val.Trim();
+            SetFMLanguages(fm, val);
         }
 
         private static void FMData_SelectedLang_Set(FanMission fm, StringBuilder val, int eqIndex)
         {
-            string valStr = val.Substring(eqIndex +1).ToString();
-            valStr = valStr.Trim();
-            if (Langs_TryGetValue(val, out var result))
+            val = val.Substring_SB(eqIndex + 1);
+            val = val.Trim();
+            if (Langs_TryGetValue(val, eqIndex + 1, val.Length, out var result))
             {
                 fm.SelectedLang = result;
             }

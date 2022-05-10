@@ -276,7 +276,7 @@ namespace FenGen
                         or "ExpandableDate"
                         or "DateTime?"
                         or "List<string>"
-                    || field.Type == Cache.LangsEnum.Name)
+                    )
                 {
                     needsStrTrim = true;
                     w.WL("string valStr = val.Substring(eqIndex +1).ToString();");
@@ -285,7 +285,7 @@ namespace FenGen
                          parseMethodName.IsEmpty() &&
                          !field.DoNotSubstring)
                 {
-                    w.WL(val + " = " + val + ".Substring(eqIndex + 1);");
+                    w.WL(val + " = " + val + ".Substring_SB(eqIndex + 1);");
                 }
 
                 if (!field.DoNotTrimValue)
@@ -437,7 +437,7 @@ namespace FenGen
                     {
                         string ifType = gi > 1 ? "else if" : "if";
                         string gameDotGameType = gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi];
-                        w.WL(ifType + " (" + val + ".EqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
+                        w.WL(ifType + " (" + val + ".EqualsAscii(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
                         w.WL("{");
                         w.WL(objDotField + " = " + gameDotGameType + ";");
                         w.WL("}");
@@ -452,14 +452,14 @@ namespace FenGen
                     var le = Cache.LangsEnum;
                     if (field.IsEnumAndSingleAssignment)
                     {
-                        w.WL("if (Langs_TryGetValue(" + val + ", out var result))");
+                        w.WL("if (Langs_TryGetValue(" + val + ", eqIndex + 1, val.Length, out var result))");
                         w.WL("{");
                         w.WL(objDotField + " = result;");
                         w.WL("}");
                     }
                     else
                     {
-                        w.WL("SetFMLanguages(" + obj + ", valStr);");
+                        w.WL("SetFMLanguages(" + obj + ", " + val + ");");
                     }
                 }
                 else if (field.Type == "ExpandableDate")
