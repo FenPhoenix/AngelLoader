@@ -368,7 +368,7 @@ namespace AngelLoader
                                 var fm = new FanMission
                                 {
                                     Archive = archive,
-                                    InstalledDir = archive.ToInstDirNameFMSel(),
+                                    InstalledDir = archive.ToInstDirNameFMSel(true),
                                     SizeBytes = sizeBytes
                                 };
 

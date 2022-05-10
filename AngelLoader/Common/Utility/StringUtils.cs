@@ -123,7 +123,7 @@ namespace AngelLoader
         /// <param name="archiveName">Filename without path or extension.</param>
         /// <param name="truncate">Whether to truncate the name to 30 characters or less.</param>
         /// <returns></returns>
-        internal static string ToInstDirNameFMSel(this string archiveName, bool truncate = true) => ToInstDirName(archiveName, "+;:.,<>?*~| ", truncate);
+        internal static string ToInstDirNameFMSel(this string archiveName, bool truncate) => ToInstDirName(archiveName, "+;:.,<>?*~| ", truncate);
 
         private static readonly StringBuilder _toInstDirNameSB = new StringBuilder(30);
         private static string ToInstDirName(string archiveName, string illegalChars, bool truncate)

@@ -312,7 +312,7 @@ namespace AngelLoader
             if (NewInstalledDirs())
 #endif
             {
-                SetInstalledNames();
+                EnsureUniqueInstalledNames();
             }
 
             // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned
@@ -394,42 +394,39 @@ namespace AngelLoader
             }
         }
 
-        // @BigO(FindFMs.SetInstalledNames())
-        // This is extremely tricky to try to do with hash tables... Because the FM needs to have its installed
-        // dir modified during the loop, whereas if we store the names in a Dictionary<string, FanMission> then
-        // those wouldn't get updated. Maybe we need to like remove the dict items as we handle them or something...?
-        private static void SetInstalledNames()
+        private static void EnsureUniqueInstalledNames()
         {
-            // Fill in empty installed dir names, making sure to check for and handle truncated name collisions
-            foreach (FanMission fm in FMDataIniList)
+            // Check for and handle truncated name collisions
+            var hash = new HashSetI(FMDataIniList.Count);
+            for (int i = 0; i < FMDataIniList.Count; i++)
             {
-                if (fm.InstalledDir.IsEmpty())
+                var fm = FMDataIniList[i];
+                if (!hash.Contains(fm.InstalledDir))
+                {
+                    hash.Add(fm.InstalledDir);
+                }
+                else
                 {
                     bool truncate = fm.Game != Game.Thief3;
-                    string instDir = fm.Archive.ToInstDirNameFMSel(truncate);
-                    int i = 0;
-
-                    // Again, an exponential search, but again, we only do it once to correct the list and then
-                    // never again
-                    while (FMDataIniList.Any(x => x.InstalledDir.EqualsI(instDir)))
+                    for (int j = 0; ; j++)
                     {
                         // Yeah, this'll never happen, but hey
-                        if (i > 999) break;
+                        // If it overflowed, oh well. You get what you deserve in that case.
+                        if (j > 999) return;
 
                         // Conform to FMSel's numbering format
-                        string append = "(" + (i + 2).ToString() + ")";
+                        string append = "(" + (j + 2).ToString() + ")";
 
-                        if (truncate && instDir.Length + append.Length > 30)
+                        if (truncate && fm.InstalledDir.Length + append.Length > 30)
                         {
-                            instDir = instDir.Substring(0, 30 - append.Length);
+                            fm.InstalledDir = fm.InstalledDir.Substring(0, 30 - append.Length);
                         }
-                        instDir += append;
+                        fm.InstalledDir += append;
 
-                        i++;
+                        if (!hash.Contains(fm.InstalledDir)) break;
                     }
 
-                    // If it overflowed, oh well. You get what you deserve in that case.
-                    fm.InstalledDir = instDir;
+                    hash.Add(fm.InstalledDir);
                 }
             }
         }
@@ -449,7 +446,7 @@ namespace AngelLoader
             for (int i = 0; i < initCount; i++)
             {
                 var fm = FMDataIniList[i];
-                if (fm.Archive.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
+                if (fm.Archive.IsEmpty() && !fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
                 {
                     fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
                 }
@@ -482,17 +479,30 @@ namespace AngelLoader
                     }
                     fm.NoArchive = false;
 
+                    if (fm.InstalledDir.IsEmpty())
+                    {
+                        bool truncate = fm.Game != Game.Thief3;
+                        fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate);
+                    }
+
                     fm.DateAdded ??= dateTimes[ai];
                 }
                 else if (fmDataIniArchiveDict.TryGetValue(archive, out fm))
                 {
                     fm.DateAdded ??= dateTimes[ai];
+
+                    if (fm.InstalledDir.IsEmpty())
+                    {
+                        bool truncate = fm.Game != Game.Thief3;
+                        fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate);
+                    }
                 }
                 else
                 {
                     FMDataIniList.Add(new FanMission
                     {
                         Archive = archive,
+                        InstalledDir = archive.ToInstDirNameFMSel(true),
                         NoArchive = false,
                         DateAdded = dateTimes[ai]
                     });
