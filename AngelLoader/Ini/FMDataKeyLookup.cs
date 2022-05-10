@@ -1,5 +1,6 @@
 ﻿//#define CONVERSION_ENABLED
 using System.Runtime.CompilerServices;
+using System.Text;
 using AngelLoader.DataClasses;
 
 namespace AngelLoader
@@ -92,9 +93,9 @@ namespace AngelLoader
             private sealed unsafe class NameAndAction
             {
                 internal readonly string Name;
-                internal readonly delegate*<FanMission, string, int, void> Action;
+                internal readonly delegate*<FanMission, StringBuilder, int, void> Action;
 
-                internal NameAndAction(string name, delegate*<FanMission, string, int, void> action)
+                internal NameAndAction(string name, delegate*<FanMission, StringBuilder, int, void> action)
                 {
                     Name = name;
                     Action = action;
@@ -205,6 +206,12 @@ namespace AngelLoader
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static uint Hash(StringBuilder str, int len)
+            {
+                return (uint)len + asso_values[str[3]] + asso_values[str[0]];
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static bool SeqEqual(string seq1, int seq1Length, string seq2)
             {
                 if (seq1Length != seq2.Length) return false;
@@ -217,7 +224,47 @@ namespace AngelLoader
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static unsafe bool TryGetValue(string str, int len, out delegate*<FanMission, string, int, void> result)
+            private static bool SeqEqual(StringBuilder seq1, int seq1Length, string seq2)
+            {
+                if (seq1Length != seq2.Length) return false;
+
+                for (int ci = 0; ci < seq1Length; ci++)
+                {
+                    if (seq1[ci] != seq2[ci]) return false;
+                }
+                return true;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static unsafe bool TryGetValue(StringBuilder str, int len, out delegate*<FanMission, StringBuilder, int, void> result)
+            {
+                if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
+                {
+                    uint key = Hash(str, len);
+
+                    if (key <= MAX_HASH_VALUE)
+                    {
+                        NameAndAction? item = _actions[key];
+                        if (item == null)
+                        {
+                            result = null;
+                            return false;
+                        }
+
+                        if (SeqEqual(str, len, item.Name))
+                        {
+                            result = item.Action;
+                            return true;
+                        }
+                    }
+                }
+
+                result = null;
+                return false;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static unsafe bool TryGetValue(string str, int len, out delegate*<FanMission, StringBuilder, int, void> result)
             {
                 if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
                 {

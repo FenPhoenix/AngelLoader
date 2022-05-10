@@ -258,7 +258,7 @@ namespace FenGen
 
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
-                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
+                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", StringBuilder " + val + ", int eqIndex)");
                 w.WL("{");
 
                 string parseMethodName = field.Type switch
@@ -269,14 +269,29 @@ namespace FenGen
                     _ => ""
                 };
 
-                if (field.Type != "bool" && parseMethodName.IsEmpty() && !field.DoNotSubstring)
+                bool needsStrTrim = false;
+
+                if (field.Type
+                        is "string"
+                        or "ExpandableDate"
+                        or "DateTime?"
+                        or "List<string>"
+                    || field.Type == Cache.LangsEnum.Name)
+                {
+                    needsStrTrim = true;
+                    w.WL("string valStr = val.Substring(eqIndex +1).ToString();");
+                }
+                else if (field.Type != "bool" &&
+                         parseMethodName.IsEmpty() &&
+                         !field.DoNotSubstring)
                 {
                     w.WL(val + " = " + val + ".Substring(eqIndex + 1);");
                 }
 
                 if (!field.DoNotTrimValue)
                 {
-                    w.WL(val + " = " + val + ".Trim();");
+                    string valToPut = needsStrTrim ? "valStr" : val;
+                    w.WL(valToPut + " = " + valToPut + ".Trim();");
                 }
                 else
                 {
@@ -294,7 +309,7 @@ namespace FenGen
                     var ldt = field.ListDistinctType;
 
                     string varToAdd = listType == "string" && field.ListType == ListType.MultipleLines
-                        ? val
+                        ? "valStr"
                         : "result";
 
                     string ignoreCaseString = ldt == ListDistinctType.CaseInsensitive && listType == "string"
@@ -312,7 +327,7 @@ namespace FenGen
                     {
                         if (field.ListType == ListType.MultipleLines)
                         {
-                            w.WL("if (!string.IsNullOrEmpty(" + val + "))");
+                            w.WL("if (!string.IsNullOrEmpty(valStr))");
                             w.WL("{");
                             w.WL(objListSet);
                             w.WL("}");
@@ -320,7 +335,7 @@ namespace FenGen
                         else
                         {
                             w.WL(objDotField + ".Clear();");
-                            w.WL("string[] items = " + val + ".Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
+                            w.WL("string[] items = valStr.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
                             w.WL("for (int a = 0; a < items.Length; a++)");
                             w.WL("{");
                             w.WL("string result = items[a].Trim();");
@@ -361,7 +376,7 @@ namespace FenGen
                 }
                 else if (field.Type == "string")
                 {
-                    w.WL(objDotField + " = " + val + ";");
+                    w.WL(objDotField + " = valStr;");
                 }
                 else if (field.Type == "bool")
                 {
@@ -444,23 +459,23 @@ namespace FenGen
                     }
                     else
                     {
-                        w.WL("SetFMLanguages(" + obj + ", " + val + ");");
+                        w.WL("SetFMLanguages(" + obj + ", valStr);");
                     }
                 }
                 else if (field.Type == "ExpandableDate")
                 {
-                    w.WL(objDotField + ".UnixDateString = " + val + ";");
+                    w.WL(objDotField + ".UnixDateString = valStr;");
                 }
                 else if (field.Type == "DateTime?")
                 {
                     w.WL("// PERF: Don't convert to local here; do it at display-time");
-                    w.WL(objDotField + " = ConvertHexUnixDateToDateTime(" + val + ", convertToLocal: " +
+                    w.WL(objDotField + " = ConvertHexUnixDateToDateTime(valStr, convertToLocal: " +
                          (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
                 }
                 else if (field.Type == "CustomResources")
                 {
                     // Totally shouldn't be hardcoded...
-                    w.WL(obj + ".ResourcesScanned = !" + val + ".EqualsI(\"NotScanned\");");
+                    w.WL(obj + ".ResourcesScanned = !" + val + ".EqualsIAscii(\"NotScanned\");");
                     w.WL("FillFMHasXFields(" + obj + ", " + val + ");");
                 }
 
@@ -486,7 +501,7 @@ namespace FenGen
             w.WL();
             foreach (string item in customResourceFieldNames)
             {
-                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
+                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", StringBuilder " + val + ", int eqIndex)");
                 w.WL("{");
                 w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(eqIndex + 1));");
                 w.WL("    " + obj + ".ResourcesScanned = true;");

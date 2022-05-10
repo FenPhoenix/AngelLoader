@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -99,21 +100,27 @@ namespace AngelLoader
         {
             fmsList.Clear();
 
-            var iniLines = File_ReadAllLines_List(fileName, Encoding.UTF8);
+            //var iniLines = File_ReadAllLines_List(fileName, Encoding.UTF8);
+            using var fs = File.OpenRead(fileName);
+            using var sr = new StreamReader_Fast(fs, Encoding.UTF8);
 
-            int fmCount = 0;
-            for (int i = 0; i < iniLines.Count; i++)
-            {
-                if (iniLines[i] == "[FM]") fmCount++;
-            }
+            //int fmCount = 0;
+            //for (int i = 0; i < iniLines.Count; i++)
+            //{
+            //    if (iniLines[i] == "[FM]") fmCount++;
+            //}
 
-            fmsList.Capacity = fmCount;
+            //fmsList.Capacity = fmCount;
 
             bool fmsListIsEmpty = true;
 
-            for (int i = 0; i < iniLines.Count; i++)
+            //for (int i = 0; i < iniLines.Count; i++)
+            StringBuilder? line;
+            while ((line = sr.ReadLine_Custom()) != null)
             {
-                string lineTS = iniLines[i].TrimStart();
+                //string lineTS = iniLines[i].TrimStart();
+
+                var lineTS = line.TrimStart();
 
                 if (lineTS.Length > 0 && lineTS[0] == '[')
                 {
@@ -180,7 +187,7 @@ namespace AngelLoader
 
         // Parses from the "value" section of the string - no substring allocation needed
 
-        private static bool TryParseIntFromEnd(string str, int indexPastSeparator, int maxDigits, out int result)
+        private static bool TryParseIntFromEnd(StringBuilder str, int indexPastSeparator, int maxDigits, out int result)
         {
             const int intMaxDigits = 10;
 
@@ -225,7 +232,7 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool TryParseULongFromEnd(string str, int indexPastSeparator, int maxDigits, out ulong result)
+        private static bool TryParseULongFromEnd(StringBuilder str, int indexPastSeparator, int maxDigits, out ulong result)
         {
             const int ulongMaxDigits = 20;
 
@@ -270,7 +277,7 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool TryParseUIntFromEnd(string str, int indexPastSeparator, int maxDigits, out uint result)
+        private static bool TryParseUIntFromEnd(StringBuilder str, int indexPastSeparator, int maxDigits, out uint result)
         {
             const int uintMaxDigits = 10;
 
@@ -317,7 +324,7 @@ namespace AngelLoader
 
         #endregion
 
-        private static void AddReadmeEncoding(FanMission fm, string line, int indexAfterEq)
+        private static void AddReadmeEncoding(FanMission fm, StringBuilder line, int indexAfterEq)
         {
             int lastIndexOfComma = line.LastIndexOf(',');
 
@@ -371,7 +378,7 @@ namespace AngelLoader
             }
         }
 
-        private static bool SegmentEquals(this string first, int start, int end, string second)
+        private static bool SegmentEquals(this StringBuilder first, int start, int end, string second)
         {
             for (; start < end; start++)
             {
@@ -398,7 +405,7 @@ namespace AngelLoader
             return true;
         }
 
-        private static void FillFMHasXFields(FanMission fm, string fieldsString)
+        private static void FillFMHasXFields(FanMission fm, StringBuilder fieldsString)
         {
             // Resources must be cleared here
             fm.Resources = CustomResources.None;

@@ -127,6 +127,15 @@ namespace AL_Common
             (char1.IsAsciiUpper() && char2.IsAsciiLower() && char1 == char2 - 32) ||
             (char1.IsAsciiLower() && char2.IsAsciiUpper() && char1 == char2 + 32);
 
+        public static bool EqualsIAscii(this StringBuilder sb, string value)
+        {
+            for (int i = 0; i < sb.Length; i++)
+            {
+                if (!sb[i].EqualsIAscii(value[i])) return false;
+            }
+            return true;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAsciiAlpha(this char c) => c.IsAsciiUpper() || c.IsAsciiLower();
 
@@ -187,7 +196,7 @@ namespace AL_Common
 
         public static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
-        public static bool EndEqualsTrue(this string value, int indexAfterEq)
+        public static bool EndEqualsTrue(this StringBuilder value, int indexAfterEq)
         {
             int valueLen = value.Length;
             return valueLen - indexAfterEq == 4 &&
@@ -386,6 +395,74 @@ namespace AL_Common
             }
             return stringList;
         }
+
+        #region StringBuilder extensions
+
+        public static StringBuilder Trim(this StringBuilder sb)
+        {
+            return SB_TrimHelper(sb, 2);
+        }
+
+        public static StringBuilder TrimStart(this StringBuilder sb)
+        {
+            return SB_TrimHelper(sb, 0);
+        }
+
+        public static StringBuilder TrimEnd(this StringBuilder sb)
+        {
+            return SB_TrimHelper(sb, 1);
+        }
+
+        // TrimStart 0, TrimEnd 1, Trim 2
+        private static StringBuilder SB_TrimHelper(StringBuilder sb, int trimType)
+        {
+            int end = sb.Length - 1;
+            int start = 0;
+            if (trimType != 1)
+            {
+                start = 0;
+                while (start < sb.Length && (char.IsWhiteSpace(sb[start])))
+                    ++start;
+            }
+            if (trimType != 0)
+            {
+                end = sb.Length - 1;
+                while (end >= start && (char.IsWhiteSpace(sb[end])))
+                    --end;
+            }
+            if ((end - start + 1) == sb.Length) return sb;
+            return sb.Remove(0, start).Remove(end, sb.Length - end);
+        }
+
+        public static int IndexOf(this StringBuilder sb, char value)
+        {
+            for (int i = 0; i < sb.Length; i++)
+            {
+                if (sb[i] == value) return i;
+            }
+            return -1;
+        }
+
+        public static int LastIndexOf(this StringBuilder sb, char value)
+        {
+            for (int i = sb.Length - 1; i >= 0; i--)
+            {
+                if (sb[i] == value) return i;
+            }
+            return -1;
+        }
+
+        public static string Substring(this StringBuilder sb, int startIndex)
+        {
+            return sb.ToString(startIndex, sb.Length - startIndex);
+        }
+
+        public static string Substring(this StringBuilder sb, int startIndex, int length)
+        {
+            return sb.ToString(startIndex, length);
+        }
+
+        #endregion
 
         #endregion
 
