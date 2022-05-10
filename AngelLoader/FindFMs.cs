@@ -414,7 +414,7 @@ namespace AngelLoader
                         if (j > 999) return;
 
                         // Conform to FMSel's numbering format
-                        string append = "(" + (j + 2).ToString() + ")";
+                        string append = "(" + (j + 2) + ")";
 
                         if (truncate && fm.InstalledDir.Length + append.Length > 30)
                         {
@@ -442,6 +442,7 @@ namespace AngelLoader
             int initCount = FMDataIniList.Count;
 
             var fmDataIniInstDirDict = new DictionaryI<FanMission>(initCount);
+            var fmDataIniArchiveDict = new DictionaryI<FanMission>(initCount);
             for (int i = 0; i < initCount; i++)
             {
                 var fm = FMDataIniList[i];
@@ -449,12 +450,6 @@ namespace AngelLoader
                 {
                     fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
                 }
-            }
-
-            var fmDataIniArchiveDict = new DictionaryI<FanMission>(initCount);
-            for (int i = 0; i < initCount; i++)
-            {
-                var fm = FMDataIniList[i];
                 if (!fm.Archive.IsEmpty() && !fmDataIniArchiveDict.ContainsKey(fm.Archive))
                 {
                     fmDataIniArchiveDict.Add(fm.Archive, fm);
