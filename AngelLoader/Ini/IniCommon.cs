@@ -15,6 +15,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
+    // @MEM(FMData.ini writer): We should write to the stream per FM, not make a huge 1MB+ StringBuilder with literally everything
     internal static partial class Ini
     {
         #region BindingFlags
