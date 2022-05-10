@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    // @MEM(DarkComboBox): Maybe cache the item texts in here so we don't have to ToString() them on every paint
     public class DarkComboBox : ComboBox, IDarkable
     {
         private const int _padding = 10;

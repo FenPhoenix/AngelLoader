@@ -329,8 +329,6 @@ namespace AngelLoader
 
         #region FMData
 
-        // @MEM: Use this or something like it for SelectedLang too
-
         // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.
         // We don't write out whitespace between them anyway.
         private static void SetFMLanguages(FanMission fm, string langsString)

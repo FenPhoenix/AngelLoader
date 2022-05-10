@@ -132,7 +132,7 @@ namespace AngelLoader
         internal static bool HasFlagFast(this FinishedState @enum, FinishedState flag) => (@enum & flag) == flag;
 
         internal static bool HasFlagFast(this Game @enum, Game flag) => (@enum & flag) == flag;
-        
+
         internal static bool HasFlagFast(this Language @enum, Language flag) => (@enum & flag) == flag;
 
         internal static bool HasFlagFast(this Difficulty @enum, Difficulty flag) => (@enum & flag) == flag;
