@@ -708,9 +708,6 @@ namespace AngelLoader
                     fm.Installed = false;
                 }
 
-                // @vNext(FindFMs): More database potential issues when things aren't right
-                // If two FMs are not installed and have the same archive, both are marked unavailable.
-                // It sucks, but we need an FM database manager where users can fix this sort of thing.
                 if (!fm.Installed ||
                     NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: true))
                 {
