@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -81,12 +80,20 @@ namespace AngelLoader
         // new title-sort classes in a loop!
         private static int TitleCompare(FanMission x, FanMission y)
         {
-            static int TitleOrFallback(string title1, string title2, FanMission fm1, FanMission fm2, bool compareTitles = true)
+            static int TitleOrFallback(
+                string title1,
+                string title2,
+                FanMission fm1,
+                FanMission fm2,
+                bool compareTitles = true,
+                int xStart = 0,
+                int yStart = 0)
             {
                 int ret;
                 if (compareTitles)
                 {
-                    ret = string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase);
+                    ret = string.Compare(title1, xStart, title2, yStart, Math.Max(title1.Length, title2.Length),
+                        StringComparison.InvariantCultureIgnoreCase);
                     if (ret != 0) return ret;
                 }
 
@@ -96,16 +103,15 @@ namespace AngelLoader
                 return string.Compare(fm1.InstalledDir, fm2.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
             }
 
-            // IMPORTANT: these get modified, so don't use the originals!
-            string xTitle = x.Title;
-            string yTitle = y.Title;
-
             // null for perf: don't create a new List<string> just to signify empty
             List<string>? articles = Config.EnableArticles ? Config.Articles : null;
 
-            if (xTitle == yTitle) return TitleOrFallback(xTitle, yTitle, x, y, compareTitles: false);
-            if (xTitle.IsEmpty()) return -1;
-            if (yTitle.IsEmpty()) return 1;
+            if (x.Title == y.Title) return TitleOrFallback(x.Title, y.Title, x, y, compareTitles: false);
+            if (x.Title.IsEmpty()) return -1;
+            if (y.Title.IsEmpty()) return 1;
+
+            int xStart = 0;
+            int yStart = 0;
 
             if (articles?.Count > 0)
             {
@@ -116,23 +122,20 @@ namespace AngelLoader
                 {
                     int aLen = a.Length;
 
-                    // Avoid concats for perf
-                    // @MEM(Title compare): If we can find the index past the last article, we can pass it to string.Compare()
-                    // to avoid these substrings (which are a lot of allocations)
-                    if (!xArticleSet && xTitle.StartsWithIPlusWhiteSpace(a, aLen))
+                    if (!xArticleSet && x.Title.StartsWithIPlusWhiteSpace(a, aLen))
                     {
-                        xTitle = xTitle.Substring(aLen + 1);
+                        xStart = aLen + 1;
                         xArticleSet = true;
                     }
-                    if (!yArticleSet && yTitle.StartsWithIPlusWhiteSpace(a, aLen))
+                    if (!yArticleSet && y.Title.StartsWithIPlusWhiteSpace(a, aLen))
                     {
-                        yTitle = yTitle.Substring(aLen + 1);
+                        yStart = aLen + 1;
                         yArticleSet = true;
                     }
                 }
             }
 
-            return TitleOrFallback(xTitle, yTitle, x, y);
+            return TitleOrFallback(x.Title, y.Title, x, y, xStart: xStart, yStart: yStart);
         }
 
         #endregion
