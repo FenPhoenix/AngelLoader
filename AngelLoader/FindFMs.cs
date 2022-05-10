@@ -397,6 +397,27 @@ namespace AngelLoader
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
             int initCount = FMDataIniList.Count;
+
+            var fmDataIniInstDirDict = new DictionaryI<FanMission>();
+            for (int i = 0; i < initCount; i++)
+            {
+                var fm = FMDataIniList[i];
+                if (fm.Archive.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
+                {
+                    fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
+                }
+            }
+
+            var fmDataIniArchiveDict = new DictionaryI<FanMission>();
+            for (int i = 0; i < initCount; i++)
+            {
+                var fm = FMDataIniList[i];
+                if (!fm.Archive.IsEmpty() && !fmDataIniArchiveDict.ContainsKey(fm.Archive))
+                {
+                    fmDataIniArchiveDict.Add(fm.Archive, fm);
+                }
+            }
+
             bool[] checkedArray = new bool[initCount];
 
             for (int ai = 0; ai < fmArchives.Length; ai++)
@@ -409,6 +430,36 @@ namespace AngelLoader
                 string? aFMSelTrunc = null;
                 string? aNDL = null;
 
+                if (fmDataIniInstDirDict.TryGetValue(archive.RemoveExtension(), out FanMission fm) ||
+                    fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(false), out fm) ||
+                    fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(true), out fm) ||
+                    fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameNDL(), out fm))
+                {
+                    fm.Archive = archive;
+                    if (fm.NoArchive)
+                    {
+                        string? fmselInf = GetFMSelInfPath(fm);
+                        if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archive);
+                    }
+                    fm.NoArchive = false;
+
+                    fm.DateAdded ??= dateTimes[ai];
+                }
+                else if (fmDataIniArchiveDict.TryGetValue(archive, out fm))
+                {
+                    fm.DateAdded ??= dateTimes[ai];
+                }
+                else
+                {
+                    FMDataIniList.Add(new FanMission
+                    {
+                        Archive = archive,
+                        NoArchive = false,
+                        DateAdded = dateTimes[ai]
+                    });
+                }
+
+#if false
                 bool existingFound = false;
                 for (int i = 0; i < initCount; i++)
                 {
@@ -462,6 +513,7 @@ namespace AngelLoader
                         DateAdded = dateTimes[ai]
                     });
                 }
+#endif
             }
         }
 
