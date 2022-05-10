@@ -88,6 +88,7 @@ namespace AngelLoader
                 try
                 {
                     Ini.ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
+                    throw new Exception("");
                 }
                 catch (Exception ex)
                 {
@@ -95,7 +96,10 @@ namespace AngelLoader
                     if (startup)
                     {
                         // Language will be loaded by this point
-                        Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
+                        // ... but the view will be initializing in parallel! So we can't call a method that will
+                        // check if the view is there to invoke to it!
+                        // @vNext(FindFMs error dialog): We could invoke this to the splash screen thread...
+                        Dialogs.ShowErrorNoInvoke(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
                         Core.EnvironmentExitDoShutdownTasks(1);
                     }
                     else

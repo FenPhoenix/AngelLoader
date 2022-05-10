@@ -173,6 +173,14 @@ namespace AngelLoader.Forms
         public static void ShowError(string message, bool showScannerLogFile = false) =>
             InvokeIfViewExists(() => ShowError_Internal(message, null, showScannerLogFile));
 
+        /// <summary>
+        /// This method will NOT be invoked to the view. Call from threads that don't know if the view is there or not.
+        /// </summary>
+        /// <param name="message"></param>
+        // Cheap way to make errors from FindFMs() be thread-safe - just don't invoke to the view, which will be
+        // initializing at the same time. Derp.
+        public static void ShowErrorNoInvoke(string message) => ShowError_Internal(message, null, false);
+
         // Private method, not invoked because all calls are
         private static void ShowError_Internal(string message, IWin32Window? owner, bool showScannerLogFile)
         {
