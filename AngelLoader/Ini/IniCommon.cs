@@ -99,21 +99,14 @@ namespace AngelLoader
         {
             fmsList.Clear();
 
-            var iniLines = File_ReadAllLines_List(fileName, Encoding.UTF8);
-
-            int fmCount = 0;
-            for (int i = 0; i < iniLines.Count; i++)
-            {
-                if (iniLines[i] == "[FM]") fmCount++;
-            }
-
-            fmsList.Capacity = fmCount;
+            using var fs = File.OpenRead(fileName);
+            using var sw = new StreamReader(fs, Encoding.UTF8);
 
             bool fmsListIsEmpty = true;
 
-            for (int i = 0; i < iniLines.Count; i++)
+            while (sw.ReadLine() is { } line)
             {
-                string lineTS = iniLines[i].TrimStart();
+                string lineTS = line.TrimStart();
 
                 if (lineTS.Length > 0 && lineTS[0] == '[')
                 {
