@@ -4,6 +4,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
+// @MEM: This thing has #if FEATURE_UTF32 in here, we need to check if it's supposed to be enabled
+// before using this reader for general purposes! (FMData.ini is our file so it's always UTF8, so it's fine there)
 namespace AL_Common
 {
     [Serializable]
@@ -90,9 +92,13 @@ namespace AL_Common
         public StreamReader_Fast(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, int bufferSize, bool leaveOpen)
         {
             if (!stream.CanRead)
-                throw new ArgumentException("Environment.GetResourceString(\"Argument_StreamNotReadable\")");
+            {
+                throw new ArgumentException("Stream not readable");
+            }
             if (bufferSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize), "Environment.GetResourceString(\"ArgumentOutOfRange_NeedPosNum\")");
+            {
+                throw new ArgumentOutOfRangeException(nameof(bufferSize), "Argument out of range");
+            }
 
             this._stream = stream;
             this._encoding = encoding;
@@ -105,7 +111,7 @@ namespace AL_Common
             _bytePos = 0;
             _detectEncoding = detectEncodingFromByteOrderMarks;
             _preamble = encoding.GetPreamble();
-            _checkPreamble = (_preamble.Length > 0);
+            _checkPreamble = _preamble.Length > 0;
             _closable = !leaveOpen;
         }
 
@@ -119,18 +125,20 @@ namespace AL_Common
             {
                 // Note that Stream.Close() can potentially throw here. So we need to 
                 // ensure cleaning up internal resources, inside the finally block.  
-                if (!LeaveOpen && disposing && (_stream != null))
+                if (!LeaveOpen && disposing && (_stream != null!))
+                {
                     _stream.Close();
+                }
             }
             finally
             {
                 if (!LeaveOpen && (_stream != null))
                 {
-                    _stream = null;
-                    _encoding = null;
-                    _decoder = null;
-                    _byteBuffer = null;
-                    _charBuffer = null;
+                    _stream = null!;
+                    _encoding = null!;
+                    _decoder = null!;
+                    _byteBuffer = null!;
+                    _charBuffer = null!;
                     _charPos = 0;
                     _charLen = 0;
                     base.Dispose(disposing);
@@ -138,20 +146,11 @@ namespace AL_Common
             }
         }
 
-        public virtual Encoding CurrentEncoding
-        {
-            get { return _encoding; }
-        }
+        public virtual Encoding CurrentEncoding => _encoding;
 
-        public virtual Stream BaseStream
-        {
-            get { return _stream; }
-        }
+        public virtual Stream BaseStream => _stream;
 
-        internal bool LeaveOpen
-        {
-            get { return !_closable; }
-        }
+        internal bool LeaveOpen => !_closable;
 
         // Trims n bytes from the front of the buffer.
         private void CompressBuffer(int n)
@@ -163,8 +162,7 @@ namespace AL_Common
 
         private void DetectEncoding()
         {
-            if (_byteLen < 2)
-                return;
+            if (_byteLen < 2) return;
             _detectEncoding = false;
             bool changedEncoding = false;
             if (_byteBuffer[0] == 0xFE && _byteBuffer[1] == 0xFF)
@@ -175,7 +173,6 @@ namespace AL_Common
                 CompressBuffer(2);
                 changedEncoding = true;
             }
-
             else if (_byteBuffer[0] == 0xFF && _byteBuffer[1] == 0xFE)
             {
                 // Little Endian Unicode, or possibly little endian UTF32
@@ -193,7 +190,6 @@ namespace AL_Common
             }
 #endif            
             }
-
             else if (_byteLen >= 3 && _byteBuffer[0] == 0xEF && _byteBuffer[1] == 0xBB && _byteBuffer[2] == 0xBF)
             {
                 // UTF-8
@@ -211,7 +207,9 @@ namespace AL_Common
             }
 #endif            
             else if (_byteLen == 2)
+            {
                 _detectEncoding = true;
+            }
             // Note: in the future, if we change this algorithm significantly,
             // we can support checking for the preamble of the given encoding.
 
@@ -230,11 +228,10 @@ namespace AL_Common
         // leading preamble bytes
         private bool IsPreamble()
         {
-            if (!_checkPreamble)
-                return _checkPreamble;
+            if (!_checkPreamble) return _checkPreamble;
 
             Contract.Assert(_bytePos <= _preamble.Length, "_compressPreamble was called with the current bytePos greater than the preamble buffer length.  Are two threads using this StreamReader at the same time?");
-            int len = (_byteLen >= (_preamble.Length)) ? (_preamble.Length - _bytePos) : (_byteLen - _bytePos);
+            int len = _byteLen >= _preamble.Length ? _preamble.Length - _bytePos : _byteLen - _bytePos;
 
             for (int i = 0; i < len; i++, _bytePos++)
             {
@@ -323,7 +320,7 @@ namespace AL_Common
         //
         public StringBuilder? ReadLine_Custom()
         {
-            if (_stream == null) __Error.ReaderClosed();
+            if (_stream == null!) __Error.ReaderClosed();
 
             if (_charPos == _charLen)
             {
@@ -340,7 +337,7 @@ namespace AL_Common
                     char ch = _charBuffer[i];
                     // Note the following common line feed chars:
                     // \n - UNIX   \r\n - DOS   \r - Mac
-                    if (ch == '\r' || ch == '\n')
+                    if (ch is '\r' or '\n')
                     {
                         //String s;
                         //if (sb != null)
@@ -375,6 +372,6 @@ namespace AL_Common
 
     internal static class __Error
     {
-        internal static void ReaderClosed() => throw new ObjectDisposedException(null, "Environment.GetResourceString(\"ObjectDisposed_ReaderClosed\")");
+        internal static void ReaderClosed() => throw new ObjectDisposedException(null, "Reader closed");
     }
 }
