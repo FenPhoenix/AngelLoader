@@ -296,7 +296,6 @@ namespace AngelLoader
                         MergeNewInstalledFMs(
                             curGameInstFMsList,
                             perGameInstFMDirsDatesList[i],
-                            instInitCount,
                             fmDataIniInstDirDict);
                     }
                 }
@@ -436,10 +435,11 @@ namespace AngelLoader
 
         #region Merge
 
-        // @BigO(FindFMs.MergeNewArchiveFMs())
         private static void MergeNewArchiveFMs(string[] fmArchives, DateTime[] dateTimes)
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
+            // 2022-05-10 post-hash-tabling: Dunno if we need this anymore but it keeps the same behavior
+            // so not touching it!
             int initCount = FMDataIniList.Count;
 
             var fmDataIniInstDirDict = new DictionaryI<FanMission>();
@@ -499,14 +499,12 @@ namespace AngelLoader
 
         // This takes an explicit initCount because we call this once per game, and we don't want to grow our
         // initCount with every call (we can keep it the initial size and still have this work, so it's faster)
-        // @BigO(FindFMs.MergeNewInstalledFMs())
+        // 2022-05-10 post-hash-tabling: Same, dunno if we need it but not touching it.
         private static void MergeNewInstalledFMs(
             List<FanMission> installedList,
             List<DateTime> dateTimes,
-            int initCount,
             DictionaryI<FanMission> fmDataIniInstDirDict)
         {
-
             for (int gFMi = 0; gFMi < installedList.Count; gFMi++)
             {
                 var gFM = installedList[gFMi];
