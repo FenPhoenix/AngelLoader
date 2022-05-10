@@ -4164,11 +4164,9 @@ namespace AngelLoader.Forms
             }
         }
 
-        private bool SetTopRightBlockerVisible()
+        private void SetTopRightBlockerVisible()
         {
-            bool val = FMsDGV.MultipleFMsSelected();
-            SetTopRightTabsMultiSelectBlockerPanel(val);
-            return val;
+            SetTopRightTabsMultiSelectBlockerPanel(FMsDGV.MultipleFMsSelected());
         }
 
         private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
@@ -4181,7 +4179,7 @@ namespace AngelLoader.Forms
 
             // Don't run selection logic for extra selected rows, to prevent a possible cascade of heavy operations
             // from being run during multi-select (scanning, caching, who knows what)
-            if (SetTopRightBlockerVisible()) return;
+            if (FMsDGV.MultipleFMsSelected()) return;
 
             await ChangeSelection(FMsDGV.MainSelectedRow?.Index ?? -1);
         }
@@ -4833,6 +4831,8 @@ namespace AngelLoader.Forms
         // row"
         internal void UpdateUIControlsForMultiSelectState(FanMission fm)
         {
+            SetTopRightBlockerVisible();
+
             var selRows = FMsDGV.SelectedRows;
 
             #region Get attributes that apply to all items
