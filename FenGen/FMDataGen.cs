@@ -502,32 +502,6 @@ namespace FenGen
                 dictFields.Add(new Field { Name = item });
             }
 
-            w.WL("// Source dictionary for manual conversion - until we can get better gperf automation going");
-            w.WL("#if false");
-            w.WL("private static readonly Dictionary<string, Action<FanMission, string>> _actionDict_FMData = new()");
-            w.WL("{");
-            for (int i = 0; i < dictFields.Count; i++)
-            {
-                Field field = dictFields[i];
-                string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
-                string comma = i == dictFields.Count - 1 ? "" : ",";
-                w.WL("{ \"" + fieldIniName + "\", FMData_" + fieldIniName + "_Set }" + comma);
-
-                if (i < dictFields.Count - 1 && dictFields[i + 1].Name == "HasMap")
-                {
-                    w.WL();
-                    w.WL("#region " + _oldResourceFormatMessage);
-                    w.WL();
-                }
-                else if (i == dictFields.Count - 1)
-                {
-                    w.WL();
-                    w.WL("#endregion");
-                }
-            }
-            w.WL("};");
-            w.WL("#endif");
-            w.WL();
             w.WL("#endregion");
         }
 

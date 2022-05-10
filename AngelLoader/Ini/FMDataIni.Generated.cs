@@ -306,56 +306,6 @@ namespace AngelLoader
 
         #endregion
 
-        // Source dictionary for manual conversion - until we can get better gperf automation going
-#if false
-        private static readonly Dictionary<string, Action<FanMission, string>> _actionDict_FMData = new()
-        {
-            { "NoArchive", FMData_NoArchive_Set },
-            { "MarkedScanned", FMData_MarkedScanned_Set },
-            { "Pinned", FMData_Pinned_Set },
-            { "Archive", FMData_Archive_Set },
-            { "InstalledDir", FMData_InstalledDir_Set },
-            { "Title", FMData_Title_Set },
-            { "AltTitles", FMData_AltTitles_Set },
-            { "Author", FMData_Author_Set },
-            { "Game", FMData_Game_Set },
-            { "Installed", FMData_Installed_Set },
-            { "NoReadmes", FMData_NoReadmes_Set },
-            { "SelectedReadme", FMData_SelectedReadme_Set },
-            { "ReadmeEncoding", FMData_ReadmeEncoding_Set },
-            { "SizeBytes", FMData_SizeBytes_Set },
-            { "Rating", FMData_Rating_Set },
-            { "ReleaseDate", FMData_ReleaseDate_Set },
-            { "LastPlayed", FMData_LastPlayed_Set },
-            { "DateAdded", FMData_DateAdded_Set },
-            { "FinishedOn", FMData_FinishedOn_Set },
-            { "FinishedOnUnknown", FMData_FinishedOnUnknown_Set },
-            { "Comment", FMData_Comment_Set },
-            { "DisabledMods", FMData_DisabledMods_Set },
-            { "DisableAllMods", FMData_DisableAllMods_Set },
-            { "HasResources", FMData_HasResources_Set },
-            { "LangsScanned", FMData_LangsScanned_Set },
-            { "Langs", FMData_Langs_Set },
-            { "SelectedLang", FMData_SelectedLang_Set },
-            { "TagsString", FMData_TagsString_Set },
-
-            #region Old resource format - backward compatibility, we still have to be able to read it
-
-            { "HasMap", FMData_HasMap_Set },
-            { "HasAutomap", FMData_HasAutomap_Set },
-            { "HasScripts", FMData_HasScripts_Set },
-            { "HasTextures", FMData_HasTextures_Set },
-            { "HasSounds", FMData_HasSounds_Set },
-            { "HasObjects", FMData_HasObjects_Set },
-            { "HasCreatures", FMData_HasCreatures_Set },
-            { "HasMotions", FMData_HasMotions_Set },
-            { "HasMovies", FMData_HasMovies_Set },
-            { "HasSubtitles", FMData_HasSubtitles_Set }
-
-            #endregion
-        };
-#endif
-
         #endregion
 
         #region Generated code for writer
