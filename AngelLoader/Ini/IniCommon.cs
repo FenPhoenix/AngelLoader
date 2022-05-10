@@ -180,7 +180,7 @@ namespace AngelLoader
 
         // Parses from the "value" section of the string - no substring allocation needed
 
-        private static bool TryParseIntFromEnd(string str, int indexPastEq, int maxDigits, out int result)
+        private static bool TryParseIntFromEnd(string str, int indexPastSeparator, int maxDigits, out int result)
         {
             const int intMaxDigits = 10;
 
@@ -188,17 +188,17 @@ namespace AngelLoader
 
             int strLen = str.Length;
 
-            if (indexPastEq >= strLen ||
-                strLen - indexPastEq > intMaxDigits ||
-                strLen > indexPastEq + maxDigits)
+            if (indexPastSeparator >= strLen ||
+                strLen - indexPastSeparator > intMaxDigits ||
+                strLen > indexPastSeparator + maxDigits)
             {
                 return false;
             }
 
             try
             {
-                int end = Math.Min(strLen, indexPastEq + maxDigits);
-                for (int i = indexPastEq; i < end; i++)
+                int end = Math.Min(strLen, indexPastSeparator + maxDigits);
+                for (int i = indexPastSeparator; i < end; i++)
                 {
                     char c = str[i];
                     if (c.IsAsciiNumeric())
@@ -225,7 +225,7 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool TryParseULongFromEnd(string str, int indexPastEq, int maxDigits, out ulong result)
+        private static bool TryParseULongFromEnd(string str, int indexPastSeparator, int maxDigits, out ulong result)
         {
             const int ulongMaxDigits = 20;
 
@@ -233,17 +233,17 @@ namespace AngelLoader
 
             int strLen = str.Length;
 
-            if (indexPastEq >= strLen ||
-                strLen - indexPastEq > ulongMaxDigits ||
-                strLen > indexPastEq + maxDigits)
+            if (indexPastSeparator >= strLen ||
+                strLen - indexPastSeparator > ulongMaxDigits ||
+                strLen > indexPastSeparator + maxDigits)
             {
                 return false;
             }
 
             try
             {
-                int end = Math.Min(strLen, indexPastEq + maxDigits);
-                for (int i = indexPastEq; i < end; i++)
+                int end = Math.Min(strLen, indexPastSeparator + maxDigits);
+                for (int i = indexPastSeparator; i < end; i++)
                 {
                     char c = str[i];
                     if (c.IsAsciiNumeric())
@@ -270,7 +270,7 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool TryParseUIntFromEnd(string str, int indexPastEq, int maxDigits, out uint result)
+        private static bool TryParseUIntFromEnd(string str, int indexPastSeparator, int maxDigits, out uint result)
         {
             const int uintMaxDigits = 10;
 
@@ -278,17 +278,17 @@ namespace AngelLoader
 
             int strLen = str.Length;
 
-            if (indexPastEq >= strLen ||
-                strLen - indexPastEq > uintMaxDigits ||
-                strLen > indexPastEq + maxDigits)
+            if (indexPastSeparator >= strLen ||
+                strLen - indexPastSeparator > uintMaxDigits ||
+                strLen > indexPastSeparator + maxDigits)
             {
                 return false;
             }
 
             try
             {
-                int end = Math.Min(strLen, indexPastEq + maxDigits);
-                for (int i = indexPastEq; i < end; i++)
+                int end = Math.Min(strLen, indexPastSeparator + maxDigits);
+                for (int i = indexPastSeparator; i < end; i++)
                 {
                     char c = str[i];
                     if (c.IsAsciiNumeric())
