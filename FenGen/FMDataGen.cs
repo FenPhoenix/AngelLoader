@@ -258,7 +258,7 @@ namespace FenGen
 
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
-                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", StringBuilder " + val + ", int eqIndex)");
+                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
                 w.WL("{");
 
                 string parseMethodName = field.Type switch
@@ -269,29 +269,14 @@ namespace FenGen
                     _ => ""
                 };
 
-                bool needsStrTrim = false;
-
-                if (field.Type
-                        is "string"
-                        or "ExpandableDate"
-                        or "DateTime?"
-                        or "List<string>"
-                    )
+                if (field.Type != "bool" && parseMethodName.IsEmpty() && !field.DoNotSubstring)
                 {
-                    needsStrTrim = true;
-                    w.WL("string valStr = val.Substring(eqIndex +1).ToString();");
-                }
-                else if (field.Type != "bool" &&
-                         parseMethodName.IsEmpty() &&
-                         !field.DoNotSubstring)
-                {
-                    w.WL(val + " = " + val + ".Substring_SB(eqIndex + 1);");
+                    w.WL(val + " = " + val + ".Substring(eqIndex + 1);");
                 }
 
                 if (!field.DoNotTrimValue)
                 {
-                    string valToPut = needsStrTrim ? "valStr" : val;
-                    w.WL(valToPut + " = " + valToPut + ".Trim();");
+                    w.WL(val + " = " + val + ".Trim();");
                 }
                 else
                 {
@@ -309,7 +294,7 @@ namespace FenGen
                     var ldt = field.ListDistinctType;
 
                     string varToAdd = listType == "string" && field.ListType == ListType.MultipleLines
-                        ? "valStr"
+                        ? val
                         : "result";
 
                     string ignoreCaseString = ldt == ListDistinctType.CaseInsensitive && listType == "string"
@@ -327,7 +312,7 @@ namespace FenGen
                     {
                         if (field.ListType == ListType.MultipleLines)
                         {
-                            w.WL("if (!string.IsNullOrEmpty(valStr))");
+                            w.WL("if (!string.IsNullOrEmpty(" + val + "))");
                             w.WL("{");
                             w.WL(objListSet);
                             w.WL("}");
@@ -335,7 +320,7 @@ namespace FenGen
                         else
                         {
                             w.WL(objDotField + ".Clear();");
-                            w.WL("string[] items = valStr.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
+                            w.WL("string[] items = " + val + ".Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
                             w.WL("for (int a = 0; a < items.Length; a++)");
                             w.WL("{");
                             w.WL("string result = items[a].Trim();");
@@ -376,7 +361,7 @@ namespace FenGen
                 }
                 else if (field.Type == "string")
                 {
-                    w.WL(objDotField + " = valStr;");
+                    w.WL(objDotField + " = " + val + ";");
                 }
                 else if (field.Type == "bool")
                 {
@@ -437,7 +422,7 @@ namespace FenGen
                     {
                         string ifType = gi > 1 ? "else if" : "if";
                         string gameDotGameType = gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi];
-                        w.WL(ifType + " (" + val + ".EqualsAscii(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
+                        w.WL(ifType + " (" + val + ".EqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
                         w.WL("{");
                         w.WL(objDotField + " = " + gameDotGameType + ";");
                         w.WL("}");
@@ -452,7 +437,7 @@ namespace FenGen
                     var le = Cache.LangsEnum;
                     if (field.IsEnumAndSingleAssignment)
                     {
-                        w.WL("if (Langs_TryGetValue(" + val + ", eqIndex + 1, val.Length, out var result))");
+                        w.WL("if (Langs_TryGetValue(" + val + ", out var result))");
                         w.WL("{");
                         w.WL(objDotField + " = result;");
                         w.WL("}");
@@ -464,18 +449,18 @@ namespace FenGen
                 }
                 else if (field.Type == "ExpandableDate")
                 {
-                    w.WL(objDotField + ".UnixDateString = valStr;");
+                    w.WL(objDotField + ".UnixDateString = " + val + ";");
                 }
                 else if (field.Type == "DateTime?")
                 {
                     w.WL("// PERF: Don't convert to local here; do it at display-time");
-                    w.WL(objDotField + " = ConvertHexUnixDateToDateTime(valStr, convertToLocal: " +
+                    w.WL(objDotField + " = ConvertHexUnixDateToDateTime(" + val + ", convertToLocal: " +
                          (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
                 }
                 else if (field.Type == "CustomResources")
                 {
                     // Totally shouldn't be hardcoded...
-                    w.WL(obj + ".ResourcesScanned = !" + val + ".EqualsIAscii(\"NotScanned\");");
+                    w.WL(obj + ".ResourcesScanned = !" + val + ".EqualsI(\"NotScanned\");");
                     w.WL("FillFMHasXFields(" + obj + ", " + val + ");");
                 }
 
@@ -501,7 +486,7 @@ namespace FenGen
             w.WL();
             foreach (string item in customResourceFieldNames)
             {
-                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", StringBuilder " + val + ", int eqIndex)");
+                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
                 w.WL("{");
                 w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(eqIndex + 1));");
                 w.WL("    " + obj + ".ResourcesScanned = true;");

@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace AngelLoader
 {
@@ -90,26 +89,7 @@ namespace AngelLoader
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint Hash(StringBuilder str, int start, int len)
-        {
-            uint hval = (uint)len;
-            return hval + asso_values[str[start]];
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool SeqEqual(string seq1, int seq1Start, int seq1Length, string seq2)
-        {
-            if (seq1Length != seq2.Length) return false;
-
-            for (int seq1i = seq1Start, seq2i = 0; seq1i < seq1Start + seq1Length; seq1i++, seq2i++)
-            {
-                if (seq1[seq1i] != seq2[seq2i]) return false;
-            }
-            return true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool SeqEqual(StringBuilder seq1, int seq1Start, int seq1Length, string seq2)
         {
             if (seq1Length != seq2.Length) return false;
 
@@ -123,34 +103,6 @@ namespace AngelLoader
         public static bool Langs_TryGetValue(string str, out Language result) => Langs_TryGetValue(str, 0, str.Length, out result);
 
         public static bool Langs_TryGetValue(string str, int start, int end, out Language result)
-        {
-            int len = end - start;
-            if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
-            {
-                uint key = Hash(str, start, len);
-
-                if (key <= MAX_HASH_VALUE)
-                {
-                    LangNameAndEnumField? language = _perfectHash_LangList[key];
-                    if (language == null)
-                    {
-                        result = Language.Default;
-                        return false;
-                    }
-
-                    if (SeqEqual(str, start, len, language.LangName))
-                    {
-                        result = language.EnumField;
-                        return true;
-                    }
-                }
-            }
-
-            result = Language.Default;
-            return false;
-        }
-
-        public static bool Langs_TryGetValue(StringBuilder str, int start, int end, out Language result)
         {
             int len = end - start;
             if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)

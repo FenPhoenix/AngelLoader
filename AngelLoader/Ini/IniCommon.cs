@@ -6,15 +6,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.LanguageSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
-
-// @MEM(FMData.ini writer): We should write to the stream per FM, not make a huge 1MB+ StringBuilder with literally everything
 
 namespace AngelLoader
 {
@@ -102,27 +99,21 @@ namespace AngelLoader
         {
             fmsList.Clear();
 
-            //var iniLines = File_ReadAllLines_List(fileName, Encoding.UTF8);
-            using var fs = File.OpenRead(fileName);
-            using var sr = new StreamReader_Fast(fs, Encoding.UTF8, 1024);
+            var iniLines = File_ReadAllLines_List(fileName, Encoding.UTF8);
 
-            //int fmCount = 0;
-            //for (int i = 0; i < iniLines.Count; i++)
-            //{
-            //    if (iniLines[i] == "[FM]") fmCount++;
-            //}
+            int fmCount = 0;
+            for (int i = 0; i < iniLines.Count; i++)
+            {
+                if (iniLines[i] == "[FM]") fmCount++;
+            }
 
-            //fmsList.Capacity = fmCount;
+            fmsList.Capacity = fmCount;
 
             bool fmsListIsEmpty = true;
 
-            //for (int i = 0; i < iniLines.Count; i++)
-            StringBuilder? line;
-            while ((line = sr.ReadLine_Custom()) != null)
+            for (int i = 0; i < iniLines.Count; i++)
             {
-                //string lineTS = iniLines[i].TrimStart();
-
-                var lineTS = line.TrimStart();
+                string lineTS = iniLines[i].TrimStart();
 
                 if (lineTS.Length > 0 && lineTS[0] == '[')
                 {
@@ -143,9 +134,10 @@ namespace AngelLoader
                 if (eqIndex > -1)
                 {
                     // @MEM(FMData read): Knowable values left:
-                    // -Game (we don't take an allocation, but it's an if statement when it should be a ph lookup)
-                    // -TagsString (we should just put them straight into the tags collection,
-                    //  because we do that anyway on FM find!
+                    // -Game
+                    // -Resources
+                    // -Langs (we do an alloc-free parse on the value itself, but we still substring the value)
+                    // -SelectedLang
                     if (FMDataKeyLookup.TryGetValue(lineTS, eqIndex, out var action))
                     {
                         // If the value is an arbitrary string or other unknowable type, then we need to split
@@ -188,7 +180,7 @@ namespace AngelLoader
 
         // Parses from the "value" section of the string - no substring allocation needed
 
-        private static bool TryParseIntFromEnd(StringBuilder str, int indexPastSeparator, int maxDigits, out int result)
+        private static bool TryParseIntFromEnd(string str, int indexPastSeparator, int maxDigits, out int result)
         {
             const int intMaxDigits = 10;
 
@@ -233,7 +225,7 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool TryParseULongFromEnd(StringBuilder str, int indexPastSeparator, int maxDigits, out ulong result)
+        private static bool TryParseULongFromEnd(string str, int indexPastSeparator, int maxDigits, out ulong result)
         {
             const int ulongMaxDigits = 20;
 
@@ -278,7 +270,7 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool TryParseUIntFromEnd(StringBuilder str, int indexPastSeparator, int maxDigits, out uint result)
+        private static bool TryParseUIntFromEnd(string str, int indexPastSeparator, int maxDigits, out uint result)
         {
             const int uintMaxDigits = 10;
 
@@ -325,7 +317,7 @@ namespace AngelLoader
 
         #endregion
 
-        private static void AddReadmeEncoding(FanMission fm, StringBuilder line, int indexAfterEq)
+        private static void AddReadmeEncoding(FanMission fm, string line, int indexAfterEq)
         {
             int lastIndexOfComma = line.LastIndexOf(',');
 
@@ -344,16 +336,14 @@ namespace AngelLoader
 
         #region FMData
 
+        // @MEM: Use this or something like it for SelectedLang too
+
         // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.
         // We don't write out whitespace between them anyway.
-        private static void SetFMLanguages(FanMission fm, StringBuilder langsString)
+        private static void SetFMLanguages(FanMission fm, string langsString)
         {
             // It's always supposed to be ascii lowercase, so only take the allocation if it's not
-            if (!langsString.IsAsciiLower())
-            {
-                string temp = langsString.ToString().ToLowerInvariant();
-                langsString = new StringBuilder(temp);
-            }
+            if (!langsString.IsAsciiLower()) langsString = langsString.ToLowerInvariant();
 
             fm.Langs = Language.Default;
 
@@ -381,7 +371,7 @@ namespace AngelLoader
             }
         }
 
-        private static bool SegmentEquals(this StringBuilder first, int start, int end, string second)
+        private static bool SegmentEquals(this string first, int start, int end, string second)
         {
             for (; start < end; start++)
             {
@@ -408,7 +398,7 @@ namespace AngelLoader
             return true;
         }
 
-        private static void FillFMHasXFields(FanMission fm, StringBuilder fieldsString)
+        private static void FillFMHasXFields(FanMission fm, string fieldsString)
         {
             // Resources must be cleared here
             fm.Resources = CustomResources.None;

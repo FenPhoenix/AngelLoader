@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define ENABLE_NEW_FMS_CHECK
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,10 +13,10 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    // @MEM/@PERF_TODO(FindFMs): Implement the thing where we sort archives and sort FanMissions by archive
-    // and do a SequenceEqual to see if anything has actually changed, so we can skip the entire noob garbage
-    // FM merging procedure if we don't have any new ones.
-    // Installed dirs too, same thing.
+    // I finally randomly just tried yet again to convert the horrific quadratic searches to dictionary lookups,
+    // and it just worked this time. Behavior appears to be the same as before, no removing entries it shouldn't
+    // or anything. I'm... kind of speechless.
+    // But okay then! YES! We're ready to handle tens of thousands of FMs! Gorge yourselves!
     internal static class FindFMs
     {
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
@@ -33,6 +35,25 @@ namespace AngelLoader
         // @CAN_RUN_BEFORE_VIEW_INIT
         private static List<int> FindInternal(bool startup)
         {
+#if ENABLE_NEW_FMS_CHECK
+            // @MEM/@PERF_TODO(Find): These bools can help avoid unnecessary work, BUT!
+            // We need to still make sure that if the corresponding FM does NOT have a DateAdded set, that we
+            // still add it even if we don't do the rest of the linkup work!
+            // Now that I randomly seemed to have figured out how to hashtable the thing after years of trying
+            // and failing, we don't really need these that badly, but we could turn them on later for a small
+            // perf boost if we have no new FMs to add.
+            bool newInstalledDirs = false;
+            bool newArchives = false;
+
+            // New check functionality disabled for now.
+            bool NewInstalledDirs() => true;
+            bool NewArchives() => true;
+#endif
+
+            // @MEM/@PERF_TODO(Find): We probably have more hashtables in here than we need
+            // So we could probably cut a couple out, but I'm so relieved at not being quadratic anymore that
+            // I kinda don't even care right now.
+
             if (!startup)
             {
                 // Make sure we don't lose anything when we re-find!
@@ -78,7 +99,10 @@ namespace AngelLoader
                     if (startup)
                     {
                         // Language will be loaded by this point
-                        Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
+                        // ... but the view will be initializing in parallel! So we can't call a method that will
+                        // check if the view is there to invoke to it!
+                        // @vNext(FindFMs error dialog): We could invoke this to the splash screen thread...
+                        Dialogs.ShowErrorNoInvoke(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
                         Core.EnvironmentExitDoShutdownTasks(1);
                     }
                     else
@@ -93,6 +117,14 @@ namespace AngelLoader
             #endregion
 
             #region Get installed dirs from disk
+
+#if ENABLE_NEW_FMS_CHECK
+            var fmDataIniInstalledDirsHash = new HashSetI(FMDataIniList.Count);
+            for (int i = 0; i < FMDataIniList.Count; i++)
+            {
+                fmDataIniInstalledDirsHash.Add(FMDataIniList[i].InstalledDir);
+            }
+#endif
 
             // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
             // horrendously expensive. Talking like eight seconds vs. < 4ms for the 1098 set. Weird.
@@ -119,6 +151,12 @@ namespace AngelLoader
                             {
                                 perGameInstFMDirsList[gi].Add(d);
                                 perGameInstFMDirsDatesList[gi].Add(dateTimes[di]);
+#if ENABLE_NEW_FMS_CHECK
+                                if (!fmDataIniInstalledDirsHash.Contains(d))
+                                {
+                                    newInstalledDirs = true;
+                                }
+#endif
                             }
                         }
                     }
@@ -137,6 +175,15 @@ namespace AngelLoader
 
             var archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
+
+#if ENABLE_NEW_FMS_CHECK
+            var fmDataIniArchivesHash = new HashSetI(FMDataIniList.Count);
+            for (int i = 0; i < FMDataIniList.Count; i++)
+            {
+                fmDataIniArchivesHash.Add(FMDataIniList[i].Archive);
+            }
+#endif
+
             for (int ai = 0; ai < archivePaths.Count; ai++)
             {
                 try
@@ -160,6 +207,12 @@ namespace AngelLoader
                             !f.ContainsI(Paths.FMSelBak))
                         {
                             fmArchivesAndDatesDict[f] = dateTimes[fi];
+#if ENABLE_NEW_FMS_CHECK
+                            if (!fmDataIniArchivesHash.Contains(f))
+                            {
+                                newArchives = true;
+                            }
+#endif
                         }
                     }
                 }
@@ -189,39 +242,79 @@ namespace AngelLoader
 
             var perGameFMsList = new List<List<FanMission>>(SupportedGameCount);
 
-            for (int gi = 0; gi < SupportedGameCount; gi++)
+#if ENABLE_NEW_FMS_CHECK
+            if (NewInstalledDirs())
+#endif
             {
-                // NOTE! List must have SupportedGameCount items in it
-                perGameFMsList.Add(new List<FanMission>());
-
-                for (int di = 0; di < perGameInstFMDirsList[gi].Count; di++)
+                for (int gi = 0; gi < SupportedGameCount; gi++)
                 {
-                    perGameFMsList[gi].Add(new FanMission
+                    // NOTE! List must have SupportedGameCount items in it
+                    perGameFMsList.Add(new List<FanMission>());
+
+                    for (int di = 0; di < perGameInstFMDirsList[gi].Count; di++)
                     {
-                        InstalledDir = perGameInstFMDirsList[gi][di],
-                        Game = GameIndexToGame((GameIndex)gi),
-                        Installed = true
-                    });
+                        perGameFMsList[gi].Add(new FanMission
+                        {
+                            InstalledDir = perGameInstFMDirsList[gi][di],
+                            Game = GameIndexToGame((GameIndex)gi),
+                            Installed = true
+                        });
+                    }
                 }
             }
 
             #endregion
 
-            MergeNewArchiveFMs(fmArchives, fmArchivesDates);
-
-            int instInitCount = FMDataIniList.Count;
-            for (int i = 0; i < SupportedGameCount; i++)
+#if ENABLE_NEW_FMS_CHECK
+            if (NewArchives())
+#endif
             {
-                var curGameInstFMsList = perGameFMsList[i];
-                if (curGameInstFMsList.Count > 0)
+                MergeNewArchiveFMs(fmArchives, fmArchivesDates);
+            }
+
+#if ENABLE_NEW_FMS_CHECK
+            if (NewInstalledDirs())
+#endif
+            {
+                int instInitCount = FMDataIniList.Count;
+
+                var fmDataIniInstDirDict = new DictionaryI<FanMission>();
+                for (int i = 0; i < instInitCount; i++)
                 {
-                    MergeNewInstalledFMs(curGameInstFMsList, perGameInstFMDirsDatesList[i], instInitCount);
+                    var fm = FMDataIniList[i];
+                    if (!fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
+                    {
+                        fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
+                    }
+                }
+
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    var curGameInstFMsList = perGameFMsList[i];
+                    if (curGameInstFMsList.Count > 0)
+                    {
+                        MergeNewInstalledFMs(
+                            curGameInstFMsList,
+                            perGameInstFMDirsDatesList[i],
+                            instInitCount,
+                            fmDataIniInstDirDict);
+                    }
                 }
             }
 
-            SetArchiveNames(fmArchives);
+#if ENABLE_NEW_FMS_CHECK
+            if (NewArchives())
+#endif
+            {
+                SetArchiveNames(fmArchives);
+            }
 
-            SetInstalledNames();
+#if ENABLE_NEW_FMS_CHECK
+            if (NewInstalledDirs())
+#endif
+            {
+                SetInstalledNames();
+            }
 
             // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned
             // FMs. This will contain indexes into FMDataIniList (not FMsViewList!)
@@ -348,63 +441,51 @@ namespace AngelLoader
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
             int initCount = FMDataIniList.Count;
-            bool[] checkedArray = new bool[initCount];
+
+            var fmDataIniInstDirDict = new DictionaryI<FanMission>();
+            for (int i = 0; i < initCount; i++)
+            {
+                var fm = FMDataIniList[i];
+                if (fm.Archive.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
+                {
+                    fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
+                }
+            }
+
+            var fmDataIniArchiveDict = new DictionaryI<FanMission>();
+            for (int i = 0; i < initCount; i++)
+            {
+                var fm = FMDataIniList[i];
+                if (!fm.Archive.IsEmpty() && !fmDataIniArchiveDict.ContainsKey(fm.Archive))
+                {
+                    fmDataIniArchiveDict.Add(fm.Archive, fm);
+                }
+            }
 
             for (int ai = 0; ai < fmArchives.Length; ai++)
             {
                 string archive = fmArchives[ai];
 
-                // perf perf blah
-                string? aRemoveExt = null;
-                string? aFMSel = null;
-                string? aFMSelTrunc = null;
-                string? aNDL = null;
-
-                bool existingFound = false;
-                for (int i = 0; i < initCount; i++)
+                if (fmDataIniInstDirDict.TryGetValue(archive.RemoveExtension(), out FanMission fm) ||
+                    fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(false), out fm) ||
+                    fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(true), out fm) ||
+                    fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameNDL(), out fm))
                 {
-                    FanMission fm = FMDataIniList[i];
-
-                    // @BigO: Idea for making this not be n-squared:
-                    // Create four different dictionaries (iterate the list four times), each with the key of one
-                    // of the things we're checking here (so one will have keys that are archive.RemoveExtension(),
-                    // one will have keys of archive.ToInstDirNameFMSel(false), etc. Then do max 4 lookups until
-                    // we find something or not. That's 4 iterations and max 4 lookups, which is galactically
-                    // better than the ~578,000 calls we're making currently. Really it hardly even matters how
-                    // lazy we even get with it; just making it not be n-squared and doing absolutely no other
-                    // optimizations whatsoever will still put us in a whole other league of efficiency.
-                    if (!checkedArray[i] &&
-                        fm.Archive.IsEmpty() &&
-                        (fm.InstalledDir.EqualsI(aRemoveExt ??= archive.RemoveExtension()) ||
-                         fm.InstalledDir.EqualsI(aFMSel ??= archive.ToInstDirNameFMSel(false)) ||
-                         fm.InstalledDir.EqualsI(aFMSelTrunc ??= archive.ToInstDirNameFMSel(true)) ||
-                         fm.InstalledDir.EqualsI(aNDL ??= archive.ToInstDirNameNDL())))
+                    fm.Archive = archive;
+                    if (fm.NoArchive)
                     {
-                        fm.Archive = archive;
-                        if (fm.NoArchive)
-                        {
-                            string? fmselInf = GetFMSelInfPath(fm);
-                            if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archive);
-                        }
-                        fm.NoArchive = false;
-
-                        fm.DateAdded ??= dateTimes[ai];
-
-                        checkedArray[i] = true;
-                        existingFound = true;
-                        break;
+                        string? fmselInf = GetFMSelInfPath(fm);
+                        if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archive);
                     }
-                    else if (!checkedArray[i] &&
-                             !fm.Archive.IsEmpty() && fm.Archive.EqualsI(archive))
-                    {
-                        fm.DateAdded ??= dateTimes[ai];
+                    fm.NoArchive = false;
 
-                        checkedArray[i] = true;
-                        existingFound = true;
-                        break;
-                    }
+                    fm.DateAdded ??= dateTimes[ai];
                 }
-                if (!existingFound)
+                else if (fmDataIniArchiveDict.TryGetValue(archive, out fm))
+                {
+                    fm.DateAdded ??= dateTimes[ai];
+                }
+                else
                 {
                     FMDataIniList.Add(new FanMission
                     {
@@ -419,38 +500,24 @@ namespace AngelLoader
         // This takes an explicit initCount because we call this once per game, and we don't want to grow our
         // initCount with every call (we can keep it the initial size and still have this work, so it's faster)
         // @BigO(FindFMs.MergeNewInstalledFMs())
-        private static void MergeNewInstalledFMs(List<FanMission> installedList, List<DateTime> dateTimes, int initCount)
+        private static void MergeNewInstalledFMs(
+            List<FanMission> installedList,
+            List<DateTime> dateTimes,
+            int initCount,
+            DictionaryI<FanMission> fmDataIniInstDirDict)
         {
-            bool[] checkedArray = new bool[initCount];
 
             for (int gFMi = 0; gFMi < installedList.Count; gFMi++)
             {
                 var gFM = installedList[gFMi];
 
-                // bool check seems to be faster than a string-null-or-empty check
-                bool isEmpty = gFM.InstalledDir.IsEmpty();
-
-                bool existingFound = false;
-                for (int i = 0; i < initCount; i++)
+                if (fmDataIniInstDirDict.TryGetValue(gFM.InstalledDir, out FanMission fm))
                 {
-                    FanMission fm = FMDataIniList[i];
-
-                    if (!isEmpty &&
-                        // Early-out bool - much faster than checking EqualsI()
-                        !checkedArray[i] &&
-                        !fm.InstalledDir.IsEmpty() &&
-                        fm.InstalledDir.EqualsI(gFM.InstalledDir))
-                    {
-                        fm.Game = gFM.Game;
-                        fm.Installed = true;
-                        fm.DateAdded ??= dateTimes[gFMi];
-
-                        checkedArray[i] = true;
-                        existingFound = true;
-                        break;
-                    }
+                    fm.Game = gFM.Game;
+                    fm.Installed = true;
+                    fm.DateAdded ??= dateTimes[gFMi];
                 }
-                if (!existingFound)
+                else
                 {
                     FMDataIniList.Add(new FanMission
                     {
@@ -491,6 +558,7 @@ namespace AngelLoader
                 // Now that I know the NoArchive value can be set back in MergeNewArchiveFMs, I wonder if this is
                 // wholly or at least partially unnecessary. If we don't have an archive name by this point, do
                 // we therefore already know this is not going to find anything?
+                // @BigO(FindFMs.GetArchiveNameFromInstalledDir()), but we're getting there!
                 bool truncate = fm.Game != Game.Thief3;
                 string? tryArchive =
                     Array.Find(archives, x => x.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
