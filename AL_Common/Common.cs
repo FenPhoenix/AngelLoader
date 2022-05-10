@@ -447,9 +447,15 @@ namespace AL_Common
             return sb.Remove(0, start).Remove(end, sb.Length - end);
         }
 
+        // @MEM: These don't scale at all. ~280,000 calls to an expensive-ish getter
+        // (StringBuilders are in chunks...)
+        // Maybe this wasn't such a good idea. Reduces memory pressure, but performance actually dropped.
+        // Also hundreds of thousands of calls in tons of other places. Yikes. We should go back to the string
+        // setup.
         public static int IndexOf(this StringBuilder sb, char value)
         {
-            for (int i = 0; i < sb.Length; i++)
+            int len = sb.Length;
+            for (int i = 0; i < len; i++)
             {
                 if (sb[i] == value) return i;
             }
@@ -458,7 +464,8 @@ namespace AL_Common
 
         public static int LastIndexOf(this StringBuilder sb, char value)
         {
-            for (int i = sb.Length - 1; i >= 0; i--)
+            int len = sb.Length;
+            for (int i = len - 1; i >= 0; i--)
             {
                 if (sb[i] == value) return i;
             }
