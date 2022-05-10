@@ -154,9 +154,11 @@ namespace AL_Common
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAsciiLower(this StringBuilder str)
         {
-            for (int i = 0; i < str.Length; i++)
+            int len = str.Length;
+            for (int i = 0; i < len; i++)
             {
                 char c = str[i];
                 if (c > 127 || (c is >= 'A' and <= 'Z')) return false;
