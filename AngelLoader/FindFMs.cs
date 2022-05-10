@@ -278,7 +278,7 @@ namespace AngelLoader
             {
                 int instInitCount = FMDataIniList.Count;
 
-                var fmDataIniInstDirDict = new DictionaryI<FanMission>();
+                var fmDataIniInstDirDict = new DictionaryI<FanMission>(instInitCount);
                 for (int i = 0; i < instInitCount; i++)
                 {
                     var fm = FMDataIniList[i];
@@ -442,7 +442,7 @@ namespace AngelLoader
             // so not touching it!
             int initCount = FMDataIniList.Count;
 
-            var fmDataIniInstDirDict = new DictionaryI<FanMission>();
+            var fmDataIniInstDirDict = new DictionaryI<FanMission>(initCount);
             for (int i = 0; i < initCount; i++)
             {
                 var fm = FMDataIniList[i];
@@ -452,7 +452,7 @@ namespace AngelLoader
                 }
             }
 
-            var fmDataIniArchiveDict = new DictionaryI<FanMission>();
+            var fmDataIniArchiveDict = new DictionaryI<FanMission>(initCount);
             for (int i = 0; i < initCount; i++)
             {
                 var fm = FMDataIniList[i];
