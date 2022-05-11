@@ -118,8 +118,21 @@ namespace AngelLoader
         {
             if (fm.MarkedUnavailable) return;
 
-            // @MULTISEL(Delete): FindAllMatches() should be in a thread
-            var archives = FindAllMatches(fm.Archive);
+            // Use wait cursor in blocking thread, rather than putting this on its own thread.
+            // The archive find operation _probably_ won't take long enough to warrant a progress box,
+            // and if it's quick then the progress box looks like an annoying flicker.
+            List<string> archives;
+            try
+            {
+                Core.View.Cursor = Cursors.WaitCursor;
+
+                archives = FindAllMatches(fm.Archive);
+            }
+            finally
+            {
+                Core.View.Cursor = Cursors.Default;
+            }
+
             if (archives.Count == 0)
             {
                 Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
