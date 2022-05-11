@@ -141,7 +141,7 @@ namespace AngelLoader
                 for (int i = 0; i < langs.Count; i++)
                 {
                     string lang = langs[i];
-                    if (Langs_TryGetValue(lang, out Language language))
+                    if (LangStringsToEnums.TryGetValue(lang, out Language language))
                     {
                         fm.Langs |= language;
                     }

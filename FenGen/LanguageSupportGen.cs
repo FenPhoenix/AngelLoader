@@ -105,6 +105,17 @@ namespace FenGen
             }
             WriteListBody(w, fsPrefixedList, addQuotes: true);
 
+            w.WL("// Even though we have the perfect hash, this one is required for things that need case-insensitivity");
+            w.WL("// in the keys!");
+            w.WL("public static DictionaryI<" + langEnum.Name + "> " + langEnum.StringToEnumDictName + " = new(" + count + ")");
+            var values = new List<string>(count);
+            foreach (var lang in langEnum.LangIndexEnumNames)
+            {
+                values.Add(langEnum.Name + "." + lang);
+            }
+            WriteDictionaryBody(w, langEnum.LangIndexEnumNamesLowercase, values, keysQuoted: true);
+
+
             var codeValues = new List<string>();
             foreach (string codeItem in langEnum.LangCodes)
             {

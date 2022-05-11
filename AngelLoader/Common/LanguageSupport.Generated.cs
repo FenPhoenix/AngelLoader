@@ -1,6 +1,7 @@
 #define FenGen_LanguageSupportDest
 
 using System;
+using static AL_Common.Common;
 using static AngelLoader.FenGenAttributes;
 
 namespace AngelLoader
@@ -55,6 +56,23 @@ namespace AngelLoader
             "/polish",
             "/russian",
             "/spanish"
+        };
+
+        // Even though we have the perfect hash, this one is required for things that need case-insensitivity
+        // in the keys!
+        public static DictionaryI<Language> LangStringsToEnums = new(11)
+        {
+            { "english", Language.English },
+            { "czech", Language.Czech },
+            { "dutch", Language.Dutch },
+            { "french", Language.French },
+            { "german", Language.German },
+            { "hungarian", Language.Hungarian },
+            { "italian", Language.Italian },
+            { "japanese", Language.Japanese },
+            { "polish", Language.Polish },
+            { "russian", Language.Russian },
+            { "spanish", Language.Spanish }
         };
 
         public static string[][] LangCodes =
