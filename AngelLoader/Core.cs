@@ -1281,6 +1281,7 @@ namespace AngelLoader
                         await sw.WriteLineAsync(safeReadme);
                     }
                 }
+                Config.Language = "English";
             }
         }
 #endif
