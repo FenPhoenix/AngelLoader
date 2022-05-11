@@ -1306,6 +1306,14 @@ namespace AngelLoader.Forms
             }
             else if (e.KeyCode == Keys.Delete)
             {
+                // @MULTISEL(Delete key/FM deletion):
+                // Currently, we don't disable this on the same multiselection conditions that we disable the
+                // menu item on.
+                // We maybe should allow delete on a set that includes unavailable FMs, and just skip those.
+                // Otherwise, the user could select a bunch and have one unavailable one in there that may not
+                // even be on screen, and wonder why they can't delete them.
+                // If we try to delete _one_ unavailable FM, we should just keep the menu item disabled but
+                // throw up the alert dialog if they pressed the delete key.
                 if (FMsDGV.Focused && FMsDGV.RowSelected())
                 {
                     await FMArchives.Delete(FMsDGV.GetMainSelectedFM());

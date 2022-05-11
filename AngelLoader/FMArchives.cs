@@ -116,7 +116,14 @@ namespace AngelLoader
         /// <returns></returns>
         internal static async Task Delete(FanMission fm)
         {
-            if (fm.MarkedUnavailable) return;
+            if (fm.MarkedUnavailable)
+            {
+                Dialogs.ShowAlert(
+                    "This FM is not available on disk, and so can't be deleted.",
+                    LText.AlertMessages.Alert,
+                    MessageBoxIcon.None);
+                return;
+            }
 
             // Use wait cursor in blocking thread, rather than putting this on its own thread.
             // The archive find operation _probably_ won't take long enough to warrant a progress box,
