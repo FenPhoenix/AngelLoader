@@ -1297,8 +1297,6 @@ namespace AngelLoader
         {
             // Since an FM's readmes are very few in number, we can afford to be all kinds of lazy and slow here
 
-            // @MEM: Test this one more time, because we've changed a few things now
-
             #region Local functions
 
             static string StripPunctuation(string str) => str
