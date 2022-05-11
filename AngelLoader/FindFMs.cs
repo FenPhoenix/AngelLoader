@@ -18,6 +18,166 @@ namespace AngelLoader
     // But okay then! YES! We're ready to handle tens of thousands of FMs! Gorge yourselves!
     internal static class FindFMs
     {
+        private sealed class LastResortLinkupBundle
+        {
+            private DictionaryI<string>? _archivesToInstDirNameFMSelTruncated;
+            private DictionaryI<string>? _archivesToInstDirNameFMSelNotTruncated;
+            private DictionaryI<string>? _archivesToInstDirNameNDLTruncated;
+            private DictionaryI<string>? _archives;
+            private DictionaryI<string>? _archivesToInstDirNameFMSelTruncated_FromFMDataIniList;
+            private DictionaryI<string>? _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList;
+            private DictionaryI<string>? _archivesToInstDirNameNDLTruncated_FromFMDataIniList;
+            private DictionaryI<string>? _installedDirs_FromFMDataIniList;
+
+            internal DictionaryI<string> GetInstDirFMSelToArchives(string[] archives, bool truncate)
+            {
+                if (truncate)
+                {
+                    if (_archivesToInstDirNameFMSelTruncated == null)
+                    {
+                        _archivesToInstDirNameFMSelTruncated = new(archives.Length);
+                        for (int i = 0; i < archives.Length; i++)
+                        {
+                            string value = archives[i];
+                            string key = value.ToInstDirNameFMSel(true);
+                            if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelTruncated.ContainsKey(key))
+                            {
+                                _archivesToInstDirNameFMSelTruncated.Add(key, value);
+                            }
+                        }
+                    }
+                    return _archivesToInstDirNameFMSelTruncated;
+                }
+                else
+                {
+                    if (_archivesToInstDirNameFMSelNotTruncated == null)
+                    {
+                        _archivesToInstDirNameFMSelNotTruncated = new(archives.Length);
+                        for (int i = 0; i < archives.Length; i++)
+                        {
+                            string value = archives[i];
+                            string key = value.ToInstDirNameFMSel(false);
+                            if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelNotTruncated.ContainsKey(key))
+                            {
+                                _archivesToInstDirNameFMSelNotTruncated.Add(key, value);
+                            }
+                        }
+                    }
+                    return _archivesToInstDirNameFMSelNotTruncated;
+                }
+            }
+
+            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives(string[] archives)
+            {
+                if (_archivesToInstDirNameNDLTruncated == null)
+                {
+                    _archivesToInstDirNameNDLTruncated = new(archives.Length);
+                    for (int i = 0; i < archives.Length; i++)
+                    {
+                        string value = archives[i];
+                        string key = value.ToInstDirNameNDL(truncate: true);
+                        if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameNDLTruncated.ContainsKey(key))
+                        {
+                            _archivesToInstDirNameNDLTruncated.Add(key, value);
+                        }
+                    }
+                }
+                return _archivesToInstDirNameNDLTruncated;
+            }
+
+            internal DictionaryI<string> GetInstDirNameToArchives(string[] archives)
+            {
+                if (_archives == null)
+                {
+                    _archives = new(archives.Length);
+                    for (int i = 0; i < archives.Length; i++)
+                    {
+                        string key = archives[i];
+                        string value = key;
+                        if (!key.IsEmpty() && !value.IsEmpty() && !_archives.ContainsKey(key))
+                        {
+                            _archives.Add(key, value);
+                        }
+                    }
+                }
+                return _archives;
+            }
+
+            internal DictionaryI<string> GetInstDirNameFMSelToArchives_FromFMDataIni(bool truncate)
+            {
+                if (truncate)
+                {
+                    if (_archivesToInstDirNameFMSelTruncated_FromFMDataIniList == null)
+                    {
+                        _archivesToInstDirNameFMSelTruncated_FromFMDataIniList = new(FMDataIniList.Count);
+                        for (int i = 0; i < FMDataIniList.Count; i++)
+                        {
+                            string value = FMDataIniList[i].Archive;
+                            string key = value.ToInstDirNameFMSel(truncate: true);
+                            if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelTruncated_FromFMDataIniList.ContainsKey(key))
+                            {
+                                _archivesToInstDirNameFMSelTruncated_FromFMDataIniList.Add(key, value);
+                            }
+                        }
+                    }
+                    return _archivesToInstDirNameFMSelTruncated_FromFMDataIniList;
+                }
+                else
+                {
+                    if (_archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList == null)
+                    {
+                        _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList = new(FMDataIniList.Count);
+                        for (int i = 0; i < FMDataIniList.Count; i++)
+                        {
+                            string value = FMDataIniList[i].Archive;
+                            string key = value.ToInstDirNameFMSel(truncate: false);
+                            if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList.ContainsKey(key))
+                            {
+                                _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList.Add(key, value);
+                            }
+                        }
+                    }
+                    return _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList;
+                }
+            }
+
+            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives_FromFMDataIni()
+            {
+                if (_archivesToInstDirNameNDLTruncated_FromFMDataIniList == null)
+                {
+                    _archivesToInstDirNameNDLTruncated_FromFMDataIniList = new(FMDataIniList.Count);
+                    for (int i = 0; i < FMDataIniList.Count; i++)
+                    {
+                        string value = FMDataIniList[i].Archive;
+                        string key = value.ToInstDirNameNDL(truncate: true);
+                        if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameNDLTruncated_FromFMDataIniList.ContainsKey(key))
+                        {
+                            _archivesToInstDirNameNDLTruncated_FromFMDataIniList.Add(key, value);
+                        }
+                    }
+                }
+                return _archivesToInstDirNameNDLTruncated_FromFMDataIniList;
+            }
+
+            internal DictionaryI<string> GetInstDirToArchives_FromFMDataIni()
+            {
+                if (_installedDirs_FromFMDataIniList == null)
+                {
+                    _installedDirs_FromFMDataIniList = new(FMDataIniList.Count);
+                    for (int i = 0; i < FMDataIniList.Count; i++)
+                    {
+                        string value = FMDataIniList[i].Archive;
+                        string key = FMDataIniList[i].InstalledDir;
+                        if (!key.IsEmpty() && !value.IsEmpty() && !_installedDirs_FromFMDataIniList.ContainsKey(key))
+                        {
+                            _installedDirs_FromFMDataIniList.Add(key, value);
+                        }
+                    }
+                }
+                return _installedDirs_FromFMDataIniList;
+            }
+        }
+
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
         internal static List<int> Find_Startup(SplashScreen splashScreen)
         {
@@ -550,166 +710,6 @@ namespace AngelLoader
         }
 
         #endregion
-
-        private sealed class LastResortLinkupBundle
-        {
-            private DictionaryI<string>? _archivesToInstDirNameFMSelTruncated;
-            private DictionaryI<string>? _archivesToInstDirNameFMSelNotTruncated;
-            private DictionaryI<string>? _archivesToInstDirNameNDLTruncated;
-            private DictionaryI<string>? _archives;
-            private DictionaryI<string>? _archivesToInstDirNameFMSelTruncated_FromFMDataIniList;
-            private DictionaryI<string>? _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList;
-            private DictionaryI<string>? _archivesToInstDirNameNDLTruncated_FromFMDataIniList;
-            private DictionaryI<string>? _installedDirs_FromFMDataIniList;
-
-            internal DictionaryI<string> GetInstDirFMSelToArchives(string[] archives, bool truncate)
-            {
-                if (truncate)
-                {
-                    if (_archivesToInstDirNameFMSelTruncated == null)
-                    {
-                        _archivesToInstDirNameFMSelTruncated = new(archives.Length);
-                        for (int i = 0; i < archives.Length; i++)
-                        {
-                            string value = archives[i];
-                            string key = value.ToInstDirNameFMSel(true);
-                            if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelTruncated.ContainsKey(key))
-                            {
-                                _archivesToInstDirNameFMSelTruncated.Add(key, value);
-                            }
-                        }
-                    }
-                    return _archivesToInstDirNameFMSelTruncated;
-                }
-                else
-                {
-                    if (_archivesToInstDirNameFMSelNotTruncated == null)
-                    {
-                        _archivesToInstDirNameFMSelNotTruncated = new(archives.Length);
-                        for (int i = 0; i < archives.Length; i++)
-                        {
-                            string value = archives[i];
-                            string key = value.ToInstDirNameFMSel(false);
-                            if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelNotTruncated.ContainsKey(key))
-                            {
-                                _archivesToInstDirNameFMSelNotTruncated.Add(key, value);
-                            }
-                        }
-                    }
-                    return _archivesToInstDirNameFMSelNotTruncated;
-                }
-            }
-
-            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives(string[] archives)
-            {
-                if (_archivesToInstDirNameNDLTruncated == null)
-                {
-                    _archivesToInstDirNameNDLTruncated = new(archives.Length);
-                    for (int i = 0; i < archives.Length; i++)
-                    {
-                        string value = archives[i];
-                        string key = value.ToInstDirNameNDL(truncate: true);
-                        if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameNDLTruncated.ContainsKey(key))
-                        {
-                            _archivesToInstDirNameNDLTruncated.Add(key, value);
-                        }
-                    }
-                }
-                return _archivesToInstDirNameNDLTruncated;
-            }
-
-            internal DictionaryI<string> GetInstDirNameToArchives(string[] archives)
-            {
-                if (_archives == null)
-                {
-                    _archives = new(archives.Length);
-                    for (int i = 0; i < archives.Length; i++)
-                    {
-                        string key = archives[i];
-                        string value = key;
-                        if (!key.IsEmpty() && !value.IsEmpty() && !_archives.ContainsKey(key))
-                        {
-                            _archives.Add(key, value);
-                        }
-                    }
-                }
-                return _archives;
-            }
-
-            internal DictionaryI<string> GetInstDirNameFMSelToArchives_FromFMDataIni(bool truncate)
-            {
-                if (truncate)
-                {
-                    if (_archivesToInstDirNameFMSelTruncated_FromFMDataIniList == null)
-                    {
-                        _archivesToInstDirNameFMSelTruncated_FromFMDataIniList = new(FMDataIniList.Count);
-                        for (int i = 0; i < FMDataIniList.Count; i++)
-                        {
-                            string value = FMDataIniList[i].Archive;
-                            string key = value.ToInstDirNameFMSel(truncate: true);
-                            if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelTruncated_FromFMDataIniList.ContainsKey(key))
-                            {
-                                _archivesToInstDirNameFMSelTruncated_FromFMDataIniList.Add(key, value);
-                            }
-                        }
-                    }
-                    return _archivesToInstDirNameFMSelTruncated_FromFMDataIniList;
-                }
-                else
-                {
-                    if (_archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList == null)
-                    {
-                        _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList = new(FMDataIniList.Count);
-                        for (int i = 0; i < FMDataIniList.Count; i++)
-                        {
-                            string value = FMDataIniList[i].Archive;
-                            string key = value.ToInstDirNameFMSel(truncate: false);
-                            if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList.ContainsKey(key))
-                            {
-                                _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList.Add(key, value);
-                            }
-                        }
-                    }
-                    return _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList;
-                }
-            }
-
-            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives_FromFMDataIni()
-            {
-                if (_archivesToInstDirNameNDLTruncated_FromFMDataIniList == null)
-                {
-                    _archivesToInstDirNameNDLTruncated_FromFMDataIniList = new(FMDataIniList.Count);
-                    for (int i = 0; i < FMDataIniList.Count; i++)
-                    {
-                        string value = FMDataIniList[i].Archive;
-                        string key = value.ToInstDirNameNDL(truncate: true);
-                        if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameNDLTruncated_FromFMDataIniList.ContainsKey(key))
-                        {
-                            _archivesToInstDirNameNDLTruncated_FromFMDataIniList.Add(key, value);
-                        }
-                    }
-                }
-                return _archivesToInstDirNameNDLTruncated_FromFMDataIniList;
-            }
-
-            internal DictionaryI<string> GetInstDirToArchives_FromFMDataIni()
-            {
-                if (_installedDirs_FromFMDataIniList == null)
-                {
-                    _installedDirs_FromFMDataIniList = new(FMDataIniList.Count);
-                    for (int i = 0; i < FMDataIniList.Count; i++)
-                    {
-                        string value = FMDataIniList[i].Archive;
-                        string key = FMDataIniList[i].InstalledDir;
-                        if (!key.IsEmpty() && !value.IsEmpty() && !_installedDirs_FromFMDataIniList.ContainsKey(key))
-                        {
-                            _installedDirs_FromFMDataIniList.Add(key, value);
-                        }
-                    }
-                }
-                return _installedDirs_FromFMDataIniList;
-            }
-        }
 
         // PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
         private static string? GetArchiveNameFromInstalledDir(FanMission fm, string[] archives, LastResortLinkupBundle bundle)
