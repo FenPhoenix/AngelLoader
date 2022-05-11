@@ -178,6 +178,11 @@ namespace AngelLoader
             }
         }
 
+        /// <summary>
+        /// Finds and merges new FMs (archives and installed) into the set. Call only on startup during parallel
+        /// load.
+        /// </summary>
+        /// <param name="splashScreen">The splash screen for it to update with a checkmark when it's done.</param>
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
         internal static List<int> Find_Startup(SplashScreen splashScreen)
         {
@@ -186,6 +191,9 @@ namespace AngelLoader
             return ret;
         }
 
+        /// <summary>
+        /// Finds and merges new FMs into the set.
+        /// </summary>
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
         internal static List<int> Find() => FindInternal(startup: false);
 

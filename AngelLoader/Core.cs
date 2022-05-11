@@ -1,4 +1,6 @@
-﻿/* NOTE: Core ideas:
+﻿//#define ENABLE_SAFE_README_IDENTICALITY_TEST
+
+/* NOTE: Core ideas:
  -We could have the stub be called back on game exit and use that to track game lifetime, for temp config var changes
   But note we may have to handle no_unload_fmsel option - make sure we don't have stale values on SelectFM call?
  -@IO_SAFETY: Make a system where files get temp-copied and then if writes fail, we copy the old file back (FMSel does this)
@@ -1260,6 +1262,28 @@ namespace AngelLoader
 
             return (readmeOnDisk, readmeType);
         }
+
+#if ENABLE_SAFE_README_IDENTICALITY_TEST
+        internal static async void ReadmeTest()
+        {
+            using (var sw = new StreamWriter(@"C:\readme_test_new.txt"))
+            {
+                var langs = Config.LanguageNames.Keys.ToList();
+                langs.Sort(StringComparer.Ordinal);
+
+                foreach (string lang in langs)
+                {
+                    Config.Language = lang;
+                    foreach (FanMission fm in FMDataIniList)
+                    {
+                        var cache = await FMCache.GetCacheableData(fm, false);
+                        string safeReadme = DetectSafeReadme(cache.Readmes, fm.Title);
+                        await sw.WriteLineAsync(safeReadme);
+                    }
+                }
+            }
+        }
+#endif
 
         /// <summary>
         /// Given a list of readme filenames, attempts to find one that doesn't contain spoilers by "eyeballing"
