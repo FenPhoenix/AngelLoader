@@ -1,7 +1,7 @@
 <h1 align="center">
 AngelLoader
 </h1>
-<p align="center"><img src="https://fenphoenix.com/github/AngelLoader/MainWindow_1.4.5_600_v3.png" /></p>
+<p align="center"><img src="https://github.com/FenPhoenix/AngelLoader/blob/master/docs/images/main_window_2022-05-10_900w.png" /></p>
 
 
 <hr>
@@ -13,15 +13,26 @@ AngelLoader is supported by JetBrains under their Open Source License.
 </p>
 
 ## Description
-AngelLoader is a modern, standalone fan mission loader for Thief 1, Thief 2, Thief 3, and System Shock 2. Current loaders for those games (FMSel, NewDarkLoader) must be attached to each game individually, necessitating multiple installs, multiple setting of config options, the inability to manage all your missions in one place, etc. AngelLoader is a one-stop shop for all your missions: every FM can be viewed, played, edited, installed, and uninstalled from one place.
+AngelLoader is a standalone fan mission loader for Thief 1, Thief 2, Thief 3, and System Shock 2. Unlike FMSel, which requires a separate copy for each game, AngelLoader allows you to manage and play all your FMs in one place. The interface is inspired by DarkLoader (by Björn Henke and Tom N. Harris) and NewDarkLoader (by Robin Collier).
 
-The list of fan missions is filterable by game and many other criteria, and provides the option to either organize games by tab or to treat them as ordinary filters.
+## Features
+- Manage all your FMs in one place
+- Search and filter your FM collection by many criteria
+- Automatically detect metadata for every FM: title, author, game, release date, etc. No need to type it in!
+- Organize your games by tab or treat them as filters
+- Disable visual or other mods on a per-FM basis with a simple visual list (no more typing an arcane string into a textbox!)
+- Choose which language to play with on a per-FM basis
+- Import your FM information from DarkLoader, NewDarkLoader, or FMSel
+- Automatically fix common problems, such as non-16-bit audio causing static, or bad values left in config files by NewDark
+- Choose between light and dark themes
+- Play nice with other loaders: AngelLoader doesn't store any .dll or data files in your game folders, making it truly portable and non-intrusive
 
-The interface is inspired by DarkLoader (by Björn Henke and Tom N. Harris) and NewDarkLoader (by Robin Collier). AngelLoader emulates the classic DarkLoader/NewDarkLoader UI design, with its simple "everything at your fingertips" layout making for a quick and intuitive experience. It also incorporates features from NewDarkLoader and FMSel, such as tags, filtering, rating, optional audio file conversion, etc.
+## Installing
+Simply download the [latest release](https://github.com/FenPhoenix/AngelLoader/releases) and unzip it to a folder of your choice. For example, `C:\AngelLoader`. New versions can be extracted right on top of old ones: your data files will not be overwritten.
 
-FM loaders have traditionally had FM scanning functionality, and AngelLoader's scanner is second to none, detecting titles and authors from the trickiest of fan missions with a speed and accuracy rate not seen from any loader before. It also detects NewDark game types accurately, in contrast to DarkLoader which requires manual editing of its .ini file in order for NewDark Thief 1 missions to work.
+*Note: Some folders are considered "protected" (`Program Files` / `Program Files (x86)` are examples) and AngelLoader should not be placed anywhere in these folders or it may not (probably won't) work.*
 
-In short, AngelLoader aims to be a complete successor to DarkLoader, being an all-in-one loader and manager with an intuitive interface, high performance, and many features both classic and modern.
+.NET Framework 4.7.2 or above is required. All modern versions of Windows should come with this already.
 
 ## Building
 - All dependencies now are either NuGet packages or are included in the bin_dependencies folder, so you should be able to just build with no fuss now.
