@@ -25,7 +25,7 @@ AngelLoader is a standalone fan mission loader for Thief 1, Thief 2, Thief 3, an
 - Import your FM information from DarkLoader, NewDarkLoader, or FMSel
 - Automatically fix common problems, such as non-16-bit audio causing static, or bad values left in config files by NewDark
 - Choose between light and dark themes
-- Play nice with other loaders: AngelLoader doesn't store any .dll or data files in your game folders, making it truly portable and non-intrusive
+- Plays nice with other loaders: AngelLoader doesn't store any .dlls or data files in your game folders, making it truly portable and non-intrusive
 
 ## Installing
 Simply download the [latest release](https://github.com/FenPhoenix/AngelLoader/releases) and unzip it to a folder of your choice. For example, `C:\AngelLoader`. New versions can be extracted right on top of old ones: your data files will not be overwritten.
