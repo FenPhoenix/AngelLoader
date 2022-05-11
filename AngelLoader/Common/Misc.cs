@@ -70,6 +70,8 @@ namespace AngelLoader
 
         public enum ReadmeState { HTML, PlainText, OtherSupported, LoadError, InitialReadmeChooser }
 
+        public enum ReadmeLocalizableMessage { NoReadmeFound, UnableToLoadReadme, None }
+
         internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }
 
         /// <summary>

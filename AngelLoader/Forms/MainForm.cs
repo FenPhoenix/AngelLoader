@@ -1651,6 +1651,11 @@ namespace AngelLoader.Forms
 
                 ChooseReadmeLLPanel.Localize();
 
+                if (ReadmeRichTextBox.LocalizableMessageType != ReadmeLocalizableMessage.None)
+                {
+                    SetReadmeLocalizableMessage(ReadmeRichTextBox.LocalizableMessageType);
+                }
+
                 #endregion
 
                 #region Bottom area
@@ -5292,7 +5297,19 @@ namespace AngelLoader.Forms
             return ReadmeRichTextBox.LoadContent(path, fileType, encoding);
         }
 
-        public void SetReadmeText(string text) => ReadmeRichTextBox.SetText(text);
+        public void SetReadmeLocalizableMessage(ReadmeLocalizableMessage messageType)
+        {
+            switch (messageType)
+            {
+                case ReadmeLocalizableMessage.NoReadmeFound:
+                    ReadmeRichTextBox.SetText(LText.ReadmeArea.NoReadmeFound);
+                    break;
+                case ReadmeLocalizableMessage.UnableToLoadReadme:
+                    ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
+                    break;
+            }
+            ReadmeRichTextBox.LocalizableMessageType = messageType;
+        }
 
         public void SetSelectedEncoding(Encoding encoding) => EncodingsLLMenu.SetEncodingMenuItemChecked(encoding);
 

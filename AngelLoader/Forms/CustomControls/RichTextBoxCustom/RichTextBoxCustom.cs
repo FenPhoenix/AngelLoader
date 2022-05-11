@@ -47,6 +47,8 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields / properties
 
+        internal ReadmeLocalizableMessage LocalizableMessageType;
+
         private Font? _monospaceFont;
         private Font MonospaceFont => _monospaceFont ??= new Font(FontFamily.GenericMonospace, 10.0f);
 
@@ -267,6 +269,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 SetReadmeTypeAndColorState(ReadmeType.PlainText);
                 ResumeState(toggleReadOnly: false);
+                LocalizableMessageType = ReadmeLocalizableMessage.None;
             }
         }
 
@@ -462,6 +465,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     _owner.Cursor = Cursors.Default;
                 }
+                LocalizableMessageType = ReadmeLocalizableMessage.None;
             }
 
             return retEncoding;

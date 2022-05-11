@@ -328,7 +328,7 @@ namespace AngelLoader.Forms
 
         Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding);
 
-        void SetReadmeText(string text);
+        void SetReadmeLocalizableMessage(ReadmeLocalizableMessage messageType);
 
         Encoding? ChangeReadmeEncoding(Encoding? encoding);
 

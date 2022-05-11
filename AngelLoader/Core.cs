@@ -1530,7 +1530,7 @@ namespace AngelLoader
             {
                 Log("Readme load failed.", ex);
                 View.SetReadmeState(ReadmeState.LoadError);
-                View.SetReadmeText(LText.ReadmeArea.UnableToLoadReadme);
+                View.SetReadmeLocalizableMessage(ReadmeLocalizableMessage.UnableToLoadReadme);
             }
         }
 
@@ -1977,7 +1977,7 @@ namespace AngelLoader
                 {
                     case 0:
                         View.SetReadmeState(ReadmeState.LoadError);
-                        View.SetReadmeText(LText.ReadmeArea.NoReadmeFound);
+                        View.SetReadmeLocalizableMessage(ReadmeLocalizableMessage.NoReadmeFound);
                         return fm;
                     case > 1:
                         string safeReadme = DetectSafeReadme(readmeFiles, fm.Title);
