@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 
@@ -32,6 +33,8 @@ namespace AngelLoader
         {
             if (_splashScreenForm.VisibleCached) _splashScreenForm.SetCheckAtStoredMessageWidth();
         }
+
+        public IWin32Window GetWindow() => _splashScreenForm;
 
         public void Dispose()
         {

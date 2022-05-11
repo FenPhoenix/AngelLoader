@@ -189,7 +189,8 @@ namespace AngelLoader
                 // The FM finder will update the splash screen from another thread (accessing only the graphics
                 // context, so no cross-thread Control access exceptions), so any calls in here are potential
                 // race conditions.
-                using (Task findFMsTask = Task.Run(() => fmsViewListUnscanned = FindFMs.Find_Startup(splashScreen)))
+                Exception? ex = null;
+                using (Task findFMsTask = Task.Run(() => (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen)))
                 {
                     // Construct and init the view both right here, because they're both heavy operations and
                     // we want them both to run in parallel with Find() to the greatest extent possible.
@@ -197,6 +198,11 @@ namespace AngelLoader
                     View.InitThreadable();
 
                     findFMsTask.Wait();
+                    if (ex != null)
+                    {
+                        Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni, splashScreen.GetWindow());
+                        EnvironmentExitDoShutdownTasks(1);
+                    }
                 }
                 // IMPORTANT: End no-splash-screen-call zone
 

@@ -184,11 +184,20 @@ namespace AngelLoader
         /// </summary>
         /// <param name="splashScreen">The splash screen for it to update with a checkmark when it's done.</param>
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-        internal static List<int> Find_Startup(SplashScreen splashScreen)
+        internal static (List<int> FMsViewListUnscanned, Exception? Ex) Find_Startup(SplashScreen splashScreen)
         {
-            var ret = FindInternal(startup: true);
-            splashScreen.SetCheckAtStoredMessageWidth();
-            return ret;
+            // This will run in a thread, so we don't want to try throwing up any dialogs or running the shutdown
+            // tasks or anything here... just return an exception and handle it on the main thread...
+            try
+            {
+                var ret = FindInternal(startup: true);
+                splashScreen.SetCheckAtStoredMessageWidth();
+                return (ret, null);
+            }
+            catch (Exception ex)
+            {
+                return (new List<int>(), ex);
+            }
         }
 
         /// <summary>
@@ -265,12 +274,7 @@ namespace AngelLoader
                     Log("Exception reading FM data ini", ex);
                     if (startup)
                     {
-                        // Language will be loaded by this point
-                        // ... but the view will be initializing in parallel! So we can't call a method that will
-                        // check if the view is there to invoke to it!
-                        // @vNext(FindFMs error dialog): We could invoke this to the splash screen thread...
-                        Dialogs.ShowErrorNoInvoke(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
-                        Core.EnvironmentExitDoShutdownTasks(1);
+                        throw;
                     }
                     else
                     {
