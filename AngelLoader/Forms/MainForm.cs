@@ -3753,7 +3753,10 @@ namespace AngelLoader.Forms
                         }
                         for (int i = selIndices.Length - 1; i >= 0; i--)
                         {
-                            FMsDGV.SetRowSelected(selIndices[i], true, suppressEvent: true);
+                            // DON'T suppress the event, because if we do it'll resume right here again, but we
+                            // already are suppressing it manually and we only want to resume at the end in the
+                            // finally block down below
+                            FMsDGV.SetRowSelected(selIndices[i], true, suppressEvent: false);
                         }
 
                         FMsDGV.SelectProperly(suspendResume: false);
