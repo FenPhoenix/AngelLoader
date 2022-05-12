@@ -23,6 +23,7 @@ namespace AngelLoader
         private static readonly byte[] _riff = { (byte)'R', (byte)'I', (byte)'F', (byte)'F' };
         private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
         private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
+        // @THREADING(FindFMs buffer4): Not thread-safe
         private static readonly byte[] _buffer4 = new byte[4];
 
         private static CancellationTokenSource _conversionCTS = new();
@@ -183,17 +184,11 @@ namespace AngelLoader
                                 {
                                     if (e.Data.IsEmpty()) return;
 
-                                    using var sr = new StringReader(e.Data);
-
-                                    string? line;
-                                    while ((line = sr.ReadLine()) != null)
+                                    string line = e.Data;
+                                    if (line.StartsWithFast_NoNullChecks("bits_per_sample=") &&
+                                        int.TryParse(line.Substring(line.IndexOf('=') + 1), out int result))
                                     {
-                                        if (line.StartsWithFast_NoNullChecks("bits_per_sample=") &&
-                                            int.TryParse(line.Substring(line.IndexOf('=') + 1), out int result))
-                                        {
-                                            ret = result;
-                                            break;
-                                        }
+                                        ret = result;
                                     }
                                 };
 

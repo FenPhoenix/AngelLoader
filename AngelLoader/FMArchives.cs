@@ -25,7 +25,7 @@ namespace AngelLoader
         internal static List<string> GetFMArchivePaths()
         {
             // Always return a COPY of the paths list, so the caller can modify it safely if it wants
-            var paths = new List<string>();
+            var paths = new List<string>(Config.FMArchivePaths.Count);
             foreach (string path in Config.FMArchivePaths)
             {
                 paths.Add(path);
@@ -238,7 +238,7 @@ namespace AngelLoader
 
             if (fms.Count == 0) return;
 
-            var archivesList = new List<List<string>>();
+            var archivesList = new List<List<string>>(fms.Count);
 
             var archivePaths = GetFMArchivePaths();
             foreach (var fm in fms)

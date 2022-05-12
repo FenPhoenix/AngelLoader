@@ -1457,7 +1457,7 @@ namespace AngelLoader.Forms
         internal static void PaintToolStripSeparators(
             PaintEventArgs e,
             int pixelsFromVerticalEdges,
-            params ToolStripItem[] items)
+            ToolStripItem[] items)
         {
             Rectangle sizeBounds = items[0].Bounds;
 
@@ -1476,9 +1476,9 @@ namespace AngelLoader.Forms
         internal static void PaintControlSeparators(
             PaintEventArgs e,
             int pixelsFromVerticalEdges,
+            Control[] items,
             int topOverride = -1,
-            int bottomOverride = -1,
-            params Control[] items)
+            int bottomOverride = -1)
         {
             Rectangle sizeBounds = items[0].Bounds;
 

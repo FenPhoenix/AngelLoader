@@ -127,7 +127,7 @@ namespace AngelLoader
                 #region Filter out invalid FMs from scan list
 
                 // Safety net to guarantee that the in and out lists will have the same count and order
-                var fmsToScanFiltered = new List<FanMission>();
+                var fmsToScanFiltered = new List<FanMission>(fmsToScan.Count);
 
                 for (int i = 0; i < fmsToScan.Count; i++)
                 {

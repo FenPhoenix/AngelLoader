@@ -10,6 +10,8 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : DarkFormBase
     {
+        private readonly Control[] _separatorPaintControls;
+
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
         internal FilterTagsForm(FMCategoriesCollection sourceTags, TagsFilter tagsFilter)
@@ -19,6 +21,8 @@ namespace AngelLoader.Forms
 #else
             InitializeComponentSlim();
 #endif
+
+            _separatorPaintControls = new Control[] { OKButton };
 
             tagsFilter.DeepCopyTo(TagsFilter);
 
@@ -294,7 +298,7 @@ namespace AngelLoader.Forms
             Images.PaintControlSeparators(
                 e: e,
                 pixelsFromVerticalEdges: 5,
-                items: new Control[] { OKButton });
+                items: _separatorPaintControls);
         }
 
         private void ArrowButtons_Paint(object sender, PaintEventArgs e)

@@ -113,11 +113,20 @@ namespace AngelLoader
                     return;
                 }
 
-                if (PlayFM(fm, playMP))
+                try
                 {
-                    fm.LastPlayed.DateTime = DateTime.Now;
-                    Core.View.RefreshFM(fm);
-                    Ini.WriteFullFMDataIni();
+                    Core.View.Cursor = Cursors.WaitCursor;
+
+                    if (PlayFM(fm, playMP))
+                    {
+                        fm.LastPlayed.DateTime = DateTime.Now;
+                        Core.View.RefreshFM(fm);
+                        Ini.WriteFullFMDataIni();
+                    }
+                }
+                finally
+                {
+                    Core.View.Cursor = Cursors.Default;
                 }
             }
         }
@@ -126,28 +135,37 @@ namespace AngelLoader
 
         internal static bool PlayOriginalGame(GameIndex game, bool playMP = false)
         {
-            (bool success, string gameExe, string gamePath) =
-                CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: true, playMP);
-            if (!success) return false;
-            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+            try
+            {
+                Core.View.Cursor = Cursors.WaitCursor;
 
-            if (game is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
-            SetUsAsSelector(game, gamePath, PlaySource.OriginalGame);
+                (bool success, string gameExe, string gamePath) =
+                    CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: true, playMP);
+                if (!success) return false;
+                Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+
+                if (game is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
+                SetUsAsSelector(game, gamePath, PlaySource.OriginalGame);
 
 #if !ReleaseBeta && !ReleasePublic
-            string args = Config.ForceWindowed ? "+force_windowed" : "";
+                string args = Config.ForceWindowed ? "+force_windowed" : "";
 #else
             string args = "";
 #endif
-            string workingPath = Config.GetGamePath(game);
-            var sv = GetSteamValues(game, playMP);
-            if (sv.Success) (_, gameExe, workingPath, args) = sv;
+                string workingPath = Config.GetGamePath(game);
+                var sv = GetSteamValues(game, playMP);
+                if (sv.Success) (_, gameExe, workingPath, args) = sv;
 
-            WriteStubCommFile(null, gamePath, originalT3: game == GameIndex.Thief3);
+                WriteStubCommFile(null, gamePath, originalT3: game == GameIndex.Thief3);
 
-            StartExe(gameExe, workingPath, args);
+                StartExe(gameExe, workingPath, args);
 
-            return true;
+                return true;
+            }
+            finally
+            {
+                Core.View.Cursor = Cursors.Default;
+            }
         }
 
         private static bool PlayFM(FanMission fm, bool playMP = false)
@@ -215,60 +233,69 @@ namespace AngelLoader
 
         internal static bool OpenFMInEditor(FanMission fm)
         {
-            #region Checks (specific to DromEd)
-
-            // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
-            if (!GameIsDark(fm.Game))
+            try
             {
-                Log("FM game type is not a Dark Engine game.\r\n" +
-                    "FM: " + GetFMId(fm) + "\r\n" +
-                    "fm.Game was: " + fm.Game, stackTrace: true);
-                Dialogs.ShowError(ErrorText.FMGameTypeIsNotDark);
-                return false;
+                Core.View.Cursor = Cursors.WaitCursor;
+
+                #region Checks (specific to DromEd)
+
+                // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
+                if (!GameIsDark(fm.Game))
+                {
+                    Log("FM game type is not a Dark Engine game.\r\n" +
+                        "FM: " + GetFMId(fm) + "\r\n" +
+                        "fm.Game was: " + fm.Game, stackTrace: true);
+                    Dialogs.ShowError(ErrorText.FMGameTypeIsNotDark);
+                    return false;
+                }
+
+                GameIndex gameIndex = GameToGameIndex(fm.Game);
+
+                string gamePath = Config.GetGamePath(gameIndex);
+                if (gamePath.IsEmpty())
+                {
+                    Log("Game path is empty for " + gameIndex, stackTrace: true);
+                    Dialogs.ShowError(gameIndex + ":\r\n" + ErrorText.GamePathEmpty);
+                    return false;
+                }
+
+                string editorExe = Config.GetEditorExe_FromDisk(gameIndex);
+                if (editorExe.IsEmpty())
+                {
+                    Log("Editor executable not found.\r\n" +
+                        "FM: " + GetFMId(fm) + "\r\n" +
+                        "Editor executable: " + editorExe);
+                    Dialogs.ShowError(fm.Game == Game.SS2
+                        ? LText.AlertMessages.ShockEd_ExecutableNotFound
+                        : LText.AlertMessages.DromEd_ExecutableNotFound);
+                    return false;
+                }
+
+                #endregion
+
+                // Just in case, and for consistency
+                Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+
+                if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
+                // We don't need to do this here, right?
+                SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
+
+                // Since we don't use the stub currently, set this here
+                // NOTE: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
+                GameConfigFiles.SetCamCfgLanguage(gamePath, "");
+
+                // Why not
+                GenerateMissFlagFileIfRequired(fm);
+
+                // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
+                StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
+
+                return true;
             }
-
-            GameIndex gameIndex = GameToGameIndex(fm.Game);
-
-            string gamePath = Config.GetGamePath(gameIndex);
-            if (gamePath.IsEmpty())
+            finally
             {
-                Log("Game path is empty for " + gameIndex, stackTrace: true);
-                Dialogs.ShowError(gameIndex + ":\r\n" + ErrorText.GamePathEmpty);
-                return false;
+                Core.View.Cursor = Cursors.Default;
             }
-
-            string editorExe = Config.GetEditorExe_FromDisk(gameIndex);
-            if (editorExe.IsEmpty())
-            {
-                Log("Editor executable not found.\r\n" +
-                    "FM: " + GetFMId(fm) + "\r\n" +
-                    "Editor executable: " + editorExe);
-                Dialogs.ShowError(fm.Game == Game.SS2
-                    ? LText.AlertMessages.ShockEd_ExecutableNotFound
-                    : LText.AlertMessages.DromEd_ExecutableNotFound);
-                return false;
-            }
-
-            #endregion
-
-            // Just in case, and for consistency
-            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
-
-            if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
-            // We don't need to do this here, right?
-            SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
-
-            // Since we don't use the stub currently, set this here
-            // NOTE: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
-            GameConfigFiles.SetCamCfgLanguage(gamePath, "");
-
-            // Why not
-            GenerateMissFlagFileIfRequired(fm);
-
-            // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
-            StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
-
-            return true;
         }
 
         #endregion

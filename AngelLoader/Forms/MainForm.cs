@@ -3495,6 +3495,7 @@ namespace AngelLoader.Forms
         // @VBL(ModsDisabledModsTextBoxCommit()): But actually maybe not?
         // This looks business-logic-ish, but really it's kind of a UI detail still? Directly updating a list of
         // checkboxes from a textbox. Meh.
+        // @MEM/@Mods: Lots of reallocations of collections here...
         private void ModsDisabledModsTextBoxCommit()
         {
             if (EventsDisabled) return;
@@ -5091,7 +5092,7 @@ namespace AngelLoader.Forms
                 {
                     ModsCheckList.SuspendDrawing();
 
-                    // @Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
+                    // @MEM/@Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
                     ModsCheckList.ClearList();
 
                     if (GameIsDark(fm.Game))
@@ -5406,7 +5407,7 @@ namespace AngelLoader.Forms
                 x: ClearFiltersButton.Bounds.Right + 6);
         }
 
-        private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, -1, 5, 20, _filterLabels);
+        private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, -1, _filterLabels, 5, 20);
 
         private void PlayFMButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayFMButton(PlayFMButton, e);
 
