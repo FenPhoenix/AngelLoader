@@ -4903,7 +4903,8 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
             FMsDGV_FM_LLMenu.SetPinItemsMode();
 
-            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(allAreAvailable);
+            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(multiSelected || allAreAvailable);
+            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemText(multiSelected);
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: fm.Game == Game.SS2);
             FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected && GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));

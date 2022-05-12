@@ -364,7 +364,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             ExplicitPinToTopMenuItem.Text = LText.FMsList.FMMenu_PinFM;
             ExplicitUnpinFromTopMenuItem.Text = LText.FMsList.FMMenu_UnpinFM;
 
-            DeleteFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_DeleteFMs : LText.FMsList.FMMenu_DeleteFM;
+            SetDeleteFMMenuItemText(multiSelected);
 
             SetOpenInDromEdMenuItemText(sayShockEd);
 
@@ -554,6 +554,15 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 _deleteFMMenuItemEnabled = value;
             }
+        }
+
+        internal void SetDeleteFMMenuItemText(bool multiSelected)
+        {
+            if (!_constructed) return;
+
+            DeleteFMMenuItem.Text = multiSelected
+                ? LText.FMsList.FMMenu_DeleteFMs
+                : LText.FMsList.FMMenu_DeleteFM;
         }
 
         internal void SetOpenInDromEdVisible(bool value)
