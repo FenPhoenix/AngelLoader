@@ -527,30 +527,6 @@ namespace AL_Common
             return true;
         }
 
-        public static bool PathEqualsI(this StringBuilder first, string second)
-        {
-            int firstLen = first.Length;
-            if (firstLen != second.Length) return false;
-
-            for (int i = 0; i < firstLen; i++)
-            {
-                char fc = first[i];
-                char sc = second[i];
-
-                if (fc > 127 || sc > 127)
-                {
-                    // Non-ASCII slow path
-                    string firstString = first.ToString();
-                    return firstString.Equals(second, OrdinalIgnoreCase) ||
-                           CanonicalizePath(firstString).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
-                }
-
-                if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
-            }
-
-            return true;
-        }
-
         /// <summary>
         /// Path starts-with check ignoring case and directory separator differences.
         /// </summary>
