@@ -110,6 +110,8 @@ namespace AL_Common
 
         #endregion
 
+        private static readonly char[] _invalidPathChars = Path.GetInvalidPathChars();
+
         public static string NormalizeAndCheckPath(string path, bool pathIsKnownValid)
         {
             // Vital, path must not have a trailing separator
@@ -119,12 +121,11 @@ namespace AL_Common
             if (!pathIsKnownValid)
             {
                 bool pathContainsInvalidChars = false;
-                char[] invalidChars = Path.GetInvalidPathChars();
 
                 // Dumb loop to avoid LINQ.
-                for (int i = 0; i < invalidChars.Length; i++)
+                for (int i = 0; i < _invalidPathChars.Length; i++)
                 {
-                    if (path.Contains(invalidChars[i]))
+                    if (path.Contains(_invalidPathChars[i]))
                     {
                         pathContainsInvalidChars = true;
                         break;
