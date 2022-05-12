@@ -24,6 +24,37 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled { get; set; }
 
+        // Cache visible state because calling Visible redoes the work even if the value is the same
+        private bool _visibleCached = true;
+
+        [PublicAPI]
+        public new bool Visible
+        {
+            get => base.Visible;
+            set
+            {
+                if (value == _visibleCached) return;
+                _visibleCached = value;
+                base.Visible = value;
+            }
+        }
+
+        [PublicAPI]
+        public new void Show()
+        {
+            if (_visibleCached) return;
+            _visibleCached = true;
+            base.Show();
+        }
+
+        [PublicAPI]
+        public new void Hide()
+        {
+            if (!_visibleCached) return;
+            _visibleCached = false;
+            base.Hide();
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             using var brush = new SolidBrush(DarkModeEnabled ? DarkModeDrawnBackColor : DrawnBackColor);

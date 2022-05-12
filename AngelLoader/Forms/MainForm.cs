@@ -4847,11 +4847,11 @@ namespace AngelLoader.Forms
         {
             SetTopRightBlockerVisible();
 
-            var selRows = FMsDGV.SelectedRows;
-
             #region Get attributes that apply to all items
 
             // Crap-garbage code to loop through only once in case we have a large selection set
+
+            int selRowsCount = 0;
 
             bool allAreInstalled,
                 noneAreInstalled,
@@ -4867,10 +4867,25 @@ namespace AngelLoader.Forms
                     gameIsDarkCount = 0,
                     knownAndSupportedCount = 0;
 
-                int selRowsCount = selRows.Count;
-                for (int i = 0; i < selRowsCount; i++)
+                // We iterate the whole list looking for selected FMs, rather than get SelectedRows every time.
+                // Drag-selecting the whole ~1694 list, profiling shows that doing the full-iteration way is
+                // about 2x faster than getting SelectedRows every time. It's less efficient when we have a big
+                // list and small selection, but it's so fast that it doesn't really matter, and it doesn't cause
+                // literally over a million allocations either.
+                // Because we can get the selected cell _count_ quickly using the GetCellCount() method, we could
+                // do a split-point thing where we start out getting SelectedRows and then switch to full iteration
+                // as the selected set passes a certain point. But that would still incur a bunch of allocations
+                // and what we're doing is already probably fast enough, so... meh...
+                var rows = FMsDGV.Rows;
+                int rowCount = rows.Count;
+                for (int i = 0; i < rowCount; i++)
                 {
-                    FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
+                    var row = rows[i];
+                    if (!row.Selected) continue;
+
+                    selRowsCount++;
+
+                    FanMission sFM = FMsDGV.GetFMFromIndex(row.Index);
                     if (sFM.Installed) installedCount++;
                     if (sFM.MarkedUnavailable) markedUnavailableCount++;
                     if (GameIsDark(sFM.Game)) gameIsDarkCount++;
@@ -4889,9 +4904,8 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            bool multiSelected = selRows.Count > 1;
+            bool multiSelected = selRowsCount > 1;
 
-            // @MULTISEL(FM menu item toggles): Maybe we want to hide unsupported menu items rather than disable?
             FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(!multiSelected && allAreSupportedAndAvailable);
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
