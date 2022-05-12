@@ -1422,8 +1422,9 @@ namespace AngelLoader
                 {
                     safeReadmes.Sort(Comparers.FileNameNoExt);
 
-                    // @MEM(safe readme detect): I almost just want to leave this in...
-                    // since this method will only be called the first time an FM is loaded...
+                    // NOTE(safe readme detector): Allocation every time, but leaving it in
+                    // since this method will only be called the first time an FM is loaded. So it's not worth
+                    // keeping this array around permanently.
                     foreach (string item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
                     {
                         foreach (string sr in safeReadmes)

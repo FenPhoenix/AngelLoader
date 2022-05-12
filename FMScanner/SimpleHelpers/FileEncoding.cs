@@ -44,7 +44,7 @@ namespace FMScanner.SimpleHelpers
     public sealed class FileEncoding
     {
         /*
-        BUG: @CharEncoding: "Knife to the Heart" RUS_readme.txt encoding detection failure
+        @CharEncoding: "Knife to the Heart" RUS_readme.txt encoding detection failure
         We flat-out fail to detect the encoding of this readme, which is Win-1251 (Cyrillic). This happens even
         if we bypass this code and just ask the UDE detector directly. However, Notepad++ detects this file's
         encoding correctly, and it's using a C version of the same detector (Mozilla Universal Charset Detector).
