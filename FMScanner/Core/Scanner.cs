@@ -3361,8 +3361,6 @@ namespace FMScanner
         private (bool? NewDarkRequired, Game Game)
         GetGameTypeAndEngine(List<NameAndIndex> baseDirFiles, List<NameAndIndex> usedMisFiles)
         {
-            // PERF_TODO: Recycle the buffers in here
-
             var ret = (NewDarkRequired: (bool?)null, Game: Game.Null);
 
             #region Choose smallest .gam file
@@ -3480,23 +3478,6 @@ namespace FMScanner
             // For folder scans, we can seek to these positions directly, but for zip scans, we have to read
             // through the stream sequentially until we hit each one.
 
-            const int ss2MapParamLoc1 = 696;
-            const int oldDarkT2Loc = 772;
-            const int ss2MapParamLoc2 = 916;
-            // Neither of these clash with SS2's SKYOBJVAR locations (3168, 7292).
-            const int newDarkLoc1 = 7217;
-            const int newDarkLoc2 = 3093;
-
-            int[] locations = { ss2MapParamLoc1, oldDarkT2Loc, ss2MapParamLoc2, newDarkLoc1, newDarkLoc2 };
-
-            const int ss2Offset1 = 705;      // 696+9 = 705
-            const int t2OldDarkOffset = 76;  // (772+9)-705 = 76
-            const int ss2Offset2 = 144;      // ((916+9)-76)-705 = 144
-            const int newDarkOffset1 = 2177; // (((3093+9)-144)-76)-705 = 2177
-            const int newDarkOffset2 = 4124; // ((((7217+9)-2177)-144)-76)-705 = 4124
-
-            int[] zipOffsets = { ss2Offset1, t2OldDarkOffset, ss2Offset2, newDarkOffset1, newDarkOffset2 };
-
             // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
             // complicating things any further than they already are.
             const int locationBytesToRead = 9;
@@ -3606,21 +3587,28 @@ namespace FMScanner
 
             #region Check for T2-unique value in .gam or .mis (determines game type for both OldDark and NewDark)
 
-            static bool StreamContainsIdentString(Stream stream, byte[] identString)
+            static bool StreamContainsIdentString(Stream stream, byte[] identString, byte[] chunk)
             {
                 // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
                 // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
                 // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
                 int boundaryLen = identString.Length;
-                const int bufSize = 81_920;
-                byte[] chunk = new byte[boundaryLen + bufSize];
 
-                while (stream.Read(chunk, boundaryLen, bufSize) != 0)
+                int bytesRead;
+                while ((bytesRead = stream.Read(chunk, boundaryLen, _gameTypeBufferSize)) != 0)
                 {
+                    // Zero out all bytes after the end of the read data if there are any, in the ludicrously
+                    // unlikely case that the end of this read data combines with the data that was already in
+                    // there and gives a false match. Literally not gonna happen but like yeah I noticed so yeah.
+                    if (bytesRead < _gameTypeBufferSize)
+                    {
+                        Array.Clear(chunk, boundaryLen + bytesRead, _gameTypeBufferSize - (boundaryLen + bytesRead));
+                    }
+
                     if (chunk.Contains(identString)) return true;
 
                     // Copy the last boundaryLen bytes from chunk and put them at the beginning
-                    for (int si = 0, ei = bufSize; si < boundaryLen; si++, ei++) chunk[si] = chunk[ei];
+                    for (int si = 0, ei = _gameTypeBufferSize; si < boundaryLen; si++, ei++) chunk[si] = chunk[ei];
                 }
 
                 return false;
@@ -3631,7 +3619,7 @@ namespace FMScanner
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
                 using Stream stream = smallestGamFile != null ? _archive.OpenEntry(gamFileZipEntry) : _archive.OpenEntry(misFileZipEntry);
-                ret.Game = StreamContainsIdentString(stream, Thief2UniqueString)
+                ret.Game = StreamContainsIdentString(stream, Thief2UniqueString, GameTypeBuffer_ChunkPlusRopeyArrow)
                     ? Game.Thief2
                     : Game.Thief1;
             }
@@ -3696,7 +3684,7 @@ namespace FMScanner
             if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
             {
                 using Stream stream = _fmIsZip ? _archive.OpenEntry(misFileZipEntry) : File.OpenRead(misFileOnDisk);
-                if (StreamContainsIdentString(stream, MAPPARAM))
+                if (StreamContainsIdentString(stream, MAPPARAM, GameTypeBuffer_ChunkPlusMAPPARAM))
                 {
                     ret.Game = Game.SS2;
                 }
