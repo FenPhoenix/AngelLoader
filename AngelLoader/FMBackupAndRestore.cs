@@ -113,6 +113,8 @@ namespace AngelLoader
         {
             static FileNameBoth GetDarkLoaderArchiveFiles()
             {
+                // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
+                // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
                 var fullPaths = FastIO.GetFilesTopOnly(Config.DarkLoaderBackupPath, "*.zip");
                 var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
 
