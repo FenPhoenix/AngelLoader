@@ -155,6 +155,7 @@ namespace AngelLoader.DataClasses
             [FenGenComment(
                 "This is displayed in the title bar of the \"Delete FM archive\" confirmation dialog box.")]
             internal readonly string DeleteFMArchive = "Delete FM archive";
+            internal readonly string DeleteFMArchives = "Delete FM archives";
             [FenGenBlankLine]
             internal readonly string DontAskAgain = "Don't ask again";
             [FenGenBlankLine]

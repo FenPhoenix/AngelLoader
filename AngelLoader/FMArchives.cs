@@ -238,9 +238,6 @@ namespace AngelLoader
 
         internal static async Task Delete(List<FanMission> fms)
         {
-            int installedWithArchiveCount = 0;
-            int installedNoArchiveCount = 0;
-            int notInstalledNoArchiveCount = 0;
             for (int i = 0; i < fms.Count; i++)
             {
                 if (fms[i].MarkedUnavailable)
@@ -255,6 +252,10 @@ namespace AngelLoader
             var fmInfos = new FMAndInfo[fms.Count];
 
             var archivePaths = GetFMArchivePaths();
+            int installedWithArchiveCount = 0;
+            int installedNoArchiveCount = 0;
+            int notInstalledNoArchiveCount = 0;
+            int installedCount = 0;
             for (int i = 0; i < fms.Count; i++)
             {
                 FanMission fm = fms[i];
@@ -265,6 +266,7 @@ namespace AngelLoader
                     fmInfo.Archives.AddRange(matches);
                     if (fm.Installed)
                     {
+                        installedCount++;
                         installedWithArchiveCount++;
                     }
                 }
@@ -272,6 +274,7 @@ namespace AngelLoader
                 {
                     if (fm.Installed)
                     {
+                        installedCount++;
                         installedNoArchiveCount++;
                     }
                     else
@@ -294,6 +297,24 @@ namespace AngelLoader
             {
                 Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
                 return;
+            }
+
+            if (installedCount > 0)
+            {
+                // @MULTISEL(Delete): Localize and finalize
+                var (cancel, cont, dontAskAgain) = Dialogs.AskToContinueWithCancelCustomStrings(
+                    message:
+                    "Some FMs are installed. Do you want to uninstall them before deleting their archives?\r\n" +
+                    "If so, do you want to back up the stuff?",
+                    title: LText.AlertMessages.DeleteFMArchive,
+                    icon: MessageBoxIcon.None,
+                    showDontAskAgain: false,
+                    yes: LText.AlertMessages.BackUp,
+                    no: LText.AlertMessages.DontBackUp,
+                    cancel: LText.Global.Cancel,
+                    defaultButton: DarkTaskDialog.Button.Yes
+                );
+                if (cancel) return;
             }
 
             throw new NotImplementedException();
