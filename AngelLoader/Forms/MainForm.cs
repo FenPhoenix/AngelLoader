@@ -1854,32 +1854,34 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        public void Block(bool block)
+        private static readonly Action<MainForm, bool> Block_Action = (view, block) =>
         {
-            if (ViewBlockingPanel == null)
+            if (view.ViewBlockingPanel == null)
             {
-                ViewBlockingPanel = new TransparentPanel { Visible = false };
-                Controls.Add(ViewBlockingPanel);
-                ViewBlockingPanel.Dock = DockStyle.Fill;
+                view.ViewBlockingPanel = new TransparentPanel { Visible = false };
+                view.Controls.Add(view.ViewBlockingPanel);
+                view.ViewBlockingPanel.Dock = DockStyle.Fill;
             }
 
             try
             {
-                if (block) Cursor = Cursors.WaitCursor;
+                if (block) view.Cursor = Cursors.WaitCursor;
 
                 // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
-                EverythingPanel.SuspendDrawing();
-                ViewBlocked = block;
-                ViewBlockingPanel.Visible = block;
-                ViewBlockingPanel.BringToFront();
+                view.EverythingPanel.SuspendDrawing();
+                view.ViewBlocked = block;
+                view.ViewBlockingPanel.Visible = block;
+                view.ViewBlockingPanel.BringToFront();
             }
             finally
             {
-                EverythingPanel.ResumeDrawing();
+                view.EverythingPanel.ResumeDrawing();
 
-                if (!block) Cursor = Cursors.Default;
+                if (!block) view.Cursor = Cursors.Default;
             }
-        }
+        };
+
+        public void Block(bool block) => Invoke(Block_Action, this, block);
 
         private void UpdateConfig()
         {

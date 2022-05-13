@@ -37,324 +37,328 @@ namespace AngelLoader
             bool scanFullIfNew = false,
             bool hideBoxIfZip = false)
         {
-            #region Local functions
-
-            static FMScanner.ScanOptions GetDefaultScanOptions() => FMScanner.ScanOptions.FalseDefault(
-                scanTitle: true,
-                scanAuthor: true,
-                scanGameType: true,
-                scanCustomResources: true,
-                scanSize: true,
-                scanReleaseDate: true,
-                scanTags: true);
-
-            static void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState_Single(
-                message1: LText.ProgressBox.ReportScanningFirst +
-                              pr.FMNumber +
-                              LText.ProgressBox.ReportScanningBetweenNumAndTotal +
-                              pr.FMsTotal +
-                              LText.ProgressBox.ReportScanningLast,
-                message2: pr.FMName.ExtIsArchive()
-                    ? pr.FMName.GetFileNameFast()
-                    : pr.FMName.GetDirNameFast(),
-                percent: pr.Percent
-            );
-
-            #endregion
-
-            scanOptions ??= GetDefaultScanOptions();
-
-            if (fmsToScan.Count == 0) return false;
-
-            bool scanningOne = fmsToScan.Count == 1;
-
-            try
+            // Shove the whole thing into a thread, otherwise the progress box will be half-blocked still somehow
+            return await Task.Run(async () =>
             {
-                #region Show progress box or block UI thread
+                #region Local functions
 
-                static void ShowProgressBox(bool suppressShow)
-                {
-                    Core.View.SetProgressBoxState_Single(
-                        visible: suppressShow ? null : true,
-                        message1: LText.ProgressBox.Scanning,
-                        message2: LText.ProgressBox.PreparingToScanFMs,
-                        progressType: ProgressType.Determinate,
-                        percent: 0,
-                        cancelAction: CancelToken
-                    );
-                }
+                static FMScanner.ScanOptions GetDefaultScanOptions() => FMScanner.ScanOptions.FalseDefault(
+                    scanTitle: true,
+                    scanAuthor: true,
+                    scanGameType: true,
+                    scanCustomResources: true,
+                    scanSize: true,
+                    scanReleaseDate: true,
+                    scanTags: true);
 
-                if (hideBoxIfZip && scanningOne)
+                static void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState_Single(
+                    message1: LText.ProgressBox.ReportScanningFirst +
+                                  pr.FMNumber +
+                                  LText.ProgressBox.ReportScanningBetweenNumAndTotal +
+                                  pr.FMsTotal +
+                                  LText.ProgressBox.ReportScanningLast,
+                    message2: pr.FMName.ExtIsArchive()
+                        ? pr.FMName.GetFileNameFast()
+                        : pr.FMName.GetDirNameFast(),
+                    percent: pr.Percent
+                );
+
+                #endregion
+
+                scanOptions ??= GetDefaultScanOptions();
+
+                if (fmsToScan.Count == 0) return false;
+
+                bool scanningOne = fmsToScan.Count == 1;
+
+                try
                 {
-                    // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as
-                    // nice as the timer method, but that can cause race conditions I don't know how to fix, so
-                    // whatever.
-                    if (fmsToScan[0].Archive.ExtIs7z())
+                    #region Show progress box or block UI thread
+
+                    static void ShowProgressBox(bool suppressShow)
                     {
-                        ShowProgressBox(suppressShow: false);
+                        Core.View.SetProgressBoxState_Single(
+                            visible: !suppressShow,
+                            message1: LText.ProgressBox.Scanning,
+                            message2: LText.ProgressBox.PreparingToScanFMs,
+                            progressType: ProgressType.Determinate,
+                            percent: 0,
+                            cancelAction: CancelToken
+                        );
+                    }
+
+                    if (hideBoxIfZip && scanningOne)
+                    {
+                        // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as
+                        // nice as the timer method, but that can cause race conditions I don't know how to fix, so
+                        // whatever.
+                        if (fmsToScan[0].Archive.ExtIs7z())
+                        {
+                            ShowProgressBox(suppressShow: false);
+                        }
+                        else
+                        {
+                            // Block user input to the form to mimic the UI thread being blocked, because we're async
+                            // here
+                            Core.View.Block(true);
+                            // Doesn't actually show the box, but shows the meter on the taskbar I guess?
+                            ShowProgressBox(suppressShow: true);
+                        }
                     }
                     else
                     {
-                        // Block user input to the form to mimic the UI thread being blocked, because we're async
-                        // here
-                        Core.View.Block(true);
-                        // Doesn't actually show the box, but shows the meter on the taskbar I guess?
-                        ShowProgressBox(suppressShow: true);
+                        ShowProgressBox(suppressShow: false);
                     }
-                }
-                else
-                {
-                    ShowProgressBox(suppressShow: false);
-                }
 
-                #endregion
+                    #endregion
 
-                #region Init
+                    #region Init
 
-                _scanCts = _scanCts.Recreate();
+                    _scanCts = _scanCts.Recreate();
 
-                var fms = new List<FMScanner.FMToScan>(fmsToScan.Count);
+                    var fms = new List<FMScanner.FMToScan>(fmsToScan.Count);
 
-                // Get archive paths list only once and cache it - in case of "include subfolders" being true,
-                // cause then it will hit the actual disk rather than just going through a list of paths in
-                // memory
-                var archivePaths = await Task.Run(FMArchives.GetFMArchivePaths);
-
-                if (_scanCts.IsCancellationRequested) return false;
-
-                #endregion
-
-                #region Filter out invalid FMs from scan list
-
-                // Safety net to guarantee that the in and out lists will have the same count and order
-                var fmsToScanFiltered = new List<FanMission>(fmsToScan.Count);
-
-                for (int i = 0; i < fmsToScan.Count; i++)
-                {
-                    FanMission fm = fmsToScan[i];
-
-                    if (fm.MarkedUnavailable) continue;
-
-                    string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive, archivePaths));
+                    // Get archive paths list only once and cache it - in case of "include subfolders" being true,
+                    // cause then it will hit the actual disk rather than just going through a list of paths in
+                    // memory
+                    var archivePaths = FMArchives.GetFMArchivePaths();
 
                     if (_scanCts.IsCancellationRequested) return false;
 
-                    if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
+                    #endregion
+
+                    #region Filter out invalid FMs from scan list
+
+                    // Safety net to guarantee that the in and out lists will have the same count and order
+                    var fmsToScanFiltered = new List<FanMission>(fmsToScan.Count);
+
+                    for (int i = 0; i < fmsToScan.Count; i++)
                     {
-                        fmsToScanFiltered.Add(fm);
-                        fms.Add(new FMScanner.FMToScan
-                        {
-                            Path = fmArchivePath,
-                            ForceFullScan = scanFullIfNew && !fm.MarkedScanned,
-                            CachePath = fm.Archive.ExtIs7z()
-                                ? Path.Combine(Paths.FMsCache, fm.InstalledDir)
-                                : ""
-                        });
-                    }
-                    else if (GameIsKnownAndSupported(fm.Game))
-                    {
-                        string fmInstalledPath = Config.GetFMInstallPathUnsafe(fm.Game);
-                        if (!fmInstalledPath.IsEmpty())
+                        FanMission fm = fmsToScan[i];
+
+                        if (fm.MarkedUnavailable) continue;
+
+                        string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths);
+
+                        if (_scanCts.IsCancellationRequested) return false;
+
+                        if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
                         {
                             fmsToScanFiltered.Add(fm);
                             fms.Add(new FMScanner.FMToScan
                             {
-                                Path = Path.Combine(fmInstalledPath, fm.InstalledDir),
-                                ForceFullScan = scanFullIfNew && !fm.MarkedScanned
+                                Path = fmArchivePath,
+                                ForceFullScan = scanFullIfNew && !fm.MarkedScanned,
+                                CachePath = fm.Archive.ExtIs7z()
+                                    ? Path.Combine(Paths.FMsCache, fm.InstalledDir)
+                                    : ""
                             });
+                        }
+                        else if (GameIsKnownAndSupported(fm.Game))
+                        {
+                            string fmInstalledPath = Config.GetFMInstallPathUnsafe(fm.Game);
+                            if (!fmInstalledPath.IsEmpty())
+                            {
+                                fmsToScanFiltered.Add(fm);
+                                fms.Add(new FMScanner.FMToScan
+                                {
+                                    Path = Path.Combine(fmInstalledPath, fm.InstalledDir),
+                                    ForceFullScan = scanFullIfNew && !fm.MarkedScanned
+                                });
+                            }
+                        }
+
+                        if (_scanCts.IsCancellationRequested) return false;
+                    }
+
+                    if (fmsToScanFiltered.Count == 0) return false;
+
+                    #endregion
+
+                    #region Run scanner
+
+                    List<FMScanner.ScannedFMDataAndError>? fmDataList = null;
+                    try
+                    {
+                        var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
+
+                        Paths.CreateOrClearTempPath(Paths.FMScannerTemp);
+
+                        if (_scanCts.IsCancellationRequested) return false;
+
+                        using var scanner = new FMScanner.Scanner(Paths.SevenZipExe)
+                        {
+                            FullScanOptions = GetDefaultScanOptions(),
+                            LogFile = Paths.ScannerLogFile
+                        };
+                        fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, _scanCts.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return false;
+                    }
+                    finally
+                    {
+                        if (fmDataList != null)
+                        {
+                            bool errors = false;
+
+                            for (int i = 0; i < fmsToScanFiltered.Count; i++)
+                            {
+                                FMScanner.ScannedFMDataAndError item = fmDataList[i];
+                                if (item.Fen7zResult != null ||
+                                    item.Exception != null ||
+                                    !item.ErrorInfo.IsEmpty())
+                                {
+                                    errors = true;
+                                    break;
+                                }
+                            }
+
+                            if (errors)
+                            {
+                                // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
+                                // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
+                                Dialogs.ShowError(ErrorText.ScanErrors, showScannerLogFile: true);
+                            }
                         }
                     }
 
-                    if (_scanCts.IsCancellationRequested) return false;
-                }
+                    #endregion
 
-                if (fmsToScanFiltered.Count == 0) return false;
+                    #region Copy scanned data to FMs
 
-                #endregion
-
-                #region Run scanner
-
-                List<FMScanner.ScannedFMDataAndError>? fmDataList = null;
-                try
-                {
-                    var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
-
-                    await Task.Run(() => Paths.CreateOrClearTempPath(Paths.FMScannerTemp));
-
-                    if (_scanCts.IsCancellationRequested) return false;
-
-                    using var scanner = new FMScanner.Scanner(Paths.SevenZipExe)
+                    for (int i = 0; i < fmsToScanFiltered.Count; i++)
                     {
-                        FullScanOptions = GetDefaultScanOptions(),
-                        LogFile = Paths.ScannerLogFile
-                    };
-                    fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, _scanCts.Token);
+                        FMScanner.ScannedFMData? scannedFM = fmDataList[i].ScannedFMData;
+
+                        #region Checks
+
+                        if (scannedFM == null)
+                        {
+                            // We need to return fail for scanning one, else we get into an infinite loop because of
+                            // a refresh that gets called in that case
+                            if (scanningOne)
+                            {
+                                Log("(one) scanned FM was null. FM was:\r\n" +
+                                    "Archive: " + fmsToScanFiltered[0].Archive + "\r\n" +
+                                    "InstalledDir: " + fmsToScanFiltered[0].InstalledDir);
+                                return false;
+                            }
+                            continue;
+                        }
+
+                        FanMission sel = fmsToScanFiltered[i];
+
+                        #endregion
+
+                        #region Set FM fields
+
+                        bool gameSup = scannedFM.Game != FMScanner.Game.Unsupported;
+
+                        if (fms[i].ForceFullScan || scanOptions.ScanTitle)
+                        {
+                            sel.Title =
+                                !scannedFM.Title.IsEmpty() ? scannedFM.Title
+                                : scannedFM.ArchiveName.ExtIsArchive() ? scannedFM.ArchiveName.RemoveExtension()
+                                : scannedFM.ArchiveName;
+
+                            if (gameSup)
+                            {
+                                sel.AltTitles.ClearAndAdd(sel.Title);
+                                sel.AltTitles.AddRange(scannedFM.AlternateTitles);
+                            }
+                            else
+                            {
+                                sel.AltTitles.Clear();
+                            }
+                        }
+
+                        if (fms[i].ForceFullScan || scanOptions.ScanSize)
+                        {
+                            sel.SizeBytes = gameSup ? scannedFM.Size ?? 0 : 0;
+                        }
+                        if (fms[i].ForceFullScan || scanOptions.ScanReleaseDate)
+                        {
+                            sel.ReleaseDate.DateTime = gameSup ? scannedFM.LastUpdateDate : null;
+                        }
+                        if (fms[i].ForceFullScan || scanOptions.ScanCustomResources)
+                        {
+                            #region This exact setup is needed to get identical results to the old method. Don't change.
+                            // We don't scan custom resources for Thief 3, so they should never be set in that case.
+                            if (gameSup && scannedFM.Game != FMScanner.Game.Thief3)
+                            {
+                                SetFMResource(sel, CustomResources.Map, scannedFM.HasMap == true);
+                                SetFMResource(sel, CustomResources.Automap, scannedFM.HasAutomap == true);
+                                SetFMResource(sel, CustomResources.Scripts, scannedFM.HasCustomScripts == true);
+                                SetFMResource(sel, CustomResources.Textures, scannedFM.HasCustomTextures == true);
+                                SetFMResource(sel, CustomResources.Sounds, scannedFM.HasCustomSounds == true);
+                                SetFMResource(sel, CustomResources.Objects, scannedFM.HasCustomObjects == true);
+                                SetFMResource(sel, CustomResources.Creatures, scannedFM.HasCustomCreatures == true);
+                                SetFMResource(sel, CustomResources.Motions, scannedFM.HasCustomMotions == true);
+                                SetFMResource(sel, CustomResources.Movies, scannedFM.HasMovies == true);
+                                SetFMResource(sel, CustomResources.Subtitles, scannedFM.HasCustomSubtitles == true);
+                                sel.ResourcesScanned = true;
+                            }
+                            else
+                            {
+                                sel.ResourcesScanned = false;
+                            }
+                            #endregion
+                        }
+
+                        if (fms[i].ForceFullScan || scanOptions.ScanAuthor)
+                        {
+                            sel.Author = gameSup ? scannedFM.Author : "";
+                        }
+
+                        if (fms[i].ForceFullScan || scanOptions.ScanGameType)
+                        {
+                            sel.Game = ScannerGameToGame(scannedFM.Game);
+                        }
+
+                        if (fms[i].ForceFullScan || scanOptions.ScanTags)
+                        {
+                            string tagsString = gameSup ? scannedFM.TagsString : "";
+
+                            // Don't clear the tags, because the user could have added a bunch and we should only
+                            // add to those, not overwrite them
+                            if (gameSup)
+                            {
+                                // Don't rebuild global tags for every FM; do it only once at the end
+                                FMTags.AddTagToFM(sel, tagsString, rebuildGlobalTags: false);
+                            }
+                        }
+
+                        sel.MarkedScanned = true;
+
+                        #endregion
+                    }
+
+                    #endregion
+
+                    FMTags.RebuildGlobalTags();
+
+                    Ini.WriteFullFMDataIni();
                 }
-                catch (OperationCanceledException)
+                catch (Exception ex)
                 {
+                    Log(ex: ex);
+                    string message = scanningOne
+                        ? LText.AlertMessages.Scan_ExceptionInScanOne
+                        : LText.AlertMessages.Scan_ExceptionInScanMultiple;
+                    Dialogs.ShowError(message);
                     return false;
                 }
                 finally
                 {
-                    if (fmDataList != null)
-                    {
-                        bool errors = false;
-
-                        for (int i = 0; i < fmsToScanFiltered.Count; i++)
-                        {
-                            FMScanner.ScannedFMDataAndError item = fmDataList[i];
-                            if (item.Fen7zResult != null ||
-                                item.Exception != null ||
-                                !item.ErrorInfo.IsEmpty())
-                            {
-                                errors = true;
-                                break;
-                            }
-                        }
-
-                        if (errors)
-                        {
-                            // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
-                            // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
-                            Dialogs.ShowError(ErrorText.ScanErrors, showScannerLogFile: true);
-                        }
-                    }
+                    _scanCts.Dispose();
+                    Core.View.Block(false);
+                    Core.View.HideProgressBox();
                 }
 
-                #endregion
-
-                #region Copy scanned data to FMs
-
-                for (int i = 0; i < fmsToScanFiltered.Count; i++)
-                {
-                    FMScanner.ScannedFMData? scannedFM = fmDataList[i].ScannedFMData;
-
-                    #region Checks
-
-                    if (scannedFM == null)
-                    {
-                        // We need to return fail for scanning one, else we get into an infinite loop because of
-                        // a refresh that gets called in that case
-                        if (scanningOne)
-                        {
-                            Log("(one) scanned FM was null. FM was:\r\n" +
-                                "Archive: " + fmsToScanFiltered[0].Archive + "\r\n" +
-                                "InstalledDir: " + fmsToScanFiltered[0].InstalledDir);
-                            return false;
-                        }
-                        continue;
-                    }
-
-                    FanMission sel = fmsToScanFiltered[i];
-
-                    #endregion
-
-                    #region Set FM fields
-
-                    bool gameSup = scannedFM.Game != FMScanner.Game.Unsupported;
-
-                    if (fms[i].ForceFullScan || scanOptions.ScanTitle)
-                    {
-                        sel.Title =
-                            !scannedFM.Title.IsEmpty() ? scannedFM.Title
-                            : scannedFM.ArchiveName.ExtIsArchive() ? scannedFM.ArchiveName.RemoveExtension()
-                            : scannedFM.ArchiveName;
-
-                        if (gameSup)
-                        {
-                            sel.AltTitles.ClearAndAdd(sel.Title);
-                            sel.AltTitles.AddRange(scannedFM.AlternateTitles);
-                        }
-                        else
-                        {
-                            sel.AltTitles.Clear();
-                        }
-                    }
-
-                    if (fms[i].ForceFullScan || scanOptions.ScanSize)
-                    {
-                        sel.SizeBytes = gameSup ? scannedFM.Size ?? 0 : 0;
-                    }
-                    if (fms[i].ForceFullScan || scanOptions.ScanReleaseDate)
-                    {
-                        sel.ReleaseDate.DateTime = gameSup ? scannedFM.LastUpdateDate : null;
-                    }
-                    if (fms[i].ForceFullScan || scanOptions.ScanCustomResources)
-                    {
-                        #region This exact setup is needed to get identical results to the old method. Don't change.
-                        // We don't scan custom resources for Thief 3, so they should never be set in that case.
-                        if (gameSup && scannedFM.Game != FMScanner.Game.Thief3)
-                        {
-                            SetFMResource(sel, CustomResources.Map, scannedFM.HasMap == true);
-                            SetFMResource(sel, CustomResources.Automap, scannedFM.HasAutomap == true);
-                            SetFMResource(sel, CustomResources.Scripts, scannedFM.HasCustomScripts == true);
-                            SetFMResource(sel, CustomResources.Textures, scannedFM.HasCustomTextures == true);
-                            SetFMResource(sel, CustomResources.Sounds, scannedFM.HasCustomSounds == true);
-                            SetFMResource(sel, CustomResources.Objects, scannedFM.HasCustomObjects == true);
-                            SetFMResource(sel, CustomResources.Creatures, scannedFM.HasCustomCreatures == true);
-                            SetFMResource(sel, CustomResources.Motions, scannedFM.HasCustomMotions == true);
-                            SetFMResource(sel, CustomResources.Movies, scannedFM.HasMovies == true);
-                            SetFMResource(sel, CustomResources.Subtitles, scannedFM.HasCustomSubtitles == true);
-                            sel.ResourcesScanned = true;
-                        }
-                        else
-                        {
-                            sel.ResourcesScanned = false;
-                        }
-                        #endregion
-                    }
-
-                    if (fms[i].ForceFullScan || scanOptions.ScanAuthor)
-                    {
-                        sel.Author = gameSup ? scannedFM.Author : "";
-                    }
-
-                    if (fms[i].ForceFullScan || scanOptions.ScanGameType)
-                    {
-                        sel.Game = ScannerGameToGame(scannedFM.Game);
-                    }
-
-                    if (fms[i].ForceFullScan || scanOptions.ScanTags)
-                    {
-                        string tagsString = gameSup ? scannedFM.TagsString : "";
-
-                        // Don't clear the tags, because the user could have added a bunch and we should only
-                        // add to those, not overwrite them
-                        if (gameSup)
-                        {
-                            // Don't rebuild global tags for every FM; do it only once at the end
-                            FMTags.AddTagToFM(sel, tagsString, rebuildGlobalTags: false);
-                        }
-                    }
-
-                    sel.MarkedScanned = true;
-
-                    #endregion
-                }
-
-                #endregion
-
-                FMTags.RebuildGlobalTags();
-
-                Ini.WriteFullFMDataIni();
-            }
-            catch (Exception ex)
-            {
-                Log(ex: ex);
-                string message = scanningOne
-                    ? LText.AlertMessages.Scan_ExceptionInScanOne
-                    : LText.AlertMessages.Scan_ExceptionInScanMultiple;
-                Dialogs.ShowError(message);
-                return false;
-            }
-            finally
-            {
-                _scanCts.Dispose();
-                Core.View.Block(false);
-                Core.View.HideProgressBox();
-            }
-
-            return true;
+                return true;
+            });
         }
 
         internal static Task ScanNewFMs(List<int> fmsViewListUnscanned)
@@ -424,6 +428,10 @@ namespace AngelLoader
 
                 if (await ScanFMs(fms.ToList(), scanOptions))
                 {
+                    // @MULTISEL(Scan selected FMs): Do we want to sort and set filter here too?
+                    // Because we might scan FMs and they end up being something that's filtered out?
+                    // We don't do it with one, I guess cause of the "don't refresh the list for a single change"
+                    // rule. But does this count?
                     Core.View.RefreshAllSelectedFMs();
                 }
             }

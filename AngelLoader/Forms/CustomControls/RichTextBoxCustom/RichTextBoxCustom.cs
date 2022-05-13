@@ -47,7 +47,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields / properties
 
-        internal ReadmeLocalizableMessage LocalizableMessageType;
+        internal ReadmeLocalizableMessage LocalizableMessageType = ReadmeLocalizableMessage.None;
 
         private Font? _monospaceFont;
         private Font MonospaceFont => _monospaceFont ??= new Font(FontFamily.GenericMonospace, 10.0f);
