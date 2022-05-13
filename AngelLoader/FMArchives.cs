@@ -255,7 +255,6 @@ namespace AngelLoader
             var fmInfos = new FMAndInfo[fms.Count];
 
             var archivePaths = GetFMArchivePaths();
-            bool noArchivesFound = true;
             for (int i = 0; i < fms.Count; i++)
             {
                 FanMission fm = fms[i];
@@ -263,8 +262,22 @@ namespace AngelLoader
                 var matches = FindAllMatches(fm.Archive, archivePaths);
                 if (matches.Count > 0)
                 {
-                    noArchivesFound = false;
                     fmInfo.Archives.AddRange(matches);
+                    if (fm.Installed)
+                    {
+                        installedWithArchiveCount++;
+                    }
+                }
+                else
+                {
+                    if (fm.Installed)
+                    {
+                        installedNoArchiveCount++;
+                    }
+                    else
+                    {
+                        notInstalledNoArchiveCount++;
+                    }
                 }
             }
 
@@ -277,7 +290,7 @@ namespace AngelLoader
             // some have no archive, also inform the user of the proper information in that case.
             // Also if all of them have no archive found and are NOT installed, throw up a dialog and return.
 
-            if (noArchivesFound)
+            if (installedNoArchiveCount == fmInfos.Length)
             {
                 Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
                 return;
