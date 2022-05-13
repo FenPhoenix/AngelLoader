@@ -4652,7 +4652,19 @@ namespace AngelLoader.Forms
 
         #region Right side
 
-        internal async void Settings_Click(object sender, EventArgs e) => await Core.OpenSettings();
+        internal async void Settings_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+
+                await Core.OpenSettings();
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
+        }
 
         public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
 

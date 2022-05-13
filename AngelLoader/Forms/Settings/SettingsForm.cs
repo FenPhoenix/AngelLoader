@@ -951,17 +951,35 @@ namespace AngelLoader.Forms
             {
                 if (!_startup)
                 {
-                    if (!LangComboBox.SelectedBackingItem().EqualsI(_inLanguage))
-                    {
-                        // It's actually totally fine that this one is a reference.
-                        LText = _inLText;
-                        _ownerForm?.Localize();
-                    }
+                    bool langsDifferent = !LangComboBox.SelectedBackingItem().EqualsI(_inLanguage);
+                    bool themesDifferent = _inTheme != _selfTheme;
 
-                    if (_inTheme != _selfTheme)
+                    try
                     {
-                        Config.VisualTheme = _inTheme;
-                        _ownerForm?.SetTheme(_inTheme);
+                        if (langsDifferent || themesDifferent)
+                        {
+                            SetCursors(wait: true);
+                        }
+
+                        if (langsDifferent)
+                        {
+                            // It's actually totally fine that this one is a reference.
+                            LText = _inLText;
+                            _ownerForm?.Localize();
+                        }
+
+                        if (themesDifferent)
+                        {
+                            Config.VisualTheme = _inTheme;
+                            _ownerForm?.SetTheme(_inTheme);
+                        }
+                    }
+                    finally
+                    {
+                        if (langsDifferent || themesDifferent)
+                        {
+                            SetCursors(wait: false);
+                        }
                     }
                 }
 
@@ -1376,6 +1394,20 @@ namespace AngelLoader.Forms
 
         #region Appearance page
 
+        private void SetCursors(bool wait)
+        {
+            if (wait)
+            {
+                if (_ownerForm != null) _ownerForm.Cursor = Cursors.WaitCursor;
+                Cursor = Cursors.WaitCursor;
+            }
+            else
+            {
+                if (_ownerForm != null) _ownerForm.Cursor = Cursors.Default;
+                Cursor = Cursors.Default;
+            }
+        }
+
         private void VisualThemeRadioButtons_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
@@ -1386,16 +1418,14 @@ namespace AngelLoader.Forms
 
             try
             {
-                if (_ownerForm != null) _ownerForm.Cursor = Cursors.WaitCursor;
-                Cursor = Cursors.WaitCursor;
+                SetCursors(wait: true);
 
                 SetTheme(theme, startup: false);
                 _ownerForm?.SetTheme(theme);
             }
             finally
             {
-                if (_ownerForm != null) _ownerForm.Cursor = Cursors.Default;
-                Cursor = Cursors.Default;
+                SetCursors(wait: false);
             }
         }
 
@@ -1596,8 +1626,17 @@ namespace AngelLoader.Forms
                 Log("Exception in language reading", ex);
             }
 
-            Localize();
-            if (!_startup) _ownerForm?.Localize();
+            try
+            {
+                SetCursors(wait: true);
+
+                Localize();
+                if (!_startup) _ownerForm?.Localize();
+            }
+            finally
+            {
+                SetCursors(wait: false);
+            }
         }
 
         #endregion
