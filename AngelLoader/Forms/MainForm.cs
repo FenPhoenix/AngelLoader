@@ -3027,22 +3027,45 @@ namespace AngelLoader.Forms
         {
             if (sender == EditFMScanForReadmesButton)
             {
-                Ini.WriteFullFMDataIni();
-                _displayedFM = await Core.DisplayFM(refreshCache: true);
+                try
+                {
+                    Cursor = Cursors.WaitCursor;
+
+                    Ini.WriteFullFMDataIni();
+                    _displayedFM = await Core.DisplayFM(refreshCache: true);
+                }
+                finally
+                {
+                    Cursor = Cursors.Default;
+                }
             }
             else
             {
-                var scanOptions =
-                    sender == EditFMScanTitleButton ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
-                    sender == EditFMScanAuthorButton ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
-                    sender == EditFMScanReleaseDateButton ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
-                    //sender == StatsScanCustomResourcesButton
-                    FMScanner.ScanOptions.FalseDefault(scanCustomResources: true);
-
-                FanMission fm = FMsDGV.GetMainSelectedFM();
-                if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
+                try
                 {
-                    RefreshFM(fm);
+                    FanMission fm = FMsDGV.GetMainSelectedFM();
+
+                    // .7z FMs will have a progress box instead
+                    if (!fm.Archive.ExtIs7z())
+                    {
+                        Cursor = Cursors.WaitCursor;
+                    }
+
+                    var scanOptions =
+                        sender == EditFMScanTitleButton ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
+                        sender == EditFMScanAuthorButton ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
+                        sender == EditFMScanReleaseDateButton ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
+                        //sender == StatsScanCustomResourcesButton
+                        FMScanner.ScanOptions.FalseDefault(scanCustomResources: true);
+
+                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
+                    {
+                        RefreshFM(fm);
+                    }
+                }
+                finally
+                {
+                    Cursor = Cursors.Default;
                 }
             }
         }
