@@ -8,7 +8,8 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using JetBrains.Annotations;
-using Microsoft.VisualBasic.FileIO; // the import of shame
+using Microsoft.VisualBasic.FileIO;
+using SevenZip; // the import of shame
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 using SearchOption = System.IO.SearchOption;
@@ -113,11 +114,14 @@ namespace AngelLoader
         /// Deletes <paramref name="fm"/>'s archive from disk, asking the user for confirmation first.
         /// </summary>
         /// <param name="fm"></param>
+        /// <param name="multiple"></param>
+        /// <param name="percent"></param>
         /// <returns></returns>
-        internal static async Task Delete(FanMission fm)
+        internal static async Task Delete(FanMission fm, bool multiple = false, int percent = -1)
         {
-            if (fm.MarkedUnavailable)
+            if (!multiple && fm.MarkedUnavailable)
             {
+                // @MULTISEL: Localize and finalize
                 Dialogs.ShowAlert(
                     "This FM is not available on disk, and so can't be deleted.",
                     LText.AlertMessages.Alert,
@@ -167,7 +171,7 @@ namespace AngelLoader
                 finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
             }
 
-            if (fm.Installed)
+            if (!multiple && fm.Installed)
             {
                 (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
                     message: LText.FMDeletion.AskToUninstallFMFirst,
@@ -190,10 +194,20 @@ namespace AngelLoader
 
             try
             {
-                Core.View.ShowProgressBox_Single(
-                    message1: LText.ProgressBox.DeletingFMArchive,
-                    progressType: ProgressType.Indeterminate
-                );
+                if (multiple)
+                {
+                    Core.View.SetProgressBoxState_Single(
+                        percent: percent > -1 ? percent : 0,
+                        message2: GetFMId(fm)
+                    );
+                }
+                else
+                {
+                    Core.View.ShowProgressBox_Single(
+                        message1: LText.ProgressBox.DeletingFMArchive,
+                        progressType: ProgressType.Indeterminate
+                    );
+                }
 
                 await Task.Run(() =>
                 {
@@ -215,24 +229,19 @@ namespace AngelLoader
             {
                 var newArchives = await Task.Run(() => FindAllMatches(fm.Archive));
 
-                Core.View.HideProgressBox();
+                if (!multiple)
+                {
+                    Core.View.HideProgressBox();
+                }
 
                 if (newArchives.Count == 0 && !fm.Installed)
                 {
                     fm.MarkedUnavailable = true;
-                    await Core.View.SortAndSetFilter(keepSelection: true);
+                    if (!multiple)
+                    {
+                        await Core.View.SortAndSetFilter(keepSelection: true);
+                    }
                 }
-            }
-        }
-
-        private sealed class FMAndInfo
-        {
-            internal readonly FanMission FM;
-            internal readonly List<string> Archives = new();
-
-            public FMAndInfo(FanMission fm)
-            {
-                FM = fm;
             }
         }
 
@@ -249,8 +258,6 @@ namespace AngelLoader
 
             if (fms.Count == 0) return;
 
-            var fmInfos = new List<FMAndInfo>(fms.Count);
-
             var archivePaths = GetFMArchivePaths();
             int installedWithArchiveCount = 0;
             int installedNoArchiveCount = 0;
@@ -259,12 +266,9 @@ namespace AngelLoader
             for (int i = 0; i < fms.Count; i++)
             {
                 FanMission fm = fms[i];
-                var fmInfo = new FMAndInfo(fm);
-                fmInfos.Add(fmInfo);
                 var matches = FindAllMatches(fm.Archive, archivePaths);
                 if (matches.Count > 0)
                 {
-                    fmInfo.Archives.AddRange(matches);
                     if (fm.Installed)
                     {
                         installedCount++;
@@ -294,7 +298,7 @@ namespace AngelLoader
             // some have no archive, also inform the user of the proper information in that case.
             // Also if all of them have no archive found and are NOT installed, throw up a dialog and return.
 
-            if (installedNoArchiveCount == fmInfos.Count)
+            if (installedNoArchiveCount == fms.Count)
             {
                 Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
                 return;
@@ -319,9 +323,9 @@ namespace AngelLoader
                 if (cont)
                 {
                     FanMission[] installedFMs = new FanMission[installedCount];
-                    for (int i = 0, i2 = 0; i < fmInfos.Count; i++)
+                    for (int i = 0, i2 = 0; i < fms.Count; i++)
                     {
-                        var fm = fmInfos[i].FM;
+                        FanMission fm = fms[i];
                         if (fm.Installed)
                         {
                             installedFMs[i2] = fm;
@@ -336,19 +340,42 @@ namespace AngelLoader
 
                 // Even though we culled out the unavailable FMs already, Uninstall() could have marked some more
                 // of them unavailable if they didn't have an archive after being uninstalled.
-                for (int i = 0; i < fmInfos.Count; i++)
+                for (int i = 0; i < fms.Count; i++)
                 {
-                    if (fmInfos[i].FM.MarkedUnavailable)
+                    if (fms[i].MarkedUnavailable)
                     {
-                        fmInfos.RemoveAt(i);
+                        fms.RemoveAt(i);
                         i--;
                     }
                 }
 
-                if (fmInfos.Count == 0) return;
+                if (fms.Count == 0)
+                {
+                    await Core.View.SortAndSetFilter(keepSelection: true);
+                    return;
+                }
             }
 
-            throw new NotImplementedException();
+            try
+            {
+                // @MULTISEL: Localize and finalize
+                Core.View.ShowProgressBox_Single(
+                    message1: "Deleting FMs...",
+                    progressType: ProgressType.Determinate,
+                    cancelType: ProgressCancelType.Stop,
+                    // @MULTISEL: Should be an actual action in final version
+                    cancelAction: null
+                );
+
+                for (int i = 0; i < fms.Count; i++)
+                {
+                    await Delete(fms[i], multiple: true, Common.GetPercentFromValue_Int(i, fms.Count));
+                }
+            }
+            finally
+            {
+                await Core.View.SortAndSetFilter(keepSelection: true);
+            }
         }
 
         internal static async Task<bool> Add(IWin32Window owner, List<string> droppedItemsList)
