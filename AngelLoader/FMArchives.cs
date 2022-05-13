@@ -225,8 +225,22 @@ namespace AngelLoader
             }
         }
 
+        private sealed class FMAndInfo
+        {
+            internal readonly FanMission FM;
+            internal readonly List<string> Archives = new();
+
+            public FMAndInfo(FanMission fm)
+            {
+                FM = fm;
+            }
+        }
+
         internal static async Task Delete(List<FanMission> fms)
         {
+            int installedWithArchiveCount = 0;
+            int installedNoArchiveCount = 0;
+            int notInstalledNoArchiveCount = 0;
             for (int i = 0; i < fms.Count; i++)
             {
                 if (fms[i].MarkedUnavailable)
@@ -238,12 +252,20 @@ namespace AngelLoader
 
             if (fms.Count == 0) return;
 
-            var archivesList = new List<List<string>>(fms.Count);
+            var fmInfos = new FMAndInfo[fms.Count];
 
             var archivePaths = GetFMArchivePaths();
-            foreach (var fm in fms)
+            bool noArchivesFound = true;
+            for (int i = 0; i < fms.Count; i++)
             {
-                archivesList.Add(FindAllMatches(fm.Archive, archivePaths));
+                FanMission fm = fms[i];
+                var fmInfo = (fmInfos[i] = new FMAndInfo(fm));
+                var matches = FindAllMatches(fm.Archive, archivePaths);
+                if (matches.Count > 0)
+                {
+                    noArchivesFound = false;
+                    fmInfo.Archives.AddRange(matches);
+                }
             }
 
             // @MULTISEL: Multi-selection Delete() method in-progress code
@@ -255,9 +277,9 @@ namespace AngelLoader
             // some have no archive, also inform the user of the proper information in that case.
             // Also if all of them have no archive found and are NOT installed, throw up a dialog and return.
 
-            if (archivesList.Count == 0)
+            if (noArchivesFound)
             {
-                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
+                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
                 return;
             }
 
