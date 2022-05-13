@@ -249,7 +249,7 @@ namespace AngelLoader
 
             if (fms.Count == 0) return;
 
-            var fmInfos = new FMAndInfo[fms.Count];
+            var fmInfos = new List<FMAndInfo>(fms.Count);
 
             var archivePaths = GetFMArchivePaths();
             int installedWithArchiveCount = 0;
@@ -259,7 +259,8 @@ namespace AngelLoader
             for (int i = 0; i < fms.Count; i++)
             {
                 FanMission fm = fms[i];
-                var fmInfo = (fmInfos[i] = new FMAndInfo(fm));
+                var fmInfo = new FMAndInfo(fm);
+                fmInfos.Add(fmInfo);
                 var matches = FindAllMatches(fm.Archive, archivePaths);
                 if (matches.Count > 0)
                 {
@@ -293,7 +294,7 @@ namespace AngelLoader
             // some have no archive, also inform the user of the proper information in that case.
             // Also if all of them have no archive found and are NOT installed, throw up a dialog and return.
 
-            if (installedNoArchiveCount == fmInfos.Length)
+            if (installedNoArchiveCount == fmInfos.Count)
             {
                 Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
                 return;
@@ -302,7 +303,7 @@ namespace AngelLoader
             if (installedCount > 0)
             {
                 // @MULTISEL(Delete): Localize and finalize
-                var (cancel, cont, dontAskAgain) = Dialogs.AskToContinueWithCancelCustomStrings(
+                var (cancel, cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
                     message:
                     "Some FMs are installed. Do you want to uninstall them before deleting their archives?\r\n" +
                     "If so, do you want to back up the stuff?",
@@ -315,6 +316,36 @@ namespace AngelLoader
                     defaultButton: DarkTaskDialog.Button.Yes
                 );
                 if (cancel) return;
+                if (cont)
+                {
+                    FanMission[] installedFMs = new FanMission[installedCount];
+                    for (int i = 0, i2 = 0; i < fmInfos.Count; i++)
+                    {
+                        var fm = fmInfos[i].FM;
+                        if (fm.Installed)
+                        {
+                            installedFMs[i2] = fm;
+                            i2++;
+                        }
+                    }
+                    if (!await FMInstallAndPlay.Uninstall(installedFMs))
+                    {
+                        return;
+                    }
+                }
+
+                // Even though we culled out the unavailable FMs already, Uninstall() could have marked some more
+                // of them unavailable if they didn't have an archive after being uninstalled.
+                for (int i = 0; i < fmInfos.Count; i++)
+                {
+                    if (fmInfos[i].FM.MarkedUnavailable)
+                    {
+                        fmInfos.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                if (fmInfos.Count == 0) return;
             }
 
             throw new NotImplementedException();
