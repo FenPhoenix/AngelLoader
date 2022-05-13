@@ -247,8 +247,13 @@ namespace AngelLoader
             }
 
             // @MULTISEL: Multi-selection Delete() method in-progress code
-            // We need to have some kind of good UX for if we're deleting multiple FMs AND one or more FMs have
-            // more than one archive found.
+            // Since multiple archives with the same name should be the rare case (nobody should be doing it),
+            // we'll just ask the user per-FM if we find any as we go. Sorry to stop your batch, but yeah.
+
+            // In the iteration up there, look for any FMs that are installed, and then note we have to ask the
+            // user if they want to uninstall them and if so, ask the usual backup options for all, and then if
+            // some have no archive, also inform the user of the proper information in that case.
+            // Also if all of them have no archive found and are NOT installed, throw up a dialog and return.
 
             if (archivesList.Count == 0)
             {
