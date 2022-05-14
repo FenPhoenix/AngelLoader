@@ -216,7 +216,7 @@ namespace FMScanner.SimpleHelpers
             Array.Clear(_buffer, 0, _buffer.Length);
             while (i++ < maxIterations)
             {
-                int sz = inputData.Read(_buffer, 0, _buffer.Length);
+                int sz = inputData.ReadAll(_buffer, 0, _buffer.Length);
                 if (sz <= 0) break;
 
                 Detect(_buffer, 0, sz);

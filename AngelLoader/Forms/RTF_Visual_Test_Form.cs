@@ -89,7 +89,7 @@ namespace AngelLoader.Forms
                     if (fs.Length >= headerLen)
                     {
                         using var br = new BinaryReader(fs, Encoding.ASCII);
-                        _ = br.Read(rtfHeaderBuffer, 0, headerLen);
+                        _ = br.ReadAll(rtfHeaderBuffer, 0, headerLen);
                     }
                 }
 

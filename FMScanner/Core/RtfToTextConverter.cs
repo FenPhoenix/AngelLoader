@@ -103,7 +103,7 @@ namespace FMScanner
             if (_bufferPos == _bufferLen)
             {
                 _bufferPos = 0;
-                _stream.Read(_buffer, 0, _bufferLen);
+                _stream.ReadAll(_buffer, 0, _bufferLen);
             }
             return _buffer[_bufferPos];
         }

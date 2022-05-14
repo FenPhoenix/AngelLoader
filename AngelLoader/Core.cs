@@ -1260,7 +1260,7 @@ namespace AngelLoader
                 // end up with an "unable to load readme" error.
                 if (fs.Length >= headerLen)
                 {
-                    _ = fs.Read(_rtfHeaderBuffer, 0, headerLen);
+                    _ = fs.ReadAll(_rtfHeaderBuffer, 0, headerLen);
                 }
             }
 

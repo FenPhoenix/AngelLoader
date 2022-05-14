@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using AL_Common;
 
 namespace FMScanner.FastZipReader
 {
@@ -44,7 +45,7 @@ namespace FMScanner.FastZipReader
             else
             {
                 field.Data = bundle.FieldDataSizeOnlyBuffer;
-                int num = stream.Read(field.Data, 0, 28);
+                int num = stream.ReadAll(field.Data, 0, 28);
                 stream.Seek(field.Size - num, SeekOrigin.Current);
             }
 

@@ -3595,7 +3595,7 @@ namespace FMScanner
                 int boundaryLen = identString.Length;
 
                 int bytesRead;
-                while ((bytesRead = stream.Read(chunk, boundaryLen, _gameTypeBufferSize)) != 0)
+                while ((bytesRead = stream.ReadAll(chunk, boundaryLen, _gameTypeBufferSize)) != 0)
                 {
                     // Zero out all bytes after the end of the read data if there are any, in the ludicrously
                     // unlikely case that the end of this read data combines with the data that was already in

@@ -100,6 +100,48 @@ namespace AL_Common
 
         #region Methods
 
+        public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
+        {
+            int length = offset;
+            do
+            {
+                int num = stream.Read(buffer, length, count);
+                if (num != 0)
+                {
+                    length += num;
+                    count -= num;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            while (count > offset);
+
+            return length - offset;
+        }
+
+        public static int ReadAll(this BinaryReader binaryReader, byte[] buffer, int offset, int count)
+        {
+            int length = offset;
+            do
+            {
+                int num = binaryReader.Read(buffer, length, count);
+                if (num != 0)
+                {
+                    length += num;
+                    count -= num;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            while (count > offset);
+
+            return length - offset;
+        }
+
         #region String
 
         public static unsafe void ReplaceCharInPlace(string value, char oldChar, char newChar)
