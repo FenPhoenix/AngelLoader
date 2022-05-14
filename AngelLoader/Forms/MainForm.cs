@@ -31,6 +31,8 @@ visible selection change/flickering etc.
 It's conceptually much cleaner to use this method, but we would then have to hack around this infuriating unwanted
 behavior that comes part and parcel with what should be a simple #$@!ing property flip.
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
+
+@MEM/MULTISEL/BUG: IMPORTANT: stream.Read(buffer[]) is not guaranteed to fill the buffer and must be checked in a loop!!!
 */
 
 using System;
