@@ -102,44 +102,34 @@ namespace AL_Common
 
         public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
         {
-            int length = offset;
-            do
+            int bytesReadRet = 0;
+            int startPosThisRound = offset;
+            while (true)
             {
-                int num = stream.Read(buffer, length, count);
-                if (num != 0)
-                {
-                    length += num;
-                    count -= num;
-                }
-                else
-                {
-                    break;
-                }
+                int bytesRead = stream.Read(buffer, startPosThisRound, count);
+                if (bytesRead <= 0) break;
+                bytesReadRet += bytesRead;
+                startPosThisRound += bytesRead;
+                count -= bytesRead;
             }
-            while (count > offset);
 
-            return length - offset;
+            return bytesReadRet;
         }
 
         public static int ReadAll(this BinaryReader binaryReader, byte[] buffer, int offset, int count)
         {
-            int length = offset;
-            do
+            int bytesReadRet = 0;
+            int startPosThisRound = offset;
+            while (true)
             {
-                int num = binaryReader.Read(buffer, length, count);
-                if (num != 0)
-                {
-                    length += num;
-                    count -= num;
-                }
-                else
-                {
-                    break;
-                }
+                int bytesRead = binaryReader.Read(buffer, startPosThisRound, count);
+                if (bytesRead <= 0) break;
+                bytesReadRet += bytesRead;
+                startPosThisRound += bytesRead;
+                count -= bytesRead;
             }
-            while (count > offset);
 
-            return length - offset;
+            return bytesReadRet;
         }
 
         #region String
