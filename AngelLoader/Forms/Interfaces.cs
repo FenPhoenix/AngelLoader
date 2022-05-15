@@ -295,9 +295,9 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region FMs list
+        #region Row count
 
-        void DisableFMsListUpdate();
+        void SetRowCount(int count);
 
         #endregion
 
