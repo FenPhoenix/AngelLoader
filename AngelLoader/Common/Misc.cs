@@ -30,6 +30,27 @@ namespace AngelLoader
             Maximized
         }
 
+        public enum MBoxButtons
+        {
+            OK,
+            OKCancel,
+            YesNoCancel,
+            YesNo,
+        }
+
+        public enum MBoxIcon
+        {
+            None,
+            Error,
+            Hand,
+            Stop,
+            Question,
+            Exclamation,
+            Warning,
+            Asterisk,
+            Information
+        }
+
         public enum Zoom { In, Out, Reset }
 
         public enum ProgressSizeMode

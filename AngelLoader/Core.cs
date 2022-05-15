@@ -57,7 +57,7 @@ namespace AngelLoader
                 string message = "Failed to create required application directories on startup.";
                 Log(message, ex);
                 // We're not even close to having a theme at this point, so just use regular MessageBox
-                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Dialogs.StandardMessageBox(message, "Error", MBoxButtons.OK, MBoxIcon.Error);
                 Environment.Exit(1);
             }
 

@@ -32,6 +32,33 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private static MessageBoxIcon ConvertIcon(MBoxIcon icon) => icon switch
+        {
+            MBoxIcon.Error => MessageBoxIcon.Error,
+            MBoxIcon.Hand => MessageBoxIcon.Hand,
+            MBoxIcon.Stop => MessageBoxIcon.Stop,
+            MBoxIcon.Question => MessageBoxIcon.Question,
+            MBoxIcon.Exclamation => MessageBoxIcon.Exclamation,
+            MBoxIcon.Warning => MessageBoxIcon.Warning,
+            MBoxIcon.Asterisk => MessageBoxIcon.Asterisk,
+            MBoxIcon.Information => MessageBoxIcon.Information,
+            _ => MessageBoxIcon.None
+        };
+
+        private static MessageBoxButtons ConvertButtons(MBoxButtons buttons) => buttons switch
+        {
+            MBoxButtons.OKCancel => MessageBoxButtons.OKCancel,
+            MBoxButtons.YesNoCancel => MessageBoxButtons.YesNoCancel,
+            MBoxButtons.YesNo => MessageBoxButtons.YesNo,
+            _ => MessageBoxButtons.OK
+        };
+
+        public static void StandardMessageBox(string text, string title, MBoxButtons buttons,
+            MBoxIcon icon)
+        {
+            MessageBox.Show(text, title, ConvertButtons(buttons), ConvertIcon(icon));
+        }
+
         /// <summary>
         /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
         /// </summary>
