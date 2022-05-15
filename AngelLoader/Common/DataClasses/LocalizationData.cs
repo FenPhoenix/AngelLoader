@@ -328,6 +328,7 @@ namespace AngelLoader.DataClasses
             internal readonly string ArchiveNotFound = "This FM's archive could not be found. To delete this FM permanently, simply uninstall it.";
             internal readonly string ArchiveNotFound_All = "None of the selected FMs' archives could be found. To delete these FMs permanently, simply uninstall them.";
             internal readonly string AskToUninstallFMFirst = "This FM is installed. Uninstall it first?";
+            internal readonly string AskToUninstallFMFirst_Multiple = "Some of the selected FMs are installed. Do you want to uninstall them first?";
             internal readonly string AboutToDelete = "The following FM archive is about to be deleted from disk:";
             internal readonly string DuplicateArchivesFound = "Multiple archives with the same name were found. Please choose which archives(s) you want to delete.";
             [FenGenComment(
@@ -606,6 +607,7 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string CachingReadmeFiles = "Caching readme files...";
             internal readonly string DeletingFMArchive = "Deleting FM archive...";
+            internal readonly string DeletingFMArchives = "Deleting FM archives...";
             internal readonly string CheckingFreeSpace = "Checking free disk space...";
         }
 

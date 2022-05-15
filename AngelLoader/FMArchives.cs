@@ -299,25 +299,23 @@ namespace AngelLoader
 
             if (installedNoArchiveCount == fms.Count)
             {
-                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
+                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives, MessageBoxIcon.Error);
                 return;
             }
 
             if (installedCount > 0)
             {
-                // @MULTISEL(Delete): Localize and finalize
-                var (cancel, cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
-                    message:
-                    "Some FMs are installed. Do you want to uninstall them before deleting their archives?\r\n" +
-                    "If so, do you want to back up the stuff?",
-                    title: LText.AlertMessages.DeleteFMArchive,
-                    icon: MessageBoxIcon.None,
+
+                (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
+                    message: LText.FMDeletion.AskToUninstallFMFirst_Multiple,
+                    title: LText.AlertMessages.DeleteFMArchives,
+                    icon: MessageBoxIcon.Warning,
                     showDontAskAgain: false,
-                    yes: LText.AlertMessages.BackUp,
-                    no: LText.AlertMessages.DontBackUp,
-                    cancel: LText.Global.Cancel,
-                    defaultButton: DarkTaskDialog.Button.Yes
+                    yes: LText.AlertMessages.Uninstall,
+                    no: LText.AlertMessages.LeaveInstalled,
+                    cancel: LText.Global.Cancel
                 );
+
                 if (cancel) return;
                 if (cont)
                 {
@@ -357,9 +355,8 @@ namespace AngelLoader
 
             try
             {
-                // @MULTISEL: Localize and finalize
                 Core.View.ShowProgressBox_Single(
-                    message1: "Deleting FMs...",
+                    message1: LText.ProgressBox.DeletingFMArchives,
                     progressType: ProgressType.Determinate,
                     cancelType: ProgressCancelType.Stop,
                     // @MULTISEL: Should be an actual action in final version
