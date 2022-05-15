@@ -1316,7 +1316,14 @@ namespace AngelLoader.Forms
                 // throw up the alert dialog if they pressed the delete key.
                 if (FMsDGV.Focused && FMsDGV.RowSelected())
                 {
-                    await FMArchives.Delete(FMsDGV.GetMainSelectedFM());
+                    if (FMsDGV.MultipleFMsSelected())
+                    {
+                        await FMArchives.Delete(FMsDGV.GetSelectedFMs_InOrder().ToList());
+                    }
+                    else
+                    {
+                        await FMArchives.Delete(FMsDGV.GetMainSelectedFM());
+                    }
                 }
             }
             else if (e.KeyCode == Keys.Escape)

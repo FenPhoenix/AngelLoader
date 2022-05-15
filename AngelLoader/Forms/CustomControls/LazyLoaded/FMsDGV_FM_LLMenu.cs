@@ -727,8 +727,14 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == DeleteFMMenuItem)
             {
-                // @MULTISEL: Make FM delete method multi-FM aware
-                await FMArchives.Delete(_owner.FMsDGV.GetMainSelectedFM());
+                if (_owner.FMsDGV.MultipleFMsSelected())
+                {
+                    await FMArchives.Delete(_owner.FMsDGV.GetSelectedFMs_InOrder().ToList());
+                }
+                else
+                {
+                    await FMArchives.Delete(_owner.FMsDGV.GetMainSelectedFM());
+                }
             }
             else if (sender == OpenInDromEdMenuItem)
             {

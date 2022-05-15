@@ -153,21 +153,28 @@ namespace AngelLoader
 
             var finalArchives = new List<string>();
 
-            using (var f = new MessageBoxCustomForm(
-                messageTop: singleArchive
-                    ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + archives[0]
-                    : LText.FMDeletion.DuplicateArchivesFound,
-                messageBottom: "",
-                title: LText.AlertMessages.DeleteFMArchive,
-                icon: MessageBoxIcon.Warning,
-                okText: singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
-                cancelText: LText.Global.Cancel,
-                okIsDangerous: true,
-                choiceStrings: singleArchive ? null : archives.ToArray()))
+            if (!multiple || !singleArchive)
             {
-                if (f.ShowDialogDark() != DialogResult.OK) return;
+                using (var f = new MessageBoxCustomForm(
+                    messageTop: singleArchive
+                        ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + archives[0]
+                        : LText.FMDeletion.DuplicateArchivesFound,
+                    messageBottom: "",
+                    title: LText.AlertMessages.DeleteFMArchive,
+                    icon: MessageBoxIcon.Warning,
+                    okText: singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
+                    cancelText: LText.Global.Cancel,
+                    okIsDangerous: true,
+                    choiceStrings: singleArchive ? null : archives.ToArray()))
+                {
+                    if (f.ShowDialogDark() != DialogResult.OK) return;
 
-                finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
+                    finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
+                }
+            }
+            else
+            {
+                finalArchives.AddRange(archives);
             }
 
             if (!multiple && fm.Installed)
@@ -288,6 +295,19 @@ namespace AngelLoader
                 }
             }
 
+            using (var f = new MessageBoxCustomForm(
+                       messageTop: LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + fms.Count +
+                                   LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
+                       messageBottom: "",
+                       title: LText.AlertMessages.DeleteFMArchives,
+                       icon: MessageBoxIcon.Warning,
+                       okText: LText.FMDeletion.DeleteFMs_CertainMultiple,
+                       cancelText: LText.Global.Cancel,
+                       okIsDangerous: true))
+            {
+                if (f.ShowDialogDark() != DialogResult.OK) return;
+            }
+
             // @MULTISEL: Multi-selection Delete() method in-progress code
             // Since multiple archives with the same name should be the rare case (nobody should be doing it),
             // we'll just ask the user per-FM if we find any as we go. Sorry to stop your batch, but yeah.
@@ -297,6 +317,7 @@ namespace AngelLoader
             // some have no archive, also inform the user of the proper information in that case.
             // Also if all of them have no archive found and are NOT installed, throw up a dialog and return.
 
+            // This thing just tells you to uninstall the FMs to delete them, so it's correct functionality
             if (installedNoArchiveCount == fms.Count)
             {
                 Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives, MessageBoxIcon.Error);
@@ -305,7 +326,6 @@ namespace AngelLoader
 
             if (installedCount > 0)
             {
-
                 (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
                     message: LText.FMDeletion.AskToUninstallFMFirst_Multiple,
                     title: LText.AlertMessages.DeleteFMArchives,
@@ -365,12 +385,13 @@ namespace AngelLoader
 
                 for (int i = 0; i < fms.Count; i++)
                 {
-                    await Delete(fms[i], multiple: true, Common.GetPercentFromValue_Int(i, fms.Count));
+                    await Delete(fms[i], multiple: true, Common.GetPercentFromValue_Int(i + 1, fms.Count));
                 }
             }
             finally
             {
                 await Core.View.SortAndSetFilter(keepSelection: true);
+                Core.View.HideProgressBox();
             }
         }
 

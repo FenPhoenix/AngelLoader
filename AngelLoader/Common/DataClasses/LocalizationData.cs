@@ -329,12 +329,24 @@ namespace AngelLoader.DataClasses
             internal readonly string ArchiveNotFound_All = "None of the selected FMs' archives could be found. To delete these FMs permanently, simply uninstall them.";
             internal readonly string AskToUninstallFMFirst = "This FM is installed. Uninstall it first?";
             internal readonly string AskToUninstallFMFirst_Multiple = "Some of the selected FMs are installed. Do you want to uninstall them first?";
+            [FenGenComment(
+                "In English, if you had 5 FMs selected for example, it would say \"Do you want to delete these 5 FMs from disk?\".",
+                "Structure these lines as appropriate for your language. You can leave one or the other blank if the",
+                "number should go at the start or at the end of the final line.",
+                "Make sure to leave a space at the end of the first line and start of the second line if they're non-empty, as demonstrated.")]
+            internal readonly string AboutToDelete_Multiple_BeforeNumber = "Do you want to delete these ";
+            internal readonly string AboutToDelete_Multiple_AfterNumber = " FMs from disk?";
             internal readonly string AboutToDelete = "The following FM archive is about to be deleted from disk:";
             internal readonly string DuplicateArchivesFound = "Multiple archives with the same name were found. Please choose which archives(s) you want to delete.";
             [FenGenComment(
                 "One of these will be displayed on a button on the \"Delete FM archive\" dialog box, depending if one or multiple FM archives were found.")]
             internal readonly string DeleteFM = "Delete FM";
+            [FenGenComment(
+                "This one is for a dialog box button where you get to choose one or more archives to delete, so we say \"Delete FM(s)\" because we don't",
+                "know if it's one or multiple.")]
             internal readonly string DeleteFMs = "Delete FM(s)";
+            [FenGenComment("This one is for when you've already selected multiple FMs to delete, so we say \"FMs\" instead of \"FM(s)\".")]
+            internal readonly string DeleteFMs_CertainMultiple = "Delete FMs";
         }
 
         internal sealed class Difficulties_Class
