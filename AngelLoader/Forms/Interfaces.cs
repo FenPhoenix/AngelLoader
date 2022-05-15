@@ -118,7 +118,7 @@ namespace AngelLoader.Forms
         void SelectBackingIndexOf(string item);
     }
 
-    internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler
+    internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler, IMessageFilter
     {
         public bool IsHandleCreated { get; }
 
