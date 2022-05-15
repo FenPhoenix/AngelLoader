@@ -5568,19 +5568,18 @@ namespace AngelLoader.Forms
         public (bool Accepted, ConfigData OutConfig)
         ShowSettingsWindow(ConfigData inConfig, bool startup, bool cleanStart)
         {
-            DialogResult result;
-            ConfigData outConfig;
-            using (var sf = new SettingsForm(this, inConfig, startup, cleanStart))
-            {
-                result = sf.ShowDialogDark();
-                outConfig = sf.OutConfig;
-            }
-            return (result == DialogResult.OK, outConfig);
+            using var sf = new SettingsForm(this, inConfig, startup, cleanStart);
+            return (sf.ShowDialogDark() == DialogResult.OK, sf.OutConfig);
         }
 
-        public void SetCursor(bool wait)
+        public void SetCursor(bool wait) => Cursor = wait ? Cursors.WaitCursor : Cursors.Default;
+
+        public (bool Accepted, bool NoneSelected, FMScanner.ScanOptions? ScanOptions) ShowScanFMsWindow()
         {
-            Cursor = wait ? Cursors.WaitCursor : Cursors.Default;
+            using var f = new ScanAllFMsForm();
+            return f.ShowDialogDark() != DialogResult.OK
+                ? (false, false, null)
+                : (true, f.NoneSelected, f.ScanOptions);
         }
     }
 }

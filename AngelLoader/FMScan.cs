@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
@@ -380,14 +379,8 @@ namespace AngelLoader
 
         private static FMScanner.ScanOptions? GetScanOptionsFromDialog()
         {
-            FMScanner.ScanOptions? scanOptions = null;
-            bool noneSelected;
-            using (var f = new ScanAllFMsForm())
-            {
-                if (f.ShowDialogDark() != DialogResult.OK) return null;
-                noneSelected = f.NoneSelected;
-                if (!noneSelected) scanOptions = f.ScanOptions;
-            }
+            var (accepted, noneSelected, scanOptions) = Core.View.ShowScanFMsWindow();
+            if (!accepted) return null;
 
             if (noneSelected)
             {
