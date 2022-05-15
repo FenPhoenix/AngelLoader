@@ -1398,12 +1398,12 @@ namespace AngelLoader.Forms
         {
             if (wait)
             {
-                if (_ownerForm != null) _ownerForm.Cursor = Cursors.WaitCursor;
+                _ownerForm?.SetCursor(wait: true);
                 Cursor = Cursors.WaitCursor;
             }
             else
             {
-                if (_ownerForm != null) _ownerForm.Cursor = Cursors.Default;
+                _ownerForm?.SetCursor(wait: false);
                 Cursor = Cursors.Default;
             }
         }

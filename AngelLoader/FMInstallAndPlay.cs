@@ -115,7 +115,7 @@ namespace AngelLoader
 
                 try
                 {
-                    Core.View.Cursor = Cursors.WaitCursor;
+                    Core.View.SetCursor(wait: true);
 
                     if (PlayFM(fm, playMP))
                     {
@@ -126,7 +126,7 @@ namespace AngelLoader
                 }
                 finally
                 {
-                    Core.View.Cursor = Cursors.Default;
+                    Core.View.SetCursor(wait: false);
                 }
             }
         }
@@ -137,7 +137,7 @@ namespace AngelLoader
         {
             try
             {
-                Core.View.Cursor = Cursors.WaitCursor;
+                Core.View.SetCursor(wait: true);
 
                 (bool success, string gameExe, string gamePath) =
                     CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: true, playMP);
@@ -164,7 +164,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.View.Cursor = Cursors.Default;
+                Core.View.SetCursor(wait: false);
             }
         }
 
@@ -235,7 +235,7 @@ namespace AngelLoader
         {
             try
             {
-                Core.View.Cursor = Cursors.WaitCursor;
+                Core.View.SetCursor(wait: true);
 
                 #region Checks (specific to DromEd)
 
@@ -294,7 +294,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.View.Cursor = Cursors.Default;
+                Core.View.SetCursor(wait: false);
             }
         }
 
@@ -1437,14 +1437,14 @@ namespace AngelLoader
 
             try
             {
-                Core.View.Cursor = Cursors.WaitCursor;
+                Core.View.SetCursor(wait: true);
 
                 bool success = await Task.Run(() => DoPreChecks(fms, fmDataList, install: false, out _));
                 if (!success) return false;
             }
             finally
             {
-                Core.View.Cursor = Cursors.Default;
+                Core.View.SetCursor(wait: false);
             }
 
             #endregion

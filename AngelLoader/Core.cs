@@ -730,7 +730,7 @@ namespace AngelLoader
             // readme and it also sets the wait cursor, to avoid flickering it on and off twice.
             try
             {
-                View.Cursor = Cursors.WaitCursor;
+                View.SetCursor(wait: true);
                 using (new DisableEvents(View))
                 {
                     var fmsViewListUnscanned = FindFMs.Find();
@@ -740,7 +740,7 @@ namespace AngelLoader
             }
             finally
             {
-                View.Cursor = Cursors.Default;
+                View.SetCursor(wait: false);
             }
         }
 

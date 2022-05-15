@@ -1865,7 +1865,7 @@ namespace AngelLoader.Forms
 
             try
             {
-                if (block) view.Cursor = Cursors.WaitCursor;
+                if (block) view.SetCursor(wait: true);
 
                 // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
                 view.EverythingPanel.SuspendDrawing();
@@ -1877,7 +1877,7 @@ namespace AngelLoader.Forms
             {
                 view.EverythingPanel.ResumeDrawing();
 
-                if (!block) view.Cursor = Cursors.Default;
+                if (!block) view.SetCursor(wait: false);
             }
         };
 
@@ -5576,6 +5576,11 @@ namespace AngelLoader.Forms
                 outConfig = sf.OutConfig;
             }
             return (result == DialogResult.OK, outConfig);
+        }
+
+        public void SetCursor(bool wait)
+        {
+            Cursor = wait ? Cursors.WaitCursor : Cursors.Default;
         }
     }
 }
