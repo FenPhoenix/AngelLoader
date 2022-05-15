@@ -92,7 +92,7 @@ namespace AngelLoader.Forms
     {
         void Localize();
         void SetTheme(VisualTheme theme);
-        void SetCursor(bool wait);
+        Cursor Cursor { get; set; }
     }
 
     [PublicAPI]
