@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using FMScanner;
 using JetBrains.Annotations;
 using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms
+namespace AngelLoader
 {
     #region DisableEvents
 
