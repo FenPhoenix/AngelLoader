@@ -149,6 +149,11 @@ namespace AngelLoader.Forms
                         GetControlFullHeight(SelectButtonsFLP, onlyIfVisible: true) +
                        (_multiChoice && messageBottom.IsEmpty() ? _edgePadding : GetControlFullHeight(MessageBottomLabel, onlyIfVisible: true)));
 
+            if (ContentTLP.Height < IconPictureBox.Height + (IconPictureBox.Top * 2))
+            {
+                IconPictureBox.Margin = IconPictureBox.Margin with { Top = (ContentTLP.Height / 2) - (IconPictureBox.Height / 2), Bottom = 0 };
+            }
+
             #endregion
 
             if (_multiChoice)
