@@ -8,8 +8,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using JetBrains.Annotations;
-using Microsoft.VisualBasic.FileIO;
-using SevenZip; // the import of shame
+using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 using SearchOption = System.IO.SearchOption;

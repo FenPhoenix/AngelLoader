@@ -434,7 +434,6 @@ namespace FenGen
                 }
                 else if (field.Type == Cache.LangsEnum.Name)
                 {
-                    var le = Cache.LangsEnum;
                     if (field.IsEnumAndSingleAssignment)
                     {
                         w.WL("if (Langs_TryGetValue(" + val + ", out var result))");
