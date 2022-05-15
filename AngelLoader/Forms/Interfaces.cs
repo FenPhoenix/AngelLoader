@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using FMScanner;
 using JetBrains.Annotations;
 using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
@@ -379,6 +378,5 @@ namespace AngelLoader.Forms
         FanMission? GetFMFromIndex(int index);
         FanMission[] GetSelectedFMs_InOrder();
         (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ConfigData inConfig, bool startup, bool cleanStart);
-        (bool Accepted, bool NoneSelected, ScanOptions? ScanOptions) ShowScanFMsWindow();
     }
 }
