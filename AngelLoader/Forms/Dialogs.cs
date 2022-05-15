@@ -119,7 +119,7 @@ namespace AngelLoader.Forms
         AskToContinueWithCancelCustomStrings(
             string message,
             string title,
-            MBoxIcon icon,
+            MessageBoxIcon icon,
             bool showDontAskAgain,
             string yes,
             string no,
@@ -135,7 +135,7 @@ namespace AngelLoader.Forms
                     cancelText: cancel,
                     defaultButton: defaultButton,
                     checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
-                    icon: ConvertIcon(icon));
+                    icon: icon);
 
                 DialogResult result = d.ShowDialogDark();
 
@@ -160,7 +160,7 @@ namespace AngelLoader.Forms
         AskToContinueYesNoCustomStrings(
             string message,
             string title,
-            MBoxIcon icon,
+            MessageBoxIcon icon,
             bool showDontAskAgain,
             string? yes,
             string? no,
@@ -174,7 +174,7 @@ namespace AngelLoader.Forms
                     noText: no,
                     defaultButton: defaultButton,
                     checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
-                    icon: ConvertIcon(icon));
+                    icon: icon);
 
                 DialogResult result = d.ShowDialogDark();
 
@@ -233,21 +233,21 @@ namespace AngelLoader.Forms
         public static void ShowAlert(
             string message,
             string title,
-            MBoxIcon icon = MBoxIcon.Warning) => InvokeIfViewExists(() =>
+            MessageBoxIcon icon = MessageBoxIcon.Warning) => InvokeIfViewExists(() =>
             {
                 if (Config.DarkMode)
                 {
                     using var d = new DarkTaskDialog(
                         message: message,
                         title: title,
-                        icon: ConvertIcon(icon),
+                        icon: icon,
                         yesText: LText.Global.OK,
                         defaultButton: DarkTaskDialog.Button.Yes);
                     d.ShowDialogDark();
                 }
                 else
                 {
-                    MessageBox.Show(message, title, MessageBoxButtons.OK, ConvertIcon(icon));
+                    MessageBox.Show(message, title, MessageBoxButtons.OK, icon);
                 }
             });
     }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
@@ -80,7 +81,7 @@ namespace AngelLoader
                             "Really stop converting audio for the selected FM(s)?\r\n" +
                             "Whatever has been done to this point won't (can't) be undone, but no more FMs' audio files will be converted.",
                             LText.AlertMessages.Alert,
-                            MBoxIcon.None,
+                            MessageBoxIcon.None,
                             false,
                             "Continue",
                             "Stop"
