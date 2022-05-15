@@ -3686,7 +3686,7 @@ namespace AngelLoader.Forms
 
         public int GetRowCount() => FMsDGV.RowCount;
 
-        public void SetRowCount(int count) => FMsDGV.RowCount = count;
+        public void DisableFMsListUpdate() => FMsDGV.RowCount = 0;
 
         public void ShowFMsListZoomButtons(bool visible)
         {

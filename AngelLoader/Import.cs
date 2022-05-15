@@ -137,7 +137,7 @@ namespace AngelLoader
             // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
             // list when it's in an indeterminate state, which can cause a selection change (bad) and/or a visible
             // change of the list (not really bad but unprofessional looking).
-            Core.View.SetRowCount(0);
+            Core.View.DisableFMsListUpdate();
 
             // ReSharper disable once ConvertToConstant.Local
             string dlErrorMessage = "An error occurred with DarkLoader importing. See the log file for details. Aborting import operation.";
@@ -222,7 +222,7 @@ namespace AngelLoader
                 if (importType == ImportType.DarkLoader) break;
             }
 
-            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
+            // Do this no matter what; because we disabled FMs list updating the list MUST be refreshed
             await Core.View.SortAndSetFilter(forceDisplayFM: true);
         }
 
