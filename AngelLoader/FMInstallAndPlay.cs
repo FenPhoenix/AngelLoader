@@ -10,7 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using FMScanner.FastZipReader;
@@ -93,7 +92,7 @@ namespace AngelLoader
                 (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
                     message: message,
                     title: LText.AlertMessages.Confirm,
-                    icon: MessageBoxIcon.None,
+                    icon: MBoxIcon.None,
                     showDontAskAgain: true,
                     yes: LText.Global.Yes,
                     no: LText.Global.No);
@@ -948,7 +947,7 @@ namespace AngelLoader
                 (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
                     message: message,
                     title: LText.AlertMessages.Alert,
-                    icon: MessageBoxIcon.Warning,
+                    icon: MBoxIcon.Warning,
                     showDontAskAgain: false,
                     yes: LText.Global.Continue,
                     no: LText.Global.Cancel,
@@ -991,7 +990,7 @@ namespace AngelLoader
                           fmDataList.Length.ToString(CultureInfo.CurrentCulture) +
                           LText.AlertMessages.Install_ConfirmPlural_AfterNumber,
                     title: LText.AlertMessages.Alert,
-                    icon: MessageBoxIcon.None,
+                    icon: MBoxIcon.None,
                     showDontAskAgain: true,
                     yes: single ? fromPlay ? LText.Global.Yes : LText.FMsList.FMMenu_InstallFM : LText.FMsList.FMMenu_InstallFMs,
                     no: LText.Global.Cancel,
@@ -1458,7 +1457,7 @@ namespace AngelLoader
                         ? LText.AlertMessages.Uninstall_Confirm
                         : LText.AlertMessages.Uninstall_Confirm_Multiple,
                     title: LText.AlertMessages.Confirm,
-                    icon: MessageBoxIcon.Warning,
+                    icon: MBoxIcon.Warning,
                     showDontAskAgain: true,
                     yes: LText.AlertMessages.Uninstall,
                     no: LText.Global.Cancel);
@@ -1481,7 +1480,7 @@ namespace AngelLoader
                     Dialogs.AskToContinueWithCancelCustomStrings(
                         message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                         title: LText.AlertMessages.Confirm,
-                        icon: MessageBoxIcon.None,
+                        icon: MBoxIcon.None,
                         showDontAskAgain: true,
                         yes: LText.AlertMessages.BackUp,
                         no: LText.AlertMessages.DontBackUp,
@@ -1546,7 +1545,7 @@ namespace AngelLoader
                         (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
                             message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                             title: LText.AlertMessages.Warning,
-                            icon: MessageBoxIcon.Warning,
+                            icon: MBoxIcon.Warning,
                             showDontAskAgain: false,
                             yes: LText.AlertMessages.Uninstall,
                             no: LText.Global.Skip,

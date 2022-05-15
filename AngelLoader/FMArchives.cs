@@ -8,8 +8,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using JetBrains.Annotations;
-using Microsoft.VisualBasic.FileIO;
-using SevenZip; // the import of shame
+using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 using SearchOption = System.IO.SearchOption;
@@ -125,7 +124,7 @@ namespace AngelLoader
                 Dialogs.ShowAlert(
                     "This FM is not available on disk, and so can't be deleted.",
                     LText.AlertMessages.Alert,
-                    MessageBoxIcon.None);
+                    MBoxIcon.None);
                 return;
             }
 
@@ -146,7 +145,7 @@ namespace AngelLoader
 
             if (archives.Count == 0)
             {
-                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
+                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MBoxIcon.Error);
                 return;
             }
 
@@ -176,7 +175,7 @@ namespace AngelLoader
                 (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
                     message: LText.FMDeletion.AskToUninstallFMFirst,
                     title: LText.AlertMessages.DeleteFMArchive,
-                    icon: MessageBoxIcon.Warning,
+                    icon: MBoxIcon.Warning,
                     showDontAskAgain: false,
                     yes: LText.AlertMessages.Uninstall,
                     no: LText.AlertMessages.LeaveInstalled,
@@ -300,7 +299,7 @@ namespace AngelLoader
 
             if (installedNoArchiveCount == fms.Count)
             {
-                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
+                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchive, MBoxIcon.Error);
                 return;
             }
 
@@ -312,7 +311,7 @@ namespace AngelLoader
                     "Some FMs are installed. Do you want to uninstall them before deleting their archives?\r\n" +
                     "If so, do you want to back up the stuff?",
                     title: LText.AlertMessages.DeleteFMArchive,
-                    icon: MessageBoxIcon.None,
+                    icon: MBoxIcon.None,
                     showDontAskAgain: false,
                     yes: LText.AlertMessages.BackUp,
                     no: LText.AlertMessages.DontBackUp,
