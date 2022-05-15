@@ -238,7 +238,13 @@ namespace AngelLoader
         public static async Task<bool>
         OpenSettings(bool startup = false, bool cleanStart = false)
         {
-            (bool accepted, ConfigData outConfig) = View.ShowSettingsWindow(Config, startup, cleanStart);
+            DialogResult result;
+            ConfigData outConfig;
+            using (var sf = new SettingsForm(View, Config, startup, cleanStart))
+            {
+                result = sf.ShowDialogDark();
+                outConfig = sf.OutConfig;
+            }
 
             // This needs to be separate so the below "always-save" stuff can work
 
@@ -255,7 +261,7 @@ namespace AngelLoader
 
             #endregion
 
-            if (!accepted)
+            if (result != DialogResult.OK)
             {
                 // Since nothing of consequence has yet happened, it's okay to do the brutal quit
                 // We know the game paths by now, so we can do this
