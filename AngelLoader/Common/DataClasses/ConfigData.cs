@@ -9,7 +9,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses
 {
-    internal sealed class ConfigData
+    public sealed class ConfigData
     {
         internal ConfigData()
         {

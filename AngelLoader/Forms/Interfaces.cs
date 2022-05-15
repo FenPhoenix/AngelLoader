@@ -377,5 +377,6 @@ namespace AngelLoader.Forms
         Task<bool> AddFMs(string[] fmArchiveNames);
         FanMission? GetFMFromIndex(int index);
         FanMission[] GetSelectedFMs_InOrder();
+        (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ConfigData inConfig, bool startup, bool cleanStart);
     }
 }

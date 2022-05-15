@@ -5564,5 +5564,18 @@ namespace AngelLoader.Forms
             if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
             Activate();
         }
+
+        public (bool Accepted, ConfigData OutConfig)
+        ShowSettingsWindow(ConfigData inConfig, bool startup, bool cleanStart)
+        {
+            DialogResult result;
+            ConfigData outConfig;
+            using (var sf = new SettingsForm(this, inConfig, startup, cleanStart))
+            {
+                result = sf.ShowDialogDark();
+                outConfig = sf.OutConfig;
+            }
+            return (result == DialogResult.OK, outConfig);
+        }
     }
 }
