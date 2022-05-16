@@ -18,6 +18,9 @@ namespace AngelLoader
     [PublicAPI]
     internal static class FMArchives
     {
+        private static CancellationTokenSource _deleteCts = new();
+        private static void CancelToken() => _deleteCts.CancelIfNotDisposed();
+
         /// <summary>
         /// Returns the list of FM archive paths, returning subfolders as well if that option is enabled.
         /// </summary>
@@ -265,9 +268,7 @@ namespace AngelLoader
             if (fms.Count == 0) return;
 
             var archivePaths = GetFMArchivePaths();
-            int installedWithArchiveCount = 0;
             int installedNoArchiveCount = 0;
-            int notInstalledNoArchiveCount = 0;
             int installedCount = 0;
             for (int i = 0; i < fms.Count; i++)
             {
@@ -278,7 +279,6 @@ namespace AngelLoader
                     if (fm.Installed)
                     {
                         installedCount++;
-                        installedWithArchiveCount++;
                     }
                 }
                 else
@@ -287,10 +287,6 @@ namespace AngelLoader
                     {
                         installedCount++;
                         installedNoArchiveCount++;
-                    }
-                    else
-                    {
-                        notInstalledNoArchiveCount++;
                     }
                 }
             }
@@ -308,14 +304,8 @@ namespace AngelLoader
                 if (f.ShowDialogDark() != DialogResult.OK) return;
             }
 
-            // @MULTISEL: Multi-selection Delete() method in-progress code
             // Since multiple archives with the same name should be the rare case (nobody should be doing it),
             // we'll just ask the user per-FM if we find any as we go. Sorry to stop your batch, but yeah.
-
-            // In the iteration up there, look for any FMs that are installed, and then note we have to ask the
-            // user if they want to uninstall them and if so, ask the usual backup options for all, and then if
-            // some have no archive, also inform the user of the proper information in that case.
-            // Also if all of them have no archive found and are NOT installed, throw up a dialog and return.
 
             // This thing just tells you to uninstall the FMs to delete them, so it's correct functionality
             if (installedNoArchiveCount == fms.Count)
@@ -375,17 +365,18 @@ namespace AngelLoader
 
             try
             {
+                _deleteCts = _deleteCts.Recreate();
                 Core.View.ShowProgressBox_Single(
                     message1: LText.ProgressBox.DeletingFMArchives,
                     progressType: ProgressType.Determinate,
                     cancelMessage: LText.Global.Stop,
-                    // @MULTISEL: Should be an actual action in final version
-                    cancelAction: null
+                    cancelAction: CancelToken
                 );
 
                 for (int i = 0; i < fms.Count; i++)
                 {
                     await Delete(fms[i], multiple: true, Common.GetPercentFromValue_Int(i + 1, fms.Count));
+                    if (_deleteCts.IsCancellationRequested) return;
                 }
             }
             finally
