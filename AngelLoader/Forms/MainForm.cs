@@ -2867,12 +2867,17 @@ namespace AngelLoader.Forms
             RefreshFMsListKeepSelection();
         }
 
-        public void RefreshAllSelectedFMRows()
+        public void RefreshAllSelectedFMRows(bool refreshInstalledStateOfCurrentRow = false)
         {
             var selRows = FMsDGV.SelectedRows;
-            foreach (DataGridViewRow row in selRows)
+            for (int i = 0; i < selRows.Count; i++)
             {
-                FMsDGV.InvalidateRow(row.Index);
+                FMsDGV.InvalidateRow(selRows[i].Index);
+            }
+
+            if (refreshInstalledStateOfCurrentRow)
+            {
+                RefreshCurrentFM_IncludeInstalledState();
             }
         }
 

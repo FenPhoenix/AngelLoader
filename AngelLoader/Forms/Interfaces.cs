@@ -328,7 +328,7 @@ namespace AngelLoader.Forms
 
         void RefreshFMsListKeepSelection(bool keepMulti = true);
 
-        void RefreshAllSelectedFMRows();
+        void RefreshAllSelectedFMRows(bool refreshInstalledStateOfCurrentRow = false);
 
         void RefreshAllSelectedFMs(bool rowOnly = false);
 

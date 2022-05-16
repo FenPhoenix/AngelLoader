@@ -1281,8 +1281,7 @@ namespace AngelLoader
                 Core.View.HideProgressBox();
             }
 
-            Core.View.RefreshAllSelectedFMRows();
-            Core.View.RefreshCurrentFM_IncludeInstalledState();
+            Core.View.RefreshAllSelectedFMRows(refreshInstalledStateOfCurrentRow: true);
 
             return true;
         }
@@ -1639,8 +1638,7 @@ namespace AngelLoader
             }
             else
             {
-                Core.View.RefreshAllSelectedFMRows();
-                Core.View.RefreshCurrentFM_IncludeInstalledState();
+                Core.View.RefreshAllSelectedFMRows(refreshInstalledStateOfCurrentRow: true);
             }
 
             return true;
