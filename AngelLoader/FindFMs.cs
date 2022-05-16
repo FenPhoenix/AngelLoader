@@ -28,16 +28,16 @@ namespace AngelLoader
             private DictionaryI<string>? _archivesToInstDirNameNDLTruncated_FromFMDataIniList;
             private DictionaryI<string>? _installedDirs_FromFMDataIniList;
 
-            internal DictionaryI<string> GetInstDirFMSelToArchives(string[] archives, bool truncate)
+            internal DictionaryI<string> GetInstDirFMSelToArchives(DictionaryI<ArchiveValueData> archives, bool truncate)
             {
                 if (truncate)
                 {
                     if (_archivesToInstDirNameFMSelTruncated == null)
                     {
-                        _archivesToInstDirNameFMSelTruncated = new(archives.Length);
-                        for (int i = 0; i < archives.Length; i++)
+                        _archivesToInstDirNameFMSelTruncated = new DictionaryI<string>(archives.Count);
+                        foreach (var item in archives)
                         {
-                            string value = archives[i];
+                            string value = item.Key;
                             string key = value.ToInstDirNameFMSel(true);
                             if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelTruncated.ContainsKey(key))
                             {
@@ -51,10 +51,10 @@ namespace AngelLoader
                 {
                     if (_archivesToInstDirNameFMSelNotTruncated == null)
                     {
-                        _archivesToInstDirNameFMSelNotTruncated = new(archives.Length);
-                        for (int i = 0; i < archives.Length; i++)
+                        _archivesToInstDirNameFMSelNotTruncated = new DictionaryI<string>(archives.Count);
+                        foreach (var item in archives)
                         {
-                            string value = archives[i];
+                            string value = item.Key;
                             string key = value.ToInstDirNameFMSel(false);
                             if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelNotTruncated.ContainsKey(key))
                             {
@@ -66,14 +66,14 @@ namespace AngelLoader
                 }
             }
 
-            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives(string[] archives)
+            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives(DictionaryI<ArchiveValueData> archives)
             {
                 if (_archivesToInstDirNameNDLTruncated == null)
                 {
-                    _archivesToInstDirNameNDLTruncated = new(archives.Length);
-                    for (int i = 0; i < archives.Length; i++)
+                    _archivesToInstDirNameNDLTruncated = new DictionaryI<string>(archives.Count);
+                    foreach (var item in archives)
                     {
-                        string value = archives[i];
+                        string value = item.Key;
                         string key = value.ToInstDirNameNDL(truncate: true);
                         if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameNDLTruncated.ContainsKey(key))
                         {
@@ -84,14 +84,14 @@ namespace AngelLoader
                 return _archivesToInstDirNameNDLTruncated;
             }
 
-            internal DictionaryI<string> GetInstDirNameToArchives(string[] archives)
+            internal DictionaryI<string> GetInstDirNameToArchives(DictionaryI<ArchiveValueData> archives)
             {
                 if (_archives == null)
                 {
-                    _archives = new(archives.Length);
-                    for (int i = 0; i < archives.Length; i++)
+                    _archives = new(archives.Count);
+                    foreach (var item in archives)
                     {
-                        string key = archives[i];
+                        string key = item.Key;
                         string value = key;
                         if (!key.IsEmpty() && !value.IsEmpty() && !_archives.ContainsKey(key))
                         {
@@ -174,6 +174,28 @@ namespace AngelLoader
                     }
                 }
                 return _installedDirs_FromFMDataIniList;
+            }
+        }
+
+        private sealed class ArchiveValueData
+        {
+            internal readonly DateTime DateTime;
+            // This bool is for BuildViewList; we don't use it until then but it's just so we can pass the dictionary
+            // all the way through without creating a second one.
+            internal bool Checked;
+
+            internal ArchiveValueData(DateTime dateTime) => DateTime = dateTime;
+        }
+
+        private sealed class InstDirValueData
+        {
+            internal readonly FanMission FM;
+            internal readonly DateTime DateTime;
+
+            internal InstDirValueData(FanMission fm, DateTime dateTime)
+            {
+                FM = fm;
+                DateTime = dateTime;
             }
         }
 
@@ -298,15 +320,11 @@ namespace AngelLoader
 
             // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
             // horrendously expensive. Talking like eight seconds vs. < 4ms for the 1098 set. Weird.
-            var perGameInstFMDirsList = new List<List<string>>(SupportedGameCount);
-            var perGameInstFMDirsDatesList = new List<List<DateTime>>(SupportedGameCount);
+            var perGameInstFMDirsItems = new DictionaryI<InstDirValueData>[SupportedGameCount];
 
             for (int gi = 0; gi < SupportedGameCount; gi++)
             {
-                // NOTE! Make sure this list ends up with SupportedGameCount items in it. Just in case I change
-                // the loop or something.
-                perGameInstFMDirsList.Add(new List<string>());
-                perGameInstFMDirsDatesList.Add(new List<DateTime>());
+                perGameInstFMDirsItems[gi] = new DictionaryI<InstDirValueData>();
 
                 string instPath = Config.GetFMInstallPath((GameIndex)gi);
                 if (Directory.Exists(instPath))
@@ -319,8 +337,13 @@ namespace AngelLoader
                             string d = dirs[di];
                             if (!d.EqualsI(Paths.FMSelCache))
                             {
-                                perGameInstFMDirsList[gi].Add(d);
-                                perGameInstFMDirsDatesList[gi].Add(dateTimes[di]);
+                                var fm = new FanMission
+                                {
+                                    InstalledDir = d,
+                                    Game = GameIndexToGame((GameIndex)gi),
+                                    Installed = true
+                                };
+                                perGameInstFMDirsItems[gi][d] = new InstDirValueData(fm, dateTimes[di]);
 #if ENABLE_NEW_FMS_CHECK
                                 if (!fmDataIniInstalledDirsHash.Contains(d))
                                 {
@@ -341,7 +364,7 @@ namespace AngelLoader
 
             #region Get archives from disk
 
-            var fmArchivesAndDatesDict = new DictionaryI<DateTime>();
+            var fmArchivesAndDatesDict = new DictionaryI<ArchiveValueData>();
 
             var archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
@@ -376,7 +399,7 @@ namespace AngelLoader
                             // @DIRSEP: These are filename only, no need for PathContainsI()
                             !f.ContainsI(Paths.FMSelBak))
                         {
-                            fmArchivesAndDatesDict[f] = dateTimes[fi];
+                            fmArchivesAndDatesDict[f] = new ArchiveValueData(dateTimes[fi]);
 #if ENABLE_NEW_FMS_CHECK
                             if (!fmDataIniArchivesHash.Contains(f))
                             {
@@ -392,54 +415,13 @@ namespace AngelLoader
                 }
             }
 
-            int fmArchivesAndDatesDictLen = fmArchivesAndDatesDict.Count;
-            // PERF_TODO: May want to keep these as dicts later or change other vars to dicts
-            string[] fmArchives = new string[fmArchivesAndDatesDictLen];
-            DateTime[] fmArchivesDates = new DateTime[fmArchivesAndDatesDictLen];
-            {
-                int i = 0;
-                foreach (var item in fmArchivesAndDatesDict)
-                {
-                    fmArchives[i] = item.Key;
-                    fmArchivesDates[i] = item.Value;
-                    i++;
-                }
-            }
-
-            #endregion
-
-            #region Build FanMission objects from installed dirs
-
-            var perGameFMsList = new List<List<FanMission>>(SupportedGameCount);
-
-#if ENABLE_NEW_FMS_CHECK
-            if (NewInstalledDirs())
-#endif
-            {
-                for (int gi = 0; gi < SupportedGameCount; gi++)
-                {
-                    // NOTE! List must have SupportedGameCount items in it
-                    perGameFMsList.Add(new List<FanMission>());
-
-                    for (int di = 0; di < perGameInstFMDirsList[gi].Count; di++)
-                    {
-                        perGameFMsList[gi].Add(new FanMission
-                        {
-                            InstalledDir = perGameInstFMDirsList[gi][di],
-                            Game = GameIndexToGame((GameIndex)gi),
-                            Installed = true
-                        });
-                    }
-                }
-            }
-
             #endregion
 
 #if ENABLE_NEW_FMS_CHECK
             if (NewArchives())
 #endif
             {
-                MergeNewArchiveFMs(fmArchives, fmArchivesDates);
+                MergeNewArchiveFMs(fmArchivesAndDatesDict);
             }
 
 #if ENABLE_NEW_FMS_CHECK
@@ -459,12 +441,11 @@ namespace AngelLoader
 
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    var curGameInstFMsList = perGameFMsList[i];
+                    var curGameInstFMsList = perGameInstFMDirsItems[i];
                     if (curGameInstFMsList.Count > 0)
                     {
                         MergeNewInstalledFMs(
                             curGameInstFMsList,
-                            perGameInstFMDirsDatesList[i],
                             fmDataIniInstDirDict);
                     }
                 }
@@ -474,7 +455,7 @@ namespace AngelLoader
             if (NewArchives())
 #endif
             {
-                SetArchiveNames(fmArchives);
+                SetArchiveNames(fmArchivesAndDatesDict);
             }
 
 #if ENABLE_NEW_FMS_CHECK
@@ -488,7 +469,7 @@ namespace AngelLoader
             // FMs. This will contain indexes into FMDataIniList (not FMsViewList!)
             var fmsViewListUnscanned = new List<int>(FMDataIniList.Count);
 
-            BuildViewList(fmArchives, perGameInstFMDirsList, fmsViewListUnscanned);
+            BuildViewList(fmArchivesAndDatesDict, perGameInstFMDirsItems, fmsViewListUnscanned);
 
             return fmsViewListUnscanned;
 
@@ -508,7 +489,7 @@ namespace AngelLoader
 
         #region Set names
 
-        private static void SetArchiveNames(string[] fmArchives)
+        private static void SetArchiveNames(DictionaryI<ArchiveValueData> fmArchives)
         {
             DictionaryI<FanMission>? archivesDict = null;
             DictionaryI<FanMission> GetArchivesDict()
@@ -618,7 +599,7 @@ namespace AngelLoader
 
         #region Merge
 
-        private static void MergeNewArchiveFMs(string[] fmArchives, DateTime[] dateTimes)
+        private static void MergeNewArchiveFMs(DictionaryI<ArchiveValueData> fmArchives)
         {
             int fmDataIniListCount = FMDataIniList.Count;
             var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
@@ -636,9 +617,9 @@ namespace AngelLoader
                 }
             }
 
-            for (int ai = 0; ai < fmArchives.Length; ai++)
+            foreach (var item in fmArchives)
             {
-                string archive = fmArchives[ai];
+                string archive = item.Key;
 
                 if (fmDataIniInstDirDict.TryGetValue(archive.RemoveExtension(), out FanMission fm) ||
                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(false), out fm) ||
@@ -659,11 +640,11 @@ namespace AngelLoader
                         fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate);
                     }
 
-                    fm.DateAdded ??= dateTimes[ai];
+                    fm.DateAdded ??= item.Value.DateTime;
                 }
                 else if (fmDataIniArchiveDict.TryGetValue(archive, out fm))
                 {
-                    fm.DateAdded ??= dateTimes[ai];
+                    fm.DateAdded ??= item.Value.DateTime;
 
                     if (fm.InstalledDir.IsEmpty())
                     {
@@ -678,26 +659,25 @@ namespace AngelLoader
                         Archive = archive,
                         InstalledDir = archive.ToInstDirNameFMSel(true),
                         NoArchive = false,
-                        DateAdded = dateTimes[ai]
+                        DateAdded = item.Value.DateTime
                     });
                 }
             }
         }
 
         private static void MergeNewInstalledFMs(
-            List<FanMission> installedList,
-            List<DateTime> dateTimes,
+            DictionaryI<InstDirValueData> installedList,
             DictionaryI<FanMission> fmDataIniInstDirDict)
         {
-            for (int gFMi = 0; gFMi < installedList.Count; gFMi++)
+            foreach (var item in installedList)
             {
-                var gFM = installedList[gFMi];
+                var gFM = item.Value.FM;
 
                 if (fmDataIniInstDirDict.TryGetValue(gFM.InstalledDir, out FanMission fm))
                 {
                     fm.Game = gFM.Game;
                     fm.Installed = true;
-                    fm.DateAdded ??= dateTimes[gFMi];
+                    fm.DateAdded ??= item.Value.DateTime;
                 }
                 else
                 {
@@ -706,7 +686,7 @@ namespace AngelLoader
                         InstalledDir = gFM.InstalledDir,
                         Game = gFM.Game,
                         Installed = true,
-                        DateAdded = dateTimes[gFMi]
+                        DateAdded = item.Value.DateTime
                     });
                 }
             }
@@ -715,7 +695,7 @@ namespace AngelLoader
         #endregion
 
         // PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
-        private static string? GetArchiveNameFromInstalledDir(FanMission fm, string[] archives, LastResortLinkupBundle bundle)
+        private static string? GetArchiveNameFromInstalledDir(FanMission fm, DictionaryI<ArchiveValueData> archives, LastResortLinkupBundle bundle)
         {
             // The game type is supposed to be inferred from the installed location, but it could be unknown in
             // the following scenario:
@@ -820,48 +800,24 @@ namespace AngelLoader
         }
 
         private static void BuildViewList(
-            string[] fmArchives,
-            List<List<string>> perGameInstalledFMDirsList,
+            DictionaryI<ArchiveValueData> fmArchivesDict,
+            DictionaryI<InstDirValueData>[] perGameInstalledFMDirsItems,
             List<int> fmsViewListUnscanned)
         {
-            var fmArchivesDict = new DictionaryI<bool>(fmArchives.Length);
-            for (int i = 0; i < fmArchives.Length; i++)
-            {
-                fmArchivesDict.Add(fmArchives[i], false);
-            }
-
             bool?[] boolsList = new bool?[SupportedGameCount];
 
-            static bool NotInPerGameList(int gCount, FanMission fm, bool?[] notInList, List<List<string>> list, bool useBool)
+            static bool NotInPerGameList(FanMission fm, bool?[] notInList, DictionaryI<InstDirValueData>[] list, bool useBool)
             {
                 if (!GameIsKnownAndSupported(fm.Game)) return false;
                 int intGame = (int)GameToGameIndex(fm.Game);
 
                 if (!useBool)
                 {
-                    for (int i = 0; i < gCount; i++)
-                    {
-                        if (intGame == i &&
-                            (bool)(notInList[i] = !list[i].ContainsI(fm.InstalledDir)))
-                        {
-                            return true;
-                        }
-                    }
-
-                    return false;
+                    return (bool)(notInList[intGame] = !list[intGame].ContainsKey(fm.InstalledDir));
                 }
                 else
                 {
-                    for (int i = 0; i < gCount; i++)
-                    {
-                        if (intGame == i &&
-                            (notInList[i] ?? !list[i].ContainsI(fm.InstalledDir)))
-                        {
-                            return true;
-                        }
-                    }
-
-                    return false;
+                    return notInList[intGame] ?? !list[intGame].ContainsKey(fm.InstalledDir);
                 }
             }
 
@@ -871,32 +827,32 @@ namespace AngelLoader
 
                 #region Checks
 
-                // Attempt to avoid re-searching lists
+                // Now that we're using hashtables, we don't really need these I guess, but if they save a lookup
+                // then I guess why not
                 for (int ti = 0; ti < boolsList.Length; ti++) boolsList[ti] = null;
 
                 if (fm.Installed &&
-                    NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: false))
+                    NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: false))
                 {
                     fm.Installed = false;
                 }
 
                 if (!fm.Installed ||
-                    NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: true))
+                    NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: true))
                 {
                     // Fix: we can have duplicate archive names if the installed dir is different, so cull them
                     // out of the view list at least.
                     // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
                     // TODO: We shouldn't have duplicate archives, but importing might add different installed dirs...
-                    bool success = fmArchivesDict.TryGetValue(fm.Archive, out bool checkedThis);
-                    if (success)
+                    if (fmArchivesDict.TryGetValue(fm.Archive, out ArchiveValueData? value))
                     {
-                        if (checkedThis)
+                        if (value.Checked)
                         {
                             continue;
                         }
                         else
                         {
-                            fmArchivesDict[fm.Archive] = true;
+                            fmArchivesDict[fm.Archive].Checked = true;
                         }
                     }
                     else
