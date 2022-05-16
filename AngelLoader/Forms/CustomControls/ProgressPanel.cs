@@ -224,8 +224,8 @@ namespace AngelLoader.Forms.CustomControls
             string? subMessage,
             int? subPercent,
             ProgressType? subProgressBarType,
-            Action<bool>? checkChangedAction,
             string? checkBoxMessage,
+            Action<bool>? checkChangedAction,
             string? cancelButtonMessage,
             Action? cancelAction)
         {
