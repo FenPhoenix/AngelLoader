@@ -469,8 +469,11 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnSelectionChanged(EventArgs e)
         {
-            _selectedRowsCached = null;
-            if (!SuppressSelectionEvent) SetMainSelectedRow();
+            if (!_owner.AboutToClose)
+            {
+                _selectedRowsCached = null;
+                if (!SuppressSelectionEvent) SetMainSelectedRow();
+            }
             base.OnSelectionChanged(e);
         }
 
@@ -479,14 +482,12 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
         {
             _selectedRowsCached = null;
-            if (!SuppressSelectionEvent) SetMainSelectedRow();
             base.OnRowsAdded(e);
         }
 
         protected override void OnRowsRemoved(DataGridViewRowsRemovedEventArgs e)
         {
             _selectedRowsCached = null;
-            if (!SuppressSelectionEvent) SetMainSelectedRow();
             base.OnRowsRemoved(e);
         }
 

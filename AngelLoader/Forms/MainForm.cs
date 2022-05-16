@@ -2909,12 +2909,21 @@ namespace AngelLoader.Forms
                     CellValueNeededDisabled = true;
                 }
 
-                // Prevents:
-                // -a glitched row from being drawn at the end in certain situations
-                // -the subsequent row count set from being really slow
-                FMsDGV.Rows.Clear();
+                try
+                {
+                    FMsDGV.SuppressSelectionEvent = true;
 
-                FMsDGV.RowCount = FMsDGV.FilterShownIndexList.Count;
+                    // Prevents:
+                    // -a glitched row from being drawn at the end in certain situations
+                    // -the subsequent row count set from being really slow
+                    FMsDGV.Rows.Clear();
+
+                    FMsDGV.RowCount = FMsDGV.FilterShownIndexList.Count;
+                }
+                finally
+                {
+                    FMsDGV.SuppressSelectionEvent = false;
+                }
 
                 if (FMsDGV.RowCount == 0)
                 {
