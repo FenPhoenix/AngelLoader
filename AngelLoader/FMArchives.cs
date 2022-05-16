@@ -256,6 +256,8 @@ namespace AngelLoader
 
         internal static async Task Delete(List<FanMission> fms)
         {
+            int origCount = fms.Count;
+
             for (int i = 0; i < fms.Count; i++)
             {
                 if (fms[i].MarkedUnavailable)
@@ -292,7 +294,7 @@ namespace AngelLoader
             }
 
             using (var f = new MessageBoxCustomForm(
-                       messageTop: LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + fms.Count +
+                       messageTop: LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
                                    LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
                        messageBottom: "",
                        title: LText.AlertMessages.DeleteFMArchives,
