@@ -607,7 +607,7 @@ namespace AngelLoader
 
                 if (install)
                 {
-                    if (fmArchivePath.IsEmpty())
+                    if (fmArchivePath.IsEmpty() && !fm.MarkedUnavailable)
                     {
                         Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
                             "FM: " + GetFMId(fm) + "\r\n" +
@@ -1064,6 +1064,8 @@ namespace AngelLoader
                         {
                             var fmData = fmDataList[i];
 
+                            if (fmData.ArchivePath.IsEmpty() || fmData.FM.MarkedUnavailable) continue;
+
                             if (!driveDataDict.TryGetValue(GetPathRootSafe(fmData.InstBasePath), out DriveData driveData))
                             {
                                 continue;
@@ -1166,6 +1168,8 @@ namespace AngelLoader
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
                     var fmData = fmDataList[i];
+
+                    if (fmData.ArchivePath.IsEmpty() || fmData.FM.MarkedUnavailable) continue;
 
                     string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
 

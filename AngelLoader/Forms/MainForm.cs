@@ -4950,7 +4950,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(allSelectedAreSameInstalledState && allAreSupportedAndAvailable);
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(allSelectedAreSameInstalledState && (multiSelected || allAreSupportedAndAvailable));
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
