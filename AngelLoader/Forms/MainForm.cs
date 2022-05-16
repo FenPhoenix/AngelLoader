@@ -1250,7 +1250,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            // @MULTISEL(FMsDGV nav): Shift-selecting "backwards" (so items deselect back toward main selection)
+            // NOTE(FMsDGV nav): wontfix: Shift-selecting "backwards" (so items deselect back toward main selection)
             // doesn't work with Home/End (but now works with arrows/page keys)
             if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
@@ -4887,7 +4887,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        // @MULTISEL(Context menu sel state update): Since this runs always on selection change...
+        // PERF_TODO(Context menu sel state update): Since this runs always on selection change...
         // ... we might not need to call it on FM load.
         // NOTE(Context menu sel state update):
         // Keep this light and fast, because it gets called like 3 times every selection due to the @SEL_SYNC_HACK

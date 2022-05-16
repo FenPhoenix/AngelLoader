@@ -474,7 +474,7 @@ namespace AngelLoader.Forms.CustomControls
             base.OnSelectionChanged(e);
         }
 
-        // @MULTISEL(FMsDGV on rows added/removed): I suspect we don't need to set main sel on these
+        // PERF_TODO(FMsDGV on rows added/removed): I suspect we don't need to set main sel on these
         // Because the FM refresh method changes the selection explicitly (for rows) or implicitly (for no rows)
         protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
         {
