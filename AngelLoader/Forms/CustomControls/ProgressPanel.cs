@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -134,6 +135,12 @@ namespace AngelLoader.Forms.CustomControls
             Invalidate();
         }
 
+        private void SetCancelButtonText(string text)
+        {
+            Cancel_Button.Text = text;
+            Cancel_Button.CenterH(this);
+        }
+
         private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, bool updateTaskbar)
         {
             if (progressType == ProgressType.Indeterminate)
@@ -189,6 +196,11 @@ namespace AngelLoader.Forms.CustomControls
             // Only set the checked state AFTER setting the null action, otherwise we'll trigger the action!
             MainCheckBox.Checked = false;
 
+            // Necessary so when we show again we can see that text is blank and put the default, otherwise we
+            // could have a scenario where we set non-default, hide, then show again without specifying the text,
+            // and then it checks for empty and finds false, so it doesn't set the default and keeps whatever was
+            // before.
+            SetCancelButtonText("");
             Cancel_Button.Hide();
             _cancelAction = NullAction;
 
@@ -283,8 +295,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (cancelButtonMessage != null)
             {
-                Cancel_Button.Text = cancelButtonMessage;
-                Cancel_Button.CenterH(this);
+                SetCancelButtonText(cancelButtonMessage);
             }
             if (cancelAction != null)
             {
@@ -299,6 +310,11 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     _owner!.EnableEverything(false);
                     Enabled = true;
+
+                    if (Cancel_Button.Text.IsEmpty())
+                    {
+                        SetCancelButtonText(DefaultCancelMessage);
+                    }
 
                     BringToFront();
                     Show();
