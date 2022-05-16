@@ -515,36 +515,45 @@ namespace AngelLoader
 
                 if (misNums.Count == 0) return;
 
-                misNums.Sort();
-
-                Directory.CreateDirectory(stringsPath);
-
-                int lastMisNum = misNums[misNums.Count - 1];
-
-                var missFlagLines = new List<string>();
-                for (int i = 1; i <= lastMisNum; i++)
+                try
                 {
-                    string curLine = "miss_" + i + ": ";
-                    if (misNums.Contains(i))
+                    misNums.Sort();
+
+                    Directory.CreateDirectory(stringsPath);
+
+                    int lastMisNum = misNums[misNums.Count - 1];
+
+                    var missFlagLines = new List<string>();
+                    for (int i = 1; i <= lastMisNum; i++)
                     {
-                        curLine += "\"no_briefing, no_loadout";
-                        if (i == lastMisNum) curLine += ", end";
-                        curLine += "\"";
-                    }
-                    else
-                    {
-                        curLine += "\"skip\"";
+                        string curLine = "miss_" + i + ": ";
+                        if (misNums.Contains(i))
+                        {
+                            curLine += "\"no_briefing, no_loadout";
+                            if (i == lastMisNum) curLine += ", end";
+                            curLine += "\"";
+                        }
+                        else
+                        {
+                            curLine += "\"skip\"";
+                        }
+
+                        missFlagLines.Add(curLine);
                     }
 
-                    missFlagLines.Add(curLine);
+                    File.WriteAllLines(missFlagFile, missFlagLines, new UTF8Encoding(false, true));
                 }
-
-                File.WriteAllLines(missFlagFile, missFlagLines, new UTF8Encoding(false, true));
+                catch (Exception ex)
+                {
+                    Log("Exception trying to generate missflag.str file for an FM that needs it", ex);
+                    Dialogs.ShowError("Failed trying to generate a missflag.str file for the following FM:\r\n\r\n" +
+                                      GetFMId(fm) + "\r\n\r\n" +
+                                      "The FM will probably not be able to play its mission(s).");
+                }
             }
             catch (Exception ex)
             {
-                // @BetterErrors(GenerateMissFlagFile())
-                Log("Exception trying to write missflag.str file", ex);
+                Log("Exception trying to generate missflag.str file", ex);
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
             }
