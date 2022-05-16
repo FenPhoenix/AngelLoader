@@ -1005,6 +1005,21 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
+        {
+            if (!FMsDGV.MultipleFMsSelected() &&
+                GameIsKnownAndSupported((fm = FMsDGV.GetMainSelectedFM()).Game) &&
+                !fm.MarkedUnavailable)
+            {
+                return true;
+            }
+            else
+            {
+                fm = null;
+                return false;
+            }
+        }
+
         #region Form events
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -1297,12 +1312,11 @@ namespace AngelLoader.Forms
 
             else if (e.KeyCode == Keys.Enter)
             {
-                FanMission fm;
-                if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported((fm = FMsDGV.GetMainSelectedFM()).Game))
+                if (FMsDGV.Focused && SelectedFMIsPlayable(out FanMission? fm))
                 {
-                    e.SuppressKeyPress = true;
                     await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
                 }
+                e.SuppressKeyPress = true;
             }
             else if (e.KeyCode == Keys.Delete)
             {
@@ -4270,13 +4284,10 @@ namespace AngelLoader.Forms
 
         private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            FanMission fm;
-            if (e.RowIndex < 0 || !FMsDGV.RowSelected() || !GameIsKnownAndSupported((fm = FMsDGV.GetMainSelectedFM()).Game))
+            if (e.RowIndex > -1 && SelectedFMIsPlayable(out FanMission? fm))
             {
-                return;
+                await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
             }
-
-            await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
         }
 
         #endregion
@@ -4950,13 +4961,18 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(allSelectedAreSameInstalledState && (multiSelected || allAreSupportedAndAvailable));
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(
+                allSelectedAreSameInstalledState &&
+                ((multiSelected && !noneAreAvailable) || allAreSupportedAndAvailable)
+            );
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
             FMsDGV_FM_LLMenu.SetPinItemsMode();
 
-            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(multiSelected || allAreAvailable);
+            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(
+                (multiSelected && !noneAreAvailable) || allAreAvailable
+            );
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemText(multiSelected);
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: fm.Game == Game.SS2);

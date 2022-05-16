@@ -266,7 +266,14 @@ namespace AngelLoader
                 }
             }
 
-            if (fms.Count == 0) return;
+            if (fms.Count == 0)
+            {
+                Dialogs.ShowAlert(
+                    LText.FMDeletion.FMsAreUnavailable,
+                    LText.AlertMessages.Alert,
+                    MessageBoxIcon.None);
+                return;
+            }
 
             var archivePaths = GetFMArchivePaths();
             int installedNoArchiveCount = 0;
