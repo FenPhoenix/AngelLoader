@@ -725,7 +725,6 @@ namespace AngelLoader
 
         internal static Task<bool> Install(params FanMission[] fms) => InstallInternal(false, false, fms);
 
-        // @MULTISEL(Install/main - cancel install): Maybe ask if they want to cancel just this, all, or all subsequent?
         private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
         {
             #region Local functions

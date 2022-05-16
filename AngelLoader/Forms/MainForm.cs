@@ -23,7 +23,7 @@ the scroll bar was).
 @MULTISEL: When switching game tabs, multi-selections are not saved. Do we want this behavior or no?
 This is part of the decision of "how temporary" do we want multi-selections to be.
 
-@MULTISEL(@SEL_SYNC_HACK enlightenment):
+@SEL_SYNC_HACK enlightenment:
 There's the concept of "current row" (CurrentRow) and "current cell" (CurrentCell). CurrentRow is read-only (of
 bloody course), but it can be set in a roundabout way by setting CurrentCell to a cell in the current row. BUT,
 setting this causes the row to scroll into view (as documented) and possibly also some other goddamn visual garbage,
@@ -1306,14 +1306,6 @@ namespace AngelLoader.Forms
             }
             else if (e.KeyCode == Keys.Delete)
             {
-                // @MULTISEL(Delete key/FM deletion):
-                // Currently, we don't disable this on the same multiselection conditions that we disable the
-                // menu item on.
-                // We maybe should allow delete on a set that includes unavailable FMs, and just skip those.
-                // Otherwise, the user could select a bunch and have one unavailable one in there that may not
-                // even be on screen, and wonder why they can't delete them.
-                // If we try to delete _one_ unavailable FM, we should just keep the menu item disabled but
-                // throw up the alert dialog if they pressed the delete key.
                 if (FMsDGV.Focused && FMsDGV.RowSelected())
                 {
                     if (FMsDGV.MultipleFMsSelected())
@@ -3528,7 +3520,6 @@ namespace AngelLoader.Forms
         // @VBL(ModsDisabledModsTextBoxCommit()): But actually maybe not?
         // This looks business-logic-ish, but really it's kind of a UI detail still? Directly updating a list of
         // checkboxes from a textbox. Meh.
-        // @MEM/@Mods: Lots of reallocations of collections here...
         private void ModsDisabledModsTextBoxCommit()
         {
             if (EventsDisabled) return;
