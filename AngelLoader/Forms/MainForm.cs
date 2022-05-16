@@ -4956,16 +4956,22 @@ namespace AngelLoader.Forms
 
             bool multiSelected = selRowsCount > 1;
 
-            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(!multiSelected && allAreSupportedAndAvailable);
+            bool playShouldBeEnabled = !multiSelected && allAreSupportedAndAvailable;
+
+            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(playShouldBeEnabled);
+            PlayFMButton.Enabled = playShouldBeEnabled;
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(
-                allSelectedAreSameInstalledState &&
-                ((multiSelected && !noneAreAvailable) || allAreSupportedAndAvailable)
-            );
+            bool installShouldBeEnabled = allSelectedAreSameInstalledState &&
+                                          ((multiSelected && !noneAreAvailable) || allAreSupportedAndAvailable);
+
+            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(installShouldBeEnabled);
+            InstallUninstallFMLLButton.SetEnabled(installShouldBeEnabled);
+
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected);
+            InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
             FMsDGV_FM_LLMenu.SetPinItemsMode();
@@ -4989,11 +4995,6 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
 
             FMsDGV_FM_LLMenu.SetWebSearchEnabled(!multiSelected);
-
-            InstallUninstallFMLLButton.SetEnabled(allSelectedAreSameInstalledState && allAreSupportedAndAvailable);
-            InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
-
-            PlayFMButton.Enabled = !multiSelected && allAreSupportedAndAvailable;
 
             WebSearchButton.Enabled = !multiSelected;
         }
