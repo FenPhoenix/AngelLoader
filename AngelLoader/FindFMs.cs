@@ -247,9 +247,10 @@ namespace AngelLoader
             bool NewArchives() => true;
 #endif
 
-            // @MEM/@PERF_TODO(Find): We probably have more hashtables in here than we need
-            // So we could probably cut a couple out, but I'm so relieved at not being quadratic anymore that
-            // I kinda don't even care right now.
+            // @MEM/@PERF_TODO(Find): Number of hashtable recreations
+            // We recreate several hashtables anew after potentially modifying the FM data ini list, because the
+            // modification may necessitate the hashtable to be rebuilt from the updated FM list.
+            // But, we should check if this is actually needed! We might be able to get rid of the rebuilds.
 
             if (!startup)
             {
