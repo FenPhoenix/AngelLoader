@@ -2846,14 +2846,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void RefreshCurrentFM_IncludeInstalledState()
-        {
-            FanMission? selectedFM = GetMainSelectedFMOrNull();
-            if (selectedFM == null) return;
-
-            UpdateUIControlsForMultiSelectState(selectedFM);
-        }
-
         public void RefreshAllSelectedFMs(bool rowOnly = false)
         {
             if (!rowOnly)
@@ -2877,7 +2869,11 @@ namespace AngelLoader.Forms
 
             if (refreshInstalledStateOfCurrentRow)
             {
-                RefreshCurrentFM_IncludeInstalledState();
+                FanMission? selectedFM = GetMainSelectedFMOrNull();
+                if (selectedFM != null)
+                {
+                    UpdateUIControlsForMultiSelectState(selectedFM);
+                }
             }
         }
 

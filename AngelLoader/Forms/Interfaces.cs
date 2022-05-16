@@ -332,8 +332,6 @@ namespace AngelLoader.Forms
 
         void RefreshAllSelectedFMs(bool rowOnly = false);
 
-        void RefreshCurrentFM_IncludeInstalledState();
-
         #endregion
 
         #region Readme
