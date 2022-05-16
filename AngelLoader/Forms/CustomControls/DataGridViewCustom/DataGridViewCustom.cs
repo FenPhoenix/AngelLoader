@@ -117,7 +117,7 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         internal FanMission GetMainSelectedFM()
         {
-            AssertR(GetRowSelectedCountInternal() > 0, nameof(GetMainSelectedFM) + ": no rows selected!");
+            AssertR(GetRowSelectedCount() > 0, nameof(GetMainSelectedFM) + ": no rows selected!");
             AssertR(MainSelectedRow != null, nameof(MainSelectedRow) + " is null when it shouldn't be");
 
             return GetFMFromIndex(MainSelectedRow!.Index);
@@ -257,17 +257,17 @@ namespace AngelLoader.Forms.CustomControls
         /// Returns true if any row is selected, false if no rows exist or none are selected.
         /// </summary>
         /// <returns></returns>
-        internal bool RowSelected() => GetRowSelectedCountInternal() > 0;
+        internal bool RowSelected() => GetRowSelectedCount() > 0;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetRowSelectedCountInternal()
+        internal int GetRowSelectedCount()
         {
             // Since we're full-row select, one row will be ColumnsCount cells selected. Avoids having to make a
             // heavy SelectedRows call.
             return GetCellCount(DataGridViewElementStates.Selected) / ColumnsCount;
         }
 
-        internal bool MultipleFMsSelected() => GetRowSelectedCountInternal() > 1;
+        internal bool MultipleFMsSelected() => GetRowSelectedCount() > 1;
 
         internal void SelectSingle(int index, bool suppressSelectionChangedEvent = false)
         {
@@ -459,13 +459,13 @@ namespace AngelLoader.Forms.CustomControls
 
         private void SetMainSelectedRow()
         {
-            if (GetRowSelectedCountInternal() == 0)
+            if (GetRowSelectedCount() == 0)
             {
                 MainSelectedRow = null;
             }
             else
             {
-                if (MainSelectedRow == null || GetRowSelectedCountInternal() == 1)
+                if (MainSelectedRow == null || GetRowSelectedCount() == 1)
                 {
                     // Need to make a SelectedRows call here, can't set CurrentRow for example because that ends
                     // up causing bad behavior when right-clicking to open the menu.

@@ -4910,6 +4910,8 @@ namespace AngelLoader.Forms
 
             #region Get attributes that apply to all items
 
+            int selectedRowCount = FMsDGV.GetRowSelectedCount();
+
             // Crap-garbage code to loop through only once in case we have a large selection set
 
             int selRowsCount = 0;
@@ -4933,24 +4935,41 @@ namespace AngelLoader.Forms
                 // about 2x faster than getting SelectedRows every time. It's less efficient when we have a big
                 // list and small selection, but it's so fast that it doesn't really matter, and it doesn't cause
                 // literally over a million allocations either.
-                // Because we can get the selected cell _count_ quickly using the GetCellCount() method, we could
-                // do a split-point thing where we start out getting SelectedRows and then switch to full iteration
-                // as the selected set passes a certain point. But that would still incur a bunch of allocations
-                // and what we're doing is already probably fast enough, so... meh...
-                var rows = FMsDGV.Rows;
-                int rowCount = rows.Count;
-                for (int i = 0; i < rowCount; i++)
+                // But, do a special-case for when only one is selected, because then the selected rows collection
+                // will be only one long for a negligible allocation, and _way_ faster in the single-select case.
+                // Gets rid of lag from SortAndSetFilter() for example.
+                // We don't need the loop if it's just 1, but keep it in case we want to tune this number.
+                if (selectedRowCount == 1)
                 {
-                    var row = rows[i];
-                    if (!row.Selected) continue;
+                    var selRows = FMsDGV.SelectedRows;
+                    selRowsCount = selRows.Count;
 
-                    selRowsCount++;
+                    for (int i = 0; i < selRowsCount; i++)
+                    {
+                        FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
+                        if (sFM.Installed) installedCount++;
+                        if (sFM.MarkedUnavailable) markedUnavailableCount++;
+                        if (GameIsDark(sFM.Game)) gameIsDarkCount++;
+                        if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
+                    }
+                }
+                else
+                {
+                    var rows = FMsDGV.Rows;
+                    int rowCount = rows.Count;
+                    for (int i = 0; i < rowCount; i++)
+                    {
+                        var row = rows[i];
+                        if (!row.Selected) continue;
 
-                    FanMission sFM = FMsDGV.GetFMFromIndex(row.Index);
-                    if (sFM.Installed) installedCount++;
-                    if (sFM.MarkedUnavailable) markedUnavailableCount++;
-                    if (GameIsDark(sFM.Game)) gameIsDarkCount++;
-                    if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
+                        selRowsCount++;
+
+                        FanMission sFM = FMsDGV.GetFMFromIndex(row.Index);
+                        if (sFM.Installed) installedCount++;
+                        if (sFM.MarkedUnavailable) markedUnavailableCount++;
+                        if (GameIsDark(sFM.Game)) gameIsDarkCount++;
+                        if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
+                    }
                 }
 
                 allAreInstalled = installedCount == selRowsCount;
