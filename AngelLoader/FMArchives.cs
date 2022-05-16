@@ -123,9 +123,8 @@ namespace AngelLoader
         {
             if (!multiple && fm.MarkedUnavailable)
             {
-                // @MULTISEL: Localize and finalize
                 Dialogs.ShowAlert(
-                    "This FM is not available on disk, and so can't be deleted.",
+                    LText.FMDeletion.FMIsUnavailable,
                     LText.AlertMessages.Alert,
                     MessageBoxIcon.None);
                 return;

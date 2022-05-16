@@ -327,6 +327,7 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string ArchiveNotFound = "This FM's archive could not be found. To delete this FM permanently, simply uninstall it.";
             internal readonly string ArchiveNotFound_All = "None of the selected FMs' archives could be found. To delete these FMs permanently, simply uninstall them.";
+            internal readonly string FMIsUnavailable = "This FM is unavailable on disk. It's either already been deleted, or it doesn't exist in any of the FM archive directories.";
             internal readonly string AskToUninstallFMFirst = "This FM is installed. Uninstall it first?";
             internal readonly string AskToUninstallFMFirst_Multiple = "Some of the selected FMs are installed. Do you want to uninstall them first?";
             [FenGenComment(
