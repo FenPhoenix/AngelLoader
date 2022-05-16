@@ -378,7 +378,7 @@ namespace AngelLoader
                 Core.View.ShowProgressBox_Single(
                     message1: LText.ProgressBox.DeletingFMArchives,
                     progressType: ProgressType.Determinate,
-                    cancelType: ProgressCancelType.Stop,
+                    cancelMessage: LText.Global.Stop,
                     // @MULTISEL: Should be an actual action in final version
                     cancelAction: null
                 );

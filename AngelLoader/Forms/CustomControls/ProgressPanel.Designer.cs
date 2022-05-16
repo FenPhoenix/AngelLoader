@@ -38,6 +38,7 @@ namespace AngelLoader.Forms.CustomControls
             this.SubProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
             this.SubMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.SubPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.MainCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.SuspendLayout();
             // 
             // Cancel_Button
@@ -45,7 +46,7 @@ namespace AngelLoader.Forms.CustomControls
             this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Cancel_Button.Location = new System.Drawing.Point(168, 152);
+            this.Cancel_Button.Location = new System.Drawing.Point(168, 184);
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(88, 23);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -57,27 +58,27 @@ namespace AngelLoader.Forms.CustomControls
             // 
             // MainPercentLabel
             // 
-            this.MainPercentLabel.Location = new System.Drawing.Point(0, 40);
+            this.MainPercentLabel.Location = new System.Drawing.Point(4, 40);
             this.MainPercentLabel.Name = "MainPercentLabel";
-            this.MainPercentLabel.Size = new System.Drawing.Size(424, 13);
+            this.MainPercentLabel.Size = new System.Drawing.Size(416, 13);
             this.MainPercentLabel.TabIndex = 2;
             this.MainPercentLabel.Text = "%";
             this.MainPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // MainMessage1Label
             // 
-            this.MainMessage1Label.Location = new System.Drawing.Point(0, 8);
+            this.MainMessage1Label.Location = new System.Drawing.Point(4, 8);
             this.MainMessage1Label.Name = "MainMessage1Label";
-            this.MainMessage1Label.Size = new System.Drawing.Size(424, 13);
+            this.MainMessage1Label.Size = new System.Drawing.Size(416, 13);
             this.MainMessage1Label.TabIndex = 0;
             this.MainMessage1Label.Text = "Message";
             this.MainMessage1Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // MainMessage2Label
             // 
-            this.MainMessage2Label.Location = new System.Drawing.Point(0, 24);
+            this.MainMessage2Label.Location = new System.Drawing.Point(4, 24);
             this.MainMessage2Label.Name = "MainMessage2Label";
-            this.MainMessage2Label.Size = new System.Drawing.Size(424, 13);
+            this.MainMessage2Label.Size = new System.Drawing.Size(416, 13);
             this.MainMessage2Label.TabIndex = 1;
             this.MainMessage2Label.Text = "Current thing";
             this.MainMessage2Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -98,27 +99,40 @@ namespace AngelLoader.Forms.CustomControls
             // 
             // SubMessageLabel
             // 
-            this.SubMessageLabel.Location = new System.Drawing.Point(0, 88);
+            this.SubMessageLabel.Location = new System.Drawing.Point(4, 88);
             this.SubMessageLabel.Name = "SubMessageLabel";
-            this.SubMessageLabel.Size = new System.Drawing.Size(424, 13);
+            this.SubMessageLabel.Size = new System.Drawing.Size(416, 13);
             this.SubMessageLabel.TabIndex = 4;
             this.SubMessageLabel.Text = "Current thing";
             this.SubMessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // SubPercentLabel
             // 
-            this.SubPercentLabel.Location = new System.Drawing.Point(0, 104);
+            this.SubPercentLabel.Location = new System.Drawing.Point(4, 104);
             this.SubPercentLabel.Name = "SubPercentLabel";
-            this.SubPercentLabel.Size = new System.Drawing.Size(424, 13);
+            this.SubPercentLabel.Size = new System.Drawing.Size(416, 13);
             this.SubPercentLabel.TabIndex = 5;
             this.SubPercentLabel.Text = "%";
             this.SubPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // MainCheckBox
+            // 
+            this.MainCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MainCheckBox.AutoSize = true;
+            this.MainCheckBox.Location = new System.Drawing.Point(176, 152);
+            this.MainCheckBox.Name = "MainCheckBox";
+            this.MainCheckBox.Size = new System.Drawing.Size(74, 17);
+            this.MainCheckBox.TabIndex = 8;
+            this.MainCheckBox.Text = "Checkbox";
+            this.MainCheckBox.UseVisualStyleBackColor = true;
+            this.MainCheckBox.CheckedChanged += new System.EventHandler(this.MainCheckBox_CheckedChanged);
             // 
             // ProgressPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.MainCheckBox);
             this.Controls.Add(this.SubProgressBar);
             this.Controls.Add(this.Cancel_Button);
             this.Controls.Add(this.SubPercentLabel);
@@ -128,7 +142,7 @@ namespace AngelLoader.Forms.CustomControls
             this.Controls.Add(this.SubMessageLabel);
             this.Controls.Add(this.MainMessage2Label);
             this.Name = "ProgressPanel";
-            this.Size = new System.Drawing.Size(424, 192);
+            this.Size = new System.Drawing.Size(424, 224);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -144,5 +158,6 @@ namespace AngelLoader.Forms.CustomControls
         private DarkProgressBar SubProgressBar;
         private DarkLabel SubMessageLabel;
         private DarkLabel SubPercentLabel;
+        private DarkCheckBox MainCheckBox;
     }
 }

@@ -13,11 +13,13 @@ namespace AngelLoader.Forms.CustomControls
         #region Consts
 
         private const ProgressSizeMode _defaultSizeMode = ProgressSizeMode.Single;
-        internal const ProgressCancelType DefaultCancelType = ProgressCancelType.Cancel;
+        internal static string DefaultCancelMessage => LText.Global.Cancel;
         internal const ProgressType DefaultProgressType = ProgressType.Determinate;
 
         private const int regularHeight = 128;
+        private const int regularHeightWithCheck = regularHeight + 32;
         private const int extendedHeight = 192;
+        private const int extendedHeightWithCheck = extendedHeight + 32;
 
         #endregion
 
@@ -25,10 +27,10 @@ namespace AngelLoader.Forms.CustomControls
 
         private MainForm? _owner;
 
-        private ProgressCancelType _cancelType = DefaultCancelType;
         private ProgressSizeMode _sizeModeMode = _defaultSizeMode;
 
         private Action _cancelAction = NullAction;
+        private Action<bool> _checkChangedAction = NullBoolAction;
 
         #endregion
 
@@ -76,6 +78,8 @@ namespace AngelLoader.Forms.CustomControls
                 SubPercentLabel.BackColor = back;
                 SubPercentLabel.ForeColor = fore;
                 SubProgressBar.DarkModeEnabled = _darkModeEnabled;
+
+                MainCheckBox.DarkModeEnabled = _darkModeEnabled;
             }
         }
 
@@ -103,29 +107,31 @@ namespace AngelLoader.Forms.CustomControls
             if (!forceChange && sizeMode == _sizeModeMode) return;
 
             bool doubleSize = sizeMode == ProgressSizeMode.Double;
+            bool checkBoxShown = sizeMode is ProgressSizeMode.SingleWithCheck or ProgressSizeMode.DoubleWithCheck;
 
-            Size = Size with { Height = doubleSize ? extendedHeight : regularHeight };
+            Size = Size with
+            {
+                Height = sizeMode switch
+                {
+                    ProgressSizeMode.Single => regularHeight,
+                    ProgressSizeMode.SingleWithCheck => regularHeightWithCheck,
+                    ProgressSizeMode.Double => extendedHeight,
+                    _ => extendedHeightWithCheck
+                }
+            };
             SubMessageLabel.Visible = doubleSize;
             SubPercentLabel.Visible = doubleSize;
             SubProgressBar.Visible = doubleSize;
 
+            MainCheckBox.Visible = checkBoxShown;
+            if (!checkBoxShown) _checkChangedAction = NullBoolAction;
+
             this.CenterHV(_owner!, clientSize: true);
 
             _sizeModeMode = sizeMode;
-        }
 
-        private void SetCancelType(ProgressCancelType cancelType)
-        {
-            _cancelType = cancelType;
-            Localize();
-        }
-
-        private void Localize()
-        {
-            Cancel_Button.Text = _cancelType == ProgressCancelType.Stop
-                ? LText.Global.Stop
-                : LText.Global.Cancel;
-            Cancel_Button.CenterH(this);
+            // Necessary otherwise our drawn border doesn't update its size
+            Invalidate();
         }
 
         private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, bool updateTaskbar)
@@ -157,18 +163,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void ShowThis()
-        {
-            _owner!.EnableEverything(false);
-            Enabled = true;
-
-            SetCancelType(_cancelType);
-
-            BringToFront();
-            Show();
-            Cancel_Button.Focus();
-        }
-
         #endregion
 
         #region Internal methods
@@ -190,9 +184,13 @@ namespace AngelLoader.Forms.CustomControls
             SubProgressBar.Value = 0;
             SubProgressBar.Style = ProgressBarStyle.Blocks;
 
+            MainCheckBox.Hide();
+            _checkChangedAction = NullBoolAction;
+            // Only set the checked state AFTER setting the null action, otherwise we'll trigger the action!
+            MainCheckBox.Checked = false;
+
             Cancel_Button.Hide();
             _cancelAction = NullAction;
-            SetCancelType(DefaultCancelType);
 
             SetSizeMode(_defaultSizeMode);
 
@@ -212,8 +210,10 @@ namespace AngelLoader.Forms.CustomControls
         /// <param name="subMessage"></param>
         /// <param name="subPercent"></param>
         /// <param name="subProgressBarType"></param>
-        /// <param name="cancelButtonType"></param>
-        /// <param name="cancelAction">Pass <see cref="NullAction"/> to hide the cancel button.</param>
+        /// <param name="checkChangedAction"></param>
+        /// <param name="checkBoxMessage"></param>
+        /// <param name="cancelButtonMessage"></param>
+        /// <param name="cancelAction">Pass <see cref="T:NullAction"/> to hide the cancel button.</param>
         internal void SetState(
             bool? visible,
             ProgressSizeMode? size,
@@ -224,7 +224,9 @@ namespace AngelLoader.Forms.CustomControls
             string? subMessage,
             int? subPercent,
             ProgressType? subProgressBarType,
-            ProgressCancelType? cancelButtonType,
+            Action<bool>? checkChangedAction,
+            string? checkBoxMessage,
+            string? cancelButtonMessage,
             Action? cancelAction)
         {
             if (size != null)
@@ -269,14 +271,25 @@ namespace AngelLoader.Forms.CustomControls
                     SubPercentLabel.Text = "";
                 }
             }
+            if (checkBoxMessage != null)
+            {
+                MainCheckBox.Text = checkBoxMessage;
+                MainCheckBox.CenterH(this);
+            }
+            if (checkChangedAction != null)
+            {
+                _checkChangedAction = checkChangedAction;
+                MainCheckBox.Visible = checkChangedAction != NullBoolAction;
+            }
+            if (cancelButtonMessage != null)
+            {
+                Cancel_Button.Text = cancelButtonMessage;
+                Cancel_Button.CenterH(this);
+            }
             if (cancelAction != null)
             {
                 _cancelAction = cancelAction;
                 Cancel_Button.Visible = cancelAction != NullAction;
-            }
-            if (cancelButtonType != null)
-            {
-                SetCancelType((ProgressCancelType)cancelButtonType);
             }
 
             // Put this last so the localization and whatever else can be right
@@ -284,7 +297,12 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (visible == true)
                 {
-                    ShowThis();
+                    _owner!.EnableEverything(false);
+                    Enabled = true;
+
+                    BringToFront();
+                    Show();
+                    Cancel_Button.Focus();
                 }
                 else
                 {
@@ -294,6 +312,11 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         #endregion
+
+        private void MainCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_checkChangedAction != NullBoolAction) _checkChangedAction.Invoke(MainCheckBox.Checked);
+        }
 
         private void ProgressCancelButton_Click(object sender, EventArgs e)
         {

@@ -489,6 +489,8 @@ namespace AngelLoader.Forms
                         break;
                 }
 
+                OtherPage.CheckDiskSpaceOnInstallCheckBox.Checked = config.CheckFreeDiskSpaceOnInstall;
+
                 #endregion
 
                 #region Uninstalling FMs
@@ -775,6 +777,8 @@ namespace AngelLoader.Forms
                     OtherPage.Install_ConfirmAlwaysRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_Always;
                     OtherPage.Install_ConfirmMultipleOnlyRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_OnlyForMultipleFMs;
                     OtherPage.Install_ConfirmNeverRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_Never;
+
+                    OtherPage.CheckDiskSpaceOnInstallCheckBox.Text = LText.SettingsWindow.Other_CheckFreeDiskSpaceOnFMInstall;
 
                     OtherPage.UninstallingFMsGroupBox.Text = LText.SettingsWindow.Other_UninstallingFMs;
                     OtherPage.ConfirmUninstallCheckBox.Text = LText.SettingsWindow.Other_ConfirmBeforeUninstalling;
@@ -1134,6 +1138,8 @@ namespace AngelLoader.Forms
                     OtherPage.Install_ConfirmAlwaysRadioButton.Checked ? ConfirmBeforeInstall.Always :
                     OtherPage.Install_ConfirmMultipleOnlyRadioButton.Checked ? ConfirmBeforeInstall.OnlyForMultiple :
                     ConfirmBeforeInstall.Never;
+
+                OutConfig.CheckFreeDiskSpaceOnInstall = OtherPage.CheckDiskSpaceOnInstallCheckBox.Checked;
 
                 #endregion
 

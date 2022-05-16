@@ -710,6 +710,11 @@ namespace AngelLoader
             config.PlayOriginalSeparateButtons = valTrimmed.EqualsTrue();
         }
 
+        private static void Config_CheckFreeDiskSpaceOnInstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            config.CheckFreeDiskSpaceOnInstall = valTrimmed.EqualsTrue();
+        }
+
         #endregion
 
         private static readonly Dictionary<string, Action<ConfigData, string, string, GameIndex, bool>> _actionDict_Config = new()
@@ -876,6 +881,7 @@ namespace AngelLoader
             { "EnableCharacterDetailFix", Config_EnableCharacterDetailFix_Set },
 
             { "PlayOriginalSeparateButtons", Config_PlayOriginalSeparateButtons_Set },
+            { "CheckFreeDiskSpaceOnInstall", Config_CheckFreeDiskSpaceOnInstall_Set },
 
             #region Backward compatibility
 
@@ -1174,6 +1180,7 @@ namespace AngelLoader
 
             sb.Append("EnableCharacterDetailFix=").Append(config.EnableCharacterDetailFix).AppendLine();
             sb.Append("PlayOriginalSeparateButtons=").Append(config.PlayOriginalSeparateButtons).AppendLine();
+            sb.Append("CheckFreeDiskSpaceOnInstall=").Append(config.CheckFreeDiskSpaceOnInstall).AppendLine();
 
             using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
             sw.Write(sb.ToString());

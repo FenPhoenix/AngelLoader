@@ -35,7 +35,9 @@ namespace AngelLoader
         public enum ProgressSizeMode
         {
             Single,
-            Double
+            SingleWithCheck,
+            Double,
+            DoubleWithCheck
         }
 
         public enum ProgressType
@@ -44,13 +46,8 @@ namespace AngelLoader
             Indeterminate
         }
 
-        public enum ProgressCancelType
-        {
-            Cancel,
-            Stop
-        }
-
         public static readonly Action NullAction = () => { };
+        public static readonly Action<bool> NullBoolAction = _ => { };
 
         public enum ImportType
         {

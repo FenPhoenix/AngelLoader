@@ -130,26 +130,32 @@ namespace AngelLoader.Forms
         /// <para/>
         /// Null parameters mean explicitly set the defaults.
         /// </summary>
+        /// <param name="showCheckBox"></param>
         /// <param name="message1"></param>
         /// <param name="message2"></param>
         /// <param name="progressType"></param>
-        /// <param name="cancelType"></param>
+        /// <param name="checkBoxMessage"></param>
+        /// <param name="checkBoxAction"></param>
+        /// <param name="cancelMessage"></param>
         /// <param name="cancelAction"></param>
-        void ShowProgressBox_Single(string? message1 = null, string? message2 = null, ProgressType? progressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
+        void ShowProgressBox_Single(bool? showCheckBox = null, string? message1 = null, string? message2 = null, ProgressType? progressType = null, string? checkBoxMessage = null, Action<bool>? checkBoxAction = null, string? cancelMessage = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
         /// <para/>
         /// Null parameters mean explicitly set the defaults.
         /// </summary>
+        /// <param name="showCheck"></param>
         /// <param name="mainMessage1"></param>
         /// <param name="mainMessage2"></param>
         /// <param name="mainProgressType"></param>
         /// <param name="subMessage"></param>
         /// <param name="subProgressType"></param>
-        /// <param name="cancelType"></param>
+        /// <param name="checkBoxMessage"></param>
+        /// <param name="checkBoxAction"></param>
+        /// <param name="cancelMessage"></param>
         /// <param name="cancelAction"></param>
-        void ShowProgressBox_Double(string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
+        void ShowProgressBox_Double(bool? showCheck = null, string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, string? checkBoxMessage = null, Action<bool>? checkBoxAction = null, string? cancelMessage = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
@@ -157,13 +163,16 @@ namespace AngelLoader.Forms
         /// Null parameters mean no change.
         /// </summary>
         /// <param name="visible"></param>
+        /// <param name="showCheckBox"></param>
         /// <param name="message1"></param>
         /// <param name="message2"></param>
         /// <param name="percent"></param>
         /// <param name="progressType"></param>
-        /// <param name="cancelType"></param>
+        /// <param name="checkBoxMessage"></param>
+        /// <param name="checkBoxAction"></param>
+        /// <param name="cancelMessage"></param>
         /// <param name="cancelAction"></param>
-        void SetProgressBoxState_Single(bool? visible = null, string? message1 = null, string? message2 = null, int? percent = null, ProgressType? progressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
+        void SetProgressBoxState_Single(bool? visible = null, bool? showCheckBox = null, string? message1 = null, string? message2 = null, int? percent = null, ProgressType? progressType = null, string? checkBoxMessage = null, Action<bool>? checkBoxAction = null, string? cancelMessage = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
@@ -171,6 +180,7 @@ namespace AngelLoader.Forms
         /// Null parameters mean no change.
         /// </summary>
         /// <param name="visible"></param>
+        /// <param name="showCheckBox"></param>
         /// <param name="mainMessage1"></param>
         /// <param name="mainMessage2"></param>
         /// <param name="mainPercent"></param>
@@ -178,9 +188,11 @@ namespace AngelLoader.Forms
         /// <param name="subMessage"></param>
         /// <param name="subPercent"></param>
         /// <param name="subProgressType"></param>
-        /// <param name="cancelType"></param>
+        /// <param name="checkBoxMessage"></param>
+        /// <param name="checkBoxAction"></param>
+        /// <param name="cancelMessage"></param>
         /// <param name="cancelAction"></param>
-        void SetProgressBoxState_Double(bool? visible = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
+        void SetProgressBoxState_Double(bool? visible = null, bool? showCheckBox = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, string? checkBoxMessage = null, Action<bool>? checkBoxAction = null, string? cancelMessage = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
@@ -206,9 +218,11 @@ namespace AngelLoader.Forms
         /// <param name="subMessage"></param>
         /// <param name="subPercent"></param>
         /// <param name="subProgressType"></param>
-        /// <param name="cancelType"></param>
+        /// <param name="checkBoxMessage"></param>
+        /// <param name="checkBoxAction"></param>
+        /// <param name="cancelMessage"></param>
         /// <param name="cancelAction"></param>
-        void SetProgressBoxState(bool? visible = null, ProgressSizeMode? size = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, ProgressCancelType? cancelType = null, Action? cancelAction = null);
+        void SetProgressBoxState(bool? visible = null, ProgressSizeMode? size = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, string? checkBoxMessage = null, Action<bool>? checkBoxAction = null, string? cancelMessage = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.

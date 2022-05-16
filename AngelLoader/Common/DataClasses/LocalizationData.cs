@@ -621,6 +621,7 @@ namespace AngelLoader.DataClasses
             internal readonly string DeletingFMArchive = "Deleting FM archive...";
             internal readonly string DeletingFMArchives = "Deleting FM archives...";
             internal readonly string CheckingFreeSpace = "Checking free disk space...";
+            internal readonly string DontCheckFreeDiskSpaceNextTime = "Don't check free disk space next time";
         }
 
         internal sealed class SettingsWindow_Class
@@ -711,6 +712,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Other_InstallConfirm_Always = "Always";
             internal readonly string Other_InstallConfirm_OnlyForMultipleFMs = "Only for multiple FMs";
             internal readonly string Other_InstallConfirm_Never = "Never";
+            internal readonly string Other_CheckFreeDiskSpaceOnFMInstall = "Check free disk space before installing";
             [FenGenBlankLine]
             internal readonly string Other_UninstallingFMs = "Uninstalling FMs";
             internal readonly string Other_ConfirmBeforeUninstalling = "Confirm before uninstalling";

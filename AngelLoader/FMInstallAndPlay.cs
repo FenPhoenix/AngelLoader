@@ -1024,7 +1024,14 @@ namespace AngelLoader
 
                     if (!DoPreChecks(fms, fmDataList, install: true, out var fmArchivePaths)) return false;
 
-                    Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CheckingFreeSpace);
+                    if (Config.CheckFreeDiskSpaceOnInstall)
+                    {
+                        Core.View.SetProgressBoxState_Single(
+                            showCheckBox: true,
+                            checkBoxMessage: LText.ProgressBox.DontCheckFreeDiskSpaceNextTime,
+                            checkBoxAction: value => Config.CheckFreeDiskSpaceOnInstall = !value,
+                        message1: LText.ProgressBox.CheckingFreeSpace);
+                    }
 
                     #region Free space checks
 
@@ -1154,7 +1161,7 @@ namespace AngelLoader
                     subMessage: "",
                     subPercent: 0,
                     subProgressType: ProgressType.Determinate,
-                    cancelType: ProgressCancelType.Cancel
+                    cancelMessage: LText.Global.Cancel
                 );
 
                 for (int i = 0; i < fmDataList.Length; i++)

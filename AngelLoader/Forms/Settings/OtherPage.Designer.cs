@@ -33,6 +33,7 @@ namespace AngelLoader.Forms
         {
             this.PagePanel = new System.Windows.Forms.Panel();
             this.InstallingFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.CheckDiskSpaceOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.Install_ConfirmNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmMultipleOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmAlwaysRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -74,13 +75,14 @@ namespace AngelLoader.Forms
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 575);
+            this.PagePanel.Size = new System.Drawing.Size(440, 610);
             this.PagePanel.TabIndex = 0;
             // 
             // InstallingFMsGroupBox
             // 
             this.InstallingFMsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.InstallingFMsGroupBox.Controls.Add(this.CheckDiskSpaceOnInstallCheckBox);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmNeverRadioButton);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmMultipleOnlyRadioButton);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmAlwaysRadioButton);
@@ -88,10 +90,23 @@ namespace AngelLoader.Forms
             this.InstallingFMsGroupBox.Location = new System.Drawing.Point(8, 100);
             this.InstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.InstallingFMsGroupBox.Name = "InstallingFMsGroupBox";
-            this.InstallingFMsGroupBox.Size = new System.Drawing.Size(424, 128);
+            this.InstallingFMsGroupBox.Size = new System.Drawing.Size(424, 164);
             this.InstallingFMsGroupBox.TabIndex = 0;
             this.InstallingFMsGroupBox.TabStop = false;
             this.InstallingFMsGroupBox.Text = "Installing FMs";
+            // 
+            // CheckDiskSpaceOnInstallCheckBox
+            // 
+            this.CheckDiskSpaceOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.CheckDiskSpaceOnInstallCheckBox.Checked = true;
+            this.CheckDiskSpaceOnInstallCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CheckDiskSpaceOnInstallCheckBox.Location = new System.Drawing.Point(16, 120);
+            this.CheckDiskSpaceOnInstallCheckBox.Name = "CheckDiskSpaceOnInstallCheckBox";
+            this.CheckDiskSpaceOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
+            this.CheckDiskSpaceOnInstallCheckBox.TabIndex = 4;
+            this.CheckDiskSpaceOnInstallCheckBox.Text = "Check free disk space before installing";
+            this.CheckDiskSpaceOnInstallCheckBox.UseVisualStyleBackColor = true;
             // 
             // Install_ConfirmNeverRadioButton
             // 
@@ -139,7 +154,7 @@ namespace AngelLoader.Forms
             this.PlayFMOnDCOrEnterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
-            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 508);
+            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 544);
             this.PlayFMOnDCOrEnterGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.PlayFMOnDCOrEnterGroupBox.Name = "PlayFMOnDCOrEnterGroupBox";
             this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
@@ -167,7 +182,7 @@ namespace AngelLoader.Forms
             this.WebSearchGroupBox.Controls.Add(this.WebSearchTitleExplanationLabel);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlTextBox);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlLabel);
-            this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 392);
+            this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 428);
             this.WebSearchGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.WebSearchGroupBox.Name = "WebSearchGroupBox";
             this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 108);
@@ -223,7 +238,7 @@ namespace AngelLoader.Forms
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAlwaysAskCheckBox);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAllChangedDataRadioButton);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
-            this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 236);
+            this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 272);
             this.UninstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.UninstallingFMsGroupBox.Name = "UninstallingFMsGroupBox";
             this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 148);
@@ -337,7 +352,7 @@ namespace AngelLoader.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "OtherPage";
-            this.Size = new System.Drawing.Size(440, 575);
+            this.Size = new System.Drawing.Size(440, 610);
             this.PagePanel.ResumeLayout(false);
             this.InstallingFMsGroupBox.ResumeLayout(false);
             this.InstallingFMsGroupBox.PerformLayout();
@@ -378,5 +393,6 @@ namespace AngelLoader.Forms
         internal CustomControls.DarkRadioButton Install_ConfirmMultipleOnlyRadioButton;
         internal CustomControls.DarkRadioButton Install_ConfirmAlwaysRadioButton;
         internal CustomControls.DarkLabel ConfirmBeforeInstallLabel;
+        internal CustomControls.DarkCheckBox CheckDiskSpaceOnInstallCheckBox;
     }
 }

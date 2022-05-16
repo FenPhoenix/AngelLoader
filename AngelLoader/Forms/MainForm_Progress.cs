@@ -62,14 +62,33 @@ namespace AngelLoader.Forms
 
         #region ShowProgressBox_Single
 
-        private static readonly Action<MainForm, string?, string?, ProgressType?, ProgressCancelType?, Action?>
+        private static readonly Action<
+                MainForm,
+                bool?,
+                string?,
+                string?,
+                ProgressType?,
+                string?,
+                Action<bool>?,
+                string?,
+                Action?>
             ShowProgressBox_Single_Action =
-                (view, message1, message2, progressType, cancelType, cancelAction) =>
+                (
+                    view,
+                    showCheckBox,
+                    message1,
+                    message2,
+                    progressType,
+                    checkBoxMessage,
+                    checkBoxAction,
+                    cancelMessage,
+                    cancelAction
+                ) =>
                 {
                     view.ConstructProgressBox();
                     view.ProgressBox!.SetState(
                         visible: true,
-                        size: ProgressSizeMode.Single,
+                        size: showCheckBox == true ? ProgressSizeMode.SingleWithCheck : ProgressSizeMode.Single,
                         mainMessage1: message1 ?? "",
                         mainMessage2: message2 ?? "",
                         mainPercent: 0,
@@ -77,38 +96,67 @@ namespace AngelLoader.Forms
                         subMessage: "",
                         subPercent: 0,
                         subProgressBarType: ProgressType.Determinate,
-                        cancelButtonType: cancelType ?? ProgressPanel.DefaultCancelType,
+                        checkBoxMessage: checkBoxMessage ?? "",
+                        checkChangedAction: checkBoxAction ?? NullBoolAction,
+                        cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
                         cancelAction: cancelAction ?? NullAction);
                 };
 
         public void ShowProgressBox_Single(
+            bool? showCheckBox = null,
             string? message1 = null,
             string? message2 = null,
             ProgressType? progressType = null,
-            ProgressCancelType? cancelType = null,
+            string? checkBoxMessage = null,
+            Action<bool>? checkBoxAction = null,
+            string? cancelMessage = null,
             Action? cancelAction = null) => Invoke(
             ShowProgressBox_Single_Action,
             this,
+            showCheckBox,
             message1,
             message2,
             progressType,
-            cancelType,
+            checkBoxMessage,
+            checkBoxAction,
+            cancelMessage,
             cancelAction);
 
         #endregion
 
         #region ShowProgressBox_Double
 
-        private static readonly Action<MainForm, string?, string?, ProgressType?, string?, ProgressType?,
-                ProgressCancelType?, Action?>
+        private static readonly Action<
+                MainForm,
+                bool?,
+                string?,
+                string?,
+                ProgressType?,
+                string?,
+                ProgressType?,
+                string?,
+                Action<bool>?,
+                string?,
+                Action?>
             ShowProgressBox_Double_Action =
-                (view, mainMessage1, mainMessage2, mainProgressType, subMessage, subProgressType, cancelType,
-                    cancelAction) =>
+                (
+                    view,
+                    showCheckBox,
+                    mainMessage1,
+                    mainMessage2,
+                    mainProgressType,
+                    subMessage,
+                    subProgressType,
+                    checkBoxMessage,
+                    checkBoxAction,
+                    cancelMessage,
+                    cancelAction
+                ) =>
                 {
                     view.ConstructProgressBox();
                     view.ProgressBox!.SetState(
                         visible: true,
-                        size: ProgressSizeMode.Double,
+                        size: showCheckBox == true ? ProgressSizeMode.DoubleWithCheck : ProgressSizeMode.Double,
                         mainMessage1: mainMessage1 ?? "",
                         mainMessage2: mainMessage2 ?? "",
                         mainPercent: 0,
@@ -116,26 +164,34 @@ namespace AngelLoader.Forms
                         subMessage: subMessage ?? "",
                         subPercent: 0,
                         subProgressBarType: subProgressType ?? ProgressPanel.DefaultProgressType,
-                        cancelButtonType: cancelType ?? ProgressPanel.DefaultCancelType,
+                        checkBoxMessage: checkBoxMessage ?? "",
+                        checkChangedAction: checkBoxAction ?? NullBoolAction,
+                        cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
                         cancelAction: cancelAction ?? NullAction);
                 };
 
         public void ShowProgressBox_Double(
+            bool? showCheck = null,
             string? mainMessage1 = null,
             string? mainMessage2 = null,
             ProgressType? mainProgressType = null,
             string? subMessage = null,
             ProgressType? subProgressType = null,
-            ProgressCancelType? cancelType = null,
+            string? checkBoxMessage = null,
+            Action<bool>? checkBoxAction = null,
+            string? cancelMessage = null,
             Action? cancelAction = null) => Invoke(
             ShowProgressBox_Double_Action,
             this,
+            showCheck,
             mainMessage1,
             mainMessage2,
             mainProgressType,
             subMessage,
             subProgressType,
-            cancelType,
+            checkBoxMessage,
+            checkBoxAction,
+            cancelMessage,
             cancelAction);
 
         #endregion
@@ -151,58 +207,115 @@ namespace AngelLoader.Forms
 
         #region SetProgressBoxState_Single
 
-        private static readonly Action<MainForm, bool?, string?, string?, int?, ProgressType?,
-                ProgressCancelType?, Action?>
-            SetProgressBoxState_Single_Action = (view, visible, message1, message2, percent, progressType,
-                cancelType, cancelAction) =>
-            {
-                view.ConstructProgressBox();
-                view.ProgressBox!.SetState(
-                    visible: visible,
-                    size: ProgressSizeMode.Single,
-                    mainMessage1: message1,
-                    mainMessage2: message2,
-                    mainPercent: percent,
-                    mainProgressBarType: progressType,
-                    subMessage: "",
-                    subPercent: 0,
-                    subProgressBarType: ProgressType.Determinate,
-                    cancelButtonType: cancelType,
-                    cancelAction: cancelAction);
-            };
+        private static readonly Action<
+                MainForm,
+                bool?,
+                bool?,
+                string?,
+                string?,
+                int?,
+                ProgressType?,
+                string?,
+                Action<bool>?,
+                string?,
+                Action?>
+            SetProgressBoxState_Single_Action =
+                (
+                    view,
+                    visible,
+                    showCheckBox,
+                    message1,
+                    message2,
+                    percent,
+                    progressType,
+                    checkBoxMessage,
+                    checkBoxAction,
+                    cancelMessage,
+                    cancelAction
+                ) =>
+                {
+                    view.ConstructProgressBox();
+                    view.ProgressBox!.SetState(
+                        visible: visible,
+                        size: showCheckBox == true ? ProgressSizeMode.SingleWithCheck : ProgressSizeMode.Single,
+                        mainMessage1: message1,
+                        mainMessage2: message2,
+                        mainPercent: percent,
+                        mainProgressBarType: progressType,
+                        subMessage: "",
+                        subPercent: 0,
+                        subProgressBarType: ProgressType.Determinate,
+                        checkBoxMessage: checkBoxMessage,
+                        checkChangedAction: checkBoxAction,
+                        cancelButtonMessage: cancelMessage,
+                        cancelAction: cancelAction);
+                };
 
         public void SetProgressBoxState_Single(
             bool? visible = null,
+            bool? showCheckBox = null,
             string? message1 = null,
             string? message2 = null,
             int? percent = null,
             ProgressType? progressType = null,
-            ProgressCancelType? cancelType = null,
+            string? checkBoxMessage = null,
+            Action<bool>? checkBoxAction = null,
+            string? cancelMessage = null,
             Action? cancelAction = null) => Invoke(
             SetProgressBoxState_Single_Action,
             this,
             visible,
+            showCheckBox,
             message1,
             message2,
             percent,
             progressType,
-            cancelType,
+            checkBoxMessage,
+            checkBoxAction,
+            cancelMessage,
             cancelAction);
 
         #endregion
 
         #region SetProgressBoxState_Double
 
-        private static readonly Action<MainForm, bool?, string?, string?, int?, ProgressType?, string?, int?,
-                ProgressType?, ProgressCancelType?, Action?>
+        private static readonly Action<
+                MainForm,
+                bool?,
+                bool?,
+                string?,
+                string?,
+                int?,
+                ProgressType?,
+                string?,
+                int?,
+                ProgressType?,
+                string?,
+                Action<bool>?,
+                string?,
+                Action?>
             SetProgressBoxState_Double_Action =
-                (view, visible, mainMessage1, mainMessage2, mainPercent, mainProgressType, subMessage,
-                    subPercent, subProgressType, cancelType, cancelAction) =>
+                (
+                    view,
+                    visible,
+                    showCheckBox,
+                    mainMessage1,
+                    mainMessage2,
+                    mainPercent,
+                    mainProgressType,
+                    subMessage,
+                    subPercent,
+                    subProgressType,
+                    checkBoxMessage,
+                    checkBoxAction,
+                    cancelMessage,
+                    cancelAction
+                ) =>
                 {
                     view.ConstructProgressBox();
                     view.ProgressBox!.SetState(
                         visible: visible,
-                        size: ProgressSizeMode.Double,
+                        size: showCheckBox == true ? ProgressSizeMode.DoubleWithCheck : ProgressSizeMode.Double,
                         mainMessage1: mainMessage1,
                         mainMessage2: mainMessage2,
                         mainPercent: mainPercent,
@@ -210,12 +323,15 @@ namespace AngelLoader.Forms
                         subMessage: subMessage,
                         subPercent: subPercent,
                         subProgressBarType: subProgressType,
-                        cancelButtonType: cancelType,
+                        checkBoxMessage: checkBoxMessage,
+                        checkChangedAction: checkBoxAction,
+                        cancelButtonMessage: cancelMessage,
                         cancelAction: cancelAction);
                 };
 
         public void SetProgressBoxState_Double(
             bool? visible = null,
+            bool? showCheckBox = null,
             string? mainMessage1 = null,
             string? mainMessage2 = null,
             int? mainPercent = null,
@@ -223,11 +339,14 @@ namespace AngelLoader.Forms
             string? subMessage = null,
             int? subPercent = null,
             ProgressType? subProgressType = null,
-            ProgressCancelType? cancelType = null,
+            string? checkBoxMessage = null,
+            Action<bool>? checkBoxAction = null,
+            string? cancelMessage = null,
             Action? cancelAction = null) => Invoke(
             SetProgressBoxState_Double_Action,
             this,
             visible,
+            showCheckBox,
             mainMessage1,
             mainMessage2,
             mainPercent,
@@ -235,7 +354,9 @@ namespace AngelLoader.Forms
             subMessage,
             subPercent,
             subProgressType,
-            cancelType,
+            checkBoxMessage,
+            checkBoxAction,
+            cancelMessage,
             cancelAction);
 
         #endregion
@@ -255,7 +376,9 @@ namespace AngelLoader.Forms
                 subMessage: null,
                 subPercent: null,
                 subProgressBarType: null,
-                cancelButtonType: null,
+                checkBoxMessage: null,
+                checkChangedAction: null,
+                cancelButtonMessage: null,
                 cancelAction: null);
         };
 
@@ -265,11 +388,38 @@ namespace AngelLoader.Forms
 
         #region SetProgressBoxState
 
-        private static readonly Action<MainForm, bool?, ProgressSizeMode?, string?, string?, int?, ProgressType?,
-                string?, int?, ProgressType?, ProgressCancelType?, Action?>
+        private static readonly Action<
+                MainForm,
+                bool?,
+                ProgressSizeMode?,
+                string?,
+                string?,
+                int?,
+                ProgressType?,
+                string?,
+                int?,
+                ProgressType?,
+                string?,
+                Action<bool>?,
+                string?,
+                Action?>
             SetProgressBoxState_Action =
-                (view, visible, size, mainMessage1, mainMessage2, mainPercent, mainProgressType, subMessage,
-                    subPercent, subProgressType, cancelType, cancelAction) =>
+                (
+                    view,
+                    visible,
+                    size,
+                    mainMessage1,
+                    mainMessage2,
+                    mainPercent,
+                    mainProgressType,
+                    subMessage,
+                    subPercent,
+                    subProgressType,
+                    checkBoxMessage,
+                    checkBoxAction,
+                    cancelMessage,
+                    cancelAction
+                ) =>
                 {
                     view.ConstructProgressBox();
                     view.ProgressBox!.SetState(
@@ -282,7 +432,9 @@ namespace AngelLoader.Forms
                         subMessage: subMessage,
                         subPercent: subPercent,
                         subProgressBarType: subProgressType,
-                        cancelButtonType: cancelType,
+                        checkBoxMessage: checkBoxMessage,
+                        checkChangedAction: checkBoxAction,
+                        cancelButtonMessage: cancelMessage,
                         cancelAction: cancelAction);
                 };
 
@@ -296,7 +448,9 @@ namespace AngelLoader.Forms
             string? subMessage = null,
             int? subPercent = null,
             ProgressType? subProgressType = null,
-            ProgressCancelType? cancelType = null,
+            string? checkBoxMessage = null,
+            Action<bool>? checkBoxAction = null,
+            string? cancelMessage = null,
             Action? cancelAction = null) => Invoke(
             SetProgressBoxState_Action,
             this,
@@ -309,7 +463,9 @@ namespace AngelLoader.Forms
             subMessage,
             subPercent,
             subProgressType,
-            cancelType,
+            checkBoxMessage,
+            checkBoxAction,
+            cancelMessage,
             cancelAction
         );
 

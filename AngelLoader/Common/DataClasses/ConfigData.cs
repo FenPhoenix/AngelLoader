@@ -428,6 +428,8 @@ namespace AngelLoader.DataClasses
         internal bool PlayOriginalSeparateButtons = true;
 
         internal ConfirmBeforeInstall ConfirmBeforeInstall = ConfirmBeforeInstall.OnlyForMultiple;
+
+        internal bool CheckFreeDiskSpaceOnInstall = true;
         
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
