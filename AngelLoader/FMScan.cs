@@ -413,20 +413,20 @@ namespace AngelLoader
 
         internal static async Task ScanSelectedFMs()
         {
-            FanMission[] fms = Core.View.GetSelectedFMs_InOrder();
-            if (fms.Length == 1)
+            var fms = Core.View.GetSelectedFMs_InOrder_List();
+            if (fms.Count == 1)
             {
-                if (await ScanFMs(fms.ToList(), hideBoxIfZip: true))
+                if (await ScanFMs(fms, hideBoxIfZip: true))
                 {
                     Core.View.RefreshFM(fms[0]);
                 }
             }
-            else if (fms.Length > 1)
+            else if (fms.Count > 1)
             {
                 FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog();
                 if (scanOptions == null) return;
 
-                if (await ScanFMs(fms.ToList(), scanOptions))
+                if (await ScanFMs(fms, scanOptions))
                 {
                     // @MULTISEL(Scan selected FMs): Do we want to sort and set filter here too?
                     // Because we might scan FMs and they end up being something that's filtered out?

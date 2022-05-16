@@ -140,23 +140,45 @@ namespace AngelLoader.Forms.CustomControls
             return ret;
         }
 
-        /// <summary>
-        /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
-        /// </summary>
-        /// <returns></returns>
-        internal FanMission[] GetSelectedFMs_InOrder()
+        private DataGridViewRow[] GetOrderedRowsArray()
         {
             // Why. Why would Microsoft have all these infuriatingly stupid custom list types.
             // DataGridViewSelectedRowCollection?! Not even a row collection, but a _SELECTED_ row collection.
             // Jesus christ is that really necessary? And it has no sort methods either because it's custom, so
             // it's copy with Cast and then copy with OrderBy and then copy to Array and then copy that to another
             // array of actual FM objects. Hooray. We've got a garbage collector so who cares right?
-            var selRows = SelectedRows.Cast<DataGridViewRow>().OrderBy(x => x.Index).ToArray();
+            return SelectedRows.Cast<DataGridViewRow>().OrderBy(x => x.Index).ToArray();
+        }
+
+        /// <summary>
+        /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
+        /// </summary>
+        /// <returns></returns>
+        internal FanMission[] GetSelectedFMs_InOrder()
+        {
+            var selRows = GetOrderedRowsArray();
 
             var ret = new FanMission[selRows.Length];
             for (int i = 0; i < selRows.Length; i++)
             {
                 ret[i] = GetFMFromIndex(selRows[i].Index);
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
+        /// </summary>
+        /// <returns></returns>
+        internal List<FanMission> GetSelectedFMs_InOrder_List()
+        {
+            var selRows = GetOrderedRowsArray();
+
+            var ret = new List<FanMission>(selRows.Length);
+            for (int i = 0; i < selRows.Length; i++)
+            {
+                ret.Add(GetFMFromIndex(selRows[i].Index));
             }
 
             return ret;

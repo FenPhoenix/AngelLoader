@@ -729,7 +729,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 if (_owner.FMsDGV.MultipleFMsSelected())
                 {
-                    await FMArchives.Delete(_owner.FMsDGV.GetSelectedFMs_InOrder().ToList());
+                    await FMArchives.Delete(_owner.FMsDGV.GetSelectedFMs_InOrder_List());
                 }
                 else
                 {

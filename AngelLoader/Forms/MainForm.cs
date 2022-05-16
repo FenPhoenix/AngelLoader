@@ -1324,7 +1324,7 @@ namespace AngelLoader.Forms
                 {
                     if (FMsDGV.MultipleFMsSelected())
                     {
-                        await FMArchives.Delete(FMsDGV.GetSelectedFMs_InOrder().ToList());
+                        await FMArchives.Delete(FMsDGV.GetSelectedFMs_InOrder_List());
                     }
                     else
                     {
@@ -3339,6 +3339,8 @@ namespace AngelLoader.Forms
         /// </summary>
         /// <returns></returns>
         public FanMission[] GetSelectedFMs_InOrder() => FMsDGV.GetSelectedFMs_InOrder();
+
+        public List<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
 
         public FanMission? GetFMFromIndex(int index) => FMsDGV.RowSelected() ? FMsDGV.GetFMFromIndex(index) : null;
 
