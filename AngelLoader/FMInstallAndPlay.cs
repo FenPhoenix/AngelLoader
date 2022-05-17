@@ -46,7 +46,10 @@ namespace AngelLoader
         }
 
         private static CancellationTokenSource _extractCts = new();
-        private static void CancelToken() => _extractCts.CancelIfNotDisposed();
+        private static void CancelExtractToken() => _extractCts.CancelIfNotDisposed();
+
+        private static CancellationTokenSource _uninstallCts = new();
+        private static void CancelUninstallToken() => _uninstallCts.CancelIfNotDisposed();
 
         internal static Task InstallOrUninstall(params FanMission[] fms)
         {
@@ -1016,7 +1019,7 @@ namespace AngelLoader
                     Core.View.ShowProgressBox_Single(
                         message1: LText.ProgressBox.PreparingToInstall,
                         progressType: ProgressType.Indeterminate,
-                        cancelAction: CancelToken
+                        cancelAction: CancelExtractToken
                     );
 
                     _extractCts = _extractCts.Recreate();
@@ -1520,14 +1523,31 @@ namespace AngelLoader
             bool atLeastOneFMMarkedUnavailable = false;
             try
             {
-                Core.View.SetProgressBoxState_Single(
-                    visible: true,
-                    message1: single ? LText.ProgressBox.UninstallingFM : LText.ProgressBox.UninstallingFMs,
-                    progressType: single ? ProgressType.Indeterminate : ProgressType.Determinate
-                );
+                _uninstallCts = _uninstallCts.Recreate();
+
+                if (single)
+                {
+                    Core.View.SetProgressBoxState_Single(
+                        visible: true,
+                        message1: LText.ProgressBox.UninstallingFM,
+                        progressType: ProgressType.Indeterminate
+                    );
+                }
+                else
+                {
+                    Core.View.SetProgressBoxState_Single(
+                        visible: true,
+                        message1: LText.ProgressBox.UninstallingFMs,
+                        progressType: ProgressType.Determinate,
+                        cancelMessage: LText.Global.Stop,
+                        cancelAction: CancelUninstallToken
+                    );
+                }
 
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
+                    if (_uninstallCts.IsCancellationRequested) return false;
+
                     var fmData = fmDataList[i];
 
                     FanMission fm = fmData.FM;
@@ -1536,7 +1556,6 @@ namespace AngelLoader
 
                     string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
 
-                    // @MULTISEL(Uninstall): Test this
                     #region Check for already uninstalled
 
                     bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
@@ -1544,21 +1563,14 @@ namespace AngelLoader
                     {
                         fm.Installed = false;
                         continue;
-                        //bool yes = Dialogs.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
-                        //    LText.AlertMessages.Alert);
-                        //if (yes)
-                        //{
-                        //    fm.Installed = false;
-                        //    Core.View.RefreshFM(fm);
-                        //}
-                        //return true;
                     }
 
                     #endregion
 
+                    if (_uninstallCts.IsCancellationRequested) return false;
+
                     bool markFMAsUnavailable = false;
 
-                    // @MULTISEL(Uninstall): Test this
                     if (fmData.ArchivePath.IsEmpty())
                     {
                         (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
@@ -1594,6 +1606,8 @@ namespace AngelLoader
 
                     if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath);
 
+                    if (_uninstallCts.IsCancellationRequested) return false;
+
                     // TODO: Give the user the option to retry or something, if it's cause they have a file open
                     // Make option to open the folder in Explorer and delete it manually?
                     if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
@@ -1625,23 +1639,25 @@ namespace AngelLoader
                             message2: GetFMId(fm)
                         );
                     }
+
+                    if (_uninstallCts.IsCancellationRequested) return false;
                 }
             }
             finally
             {
                 Ini.WriteFullFMDataIni();
                 Core.View.HideProgressBox();
-            }
 
-            // If any FMs are gone, refresh the list to remove them. Otherwise, don't refresh the list because
-            // then the FMs might move in the list if we're sorting by installed state.
-            if (atLeastOneFMMarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
-            {
-                await Core.View.SortAndSetFilter(keepSelection: true);
-            }
-            else
-            {
-                Core.View.RefreshAllSelectedFMRows(refreshInstalledStateOfCurrentRow: true);
+                // If any FMs are gone, refresh the list to remove them. Otherwise, don't refresh the list because
+                // then the FMs might move in the list if we're sorting by installed state.
+                if (atLeastOneFMMarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
+                {
+                    await Core.View.SortAndSetFilter(keepSelection: true);
+                }
+                else
+                {
+                    Core.View.RefreshAllSelectedFMRows(refreshInstalledStateOfCurrentRow: true);
+                }
             }
 
             return true;
