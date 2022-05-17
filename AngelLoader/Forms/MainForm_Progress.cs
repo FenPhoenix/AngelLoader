@@ -57,6 +57,11 @@ namespace AngelLoader.Forms
 
         // @vNext/@MEM(Progress report invoking): IMPORTANT: Test all of these!!! They can fail at runtime due to param counts and types etc.
 
+        // @MEM(Progress box): These still have frigging params object[] allocations every time.
+        // If we pull the params out into objects and just reuse them, we solve the allocation problem AND the
+        // "param count can be wrong and you'll get no compile error" problem.
+        // Although there's still boxing. Argh.
+
         // Convenience methods for first show - they handle a few parameters for you
         #region Show methods
 
