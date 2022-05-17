@@ -82,10 +82,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             (string Text, int Length)[] stringsAndLengths =
             {
-                (LText.MainButtons.UninstallFMs, TextRenderer.MeasureText(LText.MainButtons.UninstallFMs, Button.Font).Width),
-                (LText.MainButtons.UninstallFM, TextRenderer.MeasureText(LText.MainButtons.UninstallFM, Button.Font).Width),
-                (LText.MainButtons.InstallFMs, TextRenderer.MeasureText(LText.MainButtons.InstallFMs, Button.Font).Width),
-                (LText.MainButtons.InstallFM, TextRenderer.MeasureText(LText.MainButtons.InstallFM, Button.Font).Width)
+                (LText.InstallAndPlayFMGlobal.UninstallFMs, TextRenderer.MeasureText(LText.InstallAndPlayFMGlobal.UninstallFMs, Button.Font).Width),
+                (LText.InstallAndPlayFMGlobal.UninstallFM, TextRenderer.MeasureText(LText.InstallAndPlayFMGlobal.UninstallFM, Button.Font).Width),
+                (LText.InstallAndPlayFMGlobal.InstallFMs, TextRenderer.MeasureText(LText.InstallAndPlayFMGlobal.InstallFMs, Button.Font).Width),
+                (LText.InstallAndPlayFMGlobal.InstallFM, TextRenderer.MeasureText(LText.InstallAndPlayFMGlobal.InstallFM, Button.Font).Width)
             };
 
             stringsAndLengths = stringsAndLengths.OrderByDescending(x => x.Length).ToArray();
@@ -131,11 +131,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             Button.Text =
                 installState
                     ? multiSelected
-                        ? LText.MainButtons.InstallFMs
-                        : LText.MainButtons.InstallFM
+                        ? LText.InstallAndPlayFMGlobal.InstallFMs
+                        : LText.InstallAndPlayFMGlobal.InstallFM
                     : multiSelected
-                        ? LText.MainButtons.UninstallFMs
-                        : LText.MainButtons.UninstallFM;
+                        ? LText.InstallAndPlayFMGlobal.UninstallFMs
+                        : LText.InstallAndPlayFMGlobal.UninstallFM;
         }
 
         private void SetSayInstallState(bool value)

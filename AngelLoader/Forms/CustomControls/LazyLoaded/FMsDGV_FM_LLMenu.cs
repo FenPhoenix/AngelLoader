@@ -353,7 +353,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             #region Play
 
-            PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
+            PlayFMMenuItem.Text = LText.InstallAndPlayFMGlobal.PlayFM;
             PlayFMInMPMenuItem.Text = LText.FMsList.FMMenu_PlayFM_Multiplayer;
 
             #endregion
@@ -479,11 +479,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             InstallUninstallMenuItem.Text =
                 sayInstall
                     ? multiSelected
-                        ? LText.FMsList.FMMenu_InstallFMs
-                        : LText.FMsList.FMMenu_InstallFM
+                        ? LText.InstallAndPlayFMGlobal.InstallFMs
+                        : LText.InstallAndPlayFMGlobal.InstallFM
                     : multiSelected
-                        ? LText.FMsList.FMMenu_UninstallFMs
-                        : LText.FMsList.FMMenu_UninstallFM;
+                        ? LText.InstallAndPlayFMGlobal.UninstallFMs
+                        : LText.InstallAndPlayFMGlobal.UninstallFM;
         }
 
         internal void SetPinOrUnpinMenuItemState(bool sayPin)

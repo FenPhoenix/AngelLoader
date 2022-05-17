@@ -1004,7 +1004,7 @@ namespace AngelLoader
                     title: LText.AlertMessages.Alert,
                     icon: MessageBoxIcon.None,
                     showDontAskAgain: true,
-                    yes: single ? fromPlay ? LText.Global.Yes : LText.FMsList.FMMenu_InstallFM : LText.FMsList.FMMenu_InstallFMs,
+                    yes: single ? fromPlay ? LText.Global.Yes : LText.InstallAndPlayFMGlobal.InstallFM : LText.InstallAndPlayFMGlobal.InstallFMs,
                     no: LText.Global.Cancel,
                     defaultButton: DarkTaskDialog.Button.No);
                 if (cancel) return false;
