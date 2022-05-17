@@ -239,6 +239,9 @@ namespace AngelLoader
             // Now that I randomly seemed to have figured out how to hashtable the thing after years of trying
             // and failing, we don't really need these that badly, but we could turn them on later for a small
             // perf boost if we have no new FMs to add.
+            // Also, checking requires creating and populating two new hashsets and then doing a full set of
+            // lookups into each. That's just adding even more work that probably won't end up really saving us
+            // any time.
             bool newInstalledDirs = false;
             bool newArchives = false;
 
