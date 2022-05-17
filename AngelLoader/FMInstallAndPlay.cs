@@ -98,8 +98,8 @@ namespace AngelLoader
                     title: LText.AlertMessages.Confirm,
                     icon: MessageBoxIcon.None,
                     showDontAskAgain: true,
-                    yes: LText.Global.Yes,
-                    no: LText.Global.No);
+                    yes: LText.Global.PlayFM,
+                    no: LText.Global.Cancel);
 
                 if (cancel) return;
 
@@ -1004,7 +1004,7 @@ namespace AngelLoader
                     title: LText.AlertMessages.Alert,
                     icon: MessageBoxIcon.None,
                     showDontAskAgain: true,
-                    yes: single ? fromPlay ? LText.Global.Yes : LText.InstallAndPlayFMGlobal.InstallFM : LText.InstallAndPlayFMGlobal.InstallFMs,
+                    yes: single ? fromPlay ? LText.Global.Yes : LText.Global.InstallFM : LText.Global.InstallFMs,
                     no: LText.Global.Cancel,
                     defaultButton: DarkTaskDialog.Button.No);
                 if (cancel) return false;

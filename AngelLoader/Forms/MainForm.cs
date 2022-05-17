@@ -1673,7 +1673,7 @@ namespace AngelLoader.Forms
 
                 #region Bottom area
 
-                PlayFMButton.Text = LText.InstallAndPlayFMGlobal.PlayFM;
+                PlayFMButton.Text = LText.Global.PlayFM;
 
                 Lazy_PlayOriginalControls.LocalizeSingle();
                 Lazy_PlayOriginalControls.LocalizeMulti();

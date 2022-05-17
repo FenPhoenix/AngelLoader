@@ -33,7 +33,6 @@ namespace AngelLoader.DataClasses
         internal readonly AboutWindow_Class AboutWindow = new AboutWindow_Class();
         internal readonly GameVersionsWindow_Class GameVersionsWindow = new GameVersionsWindow_Class();
         //internal readonly GlobalFMStats_Class GlobalFMStats = new GlobalFMStats_Class();
-        internal readonly InstallAndPlayFMGlobal_Class InstallAndPlayFMGlobal = new InstallAndPlayFMGlobal_Class();
         internal readonly FMDeletion_Class FMDeletion = new FMDeletion_Class();
         internal readonly Difficulties_Class Difficulties = new Difficulties_Class();
         internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
@@ -114,6 +113,12 @@ namespace AngelLoader.DataClasses
             internal readonly string ResetZoom = "Reset zoom (Ctrl+0)";
             [FenGenBlankLine]
             internal readonly string Exit = "Exit";
+            [FenGenBlankLine]
+            internal readonly string PlayFM = "Play FM";
+            internal readonly string InstallFM = "Install FM";
+            internal readonly string InstallFMs = "Install FMs";
+            internal readonly string UninstallFM = "Uninstall FM";
+            internal readonly string UninstallFMs = "Uninstall FMs";
         }
 
         internal sealed class SplashScreen_Class
@@ -321,17 +326,6 @@ namespace AngelLoader.DataClasses
             internal readonly string Unsupported = "Invalid or unsupported:";
         }
         */
-
-        internal sealed class InstallAndPlayFMGlobal_Class
-        {
-            [FenGenComment(
-                "These appear in both the context menu and on buttons along the bottom, and anywhere else they might be needed.")]
-            internal readonly string PlayFM = "Play FM";
-            internal readonly string InstallFM = "Install FM";
-            internal readonly string InstallFMs = "Install FMs";
-            internal readonly string UninstallFM = "Uninstall FM";
-            internal readonly string UninstallFMs = "Uninstall FMs";
-        }
 
         internal sealed class FMDeletion_Class
         {

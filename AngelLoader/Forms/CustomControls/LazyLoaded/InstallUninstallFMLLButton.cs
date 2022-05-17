@@ -82,10 +82,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             (string Text, int Length)[] stringsAndLengths =
             {
-                (LText.InstallAndPlayFMGlobal.UninstallFMs, TextRenderer.MeasureText(LText.InstallAndPlayFMGlobal.UninstallFMs, Button.Font).Width),
-                (LText.InstallAndPlayFMGlobal.UninstallFM, TextRenderer.MeasureText(LText.InstallAndPlayFMGlobal.UninstallFM, Button.Font).Width),
-                (LText.InstallAndPlayFMGlobal.InstallFMs, TextRenderer.MeasureText(LText.InstallAndPlayFMGlobal.InstallFMs, Button.Font).Width),
-                (LText.InstallAndPlayFMGlobal.InstallFM, TextRenderer.MeasureText(LText.InstallAndPlayFMGlobal.InstallFM, Button.Font).Width)
+                (LText.Global.UninstallFMs, TextRenderer.MeasureText(LText.Global.UninstallFMs, Button.Font).Width),
+                (LText.Global.UninstallFM, TextRenderer.MeasureText(LText.Global.UninstallFM, Button.Font).Width),
+                (LText.Global.InstallFMs, TextRenderer.MeasureText(LText.Global.InstallFMs, Button.Font).Width),
+                (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.InstallFM, Button.Font).Width)
             };
 
             stringsAndLengths = stringsAndLengths.OrderByDescending(x => x.Length).ToArray();
@@ -131,11 +131,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             Button.Text =
                 installState
                     ? multiSelected
-                        ? LText.InstallAndPlayFMGlobal.InstallFMs
-                        : LText.InstallAndPlayFMGlobal.InstallFM
+                        ? LText.Global.InstallFMs
+                        : LText.Global.InstallFM
                     : multiSelected
-                        ? LText.InstallAndPlayFMGlobal.UninstallFMs
-                        : LText.InstallAndPlayFMGlobal.UninstallFM;
+                        ? LText.Global.UninstallFMs
+                        : LText.Global.UninstallFM;
         }
 
         private void SetSayInstallState(bool value)
