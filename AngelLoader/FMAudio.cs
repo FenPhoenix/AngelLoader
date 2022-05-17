@@ -202,9 +202,17 @@ namespace AngelLoader
 
                         #endregion
 
-                        if (!File.Exists(Paths.FFprobeExe) || !File.Exists(Paths.FFmpegExe))
+                        bool ffmpegNotFound = !File.Exists(Paths.FFmpegExe);
+                        bool ffProbeNotFound = !File.Exists(Paths.FFprobeExe);
+                        if (ffmpegNotFound || ffProbeNotFound)
                         {
-                            Log("FFmpeg.exe or FFProbe.exe don't exist", stackTrace: true);
+                            string message = "The following executables could not be found:\r\n\r\n" +
+                                             (ffmpegNotFound ? Paths.FFmpegExe + "\r\n" : "") +
+                                             (ffProbeNotFound ? Paths.FFprobeExe + "\r\n" : "") + "\r\n" +
+                                             "Unable to convert audio files.";
+
+                            Log(message, stackTrace: true);
+                            Dialogs.ShowError(message);
                             return;
                         }
 
@@ -218,7 +226,7 @@ namespace AngelLoader
 
                                 Dir_UnSetReadOnly(fmSndPath);
 
-                                var wavFiles = Directory.EnumerateFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
+                                var wavFiles = Directory.GetFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
                                 foreach (string f in wavFiles)
                                 {
                                     File_UnSetReadOnly(f);
