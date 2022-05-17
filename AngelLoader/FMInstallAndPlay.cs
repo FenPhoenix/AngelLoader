@@ -1627,6 +1627,8 @@ namespace AngelLoader
                     // just read in the truncated names and treat them as normal for compatibility purposes. But
                     // if we've just uninstalled the mission, then we can safely convert InstalledDir back to full
                     // un-truncated form for future use.
+                    // NOTE: 2022-05-17: This was a dumb glib decision that will probably just cause confusion
+                    // for the importer code and anyone else who looks at the behavior.
                     if (gameIndex == GameIndex.Thief3 && !fm.Archive.IsEmpty())
                     {
                         fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
