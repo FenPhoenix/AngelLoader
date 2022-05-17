@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -46,13 +47,9 @@ namespace AngelLoader
             if (fms.Length == 0) return;
 
             // @MULTISEL(Audio conversion): Checks:
-            // Do these checks for all FMs beforehand like the rest of the code does, and also, make sure we're
-            // using the permissive "if some selected FMs are not applicable, just do the applicable ones and
-            // ignore the rest" style for this, in terms of enabled menu items.
-            foreach (FanMission fm in fms)
-            {
-                if (!ChecksPassed(fm)) return;
-            }
+            // Make sure we're using the permissive "if some selected FMs are not applicable, just do the
+            // applicable ones and ignore the rest" style for this, in terms of enabled menu items.
+            if (!ChecksPassed(fms)) return;
 
             try
             {
@@ -285,35 +282,33 @@ namespace AngelLoader
         #region Helpers
 
         private static bool
-        ChecksPassed(FanMission fm)
+        ChecksPassed(FanMission[] fms)
         {
-            if (!fm.Installed || !GameIsDark(fm.Game)) return false;
+            var gameChecksHashSet = new HashSet<GameIndex>(SupportedGameCount);
 
-            GameIndex gameIndex = GameToGameIndex(fm.Game);
-
-            string gameExe = Config.GetGameExe(gameIndex);
-            string gameName = GetLocalizedGameName(gameIndex);
-            if (GameIsRunning(gameExe))
+            for (int i = 0; i < fms.Length; i++)
             {
-                Dialogs.ShowAlert(
-                    gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,
-                    LText.AlertMessages.Alert);
+                FanMission fm = fms[i];
 
-                return false;
-            }
+                GameIndex gameIndex = GameToGameIndex(fm.Game);
 
-            if (!FMIsReallyInstalled(fm))
-            {
-                bool yes = Dialogs.AskToContinue(
-                    LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
-                    LText.AlertMessages.Alert);
-                if (yes)
+                if (!gameChecksHashSet.Contains(gameIndex))
                 {
-                    fm.Installed = false;
-                    Core.View.RefreshFM(fm);
-                }
+                    string gameExe = Config.GetGameExe(gameIndex);
+                    string gameName = GetLocalizedGameName(gameIndex);
 
-                return false;
+                    if (GameIsRunning(gameExe))
+                    {
+                        Dialogs.ShowAlert(
+                            gameName + ":\r\n" +
+                            LText.AlertMessages.FileConversion_GameIsRunning,
+                            LText.AlertMessages.Alert);
+
+                        return false;
+                    }
+
+                    gameChecksHashSet.Add(gameIndex);
+                }
             }
 
             return true;
