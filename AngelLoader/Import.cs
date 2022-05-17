@@ -840,6 +840,22 @@ namespace AngelLoader
                           )
                          )
                         )
+                    /*
+                    NOTE: Original v1.01 is like this:
+
+                    if (!mainFM.Checked &&
+                        (importType == ImportType.DarkLoader &&
+                         mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                        (importType == ImportType.FMSel &&
+                         (!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                          importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)) ||
+                        (importType == ImportType.NewDarkLoader &&
+                         mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
+
+                    So it's 100% intentional, not wrong parentheses or anything.
+                    NewDarkLoader doesn't store the archive names in its ini. BUT we still get it by searching
+                    the archive dir on disk. So... it probably is still an oversight?
+                    */
                     )
                     {
                         if (fields.Title && !importedFM.Title.IsEmpty())
