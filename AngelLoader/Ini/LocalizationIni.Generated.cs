@@ -101,6 +101,12 @@ namespace AngelLoader
             {
                 FMsList_Dict.Add(f.Name, f);
             }
+            var tabsAreaFields = typeof(LText_Class.TabsArea_Class).GetFields(_bfLText);
+            var TabsArea_Dict = new Dictionary<string, FieldInfo>(tabsAreaFields.Length);
+            foreach (var f in tabsAreaFields)
+            {
+                TabsArea_Dict.Add(f.Name, f);
+            }
             var statisticsTabFields = typeof(LText_Class.StatisticsTab_Class).GetFields(_bfLText);
             var StatisticsTab_Dict = new Dictionary<string, FieldInfo>(statisticsTabFields.Length);
             foreach (var f in statisticsTabFields)
@@ -473,6 +479,28 @@ namespace AngelLoader
                             if (FMsList_Dict.TryGetValue(key, out FieldInfo value))
                             {
                                 value.SetValue(ret.FMsList, lt.Substring(eqIndex + 1));
+                            }
+                        }
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                else if (lineT == "[TabsArea]")
+                {
+                    while (i < linesLength - 1)
+                    {
+                        int ltLength;
+                        string lt = lines[i + 1].TrimStart();
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
+                        {
+                            string key = lt.Substring(0, eqIndex);
+                            if (TabsArea_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.TabsArea, lt.Substring(eqIndex + 1));
                             }
                         }
                         else if ((ltLength = lt.Length) > 0 && lt[0] == '[')

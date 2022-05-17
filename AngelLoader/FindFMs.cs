@@ -233,7 +233,7 @@ namespace AngelLoader
         private static List<int> FindInternal(bool startup)
         {
 #if ENABLE_NEW_FMS_CHECK
-            // @MEM/@PERF_TODO(Find): These bools can help avoid unnecessary work, BUT!
+            // NOTE(Find): These bools can help avoid unnecessary work, BUT!
             // We need to still make sure that if the corresponding FM does NOT have a DateAdded set, that we
             // still add it even if we don't do the rest of the linkup work!
             // Now that I randomly seemed to have figured out how to hashtable the thing after years of trying
@@ -250,7 +250,7 @@ namespace AngelLoader
             bool NewArchives() => true;
 #endif
 
-            // @MEM/@PERF_TODO(Find): Number of hashtable recreations
+            // @PERF_TODO(Find): Number of hashtable recreations
             // We recreate several hashtables anew after potentially modifying the FM data ini list, because the
             // modification may necessitate the hashtable to be rebuilt from the updated FM list.
             // But, we should check if this is actually needed! We might be able to get rid of the rebuilds.

@@ -37,6 +37,7 @@ namespace AngelLoader.DataClasses
         internal readonly Difficulties_Class Difficulties = new Difficulties_Class();
         internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
         internal readonly FMsList_Class FMsList = new FMsList_Class();
+        internal readonly TabsArea_Class TabsArea = new TabsArea_Class();
         internal readonly StatisticsTab_Class StatisticsTab = new StatisticsTab_Class();
         internal readonly EditFMTab_Class EditFMTab = new EditFMTab_Class();
         internal readonly CommentTab_Class CommentTab = new CommentTab_Class();
@@ -454,12 +455,14 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string ConvertAudioMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";
             internal readonly string ConvertAudioMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
-            [FenGenBlankLine]
-            // @MULTISEL(Localization): Try to put this line somewhere better sorted?
+        }
+
+        internal sealed class TabsArea_Class
+        {
             [FenGenComment(
-                "When multiple FMs are selected, the top-right tabs area will be hidden and this message will appear",
+                "When multiple FMs are selected, the editing tabs area will be hidden and this message will appear",
                 "in its place.")]
-            internal readonly string TopRight_MultipleFMsSelected = "Multiple FMs selected.";
+            internal readonly string MultipleFMsSelectedMessage = "Multiple FMs selected.";
         }
 
         internal sealed class StatisticsTab_Class
