@@ -13,7 +13,6 @@ namespace FMScanner.FastZipReader
         internal static void EndOfFile() => throw new EndOfStreamException("Environment.GetResourceString(\"IO.EOF_ReadBeyondEOF\")");
     }
 
-    // @MEM / @THREADING (reusable bundle silliness):
     // We should try to just make the zip archive classes be like the scanner, where it's one object that just
     // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
     public sealed class ZipReusableBundle : IDisposable

@@ -1236,9 +1236,9 @@ namespace AngelLoader
                             // This one won't be called anywhere except during install, because it always runs during
                             // install so there's no need to make it optional elsewhere. So we don't need to have a
                             // check bool or anything.
-                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, false);
-                            if (Config.ConvertOGGsToWAVsOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, false);
-                            if (Config.ConvertWAVsTo16BitOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, false);
+                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV);
+                            if (Config.ConvertOGGsToWAVsOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV);
+                            if (Config.ConvertWAVsTo16BitOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16);
                         }
                         catch (Exception ex)
                         {
