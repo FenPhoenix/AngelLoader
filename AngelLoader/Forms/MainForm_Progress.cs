@@ -237,7 +237,12 @@ namespace AngelLoader.Forms
                     view.ConstructProgressBox();
                     view.ProgressBox!.SetState(
                         visible: visible,
-                        size: showCheckBox == true ? ProgressSizeMode.SingleWithCheck : ProgressSizeMode.Single,
+                        size: showCheckBox switch
+                        {
+                            true => ProgressSizeMode.SingleWithCheck,
+                            false => ProgressSizeMode.Single,
+                            _ => null
+                        },
                         mainMessage1: message1,
                         mainMessage2: message2,
                         mainPercent: percent,
@@ -315,7 +320,12 @@ namespace AngelLoader.Forms
                     view.ConstructProgressBox();
                     view.ProgressBox!.SetState(
                         visible: visible,
-                        size: showCheckBox == true ? ProgressSizeMode.DoubleWithCheck : ProgressSizeMode.Double,
+                        size: showCheckBox switch
+                        {
+                            true => ProgressSizeMode.DoubleWithCheck,
+                            false => ProgressSizeMode.Double,
+                            _ => null
+                        },
                         mainMessage1: mainMessage1,
                         mainMessage2: mainMessage2,
                         mainPercent: mainPercent,
