@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms
+namespace AngelLoader
 {
     #region DisableEvents
 
