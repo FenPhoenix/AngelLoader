@@ -1444,7 +1444,6 @@ namespace AngelLoader
 
         #region Uninstall
 
-        // @MULTISEL(Uninstall): Add "Stop" button for uninstall
         internal static async Task<bool> Uninstall(params FanMission[] fms)
         {
             var fmDataList = new FMData[fms.Length];
