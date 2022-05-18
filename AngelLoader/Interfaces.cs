@@ -100,6 +100,18 @@ namespace AngelLoader
         bool DarkModeEnabled { get; set; }
     }
 
+    public interface ISplashScreen
+    {
+        bool VisibleCached { get; }
+        void ProgrammaticClose();
+        void SetCheckAtStoredMessageWidth();
+        void SetCheckMessageWidth(string message);
+        void SetMessage(string message);
+        void Show(VisualTheme theme);
+        void Hide();
+        void Dispose();
+    }
+
     // The splash screen is extremely un-thread-safe by design (because it's a UI we have to update while another
     // UI is loading), so we pass as this interface to guarantee that nobody can do anything dangerous with it.
     public interface ISplashScreen_Safe
@@ -121,6 +133,7 @@ namespace AngelLoader
         string ProductVersion { get; }
         void ApplicationExit();
         IDialogs GetDialogs();
+        ISplashScreen GetSplashScreen();
         IView GetView();
         (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableWindow? view, ConfigData inConfig, bool startup, bool cleanStart);
     }

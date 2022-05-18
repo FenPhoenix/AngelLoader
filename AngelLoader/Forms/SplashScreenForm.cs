@@ -10,7 +10,7 @@ using AngelLoader.Properties;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class SplashScreenForm : Form
+    public sealed partial class SplashScreenForm : Form, ISplashScreen
     {
         /*
         Here's the deal with this:
@@ -59,7 +59,7 @@ namespace AngelLoader.Forms
         #endregion
 
         // Perf
-        internal bool VisibleCached;
+        public bool VisibleCached { get; private set; }
 
         public SplashScreenForm()
         {

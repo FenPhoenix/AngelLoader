@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 
 namespace AngelLoader
 {
@@ -10,13 +8,13 @@ namespace AngelLoader
     // @WPF: Make the splash screen UI framework-agnostic like the rest
     internal sealed class SplashScreen : IDisposable, ISplashScreen_Safe
     {
-        private readonly SplashScreenForm _splashScreenForm;
+        private readonly ISplashScreen _splashScreenForm;
 
-        public SplashScreen()
+        public SplashScreen(IViewEnvironment viewEnv)
         {
             // We don't show the form right away, because we want to handle showing manually for reasons of
             // setting the theme and whatever else
-            _splashScreenForm = new SplashScreenForm();
+            _splashScreenForm = viewEnv.GetSplashScreen();
         }
 
         internal void Show(VisualTheme theme) => _splashScreenForm.Show(theme);
@@ -34,8 +32,6 @@ namespace AngelLoader
         {
             if (_splashScreenForm.VisibleCached) _splashScreenForm.SetCheckAtStoredMessageWidth();
         }
-
-        public IWin32Window GetWindow() => _splashScreenForm;
 
         public void Dispose()
         {

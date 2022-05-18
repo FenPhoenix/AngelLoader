@@ -117,7 +117,7 @@ namespace AngelLoader
 
             // We can't show the splash screen until we know our theme, which we have to get from the config
             // file, so we can't show it any earlier than this.
-            using var splashScreen = new SplashScreen();
+            using var splashScreen = new SplashScreen(ViewEnv);
 
             static void ReadLanguages(SplashScreen splashScreen)
             {

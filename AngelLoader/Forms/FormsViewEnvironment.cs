@@ -26,6 +26,8 @@ namespace AngelLoader.Forms
 
         public IDialogs GetDialogs() => new Dialogs();
 
+        public ISplashScreen GetSplashScreen() => new SplashScreenForm();
+
         public void ApplicationExit() => Application.Exit();
 
         public (bool Accepted, ConfigData OutConfig)
