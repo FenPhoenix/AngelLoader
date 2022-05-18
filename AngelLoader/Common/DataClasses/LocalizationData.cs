@@ -149,6 +149,8 @@ namespace AngelLoader.DataClasses
             internal readonly string DMLFiles = "NewDark .dml patch files (*.dml)";
         }
 
+        // @MULTISEL(Localization): We could/should reorganize this completely...
+        // Pull the section-specific messages out of here and put them in their actual sections.
         internal sealed class AlertMessages_Class
         {
             internal readonly string Alert = "Alert";
@@ -183,13 +185,13 @@ namespace AngelLoader.DataClasses
                 "\"C:\\ProgramData\\Thief 3 Sneaky Upgrade\\Installed FMs\" for Thief 3.")]
             internal readonly string Install_FMInstallPathNotFound = "FM install path not specified or not found. Unable to install FM.";
             internal readonly string Install_GameIsRunning = "Game is running; unable to install FM. Please exit the game and then try again.";
+            internal readonly string OneOrMoreGamesAreRunning = "One or more supported games are running. Please exit them first.";
             internal readonly string Install_DiskSpaceCalculationFailed = "Could not calculate whether there is enough free disk space to install FMs to the following drives:";
             internal readonly string Install_NotEnoughFreeDiskSpace = "There is not enough free disk space to install FMs to the following drives:";
             internal readonly string Install_ContinueAfterErrorWarning = "If you continue, the installation will probably fail.";
             [FenGenBlankLine]
             internal readonly string Uninstall_Confirm = "Are you sure you want to uninstall this FM?";
             internal readonly string Uninstall_Confirm_Multiple = "Are you sure you want to uninstall these FMs?";
-            // @MULTISEL(Localization/game running): Make plural versions of these messages
             internal readonly string Uninstall_GameIsRunning = "Game is running; unable to uninstall FM. Please exit the game and then try again.";
             internal readonly string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Saves and screenshots will be backed up, but any other data will not. Are you sure you want to uninstall this FM?";
             internal readonly string Uninstall_BackupSavesAndScreenshots = "Back up saves and screenshots?";

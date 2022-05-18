@@ -565,6 +565,8 @@ namespace AngelLoader
         {
             static bool Canceled(bool install) => install && _extractCts.IsCancellationRequested;
 
+            bool single = fms.Length == 1;
+
             fmArchivePaths = null;
 
             bool[] gamesChecked = new bool[SupportedGameCount];
@@ -660,9 +662,11 @@ namespace AngelLoader
                     {
                         Core.Dialogs.ShowAlert(
                             gameName + ":\r\n" +
-                            (install
-                                ? LText.AlertMessages.Install_GameIsRunning
-                                : LText.AlertMessages.Uninstall_GameIsRunning),
+                            (!single
+                                ? LText.AlertMessages.OneOrMoreGamesAreRunning
+                                : install
+                                    ? LText.AlertMessages.Install_GameIsRunning
+                                    : LText.AlertMessages.Uninstall_GameIsRunning),
                             LText.AlertMessages.Alert);
 
                         return false;
