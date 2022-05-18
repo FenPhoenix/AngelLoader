@@ -189,6 +189,7 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Uninstall_Confirm = "Are you sure you want to uninstall this FM?";
             internal readonly string Uninstall_Confirm_Multiple = "Are you sure you want to uninstall these FMs?";
+            // @MULTISEL(Localization/game running): Make plural versions of these messages
             internal readonly string Uninstall_GameIsRunning = "Game is running; unable to uninstall FM. Please exit the game and then try again.";
             internal readonly string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Saves and screenshots will be backed up, but any other data will not. Are you sure you want to uninstall this FM?";
             internal readonly string Uninstall_BackupSavesAndScreenshots = "Back up saves and screenshots?";
@@ -200,7 +201,8 @@ namespace AngelLoader.DataClasses
                 "FM installed folder, an error occurred.")]
             internal readonly string InstallRollback_FMInstallFolderDeleteFail = "The following folder could not be removed:";
             [FenGenBlankLine]
-            internal readonly string FileConversion_GameIsRunning = "Game is running; unable to convert files. Please exit the game and then try again.";
+            internal readonly string AudioConversion_GameIsRunning = "Game is running; unable to convert audio files. Please exit the game and then try again.";
+            internal readonly string AudioConversion_SomeSelectedFilesDoNotSupportConversion = "Some of the selected FMs don't support audio conversion. Audio can only be converted for installed FMs that are for Thief 1, Thief 2, or System Shock 2. If you continue, any FMs whose audio cannot be converted will be skipped.";
             [FenGenBlankLine]
             internal readonly string Play_ExecutableNotFound = "Game executable file not specified or not found. Unable to play.";
             internal readonly string Play_ExecutableNotFoundFM = "Game executable file not specified or not found. Unable to play FM.";

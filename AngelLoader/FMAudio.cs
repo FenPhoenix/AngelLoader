@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
@@ -43,17 +44,79 @@ namespace AngelLoader
 
         internal static async Task ConvertSelected(AudioConvert convertType)
         {
-            FanMission[] fms = Core.View.GetSelectedFMs_InOrder();
-            if (fms.Length == 0) return;
+            #region Local functions
 
-            // @MULTISEL(Audio conversion): Checks:
-            // Make sure we're using the permissive "if some selected FMs are not applicable, just do the
-            // applicable ones and ignore the rest" style for this, in terms of enabled menu items.
+            static bool ChecksPassed(List<FanMission> fms)
+            {
+                bool[] gamesChecked = new bool[SupportedGameCount];
+
+                for (int i = 0; i < fms.Count; i++)
+                {
+                    FanMission fm = fms[i];
+
+                    AssertR(GameIsKnownAndSupported(fm.Game), nameof(fm) + "." + nameof(fm.Game) + " is not known or supported (not convertible to GameIndex).");
+
+                    GameIndex gameIndex = GameToGameIndex(fm.Game);
+                    int intGameIndex = (int)gameIndex;
+
+                    if (!gamesChecked[intGameIndex])
+                    {
+                        string gameExe = Config.GetGameExe(gameIndex);
+                        string gameName = GetLocalizedGameName(gameIndex);
+
+                        if (GameIsRunning(gameExe))
+                        {
+                            Dialogs.ShowAlert(
+                                gameName + ":\r\n" +
+                                LText.AlertMessages.AudioConversion_GameIsRunning,
+                                LText.AlertMessages.Alert);
+
+                            return false;
+                        }
+
+                        gamesChecked[intGameIndex] = true;
+                    }
+                }
+
+                return true;
+            }
+
+            #endregion
+
+            var fms = Core.View.GetSelectedFMs_InOrder_List();
+            if (fms.Count == 0) return;
+
+            bool anyInapplicable = false;
+            for (int i = 0; i < fms.Count; i++)
+            {
+                var fm = fms[i];
+                if (!GameIsDark(fm.Game) || !fm.Installed || fm.MarkedUnavailable)
+                {
+                    anyInapplicable = true;
+                    fms.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            if (anyInapplicable)
+            {
+                (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                    message: LText.AlertMessages.AudioConversion_SomeSelectedFilesDoNotSupportConversion,
+                    title: LText.AlertMessages.Alert,
+                    icon: MessageBoxIcon.None,
+                    showDontAskAgain: false,
+                    yes: LText.Global.Continue,
+                    no: LText.Global.Cancel,
+                    defaultButton: DarkTaskDialog.Button.Yes
+                );
+                if (cancel) return;
+            }
+
             if (!ChecksPassed(fms)) return;
 
             try
             {
-                bool single = fms.Length == 1;
+                bool single = fms.Count == 1;
 
                 _conversionCTS = _conversionCTS.Recreate();
 
@@ -64,13 +127,13 @@ namespace AngelLoader
                     cancelAction: single ? null : CancelToken
                 );
 
-                for (int i = 0; i < fms.Length; i++)
+                for (int i = 0; i < fms.Count; i++)
                 {
                     FanMission fm = fms[i];
 
                     Core.View.SetProgressBoxState_Single(
                         message2: GetFMId(fm),
-                        percent: single ? null : Common.GetPercentFromValue_Int(i + 1, fms.Length)
+                        percent: single ? null : Common.GetPercentFromValue_Int(i + 1, fms.Count)
                     );
 
                     await ConvertToWAVs(fm, convertType);
@@ -280,39 +343,6 @@ namespace AngelLoader
         #endregion
 
         #region Helpers
-
-        private static bool
-        ChecksPassed(FanMission[] fms)
-        {
-            var gameChecksHashSet = new HashSet<GameIndex>(SupportedGameCount);
-
-            for (int i = 0; i < fms.Length; i++)
-            {
-                FanMission fm = fms[i];
-
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
-
-                if (!gameChecksHashSet.Contains(gameIndex))
-                {
-                    string gameExe = Config.GetGameExe(gameIndex);
-                    string gameName = GetLocalizedGameName(gameIndex);
-
-                    if (GameIsRunning(gameExe))
-                    {
-                        Dialogs.ShowAlert(
-                            gameName + ":\r\n" +
-                            LText.AlertMessages.FileConversion_GameIsRunning,
-                            LText.AlertMessages.Alert);
-
-                        return false;
-                    }
-
-                    gameChecksHashSet.Add(gameIndex);
-                }
-            }
-
-            return true;
-        }
 
         private static string[] GetFMSoundPathsByGame(FanMission fm)
         {

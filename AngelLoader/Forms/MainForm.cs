@@ -4919,6 +4919,7 @@ namespace AngelLoader.Forms
             bool allAreInstalled,
                 noneAreInstalled,
                 allAreDark,
+                noneAreDark,
                 allAreAvailable,
                 noneAreAvailable,
                 allAreKnownAndSupported,
@@ -4975,6 +4976,7 @@ namespace AngelLoader.Forms
                 allAreInstalled = installedCount == selRowsCount;
                 noneAreInstalled = installedCount == 0;
                 allAreDark = gameIsDarkCount == selRowsCount;
+                noneAreDark = gameIsDarkCount == 0;
                 allAreKnownAndSupported = knownAndSupportedCount == selRowsCount;
                 allAreAvailable = markedUnavailableCount == 0;
                 noneAreAvailable = markedUnavailableCount == selRowsCount;
@@ -5020,7 +5022,9 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!noneAreAvailable);
             FMsDGV_FM_LLMenu.SetScanFMText();
 
-            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(allAreInstalled && allAreDark && allAreAvailable);
+            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(
+                !noneAreAvailable && !noneAreInstalled && !noneAreDark
+            );
 
             FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
 

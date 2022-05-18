@@ -569,7 +569,8 @@ namespace AngelLoader
 
             fmArchivePaths = null;
 
-            var gameChecksHashSet = new HashSet<GameIndex>(SupportedGameCount);
+            bool[] gamesChecked = new bool[SupportedGameCount];
+
             for (int i = 0; i < fms.Length; i++)
             {
                 FanMission fm = fms[i];
@@ -587,6 +588,7 @@ namespace AngelLoader
                 }
 
                 GameIndex gameIndex = GameToGameIndex(fm.Game);
+                int intGameIndex = (int)gameIndex;
                 fmArchivePaths ??= FMArchives.GetFMArchivePaths();
 
                 if (Canceled(install)) return false;
@@ -622,7 +624,7 @@ namespace AngelLoader
                     }
                 }
 
-                if (!gameChecksHashSet.Contains(gameIndex))
+                if (!gamesChecked[intGameIndex])
                 {
                     if (install)
                     {
@@ -670,7 +672,7 @@ namespace AngelLoader
 
                     if (Canceled(install)) return false;
 
-                    gameChecksHashSet.Add(gameIndex);
+                    gamesChecked[intGameIndex] = true;
                 }
             }
 
