@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using static AngelLoader.Misc;
+using static AngelLoader.Forms.ControlUtils;
 
 namespace AngelLoader.Forms
 {
@@ -37,22 +38,6 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-
-        private static MessageBoxIcon GetIcon(MBoxIcon icon) => icon switch
-        {
-            MBoxIcon.Information => MessageBoxIcon.Information,
-            MBoxIcon.Warning => MessageBoxIcon.Warning,
-            MBoxIcon.Error => MessageBoxIcon.Error,
-            _ => MessageBoxIcon.None
-        };
-
-        private static MessageBoxButtons GetButtons(MBoxButtons buttons) => buttons switch
-        {
-            MBoxButtons.OKCancel => MessageBoxButtons.OKCancel,
-            MBoxButtons.YesNo => MessageBoxButtons.YesNo,
-            MBoxButtons.YesNoCancel => MessageBoxButtons.YesNoCancel,
-            _ => MessageBoxButtons.OK
-        };
 
         /// <summary>
         /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.

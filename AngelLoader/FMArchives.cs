@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using JetBrains.Annotations;
 using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AngelLoader.Logger;
@@ -157,22 +155,21 @@ namespace AngelLoader
 
             if (!multiple || !singleArchive)
             {
-                using (var f = new MessageBoxCustomForm(
+                (bool accepted, List<string> selectedItems) = Core.View.ShowCustomDialog(
                     messageTop: singleArchive
                         ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + archives[0]
                         : LText.FMDeletion.DuplicateArchivesFound,
                     messageBottom: "",
                     title: LText.AlertMessages.DeleteFMArchive,
-                    icon: MessageBoxIcon.Warning,
+                    icon: MBoxIcon.Warning,
                     okText: singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
                     cancelText: LText.Global.Cancel,
                     okIsDangerous: true,
-                    choiceStrings: singleArchive ? null : archives.ToArray()))
-                {
-                    if (f.ShowDialogDark() != DialogResult.OK) return;
+                    choiceStrings: singleArchive ? null : archives.ToArray());
 
-                    finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
-                }
+                if (!accepted) return;
+
+                finalArchives.AddRange(singleArchive ? archives : selectedItems);
             }
             else
             {
@@ -299,18 +296,17 @@ namespace AngelLoader
                 }
             }
 
-            using (var f = new MessageBoxCustomForm(
-                       messageTop: LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
-                                   LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
-                       messageBottom: "",
-                       title: LText.AlertMessages.DeleteFMArchives,
-                       icon: MessageBoxIcon.Warning,
-                       okText: LText.FMDeletion.DeleteFMs_CertainMultiple,
-                       cancelText: LText.Global.Cancel,
-                       okIsDangerous: true))
-            {
-                if (f.ShowDialogDark() != DialogResult.OK) return;
-            }
+            (bool accepted, _) = Core.View.ShowCustomDialog(
+                messageTop: LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
+                            LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
+                messageBottom: "",
+                title: LText.AlertMessages.DeleteFMArchives,
+                icon: MBoxIcon.Warning,
+                okText: LText.FMDeletion.DeleteFMs_CertainMultiple,
+                cancelText: LText.Global.Cancel,
+                okIsDangerous: true);
+
+            if (!accepted) return;
 
             // Since multiple archives with the same name should be the rare case (nobody should be doing it),
             // we'll just ask the user per-FM if we find any as we go. Sorry to stop your batch, but yeah.
@@ -394,7 +390,7 @@ namespace AngelLoader
             }
         }
 
-        internal static async Task<bool> Add(IWin32Window owner, List<string> droppedItemsList)
+        internal static async Task<bool> Add(List<string> droppedItemsList)
         {
             if (Config.FMArchivePaths.Count == 0) return false;
 
@@ -462,9 +458,12 @@ namespace AngelLoader
 
                 if (!singleArchivePath)
                 {
-                    DialogResult result = (DialogResult)Core.View.Invoke(new Func<DialogResult>(() =>
+                    bool result = (bool)Core.View.Invoke(new Func<bool>(() =>
                     {
-                        using var f = new MessageBoxCustomForm(
+                        // We need to show with explicit owner because otherwise we get in a "halfway" state where
+                        // the dialog is modal, but it can be made to be underneath the main window and then you
+                        // can never get back to it again and have to kill the app through Task Manager.
+                        (bool accepted, List<string> selectedItems) = Core.View.ShowCustomDialog(
                             messageTop:
                             (singleArchive
                                 ? LText.AddFMsToSet.AddFM_Dialog_AskMessage
@@ -476,26 +475,21 @@ namespace AngelLoader
                             title: singleArchive
                                 ? LText.AddFMsToSet.AddFM_DialogTitle
                                 : LText.AddFMsToSet.AddFMs_DialogTitle,
-                            icon: MessageBoxIcon.None,
+                            icon: MBoxIcon.None,
                             okText: LText.AddFMsToSet.AddFM_Add,
                             cancelText: LText.Global.Cancel,
                             okIsDangerous: false,
                             choiceStrings: Config.FMArchivePaths.ToArray(),
                             multiSelectionAllowed: false);
 
-                        // Show with explicit owner because otherwise we get in a "halfway" state where the dialog is
-                        // modal, but it can be made to be underneath the main window and then you can never get back
-                        // to it again and have to kill the app through Task Manager.
-                        DialogResult result = f.ShowDialogDark(owner);
+                        if (!accepted) return false;
 
-                        if (result != DialogResult.OK) return DialogResult.Cancel;
+                        destDir = selectedItems[0];
 
-                        destDir = f.SelectedItems[0];
-
-                        return DialogResult.OK;
+                        return true;
                     }));
 
-                    if (result != DialogResult.OK) return false;
+                    if (!result) return false;
                 }
                 else
                 {
@@ -515,9 +509,11 @@ namespace AngelLoader
                     catch (Exception ex)
                     {
                         Log("Exception copying archive '" + file + "' to '" + destDir, ex);
-                        Core.Dialogs.ShowError(LText.AlertMessages.AddFM_UnableToCopy +
-                                               "\r\n\r\nSource FM archive file: " + file +
-                                               "\r\n\r\nDestination directory: " + destDir);
+                        Core.Dialogs.ShowError(
+                            LText.AlertMessages.AddFM_UnableToCopy +
+                            // @vNext: Uh, do we want to localize these two strings here?
+                            "\r\n\r\nSource FM archive file: " + file +
+                            "\r\n\r\nDestination directory: " + destDir);
                     }
                 }
 

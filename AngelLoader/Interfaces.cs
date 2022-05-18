@@ -408,5 +408,6 @@ namespace AngelLoader
         FanMission[] GetSelectedFMs_InOrder();
         List<FanMission> GetSelectedFMs_InOrder_List();
         (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow();
+        (bool Accepted, List<string> SelectedItems) ShowCustomDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[]? choiceStrings = null, bool multiSelectionAllowed = true);
     }
 }

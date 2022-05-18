@@ -337,6 +337,22 @@ namespace AngelLoader.Forms
 
         #region Dialogs
 
+        internal static MessageBoxIcon GetIcon(MBoxIcon icon) => icon switch
+        {
+            MBoxIcon.Information => MessageBoxIcon.Information,
+            MBoxIcon.Warning => MessageBoxIcon.Warning,
+            MBoxIcon.Error => MessageBoxIcon.Error,
+            _ => MessageBoxIcon.None
+        };
+
+        internal static MessageBoxButtons GetButtons(MBoxButtons buttons) => buttons switch
+        {
+            MBoxButtons.OKCancel => MessageBoxButtons.OKCancel,
+            MBoxButtons.YesNo => MessageBoxButtons.YesNo,
+            MBoxButtons.YesNoCancel => MessageBoxButtons.YesNoCancel,
+            _ => MessageBoxButtons.OK
+        };
+
         internal static void SetMessageBoxIcon(PictureBox pictureBox, MessageBoxIcon icon)
         {
             var sii = new Native.SHSTOCKICONINFO();
