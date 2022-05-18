@@ -2,3 +2,5 @@
 
 # IDE0079: Remove unnecessary suppression
 dotnet_diagnostic.IDE0079.severity = none
+# IDE0037: Use inferred member name
+dotnet_diagnostic.IDE0037.severity = none

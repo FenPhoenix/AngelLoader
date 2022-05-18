@@ -4,10 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using FMScanner;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -44,28 +42,18 @@ namespace AngelLoader
 
             if (importType == ImportType.DarkLoader)
             {
-                bool importTitle,
-                    importReleaseDate,
-                    importLastPlayed,
-                    importComment,
-                    importFinishedOn,
-                    importSize;
+                (bool accepted,
+                    string iniFile,
+                    importFMData,
+                    bool importTitle,
+                    bool importSize,
+                    bool importComment,
+                    bool importReleaseDate,
+                    bool importLastPlayed,
+                    bool importFinishedOn,
+                    importSaves) = Core.View.ShowDarkLoaderImportWindow();
 
-                string iniFile;
-
-                using (var f = new ImportFromDarkLoaderForm())
-                {
-                    if (f.ShowDialogDark() != DialogResult.OK) return;
-                    iniFile = f.DarkLoaderIniFile;
-                    importFMData = f.ImportFMData;
-                    importTitle = f.ImportTitle;
-                    importSize = f.ImportSize;
-                    importComment = f.ImportComment;
-                    importReleaseDate = f.ImportReleaseDate;
-                    importLastPlayed = f.ImportLastPlayed;
-                    importFinishedOn = f.ImportFinishedOn;
-                    importSaves = f.ImportSaves;
-                }
+                if (!accepted) return;
 
                 if (!importFMData && !importSaves)
                 {
@@ -87,32 +75,21 @@ namespace AngelLoader
             }
             else
             {
-                bool importTitle,
-                    importReleaseDate,
-                    importLastPlayed,
-                    importComment,
-                    importRating,
-                    importDisabledMods,
-                    importTags,
-                    importSelectedReadme,
-                    importFinishedOn,
-                    importSize;
+                (bool accepted,
+                    List<string> returnedIniFiles,
+                    bool importTitle,
+                    bool importReleaseDate,
+                    bool importLastPlayed,
+                    bool importComment,
+                    bool importRating,
+                    bool importDisabledMods,
+                    bool importTags,
+                    bool importSelectedReadme,
+                    bool importFinishedOn,
+                    bool importSize) = Core.View.ShowImportFromMultipleInisForm(importType);
 
-                using (var f = new ImportFromMultipleInisForm(importType))
-                {
-                    if (f.ShowDialogDark() != DialogResult.OK) return;
-                    foreach (string file in f.IniFiles) iniFiles.Add(file);
-                    importTitle = f.ImportTitle;
-                    importReleaseDate = f.ImportReleaseDate;
-                    importLastPlayed = f.ImportLastPlayed;
-                    importComment = f.ImportComment;
-                    importRating = f.ImportRating;
-                    importDisabledMods = f.ImportDisabledMods;
-                    importTags = f.ImportTags;
-                    importSelectedReadme = f.ImportSelectedReadme;
-                    importFinishedOn = f.ImportFinishedOn;
-                    importSize = f.ImportSize;
-                }
+                if (!accepted) return;
+                foreach (string file in returnedIniFiles) iniFiles.Add(file);
 
                 if (iniFiles.All(x => x.IsWhiteSpace()))
                 {

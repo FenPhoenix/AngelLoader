@@ -5651,5 +5651,61 @@ namespace AngelLoader.Forms
             // Just always show with us as the owner, because we sometimes hard require it
             return (f.ShowDialogDark(this) == DialogResult.OK, f.SelectedItems);
         }
+
+        public (bool Accepted,
+            string IniFile,
+            bool ImportFMData,
+            bool ImportTitle,
+            bool ImportSize,
+            bool ImportComment,
+            bool ImportReleaseDate,
+            bool ImportLastPlayed,
+            bool ImportFinishedOn,
+            bool ImportSaves)
+        ShowDarkLoaderImportWindow()
+        {
+            using var f = new ImportFromDarkLoaderForm();
+            return (Accepted: f.ShowDialogDark(this) == DialogResult.OK,
+                    IniFile: f.DarkLoaderIniFile,
+                    ImportFMData: f.ImportFMData,
+                    ImportTitle: f.ImportTitle,
+                    ImportSize: f.ImportSize,
+                    ImportComment: f.ImportComment,
+                    ImportReleaseDate: f.ImportReleaseDate,
+                    ImportLastPlayed: f.ImportLastPlayed,
+                    ImportFinishedOn: f.ImportFinishedOn,
+                    ImportSaves: f.ImportSaves
+                );
+        }
+
+        public (bool Accepted,
+            List<string> IniFiles,
+            bool ImportTitle,
+            bool ImportReleaseDate,
+            bool ImportLastPlayed,
+            bool ImportComment,
+            bool ImportRating,
+            bool ImportDisabledMods,
+            bool ImportTags,
+            bool ImportSelectedReadme,
+            bool ImportFinishedOn,
+            bool ImportSize)
+            ShowImportFromMultipleInisForm(ImportType importType)
+        {
+            using var f = new ImportFromMultipleInisForm(importType);
+            return (Accepted: f.ShowDialogDark(this) == DialogResult.OK,
+                    IniFiles: f.IniFiles,
+                    ImportTitle: f.ImportTitle,
+                    ImportReleaseDate: f.ImportReleaseDate,
+                    ImportLastPlayed: f.ImportLastPlayed,
+                    ImportComment: f.ImportComment,
+                    ImportRating: f.ImportRating,
+                    ImportDisabledMods: f.ImportDisabledMods,
+                    ImportTags: f.ImportTags,
+                    ImportSelectedReadme: f.ImportSelectedReadme,
+                    ImportFinishedOn: f.ImportFinishedOn,
+                    ImportSize: f.ImportSize
+                );
+        }
     }
 }
