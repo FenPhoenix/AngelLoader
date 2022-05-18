@@ -117,7 +117,7 @@ namespace AngelLoader
 
                 try
                 {
-                    Core.View.Cursor = Cursors.WaitCursor;
+                    Core.View.SetWaitCursor(true);
 
                     if (PlayFM(fm, playMP))
                     {
@@ -128,7 +128,7 @@ namespace AngelLoader
                 }
                 finally
                 {
-                    Core.View.Cursor = Cursors.Default;
+                    Core.View.SetWaitCursor(false);
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace AngelLoader
         {
             try
             {
-                Core.View.Cursor = Cursors.WaitCursor;
+                Core.View.SetWaitCursor(true);
 
                 (bool success, string gameExe, string gamePath) =
                     CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: true, playMP);
@@ -166,7 +166,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.View.Cursor = Cursors.Default;
+                Core.View.SetWaitCursor(false);
             }
         }
 
@@ -237,7 +237,7 @@ namespace AngelLoader
         {
             try
             {
-                Core.View.Cursor = Cursors.WaitCursor;
+                Core.View.SetWaitCursor(true);
 
                 #region Checks (specific to DromEd)
 
@@ -296,7 +296,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.View.Cursor = Cursors.Default;
+                Core.View.SetWaitCursor(false);
             }
         }
 
@@ -1458,14 +1458,14 @@ namespace AngelLoader
 
             try
             {
-                Core.View.Cursor = Cursors.WaitCursor;
+                Core.View.SetWaitCursor(true);
 
                 bool success = await Task.Run(() => DoPreChecks(fms, fmDataList, install: false, out _));
                 if (!success) return false;
             }
             finally
             {
-                Core.View.Cursor = Cursors.Default;
+                Core.View.SetWaitCursor(false);
             }
 
             #endregion

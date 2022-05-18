@@ -46,7 +46,7 @@ namespace AngelLoader.Forms
             _ => MessageBoxIcon.None
         };
 
-        private static MessageBoxButtons GetButton(MBoxButtons buttons) => buttons switch
+        private static MessageBoxButtons GetButtons(MBoxButtons buttons) => buttons switch
         {
             MBoxButtons.OKCancel => MessageBoxButtons.OKCancel,
             MBoxButtons.YesNo => MessageBoxButtons.YesNo,
@@ -238,5 +238,10 @@ namespace AngelLoader.Forms
                     MessageBox.Show(message, title, MessageBoxButtons.OK, GetIcon(icon));
                 }
             });
+
+        public void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon)
+        {
+            MessageBox.Show(message, title, GetButtons(buttons), GetIcon(icon));
+        }
     }
 }

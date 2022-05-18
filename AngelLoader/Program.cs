@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿//#define WPF
+
+using System;
 using System.Reflection;
-using System.Windows.Forms;
 using Microsoft.VisualBasic.ApplicationServices;
 using static AngelLoader.Logger;
 
@@ -19,12 +19,14 @@ namespace AngelLoader
             Forms.RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
 #endif
 
+#if !WPF
             // Need to set these here, because the single-instance thing internally creates a window and message-
             // loop etc... that's also why we straight-up ditched our clever "init the ConfigurationManager in
             // the background" thing, because we're going to be creating a form as the very first thing we do now
             // anyway (even if we're the second instance), so such tricks won't help us. Oh well.
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+#endif
             new SingleInstanceManager().Run(args);
         }
 
@@ -34,11 +36,16 @@ namespace AngelLoader
 
             protected override bool OnStartup(StartupEventArgs eventArgs)
             {
+#if !WPF
+                IViewEnvironment viewEnv = new Forms.FormsViewEnvironment();
+#else
+#endif
+
                 // We need to clear this because FMScanner doesn't have a startup version
                 ClearLogFileStartup(Paths.ScannerLogFile);
 
                 // We don't need to clear this log because LogStartup says append: false
-                LogStartup(Application.ProductVersion + " Started session");
+                LogStartup(viewEnv.ProductVersion + " Started session");
 
                 // Do this after the startup log so we don't try to log something at the same time as the non-lock-
                 // protected startup log
@@ -50,32 +57,10 @@ namespace AngelLoader
                     }
                 };
 
-                #region SevenZipSharp init
-
-                // Catching this early, because otherwise it just gets loaded whenever and could throw (or just fail)
-                // at any time
-                string sevenZipDllLocation = Path.Combine(Paths.Startup, "7z.dll");
-                if (!File.Exists(sevenZipDllLocation))
-                {
-                    // NOTE: Not localizable because we don't want to do anything until we've checked this, and getting
-                    // the right language would mean trying to read multiple different files and whatever junk, and
-                    // we don't want to add the potential for even more errors here.
-                    MessageBox.Show(
-                        "Fatal error: 7z.dll was not found in the application startup directory.",
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                    Environment.Exit(-1);
-                }
-
-                // NOTE: Calling this takes ~50ms, but fortunately if we don't call it then it just looks in the app
-                // startup path. So we just make sure we copy 7z.dll to anywhere that could be an app startup path
-                // (so that includes our bin\x86\whatever dirs).
-                //SevenZip.SevenZipBase.SetLibraryPath(sevenZipDllLocation);
-
-                #endregion
-
-                Application.Run(new AppContext());
+#if !WPF
+                System.Windows.Forms.Application.Run(new AppContext(viewEnv));
+#else
+#endif
 
                 return false;
             }
@@ -89,9 +74,12 @@ namespace AngelLoader
             }
         }
 
-        private sealed class AppContext : ApplicationContext
+#if !WPF
+        private sealed class AppContext : System.Windows.Forms.ApplicationContext
         {
-            internal AppContext() => Core.Init();
+            internal AppContext(IViewEnvironment viewEnv) => Core.Init(viewEnv);
         }
+#else
+#endif
     }
 }

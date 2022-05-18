@@ -136,13 +136,13 @@ namespace AngelLoader
             List<string> archives;
             try
             {
-                Core.View.Cursor = Cursors.WaitCursor;
+                Core.View.SetWaitCursor(true);
 
                 archives = FindAllMatches(fm.Archive);
             }
             finally
             {
-                Core.View.Cursor = Cursors.Default;
+                Core.View.SetWaitCursor(false);
             }
 
             if (archives.Count == 0)

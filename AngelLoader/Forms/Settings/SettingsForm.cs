@@ -1404,12 +1404,12 @@ namespace AngelLoader.Forms
         {
             if (wait)
             {
-                if (_ownerForm != null) _ownerForm.Cursor = Cursors.WaitCursor;
+                _ownerForm?.SetWaitCursor(true);
                 Cursor = Cursors.WaitCursor;
             }
             else
             {
-                if (_ownerForm != null) _ownerForm.Cursor = Cursors.Default;
+                _ownerForm?.SetWaitCursor(false);
                 Cursor = Cursors.Default;
             }
         }

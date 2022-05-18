@@ -17,9 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -38,11 +36,35 @@ namespace AngelLoader
         internal static IViewEnvironment ViewEnv = null!;
         internal static IDialogs Dialogs = null!;
 
-        internal static async void Init()
+        internal static async void Init(IViewEnvironment viewEnv)
         {
-            // @WPF: We want to pass this in probably
-            ViewEnv = new FormsViewEnvironment();
+            ViewEnv = viewEnv;
             Dialogs = ViewEnv.GetDialogs();
+
+            #region SevenZipSharp init
+
+            // Catching this early, because otherwise it just gets loaded whenever and could throw (or just fail)
+            // at any time
+            string sevenZipDllLocation = Path.Combine(Paths.Startup, "7z.dll");
+            if (!File.Exists(sevenZipDllLocation))
+            {
+                // NOTE: Not localizable because we don't want to do anything until we've checked this, and getting
+                // the right language would mean trying to read multiple different files and whatever junk, and
+                // we don't want to add the potential for even more errors here.
+                Dialogs.ShowAlert_Stock(
+                    "Fatal error: 7z.dll was not found in the application startup directory.",
+                    "Error",
+                    MBoxButtons.OK,
+                    MBoxIcon.Error);
+                Environment.Exit(-1);
+            }
+
+            // NOTE: Calling this takes ~50ms, but fortunately if we don't call it then it just looks in the app
+            // startup path. So we just make sure we copy 7z.dll to anywhere that could be an app startup path
+            // (so that includes our bin\x86\whatever dirs).
+            //SevenZip.SevenZipBase.SetLibraryPath(sevenZipDllLocation);
+
+            #endregion
 
             bool openSettings = false;
             // This is if we have no config file; in that case we assume we're starting for the first time ever
@@ -63,7 +85,7 @@ namespace AngelLoader
                 string message = "Failed to create required application directories on startup.";
                 Log(message, ex);
                 // We're not even close to having a theme at this point, so just use regular MessageBox
-                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Dialogs.ShowAlert_Stock(message, "Error", MBoxButtons.OK, MBoxIcon.Error);
                 Environment.Exit(1);
             }
 
@@ -245,13 +267,8 @@ namespace AngelLoader
         public static async Task<bool>
         OpenSettings(bool startup = false, bool cleanStart = false)
         {
-            DialogResult result;
-            ConfigData outConfig;
-            using (var sf = new SettingsForm(View, Config, startup, cleanStart))
-            {
-                result = sf.ShowDialogDark();
-                outConfig = sf.OutConfig;
-            }
+            (bool accepted, ConfigData outConfig) =
+                ViewEnv.ShowSettingsWindow(startup ? null : View, Config, startup, cleanStart);
 
             // This needs to be separate so the below "always-save" stuff can work
 
@@ -268,7 +285,7 @@ namespace AngelLoader
 
             #endregion
 
-            if (result != DialogResult.OK)
+            if (!accepted)
             {
                 // Since nothing of consequence has yet happened, it's okay to do the brutal quit
                 // We know the game paths by now, so we can do this
@@ -745,7 +762,7 @@ namespace AngelLoader
             // readme and it also sets the wait cursor, to avoid flickering it on and off twice.
             try
             {
-                View.Cursor = Cursors.WaitCursor;
+                View.SetWaitCursor(true);
                 using (new DisableEvents(View))
                 {
                     var fmsViewListUnscanned = FindFMs.Find();
@@ -755,7 +772,7 @@ namespace AngelLoader
             }
             finally
             {
-                View.Cursor = Cursors.Default;
+                View.SetWaitCursor(false);
             }
         }
 

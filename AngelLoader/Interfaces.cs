@@ -92,7 +92,7 @@ namespace AngelLoader
     {
         void Localize();
         void SetTheme(VisualTheme theme);
-        Cursor Cursor { get; set; }
+        void SetWaitCursor(bool value);
     }
 
     [PublicAPI]
@@ -119,9 +119,12 @@ namespace AngelLoader
 
     public interface IViewEnvironment
     {
+        string ProductVersion { get; }
+
         void ApplicationExit();
         IDialogs GetDialogs();
         IView GetView();
+        (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableWindow? view, ConfigData inConfig, bool startup, bool cleanStart);
     }
 
     public interface IDialogs
@@ -132,14 +135,11 @@ namespace AngelLoader
         void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
         void ShowError_ViewOwned(string message);
         void ShowError(string message, bool showScannerLogFile = false);
+        void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon);
     }
 
     public interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler, IMessageFilter
     {
-        public bool IsHandleCreated { get; }
-
-        public bool InvokeRequired { get; }
-
         #region Progress box
 
         /// <summary>
