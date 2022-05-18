@@ -12,7 +12,6 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    // @WPF: There are direct dialog form calls in here still
     internal static class Import
     {
         private sealed class FieldsToImport
