@@ -30,12 +30,12 @@ namespace AngelLoader
      and has the added bonus of guaranteeing a reset of the value due to the using block.
     */
 
-    internal interface IEventDisabler
+    public interface IEventDisabler
     {
         bool EventsDisabled { set; }
     }
 
-    internal interface IZeroSelectCodeDisabler
+    public interface IZeroSelectCodeDisabler
     {
         bool ZeroSelectCodeDisabled { set; }
     }
@@ -68,7 +68,7 @@ namespace AngelLoader
 
     #region DisableKeyPresses
 
-    internal interface IKeyPressDisabler
+    public interface IKeyPressDisabler
     {
         bool KeyPressesDisabled { set; }
     }
@@ -88,7 +88,7 @@ namespace AngelLoader
 
     #endregion
 
-    internal interface ISettingsChangeableWindow
+    public interface ISettingsChangeableWindow
     {
         void Localize();
         void SetTheme(VisualTheme theme);
@@ -119,7 +119,9 @@ namespace AngelLoader
 
     public interface IViewEnvironment
     {
+        void ApplicationExit();
         IDialogs GetDialogs();
+        IView GetView();
     }
 
     public interface IDialogs
@@ -128,11 +130,11 @@ namespace AngelLoader
         (bool Cancel, bool Continue, bool DontAskAgain) AskToContinueWithCancelCustomStrings(string message, string title, MBoxIcon icon, bool showDontAskAgain, string yes, string no, string cancel, MBoxButton defaultButton = MBoxButton.Yes);
         (bool Cancel, bool DontAskAgain) AskToContinueYesNoCustomStrings(string message, string title, MBoxIcon icon, bool showDontAskAgain, string? yes, string? no, MBoxButton defaultButton = MBoxButton.Yes);
         void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
-        void ShowError(string message, IWin32Window owner, bool showScannerLogFile = false);
+        void ShowError_ViewOwned(string message);
         void ShowError(string message, bool showScannerLogFile = false);
     }
 
-    internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler, IMessageFilter
+    public interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler, IMessageFilter
     {
         public bool IsHandleCreated { get; }
 

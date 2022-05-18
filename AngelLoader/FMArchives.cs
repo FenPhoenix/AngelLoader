@@ -430,7 +430,7 @@ namespace AngelLoader
                                          "The passed path was:\r\n\r\n" +
                                          di + "\r\n\r\n";
                         Log(message, stackTrace: true);
-                        Core.Dialogs.ShowError(message, owner);
+                        Core.Dialogs.ShowError_ViewOwned(message);
                         return false;
                     }
 

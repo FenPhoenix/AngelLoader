@@ -200,7 +200,7 @@ namespace AngelLoader
                 {
                     // Construct and init the view both right here, because they're both heavy operations and
                     // we want them both to run in parallel with Find() to the greatest extent possible.
-                    View = new MainForm();
+                    View = ViewEnv.GetView();
                     View.InitThreadable();
 
                     findFMsTask.Wait();
@@ -2128,7 +2128,7 @@ namespace AngelLoader
 
             DoShutdownTasks();
 
-            Application.Exit();
+            ViewEnv.ApplicationExit();
         }
 
         #endregion

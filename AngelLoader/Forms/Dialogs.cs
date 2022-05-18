@@ -15,9 +15,11 @@ namespace AngelLoader.Forms
 
         private static void InvokeIfViewExists(InvokeIfRequiredAction action)
         {
-            if (Core.View != null! && Core.View.IsHandleCreated && Core.View.InvokeRequired)
+            if (FormsViewEnvironment.ViewCreated &&
+                FormsViewEnvironment.ViewInternal.IsHandleCreated &&
+                FormsViewEnvironment.ViewInternal.InvokeRequired)
             {
-                Core.View.Invoke(action);
+                FormsViewEnvironment.ViewInternal.Invoke(action);
             }
             else
             {
@@ -27,7 +29,11 @@ namespace AngelLoader.Forms
 
         private static object InvokeIfViewExists(InvokeIfRequiredFunc func)
         {
-            return Core.View != null! && Core.View.IsHandleCreated && Core.View.InvokeRequired ? Core.View.Invoke(func) : func();
+            return FormsViewEnvironment.ViewCreated &&
+                   FormsViewEnvironment.ViewInternal.IsHandleCreated &&
+                   FormsViewEnvironment.ViewInternal.InvokeRequired
+                ? FormsViewEnvironment.ViewInternal.Invoke(func)
+                : func();
         }
 
         #endregion
@@ -176,10 +182,11 @@ namespace AngelLoader.Forms
         /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="owner"></param>
-        /// <param name="showScannerLogFile"></param>
-        public void ShowError(string message, IWin32Window owner, bool showScannerLogFile = false) =>
-            InvokeIfViewExists(() => ShowError_Internal(message, owner, showScannerLogFile));
+        public void ShowError_ViewOwned(string message)
+        {
+            AssertR(FormsViewEnvironment.ViewCreated, nameof(FormsViewEnvironment) + "." + nameof(FormsViewEnvironment.ViewCreated) + " was false");
+            InvokeIfViewExists(() => ShowError_Internal(message, FormsViewEnvironment.ViewInternal, false));
+        }
 
         /// <summary>
         /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
