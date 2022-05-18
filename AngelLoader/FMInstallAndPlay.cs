@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using FMScanner.FastZipReader;
 using JetBrains.Annotations;
 using SevenZip;
@@ -63,7 +62,7 @@ namespace AngelLoader
             {
                 Log("Game is unknown or unsupported for FM " + GetFMId(fm) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
-                Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
+                Core.Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
                 return;
             }
 
@@ -74,7 +73,7 @@ namespace AngelLoader
                 Log("playMP was true, but fm.Game was not Thief 2.\r\n" +
                     "fm: " + GetFMId(fm) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
-                Dialogs.ShowError(ErrorText.MultiplayerForNonThief2);
+                Core.Dialogs.ShowError(ErrorText.MultiplayerForNonThief2);
                 return;
             }
 
@@ -93,7 +92,7 @@ namespace AngelLoader
                                fm.Author + "\r\n";
                 }
 
-                (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
+                (bool cancel, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: message,
                     title: LText.AlertMessages.Confirm,
                     icon: MBoxIcon.None,
@@ -112,7 +111,7 @@ namespace AngelLoader
                 {
                     Log("Thief2MP.exe not found in Thief 2 game directory.\r\n" +
                         "Thief 2 game directory: " + Config.GetGamePath(GameIndex.Thief2));
-                    Dialogs.ShowError(LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound);
+                    Core.Dialogs.ShowError(LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound);
                     return;
                 }
 
@@ -177,7 +176,7 @@ namespace AngelLoader
             {
                 Log("Game is unknown or unsupported for FM " + GetFMId(fm) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
-                Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
+                Core.Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
                 return false;
             }
 
@@ -248,7 +247,7 @@ namespace AngelLoader
                     Log("FM game type is not a Dark Engine game.\r\n" +
                         "FM: " + GetFMId(fm) + "\r\n" +
                         "fm.Game was: " + fm.Game, stackTrace: true);
-                    Dialogs.ShowError(ErrorText.FMGameTypeIsNotDark);
+                    Core.Dialogs.ShowError(ErrorText.FMGameTypeIsNotDark);
                     return false;
                 }
 
@@ -258,7 +257,7 @@ namespace AngelLoader
                 if (gamePath.IsEmpty())
                 {
                     Log("Game path is empty for " + gameIndex, stackTrace: true);
-                    Dialogs.ShowError(gameIndex + ":\r\n" + ErrorText.GamePathEmpty);
+                    Core.Dialogs.ShowError(gameIndex + ":\r\n" + ErrorText.GamePathEmpty);
                     return false;
                 }
 
@@ -268,7 +267,7 @@ namespace AngelLoader
                     Log("Editor executable not found.\r\n" +
                         "FM: " + GetFMId(fm) + "\r\n" +
                         "Editor executable: " + editorExe);
-                    Dialogs.ShowError(fm.Game == Game.SS2
+                    Core.Dialogs.ShowError(fm.Game == Game.SS2
                         ? LText.AlertMessages.ShockEd_ExecutableNotFound
                         : LText.AlertMessages.DromEd_ExecutableNotFound);
                     return false;
@@ -318,7 +317,7 @@ namespace AngelLoader
                     "Source: " + playSource,
                     stackTrace: true);
 
-                Dialogs.ShowError(
+                Core.Dialogs.ShowError(
                     "Failed to set AngelLoader as the FM selector.\r\n\r\n" +
                     "Game: " + game + "\r\n" +
                     "Game exe: " + Config.GetGameExe(game) + "\r\n" +
@@ -379,10 +378,10 @@ namespace AngelLoader
             {
                 Log("Exception writing stub file '" + Paths.StubFileName + "'\r\n" +
                     (fm == null ? "Original game" : "FM"), ex);
-                Dialogs.ShowError("Unable to write stub comm file. " +
-                                  (fm == null
-                                      ? "Game may not start correctly."
-                                      : "FM cannot be passed to the game and therefore cannot be played."));
+                Core.Dialogs.ShowError("Unable to write stub comm file. " +
+                                       (fm == null
+                                           ? "Game may not start correctly."
+                                           : "FM cannot be passed to the game and therefore cannot be played."));
             }
         }
 
@@ -404,7 +403,7 @@ namespace AngelLoader
                 Log("Exception starting " + exe + "\r\n" +
                     "workingPath: " + workingPath + "\r\n" +
                     "args: " + args, ex);
-                Dialogs.ShowError(ErrorText.UnableToStartExecutable + "\r\n\r\n" + exe);
+                Core.Dialogs.ShowError(ErrorText.UnableToStartExecutable + "\r\n\r\n" + exe);
             }
         }
 
@@ -423,7 +422,7 @@ namespace AngelLoader
             if (gamePath.IsEmpty())
             {
                 Log("Game path is empty for " + gameIndex, stackTrace: true);
-                Dialogs.ShowError(gameName + ":\r\n" + ErrorText.GamePathEmpty);
+                Core.Dialogs.ShowError(gameName + ":\r\n" + ErrorText.GamePathEmpty);
                 return failed;
             }
 
@@ -438,7 +437,7 @@ namespace AngelLoader
                 string exeNotFoundMessage = playingOriginalGame
                     ? LText.AlertMessages.Play_ExecutableNotFound
                     : LText.AlertMessages.Play_ExecutableNotFoundFM;
-                Dialogs.ShowError(gameName + ":\r\n" + exeNotFoundMessage);
+                Core.Dialogs.ShowError(gameName + ":\r\n" + exeNotFoundMessage);
                 return failed;
             }
 
@@ -448,7 +447,7 @@ namespace AngelLoader
 
             if (GameIsRunning(gameExe, checkAllGames: true))
             {
-                Dialogs.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
+                Core.Dialogs.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
                 return failed;
             }
 
@@ -549,9 +548,9 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     Log("Exception trying to generate missflag.str file for an FM that needs it", ex);
-                    Dialogs.ShowError("Failed trying to generate a missflag.str file for the following FM:\r\n\r\n" +
-                                      GetFMId(fm) + "\r\n\r\n" +
-                                      "The FM will probably not be able to play its mission(s).");
+                    Core.Dialogs.ShowError("Failed trying to generate a missflag.str file for the following FM:\r\n\r\n" +
+                                           GetFMId(fm) + "\r\n\r\n" +
+                                           "The FM will probably not be able to play its mission(s).");
                 }
             }
             catch (Exception ex)
@@ -582,8 +581,8 @@ namespace AngelLoader
                     Log("FM game type is unknown or unsupported.\r\n" +
                         "FM: " + GetFMId(fm) + "\r\n" +
                         "FM game was: " + fm.Game);
-                    Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                      ErrorText.FMGameTypeUnknownOrUnsupported);
+                    Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                           ErrorText.FMGameTypeUnknownOrUnsupported);
                     return false;
                 }
 
@@ -617,8 +616,8 @@ namespace AngelLoader
                         Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
                             "FM: " + GetFMId(fm) + "\r\n" +
                             "FM game was: " + fm.Game);
-                        Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                          LText.AlertMessages.Install_ArchiveNotFound);
+                        Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                                               LText.AlertMessages.Install_ArchiveNotFound);
 
                         return false;
                     }
@@ -632,9 +631,9 @@ namespace AngelLoader
                         {
                             Log("Game executable not found.\r\n" +
                                 "Game executable: " + gameExe);
-                            Dialogs.ShowError(gameName + ":\r\n" +
-                                              GetFMId(fm) + "\r\n" +
-                                              LText.AlertMessages.Install_ExecutableNotFound);
+                            Core.Dialogs.ShowError(gameName + ":\r\n" +
+                                                   GetFMId(fm) + "\r\n" +
+                                                   LText.AlertMessages.Install_ExecutableNotFound);
 
                             return false;
                         }
@@ -648,9 +647,9 @@ namespace AngelLoader
                                 "FM game was: " + fm.Game + "\r\n" +
                                 "FM install path: " + instBasePath
                             );
-                            Dialogs.ShowError(gameName + ":\r\n" +
-                                              GetFMId(fm) + "\r\n" +
-                                              LText.AlertMessages.Install_FMInstallPathNotFound);
+                            Core.Dialogs.ShowError(gameName + ":\r\n" +
+                                                   GetFMId(fm) + "\r\n" +
+                                                   LText.AlertMessages.Install_FMInstallPathNotFound);
 
                             return false;
                         }
@@ -660,7 +659,7 @@ namespace AngelLoader
 
                     if (GameIsRunning(gameExe))
                     {
-                        Dialogs.ShowAlert(
+                        Core.Dialogs.ShowAlert(
                             gameName + ":\r\n" +
                             (install
                                 ? LText.AlertMessages.Install_GameIsRunning
@@ -886,7 +885,7 @@ namespace AngelLoader
                         if (!DeleteFMInstalledDirectory(fmInstalledPath))
                         {
                             // Don't log it here because the deleter method will already have logged it
-                            Dialogs.ShowError(
+                            Core.Dialogs.ShowError(
                                 message: LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + "\r\n\r\n" +
                                          fmInstalledPath);
                         }
@@ -958,7 +957,7 @@ namespace AngelLoader
 
             static bool ShowDiskSpaceErrorDialog(string message)
             {
-                (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                (bool cancel, _) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: message,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.Warning,
@@ -995,7 +994,7 @@ namespace AngelLoader
                 (Config.ConfirmBeforeInstall == ConfirmBeforeInstall.Always ||
                 (!single && Config.ConfirmBeforeInstall == ConfirmBeforeInstall.OnlyForMultiple)))
             {
-                (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
+                (bool cancel, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: single
                         ? fromPlay
                             ? LText.AlertMessages.Play_InstallAndPlayConfirmMessage
@@ -1351,7 +1350,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
-                Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
+                Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
                 return (false, true);
             }
 
@@ -1418,7 +1417,7 @@ namespace AngelLoader
                         + "ExitCode: " + result.ExitCode + "\r\n"
                         + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
 
-                    Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
+                    Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
 
                     return (result.Canceled, true);
                 }
@@ -1437,7 +1436,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n", ex);
-                Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
+                Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
                 return (false, true);
             }
         }
@@ -1475,7 +1474,7 @@ namespace AngelLoader
 
             if (Config.ConfirmUninstall)
             {
-                (bool cancel, bool dontAskAgain) = Dialogs.AskToContinueYesNoCustomStrings(
+                (bool cancel, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: single
                         ? LText.AlertMessages.Uninstall_Confirm
                         : LText.AlertMessages.Uninstall_Confirm_Multiple,
@@ -1500,7 +1499,7 @@ namespace AngelLoader
                     ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                     : LText.AlertMessages.Uninstall_BackupAllData;
                 (bool cancel, bool cont, bool dontAskAgain) =
-                    Dialogs.AskToContinueWithCancelCustomStrings(
+                    Core.Dialogs.AskToContinueWithCancelCustomStrings(
                         message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                         title: LText.AlertMessages.Confirm,
                         icon: MBoxIcon.None,
@@ -1574,7 +1573,7 @@ namespace AngelLoader
 
                     if (fmData.ArchivePath.IsEmpty())
                     {
-                        (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
+                        (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                             message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                             title: LText.AlertMessages.Warning,
                             icon: MBoxIcon.Warning,
@@ -1616,8 +1615,8 @@ namespace AngelLoader
                         Log("Could not delete FM installed directory.\r\n" +
                             "FM: " + GetFMId(fm) + "\r\n" +
                             "FM installed path: " + fmInstalledPath);
-                        Dialogs.ShowError(LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
-                                          "FM: " + GetFMId(fm));
+                        Core.Dialogs.ShowError(LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
+                                               "FM: " + GetFMId(fm));
                     }
 
                     fm.Installed = false;

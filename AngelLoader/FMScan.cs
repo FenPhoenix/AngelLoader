@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -219,7 +218,7 @@ namespace AngelLoader
                             {
                                 // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
                                 // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
-                                Dialogs.ShowError(ErrorText.ScanErrors, showScannerLogFile: true);
+                                Core.Dialogs.ShowError(ErrorText.ScanErrors, showScannerLogFile: true);
                             }
                         }
                     }
@@ -347,7 +346,7 @@ namespace AngelLoader
                     string message = scanningOne
                         ? LText.AlertMessages.Scan_ExceptionInScanOne
                         : LText.AlertMessages.Scan_ExceptionInScanMultiple;
-                    Dialogs.ShowError(message);
+                    Core.Dialogs.ShowError(message);
                     return false;
                 }
                 finally
@@ -391,7 +390,7 @@ namespace AngelLoader
 
             if (noneSelected)
             {
-                Dialogs.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
+                Core.Dialogs.ShowAlert(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
                 return null;
             }
 

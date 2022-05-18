@@ -799,7 +799,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 senderItem == FinishedOnUnknownMenuItem &&
                 FinishedOnUnknownMenuItem.Checked)
             {
-                bool doFinishedOnUnknown = Dialogs.AskToContinue(
+                bool doFinishedOnUnknown = Core.Dialogs.AskToContinue(
                     LText.AlertMessages.FinishedOnUnknown_MultiFMChange,
                     LText.AlertMessages.Alert,
                     defaultButton: MBoxButton.No

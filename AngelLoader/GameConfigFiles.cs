@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
@@ -174,7 +173,7 @@ namespace AngelLoader
             Error soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
             if (soError != Error.None)
             {
-                Dialogs.ShowAlert(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert);
+                Core.Dialogs.ShowAlert(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert);
                 return (soError, false, "", "", false);
             }
 
@@ -312,9 +311,9 @@ namespace AngelLoader
                         "GameExe: " + gameExe,
                         ex);
 
-                    Dialogs.ShowError("Error attempting to restore previous game config file settings.\r\n" +
-                                      "Game: " + gameIndex + "\r\n" +
-                                      "Game exe: " + gameExe);
+                    Core.Dialogs.ShowError("Error attempting to restore previous game config file settings.\r\n" +
+                                           "Game: " + gameIndex + "\r\n" +
+                                           "Game exe: " + gameExe);
                 }
             }
         }

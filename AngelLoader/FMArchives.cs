@@ -123,7 +123,7 @@ namespace AngelLoader
         {
             if (!multiple && fm.MarkedUnavailable)
             {
-                Dialogs.ShowAlert(
+                Core.Dialogs.ShowAlert(
                     LText.FMDeletion.FMIsUnavailable,
                     LText.AlertMessages.Alert,
                     MBoxIcon.None);
@@ -147,7 +147,7 @@ namespace AngelLoader
 
             if (archives.Count == 0)
             {
-                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MBoxIcon.Error);
+                Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MBoxIcon.Error);
                 return;
             }
 
@@ -181,7 +181,7 @@ namespace AngelLoader
 
             if (!multiple && fm.Installed)
             {
-                (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
+                (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                     message: LText.FMDeletion.AskToUninstallFMFirst,
                     title: LText.AlertMessages.DeleteFMArchive,
                     icon: MBoxIcon.Warning,
@@ -228,7 +228,7 @@ namespace AngelLoader
                         catch (Exception ex)
                         {
                             Log("Exception deleting archive '" + archive + "'", ex);
-                            Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive);
+                            Core.Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive);
                         }
                     }
                 });
@@ -268,7 +268,7 @@ namespace AngelLoader
 
             if (fms.Count == 0)
             {
-                Dialogs.ShowAlert(
+                Core.Dialogs.ShowAlert(
                     LText.FMDeletion.FMsAreUnavailable,
                     LText.AlertMessages.Alert,
                     MBoxIcon.None);
@@ -318,13 +318,13 @@ namespace AngelLoader
             // This thing just tells you to uninstall the FMs to delete them, so it's correct functionality
             if (installedNoArchiveCount == fms.Count)
             {
-                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives, MBoxIcon.Error);
+                Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives, MBoxIcon.Error);
                 return;
             }
 
             if (installedCount > 0)
             {
-                (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
+                (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                     message: LText.FMDeletion.AskToUninstallFMFirst_Multiple,
                     title: LText.AlertMessages.DeleteFMArchives,
                     icon: MBoxIcon.Warning,
@@ -430,7 +430,7 @@ namespace AngelLoader
                                          "The passed path was:\r\n\r\n" +
                                          di + "\r\n\r\n";
                         Log(message, stackTrace: true);
-                        Dialogs.ShowError(message, owner);
+                        Core.Dialogs.ShowError(message, owner);
                         return false;
                     }
 
@@ -515,9 +515,9 @@ namespace AngelLoader
                     catch (Exception ex)
                     {
                         Log("Exception copying archive '" + file + "' to '" + destDir, ex);
-                        Dialogs.ShowError(LText.AlertMessages.AddFM_UnableToCopy +
-                                          "\r\n\r\nSource FM archive file: " + file +
-                                          "\r\n\r\nDestination directory: " + destDir);
+                        Core.Dialogs.ShowError(LText.AlertMessages.AddFM_UnableToCopy +
+                                               "\r\n\r\nSource FM archive file: " + file +
+                                               "\r\n\r\nDestination directory: " + destDir);
                     }
                 }
 

@@ -117,6 +117,21 @@ namespace AngelLoader
         void SelectBackingIndexOf(string item);
     }
 
+    public interface IViewEnvironment
+    {
+        IDialogs GetDialogs();
+    }
+
+    public interface IDialogs
+    {
+        bool AskToContinue(string message, string title, bool noIcon = false, MBoxButton defaultButton = MBoxButton.Yes);
+        (bool Cancel, bool Continue, bool DontAskAgain) AskToContinueWithCancelCustomStrings(string message, string title, MBoxIcon icon, bool showDontAskAgain, string yes, string no, string cancel, MBoxButton defaultButton = MBoxButton.Yes);
+        (bool Cancel, bool DontAskAgain) AskToContinueYesNoCustomStrings(string message, string title, MBoxIcon icon, bool showDontAskAgain, string? yes, string? no, MBoxButton defaultButton = MBoxButton.Yes);
+        void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
+        void ShowError(string message, IWin32Window owner, bool showScannerLogFile = false);
+        void ShowError(string message, bool showScannerLogFile = false);
+    }
+
     internal interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler, IMessageFilter
     {
         public bool IsHandleCreated { get; }

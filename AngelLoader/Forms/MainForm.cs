@@ -1417,7 +1417,7 @@ namespace AngelLoader.Forms
             // separate and detached thread to complete. Argh. Threading sucks.
             if (!EverythingPanel.Enabled || ViewBlocked)
             {
-                Dialogs.ShowAlert(
+                Core.Dialogs.ShowAlert(
                     LText.AlertMessages.AppClosing_OperationInProgress,
                     LText.AlertMessages.Alert);
                 e.Cancel = true;

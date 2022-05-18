@@ -3,7 +3,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    internal static class Dialogs
+    internal sealed class Dialogs : IDialogs
     {
         // Auto-invoke everything in here for convenience. Any overhead introduced by this nonsense doesn't
         // matter for dialogs.
@@ -56,7 +56,7 @@ namespace AngelLoader.Forms
         /// <param name="noIcon"></param>
         /// <param name="defaultButton"></param>
         /// <returns></returns>
-        public static bool
+        public bool
         AskToContinue(
             string message,
             string title,
@@ -104,7 +104,7 @@ namespace AngelLoader.Forms
         /// <param name="cancel"></param>
         /// <param name="defaultButton"></param>
         /// <returns></returns>
-        public static (bool Cancel, bool Continue, bool DontAskAgain)
+        public (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancelCustomStrings(
             string message,
             string title,
@@ -145,7 +145,7 @@ namespace AngelLoader.Forms
         /// <param name="no"></param>
         /// <param name="defaultButton"></param>
         /// <returns></returns>
-        public static (bool Cancel, bool DontAskAgain)
+        public (bool Cancel, bool DontAskAgain)
         AskToContinueYesNoCustomStrings(
             string message,
             string title,
@@ -178,7 +178,7 @@ namespace AngelLoader.Forms
         /// <param name="message"></param>
         /// <param name="owner"></param>
         /// <param name="showScannerLogFile"></param>
-        public static void ShowError(string message, IWin32Window owner, bool showScannerLogFile = false) =>
+        public void ShowError(string message, IWin32Window owner, bool showScannerLogFile = false) =>
             InvokeIfViewExists(() => ShowError_Internal(message, owner, showScannerLogFile));
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace AngelLoader.Forms
         /// </summary>
         /// <param name="message"></param>
         /// <param name="showScannerLogFile"></param>
-        public static void ShowError(string message, bool showScannerLogFile = false) =>
+        public void ShowError(string message, bool showScannerLogFile = false) =>
             InvokeIfViewExists(() => ShowError_Internal(message, null, showScannerLogFile));
 
         // Private method, not invoked because all calls are
@@ -211,7 +211,7 @@ namespace AngelLoader.Forms
         /// <param name="message"></param>
         /// <param name="title"></param>
         /// <param name="icon"></param>
-        public static void ShowAlert(
+        public void ShowAlert(
             string message,
             string title,
             MBoxIcon icon = MBoxIcon.Warning) => InvokeIfViewExists(() =>

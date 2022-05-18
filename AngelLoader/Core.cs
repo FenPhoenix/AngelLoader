@@ -35,9 +35,15 @@ namespace AngelLoader
         // Remove this null-handwave and get null notification on this so we don't accidentally access it when
         // it's null. But if we check it from another thread there'll be a race condition. Figure something out?
         internal static IView View = null!;
+        internal static IViewEnvironment ViewEnv = null!;
+        internal static IDialogs Dialogs = null!;
 
         internal static async void Init()
         {
+            // @WPF: We want to pass this in probably
+            ViewEnv = new FormsViewEnvironment();
+            Dialogs = ViewEnv.GetDialogs();
+
             bool openSettings = false;
             // This is if we have no config file; in that case we assume we're starting for the first time ever
             bool cleanStart = false;
@@ -200,7 +206,8 @@ namespace AngelLoader
                     findFMsTask.Wait();
                     if (ex != null)
                     {
-                        Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni, splashScreen.GetWindow());
+                        splashScreen.Hide();
+                        Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
                         EnvironmentExitDoShutdownTasks(1);
                     }
                 }

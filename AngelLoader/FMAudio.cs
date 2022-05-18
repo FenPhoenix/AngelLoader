@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -65,7 +64,7 @@ namespace AngelLoader
 
                         if (GameIsRunning(gameExe))
                         {
-                            Dialogs.ShowAlert(
+                            Core.Dialogs.ShowAlert(
                                 gameName + ":\r\n" +
                                 LText.AlertMessages.AudioConversion_GameIsRunning,
                                 LText.AlertMessages.Alert);
@@ -99,7 +98,7 @@ namespace AngelLoader
 
             if (anyInapplicable)
             {
-                (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
+                (bool cancel, _) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: LText.AlertMessages.AudioConversion_SomeSelectedFilesDoNotSupportConversion,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.None,
@@ -235,7 +234,7 @@ namespace AngelLoader
                                          "Unable to convert audio files.";
 
                         Log(message, stackTrace: true);
-                        Dialogs.ShowError(message);
+                        Core.Dialogs.ShowError(message);
                         return;
                     }
 

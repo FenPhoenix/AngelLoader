@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using static AL_Common.Common;
 using static AngelLoader.Misc;
 
@@ -60,7 +59,7 @@ namespace AngelLoader
 
                 // TODO: These messageboxes are annoying, but they prevent accidental deletion.
                 // Figure out something better.
-                bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
+                bool cont = Core.Dialogs.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
                 if (fm.Tags.ContainsKey(catText))
@@ -74,7 +73,7 @@ namespace AngelLoader
             {
                 if (tagText.IsWhiteSpace()) return false;
 
-                bool cont = Dialogs.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
+                bool cont = Core.Dialogs.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
                 if (fm.Tags.TryGetValue(catText, out FMTagsCollection tagsList) &&
