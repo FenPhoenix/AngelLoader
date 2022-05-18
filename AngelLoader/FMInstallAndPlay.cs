@@ -10,7 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using FMScanner.FastZipReader;
 using JetBrains.Annotations;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.LanguageSupport;
@@ -120,7 +119,6 @@ namespace AngelLoader
     public interface IViewEnvironment
     {
         string ProductVersion { get; }
-
         void ApplicationExit();
         IDialogs GetDialogs();
         IView GetView();
@@ -138,7 +136,7 @@ namespace AngelLoader
         void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon);
     }
 
-    public interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler, IMessageFilter
+    public interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler
     {
         #region Progress box
 

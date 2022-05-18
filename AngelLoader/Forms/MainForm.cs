@@ -57,7 +57,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class MainForm : DarkFormBase, IView
+    public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     {
         #region Private fields
 

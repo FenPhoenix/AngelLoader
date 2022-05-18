@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 using Microsoft.Win32;
 using static AL_Common.Common;
 using static AngelLoader.Logger;
@@ -17,6 +19,29 @@ namespace AngelLoader
 #if false
         internal const string AppFileName = "AngelLoader.exe";
 #endif
+
+        // We use this pulled-out Application.StartupPath code, so we don't rely on the WinForms Application class
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int GetModuleFileName(HandleRef hModule, StringBuilder buffer, int length);
+
+        private static string GetStartupPath()
+        {
+            var hModule = new HandleRef(null, IntPtr.Zero);
+            var buffer = new StringBuilder(260);
+            int num = 1;
+            int moduleFileName;
+            while ((moduleFileName = GetModuleFileName(hModule, buffer, buffer.Capacity)) == buffer.Capacity &&
+                   Marshal.GetLastWin32Error() == 122 &&
+                   buffer.Capacity < (int)short.MaxValue)
+            {
+                num += 2;
+                int capacity = num * 260 < (int)short.MaxValue ? num * 260 : (int)short.MaxValue;
+                buffer.EnsureCapacity(capacity);
+            }
+            buffer.Length = moduleFileName;
+            return Path.GetDirectoryName(buffer.ToString())!;
+        }
 
 #if DEBUG || Release_Testing
         private static string? _startup;
@@ -35,11 +60,11 @@ namespace AngelLoader
                         // if they run or compile the code. So only do the hardcoded path if my personal environment
                         // var is set. Obviously don't add this var yourself.
                         string? val = Environment.GetEnvironmentVariable("AL_FEN_PERSONAL_DEV_3053BA21", EnvironmentVariableTarget.Machine);
-                        _startup = val?.EqualsTrue() == true ? @"C:\AngelLoader" : System.Windows.Forms.Application.StartupPath;
+                        _startup = val?.EqualsTrue() == true ? @"C:\AngelLoader" : GetStartupPath();
                     }
                     catch
                     {
-                        _startup = System.Windows.Forms.Application.StartupPath;
+                        _startup = GetStartupPath();
                     }
                 }
 
@@ -47,7 +72,7 @@ namespace AngelLoader
             }
         }
 #else
-        internal static readonly string Startup = System.Windows.Forms.Application.StartupPath;
+        internal static readonly string Startup = GetStartupPath();
 #endif
 
         #endregion
