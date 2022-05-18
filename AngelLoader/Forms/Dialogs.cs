@@ -32,6 +32,22 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private static MessageBoxIcon GetIcon(MBoxIcon icon) => icon switch
+        {
+            MBoxIcon.Information => MessageBoxIcon.Information,
+            MBoxIcon.Warning => MessageBoxIcon.Warning,
+            MBoxIcon.Error => MessageBoxIcon.Error,
+            _ => MessageBoxIcon.None
+        };
+
+        private static MessageBoxButtons GetButton(MBoxButtons buttons) => buttons switch
+        {
+            MBoxButtons.OKCancel => MessageBoxButtons.OKCancel,
+            MBoxButtons.YesNo => MessageBoxButtons.YesNo,
+            MBoxButtons.YesNoCancel => MessageBoxButtons.YesNoCancel,
+            _ => MessageBoxButtons.OK
+        };
+
         /// <summary>
         /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
         /// </summary>
@@ -45,7 +61,7 @@ namespace AngelLoader.Forms
             string message,
             string title,
             bool noIcon = false,
-            DarkTaskDialog.Button defaultButton = DarkTaskDialog.Button.Yes) =>
+            MBoxButton defaultButton = MBoxButton.Yes) =>
             (bool)InvokeIfViewExists(() =>
             {
                 if (Config.DarkMode)
@@ -63,7 +79,7 @@ namespace AngelLoader.Forms
                 {
                     var mbDefaultButton = defaultButton switch
                     {
-                        DarkTaskDialog.Button.Yes => MessageBoxDefaultButton.Button1,
+                        MBoxButton.Yes => MessageBoxDefaultButton.Button1,
                         _ => MessageBoxDefaultButton.Button2
                     };
 
@@ -92,12 +108,12 @@ namespace AngelLoader.Forms
         AskToContinueWithCancelCustomStrings(
             string message,
             string title,
-            MessageBoxIcon icon,
+            MBoxIcon icon,
             bool showDontAskAgain,
             string yes,
             string no,
             string cancel,
-            DarkTaskDialog.Button defaultButton = DarkTaskDialog.Button.Yes) =>
+            MBoxButton defaultButton = MBoxButton.Yes) =>
             ((bool, bool, bool))InvokeIfViewExists(() =>
             {
                 using var d = new DarkTaskDialog(
@@ -108,7 +124,7 @@ namespace AngelLoader.Forms
                     cancelText: cancel,
                     defaultButton: defaultButton,
                     checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
-                    icon: icon);
+                    icon: GetIcon(icon));
 
                 DialogResult result = d.ShowDialogDark();
 
@@ -133,11 +149,11 @@ namespace AngelLoader.Forms
         AskToContinueYesNoCustomStrings(
             string message,
             string title,
-            MessageBoxIcon icon,
+            MBoxIcon icon,
             bool showDontAskAgain,
             string? yes,
             string? no,
-            DarkTaskDialog.Button defaultButton = DarkTaskDialog.Button.Yes) =>
+            MBoxButton defaultButton = MBoxButton.Yes) =>
             ((bool, bool))InvokeIfViewExists(() =>
             {
                 using var d = new DarkTaskDialog(
@@ -147,7 +163,7 @@ namespace AngelLoader.Forms
                     noText: no,
                     defaultButton: defaultButton,
                     checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
-                    icon: icon);
+                    icon: GetIcon(icon));
 
                 DialogResult result = d.ShowDialogDark();
 
@@ -198,21 +214,21 @@ namespace AngelLoader.Forms
         public static void ShowAlert(
             string message,
             string title,
-            MessageBoxIcon icon = MessageBoxIcon.Warning) => InvokeIfViewExists(() =>
+            MBoxIcon icon = MBoxIcon.Warning) => InvokeIfViewExists(() =>
             {
                 if (Config.DarkMode)
                 {
                     using var d = new DarkTaskDialog(
                         message: message,
                         title: title,
-                        icon: icon,
+                        icon: GetIcon(icon),
                         yesText: LText.Global.OK,
-                        defaultButton: DarkTaskDialog.Button.Yes);
+                        defaultButton: MBoxButton.Yes);
                     d.ShowDialogDark();
                 }
                 else
                 {
-                    MessageBox.Show(message, title, MessageBoxButtons.OK, icon);
+                    MessageBox.Show(message, title, MessageBoxButtons.OK, GetIcon(icon));
                 }
             });
     }

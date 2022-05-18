@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
@@ -103,11 +102,11 @@ namespace AngelLoader
                 (bool cancel, _) = Dialogs.AskToContinueYesNoCustomStrings(
                     message: LText.AlertMessages.AudioConversion_SomeSelectedFilesDoNotSupportConversion,
                     title: LText.AlertMessages.Alert,
-                    icon: MessageBoxIcon.None,
+                    icon: MBoxIcon.None,
                     showDontAskAgain: false,
                     yes: LText.Global.Continue,
                     no: LText.Global.Cancel,
-                    defaultButton: DarkTaskDialog.Button.Yes
+                    defaultButton: MBoxButton.Yes
                 );
                 if (cancel) return;
             }

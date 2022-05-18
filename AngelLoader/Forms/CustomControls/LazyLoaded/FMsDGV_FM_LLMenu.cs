@@ -802,7 +802,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 bool doFinishedOnUnknown = Dialogs.AskToContinue(
                     LText.AlertMessages.FinishedOnUnknown_MultiFMChange,
                     LText.AlertMessages.Alert,
-                    defaultButton: DarkTaskDialog.Button.No
+                    defaultButton: MBoxButton.No
                 );
                 if (!doFinishedOnUnknown)
                 {

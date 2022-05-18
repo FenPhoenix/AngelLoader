@@ -15,14 +15,6 @@ namespace AngelLoader.Forms
         [PublicAPI]
         public bool IsVerificationChecked => VerificationCheckBox.Checked;
 
-        [PublicAPI]
-        public enum Button
-        {
-            Yes,
-            No,
-            Cancel
-        }
-
         #endregion
 
         [PublicAPI]
@@ -35,7 +27,7 @@ namespace AngelLoader.Forms
             string? cancelText = null,
             string? checkBoxText = null,
             bool? checkBoxChecked = null,
-            Button defaultButton = Button.Cancel)
+            MBoxButton defaultButton = MBoxButton.Cancel)
         {
             // All numbers are just matching the original Win32 task dialog as closely as possible. Don't worry
             // about them.
@@ -97,7 +89,7 @@ namespace AngelLoader.Forms
 
             CancelButton = cancelButtonVisible ? Cancel_Button : noButtonVisible ? NoButton : YesButton;
 
-            static void ThrowForDefaultButton(Button button) => throw new ArgumentException("Default button not visible: " + button);
+            static void ThrowForDefaultButton(MBoxButton button) => throw new ArgumentException("Default button not visible: " + button);
 
             NoButton.DialogResult = DialogResult.No;
             YesButton.DialogResult = DialogResult.Yes;
@@ -105,17 +97,17 @@ namespace AngelLoader.Forms
 
             switch (defaultButton)
             {
-                case Button.Yes:
-                    if (!yesButtonVisible) ThrowForDefaultButton(Button.Yes);
+                case MBoxButton.Yes:
+                    if (!yesButtonVisible) ThrowForDefaultButton(MBoxButton.Yes);
                     AcceptButton = YesButton;
                     break;
-                case Button.No:
-                    if (!noButtonVisible) ThrowForDefaultButton(Button.No);
+                case MBoxButton.No:
+                    if (!noButtonVisible) ThrowForDefaultButton(MBoxButton.No);
                     AcceptButton = NoButton;
                     break;
-                case Button.Cancel:
+                case MBoxButton.Cancel:
                 default:
-                    if (!cancelButtonVisible) ThrowForDefaultButton(Button.Cancel);
+                    if (!cancelButtonVisible) ThrowForDefaultButton(MBoxButton.Cancel);
                     AcceptButton = Cancel_Button;
                     break;
             }

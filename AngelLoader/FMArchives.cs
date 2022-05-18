@@ -126,7 +126,7 @@ namespace AngelLoader
                 Dialogs.ShowAlert(
                     LText.FMDeletion.FMIsUnavailable,
                     LText.AlertMessages.Alert,
-                    MessageBoxIcon.None);
+                    MBoxIcon.None);
                 return;
             }
 
@@ -147,7 +147,7 @@ namespace AngelLoader
 
             if (archives.Count == 0)
             {
-                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MessageBoxIcon.Error);
+                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MBoxIcon.Error);
                 return;
             }
 
@@ -184,7 +184,7 @@ namespace AngelLoader
                 (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
                     message: LText.FMDeletion.AskToUninstallFMFirst,
                     title: LText.AlertMessages.DeleteFMArchive,
-                    icon: MessageBoxIcon.Warning,
+                    icon: MBoxIcon.Warning,
                     showDontAskAgain: false,
                     yes: LText.AlertMessages.Uninstall,
                     no: LText.AlertMessages.LeaveInstalled,
@@ -271,7 +271,7 @@ namespace AngelLoader
                 Dialogs.ShowAlert(
                     LText.FMDeletion.FMsAreUnavailable,
                     LText.AlertMessages.Alert,
-                    MessageBoxIcon.None);
+                    MBoxIcon.None);
                 return;
             }
 
@@ -318,7 +318,7 @@ namespace AngelLoader
             // This thing just tells you to uninstall the FMs to delete them, so it's correct functionality
             if (installedNoArchiveCount == fms.Count)
             {
-                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives, MessageBoxIcon.Error);
+                Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives, MBoxIcon.Error);
                 return;
             }
 
@@ -327,7 +327,7 @@ namespace AngelLoader
                 (bool cancel, bool cont, _) = Dialogs.AskToContinueWithCancelCustomStrings(
                     message: LText.FMDeletion.AskToUninstallFMFirst_Multiple,
                     title: LText.AlertMessages.DeleteFMArchives,
-                    icon: MessageBoxIcon.Warning,
+                    icon: MBoxIcon.Warning,
                     showDontAskAgain: false,
                     yes: LText.AlertMessages.Uninstall,
                     no: LText.AlertMessages.LeaveInstalled,

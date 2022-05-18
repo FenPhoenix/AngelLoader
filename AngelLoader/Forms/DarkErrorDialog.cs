@@ -18,7 +18,7 @@ namespace AngelLoader.Forms
                 icon: MessageBoxIcon.Error,
                 yesText: LText.AlertMessages.Error_ViewLog,
                 noText: LText.Global.OK,
-                defaultButton: Button.Yes)
+                defaultButton: MBoxButton.Yes)
         {
             _logFile = logFile;
 
