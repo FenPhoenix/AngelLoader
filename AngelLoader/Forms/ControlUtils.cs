@@ -429,12 +429,13 @@ namespace AngelLoader.Forms
         /// dialog (half-dark tooltips, dark scrollbars, etc.)
         /// </summary>
         /// <param name="dialog"></param>
+        /// <param name="owner"></param>
         /// <returns></returns>
-        internal static DialogResult ShowDialogDark(this CommonDialog dialog)
+        internal static DialogResult ShowDialogDark(this CommonDialog dialog, IWin32Window? owner)
         {
             using (Config.DarkMode ? new Win32ThemeHooks.DialogScope() : null)
             {
-                return dialog.ShowDialog();
+                return dialog.ShowDialog(owner);
             }
         }
 
@@ -453,7 +454,7 @@ namespace AngelLoader.Forms
         /// <param name="dialog"></param>
         /// <param name="owner"></param>
         /// <returns></returns>
-        internal static DialogResult ShowDialogDark(this Form dialog, IWin32Window owner) => dialog.ShowDialog(owner);
+        internal static DialogResult ShowDialogDark(this Form dialog, IWin32Window? owner) => dialog.ShowDialog(owner);
 
         #endregion
 

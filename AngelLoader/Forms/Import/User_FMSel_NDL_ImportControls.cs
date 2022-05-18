@@ -98,7 +98,7 @@ namespace AngelLoader.Forms
             {
                 Filter = LText.BrowseDialogs.IniFiles + "|*.ini|" + LText.BrowseDialogs.AllFiles + "|*.*"
             };
-            if (d.ShowDialogDark() != DialogResult.OK) return;
+            if (d.ShowDialogDark(FindForm()) != DialogResult.OK) return;
 
             var tb = GameIniItems.First(x => x.BrowseButton == sender).TextBox;
             tb.Text = d.FileName;

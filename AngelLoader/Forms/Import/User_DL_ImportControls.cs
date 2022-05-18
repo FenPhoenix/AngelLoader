@@ -26,7 +26,7 @@ namespace AngelLoader.Forms
             {
                 Filter = LText.BrowseDialogs.IniFiles + "|*.ini|" + LText.BrowseDialogs.AllFiles + "|*.*"
             };
-            if (d.ShowDialogDark() != DialogResult.OK) return;
+            if (d.ShowDialogDark(FindForm()) != DialogResult.OK) return;
 
             DarkLoaderIniTextBox.Text = d.FileName;
         }

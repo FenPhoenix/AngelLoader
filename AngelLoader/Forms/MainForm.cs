@@ -2024,7 +2024,7 @@ namespace AngelLoader.Forms
         internal void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new GameVersionsForm();
-            f.ShowDialogDark();
+            f.ShowDialogDark(this);
         }
 
         internal async void ImportMenuItems_Click(object sender, EventArgs e)
@@ -2045,7 +2045,7 @@ namespace AngelLoader.Forms
         internal void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new GlobalFMStatsForm();
-            f.ShowDialogDark();
+            f.ShowDialogDark(this);
         }
 #endif
 
@@ -2054,7 +2054,7 @@ namespace AngelLoader.Forms
         internal void AboutMenuItem_Click(object sender, EventArgs e)
         {
             using var f = new AboutForm();
-            f.ShowDialogDark();
+            f.ShowDialogDark(this);
         }
 
         internal void Exit_Click(object sender, EventArgs e) => Close();
@@ -2428,7 +2428,7 @@ namespace AngelLoader.Forms
                         FilterIconButtonsToolStrip.Location.X + button.Bounds.X,
                         FilterIconButtonsToolStrip.Location.Y + button.Bounds.Y + button.Height));
 
-                    if (f.ShowDialogDark() != DialogResult.OK) return;
+                    if (f.ShowDialogDark(this) != DialogResult.OK) return;
 
                     FMsDGV.Filter.SetDateFromAndTo(lastPlayed, f.DateFrom, f.DateTo);
 
@@ -2440,7 +2440,7 @@ namespace AngelLoader.Forms
             else if (sender == FilterByTagsButton)
             {
                 using var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags);
-                if (tf.ShowDialogDark() != DialogResult.OK) return;
+                if (tf.ShowDialogDark(this) != DialogResult.OK) return;
 
                 tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
                 FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
@@ -2458,7 +2458,7 @@ namespace AngelLoader.Forms
                             FilterByRatingButton.Bounds.Y +
                             FilterByRatingButton.Height));
 
-                    if (f.ShowDialogDark() != DialogResult.OK) return;
+                    if (f.ShowDialogDark(this) != DialogResult.OK) return;
                     FMsDGV.Filter.SetRatingFromAndTo(f.RatingFrom, f.RatingTo);
                     FilterByRatingButton.Checked =
                         !(FMsDGV.Filter.RatingFrom == -1 && FMsDGV.Filter.RatingTo == 10);
@@ -3488,7 +3488,7 @@ namespace AngelLoader.Forms
             {
                 d.Multiselect = true;
                 d.Filter = LText.BrowseDialogs.DMLFiles + "|*.dml";
-                if (d.ShowDialogDark() != DialogResult.OK || d.FileNames.Length == 0) return;
+                if (d.ShowDialogDark(this) != DialogResult.OK || d.FileNames.Length == 0) return;
                 dmlFiles.AddRange(d.FileNames);
             }
 
@@ -5621,7 +5621,7 @@ namespace AngelLoader.Forms
         ShowScanAllFMsWindow()
         {
             using var f = new ScanAllFMsForm();
-            return (f.ShowDialogDark() == DialogResult.OK, f.ScanOptions, f.NoneSelected);
+            return (f.ShowDialogDark(this) == DialogResult.OK, f.ScanOptions, f.NoneSelected);
         }
 
         public (bool Accepted, List<string> SelectedItems)
