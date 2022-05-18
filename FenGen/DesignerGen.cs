@@ -10,9 +10,11 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static FenGen.Misc;
 
-// @WPF: This whole thing is WinForms-specific
-
 /*
+@WPF(FenGen/DesignerGen): This whole thing is WinForms-specific, but:
+It only generates into *.Designer.cs files marked with attributes, so it won't mess with WPF and if we removed
+WinForms it would just be a no-op, so let's just leave it as is.
+
 MainForm gen notes:
 [ ] Remove tab control images
 

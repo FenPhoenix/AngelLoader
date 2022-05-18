@@ -7,6 +7,9 @@ using System.Xml;
 
 namespace FenGen
 {
+    // @WPF(FenGen/ExcludeResx): This thing might be WinForms specific, are resx files WinForms specific?
+    // If so, I guess we're fine since if WPF doesn't use .resx files then it won't affect it. But if it does,
+    // we might have to get rid of this. Unless WPF doesn't need them either.
     internal static class ExcludeResx
     {
         private const string _itemGroupName = "ItemGroup";
