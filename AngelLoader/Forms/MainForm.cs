@@ -5616,5 +5616,12 @@ namespace AngelLoader.Forms
             if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
             Activate();
         }
+
+        public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
+        ShowScanAllFMsWindow()
+        {
+            using var f = new ScanAllFMsForm();
+            return (f.ShowDialogDark() == DialogResult.OK, f.ScanOptions, f.NoneSelected);
+        }
     }
 }

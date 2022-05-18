@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.ThemeRenderers;
 using EasyHook;
 using ScrollBarRenderer = AngelLoader.Forms.ThemeRenderers.ScrollBarRenderer;
@@ -94,6 +93,16 @@ namespace AngelLoader.Forms.WinFormsNative
         internal static Override SysColorOverride = Override.None;
 
         #endregion
+
+        private static readonly IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
+        private static readonly IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
+        private static readonly IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
+        private static readonly IntPtr SysColorBrush_Fen_HighlightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText));
+        private static readonly IntPtr SysColorBrush_Fen_ControlBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground));
+        private static readonly IntPtr SysColorBrush_DisabledText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText));
+        private static readonly IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
+        private static readonly IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
+        private static readonly IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
 
         internal static void InstallHooks()
         {
@@ -306,27 +315,27 @@ namespace AngelLoader.Forms.WinFormsNative
                 {
                     Override.Full => nIndex switch
                     {
-                        COLOR_WINDOW => DarkColors.SysColorBrush_LightBackground,
-                        COLOR_WINDOWTEXT => DarkColors.SysColorBrush_LightText,
-                        COLOR_HIGHLIGHT => DarkColors.SysColorBrush_BlueSelection,
-                        COLOR_HIGHLIGHT_TEXT => DarkColors.SysColorBrush_Fen_HighlightText,
-                        COLOR_3DFACE => DarkColors.SysColorBrush_Fen_ControlBackground,
-                        COLOR_GRAYTEXT => DarkColors.SysColorBrush_DisabledText,
+                        COLOR_WINDOW => SysColorBrush_LightBackground,
+                        COLOR_WINDOWTEXT => SysColorBrush_LightText,
+                        COLOR_HIGHLIGHT => SysColorBrush_BlueSelection,
+                        COLOR_HIGHLIGHT_TEXT => SysColorBrush_Fen_HighlightText,
+                        COLOR_3DFACE => SysColorBrush_Fen_ControlBackground,
+                        COLOR_GRAYTEXT => SysColorBrush_DisabledText,
                         _ => GetSysColorBrushOriginal!(nIndex)
                     },
                     Override.RichText => nIndex switch
                     {
                         // Darker background, more desaturated foreground color
-                        COLOR_WINDOW => DarkColors.SysColorBrush_Fen_DarkBackground,
-                        COLOR_WINDOWTEXT => DarkColors.SysColorBrush_Fen_DarkForeground,
-                        COLOR_HIGHLIGHT => DarkColors.SysColorBrush_BlueSelection,
-                        COLOR_HIGHLIGHT_TEXT => DarkColors.SysColorBrush_Fen_HighlightText,
+                        COLOR_WINDOW => SysColorBrush_Fen_DarkBackground,
+                        COLOR_WINDOWTEXT => SysColorBrush_Fen_DarkForeground,
+                        COLOR_HIGHLIGHT => SysColorBrush_BlueSelection,
+                        COLOR_HIGHLIGHT_TEXT => SysColorBrush_Fen_HighlightText,
                         _ => GetSysColorBrushOriginal!(nIndex)
                     },
                     // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
                     // This is the ONLY way that works on those versions.
                     _ => nIndex == COLOR_3DFACE
-                        ? DarkColors.SysColorBrush_DarkBackground
+                        ? SysColorBrush_DarkBackground
                         : GetSysColorBrushOriginal!(nIndex)
                 };
             }

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -379,14 +377,10 @@ namespace AngelLoader
 
         private static FMScanner.ScanOptions? GetScanOptionsFromDialog()
         {
-            FMScanner.ScanOptions? scanOptions = null;
-            bool noneSelected;
-            using (var f = new ScanAllFMsForm())
-            {
-                if (f.ShowDialogDark() != DialogResult.OK) return null;
-                noneSelected = f.NoneSelected;
-                if (!noneSelected) scanOptions = f.ScanOptions;
-            }
+            (bool accepted, FMScanner.ScanOptions scanOptions, bool noneSelected) =
+                Core.View.ShowScanAllFMsWindow();
+
+            if (!accepted) return null;
 
             if (noneSelected)
             {

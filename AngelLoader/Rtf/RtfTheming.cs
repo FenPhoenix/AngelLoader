@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using AngelLoader.Forms.CustomControls;
 using static AL_Common.Common;
 
 namespace AngelLoader

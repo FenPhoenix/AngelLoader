@@ -1,9 +1,7 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using AngelLoader.Forms.WinFormsNative;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader
 {
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class DarkColors
@@ -153,15 +151,5 @@ namespace AngelLoader.Forms.CustomControls
         public static readonly SolidBrush PinnedBackgroundDarkBrush = new SolidBrush(PinnedBackgroundDark);
 
         #endregion
-
-        public static IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(LightBackground));
-        public static IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(LightText));
-        public static IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(BlueSelection));
-        public static IntPtr SysColorBrush_Fen_HighlightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_HighlightText));
-        public static IntPtr SysColorBrush_Fen_ControlBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_ControlBackground));
-        public static IntPtr SysColorBrush_DisabledText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DisabledText));
-        public static IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_DarkBackground));
-        public static IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(Fen_DarkForeground));
-        public static IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkBackground));
     }
 }

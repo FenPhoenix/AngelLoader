@@ -407,5 +407,6 @@ namespace AngelLoader
         FanMission? GetFMFromIndex(int index);
         FanMission[] GetSelectedFMs_InOrder();
         List<FanMission> GetSelectedFMs_InOrder_List();
+        (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow();
     }
 }

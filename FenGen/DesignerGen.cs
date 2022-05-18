@@ -10,6 +10,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static FenGen.Misc;
 
+// @WPF: This whole thing is WinForms-specific
+
 /*
 MainForm gen notes:
 [ ] Remove tab control images

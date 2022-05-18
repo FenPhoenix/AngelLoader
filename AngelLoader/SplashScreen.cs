@@ -7,6 +7,7 @@ namespace AngelLoader
 {
     // Slim wrapper around the splash screen form for cleanliness (and so we can translate a Dispose() call to a
     // ProgrammaticClose() call on the form).
+    // @WPF: Make the splash screen UI framework-agnostic like the rest
     internal sealed class SplashScreen : IDisposable, ISplashScreen_Safe
     {
         private readonly SplashScreenForm _splashScreenForm;
