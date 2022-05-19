@@ -18,8 +18,6 @@ the scroll bar was).
 
 @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 
-@MULTISEL: Test game tabs mode.
-
 @MULTISEL: When switching game tabs, multi-selections are not saved. Do we want this behavior or no?
 This is part of the decision of "how temporary" do we want multi-selections to be.
 
