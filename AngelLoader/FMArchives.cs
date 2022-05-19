@@ -510,10 +510,9 @@ namespace AngelLoader
                     {
                         Log("Exception copying archive '" + file + "' to '" + destDir, ex);
                         Core.Dialogs.ShowError(
-                            LText.AlertMessages.AddFM_UnableToCopy +
-                            // @vNext: Uh, do we want to localize these two strings here?
-                            "\r\n\r\nSource FM archive file: " + file +
-                            "\r\n\r\nDestination directory: " + destDir);
+                            LText.AlertMessages.AddFM_UnableToCopyFMArchive + "\r\n\r\n" +
+                            LText.AlertMessages.AddFM_FMArchiveFile + file + "\r\n\r\n" +
+                            LText.AlertMessages.AddFM_DestinationDir + destDir);
                     }
                 }
 

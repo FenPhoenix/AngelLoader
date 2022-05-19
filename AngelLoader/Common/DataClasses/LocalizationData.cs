@@ -254,7 +254,9 @@ namespace AngelLoader.DataClasses
             internal readonly string Help_HelpFileNotFound = "Help file not found.";
             internal readonly string Help_UnableToOpenHelpFile = "Unable to open help file.";
             [FenGenBlankLine]
-            internal readonly string AddFM_UnableToCopy = "Unable to copy FM.";
+            internal readonly string AddFM_UnableToCopyFMArchive = "Unable to copy FM archive to the selected directory.";
+            internal readonly string AddFM_FMArchiveFile = "FM archive file: ";
+            internal readonly string AddFM_DestinationDir = "Destination directory: ";
             [FenGenBlankLine]
             [FenGenComment("Text for the button in the Error dialog box that lets the user view the error log file.")]
             internal readonly string Error_ViewLog = "View log";
