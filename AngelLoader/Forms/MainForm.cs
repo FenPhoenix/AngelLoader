@@ -4864,6 +4864,8 @@ namespace AngelLoader.Forms
             }
 
             _displayedFM = null;
+
+            SetTopRightBlockerVisible();
         }
 
         private void HidePatchSectionWithMessage(string message)
