@@ -453,8 +453,6 @@ namespace AngelLoader
 
             Config.ConfirmBeforeInstall = outConfig.ConfirmBeforeInstall;
 
-            Config.CheckFreeDiskSpaceOnInstall = outConfig.CheckFreeDiskSpaceOnInstall;
-
             Config.ConfirmUninstall = outConfig.ConfirmUninstall;
 
             Config.BackupFMData = outConfig.BackupFMData;

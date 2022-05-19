@@ -443,8 +443,6 @@ namespace AngelLoader.DataClasses
 
         internal ConfirmBeforeInstall ConfirmBeforeInstall = ConfirmBeforeInstall.OnlyForMultiple;
 
-        internal bool CheckFreeDiskSpaceOnInstall;
-
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed;

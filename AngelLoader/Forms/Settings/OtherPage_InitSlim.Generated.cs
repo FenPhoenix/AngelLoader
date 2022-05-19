@@ -9,7 +9,6 @@
         {
             this.PagePanel = new System.Windows.Forms.Panel();
             this.InstallingFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.CheckDiskSpaceOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.Install_ConfirmNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmMultipleOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmAlwaysRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -49,33 +48,22 @@
             this.PagePanel.Controls.Add(this.FMFileConversionGroupBox);
             this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagePanel.Size = new System.Drawing.Size(440, 610);
+            this.PagePanel.Size = new System.Drawing.Size(440, 568);
             this.PagePanel.TabIndex = 0;
             // 
             // InstallingFMsGroupBox
             // 
             this.InstallingFMsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.InstallingFMsGroupBox.Controls.Add(this.CheckDiskSpaceOnInstallCheckBox);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmNeverRadioButton);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmMultipleOnlyRadioButton);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmAlwaysRadioButton);
             this.InstallingFMsGroupBox.Controls.Add(this.ConfirmBeforeInstallLabel);
             this.InstallingFMsGroupBox.Location = new System.Drawing.Point(8, 100);
             this.InstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-            this.InstallingFMsGroupBox.Size = new System.Drawing.Size(424, 164);
+            this.InstallingFMsGroupBox.Size = new System.Drawing.Size(424, 124);
             this.InstallingFMsGroupBox.TabIndex = 1;
             this.InstallingFMsGroupBox.TabStop = false;
-            // 
-            // CheckDiskSpaceOnInstallCheckBox
-            // 
-            this.CheckDiskSpaceOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.CheckDiskSpaceOnInstallCheckBox.Checked = true;
-            this.CheckDiskSpaceOnInstallCheckBox.Location = new System.Drawing.Point(16, 120);
-            this.CheckDiskSpaceOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
-            this.CheckDiskSpaceOnInstallCheckBox.TabIndex = 4;
-            this.CheckDiskSpaceOnInstallCheckBox.UseVisualStyleBackColor = true;
             // 
             // Install_ConfirmNeverRadioButton
             // 
@@ -111,7 +99,7 @@
             this.PlayFMOnDCOrEnterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
-            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 544);
+            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 504);
             this.PlayFMOnDCOrEnterGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
             this.PlayFMOnDCOrEnterGroupBox.TabIndex = 4;
@@ -133,7 +121,7 @@
             this.WebSearchGroupBox.Controls.Add(this.WebSearchTitleExplanationLabel);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlTextBox);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlLabel);
-            this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 428);
+            this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 388);
             this.WebSearchGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 108);
             this.WebSearchGroupBox.TabIndex = 3;
@@ -180,7 +168,7 @@
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAlwaysAskCheckBox);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAllChangedDataRadioButton);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
-            this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 272);
+            this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 232);
             this.UninstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 148);
             this.UninstallingFMsGroupBox.TabIndex = 2;
@@ -266,7 +254,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
-            this.Size = new System.Drawing.Size(440, 610);
+            this.Size = new System.Drawing.Size(440, 568);
             this.PagePanel.ResumeLayout(false);
             this.InstallingFMsGroupBox.ResumeLayout(false);
             this.InstallingFMsGroupBox.PerformLayout();
