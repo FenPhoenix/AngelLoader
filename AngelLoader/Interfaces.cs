@@ -173,7 +173,7 @@ namespace AngelLoader
         /// <para/>
         /// Null parameters mean explicitly set the defaults.
         /// </summary>
-        /// <param name="showCheck"></param>
+        /// <param name="showCheckBox"></param>
         /// <param name="mainMessage1"></param>
         /// <param name="mainMessage2"></param>
         /// <param name="mainProgressType"></param>
@@ -183,7 +183,7 @@ namespace AngelLoader
         /// <param name="checkBoxAction"></param>
         /// <param name="cancelMessage"></param>
         /// <param name="cancelAction"></param>
-        void ShowProgressBox_Double(bool? showCheck = null, string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, string? checkBoxMessage = null, Action<bool>? checkBoxAction = null, string? cancelMessage = null, Action? cancelAction = null);
+        void ShowProgressBox_Double(bool? showCheckBox = null, string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, string? checkBoxMessage = null, Action<bool>? checkBoxAction = null, string? cancelMessage = null, Action? cancelAction = null);
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
