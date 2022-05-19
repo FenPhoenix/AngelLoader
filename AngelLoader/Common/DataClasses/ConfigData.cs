@@ -432,7 +432,7 @@ namespace AngelLoader.DataClasses
 
         internal bool EnableCharacterDetailFix = true;
 
-        internal bool PlayOriginalSeparateButtons = true;
+        internal bool PlayOriginalSeparateButtons;
 
         internal ConfirmBeforeInstall ConfirmBeforeInstall = ConfirmBeforeInstall.OnlyForMultiple;
 
