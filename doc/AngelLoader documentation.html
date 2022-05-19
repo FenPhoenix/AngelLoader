@@ -463,15 +463,16 @@ The settings here are the same as the <a href="#initial_setup">Initial Setup win
 
 <h3><a name="settings_appearance_section" />Appearance section</h3>
 
-<p><img src="images/setup_appearance_tab.png" /></p>
-
 <h4>Language</h4>
+<p><img src="images/settings_appr_lang.png" /></p>
 If other languages are available, you can choose them here. Changes will take effect immediately.
 
 <h4>Theme</h4>
+<p><img src="images/settings_appr_theme.png" /></p>
 Here you can choose either the classic Windows theme or dark mode. Changes will take effect immediately.
 
 <h4>Game organization</h4>
+<p><img src="images/settings_appr_game_org.png" /></p>
 Here you can choose to either organize games into their own tabs, or to display your FMs as one list and allow filtering by game. When game tabs are enabled, each game will have its own selected FM and set of filters that will be retained between tab switches. Organizing games by tab can make things cleaner, but if you want to filter without regard to game (say, to find all missions by a single author who has released missions for multiple games), then having one list with game filters will work better.
 
 <p>
@@ -479,27 +480,38 @@ Here you can choose to either organize games into their own tabs, or to display 
 </p>
 
 <h4><a name="settings_sorting" />Sorting</h4>
+<p><img src="images/settings_appr_sort.png" /></p>
 Here you can choose to ignore leading articles when sorting FMs. For example, the FM "The Seven Sisters" will be considered to start with an "S". If you choose to move articles to the end of names when displaying them, then "The Seven Sisters" will be displayed as "Seven Sisters, The". The default set of articles is "a, an, the", but you can add more (for example to support other languages). These articles are not part of the normal localization functionality, because they apply to fan mission names, which can be any language; therefore the app-wide language setting doesn't apply to them.
 
 <h4><a name="settings_rating_display_style" />Rating display style</h4>
+<p><img src="images/settings_appr_rating.png" /></p>
 Here you can choose the style in which to display an FM's rating (0-10, 0-5, or 0-5 with stars).
 
 <h4><a name="settings_date_format" />Date format</h4>
+<p><img src="images/settings_appr_date.png" /></p>
 Here you can choose how to display dates: either in the short or long form of your PC's current culture, or a custom format.
 
 <h4><a name="settings_days_recent" />Recent FMs</h4>
+<p><img src="images/settings_appr_recent.png" /></p>
 When choosing to <a href="#show_recent_at_top">show recently added FMs at the top of the list</a>, only FMs added within the selected number of days will be included.
 
-<h4>Hide "Install / Uninstall FM" button</h4>
+<h4>Show or hide interface elements</h4>
+<p><img src="images/settings_appr_hide.png" /></p>
+<b>Hide "Install / Uninstall FM" button:</b><br>
 For extra-strength misclick prevention, enable this. You will still be able to install and uninstall FMs from the <a href="#fm_context_menu">FM context menu</a>.
+<p/>
 
-<h4>Hide FM list zoom buttons</h4>
+<b>Hide FM list zoom buttons:</b><br>
 Since you can zoom the FMs list with the keyboard or Ctrl+mousewheel, you can hide these buttons to free up room.
+<p/>
 
-<h4>Hide exit button</h4>
+<b>Hide exit button:</b><br>
 Allows you to show or hide an Exit button in the bottom-right corner of the main window, similar to FMSel.
+<p/>
 
-<h4>Use a fixed-width font when displaying plain text</h4>
+<h4>Readme box</h4>
+<p><img src="images/settings_appr_readme.png" /></p>
+<b>Use a fixed-width font when displaying plain text:</b><br>
 Some readmes may look better when displayed in a fixed-width font. This option only applies to plain text readme files; other file types will use their own fonts. This behavior matches DarkLoader.
 
 <h3><a name="settings_other_section" />Other section</h3>
@@ -514,6 +526,9 @@ Depending on your setup, .wav files that are higher than 16 bit may cause audio 
 Quoted from the FMSel manual:<br>
 <i>The game </i>can<i> play OGG files but it can under some circumstance cause short hiccups, on less powerful computers, performance heavy missions or with large OGG files. In such cases it might help to convert them to WAV files during installation</i>.<br>
 <b>This option has no effect for Thief: Deadly Shadows.</b>
+
+<h4>Installing FMs</h4>
+Choose whether to be prompted before installing FM(s). Because an unlimited number of FMs can be installed at once, free disk space checks can be performed before installing. However, these can be slow and probably won't be needed in most cases, so they're disabled by default.
 
 <h4>Confirm before uninstalling</h4>
 If this is enabled, you will be prompted for confirmation when uninstalling an FM.

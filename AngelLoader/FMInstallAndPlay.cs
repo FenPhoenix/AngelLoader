@@ -1034,71 +1034,70 @@ namespace AngelLoader
                             checkBoxMessage: LText.ProgressBox.DontCheckFreeDiskSpaceNextTime,
                             checkBoxAction: value => Config.CheckFreeDiskSpaceOnInstall = !value,
                         message1: LText.ProgressBox.CheckingFreeSpace);
-                    }
 
-                    #region Free space checks
+                        #region Free space checks
 
-                    bool success = GetDriveDataDict(fms, out var errorPaths, out var driveDataDict);
+                        bool success = GetDriveDataDict(fms, out var errorPaths, out var driveDataDict);
 
-                    if (_installCts.IsCancellationRequested) return false;
+                        if (_installCts.IsCancellationRequested) return false;
 
-                    if (!success)
-                    {
-                        var hash = new HashSetI(errorPaths.Count);
-                        for (int i = 0; i < errorPaths.Count; i++)
+                        if (!success)
                         {
-                            string errorPath = errorPaths[i];
-                            string root = GetPathRootSafe(errorPath);
-                            hash.Add(!root.IsEmpty() ? root : errorPath);
-                        }
-
-                        string errorText = "";
-                        errorText = AppendErrorText(errorText, hash, useCalcFailedLines: true);
-
-                        bool cancel = !ShowDiskSpaceErrorDialog(
-                            errorText +
-                            LText.AlertMessages.Install_ContinueAfterErrorWarning);
-                        if (cancel) return false;
-                    }
-
-                    using (var bundle = new ZipReusableBundle())
-                    {
-                        FileNameBoth? darkLoaderArchiveFiles = null;
-                        for (int i = 0; i < fmDataList.Length; i++)
-                        {
-                            var fmData = fmDataList[i];
-
-                            if (fmData.ArchivePath.IsEmpty() || fmData.FM.MarkedUnavailable) continue;
-
-                            if (!driveDataDict.TryGetValue(GetPathRootSafe(fmData.InstBasePath), out DriveData driveData))
+                            var hash = new HashSetI(errorPaths.Count);
+                            for (int i = 0; i < errorPaths.Count; i++)
                             {
-                                continue;
+                                string errorPath = errorPaths[i];
+                                string root = GetPathRootSafe(errorPath);
+                                hash.Add(!root.IsEmpty() ? root : errorPath);
                             }
 
-                            if (!AddArchiveExtractedSize(fmData.ArchivePath, driveData, bundle)) return false;
+                            string errorText = "";
+                            errorText = AppendErrorText(errorText, hash, useCalcFailedLines: true);
 
-                            if (_installCts.IsCancellationRequested) return false;
+                            bool cancel = !ShowDiskSpaceErrorDialog(
+                                errorText +
+                                LText.AlertMessages.Install_ContinueAfterErrorWarning);
+                            if (cancel) return false;
+                        }
 
-                            var backupFile = GetBackupFile(
-                                fmData.FM,
-                                cachedDarkLoaderFiles: darkLoaderArchiveFiles,
-                                cachedFMArchivePaths: fmArchivePaths);
-
-                            if (_installCts.IsCancellationRequested) return false;
-
-                            darkLoaderArchiveFiles = backupFile.Cached_DarkLoaderBackups;
-                            fmArchivePaths = backupFile.Cached_NewBackups;
-
-                            if (backupFile.Found)
+                        using (var bundle = new ZipReusableBundle())
+                        {
+                            FileNameBoth? darkLoaderArchiveFiles = null;
+                            for (int i = 0; i < fmDataList.Length; i++)
                             {
-                                if (!AddArchiveExtractedSize(backupFile.Name, driveData, bundle)) return false;
+                                var fmData = fmDataList[i];
+
+                                if (fmData.ArchivePath.IsEmpty() || fmData.FM.MarkedUnavailable) continue;
+
+                                if (!driveDataDict.TryGetValue(GetPathRootSafe(fmData.InstBasePath), out DriveData driveData))
+                                {
+                                    continue;
+                                }
+
+                                if (!AddArchiveExtractedSize(fmData.ArchivePath, driveData, bundle)) return false;
 
                                 if (_installCts.IsCancellationRequested) return false;
 
-                                fmData.BackupFile = backupFile;
+                                var backupFile = GetBackupFile(
+                                    fmData.FM,
+                                    cachedDarkLoaderFiles: darkLoaderArchiveFiles,
+                                    cachedFMArchivePaths: fmArchivePaths);
+
+                                if (_installCts.IsCancellationRequested) return false;
+
+                                darkLoaderArchiveFiles = backupFile.Cached_DarkLoaderBackups;
+                                fmArchivePaths = backupFile.Cached_NewBackups;
+
+                                if (backupFile.Found)
+                                {
+                                    if (!AddArchiveExtractedSize(backupFile.Name, driveData, bundle)) return false;
+
+                                    if (_installCts.IsCancellationRequested) return false;
+
+                                    fmData.BackupFile = backupFile;
+                                }
                             }
                         }
-                    }
 
 #if false
                     // Debug - when testing custom zip size getter for identicality/performance
@@ -1110,48 +1109,49 @@ namespace AngelLoader
                     return false;
 #endif
 
-                    var freeSpaceCalcFailedLines = new HashSetI(SupportedGameCount);
-                    var notEnoughFreeSpaceLines = new HashSetI(SupportedGameCount);
-                    for (int i = 0; i < SupportedGameCount; i++)
-                    {
-                        GameIndex gameIndex = (GameIndex)i;
-                        string driveName = GetPathRootSafe(Config.GetFMInstallPath(gameIndex));
-                        if (driveDataDict.TryGetValue(driveName, out DriveData driveData))
+                        var freeSpaceCalcFailedLines = new HashSetI(SupportedGameCount);
+                        var notEnoughFreeSpaceLines = new HashSetI(SupportedGameCount);
+                        for (int i = 0; i < SupportedGameCount; i++)
                         {
-                            long? freeSpace = GetFreeDiskSpaceForPath(driveDataDict, driveName);
-                            if (!driveData.TotalExtractedSizeCalcSuccessful || freeSpace == null)
+                            GameIndex gameIndex = (GameIndex)i;
+                            string driveName = GetPathRootSafe(Config.GetFMInstallPath(gameIndex));
+                            if (driveDataDict.TryGetValue(driveName, out DriveData driveData))
                             {
-                                freeSpaceCalcFailedLines.Add(driveName);
+                                long? freeSpace = GetFreeDiskSpaceForPath(driveDataDict, driveName);
+                                if (!driveData.TotalExtractedSizeCalcSuccessful || freeSpace == null)
+                                {
+                                    freeSpaceCalcFailedLines.Add(driveName);
+                                }
+                                // @MULTISEL(Install/disk space check): Replace with smarter estimation here
+                                else if (driveData.TotalExtractedSizeOfAllFMsForThisDisk >= freeSpace)
+                                {
+                                    notEnoughFreeSpaceLines.Add(driveName);
+                                }
                             }
-                            // @MULTISEL(Install/disk space check): Replace with smarter estimation here
-                            else if (driveData.TotalExtractedSizeOfAllFMsForThisDisk >= freeSpace)
+
+                            if (_installCts.IsCancellationRequested) return false;
+                        }
+
+                        if (freeSpaceCalcFailedLines.Count > 0 || notEnoughFreeSpaceLines.Count > 0)
+                        {
+                            string finalErrorText = "";
+                            if (notEnoughFreeSpaceLines.Count > 0)
                             {
-                                notEnoughFreeSpaceLines.Add(driveName);
+                                finalErrorText = AppendErrorText(finalErrorText, notEnoughFreeSpaceLines, useCalcFailedLines: false);
                             }
+                            if (freeSpaceCalcFailedLines.Count > 0)
+                            {
+                                finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, useCalcFailedLines: true);
+                            }
+
+                            bool cancel = !ShowDiskSpaceErrorDialog(
+                                finalErrorText +
+                                LText.AlertMessages.Install_ContinueAfterErrorWarning);
+                            if (cancel) return false;
                         }
 
-                        if (_installCts.IsCancellationRequested) return false;
+                        #endregion
                     }
-
-                    if (freeSpaceCalcFailedLines.Count > 0 || notEnoughFreeSpaceLines.Count > 0)
-                    {
-                        string finalErrorText = "";
-                        if (notEnoughFreeSpaceLines.Count > 0)
-                        {
-                            finalErrorText = AppendErrorText(finalErrorText, notEnoughFreeSpaceLines, useCalcFailedLines: false);
-                        }
-                        if (freeSpaceCalcFailedLines.Count > 0)
-                        {
-                            finalErrorText = AppendErrorText(finalErrorText, freeSpaceCalcFailedLines, useCalcFailedLines: true);
-                        }
-
-                        bool cancel = !ShowDiskSpaceErrorDialog(
-                            finalErrorText +
-                            LText.AlertMessages.Install_ContinueAfterErrorWarning);
-                        if (cancel) return false;
-                    }
-
-                    #endregion
 
                     return true;
                 });
