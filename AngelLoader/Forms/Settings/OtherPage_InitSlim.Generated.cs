@@ -64,7 +64,7 @@
             this.InstallingFMsGroupBox.Location = new System.Drawing.Point(8, 100);
             this.InstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.InstallingFMsGroupBox.Size = new System.Drawing.Size(424, 164);
-            this.InstallingFMsGroupBox.TabIndex = 0;
+            this.InstallingFMsGroupBox.TabIndex = 1;
             this.InstallingFMsGroupBox.TabStop = false;
             // 
             // CheckDiskSpaceOnInstallCheckBox

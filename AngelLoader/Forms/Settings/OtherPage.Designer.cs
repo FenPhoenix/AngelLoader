@@ -91,7 +91,7 @@ namespace AngelLoader.Forms
             this.InstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.InstallingFMsGroupBox.Name = "InstallingFMsGroupBox";
             this.InstallingFMsGroupBox.Size = new System.Drawing.Size(424, 164);
-            this.InstallingFMsGroupBox.TabIndex = 0;
+            this.InstallingFMsGroupBox.TabIndex = 1;
             this.InstallingFMsGroupBox.TabStop = false;
             this.InstallingFMsGroupBox.Text = "Installing FMs";
             // 

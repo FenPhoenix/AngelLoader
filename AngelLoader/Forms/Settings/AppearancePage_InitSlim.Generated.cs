@@ -8,6 +8,10 @@
         private void InitializeComponentSlim()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
+            this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.FMsListGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.darkHorizontalDivider4 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
             this.darkHorizontalDivider3 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
@@ -57,11 +61,8 @@
             this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
-            this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
-            this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.PagePanel.SuspendLayout();
+            this.PlayWithoutFMGroupBox.SuspendLayout();
             this.FMsListGroupBox.SuspendLayout();
             this.DateFormatRBPanel.SuspendLayout();
             this.RatingDisplayStyleRBPanel.SuspendLayout();
@@ -74,7 +75,6 @@
             this.ShowOrHideUIElementsGroupBox.SuspendLayout();
             this.VisualThemeGroupBox.SuspendLayout();
             this.LanguageGroupBox.SuspendLayout();
-            this.PlayWithoutFMGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -90,6 +90,41 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Size = new System.Drawing.Size(496, 1143);
             this.PagePanel.TabIndex = 0;
+            // 
+            // DummyAutoScrollPanel
+            // 
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
+            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
+            this.DummyAutoScrollPanel.TabIndex = 0;
+            this.DummyAutoScrollPanel.TabStop = false;
+            // 
+            // PlayWithoutFMGroupBox
+            // 
+            this.PlayWithoutFMGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_MultipleButtonsRadioButton);
+            this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_SingleButtonRadioButton);
+            this.PlayWithoutFMGroupBox.Location = new System.Drawing.Point(8, 1056);
+            this.PlayWithoutFMGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
+            this.PlayWithoutFMGroupBox.Size = new System.Drawing.Size(480, 80);
+            this.PlayWithoutFMGroupBox.TabIndex = 5;
+            this.PlayWithoutFMGroupBox.TabStop = false;
+            // 
+            // PlayWithoutFM_MultipleButtonsRadioButton
+            // 
+            this.PlayWithoutFM_MultipleButtonsRadioButton.AutoSize = true;
+            this.PlayWithoutFM_MultipleButtonsRadioButton.Location = new System.Drawing.Point(16, 48);
+            this.PlayWithoutFM_MultipleButtonsRadioButton.TabIndex = 0;
+            this.PlayWithoutFM_MultipleButtonsRadioButton.TabStop = true;
+            this.PlayWithoutFM_MultipleButtonsRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // PlayWithoutFM_SingleButtonRadioButton
+            // 
+            this.PlayWithoutFM_SingleButtonRadioButton.AutoSize = true;
+            this.PlayWithoutFM_SingleButtonRadioButton.Location = new System.Drawing.Point(16, 24);
+            this.PlayWithoutFM_SingleButtonRadioButton.TabIndex = 0;
+            this.PlayWithoutFM_SingleButtonRadioButton.TabStop = true;
+            this.PlayWithoutFM_SingleButtonRadioButton.UseVisualStyleBackColor = true;
             // 
             // FMsListGroupBox
             // 
@@ -529,40 +564,6 @@
             this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
             this.LanguageComboBox.TabIndex = 0;
             // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-            this.DummyAutoScrollPanel.TabIndex = 3;
-            // 
-            // PlayWithoutFMGroupBox
-            // 
-            this.PlayWithoutFMGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_MultipleButtonsRadioButton);
-            this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_SingleButtonRadioButton);
-            this.PlayWithoutFMGroupBox.Location = new System.Drawing.Point(8, 1056);
-            this.PlayWithoutFMGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
-            this.PlayWithoutFMGroupBox.Size = new System.Drawing.Size(480, 80);
-            this.PlayWithoutFMGroupBox.TabIndex = 5;
-            this.PlayWithoutFMGroupBox.TabStop = false;
-            // 
-            // PlayWithoutFM_SingleButtonRadioButton
-            // 
-            this.PlayWithoutFM_SingleButtonRadioButton.AutoSize = true;
-            this.PlayWithoutFM_SingleButtonRadioButton.Location = new System.Drawing.Point(16, 24);
-            this.PlayWithoutFM_SingleButtonRadioButton.TabIndex = 0;
-            this.PlayWithoutFM_SingleButtonRadioButton.TabStop = true;
-            this.PlayWithoutFM_SingleButtonRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // PlayWithoutFM_MultipleButtonsRadioButton
-            // 
-            this.PlayWithoutFM_MultipleButtonsRadioButton.AutoSize = true;
-            this.PlayWithoutFM_MultipleButtonsRadioButton.Location = new System.Drawing.Point(16, 48);
-            this.PlayWithoutFM_MultipleButtonsRadioButton.TabIndex = 0;
-            this.PlayWithoutFM_MultipleButtonsRadioButton.TabStop = true;
-            this.PlayWithoutFM_MultipleButtonsRadioButton.UseVisualStyleBackColor = true;
-            // 
             // AppearancePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -570,6 +571,8 @@
             this.Controls.Add(this.PagePanel);
             this.Size = new System.Drawing.Size(496, 1143);
             this.PagePanel.ResumeLayout(false);
+            this.PlayWithoutFMGroupBox.ResumeLayout(false);
+            this.PlayWithoutFMGroupBox.PerformLayout();
             this.FMsListGroupBox.ResumeLayout(false);
             this.FMsListGroupBox.PerformLayout();
             this.DateFormatRBPanel.ResumeLayout(false);
@@ -589,8 +592,6 @@
             this.VisualThemeGroupBox.ResumeLayout(false);
             this.VisualThemeGroupBox.PerformLayout();
             this.LanguageGroupBox.ResumeLayout(false);
-            this.PlayWithoutFMGroupBox.ResumeLayout(false);
-            this.PlayWithoutFMGroupBox.PerformLayout();
             this.ResumeLayout(false);
         }
     }
