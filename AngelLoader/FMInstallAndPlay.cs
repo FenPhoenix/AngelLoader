@@ -5,13 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-using FMScanner.FastZipReader;
 using JetBrains.Annotations;
 using SevenZip;
 using static AL_Common.Common;
@@ -149,7 +147,7 @@ namespace AngelLoader
 #if !ReleaseBeta && !ReleasePublic
                 string args = Config.ForceWindowed ? "+force_windowed" : "";
 #else
-            string args = "";
+                string args = "";
 #endif
                 string workingPath = Config.GetGamePath(game);
                 var sv = GetSteamValues(game, playMP);
@@ -703,27 +701,6 @@ namespace AngelLoader
                 GameExe = gameExe;
                 GameName = gameName;
                 InstBasePath = instBasePath;
-            }
-        }
-
-        private sealed class DriveData
-        {
-            internal readonly DriveInfo DriveInfo;
-            internal bool TotalExtractedSizeCalcSuccessful = true;
-            internal long TotalExtractedSizeOfAllFMsForThisDisk;
-
-            internal DriveData(DriveInfo driveInfo) => DriveInfo = driveInfo;
-        }
-
-        private static string GetPathRootSafe(string path)
-        {
-            try
-            {
-                return Path.GetPathRoot(path);
-            }
-            catch
-            {
-                return "";
             }
         }
 
