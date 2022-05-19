@@ -28,7 +28,7 @@
     License: http://www.opensource.org/licenses/mit-license.php
     Website: https://github.com/khalidsalomao/SimpleHelpers.Net
 
-    Modified by FenPhoenix 2020-2021
+    Modified by FenPhoenix 2020-2022
  */
 #endregion
 
