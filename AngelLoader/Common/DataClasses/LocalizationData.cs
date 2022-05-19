@@ -239,7 +239,6 @@ namespace AngelLoader.DataClasses
             internal readonly string Patch_FMFolderNotFound = "The FM's folder couldn't be found.";
             [FenGenBlankLine]
             internal readonly string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";
-            internal readonly string Misc_FMMarkedInstalledButNotInstalled = "This FM is marked as installed, but its folder cannot be found. Mark it as uninstalled?";
             [FenGenBlankLine]
             internal readonly string Extract_ZipExtractFailedFullyOrPartially = "Zip extraction failed fully or partially.";
             internal readonly string Extract_SevenZipExtractFailedFullyOrPartially = "7-zip extraction failed fully or partially.";

@@ -88,7 +88,7 @@ namespace AngelLoader
             {
                 if (_archives == null)
                 {
-                    _archives = new(archives.Count);
+                    _archives = new DictionaryI<string>(archives.Count);
                     foreach (var item in archives)
                     {
                         string key = item.Key;
@@ -108,7 +108,7 @@ namespace AngelLoader
                 {
                     if (_archivesToInstDirNameFMSelTruncated_FromFMDataIniList == null)
                     {
-                        _archivesToInstDirNameFMSelTruncated_FromFMDataIniList = new(FMDataIniList.Count);
+                        _archivesToInstDirNameFMSelTruncated_FromFMDataIniList = new DictionaryI<string>(FMDataIniList.Count);
                         for (int i = 0; i < FMDataIniList.Count; i++)
                         {
                             string value = FMDataIniList[i].Archive;
@@ -125,7 +125,7 @@ namespace AngelLoader
                 {
                     if (_archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList == null)
                     {
-                        _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList = new(FMDataIniList.Count);
+                        _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList = new DictionaryI<string>(FMDataIniList.Count);
                         for (int i = 0; i < FMDataIniList.Count; i++)
                         {
                             string value = FMDataIniList[i].Archive;
@@ -144,7 +144,7 @@ namespace AngelLoader
             {
                 if (_archivesToInstDirNameNDLTruncated_FromFMDataIniList == null)
                 {
-                    _archivesToInstDirNameNDLTruncated_FromFMDataIniList = new(FMDataIniList.Count);
+                    _archivesToInstDirNameNDLTruncated_FromFMDataIniList = new DictionaryI<string>(FMDataIniList.Count);
                     for (int i = 0; i < FMDataIniList.Count; i++)
                     {
                         string value = FMDataIniList[i].Archive;
@@ -162,7 +162,7 @@ namespace AngelLoader
             {
                 if (_installedDirs_FromFMDataIniList == null)
                 {
-                    _installedDirs_FromFMDataIniList = new(FMDataIniList.Count);
+                    _installedDirs_FromFMDataIniList = new DictionaryI<string>(FMDataIniList.Count);
                     for (int i = 0; i < FMDataIniList.Count; i++)
                     {
                         string value = FMDataIniList[i].Archive;

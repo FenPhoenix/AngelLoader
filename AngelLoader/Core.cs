@@ -33,7 +33,7 @@ namespace AngelLoader
         // Remove this null-handwave and get null notification on this so we don't accidentally access it when
         // it's null. But if we check it from another thread there'll be a race condition. Figure something out?
         internal static IView View = null!;
-        internal static IViewEnvironment ViewEnv = null!;
+        private static IViewEnvironment ViewEnv = null!;
         internal static IDialogs Dialogs = null!;
 
         internal static async void Init(IViewEnvironment viewEnv)
@@ -2132,7 +2132,7 @@ namespace AngelLoader
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        internal static void EnvironmentExitDoShutdownTasks(int exitCode)
+        private static void EnvironmentExitDoShutdownTasks(int exitCode)
         {
             DoShutdownTasks();
             Environment.Exit(exitCode);

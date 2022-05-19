@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 

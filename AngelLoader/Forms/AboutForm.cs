@@ -6,7 +6,6 @@ using System.Runtime.Versioning;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using static AngelLoader.Misc;
 

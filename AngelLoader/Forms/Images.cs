@@ -5,7 +5,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using JetBrains.Annotations;
 using static AL_Common.Common;

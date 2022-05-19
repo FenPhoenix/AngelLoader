@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms
