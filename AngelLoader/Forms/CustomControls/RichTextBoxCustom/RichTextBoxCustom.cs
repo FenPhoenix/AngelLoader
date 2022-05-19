@@ -350,7 +350,7 @@ namespace AngelLoader.Forms.CustomControls
 #else
                             var fixer = new ImageFixer();
 
-                            // TODO: @vNext: This code is suspect. It may work okay in practice, but:
+                            // TODO: This code is suspect. It may work okay in practice, but:
                             // We should at the very least make sure our nonshppict is DIRECTLY after the shppict.
                             // In theory, a shppict should always be paired up with a nonshppict directly after
                             // it. So this code should probably be correct if every file is to spec. That's if

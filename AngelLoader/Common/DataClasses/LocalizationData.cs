@@ -841,7 +841,6 @@ namespace AngelLoader.DataClasses
 
         internal sealed class AddFMsToSet_Class
         {
-            // @vNext: Working text - testing purposes
             internal readonly string AddFM_DialogTitle = "Add FM";
             internal readonly string AddFMs_DialogTitle = "Add FMs";
             internal readonly string AddFM_Dialog_AskMessage = "The following FM is about to be added:";

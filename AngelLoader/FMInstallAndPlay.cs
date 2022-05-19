@@ -32,8 +32,6 @@ namespace AngelLoader
     -If we can't write the stub file or set ourselves as the selector, maybe we should just cancel the play operation?
     */
 
-    // @vNext: Make "ask on install" be an actual radio button set on the dialog
-
     internal static class FMInstallAndPlay
     {
         private enum PlaySource
@@ -1226,7 +1224,6 @@ namespace AngelLoader
                             }
                             else
                             {
-                                // @MULTISEL(Install/convert files message): Maybe have indeterminate progress bar here?
                                 Core.View.SetProgressBoxState_Double(
                                     subMessage: LText.ProgressBox.ConvertingFiles,
                                     subPercent: 100
