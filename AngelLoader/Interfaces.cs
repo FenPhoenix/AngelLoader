@@ -405,6 +405,11 @@ namespace AngelLoader
         void AddLanguageToList(string backingItem, string item);
         // @LANGS(backing items): We could allow the backing items to be enum values
         // That way we don't even have to store the lang strings in the combobox backing list
+        /// <summary>
+        /// Sets the selected item in the language list.
+        /// </summary>
+        /// <param name="language"></param>
+        /// <returns>The selected language, or default if a match was not found.</returns>
         Language SetSelectedLanguage(Language language);
         Language GetMainSelectedLanguage();
         void SetPlayOriginalGameControlsState();

@@ -5285,11 +5285,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        /// <summary>
-        /// Sets the selected item in the language list.
-        /// </summary>
-        /// <param name="language"></param>
-        /// <returns>The selected backing string, or null if a match was not found.</returns>
         public Language SetSelectedLanguage(Language language)
         {
             if (EditFMLanguageComboBox.Items.Count == 0)
