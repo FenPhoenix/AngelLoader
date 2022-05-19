@@ -242,8 +242,8 @@ If you have NewDark 1.27 or later and have installed the multiplayer option (mea
 <p/>
 If you've chosen to display this as multiple buttons instead, then only the buttons for games that you've provided a path to will be displayed. Otherwise it works similarly.
 
-<h4><img src="images/Install.png" style="vertical-align:bottom" /> / <img src="images/Uninstall.png" style="vertical-align:bottom" /> Install / Uninstall FM</h4>
-If the currently selected FM or FMs are not installed, this button will install them; otherwise, it will uninstall them.
+<h4><img src="images/Install.png" style="vertical-align:bottom" /> / <img src="images/Uninstall.png" style="vertical-align:bottom" /> Install / Uninstall FM(s)</h4>
+If the currently selected FM(s) are not installed, this button will install them; otherwise, it will uninstall them.
 
 <h4><img src="images/WebSearch.png" style="vertical-align:bottom" /> Web search</h4>
 Click this button to search the web for the selected FM. You can set the search URL in the <a href="#settings_web_search">Settings window</a>. If multiple FMs are selected, this button will be disabled.
@@ -341,14 +341,14 @@ Plays the currently selected FM. If the FM is not installed, it will be installe
 <h4>Play FM (multiplayer)</h4>
 This item will only appear if Thief2MP.exe was found in the Thief 2 directory. Clicking it will allow you to play the selected FM in multiplayer mode (requires NewDark 1.27 or later). If the FM is not installed, it will be installed automatically first.
 
-<h4>Install / Uninstall FM</h4>
-If the currently selected FM is not installed, this will install it; otherwise, it will uninstall it.
+<h4>Install / Uninstall FM(s)</h4>
+If the currently selected FM(s) are not installed, this will install them; otherwise, it will uninstall them.
 
 <h4>Pin to top / Unpin from top</h4>
-You can choose to pin FMs to the top of list so that they will always remain there regardless of sorting or filtering. When an FM is pinned, this option will unpin it instead.
+You can choose to pin FMs to the top of list so that they will always remain there regardless of sorting or filtering. When an FM is pinned, this option will unpin it instead. When multiple FMs are selected, there will be two separate options, Pin and Unpin.
 
-<h4>Delete FM archive</h4>
-This will allow you to delete an FM's archive from disk. You can also press the Delete key while the FMs list is focused to achieve the same thing. In both cases, you will be asked for confirmation first.
+<h4>Delete FM archive(s)</h4>
+This will allow you to delete one or more FMs' archives from disk. You can also press the Delete key while the FMs list is focused to achieve the same thing. In both cases, you will be asked for confirmation first. If one or more selected FMs are installed, you will be asked if you want to uninstall them before deleting their archives.
 
 <h4>Open FM in DromEd</h4>
 This item will only appear if DromEd.exe (or ShockEd.exe for System Shock 2) was found in the game directory. Clicking it will open the currently selected FM in DromEd or ShockEd, installing it first if necessary.<br>
@@ -365,10 +365,10 @@ This menu contains the same audio conversion options as in the <a href="#setting
 <br>This option is only available for installed FMs.
 
 <h4>Rating submenu</h4>
-Here you can rate the selected FM. The ratings will appear as they've been set in the <a href="#settings_rating_display_style">Settings window</a>: either 0-10 or 0-5.
+Here you can rate the selected FM(s). The ratings will appear as they've been set in the <a href="#settings_rating_display_style">Settings window</a>: either 0-10 or 0-5.
 
 <h4><a name="finished_on" />Finished On submenu</h4>
-Here you can set which difficulty or difficulties you've finished the selected mission on.<br>
+Here you can set which difficulty or difficulties you've finished the selected FM(s) on.<br>
 <b>Unknown</b> - this is mainly for compatibility with imported FMSel data, which doesn't mark difficulties for its Finished value.<br>
 For Thief 1 and Thief 2, the other difficulties are <b>Normal</b>, <b>Hard</b>, <b>Expert</b>, and <b>Extreme</b>.<br>
 For Thief: Deadly Shadows, they are <b>Easy</b>, <b>Normal</b>, <b>Hard</b>, and <b>Expert</b>.<br>
@@ -380,12 +380,14 @@ Click this to search the web for the selected mission. You can set the search UR
 <p/>
 <hr>
 
-<h3><a name="top_right_tabs" />Top-right tabs</h3>
+<h3><a name="top_right_tabs" />FM details section</h3>
 
-These tabs allow you to edit the selected FM's data and to view more detailed information about it. The tabs can be dragged to change their order if you wish, and they can also be selectively hidden using the menu button at the top-right.
+This section allows you to edit the selected FM's data and to view more detailed information about it. The tabs can be dragged to change their order if you wish, and they can also be selectively hidden using the menu button at the top-right.
+<p/>
+Information can only be displayed for one FM at a time, so when multiple FMs are selected, this section will be disabled.
 
 <h4>Collapse / expand button</h4>
-Click this to collapse (hide) the top-right section. Click it again to expand it.
+Click this to collapse (hide) the FM details section. Click it again to expand it.
 
 <h4><a name="stats_tab" />Statistics tab</h4>
 

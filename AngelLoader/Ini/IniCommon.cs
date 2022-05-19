@@ -760,10 +760,10 @@ namespace AngelLoader
                 config.DateCustomFormatString = GetFormattedDateString(config);
             }
 
-            if ((config.DateCustomFormat1.IsEmpty() || !ValidDateFormatList.Contains(config.DateCustomFormat1)) ||
-                (config.DateCustomFormat2.IsEmpty() || !ValidDateFormatList.Contains(config.DateCustomFormat2)) ||
-                (config.DateCustomFormat3.IsEmpty() || !ValidDateFormatList.Contains(config.DateCustomFormat3)) ||
-                (config.DateCustomFormat4.IsEmpty() || !ValidDateFormatList.Contains(config.DateCustomFormat4)))
+            if (!ValidDateFormatList.Contains(config.DateCustomFormat1) ||
+                !ValidDateFormatList.Contains(config.DateCustomFormat2) ||
+                !ValidDateFormatList.Contains(config.DateCustomFormat3) ||
+                !ValidDateFormatList.Contains(config.DateCustomFormat4))
             {
                 ResetCustomDate(config);
             }
