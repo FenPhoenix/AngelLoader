@@ -104,16 +104,20 @@ namespace AngelLoader
                     string message = Paths.ConfigIni + " exists but there was an error while reading it.";
                     Log(message, ex);
                     openSettings = true;
+
+                    // We need to run this to have correct/valid config settings, if we didn't get to where it
+                    // runs in the config reader
+                    Ini.FinalizeConfig(Config);
                 }
             }
             else
             {
-                // Just in case... cause we don't run it if we don't find the config file...
-                Ini.FinalizeConfig(Config);
-
                 openSettings = true;
                 // We're starting for the first time ever (assumed)
                 cleanStart = true;
+
+                // Ditto the above
+                Ini.FinalizeConfig(Config);
             }
 
             #endregion
