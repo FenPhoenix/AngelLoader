@@ -65,7 +65,8 @@ div.headerElements:before {
       <li><a href="#mission_list">Mission list</a></li>
       <li><a href="#column_header_context_menu">Column header context menu</a></li>
       <li><a href="#fm_context_menu">FM context menu</a></li>
-      <li><a href="#top_right_tabs">Top-right tabs</a></li>
+      <li><a href="#fm_details">FM details area</a></li>
+      <li><a href="#drag_fm_to_add">Adding FMs by dragging them onto the main window</a></li>
     </ul>
   </li>
   <li>
@@ -348,7 +349,7 @@ If the currently selected FM(s) are not installed, this will install them; other
 You can choose to pin FMs to the top of list so that they will always remain there regardless of sorting or filtering. When an FM is pinned, this option will unpin it instead. When multiple FMs are selected, there will be two separate options, Pin and Unpin.
 
 <h4>Delete FM archive(s)</h4>
-This will allow you to delete one or more FMs' archives from disk. You can also press the Delete key while the FMs list is focused to achieve the same thing. In both cases, you will be asked for confirmation first. If one or more selected FMs are installed, you will be asked if you want to uninstall them before deleting their archives.
+This will allow you to delete one or more FMs' archives from disk. You can also press the <b>Delete</b> key while the FMs list is focused to achieve the same thing. In both cases, you will be asked for confirmation first. If one or more selected FMs are installed, you will be asked if you want to uninstall them before deleting their archives.
 
 <h4>Open FM in DromEd</h4>
 This item will only appear if DromEd.exe (or ShockEd.exe for System Shock 2) was found in the game directory. Clicking it will open the currently selected FM in DromEd or ShockEd, installing it first if necessary.<br>
@@ -357,8 +358,8 @@ This item will only appear if DromEd.exe (or ShockEd.exe for System Shock 2) was
 <h4>Open FM folder</h4>
 Opens the FM's installed folder.
 
-<h4>Scan FM</h4>
-This will scan the selected FM. If you only want to scan for certain fields, see the <a href="#edit_fm_tab">Edit FM tab</a>.
+<h4>Scan FM(s)</h4>
+This will scan the selected FM(s). If you only want to scan for certain fields, see the <a href="#edit_fm_tab">Edit FM tab</a>.
 
 <h4>Convert audio submenu</h4>
 This menu contains the same audio conversion options as in the <a href="#settings_audio_conversion">Settings window</a>, but they can be run at any time here.
@@ -380,7 +381,7 @@ Click this to search the web for the selected mission. You can set the search UR
 <p/>
 <hr>
 
-<h3><a name="top_right_tabs" />FM details section</h3>
+<h3><a name="fm_details" />FM details area</h3>
 
 This section allows you to edit the selected FM's data and to view more detailed information about it. The tabs can be dragged to change their order if you wish, and they can also be selectively hidden using the menu button at the top-right.
 <p/>
@@ -450,6 +451,14 @@ Note that the list simply displays all mods that are specified in <code>cam_mod.
 There are some mods that are vital to the normal functioning of an up-to-date Thief install, and should not be disabled under normal circumstances. Check this box to display those mods in the list anyway.
 
 <p/>
+
+<hr>
+
+<h2><a name="drag_fm_to_add" />Adding FMs by dragging them onto the main window</h2>
+
+In addition to the traditional method of moving new FM archives into one of your archive folders and refreshing the FMs list, you can also add them by dragging the new archive(s) onto AngelLoader's main window. The archive(s) will be copied into your archives folder and the list automatically refreshed. You can then delete the original archive(s) if you wish.
+<p/>
+If you have multiple archive folders, you will be asked which one you want to copy the dragged archive(s) to.
 
 <hr>
 
@@ -531,7 +540,7 @@ Quoted from the FMSel manual:<br>
 Choose whether to be prompted before installing FM(s). Because an unlimited number of FMs can be installed at once, free disk space checks can be performed before installing. However, these can be slow and probably won't be needed in most cases, so they're disabled by default.
 
 <h4>Confirm before uninstalling</h4>
-If this is enabled, you will be prompted for confirmation when uninstalling an FM.
+If this is enabled, you will be prompted for confirmation when uninstalling FM(s).
 
 <h4><a name="settings_backup" />Back up data when uninstalling</h4>
 When an FM is uninstalled, you will normally want to back up its saves and screenshots so they can be restored if you install it again. You can also choose to back up all changed files, in which case the backup will also include all files in the installed folder that have been added, removed, or modified as compared to the files in the archive. This is useful if you have added <a href="#dml_patches">.dml patches</a> to the FM, or made other modifications such as creating or modifying an fm.cfg file, fixing readables, etc. Because AngelLoader aims to be patch-friendly, this option is the default. You can also choose to always be asked if you want to back up data when uninstalling an FM.
