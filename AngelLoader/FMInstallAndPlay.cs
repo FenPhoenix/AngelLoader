@@ -661,10 +661,9 @@ namespace AngelLoader
                     if (GameIsRunning(gameExe))
                     {
                         Core.Dialogs.ShowAlert(
-                            gameName + ":\r\n" +
-                            (!single
+                            !single
                                 ? LText.AlertMessages.OneOrMoreGamesAreRunning
-                                : install
+                                : gameName + ":\r\n" + (install
                                     ? LText.AlertMessages.Install_GameIsRunning
                                     : LText.AlertMessages.Uninstall_GameIsRunning),
                             LText.AlertMessages.Alert);
