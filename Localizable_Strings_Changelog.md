@@ -1,23 +1,35 @@
 ## Localizable text changelog for the benefit of translators
 
-### Key:
-Red lines with a `-` in front of them are lines that have been **removed** for the listed version.
-```diff
-- removed line
-```
-Green lines with a `+` in front of them are lines that have been **added** for the listed version.
-```diff
-+ added line
-```
-Black lines with no `-` or `+` in front of them are lines that have not changed, and are just there to give you context on where the changed text is located.
-```diff
-AngelLoader is awesome.
-- You can use it to load your fan missions and become fantastigreat.
-+ You can use it to load, play, and manage your fan missions and become tafferiffic.
-Thanks for checking it out!
-```
+#### NOTE! In English.ini, all lines beginning with ; are merely comments to assist the translator and are not required to be translated themselves.
 
 ## List of localization-related changes by version
+
+### v1.6.0:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.5.4_1.6.0.html)
+
+#### [AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.5.4_1.6.0.html)
+
+New images:  
+`settings_appr_date.png`  
+`settings_appr_game_org.png`  
+`settings_appr_hide.png`  
+`settings_appr_lang.png`  
+`settings_appr_no_fm.png`  
+`settings_appr_rating.png`  
+`settings_appr_readme.png`  
+`settings_appr_recent.png`  
+`settings_appr_sort.png`  
+`settings_appr_theme.png`  
+
+Updated images:  
+`main_window_full_960.png`  
+`setup_other_tab.png`  
+
+Removed images:  
+`setup_appearance_tab.png`  
+`BlueMagnifier.png`  
+`Import.png`  
 
 ### v1.5.4:
 
