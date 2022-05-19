@@ -1542,7 +1542,7 @@ namespace AngelLoader.Forms
 
                 #region Top-right tabs area
 
-                TopRightMultiSelectBlockerLabel.Text = LText.TabsArea.MultipleFMsSelectedMessage;
+                TopRightMultiSelectBlockerLabel.Text = LText.FMDetailsArea.MultipleFMsSelectedMessage;
 
                 TopRightLLMenu.Localize();
 

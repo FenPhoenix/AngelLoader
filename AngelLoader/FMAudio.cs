@@ -119,7 +119,7 @@ namespace AngelLoader
                 _conversionCTS = _conversionCTS.Recreate();
 
                 Core.View.ShowProgressBox_Single(
-                    message1: LText.ProgressBox.ConvertingFiles,
+                    message1: LText.ProgressBox.ConvertingAudioFiles,
                     progressType: single ? ProgressType.Indeterminate : ProgressType.Determinate,
                     cancelMessage: single ? null : LText.Global.Stop,
                     cancelAction: single ? null : CancelToken

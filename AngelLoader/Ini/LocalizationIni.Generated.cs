@@ -101,11 +101,11 @@ namespace AngelLoader
             {
                 FMsList_Dict.Add(f.Name, f);
             }
-            var tabsAreaFields = typeof(LText_Class.TabsArea_Class).GetFields(_bfLText);
-            var TabsArea_Dict = new Dictionary<string, FieldInfo>(tabsAreaFields.Length);
-            foreach (var f in tabsAreaFields)
+            var fMDetailsAreaFields = typeof(LText_Class.FMDetailsArea_Class).GetFields(_bfLText);
+            var FMDetailsArea_Dict = new Dictionary<string, FieldInfo>(fMDetailsAreaFields.Length);
+            foreach (var f in fMDetailsAreaFields)
             {
-                TabsArea_Dict.Add(f.Name, f);
+                FMDetailsArea_Dict.Add(f.Name, f);
             }
             var statisticsTabFields = typeof(LText_Class.StatisticsTab_Class).GetFields(_bfLText);
             var StatisticsTab_Dict = new Dictionary<string, FieldInfo>(statisticsTabFields.Length);
@@ -488,7 +488,7 @@ namespace AngelLoader
                         i++;
                     }
                 }
-                else if (lineT == "[TabsArea]")
+                else if (lineT == "[FMDetailsArea]")
                 {
                     while (i < linesLength - 1)
                     {
@@ -498,9 +498,9 @@ namespace AngelLoader
                         if (eqIndex > -1)
                         {
                             string key = lt.Substring(0, eqIndex);
-                            if (TabsArea_Dict.TryGetValue(key, out FieldInfo value))
+                            if (FMDetailsArea_Dict.TryGetValue(key, out FieldInfo value))
                             {
-                                value.SetValue(ret.TabsArea, lt.Substring(eqIndex + 1));
+                                value.SetValue(ret.FMDetailsArea, lt.Substring(eqIndex + 1));
                             }
                         }
                         else if ((ltLength = lt.Length) > 0 && lt[0] == '[')

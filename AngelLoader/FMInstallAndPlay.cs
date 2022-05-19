@@ -922,7 +922,7 @@ namespace AngelLoader
                             if (single)
                             {
                                 Core.View.SetProgressBoxState_Single(
-                                    message1: LText.ProgressBox.ConvertingFiles,
+                                    message1: LText.ProgressBox.ConvertingAudioFiles,
                                     message2: "",
                                     progressType: ProgressType.Indeterminate
                                 );
@@ -930,7 +930,7 @@ namespace AngelLoader
                             else
                             {
                                 Core.View.SetProgressBoxState_Double(
-                                    subMessage: LText.ProgressBox.ConvertingFiles,
+                                    subMessage: LText.ProgressBox.ConvertingAudioFiles,
                                     subPercent: 100
                                 );
                             }

@@ -37,7 +37,7 @@ namespace AngelLoader.DataClasses
         internal readonly Difficulties_Class Difficulties = new Difficulties_Class();
         internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
         internal readonly FMsList_Class FMsList = new FMsList_Class();
-        internal readonly TabsArea_Class TabsArea = new TabsArea_Class();
+        internal readonly FMDetailsArea_Class FMDetailsArea = new FMDetailsArea_Class();
         internal readonly StatisticsTab_Class StatisticsTab = new StatisticsTab_Class();
         internal readonly EditFMTab_Class EditFMTab = new EditFMTab_Class();
         internal readonly CommentTab_Class CommentTab = new CommentTab_Class();
@@ -162,7 +162,7 @@ namespace AngelLoader.DataClasses
             internal readonly string BackUp = "Back up";
             internal readonly string DontBackUp = "Don't back up";
             [FenGenComment(
-                "This is displayed in the title bar of the \"Delete FM archive\" confirmation dialog box.")]
+                "These are displayed in the title bar of the \"Delete FM archive(s)\" confirmation dialog box. Depending if you've got one or multiple selected.")]
             internal readonly string DeleteFMArchive = "Delete FM archive";
             internal readonly string DeleteFMArchives = "Delete FM archives";
             [FenGenBlankLine]
@@ -250,6 +250,8 @@ namespace AngelLoader.DataClasses
             internal readonly string Help_HelpFileNotFound = "Help file not found.";
             internal readonly string Help_UnableToOpenHelpFile = "Unable to open help file.";
             [FenGenBlankLine]
+            [FenGenComment(
+                "These are for when you drag FM archive files onto the main window to add them. It tries to copy them into your archive directory.")]
             internal readonly string AddFM_UnableToCopyFMArchive = "Unable to copy FM archive to the selected directory.";
             internal readonly string AddFM_FMArchiveFile = "FM archive file: ";
             internal readonly string AddFM_DestinationDir = "Destination directory: ";
@@ -257,7 +259,7 @@ namespace AngelLoader.DataClasses
             [FenGenComment("Text for the button in the Error dialog box that lets the user view the error log file.")]
             internal readonly string Error_ViewLog = "View log";
             [FenGenBlankLine]
-            internal readonly string FinishedOnUnknown_MultiFMChange = "All selected FMs' finished states are about to be removed and replaced with 'Unknown'. Are you sure want to do this?";
+            internal readonly string FinishedOnUnknown_MultiFMChange = "All selected FMs' finished states are about to be removed and replaced with 'Unknown'. Are you sure you want to do this?";
         }
 
         // Working, subject to change
@@ -460,11 +462,11 @@ namespace AngelLoader.DataClasses
             internal readonly string ConvertAudioMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
         }
 
-        internal sealed class TabsArea_Class
+        internal sealed class FMDetailsArea_Class
         {
             [FenGenComment(
-                "When multiple FMs are selected, the editing tabs area will be hidden and this message will appear",
-                "in its place.")]
+                "When multiple FMs are selected, the FM details area (\"top-right tabs\") will be hidden and this message",
+                "will appear in its place.")]
             internal readonly string MultipleFMsSelectedMessage = "Multiple FMs selected.";
         }
 
@@ -602,7 +604,7 @@ namespace AngelLoader.DataClasses
             internal readonly string UninstallingFM = "Uninstalling FM...";
             internal readonly string UninstallingFMs = "Uninstalling FMs...";
             [FenGenBlankLine]
-            internal readonly string ConvertingFiles = "Converting audio files...";
+            internal readonly string ConvertingAudioFiles = "Converting audio files...";
             [FenGenBlankLine]
             internal readonly string PreparingToScanFMs = "Preparing to scan...";
             internal readonly string Scanning = "Scanning...";
