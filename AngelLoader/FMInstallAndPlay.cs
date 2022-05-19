@@ -43,8 +43,8 @@ namespace AngelLoader
             FM
         }
 
-        private static CancellationTokenSource _extractCts = new();
-        private static void CancelExtractToken() => _extractCts.CancelIfNotDisposed();
+        private static CancellationTokenSource _installCts = new();
+        private static void CancelInstallToken() => _installCts.CancelIfNotDisposed();
 
         private static CancellationTokenSource _uninstallCts = new();
         private static void CancelUninstallToken() => _uninstallCts.CancelIfNotDisposed();
@@ -563,7 +563,7 @@ namespace AngelLoader
         [MustUseReturnValue]
         private static bool DoPreChecks(FanMission[] fms, FMData[] fmDataList, bool install, [NotNullWhen(true)] out List<string>? fmArchivePaths)
         {
-            static bool Canceled(bool install) => install && _extractCts.IsCancellationRequested;
+            static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
 
             bool single = fms.Length == 1;
 
@@ -810,11 +810,11 @@ namespace AngelLoader
                         }
                         driveData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
 #else
-                        if (_extractCts.IsCancellationRequested) return false;
+                        if (_installCts.IsCancellationRequested) return false;
 
                         driveData.TotalExtractedSizeOfAllFMsForThisDisk += ZipSize.GetTotalUncompressedSize(File.OpenRead(archivePath), bundle);
 
-                        if (_extractCts.IsCancellationRequested) return false;
+                        if (_installCts.IsCancellationRequested) return false;
 #endif
                     }
                     else
@@ -837,7 +837,7 @@ namespace AngelLoader
                         }
                         driveData.TotalExtractedSizeOfAllFMsForThisDisk += fmExtractedSize;
 #else
-                        if (_extractCts.IsCancellationRequested) return false;
+                        if (_installCts.IsCancellationRequested) return false;
 
                         var result = Fen7z.Fen7z.Extract(
                             sevenZipWorkingPath: Paths.SevenZipPath,
@@ -847,12 +847,12 @@ namespace AngelLoader
                             entriesCount: 0,
                             listFile: "",
                             fileNamesList: null,
-                            cancellationToken: _extractCts.Token,
+                            cancellationToken: _installCts.Token,
                             progress: null,
                             justReturnUncompressedSize: true
                         );
 
-                        if (_extractCts.IsCancellationRequested) return false;
+                        if (_installCts.IsCancellationRequested) return false;
 
                         if (result.ErrorOccurred)
                         {
@@ -1022,10 +1022,10 @@ namespace AngelLoader
                     Core.View.ShowProgressBox_Single(
                         message1: LText.ProgressBox.PreparingToInstall,
                         progressType: ProgressType.Indeterminate,
-                        cancelAction: CancelExtractToken
+                        cancelAction: CancelInstallToken
                     );
 
-                    _extractCts = _extractCts.Recreate();
+                    _installCts = _installCts.Recreate();
 
                     if (!DoPreChecks(fms, fmDataList, install: true, out var fmArchivePaths)) return false;
 
@@ -1042,7 +1042,7 @@ namespace AngelLoader
 
                     bool success = GetDriveDataDict(fms, out var errorPaths, out var driveDataDict);
 
-                    if (_extractCts.IsCancellationRequested) return false;
+                    if (_installCts.IsCancellationRequested) return false;
 
                     if (!success)
                     {
@@ -1079,14 +1079,14 @@ namespace AngelLoader
 
                             if (!AddArchiveExtractedSize(fmData.ArchivePath, driveData, bundle)) return false;
 
-                            if (_extractCts.IsCancellationRequested) return false;
+                            if (_installCts.IsCancellationRequested) return false;
 
                             var backupFile = GetBackupFile(
                                 fmData.FM,
                                 cachedDarkLoaderFiles: darkLoaderArchiveFiles,
                                 cachedFMArchivePaths: fmArchivePaths);
 
-                            if (_extractCts.IsCancellationRequested) return false;
+                            if (_installCts.IsCancellationRequested) return false;
 
                             darkLoaderArchiveFiles = backupFile.Cached_DarkLoaderBackups;
                             fmArchivePaths = backupFile.Cached_NewBackups;
@@ -1095,7 +1095,7 @@ namespace AngelLoader
                             {
                                 if (!AddArchiveExtractedSize(backupFile.Name, driveData, bundle)) return false;
 
-                                if (_extractCts.IsCancellationRequested) return false;
+                                if (_installCts.IsCancellationRequested) return false;
 
                                 fmData.BackupFile = backupFile;
                             }
@@ -1132,7 +1132,7 @@ namespace AngelLoader
                             }
                         }
 
-                        if (_extractCts.IsCancellationRequested) return false;
+                        if (_installCts.IsCancellationRequested) return false;
                     }
 
                     if (freeSpaceCalcFailedLines.Count > 0 || notEnoughFreeSpaceLines.Count > 0)
@@ -1211,8 +1211,6 @@ namespace AngelLoader
                         Log("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
                     }
 
-                    // @MULTISEL(Install aux tasks): Make conversion/restore cancellable in the middle for more responsiveness
-
                     // Only Dark engine games need audio conversion
                     if (GameIsDark(fmData.FM.Game))
                     {
@@ -1239,9 +1237,29 @@ namespace AngelLoader
                             // This one won't be called anywhere except during install, because it always runs during
                             // install so there's no need to make it optional elsewhere. So we don't need to have a
                             // check bool or anything.
-                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV);
-                            if (Config.ConvertOGGsToWAVsOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV);
-                            if (Config.ConvertWAVsTo16BitOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16);
+                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, _installCts.Token);
+
+                            if (_installCts.IsCancellationRequested)
+                            {
+                                await RollBackInstalls(fmDataList, i);
+                                return false;
+                            }
+
+                            if (Config.ConvertOGGsToWAVsOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, _installCts.Token);
+
+                            if (_installCts.IsCancellationRequested)
+                            {
+                                await RollBackInstalls(fmDataList, i);
+                                return false;
+                            }
+
+                            if (Config.ConvertWAVsTo16BitOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, _installCts.Token);
+
+                            if (_installCts.IsCancellationRequested)
+                            {
+                                await RollBackInstalls(fmDataList, i);
+                                return false;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -1270,14 +1288,14 @@ namespace AngelLoader
 
                     try
                     {
-                        await RestoreFM(fmData.FM, fmData.BackupFile);
+                        await RestoreFM(fm: fmData.FM, backupFile: fmData.BackupFile, ct: _installCts.Token);
                     }
                     catch (Exception ex)
                     {
                         Log(ex: ex);
                     }
 
-                    if (_extractCts.IsCancellationRequested)
+                    if (_installCts.IsCancellationRequested)
                     {
                         await RollBackInstalls(fmDataList, i);
                         return false;
@@ -1343,7 +1361,7 @@ namespace AngelLoader
                         );
                     }
 
-                    if (_extractCts.Token.IsCancellationRequested)
+                    if (_installCts.Token.IsCancellationRequested)
                     {
                         return (true, false);
                     }
@@ -1407,7 +1425,7 @@ namespace AngelLoader
                     entriesCount,
                     listFile: "",
                     new List<string>(),
-                    _extractCts.Token,
+                    _installCts.Token,
                     progress
                 );
 

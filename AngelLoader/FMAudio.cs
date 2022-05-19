@@ -145,9 +145,11 @@ namespace AngelLoader
             }
         }
 
-        internal static async Task ConvertToWAVs(FanMission fm, AudioConvert type)
+        internal static async Task ConvertToWAVs(FanMission fm, AudioConvert type, CancellationToken? ct = null)
         {
             if (!GameIsDark(fm.Game)) return;
+
+            static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
 
             await Task.Run(async () =>
             {
@@ -238,35 +240,57 @@ namespace AngelLoader
                         return;
                     }
 
+                    if (Canceled(ct)) return;
+
                     try
                     {
                         var fmSndPaths = GetFMSoundPathsByGame(fm);
-
                         foreach (string fmSndPath in fmSndPaths)
                         {
                             if (!Directory.Exists(fmSndPath)) return;
 
+                            if (Canceled(ct)) return;
+
                             Dir_UnSetReadOnly(fmSndPath);
 
+                            if (Canceled(ct)) return;
+
                             var wavFiles = Directory.GetFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
+
+                            if (Canceled(ct)) return;
+
                             foreach (string f in wavFiles)
                             {
                                 File_UnSetReadOnly(f);
 
+                                if (Canceled(ct)) return;
+
                                 int bits = GetBitDepthFast(f);
+
+                                if (Canceled(ct)) return;
 
                                 // Header wasn't wav, so skip this one
                                 if (bits == -1) continue;
 
                                 if (bits == 0) bits = GetBitDepthSlow(f);
+
+                                if (Canceled(ct)) return;
+
                                 if (bits is >= 1 and <= 16) continue;
 
                                 string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
 
                                 await FFmpeg.NET.Engine.ConvertAsync(f, tempFile, FFmpeg.NET.ConvertType.AudioBitRateTo16Bit);
 
+                                if (Canceled(ct)) return;
+
                                 File.Delete(f);
+
+                                if (Canceled(ct)) return;
+
                                 File.Move(tempFile, f);
+
+                                if (Canceled(ct)) return;
                             }
                         }
                     }
@@ -286,6 +310,8 @@ namespace AngelLoader
                         {
                             if (!Directory.Exists(fmSndPath)) return;
 
+                            if (Canceled(ct)) return;
+
                             try
                             {
                                 Dir_UnSetReadOnly(fmSndPath);
@@ -294,6 +320,8 @@ namespace AngelLoader
                             {
                                 Log("Unable to set directory attributes on " + fmSndPath, ex);
                             }
+
+                            if (Canceled(ct)) return;
 
                             string[] files;
                             try
@@ -306,9 +334,13 @@ namespace AngelLoader
                                 return;
                             }
 
+                            if (Canceled(ct)) return;
+
                             foreach (string f in files)
                             {
                                 File_UnSetReadOnly(f);
+
+                                if (Canceled(ct)) return;
 
                                 try
                                 {
@@ -319,6 +351,8 @@ namespace AngelLoader
                                     Log("Exception in FFmpeg convert", ex);
                                 }
 
+                                if (Canceled(ct)) return;
+
                                 try
                                 {
                                     File.Delete(f);
@@ -327,6 +361,8 @@ namespace AngelLoader
                                 {
                                     Log("Exception in deleting file " + f, ex);
                                 }
+
+                                if (Canceled(ct)) return;
                             }
                         }
                     }

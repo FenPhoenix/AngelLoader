@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -377,8 +378,10 @@ namespace AngelLoader
             });
         }
 
-        internal static async Task RestoreFM(FanMission fm, BackupFile? backupFile = null)
+        internal static async Task RestoreFM(FanMission fm, BackupFile? backupFile = null, CancellationToken? ct = null)
         {
+            static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
+
             if (!GameIsKnownAndSupported(fm.Game))
             {
                 Log("Game type is unknown or unsupported (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", stackTrace: true);
@@ -394,6 +397,8 @@ namespace AngelLoader
                 backupFile ??= GetBackupFile(fm);
                 if (!backupFile.Found) return;
 
+                if (Canceled(ct)) return;
+
                 var fileExcludes = new List<string>();
                 //var dirExcludes = new List<string>();
 
@@ -402,7 +407,12 @@ namespace AngelLoader
 
                 using (var archive = GetZipArchiveCharEnc(backupFile.Name))
                 {
+                    if (Canceled(ct)) return;
+
                     int filesCount = archive.Entries.Count;
+
+                    if (Canceled(ct)) return;
+
                     if (backupFile.DarkLoader)
                     {
                         for (int i = 0; i < filesCount; i++)
@@ -419,6 +429,8 @@ namespace AngelLoader
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOfDirSep())));
                                 entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
                             }
+
+                            if (Canceled(ct)) return;
                         }
                     }
                     else
@@ -429,6 +441,9 @@ namespace AngelLoader
                             for (int i = 0; i < filesCount; i++)
                             {
                                 var entry = archive.Entries[i];
+
+                                if (Canceled(ct)) return;
+
                                 string fn = entry.FullName;
 
                                 if (fn.Length > 0 && !fn[fn.Length - 1].IsDirSep() &&
@@ -441,18 +456,28 @@ namespace AngelLoader
                                     Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOfDirSep())));
                                     entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
                                 }
+
+                                if (Canceled(ct)) return;
                             }
                         }
                         else
                         {
                             var fmSelInf = archive.GetEntry(Paths.FMSelInf);
+
+                            if (Canceled(ct)) return;
+
                             // Cap the length, cause... well, nobody's going to put a 500MB binary file named
                             // fmsel.inf, but hey...
                             // Null check required because GetEntry() can return null
                             if (fmSelInf?.Length < ByteSize.MB * 10)
                             {
                                 using var eo = fmSelInf.Open();
+
+                                if (Canceled(ct)) return;
+
                                 using var sr = new StreamReader(eo);
+
+                                if (Canceled(ct)) return;
 
                                 string? line;
                                 while ((line = sr.ReadLine()) != null)
@@ -492,6 +517,8 @@ namespace AngelLoader
                                         //    dirExcludes.Add(val);
                                         //}
                                     }
+
+                                    if (Canceled(ct)) return;
                                 }
                             }
 
@@ -514,6 +541,8 @@ namespace AngelLoader
                                 }
 
                                 f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+
+                                if (Canceled(ct)) return;
                             }
                         }
                     }
@@ -530,6 +559,8 @@ namespace AngelLoader
                             // to store whether dirs were actually removed so we can remove them again.
                             File.Delete(f);
                         }
+
+                        if (Canceled(ct)) return;
                     }
 
                     // Disabled till this is working completely
