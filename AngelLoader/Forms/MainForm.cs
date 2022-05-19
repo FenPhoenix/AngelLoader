@@ -4993,7 +4993,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(playShouldBeEnabled);
             PlayFMButton.Enabled = playShouldBeEnabled;
 
-            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
+            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
             bool installShouldBeEnabled = allSelectedAreSameInstalledState &&

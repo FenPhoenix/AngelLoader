@@ -234,17 +234,19 @@ When you click the fullscreen button, the readme area enlarges to take up the en
 <p><img src="images/BottomBar.png"/></p>
 
 <h4><img src="images/PlayFM.png" style="vertical-align:bottom" /> Play FM</h4>
-Click this button to play the currently selected FM. If the FM is not installed, it will be installed automatically first.
+Click this button to play the currently selected FM. If the FM is not installed, it will be installed automatically first. If multiple FMs are selected, this button will be disabled.
 
-<h4><img src="images/PlayOriginalGame.png" style="vertical-align:bottom" /> Play original game</h4>
-Click this button to bring up a list of supported games. Only games that you've <a href="#paths_to_game_exes">provided a path to</a> will be enabled; others will be grayed out. Clicking on one of these games will let you play it without loading an FM.<br>
+<h4><img src="images/PlayOriginalGame.png" style="vertical-align:bottom" /> Play without FM</h4>
+Click this button to bring up a list of supported games. Only games that you've <a href="#paths_to_game_exes">provided a path to</a> will be enabled. Clicking on one of these games will let you play it without loading an FM.<br>
 If you have NewDark 1.27 or later and have installed the multiplayer option (meaning Thief2MP.exe exists in your Thief 2 directory), then there will be an additional option in the list to play Thief 2 in multiplayer mode.
+<p/>
+If you've chosen to display this as multiple buttons instead, then only the buttons for games that you've provided a path to will be displayed. Otherwise it works similarly.
 
 <h4><img src="images/Install.png" style="vertical-align:bottom" /> / <img src="images/Uninstall.png" style="vertical-align:bottom" /> Install / Uninstall FM</h4>
-If the currently selected FM is not installed, this button will install it; otherwise, it will uninstall it.
+If the currently selected FM or FMs are not installed, this button will install them; otherwise, it will uninstall them.
 
 <h4><img src="images/WebSearch.png" style="vertical-align:bottom" /> Web search</h4>
-Click this button to search the web for the selected mission. You can set the search URL in the <a href="#settings_web_search">Settings window</a>.
+Click this button to search the web for the selected FM. You can set the search URL in the <a href="#settings_web_search">Settings window</a>. If multiple FMs are selected, this button will be disabled.
 
 <h4><img src="images/Settings.png" style="vertical-align:bottom" /> Settings</h4>
 Opens the <a href="#settings_window">Settings window</a>.
@@ -259,10 +261,10 @@ This is the main area where fan missions are displayed, sorted, and filtered. Yo
 Drag a column left or right to change its order. Clicking on a column header will sort by that column. Click once to sort by ascending, and click again to sort by descending.
 Double-click the size grip to the right of a column to auto-size that column to fit its content.
 <p>Right-click on any column header or any blank space in the list to bring up the <a href="#column_header_context_menu">column header context menu</a>.</p>
-<p>Right-click on an FM to bring up the <a href="#fm_context_menu">FM context menu</a>.</p>
-<p>Double-click on a mission or press Enter when a mission is selected to play that mission. By default you will be asked for confirmation in this case; see <a href="#settings_play_on_dc_or_enter_ask">Play FM on double-click / Enter</a>.</p>
+<p><b>Right-click</b> on an FM to bring up the <a href="#fm_context_menu">FM context menu</a>.</p>
+<p><b>Double-click</b> on a mission or press <b>Enter</b> when a mission is selected to play that mission. By default you will be asked for confirmation in this case; see <a href="#settings_play_on_dc_or_enter_ask">Play FM on double-click / Enter</a>.</p>
 
-Press the Delete key while an FM is selected to delete that FM's archive from disk. You will be asked for confirmation first.
+Press the <b>Delete</b> key while one or more FMs are selected to delete their archives from disk. You will be asked for confirmation first. If one or more selected FMs are installed, you will be asked if you want to uninstall them before deleting their archives.
 
 <p>You can zoom the FMs list either with the zoom buttons on the top bar, or with <code>Ctrl++</code>,<code>Ctrl+-</code>, and <code>Ctrl+0</code>, or with Ctrl+mousewheel.
 
@@ -334,7 +336,7 @@ Right-clicking on any column header, or any blank space in the main list, will b
 Right-click on a fan mission in the list to bring up this menu.
 
 <h4>Play FM</h4>
-Plays the currently selected FM. If the FM is not installed, it will be installed automatically first.
+Plays the currently selected FM. If the FM is not installed, it will be installed automatically first. If multiple FMs are selected, this option will be disabled.
 
 <h4>Play FM (multiplayer)</h4>
 This item will only appear if Thief2MP.exe was found in the Thief 2 directory. Clicking it will allow you to play the selected FM in multiplayer mode (requires NewDark 1.27 or later). If the FM is not installed, it will be installed automatically first.
