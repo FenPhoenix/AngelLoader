@@ -3013,25 +3013,23 @@ namespace AngelLoader.Forms
         {
             if (FMsDGV.RowCount == 0) return;
 
-            int selectedRow = FMsDGV.MainSelectedRow!.Index;
             var selRows = FMsDGV.SelectedRows;
-
             try
             {
                 TopSplitContainer.Panel1.SuspendDrawing();
-                using (new DisableEvents(this))
+                if (keepMulti)
                 {
-                    FMsDGV.SelectSingle(selectedRow);
+                    foreach (DataGridViewRow row in selRows)
+                    {
+                        FMsDGV.InvalidateRow(row.Index);
+                    }
+                }
+                else
+                {
+                    FMsDGV.SelectSingle(FMsDGV.MainSelectedRow!.Index);
                     // TODO: This pops our position back to put selected FM in view - but do we really need to run this here?
                     // Alternatively, maybe SelectProperly() should pop us back to where we were after it's done?
                     FMsDGV.SelectProperly();
-                    if (keepMulti)
-                    {
-                        foreach (DataGridViewRow row in selRows)
-                        {
-                            FMsDGV.Rows[row.Index].Selected = true;
-                        }
-                    }
                 }
             }
             finally
