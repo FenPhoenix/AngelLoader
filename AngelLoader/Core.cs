@@ -108,6 +108,9 @@ namespace AngelLoader
             }
             else
             {
+                // Just in case... cause we don't run it if we don't find the config file...
+                Ini.FinalizeConfig(Config);
+
                 openSettings = true;
                 // We're starting for the first time ever (assumed)
                 cleanStart = true;

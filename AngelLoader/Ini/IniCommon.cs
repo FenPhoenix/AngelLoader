@@ -700,7 +700,7 @@ namespace AngelLoader
         /// Sets some values that need everything in place first, and ensures validity of values that need it.
         /// </summary>
         /// <param name="config"></param>
-        private static void FinalizeConfig(ConfigData config)
+        internal static void FinalizeConfig(ConfigData config)
         {
             #region Ensure validity of game filter visibilities
 

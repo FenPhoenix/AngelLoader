@@ -43,6 +43,13 @@ namespace AngelLoader.DataClasses
 
                 GameFilterControlVisibilities[i] = true;
             }
+
+            // Must set the display indexes, otherwise we crash!
+            Columns = new ColumnData[ColumnsCount];
+            for (int i = 0; i < ColumnsCount; i++)
+            {
+                Columns[i] = new ColumnData { Id = (Column)i, DisplayIndex = i };
+            }
         }
 
         //internal int Version = 1;
@@ -278,7 +285,7 @@ namespace AngelLoader.DataClasses
 
         #region Columns and sorting
 
-        internal readonly ColumnData[] Columns = InitializedArray<ColumnData>(ColumnsCount);
+        internal readonly ColumnData[] Columns;
         internal Column SortedColumn = Column.Title;
         internal SortDirection SortDirection = SortDirection.Ascending;
 
@@ -430,7 +437,7 @@ namespace AngelLoader.DataClasses
         internal ConfirmBeforeInstall ConfirmBeforeInstall = ConfirmBeforeInstall.OnlyForMultiple;
 
         internal bool CheckFreeDiskSpaceOnInstall = true;
-        
+
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed;
