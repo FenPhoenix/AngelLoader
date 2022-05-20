@@ -6,6 +6,23 @@ using static AL_Common.Common;
 
 namespace AngelLoader
 {
+    /*
+    @WPF(RTF notes and research):
+    WPF has a RichTextBox that is really nice all things considered; you can just set the foreground color property
+    and just like that, it does what we have to use EasyHook on GetSysColor for. It's generally fast enough, and
+    while the way you load content is superficially different, it's basically still the same as what we've got
+    now, just pass it a stream and a format. So we can still do the byte array modifications beforehand.
+    BUT:
+    When loading images in \wmetafileN format, it is HORRENDOUSLY SLOW. I know I always say things are "horrendously
+    slow" but I mean it this time, we're talking 1.5 to as much as like 20+ seconds sometimes. It's absurd.
+    What it does is convert the metafile to a bmp, then to a png, then writes it out to the stream again.
+    If we can do this part ourselves before we pass the byte array (and do it fast), we can dodge this tarpit.
+
+    WinUI 3 has an even nicer RichEditBox, it's very fast and you can still pass it a stream. But, it doesn't
+    even attempt to load metafile-format images. So again, we could convert them to png beforehand and it would
+    work I guess. But WinUI3 is only for Win10 1809 and up, so meh.
+    */
+
     internal static class RtfTheming
     {
         #region Private fields
