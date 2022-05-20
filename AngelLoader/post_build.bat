@@ -52,8 +52,8 @@ if %ConfigurationName% == Release_Public (
 "%system%xcopy" "%SolutionDir%BinReleaseOnly" "%TargetDir%" /y /i /e
 
 rem Exlude "history" dir without having to copy and delete it afterwards (it's large) or write out an excludes file
-"%system%xcopy" "%SolutionDir%doc\*.html" "%TargetDir%doc\" /y /i
-"%system%xcopy" "%SolutionDir%doc\images" "%TargetDir%doc\images" /y /i /e
+"%system%xcopy" "%SolutionDir%docs\doc\*.html" "%TargetDir%doc\" /y /i
+"%system%xcopy" "%SolutionDir%docs\doc\images" "%TargetDir%doc\images" /y /i /e
 
 rem Personal local-only file (git-ignored). It contains stuff that is only appropriate for my personal setup and
 rem might well mess up someone else's. So don't worry about it.
