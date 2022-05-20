@@ -21,6 +21,22 @@ namespace AngelLoader
     WinUI 3 has an even nicer RichEditBox, it's very fast and you can still pass it a stream. But, it doesn't
     even attempt to load metafile-format images. So again, we could convert them to png beforehand and it would
     work I guess. But WinUI3 is only for Win10 1809 and up, so meh.
+
+    The plan:
+    -Parse until we find any {\pict with \wmetafileN
+    -Get the \pichgoal and \picwgoal values (twips) and convert to pixels, rounding AwayFromZero. This is the
+     best dimension data we can really get.
+    -Get the bytes (hex or bin) out of the stream, and convert to actual bytes (binary) in a byte array
+    -Wrap a MemoryStream around the byte array and pass to a new Metafile(Stream).
+    -Make another stream and do metafile.Save(Stream, ImageFormat.Png)
+    -Remove the old \wmetadata pict, and insert our own, with the same picw/h/wgoal/hgoal etc. and whatever others
+     are applicable, and do it binary (\binN) so we don't have to convert the bytes back to hex, just to save time
+    
+    Notes:
+    -We can't pass the GDI png compressor any params, so we can't say not to compress it to save time. It's pretty
+     fast relatively speaking, but we could try ImageMagick.NET or something to see if that's any better.
+    -This site suggests maybe we can calculate the width/height ourselves?
+     https://keestalkstech.com/2016/06/rasterizing-emf-files-png-net-csharp/
     */
 
     internal static class RtfTheming
