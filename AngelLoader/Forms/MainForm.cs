@@ -478,27 +478,11 @@ namespace AngelLoader.Forms
         // method(s) below
         public MainForm()
         {
-            /*
-            Font loading speed:
-            We can't try to be clever and set the form's font to a loaded-from-disk one in order to make it never
-            load the built-in default one (super slow if you have a ton of fonts installed like I do), because
-            the Font property setter checks the default font anyway, meaning it loads the damn thing anyway so
-            it's pointless.
-            */
-#if DEBUG
-            // The debug path - the standard designer-generated method with tons of bloat and redundant value
-            // setting, immediate initialization, etc.
-            // This path supports working with the designer.
-            InitializeComponent();
-#else
-            // The fast path - a custom method with all or most cruft stripped out, copied by hand from the
-            // designer-generated method and tweaked as I see fit for speed and lazy-loading support.
-            // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
-            InitComponentManual();
-#endif
-
-            Win32ThemeHooks.InstallHooks();
-
+            // IMPORTANT! Init manual controls BEFORE component init!
+            // Otherwise, we might get event handlers firing (looking at you, SizeChanged) right after the resume
+            // layout calls in the component init methods, and referencing the manual controls. Never happened to
+            // me, but one other user had this happen. I don't know why it doesn't happen for me on Win10 _or_ 7,
+            // but whatever...
             #region Manual control construct + init
 
             #region Lazy-loaded controls
@@ -551,8 +535,6 @@ namespace AngelLoader.Forms
                 Size = new Size(533, 310),
                 DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground
             };
-            TopSplitContainer.Panel2.Controls.Add(TopRightMultiSelectBlockerPanel);
-            TopRightMultiSelectBlockerPanel.BringToFront();
 
             TopRightMultiSelectBlockerLabel = new DarkLabel
             {
@@ -561,9 +543,33 @@ namespace AngelLoader.Forms
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            TopRightMultiSelectBlockerPanel.Controls.Add(TopRightMultiSelectBlockerLabel);
 
             #endregion
+
+            /*
+            Font loading speed:
+            We can't try to be clever and set the form's font to a loaded-from-disk one in order to make it never
+            load the built-in default one (super slow if you have a ton of fonts installed like I do), because
+            the Font property setter checks the default font anyway, meaning it loads the damn thing anyway so
+            it's pointless.
+            */
+#if DEBUG
+            // The debug path - the standard designer-generated method with tons of bloat and redundant value
+            // setting, immediate initialization, etc.
+            // This path supports working with the designer.
+            InitializeComponent();
+#else
+            // The fast path - a custom method with all or most cruft stripped out, copied by hand from the
+            // designer-generated method and tweaked as I see fit for speed and lazy-loading support.
+            // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
+            InitComponentManual();
+#endif
+
+            Win32ThemeHooks.InstallHooks();
+
+            TopSplitContainer.Panel2.Controls.Add(TopRightMultiSelectBlockerPanel);
+            TopRightMultiSelectBlockerPanel.BringToFront();
+            TopRightMultiSelectBlockerPanel.Controls.Add(TopRightMultiSelectBlockerLabel);
 
             #region Construct + init non-public-release controls
 
@@ -1062,7 +1068,8 @@ namespace AngelLoader.Forms
                 }
             }
 
-            if (AddTagLLDropDown.Visible) AddTagLLDropDown.HideAndClear();
+            // Industrial strength protection against stupid event handler firing in the component init method...
+            if (AddTagLLDropDown != null! && AddTagLLDropDown.Visible) AddTagLLDropDown.HideAndClear();
         }
 
         private void MainForm_LocationChanged(object sender, EventArgs e)
