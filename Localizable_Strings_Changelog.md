@@ -4,6 +4,10 @@
 
 ## List of localization-related changes by version
 
+### v1.6.1:
+
+No localizable text changes.
+
 ### v1.6.0:
 
 #### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.5.4_1.6.0.html)

@@ -18,9 +18,9 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>A standalone fan mission loader and manager for Thief Gold, Thief II, Thief: Deadly Shadows, and System Shock 2.</Description>
     <Copyright>Copyright © 2018 - 2022</Copyright>
-    <Version>1.6.0</Version>
-    <AssemblyVersion>1.6.0</AssemblyVersion>
-    <FileVersion>1.6.0</FileVersion>
+    <Version>1.6.1</Version>
+    <AssemblyVersion>1.6.1</AssemblyVersion>
+    <FileVersion>1.6.1</FileVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
