@@ -2885,7 +2885,9 @@ namespace AngelLoader.Forms
                 FanMission? selectedFM = GetMainSelectedFMOrNull();
                 if (selectedFM != null)
                 {
-                    UpdateUIControlsForMultiSelectState(selectedFM);
+                    // We need to update the Patch tab too, and if we ever have any other tab in the future that
+                    // might need updating
+                    UpdateAllFMUIDataExceptReadme(selectedFM);
                 }
             }
         }
