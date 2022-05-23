@@ -91,6 +91,11 @@ namespace FMScanner
 
         private ScanOptions _scanOptions = new ScanOptions();
 
+        // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
+        // fields as much as possible for performance.
+        private RtfToTextConverter? _rtfConverter;
+        private RtfToTextConverter RtfConverter => _rtfConverter ??= new RtfToTextConverter();
+
         private bool _fmIsZip;
         private bool _fmIsSevenZip;
 
@@ -400,10 +405,6 @@ namespace FMScanner
 
             var scannedFMDataList = new List<ScannedFMDataAndError>();
 
-            // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
-            // fields as much as possible for performance.
-            var rtfConverter = new RtfToTextConverter();
-
             var progressReport = new ProgressReport();
 
             for (int i = 0; i < missions.Count; i++)
@@ -483,7 +484,7 @@ namespace FMScanner
 
                         try
                         {
-                            scannedFMAndError = ScanCurrentFM(rtfConverter, missions[i], tempPath);
+                            scannedFMAndError = ScanCurrentFM(missions[i], tempPath);
                         }
                         catch (Exception ex)
                         {
@@ -522,7 +523,7 @@ namespace FMScanner
         }
 
         private ScannedFMDataAndError
-        ScanCurrentFM(RtfToTextConverter rtfConverter, FMToScan fm, string tempPath)
+        ScanCurrentFM(FMToScan fm, string tempPath)
         {
 #if DEBUG
             _overallTimer.Restart();
@@ -995,7 +996,7 @@ namespace FMScanner
 
             if (fmIsT3) foreach (NameAndIndex f in t3FMExtrasDirFiles) readmeDirFiles.Add(f);
 
-            ReadAndCacheReadmeFiles(readmeDirFiles, rtfConverter);
+            ReadAndCacheReadmeFiles(readmeDirFiles);
 
             #endregion
 
@@ -2187,7 +2188,7 @@ namespace FMScanner
 
         #endregion
 
-        private void ReadAndCacheReadmeFiles(List<NameAndIndex> readmeDirFiles, RtfToTextConverter rtfConverter)
+        private void ReadAndCacheReadmeFiles(List<NameAndIndex> readmeDirFiles)
         {
             // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
             // Treat 'em like plaintext and see how it goes.
@@ -2313,12 +2314,12 @@ namespace FMScanner
                         {
                             readmeStream?.Dispose();
                             readmeStream = _archive.OpenEntry(readmeEntry!);
-                            (success, text) = rtfConverter.Convert(readmeStream, readmeFileLen);
+                            (success, text) = RtfConverter.Convert(readmeStream, readmeFileLen);
                         }
                         else
                         {
                             using var fs = File.OpenRead(readmeFileOnDisk);
-                            (success, text) = rtfConverter.Convert(fs, readmeFileLen);
+                            (success, text) = RtfConverter.Convert(fs, readmeFileLen);
                         }
 
                         if (success)
