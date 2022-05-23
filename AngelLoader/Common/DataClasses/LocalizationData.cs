@@ -558,6 +558,8 @@ namespace AngelLoader.DataClasses
                 "under normal circumstances.")]
             internal readonly string ShowImportantMods = "Show important mods";
             internal readonly string EnableAll = "Enable all";
+            internal readonly string DisableAll = "Disable all";
+            internal readonly string DisableAllToolTip = "Disables all mods that are not marked \"important\"";
             internal readonly string DisabledMods = "Disabled mods:";
         }
 

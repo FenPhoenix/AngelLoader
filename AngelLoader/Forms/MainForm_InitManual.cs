@@ -147,7 +147,8 @@ namespace AngelLoader.Forms
             ModsTabPage = new DarkTabPageCustom();
             ModsHeaderLabel = new DarkLabel();
             ModsResetFLP = new FlowLayoutPanel();
-            ModsResetButton = new DarkButton();
+            ModsEnableAllButton = new DarkButton();
+            ModsDisableNonImportantButton = new DarkButton();
             ModsShowUberCheckBox = new DarkCheckBox();
             ModsDisabledModsTextBox = new DarkTextBox();
             ModsDisabledModsLabel = new DarkLabel();
@@ -164,7 +165,6 @@ namespace AngelLoader.Forms
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
-            PlayOriginalFLP.SuspendLayout();
             EverythingPanel.SuspendLayout();
             MainSplitContainer.BeginInit();
             MainSplitContainer.Panel1.SuspendLayout();
@@ -1386,7 +1386,8 @@ namespace AngelLoader.Forms
             // ModsResetFLP
             // 
             ModsResetFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ModsResetFLP.Controls.Add(ModsResetButton);
+            ModsResetFLP.Controls.Add(ModsDisableNonImportantButton);
+            ModsResetFLP.Controls.Add(ModsEnableAllButton);
             ModsResetFLP.Controls.Add(ModsShowUberCheckBox);
             ModsResetFLP.FlowDirection = FlowDirection.RightToLeft;
             ModsResetFLP.Location = new Point(8, 216);
@@ -1394,14 +1395,21 @@ namespace AngelLoader.Forms
             ModsResetFLP.TabIndex = 1;
             ModsResetFLP.WrapContents = false;
             // 
-            // ModsResetButton
+            // ModsDisableNonImportantButton
             // 
-            ModsResetButton.Location = new Point(438, 0);
-            ModsResetButton.Margin = new Padding(0);
-            ModsResetButton.MinimumSize = new Size(75, 23);
-            ModsResetButton.TabIndex = 1;
-            ModsResetButton.UseVisualStyleBackColor = true;
-            ModsResetButton.Click += ModsResetButton_Click;
+            ModsDisableNonImportantButton.Margin = new Padding(0);
+            ModsDisableNonImportantButton.MinimumSize = new Size(75, 23);
+            ModsDisableNonImportantButton.TabIndex = 2;
+            ModsDisableNonImportantButton.UseVisualStyleBackColor = true;
+            ModsDisableNonImportantButton.Click += ModsDisableNonImportantButton_Click;
+            // 
+            // ModsEnableAllButton
+            // 
+            ModsEnableAllButton.Margin = new Padding(0);
+            ModsEnableAllButton.MinimumSize = new Size(75, 23);
+            ModsEnableAllButton.TabIndex = 1;
+            ModsEnableAllButton.UseVisualStyleBackColor = true;
+            ModsEnableAllButton.Click += ModsEnableAllButton_Click;
             // 
             // ModsShowUberCheckBox
             // 
@@ -1560,8 +1568,6 @@ namespace AngelLoader.Forms
             BottomRightButtonsFLP.PerformLayout();
             BottomLeftButtonsFLP.ResumeLayout(false);
             BottomLeftButtonsFLP.PerformLayout();
-            PlayOriginalFLP.ResumeLayout(false);
-            PlayOriginalFLP.PerformLayout();
             EverythingPanel.ResumeLayout(false);
             MainSplitContainer.Panel1.ResumeLayout(false);
             MainSplitContainer.Panel2.ResumeLayout(false);

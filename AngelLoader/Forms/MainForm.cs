@@ -1647,7 +1647,9 @@ namespace AngelLoader.Forms
                 ModsCheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
 
                 ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportantMods;
-                ModsResetButton.Text = LText.ModsTab.EnableAll;
+                ModsEnableAllButton.Text = LText.ModsTab.EnableAll;
+                ModsDisableNonImportantButton.Text = LText.ModsTab.DisableAll;
+                MainToolTip.SetToolTip(ModsDisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
 
                 ModsDisabledModsLabel.Text = LText.ModsTab.DisabledMods;
 
@@ -3592,6 +3594,57 @@ namespace AngelLoader.Forms
 
             var fm = FMsDGV.GetMainSelectedFM();
 
+            UpdateFMDisabledMods(fm);
+        }
+
+        private void ModsShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ModsCheckList.ShowCautionSection(ModsShowUberCheckBox.Checked);
+        }
+
+        private void ModsEnableAllButton_Click(object sender, EventArgs e)
+        {
+            var fm = FMsDGV.GetMainSelectedFM();
+
+            using (new DisableEvents(this))
+            {
+                foreach (Control control in ModsCheckList.Controls)
+                {
+                    if (control is CheckBox checkBox)
+                    {
+                        checkBox.Checked = true;
+                    }
+                }
+
+                fm.DisabledMods = "";
+                ModsDisabledModsTextBox.Text = "";
+            }
+
+            RefreshFM(fm, rowOnly: true);
+
+            Ini.WriteFullFMDataIni();
+        }
+
+        private void ModsDisableNonImportantButton_Click(object sender, EventArgs e)
+        {
+            var fm = FMsDGV.GetMainSelectedFM();
+
+            using (new DisableEvents(this))
+            {
+                foreach (Control control in ModsCheckList.Controls)
+                {
+                    if (control is CheckBox checkBox && !ModsCheckList.IsControlCaution(checkBox))
+                    {
+                        checkBox.Checked = false;
+                    }
+                }
+
+                UpdateFMDisabledMods(fm);
+            }
+        }
+
+        private void UpdateFMDisabledMods(FanMission fm)
+        {
             fm.DisabledMods = "";
 
             foreach (DarkCheckList.CheckItem item in ModsCheckList.CheckItems)
@@ -3612,32 +3665,6 @@ namespace AngelLoader.Forms
             RefreshFM(fm, rowOnly: true);
 
             Ini.WriteFullFMDataIni();
-        }
-
-        private void ModsShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            ModsCheckList.ShowCautionSection(ModsShowUberCheckBox.Checked);
-        }
-
-        private void ModsResetButton_Click(object sender, EventArgs e)
-        {
-            var fm = FMsDGV.GetMainSelectedFM();
-
-            using (new DisableEvents(this))
-            {
-                foreach (Control control in ModsCheckList.Controls)
-                {
-                    if (control is CheckBox checkBox)
-                    {
-                        checkBox.Checked = true;
-                    }
-                }
-
-                fm.DisabledMods = "";
-                ModsDisabledModsTextBox.Text = "";
-            }
-
-            RefreshFM(fm, rowOnly: true);
         }
 
         #endregion

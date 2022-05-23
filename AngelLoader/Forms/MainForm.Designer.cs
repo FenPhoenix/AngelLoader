@@ -167,7 +167,8 @@
             this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.ModsHeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsResetFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.ModsResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ModsDisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ModsEnableAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ModsShowUberCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ModsDisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.ModsDisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -184,7 +185,6 @@
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
-            this.PlayOriginalFLP.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
@@ -270,7 +270,7 @@
             this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftButtonsFLP.Name = "BottomLeftButtonsFLP";
-            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(547, 42);
+            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(234, 42);
             this.BottomLeftButtonsFLP.TabIndex = 36;
             this.BottomLeftButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftButtonsFLP_Paint);
             // 
@@ -296,14 +296,14 @@
             this.PlayOriginalFLP.Location = new System.Drawing.Point(100, 3);
             this.PlayOriginalFLP.Margin = new System.Windows.Forms.Padding(6, 3, 0, 3);
             this.PlayOriginalFLP.Name = "PlayOriginalFLP";
-            this.PlayOriginalFLP.Size = new System.Drawing.Size(310, 36);
+            this.PlayOriginalFLP.Size = new System.Drawing.Size(0, 0);
             this.PlayOriginalFLP.TabIndex = 57;
             // 
             // WebSearchButton
             // 
             this.WebSearchButton.AutoSize = true;
             this.WebSearchButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.WebSearchButton.Location = new System.Drawing.Point(428, 3);
+            this.WebSearchButton.Location = new System.Drawing.Point(115, 3);
             this.WebSearchButton.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
             this.WebSearchButton.MinimumSize = new System.Drawing.Size(116, 36);
             this.WebSearchButton.Name = "WebSearchButton";
@@ -476,7 +476,6 @@
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
-            this.FMsDGV.MultiSelect = true;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -1771,7 +1770,8 @@
             // 
             this.ModsResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ModsResetFLP.Controls.Add(this.ModsResetButton);
+            this.ModsResetFLP.Controls.Add(this.ModsDisableNonImportantButton);
+            this.ModsResetFLP.Controls.Add(this.ModsEnableAllButton);
             this.ModsResetFLP.Controls.Add(this.ModsShowUberCheckBox);
             this.ModsResetFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.ModsResetFLP.Location = new System.Drawing.Point(8, 216);
@@ -1780,22 +1780,34 @@
             this.ModsResetFLP.TabIndex = 1;
             this.ModsResetFLP.WrapContents = false;
             // 
-            // ModsResetButton
+            // ModsDisableNonImportantButton
             // 
-            this.ModsResetButton.Location = new System.Drawing.Point(438, 0);
-            this.ModsResetButton.Margin = new System.Windows.Forms.Padding(0);
-            this.ModsResetButton.MinimumSize = new System.Drawing.Size(75, 23);
-            this.ModsResetButton.Name = "ModsResetButton";
-            this.ModsResetButton.Size = new System.Drawing.Size(75, 23);
-            this.ModsResetButton.TabIndex = 1;
-            this.ModsResetButton.Text = "Reset";
-            this.ModsResetButton.UseVisualStyleBackColor = true;
-            this.ModsResetButton.Click += new System.EventHandler(this.ModsResetButton_Click);
+            this.ModsDisableNonImportantButton.Location = new System.Drawing.Point(438, 0);
+            this.ModsDisableNonImportantButton.Margin = new System.Windows.Forms.Padding(0);
+            this.ModsDisableNonImportantButton.MinimumSize = new System.Drawing.Size(75, 23);
+            this.ModsDisableNonImportantButton.Name = "ModsDisableNonImportantButton";
+            this.ModsDisableNonImportantButton.Size = new System.Drawing.Size(75, 23);
+            this.ModsDisableNonImportantButton.TabIndex = 2;
+            this.ModsDisableNonImportantButton.Text = "Disable all";
+            this.ModsDisableNonImportantButton.UseVisualStyleBackColor = true;
+            this.ModsDisableNonImportantButton.Click += new System.EventHandler(this.ModsDisableNonImportantButton_Click);
+            // 
+            // ModsEnableAllButton
+            // 
+            this.ModsEnableAllButton.Location = new System.Drawing.Point(363, 0);
+            this.ModsEnableAllButton.Margin = new System.Windows.Forms.Padding(0);
+            this.ModsEnableAllButton.MinimumSize = new System.Drawing.Size(75, 23);
+            this.ModsEnableAllButton.Name = "ModsEnableAllButton";
+            this.ModsEnableAllButton.Size = new System.Drawing.Size(75, 23);
+            this.ModsEnableAllButton.TabIndex = 1;
+            this.ModsEnableAllButton.Text = "Enable all";
+            this.ModsEnableAllButton.UseVisualStyleBackColor = true;
+            this.ModsEnableAllButton.Click += new System.EventHandler(this.ModsEnableAllButton_Click);
             // 
             // ModsShowUberCheckBox
             // 
             this.ModsShowUberCheckBox.AutoSize = true;
-            this.ModsShowUberCheckBox.Location = new System.Drawing.Point(336, 3);
+            this.ModsShowUberCheckBox.Location = new System.Drawing.Point(261, 3);
             this.ModsShowUberCheckBox.Name = "ModsShowUberCheckBox";
             this.ModsShowUberCheckBox.Size = new System.Drawing.Size(99, 17);
             this.ModsShowUberCheckBox.TabIndex = 0;
@@ -1987,8 +1999,6 @@
             this.BottomRightButtonsFLP.PerformLayout();
             this.BottomLeftButtonsFLP.ResumeLayout(false);
             this.BottomLeftButtonsFLP.PerformLayout();
-            this.PlayOriginalFLP.ResumeLayout(false);
-            this.PlayOriginalFLP.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
@@ -2189,7 +2199,8 @@
         internal CustomControls.DarkTextBox ModsDisabledModsTextBox;
         internal CustomControls.DarkLabel ModsDisabledModsLabel;
         internal System.Windows.Forms.FlowLayoutPanel ModsResetFLP;
-        internal CustomControls.DarkButton ModsResetButton;
+        internal CustomControls.DarkButton ModsDisableNonImportantButton;
+        internal CustomControls.DarkButton ModsEnableAllButton;
         internal CustomControls.DarkCheckBox ModsShowUberCheckBox;
         internal CustomControls.DarkLabel ModsHeaderLabel;
         internal System.Windows.Forms.Panel ModsAutoScrollDummyPanel;

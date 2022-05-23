@@ -160,6 +160,8 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public methods
 
+        internal bool IsControlCaution(Control control) => control.Tag is ItemType.Caution;
+
         internal void ClearList()
         {
             base.Controls.DisposeAndClear();
