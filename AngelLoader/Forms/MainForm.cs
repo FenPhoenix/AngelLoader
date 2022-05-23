@@ -5043,6 +5043,8 @@ namespace AngelLoader.Forms
         }
 
         // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
+        // IMPORTANT(UpdateAllFMUIDataExceptReadme): ALWAYS call this when changing install state!
+        // The Patch tab needs to change on install state change and you keep forgetting. So like reminder.
         public void UpdateAllFMUIDataExceptReadme(FanMission fm)
         {
             bool fmIsT3 = fm.Game == Game.Thief3;
