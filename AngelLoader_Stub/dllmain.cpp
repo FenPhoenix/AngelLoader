@@ -98,6 +98,9 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 		return kSelFMRet_Cancel;
 	}
 
+	// Never call us back; we're standalone and don't need it
+	data->bRunAfterGame = 0;
+
 	//wstring localized_alert_message = get_loader_alert_message();
 
 	// data->sGameVersion:
@@ -182,6 +185,8 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 
 	if (play_original_game_key_found && play_original_game)
 	{
+		if (!disabled_mods.empty() && data->nMaxModExcludeLen > 0) strncpy_s(data->sModExcludePaths, data->nMaxModExcludeLen, disabled_mods.c_str(), data->nMaxModExcludeLen);
+
 		return kSelFMRet_Cancel;
 	}
 	else if (!play_original_game_key_found || fm_name.empty())
@@ -203,9 +208,6 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 	// Leave whatever was in there before if we haven't got a value. Don't ever overwrite defaults with our blanks.
 	if (!language.empty() && data->nLanguageLen > 0) strncpy_s(data->sLanguage, data->nLanguageLen, language.c_str(), data->nLanguageLen);
 	if (!force_language.empty()) data->bForceLanguage = !_stricmp(force_language.c_str(), "true") ? 1 : 0;
-
-	// Never call us back; we're standalone and don't need it
-	data->bRunAfterGame = 0;
 
 	return kSelFMRet_OK;
 }

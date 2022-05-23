@@ -126,7 +126,7 @@ namespace AngelLoader
 
         #region Play / open
 
-        internal static bool PlayOriginalGame(GameIndex game, bool playMP = false)
+        internal static bool PlayOriginalGame(GameIndex game, bool playMP = false, string? origDisabledMods = null)
         {
             try
             {
@@ -149,7 +149,11 @@ namespace AngelLoader
                 var sv = GetSteamValues(game, playMP);
                 if (sv.Success) (_, gameExe, workingPath, args) = sv;
 
-                WriteStubCommFile(null, gamePath, originalT3: game == GameIndex.Thief3);
+                WriteStubCommFile(
+                    fm: null,
+                    gamePath: gamePath,
+                    originalT3: game == GameIndex.Thief3,
+                    origDisabledMods: origDisabledMods);
 
                 StartExe(gameExe, workingPath, args);
 
@@ -317,7 +321,7 @@ namespace AngelLoader
             }
         }
 
-        private static void WriteStubCommFile(FanMission? fm, string gamePath, bool originalT3 = false)
+        private static void WriteStubCommFile(FanMission? fm, string gamePath, bool originalT3 = false, string? origDisabledMods = null)
         {
             string sLanguage = "";
             bool? bForceLanguage = null;
@@ -356,6 +360,10 @@ namespace AngelLoader
                 using var sw = new StreamWriter(Paths.StubCommFilePath, append: false,
                     new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true));
                 sw.WriteLine("PlayOriginalGame=" + (fm == null));
+                if (fm == null && !origDisabledMods.IsEmpty())
+                {
+                    sw.WriteLine("DisabledMods=" + origDisabledMods);
+                }
                 if (fm != null)
                 {
                     sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
