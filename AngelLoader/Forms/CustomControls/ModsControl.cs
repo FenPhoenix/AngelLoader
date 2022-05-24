@@ -1,35 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public partial class ModsControl : UserControl//, IDarkable
+    public sealed partial class ModsControl : UserControl
     {
-        //private bool _darkModeEnabled;
-        //public bool DarkModeEnabled
-        //{
-        //    get => _darkModeEnabled;
-        //    set
-        //    {
-        //        if (_darkModeEnabled == value) return;
-        //        _darkModeEnabled = value;
-
-        //        (ForeColor, BackColor) = _darkModeEnabled
-        //            ? (DarkColors.LightText, DarkColors.Fen_ControlBackground):
-        //    }
-        //}
-
         public ModsControl()
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitializeComponentSlim();
+#endif
         }
 
         [PublicAPI]
