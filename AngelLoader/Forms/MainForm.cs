@@ -4712,6 +4712,15 @@ namespace AngelLoader.Forms
             FMInstallAndPlay.PlayOriginalGame(((DarkButton)sender).GameIndex);
         }
 
+        internal void PlayOriginalGameButton_MouseUp(object sender, MouseEventArgs e)
+        {
+            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            {
+                string game = ((DarkButton)sender).GameIndex.ToString();
+                Core.Dialogs.ShowAlert("Game mods go here: " + game, "Test", MBoxIcon.None);
+            }
+        }
+
         internal void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
         {
             ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu, Lazy_PlayOriginalControls.T2MPMenuButton, MenuPos.TopRight);

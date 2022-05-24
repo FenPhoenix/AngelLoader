@@ -94,6 +94,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                 gameButton.PaintCustom += _owner.PlayOriginalGamesButtons_Paint;
                 gameButton.Click += _owner.PlayOriginalGameButtons_Click;
+                gameButton.MouseUp += _owner.PlayOriginalGameButton_MouseUp;
 
                 tabIndex += i == (int)GameIndex.Thief2 ? 2 : 1;
             }
