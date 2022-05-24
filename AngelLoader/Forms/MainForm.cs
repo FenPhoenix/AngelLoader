@@ -897,8 +897,6 @@ namespace AngelLoader.Forms
                 SetTopRightCollapsedState();
             }
 
-            MainModsControl.ModsCheckList.Inject(() => MainModsControl.ModsShowUberCheckBox.Checked);
-
             #endregion
 
             // Set these here because they depend on the splitter positions
@@ -3601,11 +3599,6 @@ namespace AngelLoader.Forms
             UpdateFMDisabledMods(fm);
         }
 
-        private void ModsShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            MainModsControl.ModsCheckList.ShowCautionSection(MainModsControl.ModsShowUberCheckBox.Checked);
-        }
-
         private void ModsEnableAllButton_Click(object sender, EventArgs e)
         {
             var fm = FMsDGV.GetMainSelectedFM();
@@ -4716,8 +4709,22 @@ namespace AngelLoader.Forms
         {
             if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
-                string game = ((DarkButton)sender).GameIndex.ToString();
-                Core.Dialogs.ShowAlert("Game mods go here: " + game, "Test", MBoxIcon.None);
+                GameIndex gameIndex = ((DarkButton)sender).GameIndex;
+                // @GENGAMES(T3 doesn't support mod management)
+                if (GameIsDark(gameIndex))
+                {
+                    using var f = new OriginalGameModsForm(gameIndex, Config.GetDisabledMods(gameIndex));
+                    if (f.ShowDialogDark() != DialogResult.OK) return;
+                    Config.SetDisabledMods(gameIndex, f.DisabledMods);
+                }
+                else
+                {
+                    Core.Dialogs.ShowAlert(
+                        // @vNext: Localize and finalize
+                        "AngelLoader does not support managing mods for Thief: Deadly Shadows.",
+                        LText.AlertMessages.Alert,
+                        MBoxIcon.None);
+                }
             }
         }
 
@@ -5253,7 +5260,7 @@ namespace AngelLoader.Forms
 
                     if (GameIsDark(fm.Game))
                     {
-                        (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(fm);
+                        (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(GameToGameIndex(fm.Game));
 
                         if (error == Error.None)
                         {

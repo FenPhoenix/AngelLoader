@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms
 {
-    partial class OriginalGameMods
+    partial class OriginalGameModsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -45,9 +45,16 @@
             this.OrigGameModsControl.Name = "OrigGameModsControl";
             this.OrigGameModsControl.Size = new System.Drawing.Size(527, 284);
             this.OrigGameModsControl.TabIndex = 0;
+            this.OrigGameModsControl.ModsEnableAllButtonClick += new System.EventHandler(this.OrigGameModsControl_ModsEnableAllButtonClick);
+            this.OrigGameModsControl.ModsDisableNonImportantButtonClick += new System.EventHandler(this.OrigGameModsControl_ModsDisableNonImportantButtonClick);
+            this.OrigGameModsControl.ModsDisabledModsTextBoxTextChanged += new System.EventHandler(this.OrigGameModsControl_ModsDisabledModsTextBoxTextChanged);
+            this.OrigGameModsControl.ModsDisabledModsTextBoxKeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.OrigGameModsControl_ModsDisabledModsTextBoxKeyDown);
+            this.OrigGameModsControl.ModsDisabledModsTextBoxLeave += new System.EventHandler(this.OrigGameModsControl_ModsDisabledModsTextBoxLeave);
+            this.OrigGameModsControl.ModsCheckListItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.OrigGameModsControl_ModsCheckListItemCheckedChanged);
             // 
             // OKButton
             // 
+            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(362, 0);
             this.OKButton.Margin = new System.Windows.Forms.Padding(0);
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
@@ -64,13 +71,14 @@
             this.flowLayoutPanel1.Controls.Add(this.Cancel_Button);
             this.flowLayoutPanel1.Controls.Add(this.OKButton);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 280);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 285);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(512, 23);
             this.flowLayoutPanel1.TabIndex = 2;
             // 
             // Cancel_Button
             // 
+            this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(437, 0);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(0);
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
@@ -80,15 +88,20 @@
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
-            // OriginalGameMods
+            // OriginalGameModsForm
             // 
+            this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(527, 311);
+            this.CancelButton = this.Cancel_Button;
+            this.ClientSize = new System.Drawing.Size(527, 316);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.OrigGameModsControl);
-            this.Name = "OriginalGameMods";
-            this.Text = "OriginalGameMods";
+            this.KeyPreview = true;
+            this.Name = "OriginalGameModsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Manage mods for [Game]";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OriginalGameMods_FormClosing);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 

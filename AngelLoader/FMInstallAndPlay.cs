@@ -126,34 +126,39 @@ namespace AngelLoader
 
         #region Play / open
 
-        internal static bool PlayOriginalGame(GameIndex game, bool playMP = false, string? origDisabledMods = null)
+        internal static bool PlayOriginalGame(GameIndex gameIndex, bool playMP = false)
         {
             try
             {
                 Core.View.SetWaitCursor(true);
 
                 (bool success, string gameExe, string gamePath) =
-                    CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: true, playMP);
+                    CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: true, playMP);
                 if (!success) return false;
+
                 Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-                if (game is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
-                SetUsAsSelector(game, gamePath, PlaySource.OriginalGame);
+                if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2)
+                {
+                    GameConfigFiles.FixCharacterDetailLine(gamePath);
+                }
+
+                SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame);
 
 #if !ReleaseBeta && !ReleasePublic
                 string args = Config.ForceWindowed ? "+force_windowed" : "";
 #else
                 string args = "";
 #endif
-                string workingPath = Config.GetGamePath(game);
-                var sv = GetSteamValues(game, playMP);
+                string workingPath = Config.GetGamePath(gameIndex);
+                var sv = GetSteamValues(gameIndex, playMP);
                 if (sv.Success) (_, gameExe, workingPath, args) = sv;
 
                 WriteStubCommFile(
                     fm: null,
                     gamePath: gamePath,
-                    originalT3: game == GameIndex.Thief3,
-                    origDisabledMods: origDisabledMods);
+                    originalT3: gameIndex == GameIndex.Thief3,
+                    origDisabledMods: Config.GetDisabledMods(gameIndex));
 
                 StartExe(gameExe, workingPath, args);
 

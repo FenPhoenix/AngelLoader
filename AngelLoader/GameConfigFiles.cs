@@ -977,13 +977,11 @@ namespace AngelLoader
 #endif
 
         internal static (Error Error, List<Mod>)
-        GetGameMods(FanMission fm)
+        GetGameMods(GameIndex gameIndex)
         {
             var list = new List<Mod>();
 
-            if (!GameIsDark(fm.Game)) return (Error.None, list);
-
-            GameIndex gameIndex = GameToGameIndex(fm.Game);
+            if (!GameIsDark(gameIndex)) return (Error.None, list);
 
             string gamePath = Config.GetGamePath(gameIndex);
 

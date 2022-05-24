@@ -1374,7 +1374,6 @@ namespace AngelLoader.Forms
             MainModsControl.TabIndex = 6;
             MainModsControl.ModsEnableAllButtonClick += ModsEnableAllButton_Click;
             MainModsControl.ModsDisableNonImportantButtonClick += ModsDisableNonImportantButton_Click;
-            MainModsControl.ModsShowUberCheckBoxCheckedChanged += ModsShowUberCheckBox_CheckedChanged;
             MainModsControl.ModsDisabledModsTextBoxTextChanged += ModsDisabledModsTextBox_TextChanged;
             MainModsControl.ModsDisabledModsTextBoxKeyDown += ModsDisabledModsTextBox_KeyDown;
             MainModsControl.ModsDisabledModsTextBoxLeave += ModsDisabledModsTextBox_Leave;

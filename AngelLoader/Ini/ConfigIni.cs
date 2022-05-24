@@ -418,6 +418,11 @@ namespace AngelLoader
 
         #region Per-game fields
 
+        private static void Config_DisabledMods_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            config.SetDisabledMods(inGameIndex, valTrimmed);
+        }
+
         private static void Config_Exe_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.SetGameExe(inGameIndex, valTrimmed);
@@ -801,6 +806,8 @@ namespace AngelLoader
 
             #region Per-game fields
 
+            { "DisabledMods", Config_DisabledMods_Set },
+
             { "Exe", Config_Exe_Set },
 
             { "UseSteam", Config_UseSteam_Set },
@@ -996,6 +1003,16 @@ namespace AngelLoader
             #region Paths
 
             #region Game exes
+
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gameIndex = (GameIndex)i;
+                // @GENGAMES(T3 doesn't support mod management)
+                if (GameIsDark(gameIndex))
+                {
+                    sb.Append(GetGamePrefix(gameIndex)).Append("DisabledMods=").AppendLine(config.GetDisabledMods(gameIndex).Trim());
+                }
+            }
 
             for (int i = 0; i < SupportedGameCount; i++)
             {

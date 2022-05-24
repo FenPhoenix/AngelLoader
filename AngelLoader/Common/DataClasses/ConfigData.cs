@@ -13,6 +13,8 @@ namespace AngelLoader.DataClasses
     {
         internal ConfigData()
         {
+            _disabledMods = new string[SupportedGameCount];
+
             GameExes = new string[SupportedGameCount];
             GamePaths = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];
@@ -33,6 +35,8 @@ namespace AngelLoader.DataClasses
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 // bool[]s are initialized to false by default, so in that case we don't need to do anything here
+
+                _disabledMods[i] = "";
 
                 GameExes[i] = "";
                 GamePaths[i] = "";
@@ -77,6 +81,14 @@ namespace AngelLoader.DataClasses
         #endregion
 
         #endregion
+
+        private readonly string[] _disabledMods;
+
+        // @GENGAMES(T3 doesn't support mod management) - Begin
+        internal string GetDisabledMods(GameIndex index) => GameIsDark(index) ? _disabledMods[(int)index] : "";
+
+        internal void SetDisabledMods(GameIndex index, string value) => _disabledMods[(int)index] = GameIsDark(index) ? value : "";
+        // @GENGAMES(T3 doesn't support mod management) - End
 
         #region Paths
 

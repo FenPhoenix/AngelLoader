@@ -14,6 +14,7 @@ namespace AngelLoader.Forms.CustomControls
 #else
             InitializeComponentSlim();
 #endif
+            ModsCheckList.Inject(() => ModsShowUberCheckBox.Checked);
         }
 
         [PublicAPI]
@@ -25,11 +26,6 @@ namespace AngelLoader.Forms.CustomControls
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
         public event EventHandler? ModsDisableNonImportantButtonClick;
-
-        [PublicAPI]
-        [Browsable(true)]
-        [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? ModsShowUberCheckBoxCheckedChanged;
 
         [PublicAPI]
         [Browsable(true)]
@@ -63,7 +59,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void ModsShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            ModsShowUberCheckBoxCheckedChanged?.Invoke(ModsShowUberCheckBox, e);
+            ModsCheckList.ShowCautionSection(ModsShowUberCheckBox.Checked);
         }
 
         private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)

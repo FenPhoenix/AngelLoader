@@ -1754,7 +1754,6 @@
             this.MainModsControl.TabIndex = 6;
             this.MainModsControl.ModsEnableAllButtonClick += new System.EventHandler(this.ModsEnableAllButton_Click);
             this.MainModsControl.ModsDisableNonImportantButtonClick += new System.EventHandler(this.ModsDisableNonImportantButton_Click);
-            this.MainModsControl.ModsShowUberCheckBoxCheckedChanged += new System.EventHandler(this.ModsShowUberCheckBox_CheckedChanged);
             this.MainModsControl.ModsDisabledModsTextBoxTextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
             this.MainModsControl.ModsDisabledModsTextBoxKeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.ModsDisabledModsTextBox_KeyDown);
             this.MainModsControl.ModsDisabledModsTextBoxLeave += new System.EventHandler(this.ModsDisabledModsTextBox_Leave);
