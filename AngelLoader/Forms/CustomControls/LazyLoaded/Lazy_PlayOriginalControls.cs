@@ -114,7 +114,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 _owner.PlayOriginalFLP.Controls.Add(GameButtons[i]);
             }
             _owner.PlayOriginalFLP.Controls.Add(T2MPMenuButton);
-            _owner.PlayOriginalFLP.Controls.SetChildIndex(T2MPMenuButton, 2);
+            _owner.PlayOriginalFLP.Controls.SetChildIndex(T2MPMenuButton, _owner.PlayOriginalFLP.Controls.GetChildIndex(GameButtons[(int)GameIndex.Thief2]) + 1);
 
             _constructedMulti = true;
 
