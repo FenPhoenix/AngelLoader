@@ -4720,8 +4720,7 @@ namespace AngelLoader.Forms
                 else
                 {
                     Core.Dialogs.ShowAlert(
-                        // @vNext: Localize and finalize
-                        "AngelLoader does not support managing mods for Thief: Deadly Shadows.",
+                        LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
                         LText.AlertMessages.Alert,
                         MBoxIcon.None);
                 }

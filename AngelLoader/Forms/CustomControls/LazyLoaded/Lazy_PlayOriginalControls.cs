@@ -133,7 +133,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                _owner.MainToolTip.SetToolTip(GameButtons[i], GetLocalizedGamePlayOriginalText((GameIndex)i));
+                GameIndex gameIndex = (GameIndex)i;
+                string message = GetLocalizedGamePlayOriginalText(gameIndex);
+                // @GENGAMES(T3 doesn't support mod management)
+                if (GameIsDark(gameIndex)) message += "\r\n" + LText.PlayOriginalGameMenu.Mods_ToolTipMessage;
+                _owner.MainToolTip.SetToolTip(GameButtons[i], message);
             }
         }
 

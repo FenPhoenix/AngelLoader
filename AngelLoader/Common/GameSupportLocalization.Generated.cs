@@ -45,6 +45,15 @@ namespace AngelLoader
                 Misc.LText.PlayOriginalGameMenu.SystemShock2_PlayOriginal;
         }
 
+        internal static string GetLocalizedOriginalModHeaderText(GameIndex gameIndex)
+        {
+            return
+                gameIndex == GameIndex.Thief1 ? Misc.LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief1:
+                gameIndex == GameIndex.Thief2 ? Misc.LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief2:
+                gameIndex == GameIndex.Thief3 ? Misc.LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief3:
+                Misc.LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForSS2;
+        }
+
         #endregion
     }
 }

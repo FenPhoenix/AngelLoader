@@ -582,6 +582,13 @@ namespace AngelLoader.DataClasses
             internal readonly string Thief2_PlayOriginal = "Play Thief 2 without FM";
             internal readonly string Thief3_PlayOriginal = "Play Thief 3 without FM";
             internal readonly string SystemShock2_PlayOriginal = "Play System Shock 2 without FM";
+            internal readonly string Mods_ToolTipMessage = "Right-click to enable or disable mods for this game.";
+            internal readonly string Mods_Thief3NotSupported = "AngelLoader does not support managing mods for Thief: Deadly Shadows.";
+            [FenGenGameSet("GetLocalizedOriginalModHeaderText")]
+            internal readonly string Mods_EnableOrDisableModsForThief1 = "Enable or disable mods for Thief 1:";
+            internal readonly string Mods_EnableOrDisableModsForThief2 = "Enable or disable mods for Thief 2:";
+            internal readonly string Mods_EnableOrDisableModsForThief3 = "Enable or disable mods for Thief 3:";
+            internal readonly string Mods_EnableOrDisableModsForSS2 = "Enable or disable mods for System Shock 2:";
         }
         // @GENGAMES (Localization - PlayOriginalGameMenu_Class) - End
 
