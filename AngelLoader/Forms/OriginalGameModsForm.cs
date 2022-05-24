@@ -77,7 +77,6 @@ namespace AngelLoader.Forms
             ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
         }
 
-        // @vNext: Localize and finalize
         private void Localize(GameIndex gameIndex)
         {
             Text = GetLocalizedGameName(gameIndex);
