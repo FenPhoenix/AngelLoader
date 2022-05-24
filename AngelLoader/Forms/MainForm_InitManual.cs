@@ -145,15 +145,7 @@ namespace AngelLoader.Forms
             PatchOpenFMFolderButton = new DarkButton();
             PatchFMNotInstalledLabel = new DarkLabel();
             ModsTabPage = new DarkTabPageCustom();
-            ModsHeaderLabel = new DarkLabel();
-            ModsResetFLP = new FlowLayoutPanel();
-            ModsEnableAllButton = new DarkButton();
-            ModsDisableNonImportantButton = new DarkButton();
-            ModsShowUberCheckBox = new DarkCheckBox();
-            ModsDisabledModsTextBox = new DarkTextBox();
-            ModsDisabledModsLabel = new DarkLabel();
-            ModsCheckList = new DarkCheckList();
-            ModsAutoScrollDummyPanel = new Panel();
+            MainModsControl = new ModsControl();
             ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
@@ -192,7 +184,6 @@ namespace AngelLoader.Forms
             PatchMainPanel.SuspendLayout();
             PatchDMLsPanel.SuspendLayout();
             ModsTabPage.SuspendLayout();
-            ModsResetFLP.SuspendLayout();
             SuspendLayout();
             // 
             // GameTabsImageList
@@ -1368,88 +1359,26 @@ namespace AngelLoader.Forms
             // 
             ModsTabPage.AutoScroll = true;
             ModsTabPage.BackColor = SystemColors.Control;
-            ModsTabPage.Controls.Add(ModsHeaderLabel);
-            ModsTabPage.Controls.Add(ModsResetFLP);
-            ModsTabPage.Controls.Add(ModsDisabledModsTextBox);
-            ModsTabPage.Controls.Add(ModsDisabledModsLabel);
-            ModsTabPage.Controls.Add(ModsCheckList);
-            ModsTabPage.Controls.Add(ModsAutoScrollDummyPanel);
+            ModsTabPage.Controls.Add(MainModsControl);
             ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
             // 
-            // ModsHeaderLabel
+            // MainModsControl
             // 
-            ModsHeaderLabel.AutoSize = true;
-            ModsHeaderLabel.Location = new Point(8, 8);
-            ModsHeaderLabel.TabIndex = 4;
-            // 
-            // ModsResetFLP
-            // 
-            ModsResetFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ModsResetFLP.Controls.Add(ModsDisableNonImportantButton);
-            ModsResetFLP.Controls.Add(ModsEnableAllButton);
-            ModsResetFLP.Controls.Add(ModsShowUberCheckBox);
-            ModsResetFLP.FlowDirection = FlowDirection.RightToLeft;
-            ModsResetFLP.Location = new Point(8, 216);
-            ModsResetFLP.Size = new Size(513, 24);
-            ModsResetFLP.TabIndex = 1;
-            ModsResetFLP.WrapContents = false;
-            // 
-            // ModsDisableNonImportantButton
-            // 
-            ModsDisableNonImportantButton.Margin = new Padding(0);
-            ModsDisableNonImportantButton.MinimumSize = new Size(75, 23);
-            ModsDisableNonImportantButton.TabIndex = 2;
-            ModsDisableNonImportantButton.UseVisualStyleBackColor = true;
-            ModsDisableNonImportantButton.Click += ModsDisableNonImportantButton_Click;
-            // 
-            // ModsEnableAllButton
-            // 
-            ModsEnableAllButton.Margin = new Padding(0);
-            ModsEnableAllButton.MinimumSize = new Size(75, 23);
-            ModsEnableAllButton.TabIndex = 1;
-            ModsEnableAllButton.UseVisualStyleBackColor = true;
-            ModsEnableAllButton.Click += ModsEnableAllButton_Click;
-            // 
-            // ModsShowUberCheckBox
-            // 
-            ModsShowUberCheckBox.AutoSize = true;
-            ModsShowUberCheckBox.TabIndex = 0;
-            ModsShowUberCheckBox.UseVisualStyleBackColor = true;
-            ModsShowUberCheckBox.CheckedChanged += ModsShowUberCheckBox_CheckedChanged;
-            // 
-            // ModsDisabledModsTextBox
-            // 
-            ModsDisabledModsTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ModsDisabledModsTextBox.Location = new Point(8, 256);
-            ModsDisabledModsTextBox.Size = new Size(512, 20);
-            ModsDisabledModsTextBox.TabIndex = 3;
-            ModsDisabledModsTextBox.KeyDown += ModsDisabledModsTextBox_KeyDown;
-            ModsDisabledModsTextBox.TextChanged += ModsDisabledModsTextBox_TextChanged;
-            ModsDisabledModsTextBox.Leave += ModsDisabledModsTextBox_Leave;
-            // 
-            // ModsDisabledModsLabel
-            // 
-            ModsDisabledModsLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            ModsDisabledModsLabel.AutoSize = true;
-            ModsDisabledModsLabel.Location = new Point(8, 240);
-            ModsDisabledModsLabel.TabIndex = 2;
-            // 
-            // ModsCheckList
-            // 
-            ModsCheckList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ModsCheckList.AutoScroll = true;
-            ModsCheckList.BorderStyle = BorderStyle.FixedSingle;
-            ModsCheckList.Location = new Point(8, 32);
-            ModsCheckList.Size = new Size(512, 184);
-            ModsCheckList.TabIndex = 0;
-            ModsCheckList.ItemCheckedChanged += ModsCheckList_ItemCheckedChanged;
-            // 
-            // ModsAutoScrollDummyPanel
-            // 
-            ModsAutoScrollDummyPanel.Location = new Point(8, 8);
-            ModsAutoScrollDummyPanel.Size = new Size(280, 208);
-            ModsAutoScrollDummyPanel.TabIndex = 5;
+            MainModsControl.Anchor = AnchorStyles.Top |
+                                     AnchorStyles.Bottom |
+                                     AnchorStyles.Left |
+                                     AnchorStyles.Right;
+            MainModsControl.Location = new Point(0, 0);
+            MainModsControl.Size = new Size(527, 284);
+            MainModsControl.TabIndex = 6;
+            MainModsControl.ModsEnableAllButtonClick += ModsEnableAllButton_Click;
+            MainModsControl.ModsDisableNonImportantButtonClick += ModsDisableNonImportantButton_Click;
+            MainModsControl.ModsShowUberCheckBoxCheckedChanged += ModsShowUberCheckBox_CheckedChanged;
+            MainModsControl.ModsDisabledModsTextBoxTextChanged += ModsDisabledModsTextBox_TextChanged;
+            MainModsControl.ModsDisabledModsTextBoxKeyDown += ModsDisabledModsTextBox_KeyDown;
+            MainModsControl.ModsDisabledModsTextBoxLeave += ModsDisabledModsTextBox_Leave;
+            MainModsControl.ModsCheckListItemCheckedChanged += ModsCheckList_ItemCheckedChanged;
             // 
             // ReadmeEncodingButton
             // 
@@ -1611,8 +1540,6 @@ namespace AngelLoader.Forms
             PatchDMLsPanel.PerformLayout();
             ModsTabPage.ResumeLayout(false);
             ModsTabPage.PerformLayout();
-            ModsResetFLP.ResumeLayout(false);
-            ModsResetFLP.PerformLayout();
             ResumeLayout(false);
         }
     }
