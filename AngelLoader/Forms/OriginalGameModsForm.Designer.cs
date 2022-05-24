@@ -98,7 +98,10 @@
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.OrigGameModsControl);
             this.KeyPreview = true;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "OriginalGameModsForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Manage mods for [Game]";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OriginalGameMods_FormClosing);

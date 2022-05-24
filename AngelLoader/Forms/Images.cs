@@ -803,6 +803,13 @@ namespace AngelLoader.Forms
 
         #region Misc
 
+        private static Bitmap? _mods_16;
+        private static Bitmap? _mods_16_Dark;
+        public static Bitmap Mods_16 =>
+            DarkModeEnabled
+                ? _mods_16_Dark ??= Resources.Mods_16_dark
+                : _mods_16 ??= Resources.Mods_16;
+
         private static Bitmap? _pin_16;
         private static Bitmap? _pin_16_Dark;
         public static Bitmap Pin_16 =>

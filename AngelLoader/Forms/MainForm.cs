@@ -4705,25 +4705,34 @@ namespace AngelLoader.Forms
             FMInstallAndPlay.PlayOriginalGame(((DarkButton)sender).GameIndex);
         }
 
+        private void ShowPerGameModsWindow(GameIndex gameIndex)
+        {
+            // @GENGAMES(T3 doesn't support mod management)
+            if (GameIsDark(gameIndex))
+            {
+                using var f = new OriginalGameModsForm(gameIndex, Config.GetDisabledMods(gameIndex));
+                if (f.ShowDialogDark() != DialogResult.OK) return;
+                Config.SetDisabledMods(gameIndex, f.DisabledMods);
+            }
+            else
+            {
+                Core.Dialogs.ShowAlert(
+                    LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
+                    LText.AlertMessages.Alert,
+                    MBoxIcon.None);
+            }
+        }
+
+        internal void PlayOriginalGameModMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowPerGameModsWindow(((ToolStripMenuItemCustom)sender).GameIndex);
+        }
+
         internal void PlayOriginalGameButton_MouseUp(object sender, MouseEventArgs e)
         {
             if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
             {
-                GameIndex gameIndex = ((DarkButton)sender).GameIndex;
-                // @GENGAMES(T3 doesn't support mod management)
-                if (GameIsDark(gameIndex))
-                {
-                    using var f = new OriginalGameModsForm(gameIndex, Config.GetDisabledMods(gameIndex));
-                    if (f.ShowDialogDark() != DialogResult.OK) return;
-                    Config.SetDisabledMods(gameIndex, f.DisabledMods);
-                }
-                else
-                {
-                    Core.Dialogs.ShowAlert(
-                        LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
-                        LText.AlertMessages.Alert,
-                        MBoxIcon.None);
-                }
+                ShowPerGameModsWindow(((DarkButton)sender).GameIndex);
             }
         }
 

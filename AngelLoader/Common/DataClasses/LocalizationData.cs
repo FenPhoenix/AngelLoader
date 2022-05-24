@@ -589,6 +589,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Mods_EnableOrDisableModsForThief2 = "Enable or disable mods for Thief 2:";
             internal readonly string Mods_EnableOrDisableModsForThief3 = "Enable or disable mods for Thief 3:";
             internal readonly string Mods_EnableOrDisableModsForSS2 = "Enable or disable mods for System Shock 2:";
+            internal readonly string Mods_SubMenu = "Mods";
         }
         // @GENGAMES (Localization - PlayOriginalGameMenu_Class) - End
 
