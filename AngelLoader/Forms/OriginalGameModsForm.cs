@@ -17,7 +17,11 @@ namespace AngelLoader.Forms
 
         public OriginalGameModsForm(GameIndex gameIndex, string inDisabledMods)
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitializeComponentSlim();
+#endif
 
             DisabledMods = inDisabledMods;
 
