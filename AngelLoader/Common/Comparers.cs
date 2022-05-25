@@ -193,7 +193,9 @@ namespace AngelLoader
 
             public int Compare(FanMission x, FanMission y)
             {
-                int ret = string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
+                int ret =
+                    x.Archive == y.Archive ? TitleCompare(x, y) :
+                    string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
 
                 return SortDirection == SortDirection.Ascending ? ret : -ret;
             }
@@ -207,6 +209,8 @@ namespace AngelLoader
             {
                 int ret =
                     x.Author == y.Author ? TitleCompare(x, y) :
+                    x.Author.IsEmpty() ? -1 :
+                    y.Author.IsEmpty() ? 1 :
                     string.Compare(x.Author, y.Author, StringComparison.InvariantCultureIgnoreCase);
 
                 return SortDirection == SortDirection.Ascending ? ret : -ret;
@@ -221,6 +225,8 @@ namespace AngelLoader
             {
                 int ret =
                     x.SizeBytes == y.SizeBytes ? TitleCompare(x, y) :
+                    x.SizeBytes == 0 ? -1 :
+                    y.SizeBytes == 0 ? 1 :
                     x.SizeBytes < y.SizeBytes ? -1 : 1;
 
                 return SortDirection == SortDirection.Ascending ? ret : -ret;
@@ -251,6 +257,8 @@ namespace AngelLoader
                 {
                     ret =
                         x.Rating == y.Rating ? TitleCompare(x, y) :
+                        x.Rating == 0 ? -1 :
+                        y.Rating == 0 ? 1 :
                         x.Rating < y.Rating ? -1 : 1;
                 }
 
@@ -397,6 +405,8 @@ namespace AngelLoader
                     !x.DisableAllMods && y.DisableAllMods ? 1 :
                     (x.DisableAllMods && y.DisableAllMods) || x.DisabledMods == y.DisabledMods ? TitleCompare(x, y) :
                     // Sort this column content-first for better UX
+                    x.DisabledMods.IsEmpty() ? 1 :
+                    y.DisabledMods.IsEmpty() ? -1 :
                     string.Compare(x.DisabledMods, y.DisabledMods, StringComparison.InvariantCultureIgnoreCase);
 
                 return SortDirection == SortDirection.Ascending ? ret : -ret;
@@ -412,6 +422,8 @@ namespace AngelLoader
                 int ret =
                     x.CommentSingleLine == y.CommentSingleLine ? TitleCompare(x, y) :
                     // Sort this column content-first for better UX
+                    x.CommentSingleLine.IsEmpty() ? 1 :
+                    y.CommentSingleLine.IsEmpty() ? -1 :
                     string.Compare(x.CommentSingleLine, y.CommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
 
                 return SortDirection == SortDirection.Ascending ? ret : -ret;
@@ -426,6 +438,8 @@ namespace AngelLoader
         {
             public int Compare(string x, string y) =>
                 x == y ? 0 :
+                x.IsEmpty() ? -1 :
+                y.IsEmpty() ? 1 :
                 string.Compare(
                     Path.GetFileNameWithoutExtension(x),
                     Path.GetFileNameWithoutExtension(y),
