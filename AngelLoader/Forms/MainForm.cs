@@ -4681,9 +4681,16 @@ namespace AngelLoader.Forms
         {
             PlayOriginalGameLLMenu.Construct();
 
-            for (int i = 0; i < SupportedGameCount; i++)
+            for (int i = 0, modI = 0; i < SupportedGameCount; i++)
             {
-                PlayOriginalGameLLMenu.GameMenuItems[i].Enabled = !Config.GetGameExe((GameIndex)i).IsEmpty();
+                GameIndex gameIndex = (GameIndex)i;
+                bool gameSpecified = !Config.GetGameExe(gameIndex).IsEmpty();
+                PlayOriginalGameLLMenu.GameMenuItems[i].Enabled = gameSpecified;
+                if (GameIsDark(gameIndex))
+                {
+                    PlayOriginalGameLLMenu.ModsSubMenu.DropDownItems[modI].Enabled = gameSpecified;
+                    modI++;
+                }
             }
             PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
 
