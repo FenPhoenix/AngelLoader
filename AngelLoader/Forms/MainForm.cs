@@ -220,8 +220,53 @@ namespace AngelLoader.Forms
             Height = 872;
         }
 
-        private void Test3Button_Click(object sender, EventArgs e)
+        private async void Test3Button_Click(object sender, EventArgs e)
         {
+            if (FMsDGV.RowCount > 0 && FMsDGV.GetRowSelectedCount() == 1)
+            {
+                FanMission fm = FMsDGV.GetMainSelectedFM();
+                if (fm.MarkedUnavailable)
+                {
+                    await DeleteFromDB_Test(fm);
+                }
+            }
+        }
+
+        // @DB: Support deleting multiple at once
+        private async Task DeleteFromDB_Test(FanMission fmToDelete)
+        {
+            if (!fmToDelete.Archive.IsEmpty())
+            {
+                var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
+                for (int i = 0; i < FMDataIniList.Count; i++)
+                {
+                    FanMission fm = FMDataIniList[i];
+                    if (iniDict.TryGetValue(fm.Archive, out var list))
+                    {
+                        list.Add(fm);
+                    }
+                    else
+                    {
+                        iniDict.Add(fm.Archive, new List<FanMission> { fm });
+                    }
+                }
+
+                var fmToDeleteIniCopies = iniDict[fmToDelete.Archive];
+
+                foreach (var fm in fmToDeleteIniCopies)
+                {
+                    FMDataIniList.Remove(fm);
+                }
+            }
+            else
+            {
+                FMDataIniList.Remove(fmToDelete);
+            }
+
+            Ini.WriteFullFMDataIni();
+            // @DB: This doesn't support keep nearest sel if the old FM ends up physically not in the list.
+            // We'll need to pass it the explicit FM we want it to land on ourselves.
+            await Core.RefreshFMsListFromDisk();
         }
 
         private void Test4Button_Click(object sender, EventArgs e)

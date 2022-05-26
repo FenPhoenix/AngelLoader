@@ -844,22 +844,7 @@ namespace AngelLoader
                 if (!fm.Installed ||
                     NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: true))
                 {
-                    // Fix: we can have duplicate archive names if the installed dir is different, so cull them
-                    // out of the view list at least.
-                    // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
-                    // TODO: We shouldn't have duplicate archives, but importing might add different installed dirs...
-                    if (fmArchivesDict.TryGetValue(fm.Archive, out ArchiveValueData? value))
-                    {
-                        if (value.Checked)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            fmArchivesDict[fm.Archive].Checked = true;
-                        }
-                    }
-                    else
+                    if (!fmArchivesDict.ContainsKey(fm.Archive))
                     {
                         fm.MarkedUnavailable = true;
                     }
@@ -878,6 +863,25 @@ namespace AngelLoader
                 FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
 
                 FMsViewList.Add(fm);
+            }
+
+            // Fix: we can have duplicate archive names if the installed dir is different, so cull them
+            // out of the view list at least.
+            // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
+            // TODO: We shouldn't have duplicate archives, but importing might add different installed dirs...
+            var viewListHash = new HashSetI(FMsViewList.Count);
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                var fm = FMsViewList[i];
+                if (!viewListHash.Contains(fm.Archive))
+                {
+                    viewListHash.Add(fm.Archive);
+                }
+                else
+                {
+                    FMsViewList.RemoveAt(i);
+                    i--;
+                }
             }
 
             FMsViewList.TrimExcess();
