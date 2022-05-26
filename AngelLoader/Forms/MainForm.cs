@@ -222,6 +222,12 @@ namespace AngelLoader.Forms
 
         private async void Test3Button_Click(object sender, EventArgs e)
         {
+            bool cont = Core.Dialogs.AskToContinue(
+                "Delete test thing! FMData.ini will be modified and entries removed and stuff!",
+                LText.AlertMessages.Alert,
+                defaultButton: MBoxButton.No);
+            if (!cont) return;
+
             if (FMsDGV.RowCount > 0 && FMsDGV.GetRowSelectedCount() == 1)
             {
                 FanMission fm = FMsDGV.GetMainSelectedFM();
