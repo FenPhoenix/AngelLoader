@@ -5113,6 +5113,8 @@ namespace AngelLoader.Forms
 
             #region Toggles
 
+            MainModsControl.ModsCheckList.Enabled = !fmIsT3;
+
             // We should never get here when FMsList.Count == 0, but hey
             MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
