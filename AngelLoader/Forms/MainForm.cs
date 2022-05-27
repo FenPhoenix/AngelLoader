@@ -270,9 +270,8 @@ namespace AngelLoader.Forms
             }
 
             Ini.WriteFullFMDataIni();
-            // @DB: This doesn't support keep nearest sel if the old FM ends up physically not in the list.
-            // We'll need to pass it the explicit FM we want it to land on ourselves.
-            await Core.RefreshFMsListFromDisk();
+            SelectedFM? selFM = Core.FindNearestUnselectedFM(FMsDGV.SelectedRows[0].Index, FMsDGV.RowCount);
+            await Core.RefreshFMsListFromDisk(selFM);
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
