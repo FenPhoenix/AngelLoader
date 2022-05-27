@@ -28,7 +28,7 @@ namespace AngelLoader
             private DictionaryI<string>? _archivesToInstDirNameNDLTruncated_FromFMDataIniList;
             private DictionaryI<string>? _installedDirs_FromFMDataIniList;
 
-            internal DictionaryI<string> GetInstDirFMSelToArchives(DictionaryI<ArchiveValueData> archives, bool truncate)
+            internal DictionaryI<string> GetInstDirFMSelToArchives(DictionaryI<DateTime> archives, bool truncate)
             {
                 if (truncate)
                 {
@@ -66,7 +66,7 @@ namespace AngelLoader
                 }
             }
 
-            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives(DictionaryI<ArchiveValueData> archives)
+            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives(DictionaryI<DateTime> archives)
             {
                 if (_archivesToInstDirNameNDLTruncated == null)
                 {
@@ -84,7 +84,7 @@ namespace AngelLoader
                 return _archivesToInstDirNameNDLTruncated;
             }
 
-            internal DictionaryI<string> GetInstDirNameToArchives(DictionaryI<ArchiveValueData> archives)
+            internal DictionaryI<string> GetInstDirNameToArchives(DictionaryI<DateTime> archives)
             {
                 if (_archives == null)
                 {
@@ -175,16 +175,6 @@ namespace AngelLoader
                 }
                 return _installedDirs_FromFMDataIniList;
             }
-        }
-
-        private sealed class ArchiveValueData
-        {
-            internal readonly DateTime DateTime;
-            // This bool is for BuildViewList; we don't use it until then but it's just so we can pass the dictionary
-            // all the way through without creating a second one.
-            internal bool Checked;
-
-            internal ArchiveValueData(DateTime dateTime) => DateTime = dateTime;
         }
 
         private sealed class InstDirValueData
@@ -368,7 +358,7 @@ namespace AngelLoader
 
             #region Get archives from disk
 
-            var fmArchivesAndDatesDict = new DictionaryI<ArchiveValueData>();
+            var fmArchivesAndDatesDict = new DictionaryI<DateTime>();
 
             var archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
@@ -403,7 +393,7 @@ namespace AngelLoader
                             // @DIRSEP: These are filename only, no need for PathContainsI()
                             !f.ContainsI(Paths.FMSelBak))
                         {
-                            fmArchivesAndDatesDict[f] = new ArchiveValueData(dateTimes[fi]);
+                            fmArchivesAndDatesDict[f] = dateTimes[fi];
 #if ENABLE_NEW_FMS_CHECK
                             if (!fmDataIniArchivesHash.Contains(f))
                             {
@@ -493,7 +483,7 @@ namespace AngelLoader
 
         #region Set names
 
-        private static void SetArchiveNames(DictionaryI<ArchiveValueData> fmArchives)
+        private static void SetArchiveNames(DictionaryI<DateTime> fmArchives)
         {
             DictionaryI<FanMission>? archivesDict = null;
             DictionaryI<FanMission> GetArchivesDict()
@@ -603,7 +593,7 @@ namespace AngelLoader
 
         #region Merge
 
-        private static void MergeNewArchiveFMs(DictionaryI<ArchiveValueData> fmArchives)
+        private static void MergeNewArchiveFMs(DictionaryI<DateTime> fmArchives)
         {
             int fmDataIniListCount = FMDataIniList.Count;
             var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
@@ -644,11 +634,11 @@ namespace AngelLoader
                         fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate);
                     }
 
-                    fm.DateAdded ??= item.Value.DateTime;
+                    fm.DateAdded ??= item.Value;
                 }
                 else if (fmDataIniArchiveDict.TryGetValue(archive, out fm))
                 {
-                    fm.DateAdded ??= item.Value.DateTime;
+                    fm.DateAdded ??= item.Value;
 
                     if (fm.InstalledDir.IsEmpty())
                     {
@@ -663,7 +653,7 @@ namespace AngelLoader
                         Archive = archive,
                         InstalledDir = archive.ToInstDirNameFMSel(true),
                         NoArchive = false,
-                        DateAdded = item.Value.DateTime
+                        DateAdded = item.Value
                     });
                 }
             }
@@ -699,7 +689,7 @@ namespace AngelLoader
         #endregion
 
         // PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
-        private static string? GetArchiveNameFromInstalledDir(FanMission fm, DictionaryI<ArchiveValueData> archives, LastResortLinkupBundle bundle)
+        private static string? GetArchiveNameFromInstalledDir(FanMission fm, DictionaryI<DateTime> archives, LastResortLinkupBundle bundle)
         {
             // The game type is supposed to be inferred from the installed location, but it could be unknown in
             // the following scenario:
@@ -804,7 +794,7 @@ namespace AngelLoader
         }
 
         private static void BuildViewList(
-            DictionaryI<ArchiveValueData> fmArchivesDict,
+            DictionaryI<DateTime> fmArchivesDict,
             DictionaryI<InstDirValueData>[] perGameInstalledFMDirsItems,
             List<int> fmsViewListUnscanned)
         {
