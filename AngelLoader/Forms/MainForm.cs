@@ -228,25 +228,26 @@ namespace AngelLoader.Forms
                 defaultButton: MBoxButton.No);
             if (!cont) return;
 
-            if (FMsDGV.RowCount > 0 && FMsDGV.GetRowSelectedCount() == 1)
+            if (FMsDGV.RowCount > 0 && FMsDGV.GetRowSelectedCount() > 0)
             {
-                FanMission fm = FMsDGV.GetMainSelectedFM();
-                if (fm.MarkedUnavailable)
+                var fms = FMsDGV.GetSelectedFMs_InOrder();
+                foreach (FanMission fm in fms)
                 {
-                    await DeleteFromDB_Test(fm);
+                    if (!fm.MarkedUnavailable) return;
                 }
+                await DeleteFromDB_Test(fms);
             }
         }
 
-        // @DB: Support deleting multiple at once
-        private async Task DeleteFromDB_Test(FanMission fmToDelete)
+        // @DB: Finalize the feature (add to context menu state changer, final dialog, do we want del key? etc.)
+        private async Task DeleteFromDB_Test(params FanMission[] fmsToDelete)
         {
-            if (!fmToDelete.Archive.IsEmpty())
+            var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
+            for (int i = 0; i < FMDataIniList.Count; i++)
             {
-                var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
-                for (int i = 0; i < FMDataIniList.Count; i++)
+                FanMission fm = FMDataIniList[i];
+                if (!fm.Archive.IsEmpty())
                 {
-                    FanMission fm = FMDataIniList[i];
                     if (iniDict.TryGetValue(fm.Archive, out var list))
                     {
                         list.Add(fm);
@@ -256,17 +257,22 @@ namespace AngelLoader.Forms
                         iniDict.Add(fm.Archive, new List<FanMission> { fm });
                     }
                 }
-
-                var fmToDeleteIniCopies = iniDict[fmToDelete.Archive];
-
-                foreach (var fm in fmToDeleteIniCopies)
-                {
-                    FMDataIniList.Remove(fm);
-                }
             }
-            else
+
+            foreach (var fmToDelete in fmsToDelete)
             {
-                FMDataIniList.Remove(fmToDelete);
+                if (!fmToDelete.Archive.IsEmpty() &&
+                    iniDict.TryGetValue(fmToDelete.Archive, out var fmToDeleteIniCopies))
+                {
+                    foreach (var fm in fmToDeleteIniCopies)
+                    {
+                        FMDataIniList.Remove(fm);
+                    }
+                }
+                else
+                {
+                    FMDataIniList.Remove(fmToDelete);
+                }
             }
 
             Ini.WriteFullFMDataIni();

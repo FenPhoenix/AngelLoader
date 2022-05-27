@@ -873,6 +873,8 @@ namespace AngelLoader
             for (int i = 0; i < FMsViewList.Count; i++)
             {
                 var fm = FMsViewList[i];
+                if (fm.Archive.IsEmpty()) continue;
+
                 if (!viewListHash.Contains(fm.Archive))
                 {
                     viewListHash.Add(fm.Archive);
