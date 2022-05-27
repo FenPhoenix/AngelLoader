@@ -760,13 +760,13 @@ namespace AngelLoader
             #endregion
         }
 
-        public static async Task RefreshFMsListFromDisk()
+        public static async Task RefreshFMsListFromDisk(SelectedFM? selFM = null)
         {
-            SelectedFM? selFM = View.GetMainSelectedFMPosInfo();
-            // Cursor here instead of in Find(), so we can keep it over the case where we load an RTF
-            // readme and it also sets the wait cursor, to avoid flickering it on and off twice.
+            selFM ??= View.GetMainSelectedFMPosInfo();
             try
             {
+                // Cursor here instead of in Find(), so we can keep it over the case where we load an RTF readme
+                // and it also sets the wait cursor, to avoid flickering it on and off twice.
                 View.SetWaitCursor(true);
                 using (new DisableEvents(View))
                 {
@@ -1866,28 +1866,35 @@ namespace AngelLoader
             SelectedFM? selFM = null;
             if (!pin && rowCount > 1)
             {
-                int index = View.GetMainSelectedRowIndex();
-                if (index == rowCount - 1)
-                {
-                    selFM = View.GetFMPosInfoFromIndex(index - 1);
-                }
-                else
-                {
-                    for (int i = index; i < rowCount; i++)
-                    {
-                        if (!View.RowSelected(i))
-                        {
-                            selFM = View.GetFMPosInfoFromIndex(i);
-                            break;
-                        }
-                    }
-                }
+                selFM = FindNearestUnselectedFM(View.GetMainSelectedRowIndex(), rowCount);
             }
 
             await View.SortAndSetFilter(
                 keepSelection: pin,
                 selectedFM: selFM,
                 keepMultiSelection: !singleFMSelected && pin);
+        }
+
+        internal static SelectedFM? FindNearestUnselectedFM(int index, int rowCount)
+        {
+            if (rowCount <= 1) return null;
+
+            if (index == rowCount - 1)
+            {
+                return View.GetFMPosInfoFromIndex(index - 1);
+            }
+            else
+            {
+                for (int i = index; i < rowCount; i++)
+                {
+                    if (!View.RowSelected(i))
+                    {
+                        return View.GetFMPosInfoFromIndex(i);
+                    }
+                }
+            }
+
+            return null;
         }
 
         internal static bool AtLeastOneDroppedFileValid(string[] droppedItems)

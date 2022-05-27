@@ -220,8 +220,64 @@ namespace AngelLoader.Forms
             Height = 872;
         }
 
-        private void Test3Button_Click(object sender, EventArgs e)
+        private async void Test3Button_Click(object sender, EventArgs e)
         {
+            bool cont = Core.Dialogs.AskToContinue(
+                "Delete test thing! FMData.ini will be modified and entries removed and stuff!",
+                LText.AlertMessages.Alert,
+                defaultButton: MBoxButton.No);
+            if (!cont) return;
+
+            if (FMsDGV.RowCount > 0 && FMsDGV.GetRowSelectedCount() > 0)
+            {
+                var fms = FMsDGV.GetSelectedFMs_InOrder();
+                foreach (FanMission fm in fms)
+                {
+                    if (!fm.MarkedUnavailable) return;
+                }
+                await DeleteFromDB_Test(fms);
+            }
+        }
+
+        // @DB: Finalize the feature (add to context menu state changer, final dialog, do we want del key? etc.)
+        private async Task DeleteFromDB_Test(params FanMission[] fmsToDelete)
+        {
+            var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
+            for (int i = 0; i < FMDataIniList.Count; i++)
+            {
+                FanMission fm = FMDataIniList[i];
+                if (!fm.Archive.IsEmpty())
+                {
+                    if (iniDict.TryGetValue(fm.Archive, out var list))
+                    {
+                        list.Add(fm);
+                    }
+                    else
+                    {
+                        iniDict.Add(fm.Archive, new List<FanMission> { fm });
+                    }
+                }
+            }
+
+            foreach (var fmToDelete in fmsToDelete)
+            {
+                if (!fmToDelete.Archive.IsEmpty() &&
+                    iniDict.TryGetValue(fmToDelete.Archive, out var fmToDeleteIniCopies))
+                {
+                    foreach (var fm in fmToDeleteIniCopies)
+                    {
+                        FMDataIniList.Remove(fm);
+                    }
+                }
+                else
+                {
+                    FMDataIniList.Remove(fmToDelete);
+                }
+            }
+
+            Ini.WriteFullFMDataIni();
+            SelectedFM? selFM = Core.FindNearestUnselectedFM(FMsDGV.SelectedRows[0].Index, FMsDGV.RowCount);
+            await Core.RefreshFMsListFromDisk(selFM);
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
