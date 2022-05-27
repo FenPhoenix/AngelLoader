@@ -504,7 +504,7 @@ namespace AngelLoader
                     for (int i = 0; i < FMDataIniList.Count; i++)
                     {
                         var fm = FMDataIniList[i];
-                        if (!archivesDict.ContainsKey(fm.Archive))
+                        if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
                         {
                             archivesDict.Add(fm.Archive, fm);
                         }
