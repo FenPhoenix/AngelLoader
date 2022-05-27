@@ -1,6 +1,4 @@
-﻿//#define ENABLE_NEW_FMS_CHECK
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using AngelLoader.DataClasses;
@@ -222,24 +220,6 @@ namespace AngelLoader
         // @CAN_RUN_BEFORE_VIEW_INIT
         private static List<int> FindInternal(bool startup)
         {
-#if ENABLE_NEW_FMS_CHECK
-            // NOTE(Find): These bools can help avoid unnecessary work, BUT!
-            // We need to still make sure that if the corresponding FM does NOT have a DateAdded set, that we
-            // still add it even if we don't do the rest of the linkup work!
-            // Now that I randomly seemed to have figured out how to hashtable the thing after years of trying
-            // and failing, we don't really need these that badly, but we could turn them on later for a small
-            // perf boost if we have no new FMs to add.
-            // Also, checking requires creating and populating two new hashsets and then doing a full set of
-            // lookups into each. That's just adding even more work that probably won't end up really saving us
-            // any time.
-            bool newInstalledDirs = false;
-            bool newArchives = false;
-
-            // New check functionality disabled for now.
-            bool NewInstalledDirs() => true;
-            bool NewArchives() => true;
-#endif
-
             // @PERF_TODO(Find): Number of hashtable recreations
             // We recreate several hashtables anew after potentially modifying the FM data ini list, because the
             // modification may necessitate the hashtable to be rebuilt from the updated FM list.
@@ -304,14 +284,6 @@ namespace AngelLoader
 
             #region Get installed dirs from disk
 
-#if ENABLE_NEW_FMS_CHECK
-            var fmDataIniInstalledDirsHash = new HashSetI(FMDataIniList.Count);
-            for (int i = 0; i < FMDataIniList.Count; i++)
-            {
-                fmDataIniInstalledDirsHash.Add(FMDataIniList[i].InstalledDir);
-            }
-#endif
-
             // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
             // horrendously expensive. Talking like eight seconds vs. < 4ms for the 1098 set. Weird.
             var perGameInstFMDirsItems = new DictionaryI<InstDirValueData>[SupportedGameCount];
@@ -338,12 +310,6 @@ namespace AngelLoader
                                     Installed = true
                                 };
                                 perGameInstFMDirsItems[gi][d] = new InstDirValueData(fm, dateTimes[di]);
-#if ENABLE_NEW_FMS_CHECK
-                                if (!fmDataIniInstalledDirsHash.Contains(d))
-                                {
-                                    newInstalledDirs = true;
-                                }
-#endif
                             }
                         }
                     }
@@ -362,14 +328,6 @@ namespace AngelLoader
 
             var archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
-
-#if ENABLE_NEW_FMS_CHECK
-            var fmDataIniArchivesHash = new HashSetI(FMDataIniList.Count);
-            for (int i = 0; i < FMDataIniList.Count; i++)
-            {
-                fmDataIniArchivesHash.Add(FMDataIniList[i].Archive);
-            }
-#endif
 
             for (int ai = 0; ai < archivePaths.Count; ai++)
             {
@@ -394,12 +352,6 @@ namespace AngelLoader
                             !f.ContainsI(Paths.FMSelBak))
                         {
                             fmArchivesAndDatesDict[f] = dateTimes[fi];
-#if ENABLE_NEW_FMS_CHECK
-                            if (!fmDataIniArchivesHash.Contains(f))
-                            {
-                                newArchives = true;
-                            }
-#endif
                         }
                     }
                 }
@@ -411,53 +363,33 @@ namespace AngelLoader
 
             #endregion
 
-#if ENABLE_NEW_FMS_CHECK
-            if (NewArchives())
-#endif
-            {
-                MergeNewArchiveFMs(fmArchivesAndDatesDict);
-            }
+            MergeNewArchiveFMs(fmArchivesAndDatesDict);
 
-#if ENABLE_NEW_FMS_CHECK
-            if (NewInstalledDirs())
-#endif
+            int fmDataIniListCount = FMDataIniList.Count;
+            var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
+            for (int i = 0; i < fmDataIniListCount; i++)
             {
-                int fmDataIniListCount = FMDataIniList.Count;
-                var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
-                for (int i = 0; i < fmDataIniListCount; i++)
+                var fm = FMDataIniList[i];
+                if (!fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
                 {
-                    var fm = FMDataIniList[i];
-                    if (!fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
-                    {
-                        fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
-                    }
-                }
-
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    var curGameInstFMsList = perGameInstFMDirsItems[i];
-                    if (curGameInstFMsList.Count > 0)
-                    {
-                        MergeNewInstalledFMs(
-                            curGameInstFMsList,
-                            fmDataIniInstDirDict);
-                    }
+                    fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
                 }
             }
 
-#if ENABLE_NEW_FMS_CHECK
-            if (NewArchives())
-#endif
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                SetArchiveNames(fmArchivesAndDatesDict);
+                var curGameInstFMsList = perGameInstFMDirsItems[i];
+                if (curGameInstFMsList.Count > 0)
+                {
+                    MergeNewInstalledFMs(
+                        curGameInstFMsList,
+                        fmDataIniInstDirDict);
+                }
             }
 
-#if ENABLE_NEW_FMS_CHECK
-            if (NewInstalledDirs())
-#endif
-            {
-                EnsureUniqueInstalledNames();
-            }
+            SetArchiveNames(fmArchivesAndDatesDict);
+
+            EnsureUniqueInstalledNames();
 
             // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned
             // FMs. This will contain indexes into FMDataIniList (not FMsViewList!)
