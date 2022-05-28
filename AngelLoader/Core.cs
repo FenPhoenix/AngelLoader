@@ -2062,8 +2062,7 @@ namespace AngelLoader
             return fm;
         }
 
-        // @DB: Finalize the feature (add to context menu state changer, final dialog, do we want del key? etc.)
-        // @DB: When deleting, make a backup of FMData.ini, like maybe up to 10 or something, like a lot of apps do
+        // @DB: Finalize the feature (final dialog, do we want del key? etc.)
         internal static async Task DeleteFMsFromDB(params FanMission[] fmsToDelete)
         {
             if (fmsToDelete.Length == 0) return;
