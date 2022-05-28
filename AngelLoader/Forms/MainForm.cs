@@ -240,6 +240,7 @@ namespace AngelLoader.Forms
         }
 
         // @DB: Finalize the feature (add to context menu state changer, final dialog, do we want del key? etc.)
+        // @DB: When deleting, make a backup of FMData.ini, like maybe up to 10 or something, like a lot of apps do
         private async Task DeleteFromDB_Test(params FanMission[] fmsToDelete)
         {
             var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
