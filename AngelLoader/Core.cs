@@ -1895,7 +1895,7 @@ namespace AngelLoader
                 keepMultiSelection: !singleFMSelected && pin);
         }
 
-        internal static SelectedFM? FindNearestUnselectedFM(int index, int rowCount)
+        private static SelectedFM? FindNearestUnselectedFM(int index, int rowCount)
         {
             if (rowCount <= 1) return null;
 
@@ -2066,6 +2066,62 @@ namespace AngelLoader
             #endregion
 
             return fm;
+        }
+
+        // @DB: Finalize the feature (add to context menu state changer, final dialog, do we want del key? etc.)
+        // @DB: When deleting, make a backup of FMData.ini, like maybe up to 10 or something, like a lot of apps do
+        internal static async Task DeleteFMsFromDB(params FanMission[] fmsToDelete)
+        {
+            if (fmsToDelete.Length == 0) return;
+
+            // @DB: Localize and finalize
+            bool cont = Dialogs.AskToContinue(
+                "Delete test thing! FMData.ini will be modified and entries removed and stuff!",
+                LText.AlertMessages.Alert,
+                defaultButton: MBoxButton.No);
+            if (!cont) return;
+
+            foreach (FanMission fm in fmsToDelete)
+            {
+                if (!fm.MarkedUnavailable) return;
+            }
+
+            var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
+            for (int i = 0; i < FMDataIniList.Count; i++)
+            {
+                FanMission fm = FMDataIniList[i];
+                if (!fm.Archive.IsEmpty())
+                {
+                    if (iniDict.TryGetValue(fm.Archive, out var list))
+                    {
+                        list.Add(fm);
+                    }
+                    else
+                    {
+                        iniDict.Add(fm.Archive, new List<FanMission> { fm });
+                    }
+                }
+            }
+
+            foreach (var fmToDelete in fmsToDelete)
+            {
+                if (!fmToDelete.Archive.IsEmpty() &&
+                    iniDict.TryGetValue(fmToDelete.Archive, out var fmToDeleteIniCopies))
+                {
+                    foreach (var fm in fmToDeleteIniCopies)
+                    {
+                        FMDataIniList.Remove(fm);
+                    }
+                }
+                else
+                {
+                    FMDataIniList.Remove(fmToDelete);
+                }
+            }
+
+            Ini.WriteFullFMDataIni();
+            SelectedFM? selFM = FindNearestUnselectedFM(View.GetMainSelectedRowIndex(), View.GetRowCount());
+            await RefreshFMsListFromDisk(selFM);
         }
 
         #region Shutdown

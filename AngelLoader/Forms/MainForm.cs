@@ -220,65 +220,8 @@ namespace AngelLoader.Forms
             Height = 872;
         }
 
-        private async void Test3Button_Click(object sender, EventArgs e)
+        private void Test3Button_Click(object sender, EventArgs e)
         {
-            bool cont = Core.Dialogs.AskToContinue(
-                "Delete test thing! FMData.ini will be modified and entries removed and stuff!",
-                LText.AlertMessages.Alert,
-                defaultButton: MBoxButton.No);
-            if (!cont) return;
-
-            if (FMsDGV.RowCount > 0 && FMsDGV.GetRowSelectedCount() > 0)
-            {
-                var fms = FMsDGV.GetSelectedFMs_InOrder();
-                foreach (FanMission fm in fms)
-                {
-                    if (!fm.MarkedUnavailable) return;
-                }
-                await DeleteFromDB_Test(fms);
-            }
-        }
-
-        // @DB: Finalize the feature (add to context menu state changer, final dialog, do we want del key? etc.)
-        // @DB: When deleting, make a backup of FMData.ini, like maybe up to 10 or something, like a lot of apps do
-        private async Task DeleteFromDB_Test(params FanMission[] fmsToDelete)
-        {
-            var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
-            for (int i = 0; i < FMDataIniList.Count; i++)
-            {
-                FanMission fm = FMDataIniList[i];
-                if (!fm.Archive.IsEmpty())
-                {
-                    if (iniDict.TryGetValue(fm.Archive, out var list))
-                    {
-                        list.Add(fm);
-                    }
-                    else
-                    {
-                        iniDict.Add(fm.Archive, new List<FanMission> { fm });
-                    }
-                }
-            }
-
-            foreach (var fmToDelete in fmsToDelete)
-            {
-                if (!fmToDelete.Archive.IsEmpty() &&
-                    iniDict.TryGetValue(fmToDelete.Archive, out var fmToDeleteIniCopies))
-                {
-                    foreach (var fm in fmToDeleteIniCopies)
-                    {
-                        FMDataIniList.Remove(fm);
-                    }
-                }
-                else
-                {
-                    FMDataIniList.Remove(fmToDelete);
-                }
-            }
-
-            Ini.WriteFullFMDataIni();
-            SelectedFM? selFM = Core.FindNearestUnselectedFM(FMsDGV.SelectedRows[0].Index, FMsDGV.RowCount);
-            await Core.RefreshFMsListFromDisk(selFM);
         }
 
         private void Test4Button_Click(object sender, EventArgs e)
@@ -4865,6 +4808,9 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(sayPin: true);
 
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(false);
+            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemVisible(true);
+            FMsDGV_FM_LLMenu.SetDeleteRecordMenuItemVisible(false);
+            FMsDGV_FM_LLMenu.SetDeleteRecordMenuItemText(multiSelected: false);
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: false);
             FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(false);
@@ -5139,7 +5085,11 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(
                 (multiSelected && !noneAreAvailable) || allAreAvailable
             );
+            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemVisible(!noneAreAvailable);
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemText(multiSelected);
+
+            FMsDGV_FM_LLMenu.SetDeleteRecordMenuItemVisible(noneAreAvailable);
+            FMsDGV_FM_LLMenu.SetDeleteRecordMenuItemText(multiSelected);
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: fm.Game == Game.SS2);
             FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected && GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
