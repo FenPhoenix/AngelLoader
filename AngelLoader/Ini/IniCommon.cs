@@ -74,6 +74,8 @@ namespace AngelLoader
 
         private static string GetBackupFileName()
         {
+            const int maxBackups = 10;
+
             try
             {
                 var fileInfos = new DirectoryInfo(Paths.Data)
@@ -96,13 +98,15 @@ namespace AngelLoader
                 }
 
                 FileInfo? lastWritten = fileInfos.OrderByDescending(x => x.LastWriteTime).ToArray()[0];
-                string numStr = lastWritten.Name.Substring(Paths.FMDataBakBase.Length);
-                if (int.TryParse(numStr, out int num))
+                string lastWrittenFileNumStr = lastWritten.Name.Substring(Paths.FMDataBakBase.Length);
+
+                int newNum = 1;
+                if (int.TryParse(lastWrittenFileNumStr, out int lastWrittenFileNum))
                 {
-                    num = num >= 10 ? 1 : num + 1;
+                    newNum = lastWrittenFileNum >= maxBackups ? 1 : lastWrittenFileNum + 1;
                 }
 
-                return Path.Combine(Paths.Data, Paths.FMDataBakBase + num);
+                return Path.Combine(Paths.Data, Paths.FMDataBakBase + newNum);
             }
             catch
             {
