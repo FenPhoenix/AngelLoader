@@ -1165,6 +1165,10 @@ namespace AngelLoader
 
             #region Marked unavailable
 
+            // @DB: Make the "Show unavailable" button show ONLY unavailable, or make some way to do that
+            // It's not a good ux right now, when you have to hunt through the list for them
+            // Do we want to change this one's functionality, or make a second button?
+#if true
             if (!View.GetShowUnavailableFMsFilter())
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
@@ -1177,6 +1181,22 @@ namespace AngelLoader
                     }
                 }
             }
+#else
+            if (View.GetShowUnavailableFMsFilter())
+            {
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    if (!fm.MarkedRecent &&
+                        !fm.Pinned &&
+                        !fm.MarkedUnavailable)
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+#endif
 
             #endregion
         }

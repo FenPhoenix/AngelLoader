@@ -240,8 +240,6 @@ namespace AngelLoader.Forms
         }
 
         // @DB: Finalize the feature (add to context menu state changer, final dialog, do we want del key? etc.)
-        // @DB: Make the "Show unavailable" button show ONLY unavailable, or make some way to do that
-        // It's not a good ux right now, when you have to hunt through the list for them
         private async Task DeleteFromDB_Test(params FanMission[] fmsToDelete)
         {
             var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
