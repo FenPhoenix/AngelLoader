@@ -1165,7 +1165,19 @@ namespace AngelLoader
 
             #region Marked unavailable
 
-            if (View.GetShowUnavailableFMsFilter())
+            if (!View.GetShowUnavailableFMsFilter())
+            {
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    if (fm.MarkedUnavailable)
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            else
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
