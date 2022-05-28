@@ -2063,6 +2063,7 @@ namespace AngelLoader
         }
 
         // @DB: Finalize the feature (final dialog, do we want del key? etc.)
+        // @DB: When deleting FMs, allow user to also delete them from the database
         internal static async Task DeleteFMsFromDB(params FanMission[] fmsToDelete)
         {
             if (fmsToDelete.Length == 0) return;
@@ -2071,11 +2072,24 @@ namespace AngelLoader
                 if (!fm.MarkedUnavailable) return;
             }
 
-            // @DB: Localize and finalize
-            bool cont = Dialogs.AskToContinue(
-                "Delete test thing! FMData.ini will be modified and entries removed and stuff!",
-                LText.AlertMessages.Alert,
-                defaultButton: MBoxButton.No);
+            bool single = fmsToDelete.Length == 1;
+
+            (bool cont, _) =
+                View.ShowCustomDialog(
+                    messageTop:
+                    (single
+                        ? LText.FMDeletion.DeleteFromDB_AlertMessage1_Single
+                        : LText.FMDeletion.DeleteFromDB_AlertMessage1_Multiple) +
+                    "\r\n\r\n" +
+                    (single
+                        ? LText.FMDeletion.DeleteFromDB_AlertMessage2_Single
+                        : LText.FMDeletion.DeleteFromDB_AlertMessage2_Multiple),
+                    messageBottom: "",
+                    title: LText.AlertMessages.Alert,
+                    icon: MBoxIcon.Warning,
+                    okText: LText.FMDeletion.DeleteFromDB_OKMessage,
+                    cancelText: LText.Global.Cancel,
+                    okIsDangerous: true);
             if (!cont) return;
 
             var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
