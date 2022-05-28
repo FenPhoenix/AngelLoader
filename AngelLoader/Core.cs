@@ -2100,7 +2100,7 @@ namespace AngelLoader
                 }
             }
 
-            Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni(makeBackup: true);
             SelectedFM? selFM = FindNearestUnselectedFM(View.GetMainSelectedRowIndex(), View.GetRowCount());
             await RefreshFMsListFromDisk(selFM);
         }

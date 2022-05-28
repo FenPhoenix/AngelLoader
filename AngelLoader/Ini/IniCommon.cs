@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
@@ -68,14 +69,67 @@ namespace AngelLoader
             }
         }
 
-        private static readonly ReaderWriterLockSlim _fmDataIniRWLock = new ReaderWriterLockSlim();
-        private static readonly ReaderWriterLockSlim _configIniRWLock = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim _fmDataIniRWLock = new();
+        private static readonly ReaderWriterLockSlim _configIniRWLock = new();
 
-        internal static void WriteFullFMDataIni()
+        private static string GetBackupFileName()
+        {
+            try
+            {
+                var fileInfos = new DirectoryInfo(Paths.Data)
+                    .GetFiles(Paths.FMDataBakBase + "*", SearchOption.TopDirectoryOnly)
+                    .ToList();
+
+                for (int i = 0; i < fileInfos.Count; i++)
+                {
+                    string fileName = fileInfos[i].Name;
+                    if (!Regex.Match(fileName, Paths.FMDataBakNumberedRegexString).Success)
+                    {
+                        fileInfos.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                if (fileInfos.Count == 0)
+                {
+                    return Path.Combine(Paths.Data, Paths.FMDataBakBase + "1");
+                }
+
+                FileInfo? lastWritten = fileInfos.OrderByDescending(x => x.LastWriteTime).ToArray()[0];
+                string numStr = lastWritten.Name.Substring(Paths.FMDataBakBase.Length);
+                if (int.TryParse(numStr, out int num))
+                {
+                    num = num >= 10 ? 1 : num + 1;
+                }
+
+                return Path.Combine(Paths.Data, Paths.FMDataBakBase + num);
+            }
+            catch
+            {
+                return Path.Combine(Paths.Data, Paths.FMDataBakBase + "1");
+            }
+        }
+
+        internal static void WriteFullFMDataIni(bool makeBackup = false)
         {
             try
             {
                 _fmDataIniRWLock.EnterWriteLock();
+                if (makeBackup)
+                {
+                    string file = GetBackupFileName();
+                    try
+                    {
+                        if (File.Exists(Paths.FMDataIni))
+                        {
+                            File.Copy(Paths.FMDataIni, file, overwrite: true);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Error attempting to copy '" + Paths.FMDataIni + "' to '" + file + "'", ex);
+                    }
+                }
                 WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
             }
             catch (Exception ex)
