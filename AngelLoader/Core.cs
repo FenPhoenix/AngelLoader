@@ -2073,6 +2073,10 @@ namespace AngelLoader
         internal static async Task DeleteFMsFromDB(params FanMission[] fmsToDelete)
         {
             if (fmsToDelete.Length == 0) return;
+            foreach (FanMission fm in fmsToDelete)
+            {
+                if (!fm.MarkedUnavailable) return;
+            }
 
             // @DB: Localize and finalize
             bool cont = Dialogs.AskToContinue(
@@ -2080,11 +2084,6 @@ namespace AngelLoader
                 LText.AlertMessages.Alert,
                 defaultButton: MBoxButton.No);
             if (!cont) return;
-
-            foreach (FanMission fm in fmsToDelete)
-            {
-                if (!fm.MarkedUnavailable) return;
-            }
 
             var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
             for (int i = 0; i < FMDataIniList.Count; i++)
