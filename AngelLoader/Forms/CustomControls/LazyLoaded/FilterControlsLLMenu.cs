@@ -58,28 +58,27 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (_constructed) return;
 
             // TODO: Component LazyLoaded tags are ignored because only Controls are checked in the dictionary filler.
-            // Also, they get stomped on below anyway with the indexes.
+            // Also, they sometimes need their own tags anyway like here.
 
             _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
             _menu.Items.AddRange(new ToolStripItem[]
             {
-                TitleMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                AuthorMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                ReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                LastPlayedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                TagsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                FinishedStateMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                RatingMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                ShowUnsupportedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                ShowUnavailableFMsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy }
+                TitleMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Title },
+                AuthorMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Author },
+                ReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ReleaseDate },
+                LastPlayedMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.LastPlayed },
+                TagsMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Tags },
+                FinishedStateMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.FinishedState },
+                RatingMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Rating },
+                ShowUnsupportedMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowUnsupported },
+                ShowUnavailableFMsMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowUnavailable },
+                ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowRecentAtTop }
             });
 
             for (int i = 0; i < _menu.Items.Count; i++)
             {
                 var item = (ToolStripMenuItemCustom)_menu.Items[i];
                 item.CheckOnClick = true;
-                item.Tag = (HideableFilterControls)i;
                 item.Checked = _filterCheckedStates[i];
                 item.Click += _owner.FilterControlsMenuItems_Click;
             }
