@@ -8,6 +8,9 @@ namespace AngelLoader
 {
     /*
     @WPF(RTF notes and research):
+    -We could use WebView2 with WPF and convert our RTF to HTML maybe by modifying the internal RTF-to-XAML code
+     in WPF. WebView2 seems fast - ~30ms to start and finish navigation to the AL doc file (long and lots of images).
+
     WPF RichTextBox and FlowDocument-based controls that can also work:
     Pros:
     -No need for this horrendous EasyHook/GetSysColor nonsense, you just set the foreground color and it uses it
