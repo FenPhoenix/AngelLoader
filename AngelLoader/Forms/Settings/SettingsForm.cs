@@ -277,13 +277,22 @@ namespace AngelLoader.Forms
 
             var langsList = config.LanguageNames.ToList().OrderBy(x => x.Key);
 
-            LangComboBox.AddFullItem(engLang, engLang);
-            foreach (var item in langsList)
+            try
             {
-                if (!item.Key.EqualsI(engLang))
+                LangComboBox.BeginUpdate();
+
+                LangComboBox.AddFullItem(engLang, engLang);
+                foreach (var item in langsList)
                 {
-                    LangComboBox.AddFullItem(item.Key, item.Value);
+                    if (!item.Key.EqualsI(engLang))
+                    {
+                        LangComboBox.AddFullItem(item.Key, item.Value);
+                    }
                 }
+            }
+            finally
+            {
+                LangComboBox.EndUpdate();
             }
 
             LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language)

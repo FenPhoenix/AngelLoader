@@ -126,6 +126,8 @@ namespace AngelLoader
         int BackingIndexOf(string item);
         string SelectedBackingItem();
         void SelectBackingIndexOf(string item);
+        void BeginUpdate();
+        void EndUpdate();
     }
 
     public interface IViewEnvironment
@@ -402,7 +404,7 @@ namespace AngelLoader
         bool RowSelected(int index);
         string GetFMCommentText();
         void ClearLanguagesList();
-        void AddLanguageToList(string backingItem, string item);
+        void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs);
         // @LANGS(backing items): We could allow the backing items to be enum values
         // That way we don't even have to store the lang strings in the combobox backing list
         /// <summary>

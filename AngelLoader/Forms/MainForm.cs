@@ -5352,7 +5352,22 @@ namespace AngelLoader.Forms
 
         public void ClearLanguagesList() => EditFMLanguageComboBox.ClearFullItems();
 
-        public void AddLanguageToList(string backingItem, string item) => EditFMLanguageComboBox.AddFullItem(backingItem, item);
+        public void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs)
+        {
+            try
+            {
+                EditFMLanguageComboBox.BeginUpdate();
+
+                foreach (var item in langPairs)
+                {
+                    EditFMLanguageComboBox.AddFullItem(item.Key, item.Value);
+                }
+            }
+            finally
+            {
+                EditFMLanguageComboBox.EndUpdate();
+            }
+        }
 
         public Language GetMainSelectedLanguage()
         {
@@ -5452,6 +5467,7 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
+                    ChooseReadmeComboBox.BeginUpdate();
                     readmeListControl = ChooseReadmeComboBox;
                 }
 
@@ -5467,6 +5483,10 @@ namespace AngelLoader.Forms
                 if (initialChooser)
                 {
                     ChooseReadmeLLPanel.ListBox.EndUpdate();
+                }
+                else
+                {
+                    ChooseReadmeComboBox.EndUpdate();
                 }
             }
         }

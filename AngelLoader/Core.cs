@@ -1948,8 +1948,11 @@ namespace AngelLoader
             FanMission? fm = View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
+            var langPairs = new List<KeyValuePair<string, string>>(SupportedLanguageCount + 1);
+
             View.ClearLanguagesList();
-            View.AddLanguageToList(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
+
+            langPairs.Add(new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage));
 
             if (GameIsDark(fm.Game))
             {
@@ -1964,10 +1967,12 @@ namespace AngelLoader
                     if (fm.Langs.HasFlagFast(language))
                     {
                         string langStr = GetLanguageString(index);
-                        View.AddLanguageToList(langStr, GetTranslatedLanguageName(index));
+                        langPairs.Add(new(langStr, GetTranslatedLanguageName(index)));
                     }
                 }
             }
+
+            View.AddLanguagesToList(langPairs);
 
             fm.SelectedLang = View.SetSelectedLanguage(fm.SelectedLang);
         }
