@@ -8,11 +8,22 @@ namespace AngelLoader
 {
     /*
     @WPF(RTF notes and research):
-    WPF has a RichTextBox that is really nice all things considered; you can just set the foreground color property
-    and just like that, it does what we have to use EasyHook on GetSysColor for. It's generally fast enough, and
-    while the way you load content is superficially different, it's basically still the same as what we've got
-    now, just pass it a stream and a format. So we can still do the byte array modifications beforehand.
-    BUT:
+    WPF RichTextBox and FlowDocument-based controls that can also work:
+    Pros:
+    -No need for this horrendous EasyHook/GetSysColor nonsense, you just set the foreground color and it uses it
+     as the default when none other is specified, just like we want.
+    Cons:
+    -Takes 1.5-20+ seconds to load wmf images. We can work around this by preprocessing the RTF to convert all
+     wmf images to png.
+    -Is fucking gargantuanly slow even on image-less RTF files if there are enough state changes to create enough
+     FlowDocument "blocks". Tested, this even happens if you merely copy one FlowDocument to another, so it's not
+     even the RTF parser's fault here. Insane and moronic and why did they even bother. Why am I not surprised.
+
+    This makes WPF totally unusable for rich text, for ANY FlowDocument-based control, they all have the same
+    problem. Moving fucking on.
+
+    OLD TEXT WITH NOTES ON HOW TO DO THE PRE-CONVERT OF IMAGES:
+
     When loading images in \wmetafileN format, it is HORRENDOUSLY SLOW. I know I always say things are "horrendously
     slow" but I mean it this time, we're talking 1.5 to as much as like 20+ seconds sometimes. It's absurd.
     What it does is convert the metafile to a bmp, then to a png, then writes it out to the stream again.
