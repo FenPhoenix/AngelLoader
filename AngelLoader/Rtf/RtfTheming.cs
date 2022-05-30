@@ -17,6 +17,11 @@ namespace AngelLoader
     -Because it's just Edge, it's subject to being updated constantly I guess, and also may well be different
      versions on different peoples' PCs, which is a very nervous-making proposition for an app that ideally won't
      have to be babysat by me every 5 minutes when Edge updates. Who knows... :\
+    -It takes ~230ms to init the browser. Normally I'd throw a hissy fit over that, but these days we take like
+     twice that time just to apply the dark theme on WinForms, so until I find out WPF takes a similar time to
+     set its theme, I just can't bring myself to care.
+    -The init method is async, so we can try to overlap it with the app and view init I guess? If it isn't going
+     to throw cross-thread exceptions? (it shouldn't, or why would it be async, right?)
 
     WPF RichTextBox and FlowDocument-based controls that can also work:
     Pros:
