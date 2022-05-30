@@ -10,6 +10,13 @@ namespace AngelLoader
     @WPF(RTF notes and research):
     -We could use WebView2 with WPF and convert our RTF to HTML maybe by modifying the internal RTF-to-XAML code
      in WPF. WebView2 seems fast - ~30ms to start and finish navigation to the AL doc file (long and lots of images).
+    -It's a full-blown browser like CefSharp was, so we need to delete cache on startup (can't do it after init
+     because it throws an access denied exception EVEN AFTER WE DISPOSE THE CONTROL because of course it does)
+     and pass it every lockdown parameter possible to get it to act the least like a browser and the most like
+     an inert rich text control.
+    -Because it's just Edge, it's subject to being updated constantly I guess, and also may well be different
+     versions on different peoples' PCs, which is a very nervous-making proposition for an app that ideally won't
+     have to be babysat by me every 5 minutes when Edge updates. Who knows... :\
 
     WPF RichTextBox and FlowDocument-based controls that can also work:
     Pros:
