@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.Forms.ThemeRenderers;
-using MinHook;
+using EasyHook;
 using ScrollBarRenderer = AngelLoader.Forms.ThemeRenderers.ScrollBarRenderer;
 
 namespace AngelLoader.Forms.WinFormsNative
@@ -24,6 +24,8 @@ namespace AngelLoader.Forms.WinFormsNative
 
         #region GetSysColor
 
+        private static LocalHook? _getSysColorHook;
+
         private static GetSysColorDelegate? GetSysColorOriginal;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
@@ -33,6 +35,8 @@ namespace AngelLoader.Forms.WinFormsNative
 
         #region GetSysColorBrush
 
+        private static LocalHook? _getSysColorBrushHook;
+
         private static GetSysColorBrushDelegate? GetSysColorBrushOriginal;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
@@ -41,6 +45,8 @@ namespace AngelLoader.Forms.WinFormsNative
         #endregion
 
         #region DrawThemeBackground
+
+        private static LocalHook? _drawThemeBackgroundHook;
 
         private static DrawThemeBackgroundDelegate? DrawThemeBackgroundOriginal;
 
@@ -56,6 +62,8 @@ namespace AngelLoader.Forms.WinFormsNative
         #endregion
 
         #region GetThemeColor
+
+        private static LocalHook? _getThemeColorHook;
 
         private static GetThemeColorDelegate? GetThemeColorOriginal;
 
@@ -96,8 +104,6 @@ namespace AngelLoader.Forms.WinFormsNative
         private static readonly IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
         private static readonly IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
 
-        private static readonly HookEngine _hookEngine = new();
-
         internal static void InstallHooks()
         {
             if (_hooksInstalled) return;
@@ -111,35 +117,63 @@ namespace AngelLoader.Forms.WinFormsNative
 
             try
             {
-                GetSysColorOriginal = _hookEngine.CreateHook(
+                (_getSysColorHook, GetSysColorOriginal) = InstallHook<GetSysColorDelegate>(
                     "user32.dll",
                     "GetSysColor",
-                    new GetSysColorDelegate(GetSysColor_Hooked));
+                    GetSysColor);
 
-                GetSysColorBrushOriginal = _hookEngine.CreateHook(
+                (_getSysColorBrushHook, GetSysColorBrushOriginal) = InstallHook<GetSysColorBrushDelegate>(
                     "user32.dll",
                     "GetSysColorBrush",
-                    new GetSysColorBrushDelegate(GetSysColorBrush_Hooked));
-
-                DrawThemeBackgroundOriginal = _hookEngine.CreateHook(
-                    "uxtheme.dll",
-                    "DrawThemeBackground",
-                    new DrawThemeBackgroundDelegate(DrawThemeBackground_Hooked));
-
-                GetThemeColorOriginal = _hookEngine.CreateHook(
-                    "uxtheme.dll",
-                    "GetThemeColor",
-                    new GetThemeColorDelegate(GetThemeColor_Hooked));
-
-                _hookEngine.EnableHooks();
-                _hooksInstalled = true;
+                    GetSysColorBrush);
             }
             catch
             {
                 // If we fail, oh well, just keep the classic-mode colors then... better than nothing
-                _hookEngine.DisableHooks();
-                _hooksInstalled = false;
+                _getSysColorHook?.Dispose();
+                _getSysColorBrushHook?.Dispose();
             }
+            try
+            {
+                (_drawThemeBackgroundHook, DrawThemeBackgroundOriginal) = InstallHook<DrawThemeBackgroundDelegate>(
+                    "uxtheme.dll",
+                    "DrawThemeBackground",
+                    DrawThemeBackgroundHook);
+
+                (_getThemeColorHook, GetThemeColorOriginal) = InstallHook<GetThemeColorDelegate>(
+                    "uxtheme.dll",
+                    "GetThemeColor",
+                    GetThemeColorHook);
+            }
+            catch
+            {
+                _drawThemeBackgroundHook?.Dispose();
+                _getThemeColorHook?.Dispose();
+            }
+
+            _hooksInstalled = true;
+        }
+
+        private static (LocalHook Hook, TDelegate OriginalMethod)
+        InstallHook<TDelegate>(string dll, string method, TDelegate hookDelegate) where TDelegate : Delegate
+        {
+            TDelegate originalMethod;
+            LocalHook? hook = null;
+
+            try
+            {
+                IntPtr address = LocalHook.GetProcAddress(dll, method);
+                originalMethod = Marshal.GetDelegateForFunctionPointer<TDelegate>(address);
+                hook = LocalHook.Create(address, hookDelegate, null);
+                hook.ThreadACL.SetInclusiveACL(new[] { 0 });
+            }
+            catch
+            {
+                hook?.Dispose();
+                throw;
+            }
+
+            return (hook, originalMethod);
         }
 
         internal static void ReloadTheme()
@@ -198,7 +232,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         #region Hooked method overrides
 
-        private static int DrawThemeBackground_Hooked(
+        private static int DrawThemeBackgroundHook(
             IntPtr hTheme,
             IntPtr hdc,
             int iPartId,
@@ -216,7 +250,7 @@ namespace AngelLoader.Forms.WinFormsNative
                 : DrawThemeBackgroundOriginal!(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect);
         }
 
-        private static int GetThemeColor_Hooked(
+        private static int GetThemeColorHook(
             IntPtr hTheme,
             int iPartId,
             int iStateId,
@@ -233,7 +267,7 @@ namespace AngelLoader.Forms.WinFormsNative
                 : GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
         }
 
-        private static int GetSysColor_Hooked(int nIndex)
+        private static int GetSysColor(int nIndex)
         {
             if (!_disableHookedTheming && Misc.Config.DarkMode)
             {
@@ -273,7 +307,7 @@ namespace AngelLoader.Forms.WinFormsNative
             }
         }
 
-        private static IntPtr GetSysColorBrush_Hooked(int nIndex)
+        private static IntPtr GetSysColorBrush(int nIndex)
         {
             if (!_disableHookedTheming && Misc.Config.DarkMode)
             {
