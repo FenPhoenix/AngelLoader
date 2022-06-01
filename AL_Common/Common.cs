@@ -134,18 +134,6 @@ namespace AL_Common
 
         #region String
 
-        public static unsafe void ReplaceCharInPlace(string value, char oldChar, char newChar)
-        {
-            fixed (char* chars = value)
-            {
-                int len = value.Length;
-                for (int i = 0; i < len; i++)
-                {
-                    if (chars[i] == oldChar) chars[i] = newChar;
-                }
-            }
-        }
-
         #region ASCII-specific
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -310,12 +298,12 @@ namespace AL_Common
 
         #region Percent
 
-        public static double GetPercentFromValue_Double(int current, int total) => total == 0 ? 0 : (double)(100 * current) / total;
+        //public static double GetPercentFromValue_Double(int current, int total) => total == 0 ? 0 : (double)(100 * current) / total;
         public static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
         //public static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
-        public static int GetValueFromPercent(double percent, int total) => (int)((percent / 100d) * total);
-        public static int GetValueFromPercent_Rounded(double percent, int total) => (int)Math.Round((percent / 100d) * total, 1, MidpointRounding.AwayFromZero);
-        public static double GetValueFromPercent_Double(double percent, int total) => percent / 100d * total;
+        //public static int GetValueFromPercent(double percent, int total) => (int)((percent / 100d) * total);
+        //public static int GetValueFromPercent_Rounded(double percent, int total) => (int)Math.Round((percent / 100d) * total, 1, MidpointRounding.AwayFromZero);
+        //public static double GetValueFromPercent_Double(double percent, int total) => percent / 100d * total;
 
         #endregion
 
