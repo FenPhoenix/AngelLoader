@@ -14,6 +14,8 @@ namespace AngelLoader.Forms.WinFormsNative
     -MinHook.NET works on .NET 5+ in general, but the GetSysColor hook causes an ExecutionEngineException. Even
      if I have it literally just return 0. It DOES start executing the hooked method (confirmed by putting a
      Trace.WriteLine() in there), but crashes with the exception on return.
+     All the other hooks work fine. It's just GetSysColor that throws the dreaded no-stack-trace-and-no-info
+     ExecutionEngineException.
     -MinSharp (a wrapper, not a port like MinHook.NET) doesn't even get as far as loading its native dll.
      Ever, not matter what fiddling I do. So anyway.
     No exceptions for any hook library on Framework.
