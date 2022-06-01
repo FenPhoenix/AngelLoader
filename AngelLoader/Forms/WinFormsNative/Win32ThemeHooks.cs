@@ -17,12 +17,12 @@ namespace AngelLoader.Forms.WinFormsNative
      All the other hooks work fine. It's just GetSysColor that throws the dreaded no-stack-trace-and-no-info
      ExecutionEngineException.
     -MinSharp (a wrapper, not a port like MinHook.NET) doesn't even get as far as loading its native dll.
-     Ever, not matter what fiddling I do. So anyway.
-    No exceptions for any hook library on Framework.
+     Ever, no matter what fiddling I do. So anyway.
+    No exceptions for any hook library on Framework, they all work.
     God only knows what the god damn hell the .NET version has to do with running A NATIVE WINDOWS PROC but hey.
     -Only thing I can think of is using native C++ hook code, shoving it in a dll, and p/invoking it like "hey
-    start your hook that has nothing to do with me now". Why do I suspect that wouldn't work either, just to make
-    me furious for no reason. Why indeed.
+     start your hook that has nothing to do with me now". Why do I suspect that wouldn't work either, just to make
+     me furious for no reason. Why indeed.
     */
     internal static class Win32ThemeHooks
     {
