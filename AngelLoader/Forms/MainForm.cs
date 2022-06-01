@@ -1047,9 +1047,6 @@ namespace AngelLoader.Forms
 
         private void MainForm_Deactivate(object sender, EventArgs e)
         {
-#if false
-            SetReadmeControlZPosition(true);
-#endif
             CancelResizables();
         }
 
@@ -1062,7 +1059,7 @@ namespace AngelLoader.Forms
                 if (WindowState != FormWindowState.Maximized)
                 {
                     _nominalWindowSize = Size;
-                    _nominalWindowLocation = new Point(Location.X, Location.Y);
+                    _nominalWindowLocation = Location;
                 }
             }
 
@@ -1072,36 +1069,11 @@ namespace AngelLoader.Forms
 
         private void MainForm_LocationChanged(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Normal) _nominalWindowLocation = new Point(Location.X, Location.Y);
+            if (WindowState == FormWindowState.Normal) _nominalWindowLocation = Location;
         }
-
-        private void CancelResizables()
-        {
-            FMsDGV.CancelColumnResize();
-            MainSplitContainer.CancelResize();
-            TopSplitContainer.CancelResize();
-        }
-
-#if false
-        protected override void OnKeyUp(KeyEventArgs e)
-        {
-            base.OnKeyUp(e);
-            if ((ModifierKeys & Keys.Control) != Keys.Control)
-            {
-                SetReadmeControlZPosition(true);
-            }
-        }
-#endif
 
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-#if false
-            if ((ModifierKeys & Keys.Control) == Keys.Control)
-            {
-                SetReadmeControlZPosition(false);
-            }
-#endif
-
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             if (e.Control && e.KeyCode == Keys.E)
             {
@@ -1811,210 +1783,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Helpers & misc
-
-        public void SetWaitCursor(bool value) => Cursor = value ? Cursors.WaitCursor : Cursors.Default;
-
-        // TODO: This is a crappy way to do it, make a proper "logical visibility" layer for these
-        private void SetReadmeControlZPosition(bool front)
-        {
-            if (front)
-            {
-                ChooseReadmeComboBox.BringToFront();
-                foreach (DarkButton button in _readmeControlButtons)
-                {
-                    button.BringToFront();
-                }
-            }
-            else
-            {
-                ChooseReadmeComboBox.SendToBack();
-                ChooseReadmeComboBox.DroppedDown = false;
-                foreach (DarkButton button in _readmeControlButtons)
-                {
-                    button.SendToBack();
-                }
-            }
-        }
-
-        #region Show menu
-
-        private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
-
-        private static void ShowMenu(
-            ContextMenuStrip menu,
-            Control control,
-            MenuPos pos,
-            int xOffset = 0,
-            int yOffset = 0,
-            bool unstickMenu = false)
-        {
-            int x = pos is MenuPos.LeftUp or MenuPos.LeftDown or MenuPos.TopRight or MenuPos.BottomRight
-                ? 0
-                : control.Width;
-
-            int y = pos is MenuPos.LeftDown or MenuPos.TopLeft or MenuPos.TopRight or MenuPos.RightDown
-                ? 0
-                : control.Height;
-
-            var direction = pos switch
-            {
-                MenuPos.LeftUp or MenuPos.TopLeft => ToolStripDropDownDirection.AboveLeft,
-                MenuPos.RightUp or MenuPos.TopRight => ToolStripDropDownDirection.AboveRight,
-                MenuPos.LeftDown or MenuPos.BottomLeft => ToolStripDropDownDirection.BelowLeft,
-                _ => ToolStripDropDownDirection.BelowRight
-            };
-
-            if (unstickMenu)
-            {
-                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
-                // then carry on with the final show below
-                menu.Show();
-                menu.Hide();
-            }
-
-            menu.Show(control, new Point(x + xOffset, y + yOffset), direction);
-        }
-
-        #endregion
-
-        private static readonly Action<MainForm, bool> Block_Action = (view, block) =>
-        {
-            if (view.ViewBlockingPanel == null)
-            {
-                view.ViewBlockingPanel = new TransparentPanel { Visible = false };
-                view.Controls.Add(view.ViewBlockingPanel);
-                view.ViewBlockingPanel.Dock = DockStyle.Fill;
-            }
-
-            try
-            {
-                if (block) view.Cursor = Cursors.WaitCursor;
-
-                // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
-                view.EverythingPanel.SuspendDrawing();
-                view.ViewBlocked = block;
-                view.ViewBlockingPanel.Visible = block;
-                view.ViewBlockingPanel.BringToFront();
-            }
-            finally
-            {
-                view.EverythingPanel.ResumeDrawing();
-
-                if (!block) view.Cursor = Cursors.Default;
-            }
-        };
-
-        public void Block(bool block) => Invoke(Block_Action, this, block);
-
-        private void UpdateConfig()
-        {
-            GameIndex gameTab = GameIndex.Thief1;
-            if (Config.GameOrganization == GameOrganization.ByTab)
-            {
-                SaveCurrentTabSelectedFM(GamesTabControl.SelectedTab);
-                var selGameTab = GamesTabControl.SelectedTab;
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    if (_gameTabsInOrder[i] == selGameTab)
-                    {
-                        gameTab = (GameIndex)i;
-                        break;
-                    }
-                }
-            }
-
-            SelectedFM selectedFM = FMsDGV.GetMainSelectedFMPosInfo();
-
-            var topRightTabs = new TopRightTabsData
-            {
-                SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabsInOrder, TopRightTabControl.SelectedTab)
-            };
-
-            for (int i = 0; i < TopRightTabsData.Count; i++)
-            {
-                topRightTabs.Tabs[i].DisplayIndex = TopRightTabControl.GetTabDisplayIndex(_topRightTabsInOrder[i]);
-                topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(_topRightTabsInOrder[i]);
-            }
-
-            #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
-
-            FormWindowState nominalState = _nominalWindowState;
-
-            bool minimized = false;
-            if (WindowState == FormWindowState.Minimized)
-            {
-                minimized = true;
-                WindowState = FormWindowState.Maximized;
-            }
-
-            float mainSplitterPercent = MainSplitContainer.SplitterPercentReal;
-            float topSplitterPercent = TopSplitContainer.SplitterPercentReal;
-
-            if (minimized) WindowState = nominalState;
-
-            #endregion
-
-            Core.UpdateConfig(
-                FormWindowStateToWindowState(_nominalWindowState),
-                _nominalWindowSize,
-                _nominalWindowLocation,
-                mainSplitterPercent,
-                topSplitterPercent,
-                FMsDGV.GetColumnData(),
-                FMsDGV.CurrentSortedColumn,
-                FMsDGV.CurrentSortDirection,
-                FMsDGV.DefaultCellStyle.Font.SizeInPoints,
-                FMsDGV.Filter,
-                GameFilterControlsLLMenu.GetCheckedStates(),
-                FilterControlsLLMenu.GetCheckedStates(),
-                selectedFM,
-                FMsDGV.GameTabsState,
-                gameTab,
-                topRightTabs,
-                TopSplitContainer.FullScreen,
-                ReadmeRichTextBox.ZoomFactor);
-        }
-
-        internal IContainer GetComponents() => components;
-
-        #region Cursor over area detection
-
-        private bool CursorOverReadmeArea()
-        {
-            return ReadmeRichTextBox.Visible ? CursorOverControl(ReadmeRichTextBox) :
-                ViewHTMLReadmeLLButton.Visible && CursorOverControl(MainSplitContainer.Panel2);
-        }
-
-        // Standard Windows drop-down behavior: nothing else responds until the drop-down closes
-        private bool CursorOutsideAddTagsDropDownArea()
-        {
-            // Check Visible first, otherwise we might be passing a null ref!
-            return AddTagLLDropDown.Visible &&
-                   // Check Size instead of ClientSize in order to support clicking the scroll bar
-                   !CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true) &&
-                   !CursorOverControl(AddTagTextBox) &&
-                   !CursorOverControl(AddTagButton);
-        }
-
-        private bool CursorOverControl(Control control, bool fullArea = false)
-        {
-            if (!control.Visible || !control.Enabled) return false;
-
-            Point rpt = this.PointToClient_Fast(control.PointToScreen_Fast(new Point(0, 0)));
-            Size rcs = fullArea ? control.Size : control.ClientSize;
-
-            Point ptc = this.PointToClient_Fast(Native.GetCursorPosition_Fast());
-
-            // Don't create eleventy billion Rectangle objects per second
-            return ptc.X >= rpt.X && ptc.X < rpt.X + rcs.Width &&
-                   ptc.Y >= rpt.Y && ptc.Y < rpt.Y + rcs.Height;
-        }
-
-        #endregion
-
-        #endregion
-
         #region Main menu
 
         #region Menu button
@@ -2049,14 +1817,6 @@ namespace AngelLoader.Forms
         }
 
         internal async void ScanAllFMsMenuItem_Click(object sender, EventArgs e) => await FMScan.ScanAllFMs();
-
-#if false
-        internal void GlobalFMStatsMenuItem_Click(object sender, EventArgs e)
-        {
-            using var f = new GlobalFMStatsForm();
-            f.ShowDialogDark(this);
-        }
-#endif
 
         internal void ViewHelpFileMenuItem_Click(object sender, EventArgs e) => Core.OpenHelpFile();
 
@@ -3131,7 +2891,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.Title = EditFMTitleTextBox.Text;
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
         }
 
         private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
@@ -3145,7 +2905,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.Author = EditFMAuthorTextBox.Text;
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
         }
 
         private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
@@ -3164,7 +2924,7 @@ namespace AngelLoader.Forms
                 ? EditFMReleaseDateDateTimePicker.Value
                 : null;
 
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
             Ini.WriteFullFMDataIni();
         }
 
@@ -3173,7 +2933,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.ReleaseDate.DateTime = EditFMReleaseDateDateTimePicker.Value;
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
             Ini.WriteFullFMDataIni();
         }
 
@@ -3187,7 +2947,7 @@ namespace AngelLoader.Forms
                 ? EditFMLastPlayedDateTimePicker.Value
                 : null;
 
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
             Ini.WriteFullFMDataIni();
         }
 
@@ -3196,7 +2956,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.LastPlayed.DateTime = EditFMLastPlayedDateTimePicker.Value;
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
             Ini.WriteFullFMDataIni();
         }
 
@@ -3210,7 +2970,7 @@ namespace AngelLoader.Forms
         {
             FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.Rating = rating;
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
 
             UpdateRatingMenus(rating, disableEvents: true);
 
@@ -3547,7 +3307,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.DisabledMods = MainModsControl.ModsDisabledModsTextBox.Text;
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
         }
 
         private void ModsDisabledModsTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -3627,7 +3387,7 @@ namespace AngelLoader.Forms
                 MainModsControl.ModsDisabledModsTextBox.Text = "";
             }
 
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
 
             Ini.WriteFullFMDataIni();
         }
@@ -3669,7 +3429,7 @@ namespace AngelLoader.Forms
             }
 
             fm.DisabledMods = MainModsControl.ModsDisabledModsTextBox.Text;
-            RefreshFM(fm, rowOnly: true);
+            RefreshMainSelectedFMRow_Fast();
 
             Ini.WriteFullFMDataIni();
         }
@@ -4973,15 +4733,6 @@ namespace AngelLoader.Forms
             StatsCheckBoxesPanel.Hide();
         }
 
-        private void UpdateRatingMenus(int rating, bool disableEvents = false)
-        {
-            using (disableEvents ? new DisableEvents(this) : null)
-            {
-                FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
-                EditFMRatingComboBox.SelectedIndex = rating + 1;
-            }
-        }
-
         // PERF_TODO(Context menu sel state update): Since this runs always on selection change...
         // ... we might not need to call it on FM load.
         // NOTE(Context menu sel state update):
@@ -5178,7 +4929,7 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
 
-            #region Custom resources
+            #region Stats tab
 
             if (fmIsT3)
             {
@@ -5349,6 +5100,15 @@ namespace AngelLoader.Forms
                 }
 
                 #endregion
+            }
+        }
+
+        private void UpdateRatingMenus(int rating, bool disableEvents = false)
+        {
+            using (disableEvents ? new DisableEvents(this) : null)
+            {
+                FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
+                EditFMRatingComboBox.SelectedIndex = rating + 1;
             }
         }
 
@@ -5681,6 +5441,225 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Helpers & misc
+
+        private void CancelResizables()
+        {
+            FMsDGV.CancelColumnResize();
+            MainSplitContainer.CancelResize();
+            TopSplitContainer.CancelResize();
+        }
+
+        public void SetWaitCursor(bool value) => Cursor = value ? Cursors.WaitCursor : Cursors.Default;
+
+        // TODO: This is a crappy way to do it, make a proper "logical visibility" layer for these
+        private void SetReadmeControlZPosition(bool front)
+        {
+            if (front)
+            {
+                ChooseReadmeComboBox.BringToFront();
+                foreach (DarkButton button in _readmeControlButtons)
+                {
+                    button.BringToFront();
+                }
+            }
+            else
+            {
+                ChooseReadmeComboBox.SendToBack();
+                ChooseReadmeComboBox.DroppedDown = false;
+                foreach (DarkButton button in _readmeControlButtons)
+                {
+                    button.SendToBack();
+                }
+            }
+        }
+
+        #region Show menu
+
+        private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
+
+        private static void ShowMenu(
+            ContextMenuStrip menu,
+            Control control,
+            MenuPos pos,
+            int xOffset = 0,
+            int yOffset = 0,
+            bool unstickMenu = false)
+        {
+            int x = pos is MenuPos.LeftUp or MenuPos.LeftDown or MenuPos.TopRight or MenuPos.BottomRight
+                ? 0
+                : control.Width;
+
+            int y = pos is MenuPos.LeftDown or MenuPos.TopLeft or MenuPos.TopRight or MenuPos.RightDown
+                ? 0
+                : control.Height;
+
+            var direction = pos switch
+            {
+                MenuPos.LeftUp or MenuPos.TopLeft => ToolStripDropDownDirection.AboveLeft,
+                MenuPos.RightUp or MenuPos.TopRight => ToolStripDropDownDirection.AboveRight,
+                MenuPos.LeftDown or MenuPos.BottomLeft => ToolStripDropDownDirection.BelowLeft,
+                _ => ToolStripDropDownDirection.BelowRight
+            };
+
+            if (unstickMenu)
+            {
+                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
+                // then carry on with the final show below
+                menu.Show();
+                menu.Hide();
+            }
+
+            menu.Show(control, new Point(x + xOffset, y + yOffset), direction);
+        }
+
+        #endregion
+
+        private static readonly Action<MainForm, bool> Block_Action = (view, block) =>
+        {
+            if (view.ViewBlockingPanel == null)
+            {
+                view.ViewBlockingPanel = new TransparentPanel { Visible = false };
+                view.Controls.Add(view.ViewBlockingPanel);
+                view.ViewBlockingPanel.Dock = DockStyle.Fill;
+            }
+
+            try
+            {
+                if (block) view.Cursor = Cursors.WaitCursor;
+
+                // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
+                view.EverythingPanel.SuspendDrawing();
+                view.ViewBlocked = block;
+                view.ViewBlockingPanel.Visible = block;
+                view.ViewBlockingPanel.BringToFront();
+            }
+            finally
+            {
+                view.EverythingPanel.ResumeDrawing();
+
+                if (!block) view.Cursor = Cursors.Default;
+            }
+        };
+
+        public void Block(bool block) => Invoke(Block_Action, this, block);
+
+        private void UpdateConfig()
+        {
+            GameIndex gameTab = GameIndex.Thief1;
+            if (Config.GameOrganization == GameOrganization.ByTab)
+            {
+                SaveCurrentTabSelectedFM(GamesTabControl.SelectedTab);
+                var selGameTab = GamesTabControl.SelectedTab;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    if (_gameTabsInOrder[i] == selGameTab)
+                    {
+                        gameTab = (GameIndex)i;
+                        break;
+                    }
+                }
+            }
+
+            SelectedFM selectedFM = FMsDGV.GetMainSelectedFMPosInfo();
+
+            var topRightTabs = new TopRightTabsData
+            {
+                SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabsInOrder, TopRightTabControl.SelectedTab)
+            };
+
+            for (int i = 0; i < TopRightTabsData.Count; i++)
+            {
+                topRightTabs.Tabs[i].DisplayIndex = TopRightTabControl.GetTabDisplayIndex(_topRightTabsInOrder[i]);
+                topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(_topRightTabsInOrder[i]);
+            }
+
+            #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
+
+            FormWindowState nominalState = _nominalWindowState;
+
+            bool minimized = false;
+            if (WindowState == FormWindowState.Minimized)
+            {
+                minimized = true;
+                WindowState = FormWindowState.Maximized;
+            }
+
+            float mainSplitterPercent = MainSplitContainer.SplitterPercentReal;
+            float topSplitterPercent = TopSplitContainer.SplitterPercentReal;
+
+            if (minimized) WindowState = nominalState;
+
+            #endregion
+
+            Core.UpdateConfig(
+                FormWindowStateToWindowState(_nominalWindowState),
+                _nominalWindowSize,
+                _nominalWindowLocation,
+                mainSplitterPercent,
+                topSplitterPercent,
+                FMsDGV.GetColumnData(),
+                FMsDGV.CurrentSortedColumn,
+                FMsDGV.CurrentSortDirection,
+                FMsDGV.DefaultCellStyle.Font.SizeInPoints,
+                FMsDGV.Filter,
+                GameFilterControlsLLMenu.GetCheckedStates(),
+                FilterControlsLLMenu.GetCheckedStates(),
+                selectedFM,
+                FMsDGV.GameTabsState,
+                gameTab,
+                topRightTabs,
+                TopSplitContainer.FullScreen,
+                ReadmeRichTextBox.ZoomFactor);
+        }
+
+        internal IContainer GetComponents() => components;
+
+        #region Cursor over area detection
+
+        private bool CursorOverReadmeArea()
+        {
+            return ReadmeRichTextBox.Visible ? CursorOverControl(ReadmeRichTextBox) :
+                ViewHTMLReadmeLLButton.Visible && CursorOverControl(MainSplitContainer.Panel2);
+        }
+
+        // Standard Windows drop-down behavior: nothing else responds until the drop-down closes
+        private bool CursorOutsideAddTagsDropDownArea()
+        {
+            // Check Visible first, otherwise we might be passing a null ref!
+            return AddTagLLDropDown.Visible &&
+                   // Check Size instead of ClientSize in order to support clicking the scroll bar
+                   !CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true) &&
+                   !CursorOverControl(AddTagTextBox) &&
+                   !CursorOverControl(AddTagButton);
+        }
+
+        private bool CursorOverControl(Control control, bool fullArea = false)
+        {
+            if (!control.Visible || !control.Enabled) return false;
+
+            Point rpt = this.PointToClient_Fast(control.PointToScreen_Fast(new Point(0, 0)));
+            Size rcs = fullArea ? control.Size : control.ClientSize;
+
+            Point ptc = this.PointToClient_Fast(Native.GetCursorPosition_Fast());
+
+            // Don't create eleventy billion Rectangle objects per second
+            return ptc.X >= rpt.X && ptc.X < rpt.X + rcs.Width &&
+                   ptc.Y >= rpt.Y && ptc.Y < rpt.Y + rcs.Height;
+        }
+
+        #endregion
+
+        public void ActivateThisInstance()
+        {
+            if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
+            Activate();
+        }
+
+        #endregion
+
+        #region Drag & drop
+
         public bool AbleToAcceptDragDrop() => EverythingPanel.Enabled;
 
         private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
@@ -5699,6 +5678,9 @@ namespace AngelLoader.Forms
             }
         }
 
+        #endregion
+
+        // @VBL(AddFMs)
         public async Task<bool> AddFMs(string[] fmArchiveNames)
         {
             if (!EverythingPanel.Enabled) return false;
@@ -5714,11 +5696,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void ActivateThisInstance()
-        {
-            if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
-            Activate();
-        }
+        #region Show dialogs
 
         public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
         ShowScanAllFMsWindow()
@@ -5811,4 +5789,6 @@ namespace AngelLoader.Forms
                 );
         }
     }
+
+    #endregion
 }

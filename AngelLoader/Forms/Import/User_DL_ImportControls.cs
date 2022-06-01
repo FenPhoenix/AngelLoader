@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Forms;
-using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -15,7 +13,7 @@ namespace AngelLoader.Forms
 #else
             InitializeComponentSlim();
 #endif
-            DarkLoaderIniTextBox.Text = AutodetectDarkLoaderIni();
+            DarkLoaderIniTextBox.Text = Import.AutodetectDarkLoaderIni();
         }
 
         internal string DarkLoaderIniText => DarkLoaderIniTextBox.Text;
@@ -36,7 +34,7 @@ namespace AngelLoader.Forms
             DarkLoaderIniTextBox.ReadOnly = AutodetectCheckBox.Checked;
             DarkLoaderIniBrowseButton.Enabled = !AutodetectCheckBox.Checked;
 
-            if (AutodetectCheckBox.Checked) DarkLoaderIniTextBox.Text = AutodetectDarkLoaderIni();
+            if (AutodetectCheckBox.Checked) DarkLoaderIniTextBox.Text = Import.AutodetectDarkLoaderIni();
         }
 
         internal void Localize()
@@ -44,49 +42,6 @@ namespace AngelLoader.Forms
             ChooseDarkLoaderIniLabel.Text = LText.Importing.DarkLoader_ChooseIni;
             AutodetectCheckBox.Text = LText.Global.Autodetect;
             DarkLoaderIniBrowseButton.SetTextForTextBoxButtonCombo(DarkLoaderIniTextBox, LText.Global.BrowseEllipses);
-        }
-
-        private static string AutodetectDarkLoaderIni()
-        {
-            // Common locations. Don't go overboard and search the whole filesystem; that would take forever.
-            string[] dlLocations =
-            {
-                "DarkLoader",
-                @"Games\DarkLoader"
-            };
-
-            DriveInfo[] drives;
-            try
-            {
-                drives = DriveInfo.GetDrives();
-            }
-            catch (Exception ex)
-            {
-                Log("Exception in GetDrives()", ex);
-                return "";
-            }
-
-            foreach (DriveInfo drive in drives)
-            {
-                if (!drive.IsReady || drive.DriveType != DriveType.Fixed) continue;
-
-                try
-                {
-                    foreach (string loc in dlLocations)
-                    {
-                        if (TryCombineFilePathAndCheckExistence(drive.Name, loc, Paths.DarkLoaderIni, out string dlIni))
-                        {
-                            return dlIni;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception in DarkLoader multi-drive search", ex);
-                }
-            }
-
-            return "";
         }
     }
 }

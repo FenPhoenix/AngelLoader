@@ -30,6 +30,49 @@ namespace AngelLoader
 
         #region Public methods
 
+        internal static string AutodetectDarkLoaderIni()
+        {
+            // Common locations. Don't go overboard and search the whole filesystem; that would take forever.
+            string[] dlLocations =
+            {
+                "DarkLoader",
+                @"Games\DarkLoader"
+            };
+
+            DriveInfo[] drives;
+            try
+            {
+                drives = DriveInfo.GetDrives();
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in GetDrives()", ex);
+                return "";
+            }
+
+            foreach (DriveInfo drive in drives)
+            {
+                if (!drive.IsReady || drive.DriveType != DriveType.Fixed) continue;
+
+                try
+                {
+                    foreach (string loc in dlLocations)
+                    {
+                        if (TryCombineFilePathAndCheckExistence(drive.Name, loc, Paths.DarkLoaderIni, out string dlIni))
+                        {
+                            return dlIni;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception in DarkLoader multi-drive search", ex);
+                }
+            }
+
+            return "";
+        }
+
         internal static async Task ImportFrom(ImportType importType)
         {
             bool importFMData = false;
