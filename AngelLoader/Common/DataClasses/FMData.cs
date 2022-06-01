@@ -14,6 +14,13 @@ namespace AngelLoader.DataClasses
      Notes to self:
         -Keep names shortish for more performance when reading
         -I told myself to version-header ini files right from the start, but I didn't. Meh.
+
+    @MEM(FMData): We could get rid of some stuff in here, like TagsString is an easy candidate
+    -We could also, if we're clever, get rid of some other stuff we nominally need, like MarkedRecent. We could
+     have like an internal hashset where we put all "recent" FMs into and remove them from it as appropriate.
+     Same with MarkedUnavailable. In fact, we could do that for all fields expected to _usually_ be false.
+    -We could squeeze all value types and enums down to their smallest possible representation, sbyte/byte/ushort
+     etc.
     */
 
     [FenGenFMDataSourceClass]
