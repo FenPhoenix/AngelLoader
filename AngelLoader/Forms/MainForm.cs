@@ -2863,6 +2863,14 @@ namespace AngelLoader.Forms
             }
         }
 
+        public void RefreshMainSelectedFMRow_Fast()
+        {
+            if (FMsDGV.MainSelectedRow != null)
+            {
+                FMsDGV.InvalidateRow(FMsDGV.MainSelectedRow.Index);
+            }
+        }
+
         public void RefreshAllSelectedFMs(bool rowOnly = false)
         {
             if (!rowOnly)
@@ -3337,6 +3345,8 @@ namespace AngelLoader.Forms
         }
 
         public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
+
+        public FanMission? GetMainSelectedFMOrNull_Fast() => _displayedFM;
 
         /// <summary>
         /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder"/>
@@ -5671,11 +5681,11 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        public bool AbleToAcceptDragDrop() => EverythingPanel.Enabled;
+
         private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
         {
-            if (EverythingPanel.Enabled &&
-                e.Data.GetData(DataFormats.FileDrop) is string[] droppedItems &&
-                Core.AtLeastOneDroppedFileValid(droppedItems))
+            if (Core.FilesDropped(e.Data.GetData(DataFormats.FileDrop), out _))
             {
                 e.Effect = DragDropEffects.Copy;
             }
@@ -5683,9 +5693,7 @@ namespace AngelLoader.Forms
 
         private async void EverythingPanel_DragDrop(object sender, DragEventArgs e)
         {
-            if (EverythingPanel.Enabled &&
-                e.Data.GetData(DataFormats.FileDrop) is string[] droppedItems &&
-                Core.AtLeastOneDroppedFileValid(droppedItems))
+            if (Core.FilesDropped(e.Data.GetData(DataFormats.FileDrop), out string[]? droppedItems))
             {
                 await AddFMs(droppedItems);
             }

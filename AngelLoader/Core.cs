@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -1911,7 +1912,23 @@ namespace AngelLoader
             return null;
         }
 
-        internal static bool AtLeastOneDroppedFileValid(string[] droppedItems)
+        internal static bool FilesDropped(object data, [NotNullWhen(true)] out string[]? droppedItems)
+        {
+            if (View.AbleToAcceptDragDrop() &&
+                data is string[] droppedItems_Internal &&
+                AtLeastOneDroppedFileValid(droppedItems_Internal))
+            {
+                droppedItems = droppedItems_Internal;
+                return true;
+            }
+            else
+            {
+                droppedItems = null;
+                return false;
+            }
+        }
+
+        private static bool AtLeastOneDroppedFileValid(string[] droppedItems)
         {
             for (int i = 0; i < droppedItems.Length; i++)
             {
@@ -1927,7 +1944,7 @@ namespace AngelLoader
 
         internal static void UpdateFMComment()
         {
-            FanMission? fm = View.GetMainSelectedFMOrNull();
+            FanMission? fm = View.GetMainSelectedFMOrNull_Fast();
             if (fm == null) return;
 
             string commentText = View.GetFMCommentText();
@@ -1940,7 +1957,7 @@ namespace AngelLoader
             fm.Comment = commentText.ToRNEscapes();
             fm.CommentSingleLine = commentText.ToSingleLineComment(100);
 
-            View.RefreshFM(fm, rowOnly: true);
+            View.RefreshMainSelectedFMRow_Fast();
         }
 
         internal static void ScanAndFillLanguagesList(bool forceScan)
