@@ -7,35 +7,35 @@ namespace AngelLoader
     // ProgrammaticClose() call on the form).
     internal sealed class SplashScreen : IDisposable, ISplashScreen_Safe
     {
-        private readonly ISplashScreen _splashScreenForm;
+        private readonly ISplashScreen _splashScreenView;
 
-        public SplashScreen(IViewEnvironment viewEnv)
+        public SplashScreen(ISplashScreen splashScreenView)
         {
             // We don't show the form right away, because we want to handle showing manually for reasons of
             // setting the theme and whatever else
-            _splashScreenForm = viewEnv.GetSplashScreen();
+            _splashScreenView = splashScreenView;
         }
 
-        internal void Show(VisualTheme theme) => _splashScreenForm.Show(theme);
+        internal void Show(VisualTheme theme) => _splashScreenView.Show(theme);
 
-        public void Hide() => _splashScreenForm.Hide();
+        public void Hide() => _splashScreenView.Hide();
 
         internal void SetMessage(string message)
         {
-            if (_splashScreenForm.VisibleCached) _splashScreenForm.SetMessage(message);
+            if (_splashScreenView.VisibleCached) _splashScreenView.SetMessage(message);
         }
 
-        internal void SetCheckMessageWidth(string message) => _splashScreenForm.SetCheckMessageWidth(message);
+        internal void SetCheckMessageWidth(string message) => _splashScreenView.SetCheckMessageWidth(message);
 
         internal void SetCheckAtStoredMessageWidth()
         {
-            if (_splashScreenForm.VisibleCached) _splashScreenForm.SetCheckAtStoredMessageWidth();
+            if (_splashScreenView.VisibleCached) _splashScreenView.SetCheckAtStoredMessageWidth();
         }
 
         public void Dispose()
         {
-            _splashScreenForm.ProgrammaticClose();
-            _splashScreenForm.Dispose();
+            _splashScreenView.ProgrammaticClose();
+            _splashScreenView.Dispose();
         }
     }
 }
