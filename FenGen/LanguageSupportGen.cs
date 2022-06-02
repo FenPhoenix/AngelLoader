@@ -115,7 +115,6 @@ namespace FenGen
             }
             WriteDictionaryBody(w, langEnum.LangIndexEnumNamesLowercase, values, keysQuoted: true);
 
-
             var codeValues = new List<string>();
             foreach (string codeItem in langEnum.LangCodes)
             {

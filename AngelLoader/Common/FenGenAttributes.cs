@@ -29,7 +29,6 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenDoNotSubstringAttribute : Attribute { }
 
-
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
         internal sealed class FenGenFlagsSingleAssignment : Attribute { }

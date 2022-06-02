@@ -356,7 +356,6 @@ namespace AngelLoader.DataClasses
                                                  Defaults.DateCustomSeparator3 +
                                                  Defaults.DateCustomFormat4;
 
-
         #endregion
 
         #region Main window state

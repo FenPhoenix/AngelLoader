@@ -222,8 +222,8 @@ namespace AngelLoader.Forms.CustomControls
         /// <param name="subMessage"></param>
         /// <param name="subPercent"></param>
         /// <param name="subProgressBarType"></param>
-        /// <param name="checkChangedAction"></param>
         /// <param name="checkBoxMessage"></param>
+        /// <param name="checkChangedAction"></param>
         /// <param name="cancelButtonMessage"></param>
         /// <param name="cancelAction">Pass <see cref="T:NullAction"/> to hide the cancel button.</param>
         internal void SetState(
