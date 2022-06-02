@@ -422,22 +422,22 @@ namespace FMScanner
         private byte[]? _gameTypeBuffer_ChunkPlusMAPPARAM;
         private byte[] GameTypeBuffer_ChunkPlusMAPPARAM => _gameTypeBuffer_ChunkPlusMAPPARAM ??= new byte[_gameTypeBufferSize + MAPPARAM.Length];
 
-        private const int ss2MapParamLoc1 = 696;
-        private const int oldDarkT2Loc = 772;
-        private const int ss2MapParamLoc2 = 916;
+        private const int _ss2MapParamLoc1 = 696;
+        private const int _oldDarkT2Loc = 772;
+        private const int _ss2MapParamLoc2 = 916;
         // Neither of these clash with SS2's SKYOBJVAR locations (3168, 7292).
-        private const int newDarkLoc1 = 7217;
-        private const int newDarkLoc2 = 3093;
+        private const int _newDarkLoc1 = 7217;
+        private const int _newDarkLoc2 = 3093;
 
-        private readonly int[] locations = { ss2MapParamLoc1, oldDarkT2Loc, ss2MapParamLoc2, newDarkLoc1, newDarkLoc2 };
+        private readonly int[] _locations = { _ss2MapParamLoc1, _oldDarkT2Loc, _ss2MapParamLoc2, _newDarkLoc1, _newDarkLoc2 };
 
-        private const int ss2Offset1 = 705;      // 696+9 = 705
-        private const int t2OldDarkOffset = 76;  // (772+9)-705 = 76
-        private const int ss2Offset2 = 144;      // ((916+9)-76)-705 = 144
-        private const int newDarkOffset1 = 2177; // (((3093+9)-144)-76)-705 = 2177
-        private const int newDarkOffset2 = 4124; // ((((7217+9)-2177)-144)-76)-705 = 4124
+        private const int _ss2Offset1 = 705;      // 696+9 = 705
+        private const int _t2OldDarkOffset = 76;  // (772+9)-705 = 76
+        private const int _ss2Offset2 = 144;      // ((916+9)-76)-705 = 144
+        private const int _newDarkOffset1 = 2177; // (((3093+9)-144)-76)-705 = 2177
+        private const int _newDarkOffset2 = 4124; // ((((7217+9)-2177)-144)-76)-705 = 4124
 
-        private readonly int[] zipOffsets = { ss2Offset1, t2OldDarkOffset, ss2Offset2, newDarkOffset1, newDarkOffset2 };
+        private readonly int[] _zipOffsets = { _ss2Offset1, _t2OldDarkOffset, _ss2Offset2, _newDarkOffset1, _newDarkOffset2 };
 
         // ReSharper restore IdentifierTypo
 

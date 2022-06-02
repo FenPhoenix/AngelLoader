@@ -3458,13 +3458,13 @@ namespace FMScanner
                 ? new BinaryReader(_archive.OpenEntry(misFileZipEntry), Encoding.ASCII, false)
                 : new BinaryReader(File.OpenRead(misFileOnDisk), Encoding.ASCII, false))
             {
-                for (int i = 0; i < locations.Length; i++)
+                for (int i = 0; i < _locations.Length; i++)
                 {
                     if (
 #if FMScanner_FullCode
                         !_scanOptions.ScanNewDarkRequired &&
 #endif
-                        (locations[i] == newDarkLoc1 || locations[i] == newDarkLoc2))
+                        (_locations[i] == _newDarkLoc1 || _locations[i] == _newDarkLoc2))
                     {
                         break;
                     }
@@ -3473,35 +3473,35 @@ namespace FMScanner
 
                     if (_fmIsZip)
                     {
-                        buffer = sr.ReadBytes(zipOffsets[i]);
+                        buffer = sr.ReadBytes(_zipOffsets[i]);
                     }
                     else
                     {
-                        sr.BaseStream.Position = locations[i];
+                        sr.BaseStream.Position = _locations[i];
                         buffer = sr.ReadBytes(locationBytesToRead);
                     }
 
-                    if ((locations[i] == ss2MapParamLoc1 ||
-                         locations[i] == ss2MapParamLoc2) &&
+                    if ((_locations[i] == _ss2MapParamLoc1 ||
+                         _locations[i] == _ss2MapParamLoc2) &&
                         EndsWithMAPPARAM(buffer))
                     {
                         // TODO: @SS2: AngelLoader doesn't need to know if NewDark is required, but put that in eventually
                         return (null, Game.SS2);
                     }
-                    else if ((locations[i] == oldDarkT2Loc ||
-                              locations[i] == newDarkLoc1 ||
-                              locations[i] == newDarkLoc2) &&
+                    else if ((_locations[i] == _oldDarkT2Loc ||
+                              _locations[i] == _newDarkLoc1 ||
+                              _locations[i] == _newDarkLoc2) &&
                              EndsWithSKYOBJVAR(buffer))
                     {
                         // Zip reading is going to check the NewDark locations the other way round, but fortunately
                         // they're interchangeable in meaning so we don't have to do anything
-                        if (locations[i] == newDarkLoc1 || locations[i] == newDarkLoc2)
+                        if (_locations[i] == _newDarkLoc1 || _locations[i] == _newDarkLoc2)
                         {
                             ret.NewDarkRequired = true;
                             foundAtNewDarkLocation = true;
                             break;
                         }
-                        else if (locations[i] == oldDarkT2Loc)
+                        else if (_locations[i] == _oldDarkT2Loc)
                         {
                             foundAtOldDarkThief2Location = true;
                             break;
