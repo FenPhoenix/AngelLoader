@@ -356,11 +356,13 @@ namespace AngelLoader
 
         void RefreshFM(FanMission fm, bool rowOnly = false);
 
-        void RefreshFMsListKeepSelection(bool keepMulti = true);
+        void RefreshFMsListRowsOnlyKeepSelection();
 
-        void RefreshAllSelectedFMRows(bool refreshInstalledStateOfCurrentRow = false);
+        void RefreshAllSelectedFMs_Full();
 
-        void RefreshAllSelectedFMs(bool rowOnly = false);
+        void RefreshMainSelectedFMRow_Fast();
+
+        void RefreshAllSelectedFMs_UpdateInstallState();
 
         #endregion
 
@@ -431,6 +433,5 @@ namespace AngelLoader
         (bool Accepted, List<string> IniFiles, bool ImportTitle, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportComment, bool ImportRating, bool ImportDisabledMods, bool ImportTags, bool ImportSelectedReadme, bool ImportFinishedOn, bool ImportSize) ShowImportFromMultipleInisForm(ImportType importType);
         bool AbleToAcceptDragDrop();
         FanMission? GetMainSelectedFMOrNull_Fast();
-        void RefreshMainSelectedFMRow_Fast();
     }
 }

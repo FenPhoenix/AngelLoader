@@ -554,7 +554,7 @@ namespace AngelLoader
             }
             else if (dateFormatChanged || languageChanged)
             {
-                View.RefreshFMsListKeepSelection();
+                View.RefreshFMsListRowsOnlyKeepSelection();
             }
 
             #endregion

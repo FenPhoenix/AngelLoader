@@ -425,7 +425,7 @@ namespace AngelLoader
                     // Because we might scan FMs and they end up being something that's filtered out?
                     // We don't do it with one, I guess cause of the "don't refresh the list for a single change"
                     // rule. But does this count?
-                    Core.View.RefreshAllSelectedFMs();
+                    Core.View.RefreshAllSelectedFMs_Full();
                 }
             }
         }

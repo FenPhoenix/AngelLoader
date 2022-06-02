@@ -1672,16 +1672,14 @@ namespace AngelLoader.Forms
             }
             finally
             {
+                // This causes a refresh of everything and in turn updates the size column strings
+                // We don't need to refresh on startup because we already will later
                 if (!startup) EverythingPanel.ResumeDrawing();
 
                 // We can't do this while the layout is suspended, because then it won't have the right dimensions
                 // for centering
                 ViewHTMLReadmeLLButton.Center(MainSplitContainer.Panel2);
             }
-
-            // To refresh the FM size column strings to localized
-            // We don't need to refresh on startup because we already will later
-            if (!startup) RefreshFMsListKeepSelection();
         }
 
         public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false);
@@ -2619,7 +2617,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                RefreshFMsListKeepSelection();
+                RefreshFMsListRowsOnlyKeepSelection();
             }
         }
 
@@ -2631,38 +2629,22 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void RefreshAllSelectedFMs(bool rowOnly = false)
+        public void RefreshAllSelectedFMs_Full()
         {
-            if (!rowOnly)
-            {
-                FanMission? selectedFM = GetMainSelectedFMOrNull();
-                if (selectedFM != null)
-                {
-                    UpdateAllFMUIDataExceptReadme(selectedFM);
-                }
-            }
-            RefreshFMsListKeepSelection();
+            FanMission? selectedFM = GetMainSelectedFMOrNull();
+            if (selectedFM != null) UpdateAllFMUIDataExceptReadme(selectedFM);
+            RefreshFMsListRowsOnlyKeepSelection();
         }
 
-        public void RefreshAllSelectedFMRows(bool refreshInstalledStateOfCurrentRow = false)
+        // Convenience method so I don't forget why I'm calling with "rowOnly: false" again
+        public void RefreshAllSelectedFMs_UpdateInstallState()
         {
-            var selRows = FMsDGV.SelectedRows;
-            for (int i = 0; i < selRows.Count; i++)
-            {
-                FMsDGV.InvalidateRow(selRows[i].Index);
-            }
-
-            if (refreshInstalledStateOfCurrentRow)
-            {
-                FanMission? selectedFM = GetMainSelectedFMOrNull();
-                if (selectedFM != null)
-                {
-                    // We need to update the Patch tab too, and if we ever have any other tab in the future that
-                    // might need updating
-                    UpdateAllFMUIDataExceptReadme(selectedFM);
-                }
-            }
+            // We need to update the Patch tab too, and if we ever have any other tab in the future that might
+            // need updating
+            RefreshAllSelectedFMs_Full();
         }
+
+        public void RefreshFMsListRowsOnlyKeepSelection() => FMsDGV.Refresh();
 
         /// <summary>
         /// Returns false if the list is empty and ClearShownData() has been called, otherwise true
@@ -2788,35 +2770,6 @@ namespace AngelLoader.Forms
             }
 
             return true;
-        }
-
-        public void RefreshFMsListKeepSelection(bool keepMulti = true)
-        {
-            if (FMsDGV.RowCount == 0) return;
-
-            var selRows = FMsDGV.SelectedRows;
-            try
-            {
-                TopSplitContainer.Panel1.SuspendDrawing();
-                if (keepMulti)
-                {
-                    foreach (DataGridViewRow row in selRows)
-                    {
-                        FMsDGV.InvalidateRow(row.Index);
-                    }
-                }
-                else
-                {
-                    FMsDGV.SelectSingle(FMsDGV.MainSelectedRow!.Index);
-                    // TODO: This pops our position back to put selected FM in view - but do we really need to run this here?
-                    // Alternatively, maybe SelectProperly() should pop us back to where we were after it's done?
-                    FMsDGV.SelectProperly();
-                }
-            }
-            finally
-            {
-                TopSplitContainer.Panel1.ResumeDrawing();
-            }
         }
 
         #endregion
@@ -2981,7 +2934,7 @@ namespace AngelLoader.Forms
                 {
                     sFM.Rating = rating;
                 }
-                RefreshAllSelectedFMs(rowOnly: true);
+                RefreshFMsListRowsOnlyKeepSelection();
             }
             Ini.WriteFullFMDataIni();
         }
@@ -4183,7 +4136,7 @@ namespace AngelLoader.Forms
             if (!startup)
             {
                 FMsDGV.SetColumnData(FMsDGV_ColumnHeaderLLMenu, FMsDGV.GetColumnData());
-                RefreshFMsListKeepSelection();
+                RefreshFMsListRowsOnlyKeepSelection();
             }
 
             #endregion

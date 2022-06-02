@@ -916,7 +916,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 }
             }
 
-            _owner.RefreshAllSelectedFMRows();
+            _owner.RefreshFMsListRowsOnlyKeepSelection();
 
             Ini.WriteFullFMDataIni();
         }
