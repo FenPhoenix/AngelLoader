@@ -4508,30 +4508,6 @@ namespace AngelLoader.Forms
 
             MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
-            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(false);
-            FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(false);
-            FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(false);
-
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(sayInstall: true, multiSelected: false);
-            FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(false);
-
-            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(sayPin: true);
-
-            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(false);
-            FMsDGV_FM_LLMenu.SetDeleteFMMenuItemVisible(true);
-            FMsDGV_FM_LLMenu.SetDeleteRecordMenuItemVisible(false);
-            FMsDGV_FM_LLMenu.SetDeleteRecordMenuItemText(multiSelected: false);
-
-            FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: false);
-            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(false);
-            FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(false);
-
-            FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(false);
-
-            FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(false);
-
-            FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(false);
-
             #endregion
 
             #region Bottom bar
@@ -4555,15 +4531,15 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            #region Stats tab
-
-            BlankStatsPanelWithMessage(LText.StatisticsTab.NoFMSelected);
-            StatsScanCustomResourcesButton.Hide();
-
-            #endregion
-
             using (new DisableEvents(this))
             {
+                #region Stats tab
+
+                BlankStatsPanelWithMessage(LText.StatisticsTab.NoFMSelected);
+                StatsScanCustomResourcesButton.Hide();
+
+                #endregion
+
                 #region Edit FM tab
 
                 AltTitlesLLMenu.ClearItems();
