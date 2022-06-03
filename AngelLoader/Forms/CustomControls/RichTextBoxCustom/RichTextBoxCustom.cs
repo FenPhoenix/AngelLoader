@@ -101,10 +101,10 @@ namespace AngelLoader.Forms.CustomControls
 
                 Font = useFixed ? MonospaceFont : DefaultFont;
 
-                string savedText = Text;
-
                 if (outsideCall)
                 {
+                    string savedText = Text;
+
                     Clear();
                     ResetScrollInfo();
 
