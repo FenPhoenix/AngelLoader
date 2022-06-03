@@ -46,8 +46,11 @@ namespace AngelLoader.Forms.CustomControls
 
         public void ClearFullItems()
         {
-            BackingItems.Clear();
-            Items.Clear();
+            if (Items.Count > 0 && BackingItems.Count > 0)
+            {
+                BackingItems.Clear();
+                Items.Clear();
+            }
         }
 
         public int BackingIndexOf(string item) => BackingItems.IndexOf(item);

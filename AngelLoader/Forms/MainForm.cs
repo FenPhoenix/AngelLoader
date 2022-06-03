@@ -4181,7 +4181,8 @@ namespace AngelLoader.Forms
         {
             // This is only hooked up after construction, so no Construct() call needed
 
-            if (ChooseReadmeLLPanel.ListBox.Items.Count == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
+            int itemCount = ChooseReadmeLLPanel.ListBox.Items.Count;
+            if (itemCount == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
             {
                 return;
             }
@@ -4190,28 +4191,14 @@ namespace AngelLoader.Forms
             fm.SelectedReadme = ChooseReadmeLLPanel.ListBox.SelectedBackingItem();
             ChooseReadmeLLPanel.ShowPanel(false);
 
-            if (fm.SelectedReadme.ExtIsHtml())
-            {
-                ViewHTMLReadmeLLButton.Show();
-            }
-            else
-            {
-                SetReadmeVisible(true);
-            }
+            var list = itemCount > 1
+                ? ChooseReadmeLLPanel.ListBox.BackingItems
+                : new List<string>();
 
-            if (ChooseReadmeLLPanel.ListBox.Items.Count > 1)
-            {
-                ReadmeListFillAndSelect(ChooseReadmeLLPanel.ListBox.BackingItems, fm.SelectedReadme);
-                ShowReadmeControls(CursorOverReadmeArea());
-            }
-            else
-            {
-                using (new DisableEvents(this))
-                {
-                    ChooseReadmeComboBox.ClearFullItems();
-                }
-                ChooseReadmeComboBox.Hide();
-            }
+            ReadmeListFillAndSelect(list, fm.SelectedReadme);
+            ShowReadmeControls(CursorOverReadmeArea());
+
+            ChooseReadmeLLPanel.ListBox.ClearFullItems();
 
             Core.LoadReadme(fm);
         }
@@ -5135,8 +5122,17 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                FillReadmeList(readmeFiles);
-                ChooseReadmeComboBox.SelectBackingIndexOf(readme);
+                if (readmeFiles.Count == 0)
+                {
+                    ChooseReadmeComboBox.ClearFullItems();
+                    ChooseReadmeComboBox.Hide();
+                }
+                else
+                {
+                    FillReadmeList(readmeFiles);
+                    ChooseReadmeComboBox.SelectBackingIndexOf(readme);
+                    ChooseReadmeComboBox.Show();
+                }
             }
         }
 
@@ -5179,20 +5175,14 @@ namespace AngelLoader.Forms
 
         private void FillReadmeList(List<string> readmes, bool initialChooser = false)
         {
+            IListControlWithBackingItems readmeListControl =
+                initialChooser
+                    ? ChooseReadmeLLPanel.ListBox
+                    : ChooseReadmeComboBox;
             try
             {
-                IListControlWithBackingItems readmeListControl;
-                if (initialChooser)
-                {
-                    ChooseReadmeLLPanel.ListBox.BeginUpdate();
-                    ChooseReadmeLLPanel.ListBox.ClearFullItems();
-                    readmeListControl = ChooseReadmeLLPanel.ListBox;
-                }
-                else
-                {
-                    ChooseReadmeComboBox.BeginUpdate();
-                    readmeListControl = ChooseReadmeComboBox;
-                }
+                readmeListControl.BeginUpdate();
+                readmeListControl.ClearFullItems();
 
                 foreach (string f in readmes)
                 {
@@ -5203,14 +5193,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                if (initialChooser)
-                {
-                    ChooseReadmeLLPanel.ListBox.EndUpdate();
-                }
-                else
-                {
-                    ChooseReadmeComboBox.EndUpdate();
-                }
+                readmeListControl.EndUpdate();
             }
         }
 
