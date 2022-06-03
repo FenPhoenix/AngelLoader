@@ -5129,7 +5129,7 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    FillReadmeList(readmeFiles);
+                    FillReadmeListControl(ChooseReadmeComboBox, readmeFiles);
                     ChooseReadmeComboBox.SelectBackingIndexOf(readme);
                     ChooseReadmeComboBox.Show();
                 }
@@ -5166,19 +5166,15 @@ namespace AngelLoader.Forms
                 case ReadmeState.InitialReadmeChooser when readmeFilesForChooser != null:
                     SetReadmeVisible(false);
                     ViewHTMLReadmeLLButton.Hide();
-                    FillReadmeList(readmeFilesForChooser, initialChooser: true);
+                    FillReadmeListControl(ChooseReadmeLLPanel.ListBox, readmeFilesForChooser);
                     ShowReadmeControls(false);
                     ChooseReadmeLLPanel.ShowPanel(true);
                     break;
             }
         }
 
-        private void FillReadmeList(List<string> readmes, bool initialChooser = false)
+        private static void FillReadmeListControl(IListControlWithBackingItems readmeListControl, List<string> readmes)
         {
-            IListControlWithBackingItems readmeListControl =
-                initialChooser
-                    ? ChooseReadmeLLPanel.ListBox
-                    : ChooseReadmeComboBox;
             try
             {
                 readmeListControl.BeginUpdate();
