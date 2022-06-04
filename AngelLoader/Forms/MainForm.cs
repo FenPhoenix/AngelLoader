@@ -64,6 +64,8 @@ namespace AngelLoader.Forms
         /// </summary>
         internal bool AboutToClose;
 
+        private FanMission? _displayedFM;
+
         #region Window size/location
 
         private FormWindowState _nominalWindowState;
@@ -951,20 +953,6 @@ namespace AngelLoader.Forms
             //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
 #endif
         }
-
-        private static FormWindowState WindowStateToFormWindowState(WindowState windowState) => windowState switch
-        {
-            Misc.WindowState.Normal => FormWindowState.Normal,
-            Misc.WindowState.Minimized => FormWindowState.Minimized,
-            _ => FormWindowState.Maximized
-        };
-
-        private static WindowState FormWindowStateToWindowState(FormWindowState formWindowState) => formWindowState switch
-        {
-            FormWindowState.Normal => Misc.WindowState.Normal,
-            FormWindowState.Minimized => Misc.WindowState.Minimized,
-            _ => Misc.WindowState.Maximized
-        };
 
         private void SetWindowStateAndSize()
         {
@@ -3043,27 +3031,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
-
-        public FanMission? GetMainSelectedFMOrNull_Fast() => _displayedFM;
-
-        /// <summary>
-        /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder"/>
-        /// if you need them in visual order.
-        /// </summary>
-        /// <returns></returns>
-        public FanMission[] GetSelectedFMs() => FMsDGV.GetSelectedFMs();
-
-        /// <summary>
-        /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
-        /// </summary>
-        /// <returns></returns>
-        public FanMission[] GetSelectedFMs_InOrder() => FMsDGV.GetSelectedFMs_InOrder();
-
-        public List<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
-
-        public FanMission? GetFMFromIndex(int index) => FMsDGV.RowSelected() ? FMsDGV.GetFMFromIndex(index) : null;
-
         public (string Category, string Tag)
         SelectedCategoryAndTag()
         {
@@ -3434,7 +3401,26 @@ namespace AngelLoader.Forms
 
         #region FMs list
 
-        private FanMission? _displayedFM;
+        public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
+
+        public FanMission? GetMainSelectedFMOrNull_Fast() => _displayedFM;
+
+        /// <summary>
+        /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder"/>
+        /// if you need them in visual order.
+        /// </summary>
+        /// <returns></returns>
+        public FanMission[] GetSelectedFMs() => FMsDGV.GetSelectedFMs();
+
+        /// <summary>
+        /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
+        /// </summary>
+        /// <returns></returns>
+        public FanMission[] GetSelectedFMs_InOrder() => FMsDGV.GetSelectedFMs_InOrder();
+
+        public List<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
+
+        public FanMission? GetFMFromIndex(int index) => FMsDGV.RowSelected() ? FMsDGV.GetFMFromIndex(index) : null;
 
         public int GetMainSelectedRowIndex() => FMsDGV.RowSelected() ? FMsDGV.MainSelectedRow!.Index : -1;
 
@@ -3622,10 +3608,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void SetPinnedMenuState(bool pinned)
-        {
-            FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!pinned);
-        }
+        public void SetPinnedMenuState(bool pinned) => FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!pinned);
 
         #region FMs list sorting
 
@@ -3970,10 +3953,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void SetTopRightBlockerVisible()
-        {
-            SetTopRightTabsMultiSelectBlockerPanel(FMsDGV.MultipleFMsSelected());
-        }
+        private void SetTopRightBlockerVisible() => SetTopRightTabsMultiSelectBlockerPanel(FMsDGV.MultipleFMsSelected());
 
         private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
@@ -4229,10 +4209,7 @@ namespace AngelLoader.Forms
             ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
         }
 
-        public Encoding? ChangeReadmeEncoding(Encoding? encoding)
-        {
-            return ReadmeRichTextBox.ChangeEncoding(encoding);
-        }
+        public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
 
         private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
 
@@ -5586,6 +5563,20 @@ namespace AngelLoader.Forms
                 await AddFMs(droppedItems);
             }
         }
+
+        private static FormWindowState WindowStateToFormWindowState(WindowState windowState) => windowState switch
+        {
+            Misc.WindowState.Normal => FormWindowState.Normal,
+            Misc.WindowState.Minimized => FormWindowState.Minimized,
+            _ => FormWindowState.Maximized
+        };
+
+        private static WindowState FormWindowStateToWindowState(FormWindowState formWindowState) => formWindowState switch
+        {
+            FormWindowState.Normal => Misc.WindowState.Normal,
+            FormWindowState.Minimized => Misc.WindowState.Minimized,
+            _ => Misc.WindowState.Maximized
+        };
 
         #endregion
 
