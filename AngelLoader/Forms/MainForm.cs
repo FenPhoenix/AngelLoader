@@ -975,23 +975,23 @@ namespace AngelLoader.Forms
 
             const int minVisible = 200;
 
-            var loc = new Point(Config.MainWindowLocation.X, Config.MainWindowLocation.Y);
+            var loc = Config.MainWindowLocation;
             var bounds = Screen.FromControl(this).Bounds;
 
             if (loc.X < bounds.Left - (Width - minVisible) || loc.X > bounds.Right - minVisible)
             {
-                loc.X = Defaults.MainWindowX;
+                loc.X = Defaults.MainWindowLocation.X;
             }
             if (loc.Y < bounds.Top - (Height - minVisible) || loc.Y > bounds.Bottom - minVisible)
             {
-                loc.Y = Defaults.MainWindowY;
+                loc.Y = Defaults.MainWindowLocation.Y;
             }
 
-            Location = new Point(loc.X, loc.Y);
+            Location = loc;
 
             _nominalWindowState = WindowStateToFormWindowState(Config.MainWindowState);
             _nominalWindowSize = Config.MainWindowSize;
-            _nominalWindowLocation = new Point(loc.X, loc.Y);
+            _nominalWindowLocation = loc;
         }
 
         private new void Show()
@@ -1985,6 +1985,7 @@ namespace AngelLoader.Forms
         // controls properly) but keep the rest of the work before load
         private void ChangeFilterControlsForGameType()
         {
+            // TODO: These two if blocks should be combined
             if (Config.GameOrganization == GameOrganization.ByTab)
             {
                 #region Select target tab in advance

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using AngelLoader.DataClasses;
 
 namespace AngelLoader
@@ -139,11 +140,9 @@ namespace AngelLoader
         {
             #region Main window
 
-            internal const int MainWindowWidth = 1280;
-            internal const int MainWindowHeight = 720;
+            internal static readonly Size MainWindowSize = new Size(1280, 720);
 
-            internal const int MainWindowX = 50;
-            internal const int MainWindowY = 50;
+            internal static readonly Point MainWindowLocation = new Point(50, 50);
 
             internal const int ColumnWidth = 100;
             internal const int MinColumnWidth = 25;

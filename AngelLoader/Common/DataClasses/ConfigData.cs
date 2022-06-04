@@ -362,8 +362,8 @@ namespace AngelLoader.DataClasses
 
         private WindowState _mainWindowState = WindowState.Maximized;
         internal WindowState MainWindowState { get => _mainWindowState; set => _mainWindowState = value == WindowState.Minimized ? WindowState.Maximized : value; }
-        internal Size MainWindowSize = new Size(Defaults.MainWindowWidth, Defaults.MainWindowHeight);
-        internal Point MainWindowLocation = new Point(Defaults.MainWindowX, Defaults.MainWindowY);
+        internal Size MainWindowSize = Defaults.MainWindowSize;
+        internal Point MainWindowLocation = Defaults.MainWindowLocation;
 
         private float _mainSplitterPercent = Defaults.MainSplitterPercent;
         internal float MainSplitterPercent { get => _mainSplitterPercent; set => _mainSplitterPercent = value.ClampZeroToOne(); }
