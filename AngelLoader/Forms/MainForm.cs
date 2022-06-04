@@ -1007,21 +1007,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
-        {
-            if (!FMsDGV.MultipleFMsSelected() &&
-                GameIsKnownAndSupported((fm = FMsDGV.GetMainSelectedFM()).Game) &&
-                !fm.MarkedUnavailable)
-            {
-                return true;
-            }
-            else
-            {
-                fm = null;
-                return false;
-            }
-        }
-
         #region Form events
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -5562,6 +5547,21 @@ namespace AngelLoader.Forms
         {
             if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
             Activate();
+        }
+
+        private bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
+        {
+            if (!FMsDGV.MultipleFMsSelected() &&
+                GameIsKnownAndSupported((fm = FMsDGV.GetMainSelectedFM()).Game) &&
+                !fm.MarkedUnavailable)
+            {
+                return true;
+            }
+            else
+            {
+                fm = null;
+                return false;
+            }
         }
 
         #endregion
