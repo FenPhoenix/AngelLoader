@@ -27,7 +27,7 @@ namespace AngelLoader.Forms
 
             OrigGameModsControl.ModsDisabledModsTextBox.Text = DisabledMods;
 
-            SetTheme(Config.VisualTheme);
+            if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
             Localize(gameIndex);
 
@@ -74,11 +74,6 @@ namespace AngelLoader.Forms
             {
                 OrigGameModsControl.ModsCheckList.ResumeDrawing();
             }
-        }
-
-        private void SetTheme(VisualTheme theme)
-        {
-            ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
         }
 
         private void Localize(GameIndex gameIndex)

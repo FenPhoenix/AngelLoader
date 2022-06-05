@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using AL_Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -12,8 +11,6 @@ namespace AngelLoader.Forms
     // TEXT WHICH IS THE #$@$ING THING WE'RE TRYING TO PREVENT IN THE FIRST PLACE.
     public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
     {
-        private const int _minClientWidth = 170;
-
         public bool EventsDisabled { get; set; }
 
         internal int RatingFrom;
@@ -31,11 +28,7 @@ namespace AngelLoader.Forms
 
             Localize();
 
-            int width = (OKButton.Width + Cancel_Button.Width + 24).Clamp(_minClientWidth, int.MaxValue);
-
-            ClientSize = ClientSize with { Width = width };
-
-            Cancel_Button.Location = Cancel_Button.Location with { X = OKButton.Right + 8 };
+            ControlUtils.DoFilterWindowButtonLayout(this, OKButton, Cancel_Button);
 
             FromComboBox.Items.Add(LText.Global.Unrated);
             for (int i = 0; i <= 10; i++) FromComboBox.Items.Add((outOfFive ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture));

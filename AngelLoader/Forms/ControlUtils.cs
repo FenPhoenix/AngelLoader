@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
@@ -690,6 +691,15 @@ namespace AngelLoader.Forms
                 foreach (string tag in item.Tags) categoryNode.Nodes.Add(tag);
                 treeView.Nodes.Add(categoryNode);
             }
+        }
+
+        internal static void DoFilterWindowButtonLayout(Form form, Button okButton, Button cancelButton)
+        {
+            int width = (okButton.Width + cancelButton.Width + 24).ClampToMin(form.ClientSize.Width);
+
+            form.ClientSize = form.ClientSize with { Width = width };
+
+            cancelButton.Location = cancelButton.Location with { X = okButton.Right + 8 };
         }
     }
 }

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
-using AL_Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
     public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
     {
-        private const int _minClientWidth = 170;
-
         private enum DateType { From, To }
 
         public bool EventsDisabled { get; set; }
@@ -38,11 +35,7 @@ namespace AngelLoader.Forms
 
             Text = title;
 
-            int width = (OKButton.Width + Cancel_Button.Width + 24).Clamp(_minClientWidth, int.MaxValue);
-
-            ClientSize = ClientSize with { Width = width };
-
-            Cancel_Button.Location = Cancel_Button.Location with { X = OKButton.Right + 8 };
+            ControlUtils.DoFilterWindowButtonLayout(this, OKButton, Cancel_Button);
 
             using (new DisableEvents(this))
             {

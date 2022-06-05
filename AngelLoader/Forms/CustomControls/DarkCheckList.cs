@@ -251,7 +251,7 @@ namespace AngelLoader.Forms.CustomControls
             RefreshDarkMode();
         }
 
-        internal void Inject(Func<bool> predicate) => _predicate = predicate;
+        internal void SetCautionVisiblePredicate(Func<bool> predicate) => _predicate = predicate;
 
         internal void RefreshCautionLabelText(string text)
         {

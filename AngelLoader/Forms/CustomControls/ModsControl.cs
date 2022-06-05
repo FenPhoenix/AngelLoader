@@ -14,7 +14,7 @@ namespace AngelLoader.Forms.CustomControls
 #else
             InitializeComponentSlim();
 #endif
-            ModsCheckList.Inject(() => ModsShowUberCheckBox.Checked);
+            ModsCheckList.SetCautionVisiblePredicate(() => ModsShowUberCheckBox.Checked);
         }
 
         [PublicAPI]

@@ -1973,7 +1973,6 @@ namespace AngelLoader.Forms
         // controls properly) but keep the rest of the work before load
         private void ChangeFilterControlsForGameType()
         {
-            // TODO: These two if blocks should be combined
             if (Config.GameOrganization == GameOrganization.ByTab)
             {
                 #region Select target tab in advance
@@ -2023,6 +2022,11 @@ namespace AngelLoader.Forms
                 }
 
                 #endregion
+
+                PositionFilterBarAfterTabs();
+
+                FilterGameButtonsToolStrip.Hide();
+                GamesTabControl.Show();
             }
             else // OneList
             {
@@ -2033,23 +2037,13 @@ namespace AngelLoader.Forms
                     button.Visible = visible;
                     if (button.Checked && !visible) button.Checked = false;
                 }
-            }
 
-            if (Config.GameOrganization == GameOrganization.OneList)
-            {
                 GamesTabControl.Hide();
                 // Don't inline this var - it stores the X value to persist it through a change
                 int plusWidth = FilterBarFLP.Location.X - TopBarXZero();
                 FilterBarFLP.Location = new Point(TopBarXZero(), FilterBarFLP.Location.Y);
                 FilterBarFLP.Width += plusWidth;
                 FilterGameButtonsToolStrip.Show();
-            }
-            else // ByTab
-            {
-                PositionFilterBarAfterTabs();
-
-                FilterGameButtonsToolStrip.Hide();
-                GamesTabControl.Show();
             }
 
             SetGameFilterShowHideMenuText();
