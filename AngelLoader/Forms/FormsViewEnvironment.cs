@@ -4,7 +4,7 @@ using AngelLoader.DataClasses;
 namespace AngelLoader.Forms
 {
     // We still want to be able to do UI-framework-dependent things when we may not have loaded our main view yet,
-    //so we have this concept of a "view environment" that will change implementations with the UI framework.
+    // so we have this concept of a "view environment" that will change implementations with the UI framework.
     public sealed class FormsViewEnvironment : IViewEnvironment
     {
         internal static bool ViewCreated;
