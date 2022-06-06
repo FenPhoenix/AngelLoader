@@ -26,6 +26,17 @@ Cons:
 - RichTextBox is slow as ass if there's more than a trivial amount of "runs" / "blocks" or whatever
 - Probably dead-end tech
 
+### WPF with WebView2 to display rtf-to-HTML converted readmes:
+
+Pros:
+- A full-blown web browser _definitely_ covers the Win32 RichEdit control's capabilites.
+- Preliminary testing shows good results, can have back-and-forward disabled, context menu disabled, can zoom/set zoom programatically, etc.
+
+Cons:
+- WebView2 is Edge, and it's subject to updates. This exposes us to a _huge_ liability in that a) a third-party can break us at any time and there's nothing we can do, and b) every user might have a different version of Edge on their system, so if there's a problem, good luck us being able to diagnose/reproduce.
+- WebView2 can also be deployed in a fixed version alongside the app, which dodges the issues above, but then we're talking a _300MB+_ package. It makes Electron look positively svelte in comparison.
+- Load performance acceptability is uncertain - I measured ~20-30ms to load AL's doc page, but then later it was over 100ms, not sure what happened there. The doc page is very large and with many images in comparison to what's expected of an average FM readme, so we could still be good. Need more testing. Can't test multiple readme load speed at present because I don't have a working rtf-to-html converter.
+
 ### WinUI 3:
 Pros:
 - Can be themed in a completely supported and dynamically-switchable way
