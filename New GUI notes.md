@@ -18,29 +18,35 @@ Pros:
 - Fully supports high DPI
 - Internally implemented RichTextBox (ie. _not_ a wrapper around the Win32 one) that doesn't leak
 - Can be themed, and in a better and more supported way than Windows Forms
+- DataGrid apparently CAN be made fast like WinForms - [see](https://stackoverflow.com/questions/55245962/use-data-virtualization-when-binding-to-wpf-datagrid-and-support-sorting)
 
 Cons:
 - Not cross-platform
-- Unusable DataGrid - not virtualizable (and no, "Virtual Mode" is not what we need despite it being named like it is)
+~- Unusable DataGrid - not virtualizable (and no, "Virtual Mode" is not what we need despite it being named like it is)~
+- RichTextBox is slow as ass if there's more than a trivial amount of "runs" / "blocks" or whatever
 - Probably dead-end tech
 
 ### WinUI 3:
 Pros:
 - Can be themed in a completely supported and dynamically-switchable way
-- Has RichTextBox
+- Has RichTextBox - fast, doesn't support WMF images but we can pre-convert
 - DataGrid - is it virtualizable for high performance with large numbers of rows? **(need to confirm!)**
+- Latest demo doesn't seem slow anymore? Need more thorough testing
 
 Cons:
 - Not cross-platform
-- Horrendously laggy and in a jagged and inconsistent way which makes it even _more_ distracting and awful than WinForms, at least WinForms is _even_ in its slowness
+~- Horrendously laggy and in a jagged and inconsistent way which makes it even _more_ distracting and awful than WinForms, at least WinForms is _even_ in its slowness~
+- Appears to dump masses of dlls in build dir - suggesting we need to package them with the app (but not sure)
 
 ### MAUI:
 Pros:
 - Cross-platform
+- Uses WinUI 3 so has the nice RichTextBox
 
 Cons:
 - I think it uses WinUI 3 for Windows so we're right back to that
-- I don't know much about this one. I don't even know how you would develop apps, I try to make a MAUI project and there's nothing, no designer and not even any reference documentation that would even tell me how to create a UI by hand. Ugh.
+~- I don't know much about this one. I don't even know how you would develop apps, I try to make a MAUI project and there's nothing, no designer and not even any reference documentation that would even tell me how to create a UI by hand. Ugh.~
+- Can't get MAUI projects to work whatsoever, all references are just errors and docs say nothing about this situation and google provides no (working) answers either
 
 ### Avalonia
 Pros:
@@ -84,4 +90,5 @@ Pros:
 Cons:
 - Still bloats up AngelLoader's distribution size due to the need to carry actual renderer dlls with it
 - No rich text box capable of handling what we need - we would have to implement it ourselves
+- Doesn't seem to have disabled-control functionality, probably also lacking other things we might want
 - We would be reliant on a wrapper that may be several versions behind Dear ImGui
