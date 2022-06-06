@@ -199,7 +199,7 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field)]
         internal sealed class FenGenGameAttribute : Attribute
         {
-            internal FenGenGameAttribute(string prefix, string steamId) { }
+            internal FenGenGameAttribute(string prefix, string steamId, string editorName) { }
         }
 
         #endregion

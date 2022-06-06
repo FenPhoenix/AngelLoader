@@ -28,13 +28,13 @@ namespace AngelLoader
             // IMPORTANT: Prefixes are used in Config.ini, so they must remain the same for compatibility.
             // Don't change the existing values, only add new ones!
             // Obviously the steam ids must remain the same as well.
-            [FenGenGame(prefix: "T1", steamId: "211600")]
+            [FenGenGame(prefix: "T1", steamId: "211600", editorName: "DromEd")]
             Thief1 = 1,
-            [FenGenGame(prefix: "T2", steamId: "211740")]
+            [FenGenGame(prefix: "T2", steamId: "211740", editorName: "DromEd")]
             Thief2 = 2,
-            [FenGenGame(prefix: "T3", steamId: "6980")]
+            [FenGenGame(prefix: "T3", steamId: "6980", editorName: "")]
             Thief3 = 4,
-            [FenGenGame(prefix: "SS2", steamId: "238210")]
+            [FenGenGame(prefix: "SS2", steamId: "238210", editorName: "ShockEd")]
             SS2 = 8,
 
             [FenGenIgnore]

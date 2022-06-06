@@ -50,9 +50,11 @@ namespace FenGen
 
                     if (gameAttr != null)
                     {
-                        if (gameAttr.ArgumentList == null || gameAttr.ArgumentList.Arguments.Count < 2)
+                        const int reqArgCount = 3;
+
+                        if (gameAttr.ArgumentList == null || gameAttr.ArgumentList.Arguments.Count < reqArgCount)
                         {
-                            ThrowErrorAndTerminate(nameof(GenAttributes.FenGenGame) + " had < 2 args");
+                            ThrowErrorAndTerminate(nameof(GenAttributes.FenGenGame) + " had < " + reqArgCount + " args");
                         }
 
                         string prefixArg =
@@ -61,9 +63,13 @@ namespace FenGen
                         string steamIdArg =
                             ((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[1].Expression).Token
                             .ValueText;
+                        string editorNameArg =
+                            ((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[2].Expression).Token
+                            .ValueText;
 
                         ret.GamePrefixes.Add(prefixArg);
                         ret.SteamIds.Add(steamIdArg);
+                        ret.EditorNames.Add(editorNameArg);
                     }
                 }
             }
@@ -101,9 +107,14 @@ namespace FenGen
             w.WL("private static readonly string[] _steamAppIds =");
             WriteListBody(w, Cache.GamesEnum.SteamIds, addQuotes: true);
 
+            w.WL("private static readonly string[] _gameEditorNames =");
+            WriteListBody(w, Cache.GamesEnum.EditorNames, addQuotes: true);
+
             w.WL("public static string GetGamePrefix(" + gameIndexName + " index) => _gamePrefixes[(int)index];");
             w.WL();
             w.WL("public static string GetGameSteamId(" + gameIndexName + " index) => _steamAppIds[(int)index];");
+            w.WL();
+            w.WL("public static string GetGameEditorName(" + gameIndexName + " index) => _gameEditorNames[(int)index];");
             w.WL();
 
             w.WL("#endregion");

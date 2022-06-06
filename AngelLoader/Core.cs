@@ -1822,6 +1822,40 @@ namespace AngelLoader
 
         #endregion
 
+        internal static string GetAutodetectedGameEditorExe(GameIndex gameIndex)
+        {
+            string gamePath;
+            string editorName;
+            if (!GameIsDark(gameIndex) ||
+                (editorName = GetGameEditorName(gameIndex)).IsEmpty() ||
+                (gamePath = Config.GetGamePath(gameIndex)).IsEmpty())
+            {
+                return "";
+            }
+
+            try
+            {
+                var exeFiles = FastIO.GetFilesTopOnly(gamePath, "*.exe");
+                for (int i = 0; i < exeFiles.Count; i++)
+                {
+                    string exeFile = exeFiles[i];
+                    var fvi = FileVersionInfo.GetVersionInfo(exeFile);
+                    if (fvi.ProductName?.EqualsI(editorName) == true ||
+                        exeFile.GetFileNameFast().ContainsI(editorName))
+                    {
+                        return exeFile;
+                    }
+                }
+
+                return "";
+            }
+            catch (Exception ex)
+            {
+                Log("Exception trying to detect game editor exe", ex);
+                return "";
+            }
+        }
+
         internal static (Error Error, string Version)
         GetGameVersion(GameIndex game)
         {

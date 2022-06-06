@@ -15,6 +15,8 @@ namespace AngelLoader.DataClasses
         {
             _disabledMods = new string[SupportedGameCount];
 
+            _editorExes = new string[SupportedGameCount];
+
             GameExes = new string[SupportedGameCount];
             GamePaths = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];
@@ -37,6 +39,8 @@ namespace AngelLoader.DataClasses
                 // bool[]s are initialized to false by default, so in that case we don't need to do anything here
 
                 _disabledMods[i] = "";
+
+                _editorExes[i] = "";
 
                 GameExes[i] = "";
                 GamePaths[i] = "";
@@ -89,6 +93,12 @@ namespace AngelLoader.DataClasses
 
         internal void SetDisabledMods(GameIndex index, string value) => _disabledMods[(int)index] = GameIsDark(index) ? value : "";
         // @GENGAMES(T3 doesn't support mod management) - End
+
+        private readonly string[] _editorExes;
+
+        internal string GetEditorExe(GameIndex index) => _editorExes[(int)index];
+
+        internal void SetEditorExe(GameIndex index, string value) => _editorExes[(int)index] = value;
 
         #region Paths
 
@@ -154,6 +164,8 @@ namespace AngelLoader.DataClasses
 
         #region Get special exes
 
+        internal bool AutodetectEditor = true;
+
         /*
          I'm not completely comfortable putting these in here... They're sort of in a no-man's land between
          belonging here or belonging outside.
@@ -170,21 +182,28 @@ namespace AngelLoader.DataClasses
         */
 
         /// <summary>
-        /// Returns the full path of the editor for <paramref name="game"/> if and only if it exists on disk.
-        /// Otherwise, returns the empty string. It will also return the empty string if <paramref name="game"/>
+        /// Returns the full path of the editor for <paramref name="gameIndex"/> if and only if it exists on disk.
+        /// Otherwise, returns the empty string. It will also return the empty string if <paramref name="gameIndex"/>
         /// is not Dark.
         /// </summary>
-        /// <param name="game"></param>
+        /// <param name="gameIndex"></param>
         /// <returns></returns>
-        internal string GetEditorExe_FromDisk(GameIndex game)
+        internal string GetEditorExe_FromDisk(GameIndex gameIndex)
         {
             string gamePath;
-            if (!GameIsDark(game) || (gamePath = GetGamePath(game)).IsEmpty()) return "";
+            if (!GameIsDark(gameIndex) || (gamePath = GetGamePath(gameIndex)).IsEmpty()) return "";
 
-            string exe = game == GameIndex.SS2 ? Paths.ShockEdExe : Paths.DromEdExe;
-            return TryCombineFilePathAndCheckExistence(gamePath, exe, out string fullPathExe)
-                ? fullPathExe
-                : "";
+            if (Config.AutodetectEditor)
+            {
+                return Core.GetAutodetectedGameEditorExe(gameIndex);
+            }
+            else
+            {
+                string exe = Config.GetEditorExe(gameIndex);
+                return TryCombineFilePathAndCheckExistence(gamePath, exe, out string fullPathExe)
+                    ? fullPathExe
+                    : "";
+            }
         }
 
         /// <summary>

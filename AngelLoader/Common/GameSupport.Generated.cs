@@ -38,9 +38,19 @@ namespace AngelLoader
             "238210"
         };
 
+        private static readonly string[] _gameEditorNames =
+        {
+            "DromEd",
+            "DromEd",
+            "",
+            "ShockEd"
+        };
+
         public static string GetGamePrefix(GameIndex index) => _gamePrefixes[(int)index];
 
         public static string GetGameSteamId(GameIndex index) => _steamAppIds[(int)index];
+
+        public static string GetGameEditorName(GameIndex index) => _gameEditorNames[(int)index];
 
         #endregion
 

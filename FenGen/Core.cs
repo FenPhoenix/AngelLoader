@@ -60,10 +60,11 @@ namespace FenGen
     {
         internal string Name = "";
         internal string GameIndexName = "";
-        internal readonly List<string> GameEnumNames = new List<string>();
-        internal readonly List<string> GameIndexEnumNames = new List<string>();
-        internal readonly List<string> GamePrefixes = new List<string>();
-        internal readonly List<string> SteamIds = new List<string>();
+        internal readonly List<string> GameEnumNames = new();
+        internal readonly List<string> GameIndexEnumNames = new();
+        internal readonly List<string> GamePrefixes = new();
+        internal readonly List<string> SteamIds = new();
+        internal readonly List<string> EditorNames = new();
     }
 
     internal sealed class LanguageSourceEnum
