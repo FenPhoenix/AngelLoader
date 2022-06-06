@@ -2311,5 +2311,20 @@ namespace AngelLoader
         }
 
         #endregion
+
+        public static async Task<bool> AddFMs(string[] fmArchiveNames)
+        {
+            if (!View.GetUIEnabled()) return false;
+
+            try
+            {
+                View.SetUIEnabled(false);
+                return await FMArchives.Add(fmArchiveNames.ToList());
+            }
+            finally
+            {
+                View.SetUIEnabled(true);
+            }
+        }
     }
 }

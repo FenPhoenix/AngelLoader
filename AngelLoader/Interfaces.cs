@@ -423,7 +423,6 @@ namespace AngelLoader
         void ShowReadmeChooser(bool visible);
         void ShowInitialReadmeChooser(bool visible);
         void ActivateThisInstance();
-        Task<bool> AddFMs(string[] fmArchiveNames);
         FanMission? GetFMFromIndex(int index);
         FanMission[] GetSelectedFMs_InOrder();
         List<FanMission> GetSelectedFMs_InOrder_List();
@@ -433,5 +432,7 @@ namespace AngelLoader
         (bool Accepted, List<string> IniFiles, bool ImportTitle, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportComment, bool ImportRating, bool ImportDisabledMods, bool ImportTags, bool ImportSelectedReadme, bool ImportFinishedOn, bool ImportSize) ShowImportFromMultipleInisForm(ImportType importType);
         bool AbleToAcceptDragDrop();
         FanMission? GetMainSelectedFMOrNull_Fast();
+        bool GetUIEnabled();
+        void SetUIEnabled(bool value);
     }
 }

@@ -5538,9 +5538,13 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        public bool GetUIEnabled() => EverythingPanel.Enabled;
+
+        public void SetUIEnabled(bool value) => EnableEverything(value);
+
         #region Drag & drop
 
-        public bool AbleToAcceptDragDrop() => EverythingPanel.Enabled;
+        public bool AbleToAcceptDragDrop() => GetUIEnabled();
 
         private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
         {
@@ -5554,7 +5558,7 @@ namespace AngelLoader.Forms
         {
             if (Core.FilesDropped(e.Data.GetData(DataFormats.FileDrop), out string[]? droppedItems))
             {
-                await AddFMs(droppedItems);
+                await Core.AddFMs(droppedItems);
             }
         }
 
@@ -5573,22 +5577,6 @@ namespace AngelLoader.Forms
         };
 
         #endregion
-
-        // @VBL(AddFMs)
-        public async Task<bool> AddFMs(string[] fmArchiveNames)
-        {
-            if (!EverythingPanel.Enabled) return false;
-
-            try
-            {
-                EnableEverything(false);
-                return await FMArchives.Add(fmArchiveNames.ToList());
-            }
-            finally
-            {
-                EnableEverything(true);
-            }
-        }
 
         #region Show dialogs
 
