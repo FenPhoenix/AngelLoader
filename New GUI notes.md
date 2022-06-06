@@ -22,7 +22,7 @@ Pros:
 
 Cons:
 - Not cross-platform
-~- Unusable DataGrid - not virtualizable (and no, "Virtual Mode" is not what we need despite it being named like it is)~
+- ~Unusable DataGrid - not virtualizable (and no, "Virtual Mode" is not what we need despite it being named like it is)~
 - RichTextBox is slow as ass if there's more than a trivial amount of "runs" / "blocks" or whatever
 - Probably dead-end tech
 
@@ -35,7 +35,7 @@ Pros:
 
 Cons:
 - Not cross-platform
-~- Horrendously laggy and in a jagged and inconsistent way which makes it even _more_ distracting and awful than WinForms, at least WinForms is _even_ in its slowness~
+- ~Horrendously laggy and in a jagged and inconsistent way which makes it even _more_ distracting and awful than WinForms, at least WinForms is _even_ in its slowness~
 - Appears to dump masses of dlls in build dir - suggesting we need to package them with the app (but not sure)
 
 ### MAUI:
@@ -45,7 +45,7 @@ Pros:
 
 Cons:
 - I think it uses WinUI 3 for Windows so we're right back to that
-~- I don't know much about this one. I don't even know how you would develop apps, I try to make a MAUI project and there's nothing, no designer and not even any reference documentation that would even tell me how to create a UI by hand. Ugh.~
+- ~I don't know much about this one. I don't even know how you would develop apps, I try to make a MAUI project and there's nothing, no designer and not even any reference documentation that would even tell me how to create a UI by hand. Ugh.~
 - Can't get MAUI projects to work whatsoever, all references are just errors and docs say nothing about this situation and google provides no (working) answers either
 
 ### Avalonia
