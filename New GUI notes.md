@@ -69,7 +69,7 @@ Cons:
 - License is dumb and annoying and I can't include its source without making my code GPL but I can include .dlls without doing so
 - Requires using a proprietary IDE that's like a dozen GB in size and a steep learning curve
 - Bloats up AngelLoader's distribution size
-- Rich text control HTML subset may or may cover all Win32 RichEdit control's capabilities. Basics are there, font family/size/color, bold/italic, links, tables, etc. Can't do base64 embedded images, so that's a hard requirement for an on-disk converted-file cache to hold external images.
+- Rich text control HTML subset may or may not cover all Win32 RichEdit control's capabilities. Basics are there, font family/size/color, bold/italic, links, tables, etc. Can't do base64 embedded images, so that's a hard requirement for an on-disk converted-file cache to hold external images.
 
 ### Electron with .NET wrapper:
 Pros:
