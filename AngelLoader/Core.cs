@@ -1840,7 +1840,7 @@ namespace AngelLoader
                 {
                     string exeFile = exeFiles[i];
                     var fvi = FileVersionInfo.GetVersionInfo(exeFile);
-                    if (fvi.ProductName?.EqualsI(editorName) == true ||
+                    if (fvi.ProductName?.ContainsI(editorName) == true ||
                         exeFile.GetFileNameFast().ContainsI(editorName))
                     {
                         return exeFile;
