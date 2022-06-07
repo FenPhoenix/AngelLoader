@@ -1376,17 +1376,14 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            Application.RemoveMessageFilter(this);
-
-            // Argh, stupid hack to get this to not run TWICE on Application.Exit()
-            // Application.Exit() is the worst thing ever. Before closing it just does whatever the hell it wants.
-            FormClosing -= MainForm_FormClosing;
-
             AboutToClose = true;
 
+            Application.RemoveMessageFilter(this);
+
             UpdateConfig();
-            Core.Shutdown();
         }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e) => Core.Shutdown();
 
         #endregion
 

@@ -1484,6 +1484,7 @@ namespace AngelLoader.Forms
             KeyPreview = true;
             MinimumSize = new Size(894, 260);
             Deactivate += MainForm_Deactivate;
+            FormClosed += MainForm_FormClosed;
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             Shown += MainForm_Shown;
