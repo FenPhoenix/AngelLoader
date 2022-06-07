@@ -610,7 +610,7 @@ namespace AngelLoader
                     );
 
                 Config.SetFMInstallPath(gameIndex, data.FMsPath);
-                Config.SetGameEditorDetected(gameIndex, gameExeSpecified && !Config.GetEditorExe_FromDisk(gameIndex).IsEmpty());
+                Config.SetGameEditorDetected(gameIndex, gameExeSpecified && !GetEditorExe_FromDisk(gameIndex).IsEmpty());
 
                 if (storeConfigInfo)
                 {
@@ -628,7 +628,7 @@ namespace AngelLoader
 
                 if (gameIndex == GameIndex.Thief2)
                 {
-                    Config.T2MPDetected = gameExeSpecified && !Config.GetT2MultiplayerExe_FromDisk().IsEmpty();
+                    Config.T2MPDetected = gameExeSpecified && !GetT2MultiplayerExe_FromDisk().IsEmpty();
                 }
             }
             else
@@ -1819,40 +1819,6 @@ namespace AngelLoader
 
         #endregion
 
-        internal static string GetAutodetectedGameEditorExe(GameIndex gameIndex)
-        {
-            string gamePath;
-            string editorName;
-            if (!GameIsDark(gameIndex) ||
-                (editorName = GetGameEditorName(gameIndex)).IsEmpty() ||
-                (gamePath = Config.GetGamePath(gameIndex)).IsEmpty())
-            {
-                return "";
-            }
-
-            try
-            {
-                var exeFiles = FastIO.GetFilesTopOnly(gamePath, "*.exe");
-                for (int i = 0; i < exeFiles.Count; i++)
-                {
-                    string exeFile = exeFiles[i];
-                    var fvi = FileVersionInfo.GetVersionInfo(exeFile);
-                    if (fvi.ProductName?.ContainsI(editorName) == true ||
-                        exeFile.GetFileNameFast().ContainsI(editorName))
-                    {
-                        return exeFile;
-                    }
-                }
-
-                return "";
-            }
-            catch (Exception ex)
-            {
-                Log("Exception trying to detect game editor exe", ex);
-                return "";
-            }
-        }
-
         internal static (Error Error, string Version)
         GetGameVersion(GameIndex game)
         {
@@ -1886,6 +1852,81 @@ namespace AngelLoader
 
             return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
         }
+
+        #region Get special exes
+
+        /// <summary>
+        /// Returns the full path of the editor for <paramref name="gameIndex"/> if and only if it exists on disk.
+        /// Otherwise, returns the empty string. It will also return the empty string if <paramref name="gameIndex"/>
+        /// is not Dark.
+        /// </summary>
+        /// <param name="gameIndex"></param>
+        /// <returns></returns>
+        internal static string GetEditorExe_FromDisk(GameIndex gameIndex)
+        {
+            string gamePath;
+            string editorName;
+            if (!GameIsDark(gameIndex) ||
+                (editorName = GetGameEditorName(gameIndex)).IsEmpty() ||
+                (gamePath = Config.GetGamePath(gameIndex)).IsEmpty())
+            {
+                return "";
+            }
+
+            List<string> exeFiles;
+            try
+            {
+                exeFiles = FastIO.GetFilesTopOnly(gamePath, "*.exe");
+            }
+            catch (Exception ex)
+            {
+                Log("Exception trying to detect game editor exe: Get exe files in game dir", ex);
+                return "";
+            }
+
+            for (int i = 0; i < exeFiles.Count; i++)
+            {
+                string exeFile = exeFiles[i];
+                if (exeFile.GetFileNameFast().ContainsI(editorName))
+                {
+                    return exeFile;
+                }
+            }
+
+            for (int i = 0; i < exeFiles.Count; i++)
+            {
+                string exeFile = exeFiles[i];
+                try
+                {
+                    var fvi = FileVersionInfo.GetVersionInfo(exeFile);
+                    if (fvi.ProductName?.ContainsI(editorName) == true)
+                    {
+                        return exeFile;
+                    }
+                }
+                catch
+                {
+                    // ignore: just move on to the next file
+                }
+            }
+
+            return "";
+        }
+
+        /// <summary>
+        /// Returns the full path of Thief2MP.exe if any only if it exists on disk in the same directory as the
+        /// specified Thief 2 executable. Otherwise, returns the empty string.
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetT2MultiplayerExe_FromDisk()
+        {
+            string gamePath = Config.GetGamePath(GameIndex.Thief2);
+            return !gamePath.IsEmpty() && TryCombineFilePathAndCheckExistence(gamePath, Paths.T2MPExe, out string fullPathExe)
+                ? fullPathExe
+                : "";
+        }
+
+        #endregion
 
         private static void UpdateFMReadmeCodePages(FanMission fm, int codePage)
         {

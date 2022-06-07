@@ -162,65 +162,6 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
-        #region Get special exes
-
-        internal bool AutodetectEditor = true;
-
-        /*
-         I'm not completely comfortable putting these in here... They're sort of in a no-man's land between
-         belonging here or belonging outside.
-         Arguments for being in here:
-         -They depend on the game paths which are in here
-         -They conceptually go with the other Get*Exe() methods
-         Arguments for being outside:
-         -The actual filenames at the end of their paths are constants from the static paths class
-         -They access the file system, which feels a bit weird for a config object to do. I feel like the methods
-          in here should all be "instant" and operate on memory only and not do weird things you don't expect.
-          (that's the main reason for my discomfort really)
-
-         I'm just going to append "_FromDisk" to their names, document them, and call it serviceable.
-        */
-
-        /// <summary>
-        /// Returns the full path of the editor for <paramref name="gameIndex"/> if and only if it exists on disk.
-        /// Otherwise, returns the empty string. It will also return the empty string if <paramref name="gameIndex"/>
-        /// is not Dark.
-        /// </summary>
-        /// <param name="gameIndex"></param>
-        /// <returns></returns>
-        internal string GetEditorExe_FromDisk(GameIndex gameIndex)
-        {
-            string gamePath;
-            if (!GameIsDark(gameIndex) || (gamePath = GetGamePath(gameIndex)).IsEmpty()) return "";
-
-            if (Config.AutodetectEditor)
-            {
-                return Core.GetAutodetectedGameEditorExe(gameIndex);
-            }
-            else
-            {
-                string exe = Config.GetEditorExe(gameIndex);
-                return TryCombineFilePathAndCheckExistence(gamePath, exe, out string fullPathExe)
-                    ? fullPathExe
-                    : "";
-            }
-        }
-
-        /// <summary>
-        /// Returns the full path of Thief2MP.exe if any only if it exists on disk in the same directory as the
-        /// specified Thief 2 executable. Otherwise, returns the empty string.
-        /// </summary>
-        /// <returns></returns>
-        internal string GetT2MultiplayerExe_FromDisk()
-        {
-            string gamePath = GetGamePath(GameIndex.Thief2);
-            return !gamePath.IsEmpty() && TryCombineFilePathAndCheckExistence(gamePath, Paths.T2MPExe, out string fullPathExe)
-                ? fullPathExe
-                : "";
-        }
-
-        #endregion
-
         #region FM install paths
 
         private readonly string[] FMInstallPaths;

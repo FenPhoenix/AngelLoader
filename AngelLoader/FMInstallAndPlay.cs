@@ -98,7 +98,7 @@ namespace AngelLoader
 
             if (fm.Installed || await InstallInternal(fromPlay: true, suppressConfirmation: askingConfirmation, fm))
             {
-                if (playMP && gameIndex == GameIndex.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
+                if (playMP && gameIndex == GameIndex.Thief2 && Core.GetT2MultiplayerExe_FromDisk().IsEmpty())
                 {
                     Log("Thief2MP.exe not found in Thief 2 game directory.\r\n" +
                         "Thief 2 game directory: " + Config.GetGamePath(GameIndex.Thief2));
@@ -257,7 +257,7 @@ namespace AngelLoader
                     return false;
                 }
 
-                string editorExe = Config.GetEditorExe_FromDisk(gameIndex);
+                string editorExe = Core.GetEditorExe_FromDisk(gameIndex);
                 if (editorExe.IsEmpty())
                 {
                     Log("Editor executable not found.\r\n" +
