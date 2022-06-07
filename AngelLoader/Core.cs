@@ -1864,6 +1864,11 @@ namespace AngelLoader
         /// <returns></returns>
         internal static string GetEditorExe_FromDisk(GameIndex gameIndex)
         {
+            static string Fallback(string gamePath, string editorName) =>
+                TryCombineFilePathAndCheckExistence(gamePath, editorName, out string fullPathExe)
+                    ? fullPathExe
+                    : "";
+
             string gamePath;
             string editorName;
             if (!GameIsDark(gameIndex) ||
@@ -1873,26 +1878,24 @@ namespace AngelLoader
                 return "";
             }
 
-            List<string> exeFiles;
             try
             {
-                exeFiles = FastIO.GetFilesTopOnly(gamePath, "*.exe");
+                var exeFiles = FastIO.GetFilesTopOnly(gamePath, "*.exe");
+                for (int i = 0; i < exeFiles.Count; i++)
+                {
+                    string exeFile = exeFiles[i];
+                    if (exeFile.GetFileNameFast().ContainsI(editorName))
+                    {
+                        return exeFile;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Log("Exception trying to detect game editor exe: Get exe files in game dir", ex);
-                return "";
+                Log("Exception trying to detect game editor exe", ex);
             }
 
-            for (int i = 0; i < exeFiles.Count; i++)
-            {
-                string exeFile = exeFiles[i];
-                if (exeFile.GetFileNameFast().ContainsI(editorName))
-                {
-                    return exeFile;
-                }
-            }
-
+#if false
             for (int i = 0; i < exeFiles.Count; i++)
             {
                 string exeFile = exeFiles[i];
@@ -1909,8 +1912,9 @@ namespace AngelLoader
                     // ignore: just move on to the next file
                 }
             }
+#endif
 
-            return "";
+            return Fallback(gamePath, editorName);
         }
 
         /// <summary>
