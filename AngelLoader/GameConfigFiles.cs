@@ -807,7 +807,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    selectorPath = startupFMSelectorLines.Count == 0 ||
+                    selectorPath = startupFMSelectorLines.Count > 0 &&
                                    !startupFMSelectorLines[0].PathEqualsI(Paths.StubPath)
                         ? startupFMSelectorLines[0]
                         : Paths.FMSelDll;
