@@ -138,11 +138,7 @@ namespace AngelLoader
 
                 Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-                if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2)
-                {
-                    GameConfigFiles.FixCharacterDetailLine(gamePath);
-                }
-
+                GameConfigFiles.FixCharacterDetailLine(gameIndex);
                 SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame);
 
 #if !ReleaseBeta && !ReleasePublic
@@ -189,7 +185,7 @@ namespace AngelLoader
             // Always do this for robustness, see below
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
+            GameConfigFiles.FixCharacterDetailLine(gameIndex);
             SetUsAsSelector(gameIndex, gamePath, PlaySource.FM);
 
             string steamArgs = "";
@@ -278,7 +274,7 @@ namespace AngelLoader
                 // Just in case, and for consistency
                 Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-                if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2) GameConfigFiles.FixCharacterDetailLine(gamePath);
+                GameConfigFiles.FixCharacterDetailLine(gameIndex);
                 // We don't need to do this here, right?
                 SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
 
@@ -304,23 +300,23 @@ namespace AngelLoader
 
         #region Helpers
 
-        private static void SetUsAsSelector(GameIndex game, string gamePath, PlaySource playSource)
+        private static void SetUsAsSelector(GameIndex gameIndex, string gamePath, PlaySource playSource)
         {
-            bool success = GameIsDark(game)
-                ? GameConfigFiles.SetDarkFMSelector(game, gamePath)
+            bool success = GameIsDark(gameIndex)
+                ? GameConfigFiles.SetDarkFMSelector(gameIndex, gamePath)
                 : GameConfigFiles.SetT3FMSelector();
             if (!success)
             {
-                Log("Unable to set us as the selector for " + Config.GetGameExe(game) + " (" +
-                    (GameIsDark(game) ? nameof(GameConfigFiles.SetDarkFMSelector) : nameof(GameConfigFiles.SetT3FMSelector)) +
+                Log("Unable to set us as the selector for " + Config.GetGameExe(gameIndex) + " (" +
+                    (GameIsDark(gameIndex) ? nameof(GameConfigFiles.SetDarkFMSelector) : nameof(GameConfigFiles.SetT3FMSelector)) +
                     " returned false)\r\n" +
                     "Source: " + playSource,
                     stackTrace: true);
 
                 Core.Dialogs.ShowError(
                     "Failed to set AngelLoader as the FM selector.\r\n\r\n" +
-                    "Game: " + game + "\r\n" +
-                    "Game exe: " + Config.GetGameExe(game) + "\r\n" +
+                    "Game: " + gameIndex + "\r\n" +
+                    "Game exe: " + Config.GetGameExe(gameIndex) + "\r\n" +
                     "Source: " + playSource + "\r\n" +
                     "");
             }

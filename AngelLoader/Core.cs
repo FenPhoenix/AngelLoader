@@ -206,10 +206,7 @@ namespace AngelLoader
                 if (!gameExe.IsEmpty() && File.Exists(gameExe))
                 {
                     SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
-                    if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2)
-                    {
-                        GameConfigFiles.FixCharacterDetailLine(Config.GetGamePath(gameIndex));
-                    }
+                    GameConfigFiles.FixCharacterDetailLine(gameIndex);
                 }
             }
 

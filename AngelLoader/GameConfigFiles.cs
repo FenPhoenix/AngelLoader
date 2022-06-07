@@ -290,7 +290,7 @@ namespace AngelLoader
                             string gamePath = Config.GetGamePath(gameIndex);
                             SetCamCfgLanguage(gamePath, "");
                             SetDarkFMSelector(gameIndex, gamePath, resetSelector: true);
-                            if (gameIndex is GameIndex.Thief1 or GameIndex.Thief2) FixCharacterDetailLine(gamePath);
+                            FixCharacterDetailLine(gameIndex);
                         }
                         else
                         {
@@ -331,9 +331,13 @@ namespace AngelLoader
         // We don't want to allow UI changing because the option shouldn't be disabled pretty much ever under
         // normal circumstances.
         // @CAN_RUN_BEFORE_VIEW_INIT
-        internal static void FixCharacterDetailLine(string gamePath)
+        internal static void FixCharacterDetailLine(GameIndex gameIndex)
         {
+            if (gameIndex is not GameIndex.Thief1 and not GameIndex.Thief2) return;
+
             if (!Config.EnableCharacterDetailFix) return;
+
+            string gamePath = Config.GetGamePath(gameIndex);
 
             static void Run(string gamePath, string fileName, bool removeAll)
             {
