@@ -2270,7 +2270,9 @@ namespace AngelLoader.Forms
 
                 // Don't keep selection for title/author, cause you want to end up on the FM you typed as soon as
                 // possible
-                bool keepSel = sender != FilterShowRecentAtTopButton && !senderIsTextBox;
+                bool keepSel = sender != FilterShowRecentAtTopButton &&
+                               sender != FilterShowUnavailableButton &&
+                               !senderIsTextBox;
                 await SortAndSetFilter(
                     keepSelection: keepSel,
                     landImmediate: senderIsTextBox &&
