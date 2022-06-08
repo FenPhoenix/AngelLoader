@@ -808,6 +808,7 @@ namespace AngelLoader
                 }
             }
 
+            FMDataIniList.TrimExcess();
             FMsViewList.TrimExcess();
         }
     }
