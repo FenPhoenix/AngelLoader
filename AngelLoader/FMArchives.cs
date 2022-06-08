@@ -134,13 +134,13 @@ namespace AngelLoader
             List<string> archives;
             try
             {
-                Core.View.SetWaitCursor(true);
+                if (!multiple) Core.View.SetWaitCursor(true);
 
                 archives = FindAllMatches(fm.Archive);
             }
             finally
             {
-                Core.View.SetWaitCursor(false);
+                if (!multiple) Core.View.SetWaitCursor(false);
             }
 
             if (archives.Count == 0)
@@ -272,28 +272,37 @@ namespace AngelLoader
                 return;
             }
 
-            var archivePaths = GetFMArchivePaths();
             int installedNoArchiveCount = 0;
             int installedCount = 0;
-            for (int i = 0; i < fms.Count; i++)
+            try
             {
-                FanMission fm = fms[i];
-                var matches = FindAllMatches(fm.Archive, archivePaths);
-                if (matches.Count > 0)
+                Core.View.SetWaitCursor(true);
+
+                var archivePaths = GetFMArchivePaths();
+                for (int i = 0; i < fms.Count; i++)
                 {
-                    if (fm.Installed)
+                    FanMission fm = fms[i];
+                    var matches = FindAllMatches(fm.Archive, archivePaths);
+                    if (matches.Count > 0)
                     {
-                        installedCount++;
+                        if (fm.Installed)
+                        {
+                            installedCount++;
+                        }
+                    }
+                    else
+                    {
+                        if (fm.Installed)
+                        {
+                            installedCount++;
+                            installedNoArchiveCount++;
+                        }
                     }
                 }
-                else
-                {
-                    if (fm.Installed)
-                    {
-                        installedCount++;
-                        installedNoArchiveCount++;
-                    }
-                }
+            }
+            finally
+            {
+                Core.View.SetWaitCursor(false);
             }
 
             (bool accepted, _) = Core.View.ShowCustomDialog(
