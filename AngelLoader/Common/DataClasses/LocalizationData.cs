@@ -334,6 +334,8 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string ArchiveNotFound = "This FM's archive could not be found. To delete this FM permanently, simply uninstall it.";
             internal readonly string ArchiveNotFound_All = "None of the selected FMs' archives could be found. To delete these FMs permanently, simply uninstall them.";
+            // @DB(Localization possibly unused strings): These are "used" in code but the code path I think can never be hit now
+            // Because if all FMs are unavailable, we just run the DB delete instead. Confirm this and if true, remove these!
             internal readonly string FMIsUnavailable = "This FM is unavailable on disk. It's either already been deleted, or it doesn't exist in any of the FM archive directories.";
             internal readonly string FMsAreUnavailable = "The selected FMs are unavailable on disk. They've either already been deleted, or they don't exist in any of the FM archive directories.";
             internal readonly string AskToUninstallFMFirst = "This FM is installed. Uninstall it first?";
