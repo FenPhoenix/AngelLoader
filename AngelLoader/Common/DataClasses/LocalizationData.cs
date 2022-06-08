@@ -3,7 +3,6 @@
 using System.Diagnostics.CodeAnalysis;
 using static AngelLoader.FenGenAttributes;
 
-// @MULTISEL(Localization): Remove all unused fields in here
 namespace AngelLoader.DataClasses
 {
     // NOTE(Localization - articles):
