@@ -736,6 +736,8 @@ namespace AngelLoader
                 for (int i = 0; i < FMsViewList.Count; i++) FMsViewList[i].MarkedRecent = false;
             }
 
+            if (View.GetShowUnavailableFMsFilter()) return;
+
             #region Pinned
 
             tempFMs.Clear();
@@ -1180,10 +1182,7 @@ namespace AngelLoader
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
-                    // @DB: Maybe we want to not even show recent and pinned here? So it's more like a "mode"?
-                    if (!fm.MarkedRecent &&
-                        !fm.Pinned &&
-                        !fm.MarkedUnavailable)
+                    if (!fm.MarkedUnavailable)
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;
@@ -2244,11 +2243,13 @@ namespace AngelLoader
                     foreach (var fm in fmToDeleteIniCopies)
                     {
                         FMDataIniList.Remove(fm);
+                        FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
                     }
                 }
                 else
                 {
                     FMDataIniList.Remove(fmToDelete);
+                    FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
                 }
             }
 

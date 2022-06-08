@@ -51,28 +51,29 @@ namespace AngelLoader
             internal CacheData(List<string> readmes) => Readmes = readmes;
         }
 
+        internal static void ClearCacheDir(FanMission fm, bool deleteCacheDirItself = false)
+        {
+            string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
+            if (!fmCachePath.TrimEnd(CA_BS_FS).PathEqualsI(Paths.FMsCache.TrimEnd(CA_BS_FS)) && Directory.Exists(fmCachePath))
+            {
+                try
+                {
+                    foreach (string f in FastIO.GetFilesTopOnly(fmCachePath, "*")) File.Delete(f);
+                    foreach (string d in FastIO.GetDirsTopOnly(fmCachePath, "*")) Directory.Delete(d, recursive: true);
+                    if (deleteCacheDirItself) Directory.Delete(fmCachePath);
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception clearing files in FM cache for " + fm.Archive + " / " + fm.InstalledDir, ex);
+                }
+            }
+        }
+
         // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
         // a button, so don't worry about it
         internal static async Task<CacheData> GetCacheableData(FanMission fm, bool refreshCache)
         {
             #region Local functions
-
-            static void ClearCacheDir(FanMission fm)
-            {
-                string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
-                if (!fmCachePath.TrimEnd(CA_BS_FS).PathEqualsI(Paths.FMsCache.TrimEnd(CA_BS_FS)) && Directory.Exists(fmCachePath))
-                {
-                    try
-                    {
-                        foreach (string f in FastIO.GetFilesTopOnly(fmCachePath, "*")) File.Delete(f);
-                        foreach (string d in FastIO.GetDirsTopOnly(fmCachePath, "*")) Directory.Delete(d, recursive: true);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Exception clearing files in FM cache for " + fm.Archive + " / " + fm.InstalledDir, ex);
-                    }
-                }
-            }
 
             // Does not check basePath for existence, so check it first before calling.
             static List<string> GetValidReadmes(string basePath)

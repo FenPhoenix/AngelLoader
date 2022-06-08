@@ -3775,6 +3775,8 @@ namespace AngelLoader.Forms
 
             const string pinChar = "\U0001F4CC ";
 
+            bool fmShouldBePinned = fm.Pinned && !GetShowUnavailableFMsFilter();
+
             switch ((Column)e.ColumnIndex)
             {
                 case Column.Game:
@@ -3811,7 +3813,7 @@ namespace AngelLoader.Forms
                         finalTitle = fm.Title;
                     }
 
-                    if (TitleColumn.Visible && fm.Pinned)
+                    if (TitleColumn.Visible && fmShouldBePinned)
                     {
                         finalTitle = pinChar + finalTitle;
                     }
@@ -3822,13 +3824,13 @@ namespace AngelLoader.Forms
 
                 case Column.Archive:
 
-                    e.Value = !TitleColumn.Visible && ArchiveColumn.Visible && fm.Pinned
+                    e.Value = !TitleColumn.Visible && ArchiveColumn.Visible && fmShouldBePinned
                         ? pinChar + fm.Archive
                         : fm.Archive;
                     break;
 
                 case Column.Author:
-                    e.Value = !TitleColumn.Visible && !ArchiveColumn.Visible && AuthorColumn.Visible && fm.Pinned
+                    e.Value = !TitleColumn.Visible && !ArchiveColumn.Visible && AuthorColumn.Visible && fmShouldBePinned
                         ? pinChar + fm.Author
                         : fm.Author;
                     break;
