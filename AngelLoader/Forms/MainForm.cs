@@ -1274,14 +1274,7 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.Focused && FMsDGV.RowSelected())
                 {
-                    if (FMsDGV.MultipleFMsSelected())
-                    {
-                        await FMArchives.Delete(FMsDGV.GetSelectedFMs_InOrder_List());
-                    }
-                    else
-                    {
-                        await FMArchives.Delete(FMsDGV.GetMainSelectedFM());
-                    }
+                    await Core.HandleDelete();
                 }
             }
             else if (e.KeyCode == Keys.Escape)

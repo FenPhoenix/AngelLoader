@@ -2160,17 +2160,45 @@ namespace AngelLoader
             return fm;
         }
 
-        // @DB: Finalize the feature (final dialog, do we want del key? etc.)
-        // @DB: When deleting FMs, allow user to also delete them from the database
-        internal static async Task DeleteFMsFromDB(params FanMission[] fmsToDelete)
+        internal static async Task HandleDelete()
         {
-            if (fmsToDelete.Length == 0) return;
+            var fms = View.GetSelectedFMs_InOrder_List();
+
+            switch (fms.Count)
+            {
+                case 0:
+                    return;
+                case 1:
+                    FanMission fm = fms[0];
+                    await (fm.MarkedUnavailable
+                        ? DeleteFMsFromDB(fms)
+                        : FMArchives.Delete(fm));
+                    break;
+                default:
+                    bool allUnavailable = true;
+                    for (int i = 0; i < fms.Count; i++)
+                    {
+                        if (!fms[i].MarkedUnavailable)
+                        {
+                            allUnavailable = false;
+                            break;
+                        }
+                    }
+                    await (allUnavailable ? DeleteFMsFromDB(fms) : FMArchives.Delete(fms));
+                    break;
+            }
+        }
+
+        // @DB: When deleting FMs, allow user to also delete them from the database
+        internal static async Task DeleteFMsFromDB(List<FanMission> fmsToDelete)
+        {
+            if (fmsToDelete.Count == 0) return;
             foreach (FanMission fm in fmsToDelete)
             {
                 if (!fm.MarkedUnavailable) return;
             }
 
-            bool single = fmsToDelete.Length == 1;
+            bool single = fmsToDelete.Count == 1;
 
             (bool cont, _) =
                 View.ShowCustomDialog(

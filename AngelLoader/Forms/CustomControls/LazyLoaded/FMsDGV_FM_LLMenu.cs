@@ -780,7 +780,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == DeleteRecordMenuItem)
             {
-                await Core.DeleteFMsFromDB(_owner.GetSelectedFMs_InOrder());
+                await Core.DeleteFMsFromDB(_owner.GetSelectedFMs_InOrder_List());
             }
             else if (sender == OpenInDromEdMenuItem)
             {
