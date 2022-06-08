@@ -145,7 +145,7 @@ namespace AngelLoader
 
             if (archives.Count == 0)
             {
-                Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive, MBoxIcon.Error);
+                Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
                 return;
             }
 
@@ -328,7 +328,7 @@ namespace AngelLoader
             // This thing just tells you to uninstall the FMs to delete them, so it's correct functionality
             if (installedNoArchiveCount == fms.Count)
             {
-                Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives, MBoxIcon.Error);
+                Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives);
                 return;
             }
 
