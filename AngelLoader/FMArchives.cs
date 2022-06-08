@@ -282,6 +282,11 @@ namespace AngelLoader
                 for (int i = 0; i < fms.Count; i++)
                 {
                     FanMission fm = fms[i];
+                    // PERF_TODO(Delete FindAllMatches): Delete(singular) re-finds the matches for each FM
+                    // We could almost just cache this set and pass it, except that if we have to run the
+                    // uninstaller, we could end up with fewer FMs in the list from removing archive-less ones
+                    // and then the matches list wouldn't match up anymore. We could get really clever and account
+                    // for that still, if we felt like the perf increase would be worth it, but for now, meh.
                     var matches = FindAllMatches(fm.Archive, archivePaths);
                     if (matches.Count > 0)
                     {
