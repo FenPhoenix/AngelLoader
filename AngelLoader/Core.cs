@@ -1180,6 +1180,7 @@ namespace AngelLoader
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
+                    // @DB: Maybe we want to not even show recent and pinned here? So it's more like a "mode"?
                     if (!fm.MarkedRecent &&
                         !fm.Pinned &&
                         !fm.MarkedUnavailable)
