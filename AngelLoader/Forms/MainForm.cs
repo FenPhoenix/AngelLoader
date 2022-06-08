@@ -2705,13 +2705,27 @@ namespace AngelLoader.Forms
 
                     if (multiSelectedFMs != null)
                     {
-                        foreach (FanMission fm in multiSelectedFMs)
+                        var hash = multiSelectedFMs.ToHashSet();
+                        DataGridViewRow? latestRow = null;
+                        try
                         {
-                            int index = FMsDGV.GetIndexFromFM(fm);
-                            if (index > -1)
+                            FMsDGV.SuppressSelectionEvent = true;
+
+                            for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                             {
-                                FMsDGV.Rows[index].Selected = true;
+                                if (hash.Contains(FMsDGV.GetFMFromIndex(i)))
+                                {
+                                    latestRow = FMsDGV.Rows[i];
+                                    latestRow.Selected = true;
+                                }
                             }
+
+                            // Match original behavior
+                            if (latestRow != null) FMsDGV.MainSelectedRow = latestRow;
+                        }
+                        finally
+                        {
+                            FMsDGV.SuppressSelectionEvent = false;
                         }
                     }
 
