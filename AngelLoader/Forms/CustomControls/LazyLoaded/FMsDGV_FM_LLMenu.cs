@@ -220,7 +220,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy, Image = Images.Unpin_16, Visible = false },
                 new ToolStripSeparator { Tag = LoadType.Lazy },
                 DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16, Tag = LoadType.Lazy },
-                // @DB: Have like a red X image for this maybe?
                 DeleteFromDBMenuItem = new ToolStripMenuItemCustom { Image = Images.DeleteFromDB, Tag = LoadType.Lazy },
                 OpenInDromEdSep = new ToolStripSeparator { Tag = LoadType.Lazy },
                 OpenInDromEdMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
