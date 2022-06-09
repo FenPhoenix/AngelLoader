@@ -105,7 +105,7 @@ namespace AngelLoader
 
         #region Public methods
 
-        internal static BackupFile
+        private static BackupFile
         GetBackupFile(
             FanMission fm,
             bool findDarkLoaderOnly = false,

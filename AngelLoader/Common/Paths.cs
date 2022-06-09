@@ -273,9 +273,6 @@ namespace AngelLoader
 
         #region Game exes
 
-        internal const string DromEdExe = "DromEd.exe";
-        internal const string ShockEdExe = "ShockEd.exe";
-
         internal const string T2MPExe = "Thief2MP.exe";
 
         #endregion

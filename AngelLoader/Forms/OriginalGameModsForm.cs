@@ -141,7 +141,7 @@ namespace AngelLoader.Forms
             OrigGameModsControl.ModsCheckList.SetItemCheckedStates(checkedStates);
         }
 
-        private void OrigGameModsControl_ModsCheckListItemCheckedChanged(object sender, CustomControls.DarkCheckList.DarkCheckListEventArgs e)
+        private void OrigGameModsControl_ModsCheckListItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
             if (EventsDisabled) return;
             UpdateDisabledMods();

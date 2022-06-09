@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -562,13 +561,11 @@ namespace AngelLoader
         }
 
         [MustUseReturnValue]
-        private static bool DoPreChecks(FanMission[] fms, FMData[] fmDataList, bool install, [NotNullWhen(true)] out List<string>? fmArchivePaths)
+        private static bool DoPreChecks(FanMission[] fms, FMData[] fmDataList, bool install)
         {
             static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
 
             bool single = fms.Length == 1;
-
-            fmArchivePaths = null;
 
             bool[] gamesChecked = new bool[SupportedGameCount];
 
@@ -590,11 +587,10 @@ namespace AngelLoader
 
                 GameIndex gameIndex = GameToGameIndex(fm.Game);
                 int intGameIndex = (int)gameIndex;
-                fmArchivePaths ??= FMArchives.GetFMArchivePaths();
 
                 if (Canceled(install)) return false;
 
-                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, fmArchivePaths);
+                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
 
                 if (Canceled(install)) return false;
 
@@ -678,11 +674,6 @@ namespace AngelLoader
                 }
             }
 
-            // Shouldn't ever be null here, but apparently the static analyzer thinks it can, even if I put a
-            // guard check above the loop like "if (fms.Length == 0) return false;" in case the loop doesn't ever
-            // run. Whatever man.
-            fmArchivePaths ??= new List<string>();
-
             return true;
         }
 
@@ -697,7 +688,6 @@ namespace AngelLoader
             internal readonly string GameExe;
             internal readonly string GameName;
             internal readonly string InstBasePath;
-            internal BackupFile? BackupFile;
 
             public FMData(FanMission fm, string archivePath, string gameExe, string gameName, string instBasePath)
             {
@@ -838,9 +828,7 @@ namespace AngelLoader
 
                     _installCts = _installCts.Recreate();
 
-                    if (!DoPreChecks(fms, fmDataList, install: true, out var fmArchivePaths)) return false;
-
-                    return true;
+                    return DoPreChecks(fms, fmDataList, install: true);
                 });
                 if (!success) return false;
 
@@ -972,7 +960,7 @@ namespace AngelLoader
 
                     try
                     {
-                        await RestoreFM(fm: fmData.FM, backupFile: fmData.BackupFile, ct: _installCts.Token);
+                        await RestoreFM(fm: fmData.FM, ct: _installCts.Token);
                     }
                     catch (Exception ex)
                     {
@@ -1164,7 +1152,7 @@ namespace AngelLoader
             {
                 Core.View.SetWaitCursor(true);
 
-                bool success = await Task.Run(() => DoPreChecks(fms, fmDataList, install: false, out _));
+                bool success = await Task.Run(() => DoPreChecks(fms, fmDataList, install: false));
                 if (!success) return false;
             }
             finally

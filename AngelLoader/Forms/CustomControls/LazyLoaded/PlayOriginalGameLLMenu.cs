@@ -31,7 +31,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         internal readonly ToolStripItem[] GameMenuItems = new ToolStripItem[SupportedGameCount];
 
         // @GENGAMES(T3 doesn't support mod management)
-        internal readonly ToolStripItem[] ModMenuItems = new ToolStripItem[SupportedGameCount - 1];
+        private readonly ToolStripItem[] ModMenuItems = new ToolStripItem[SupportedGameCount - 1];
 
         private bool _darkModeEnabled;
         [PublicAPI]

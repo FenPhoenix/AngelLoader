@@ -1865,7 +1865,7 @@ namespace AngelLoader
         internal static string GetEditorExe_FromDisk(GameIndex gameIndex)
         {
             static string Fallback(string gamePath, string editorName) =>
-                TryCombineFilePathAndCheckExistence(gamePath, editorName, out string fullPathExe)
+                TryCombineFilePathAndCheckExistence(gamePath, editorName + ".exe", out string fullPathExe)
                     ? fullPathExe
                     : "";
 
