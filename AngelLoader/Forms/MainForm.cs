@@ -1050,7 +1050,7 @@ namespace AngelLoader.Forms
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             if (e.Control && e.KeyCode == Keys.E)
             {
-                EnableEverything(!EverythingPanel.Enabled);
+                SetUIEnabled(!EverythingPanel.Enabled);
                 return;
             }
             // For separating log spam
@@ -3450,7 +3450,7 @@ namespace AngelLoader.Forms
             {
                 // If we suspend the form, our mouse events go THROUGH it to any underlying window and affect that.
                 // If we suspend FMsDGV, it straight-up doesn't work and still flickers.
-                // So suspend EverythingPanel instead and it works fine.
+                // So suspend FMsDGV's containing control instead and it works fine.
                 TopSplitContainer.Panel1.SuspendDrawing();
                 // Must suppress this or our context menu becomes wrong
                 FMsDGV.SuppressSelectionEvent = true;
@@ -5548,7 +5548,20 @@ namespace AngelLoader.Forms
 
         public bool GetUIEnabled() => EverythingPanel.Enabled;
 
-        public void SetUIEnabled(bool value) => EnableEverything(value);
+        public void SetUIEnabled(bool enabled)
+        {
+            bool doFocus = !EverythingPanel.Enabled && enabled;
+
+            EverythingPanel.Enabled = enabled;
+
+            if (!doFocus) return;
+
+            // The "mouse wheel scroll without needing to focus" thing stops working when no control is focused
+            // (this happens when we disable and enable EverythingPanel). Therefore, we need to give focus to a
+            // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
+            FMsDGV.Focus();
+            FMsDGV.SelectProperly();
+        }
 
         #region Drag & drop
 

@@ -207,7 +207,7 @@ namespace AngelLoader.Forms.CustomControls
             SetSizeMode(_defaultSizeMode);
 
             Enabled = false;
-            _owner!.EnableEverything(true);
+            _owner!.SetUIEnabled(true);
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (visible == true)
                 {
-                    _owner!.EnableEverything(false);
+                    _owner!.SetUIEnabled(false);
                     Enabled = true;
 
                     if (Cancel_Button.Text.IsEmpty())

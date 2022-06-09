@@ -37,21 +37,6 @@ namespace AngelLoader.Forms
             _progressBoxConstructed = true;
         }
 
-        internal void EnableEverything(bool enabled)
-        {
-            bool doFocus = !EverythingPanel.Enabled && enabled;
-
-            EverythingPanel.Enabled = enabled;
-
-            if (!doFocus) return;
-
-            // The "mouse wheel scroll without needing to focus" thing stops working when no control is focused
-            // (this happens when we disable and enable EverythingPanel). Therefore, we need to give focus to a
-            // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
-            FMsDGV.Focus();
-            FMsDGV.SelectProperly();
-        }
-
         // Just always invoke these, because they're almost always called from another thread anyway. Keeps it
         // simple.
 
