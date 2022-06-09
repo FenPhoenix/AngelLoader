@@ -379,7 +379,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             OpenFMFolderMenuItem.Text = LText.FMsList.FMMenu_OpenFMFolder;
 
-            SetScanFMText();
+            SetScanFMText(multiSelected);
 
             #region Convert audio submenu
 
@@ -408,11 +408,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch;
         }
 
-        internal void SetScanFMText()
+        internal void SetScanFMText(bool multiSelected)
         {
             if (!_constructed) return;
 
-            bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
             ScanFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_ScanFMs : LText.FMsList.FMMenu_ScanFM;
         }
 

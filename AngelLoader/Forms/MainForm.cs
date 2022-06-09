@@ -4740,7 +4740,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && fm.Installed);
 
             FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!noneAreAvailable);
-            FMsDGV_FM_LLMenu.SetScanFMText();
+            FMsDGV_FM_LLMenu.SetScanFMText(multiSelected);
 
             FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(
                 !noneAreAvailable && !noneAreInstalled && !noneAreDark
