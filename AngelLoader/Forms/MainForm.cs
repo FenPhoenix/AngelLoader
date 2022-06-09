@@ -4730,8 +4730,8 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemVisible(!noneAreAvailable);
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemText(multiSelected);
 
-            FMsDGV_FM_LLMenu.SetDeleteRecordMenuItemVisible(noneAreAvailable);
-            FMsDGV_FM_LLMenu.SetDeleteRecordMenuItemText(multiSelected);
+            FMsDGV_FM_LLMenu.SetDeleteFromDBMenuItemVisible(noneAreAvailable);
+            FMsDGV_FM_LLMenu.SetDeleteFromDBMenuItemText(multiSelected);
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: fm.Game == Game.SS2);
             FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected && GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));

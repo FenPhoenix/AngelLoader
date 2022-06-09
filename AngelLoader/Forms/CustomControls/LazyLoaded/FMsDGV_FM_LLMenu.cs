@@ -22,7 +22,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private bool _installUninstallMenuItemEnabled;
         private bool _deleteFMMenuItemEnabled;
         private bool _deleteFMMenuItemVisible;
-        private bool _deleteRecordMenuItemVisible;
+        private bool _deleteFromDBMenuItemVisible;
         private bool _openInDromEdMenuItemVisible;
         private bool _openInDromedMenuItemEnabled;
         private bool _openFMFolderMenuItemVisible;
@@ -61,7 +61,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private ToolStripMenuItemCustom ExplicitPinToTopMenuItem = null!;
         private ToolStripMenuItemCustom ExplicitUnpinFromTopMenuItem = null!;
         private ToolStripMenuItemCustom DeleteFMMenuItem = null!;
-        private ToolStripMenuItemCustom DeleteRecordMenuItem = null!;
+        private ToolStripMenuItemCustom DeleteFromDBMenuItem = null!;
         private ToolStripSeparator OpenInDromEdSep = null!;
         private ToolStripMenuItemCustom OpenInDromEdMenuItem = null!;
         private ToolStripSeparator OpenFMFolderSep = null!;
@@ -98,7 +98,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 FinishedOnMenu.DarkModeEnabled = _darkModeEnabled;
 
                 DeleteFMMenuItem.Image = Images.Trash_16;
-                DeleteRecordMenuItem.Image = Images.DeleteFromDB;
+                DeleteFromDBMenuItem.Image = Images.DeleteFromDB;
                 PinToTopMenuItem.Image = _sayPin ? Images.Pin_16 : Images.Unpin_16;
                 ExplicitPinToTopMenuItem.Image = Images.Pin_16;
                 ExplicitUnpinFromTopMenuItem.Image = Images.Unpin_16;
@@ -221,7 +221,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 new ToolStripSeparator { Tag = LoadType.Lazy },
                 DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16, Tag = LoadType.Lazy },
                 // @DB: Have like a red X image for this maybe?
-                DeleteRecordMenuItem = new ToolStripMenuItemCustom { Image = Images.DeleteFromDB, Tag = LoadType.Lazy },
+                DeleteFromDBMenuItem = new ToolStripMenuItemCustom { Image = Images.DeleteFromDB, Tag = LoadType.Lazy },
                 OpenInDromEdSep = new ToolStripSeparator { Tag = LoadType.Lazy },
                 OpenInDromEdMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 OpenFMFolderSep = new ToolStripSeparator { Tag = LoadType.Lazy },
@@ -272,7 +272,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             ExplicitPinToTopMenuItem.Click += AsyncMenuItems_Click;
             ExplicitUnpinFromTopMenuItem.Click += AsyncMenuItems_Click;
             DeleteFMMenuItem.Click += AsyncMenuItems_Click;
-            DeleteRecordMenuItem.Click += AsyncMenuItems_Click;
+            DeleteFromDBMenuItem.Click += AsyncMenuItems_Click;
             OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
             OpenFMFolderMenuItem.Click += AsyncMenuItems_Click;
             ScanFMMenuItem.Click += AsyncMenuItems_Click;
@@ -306,7 +306,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
             DeleteFMMenuItem.Visible = _deleteFMMenuItemVisible;
-            DeleteRecordMenuItem.Visible = _deleteRecordMenuItemVisible;
+            DeleteFromDBMenuItem.Visible = _deleteFromDBMenuItemVisible;
 
             OpenInDromEdSep.Visible = _openInDromEdMenuItemVisible;
             OpenInDromEdMenuItem.Visible = _openInDromEdMenuItemVisible;
@@ -374,7 +374,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             ExplicitUnpinFromTopMenuItem.Text = LText.FMsList.FMMenu_UnpinFM;
 
             SetDeleteFMMenuItemText(multiSelected);
-            SetDeleteRecordMenuItemText(multiSelected);
+            SetDeleteFromDBMenuItemText(multiSelected);
 
             SetOpenInDromEdMenuItemText(sayShockEd);
 
@@ -587,23 +587,23 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 : LText.FMsList.FMMenu_DeleteFM;
         }
 
-        internal void SetDeleteRecordMenuItemVisible(bool value)
+        internal void SetDeleteFromDBMenuItemVisible(bool value)
         {
             if (_constructed)
             {
-                DeleteRecordMenuItem.Visible = value;
+                DeleteFromDBMenuItem.Visible = value;
             }
             else
             {
-                _deleteRecordMenuItemVisible = value;
+                _deleteFromDBMenuItemVisible = value;
             }
         }
 
-        internal void SetDeleteRecordMenuItemText(bool multiSelected)
+        internal void SetDeleteFromDBMenuItemText(bool multiSelected)
         {
             if (!_constructed) return;
 
-            DeleteRecordMenuItem.Text = multiSelected
+            DeleteFromDBMenuItem.Text = multiSelected
                 ? LText.FMsList.FMMenu_DeleteFMsFromDB
                 : LText.FMsList.FMMenu_DeleteFMFromDB;
         }
@@ -779,7 +779,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     await FMArchives.Delete(_owner.FMsDGV.GetMainSelectedFM());
                 }
             }
-            else if (sender == DeleteRecordMenuItem)
+            else if (sender == DeleteFromDBMenuItem)
             {
                 await Core.DeleteFMsFromDB(_owner.GetSelectedFMs_InOrder_List());
             }
