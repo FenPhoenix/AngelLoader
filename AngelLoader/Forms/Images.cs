@@ -801,14 +801,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Misc
-
-        private static Bitmap? _mods_16;
-        private static Bitmap? _mods_16_Dark;
-        public static Bitmap Mods_16 =>
-            DarkModeEnabled
-                ? _mods_16_Dark ??= Resources.Mods_16_dark
-                : _mods_16 ??= Resources.Mods_16;
+        #region FM context menu
 
         private static Bitmap? _pin_16;
         private static Bitmap? _pin_16_Dark;
@@ -830,6 +823,24 @@ namespace AngelLoader.Forms
             DarkModeEnabled
                 ? _trash_16_Dark ??= Resources.Trash_16_Dark
                 : _trash_16 ??= Resources.Trash_16;
+
+        private static Bitmap? _deleteFromDB;
+        private static Bitmap? _deleteFromDB_Dark;
+        public static Bitmap DeleteFromDB =>
+            DarkModeEnabled
+                ? _deleteFromDB_Dark ??= Resources.Delete_16_Dark
+                : _deleteFromDB ??= Resources.Delete_16;
+
+        #endregion
+
+        #region Misc
+
+        private static Bitmap? _mods_16;
+        private static Bitmap? _mods_16_Dark;
+        public static Bitmap Mods_16 =>
+            DarkModeEnabled
+                ? _mods_16_Dark ??= Resources.Mods_16_dark
+                : _mods_16 ??= Resources.Mods_16;
 
         private static Bitmap? _redExclamationMarkCircle;
         private static Bitmap? _redExclamationMarkCircle_Dark;

@@ -98,6 +98,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 FinishedOnMenu.DarkModeEnabled = _darkModeEnabled;
 
                 DeleteFMMenuItem.Image = Images.Trash_16;
+                DeleteRecordMenuItem.Image = Images.DeleteFromDB;
                 PinToTopMenuItem.Image = _sayPin ? Images.Pin_16 : Images.Unpin_16;
                 ExplicitPinToTopMenuItem.Image = Images.Pin_16;
                 ExplicitUnpinFromTopMenuItem.Image = Images.Unpin_16;
@@ -220,7 +221,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 new ToolStripSeparator { Tag = LoadType.Lazy },
                 DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16, Tag = LoadType.Lazy },
                 // @DB: Have like a red X image for this maybe?
-                DeleteRecordMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
+                DeleteRecordMenuItem = new ToolStripMenuItemCustom { Image = Images.DeleteFromDB, Tag = LoadType.Lazy },
                 OpenInDromEdSep = new ToolStripSeparator { Tag = LoadType.Lazy },
                 OpenInDromEdMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 OpenFMFolderSep = new ToolStripSeparator { Tag = LoadType.Lazy },
