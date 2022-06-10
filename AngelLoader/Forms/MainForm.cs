@@ -49,6 +49,7 @@ using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
+using static AngelLoader.DifficultySupport;
 using static AngelLoader.GameSupport;
 using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;

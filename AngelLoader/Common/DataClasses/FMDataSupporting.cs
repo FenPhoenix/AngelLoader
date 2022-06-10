@@ -1,5 +1,4 @@
 ﻿using System;
-using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses
@@ -54,16 +53,5 @@ namespace AngelLoader.DataClasses
         Motions = 128,
         Movies = 256,
         Subtitles = 512
-    }
-
-    [Flags]
-    public enum Difficulty : uint
-    {
-        [UsedImplicitly]
-        None = 0,
-        Normal = 1,
-        Hard = 2,
-        Expert = 4,
-        Extreme = 8
     }
 }

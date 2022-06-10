@@ -8,6 +8,7 @@ using System.Threading;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static AngelLoader.DifficultySupport;
 using static AngelLoader.GameSupport;
 using static AngelLoader.LanguageSupport;
 using static AngelLoader.Logger;
