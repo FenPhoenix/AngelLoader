@@ -193,7 +193,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         internal static void ReloadTheme()
         {
-            if (!Native.IsThemeActive()) return;
+            if (!_hooksInstalled || !Native.IsThemeActive()) return;
 
             // We have to re-add the HTheme keys because they may/will(?) have changed
 
