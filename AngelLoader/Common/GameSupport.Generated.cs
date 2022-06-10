@@ -30,6 +30,8 @@ namespace AngelLoader
             "SS2"
         };
 
+        public static string GetGamePrefix(GameIndex index) => _gamePrefixes[(int)index];
+
         private static readonly string[] _steamAppIds =
         {
             "211600",
@@ -38,6 +40,8 @@ namespace AngelLoader
             "238210"
         };
 
+        public static string GetGameSteamId(GameIndex index) => _steamAppIds[(int)index];
+
         private static readonly string[] _gameEditorNames =
         {
             "DromEd",
@@ -45,10 +49,6 @@ namespace AngelLoader
             "",
             "ShockEd"
         };
-
-        public static string GetGamePrefix(GameIndex index) => _gamePrefixes[(int)index];
-
-        public static string GetGameSteamId(GameIndex index) => _steamAppIds[(int)index];
 
         public static string GetGameEditorName(GameIndex index) => _gameEditorNames[(int)index];
 
@@ -70,6 +70,7 @@ namespace AngelLoader
                 _ => GameIndex.SS2
             };
         }
+
         /// <summary>
         /// Converts a GameIndex to a Game. Widening conversion, so it will always succeed.
         /// </summary>

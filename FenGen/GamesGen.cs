@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -81,6 +82,20 @@ namespace FenGen
         {
             #region Local functions
 
+            static void WriteArrayAndGetter(
+                CodeWriters.IndentingWriter w,
+                string arrayName,
+                string getterName,
+                List<string> items,
+                string gameIndexName,
+                bool addQuotes = true)
+            {
+                w.WL("private static readonly string[] " + arrayName + " =");
+                WriteListBody(w, items, addQuotes: addQuotes);
+                w.WL("public static string " + getterName + "(" + gameIndexName + " index) => " + arrayName + "[(int)index];");
+                w.WL();
+            }
+
             #endregion
 
             var w = GetWriterForClass(destFile, GenAttributes.FenGenGameSupportMainGenDestClass);
@@ -101,21 +116,9 @@ namespace FenGen
             w.WL("#region Per-game constants");
             w.WL();
 
-            w.WL("private static readonly string[] _gamePrefixes =");
-            WriteListBody(w, Cache.GamesEnum.GamePrefixes, addQuotes: true);
-
-            w.WL("private static readonly string[] _steamAppIds =");
-            WriteListBody(w, Cache.GamesEnum.SteamIds, addQuotes: true);
-
-            w.WL("private static readonly string[] _gameEditorNames =");
-            WriteListBody(w, Cache.GamesEnum.EditorNames, addQuotes: true);
-
-            w.WL("public static string GetGamePrefix(" + gameIndexName + " index) => _gamePrefixes[(int)index];");
-            w.WL();
-            w.WL("public static string GetGameSteamId(" + gameIndexName + " index) => _steamAppIds[(int)index];");
-            w.WL();
-            w.WL("public static string GetGameEditorName(" + gameIndexName + " index) => _gameEditorNames[(int)index];");
-            w.WL();
+            WriteArrayAndGetter(w, "_gamePrefixes", "GetGamePrefix", Cache.GamesEnum.GamePrefixes, gameIndexName);
+            WriteArrayAndGetter(w, "_steamAppIds", "GetGameSteamId", Cache.GamesEnum.SteamIds, gameIndexName);
+            WriteArrayAndGetter(w, "_gameEditorNames", "GetGameEditorName", Cache.GamesEnum.EditorNames, gameIndexName);
 
             w.WL("#endregion");
             w.WL();
@@ -140,6 +143,7 @@ namespace FenGen
             }
             w.WL("};");
             w.WL("}");
+            w.WL();
 
             #endregion
 
