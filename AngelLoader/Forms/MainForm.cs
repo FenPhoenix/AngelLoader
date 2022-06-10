@@ -1265,7 +1265,7 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.Focused)
                 {
-                    if (SelectedFMIsPlayable(out FanMission? fm))
+                    if (Core.SelectedFMIsPlayable(out FanMission? fm))
                     {
                         await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
                     }
@@ -4020,7 +4020,7 @@ namespace AngelLoader.Forms
 
         private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex > -1 && SelectedFMIsPlayable(out FanMission? fm))
+            if (e.RowIndex > -1 && Core.SelectedFMIsPlayable(out FanMission? fm))
             {
                 await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
             }
@@ -4029,6 +4029,8 @@ namespace AngelLoader.Forms
         #endregion
 
         #endregion
+
+        public bool MultipleFMsSelected() => FMsDGV.MultipleFMsSelected();
 
         #region Update displayed rating
 
@@ -5528,21 +5530,6 @@ namespace AngelLoader.Forms
         {
             if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
             Activate();
-        }
-
-        private bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
-        {
-            if (!FMsDGV.MultipleFMsSelected() &&
-                GameIsKnownAndSupported((fm = FMsDGV.GetMainSelectedFM()).Game) &&
-                !fm.MarkedUnavailable)
-            {
-                return true;
-            }
-            else
-            {
-                fm = null;
-                return false;
-            }
         }
 
         #endregion

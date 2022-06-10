@@ -2398,5 +2398,28 @@ namespace AngelLoader
                 View.SetUIEnabled(true);
             }
         }
+
+        public static bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
+        {
+            if (!View.MultipleFMsSelected())
+            {
+                fm = View.GetMainSelectedFMOrNull();
+                if (fm != null && GameIsKnownAndSupported(fm.Game) &&
+                    !fm.MarkedUnavailable)
+                {
+                    return true;
+                }
+                else
+                {
+                    fm = null;
+                    return false;
+                }
+            }
+            else
+            {
+                fm = null;
+                return false;
+            }
+        }
     }
 }
