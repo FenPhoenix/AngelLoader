@@ -59,6 +59,8 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
+        private ISplashScreen_Safe? _splashScreen;
+
         /// <summary>
         /// Any control that might need to know this can check it.
         /// </summary>
@@ -163,6 +165,9 @@ namespace AngelLoader.Forms
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
 
         #endregion
+
+        // Cache visible state because calling Visible redoes the work even if the value is the same
+        private bool _readmeControlsOtherThanComboBoxVisible;
 
         #endregion
 
@@ -918,8 +923,6 @@ namespace AngelLoader.Forms
             UpdateGameScreenShotModes();
 #endif
         }
-
-        private ISplashScreen_Safe? _splashScreen;
 
         // This one can't be multithreaded because it depends on the FMs list
         public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen)
@@ -4247,8 +4250,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        // Cache visible state because calling Visible redoes the work even if the value is the same
-        private bool _readmeControlsOtherThanComboBoxVisible;
         private void ShowReadmeControls(bool enabled)
         {
             ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
