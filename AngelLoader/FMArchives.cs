@@ -119,12 +119,11 @@ namespace AngelLoader
         /// <returns></returns>
         internal static async Task Delete(FanMission fm, bool multiple = false, int percent = -1)
         {
-            if (!multiple && fm.MarkedUnavailable)
+            if (fm.MarkedUnavailable)
             {
-                Core.Dialogs.ShowAlert(
-                    LText.FMDeletion.FMIsUnavailable,
-                    LText.AlertMessages.Alert,
-                    MBoxIcon.None);
+                string message = "Delete(" + nameof(multiple) + " == " + multiple + "): " + nameof(fm) + " unavailable.";
+                Log(message, stackTrace: true);
+                Core.Dialogs.ShowError(message);
                 return;
             }
 
@@ -265,10 +264,9 @@ namespace AngelLoader
 
             if (fms.Count == 0)
             {
-                Core.Dialogs.ShowAlert(
-                    LText.FMDeletion.FMsAreUnavailable,
-                    LText.AlertMessages.Alert,
-                    MBoxIcon.None);
+                const string message = "Delete(List<FanMission>): " + nameof(fms) + ".Count is 0 (meaning all are unavailable).";
+                Log(message, stackTrace: true);
+                Core.Dialogs.ShowError(message);
                 return;
             }
 
