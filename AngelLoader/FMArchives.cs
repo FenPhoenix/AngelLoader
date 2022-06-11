@@ -7,6 +7,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using Microsoft.VisualBasic.FileIO; // the import of shame
+using static AL_Common.Common;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 using SearchOption = System.IO.SearchOption;
@@ -181,6 +182,83 @@ namespace AngelLoader
                     }
                 }
             });
+        }
+
+        // @DB: When deleting FMs, allow user to also delete them from the database
+        internal static async Task DeleteFMsFromDB(List<FanMission> fmsToDelete, bool singleCall = true)
+        {
+            if (fmsToDelete.Count == 0) return;
+            foreach (FanMission fm in fmsToDelete)
+            {
+                if (!fm.MarkedUnavailable) return;
+            }
+
+            bool single = fmsToDelete.Count == 1;
+
+            if (singleCall)
+            {
+                (bool cont, _) =
+                    Core.View.ShowCustomDialog(
+                        messageTop:
+                        (single
+                            ? LText.FMDeletion.DeleteFromDB_AlertMessage1_Single
+                            : LText.FMDeletion.DeleteFromDB_AlertMessage1_Multiple) +
+                        "\r\n\r\n" +
+                        (single
+                            ? LText.FMDeletion.DeleteFromDB_AlertMessage2_Single
+                            : LText.FMDeletion.DeleteFromDB_AlertMessage2_Multiple),
+                        messageBottom: "",
+                        title: LText.AlertMessages.Alert,
+                        icon: MBoxIcon.Warning,
+                        okText: LText.FMDeletion.DeleteFromDB_OKMessage,
+                        cancelText: LText.Global.Cancel,
+                        okIsDangerous: true);
+                if (!cont) return;
+            }
+
+            var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
+            for (int i = 0; i < FMDataIniList.Count; i++)
+            {
+                FanMission fm = FMDataIniList[i];
+                if (!fm.Archive.IsEmpty())
+                {
+                    if (iniDict.TryGetValue(fm.Archive, out var list))
+                    {
+                        list.Add(fm);
+                    }
+                    else
+                    {
+                        iniDict.Add(fm.Archive, new List<FanMission> { fm });
+                    }
+                }
+            }
+
+            foreach (var fmToDelete in fmsToDelete)
+            {
+                if (!fmToDelete.Archive.IsEmpty() &&
+                    iniDict.TryGetValue(fmToDelete.Archive, out var fmToDeleteIniCopies))
+                {
+                    foreach (var fm in fmToDeleteIniCopies)
+                    {
+                        FMDataIniList.Remove(fm);
+                        FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
+                    }
+                }
+                else
+                {
+                    FMDataIniList.Remove(fmToDelete);
+                    FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
+                }
+            }
+
+            if (singleCall) await DeleteFromDBRefresh();
+        }
+
+        private static async Task DeleteFromDBRefresh()
+        {
+            Ini.WriteFullFMDataIni(makeBackup: true);
+            SelectedFM? selFM = Core.FindNearestUnselectedFM(Core.View.GetMainSelectedRowIndex(), Core.View.GetRowCount());
+            await Core.RefreshFMsListFromDisk(selFM);
         }
 
         internal static async Task DeleteSingle(FanMission fm)

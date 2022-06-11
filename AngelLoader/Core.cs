@@ -1966,7 +1966,7 @@ namespace AngelLoader
                 keepMultiSelection: !singleFMSelected && pin);
         }
 
-        private static SelectedFM? FindNearestUnselectedFM(int index, int rowCount)
+        internal static SelectedFM? FindNearestUnselectedFM(int index, int rowCount)
         {
             if (rowCount <= 1) return null;
 
@@ -2171,7 +2171,7 @@ namespace AngelLoader
                 case 1:
                     FanMission fm = fms[0];
                     await (fm.MarkedUnavailable
-                        ? DeleteFMsFromDB(fms)
+                        ? FMArchives.DeleteFMsFromDB(fms)
                         : FMArchives.DeleteSingle(fm));
                     break;
                 default:
@@ -2184,78 +2184,9 @@ namespace AngelLoader
                             break;
                         }
                     }
-                    await (allUnavailable ? DeleteFMsFromDB(fms) : FMArchives.DeleteMultiple(fms));
+                    await (allUnavailable ? FMArchives.DeleteFMsFromDB(fms) : FMArchives.DeleteMultiple(fms));
                     break;
             }
-        }
-
-        // @DB: When deleting FMs, allow user to also delete them from the database
-        internal static async Task DeleteFMsFromDB(List<FanMission> fmsToDelete)
-        {
-            if (fmsToDelete.Count == 0) return;
-            foreach (FanMission fm in fmsToDelete)
-            {
-                if (!fm.MarkedUnavailable) return;
-            }
-
-            bool single = fmsToDelete.Count == 1;
-
-            (bool cont, _) =
-                View.ShowCustomDialog(
-                    messageTop:
-                    (single
-                        ? LText.FMDeletion.DeleteFromDB_AlertMessage1_Single
-                        : LText.FMDeletion.DeleteFromDB_AlertMessage1_Multiple) +
-                    "\r\n\r\n" +
-                    (single
-                        ? LText.FMDeletion.DeleteFromDB_AlertMessage2_Single
-                        : LText.FMDeletion.DeleteFromDB_AlertMessage2_Multiple),
-                    messageBottom: "",
-                    title: LText.AlertMessages.Alert,
-                    icon: MBoxIcon.Warning,
-                    okText: LText.FMDeletion.DeleteFromDB_OKMessage,
-                    cancelText: LText.Global.Cancel,
-                    okIsDangerous: true);
-            if (!cont) return;
-
-            var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
-            for (int i = 0; i < FMDataIniList.Count; i++)
-            {
-                FanMission fm = FMDataIniList[i];
-                if (!fm.Archive.IsEmpty())
-                {
-                    if (iniDict.TryGetValue(fm.Archive, out var list))
-                    {
-                        list.Add(fm);
-                    }
-                    else
-                    {
-                        iniDict.Add(fm.Archive, new List<FanMission> { fm });
-                    }
-                }
-            }
-
-            foreach (var fmToDelete in fmsToDelete)
-            {
-                if (!fmToDelete.Archive.IsEmpty() &&
-                    iniDict.TryGetValue(fmToDelete.Archive, out var fmToDeleteIniCopies))
-                {
-                    foreach (var fm in fmToDeleteIniCopies)
-                    {
-                        FMDataIniList.Remove(fm);
-                        FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
-                    }
-                }
-                else
-                {
-                    FMDataIniList.Remove(fmToDelete);
-                    FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
-                }
-            }
-
-            Ini.WriteFullFMDataIni(makeBackup: true);
-            SelectedFM? selFM = FindNearestUnselectedFM(View.GetMainSelectedRowIndex(), View.GetRowCount());
-            await RefreshFMsListFromDisk(selFM);
         }
 
         #region Shutdown
