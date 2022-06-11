@@ -162,6 +162,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal bool IsControlCaution(Control control) => control.Tag is ItemType.Caution;
 
+        // @MEM/@Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
         internal void ClearList()
         {
             base.Controls.DisposeAndClear();

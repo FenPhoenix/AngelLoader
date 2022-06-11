@@ -4924,7 +4924,6 @@ namespace AngelLoader.Forms
                 {
                     MainModsControl.ModsCheckList.SuspendDrawing();
 
-                    // @MEM/@Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
                     MainModsControl.ModsCheckList.ClearList();
 
                     if (GameIsDark(fm.Game))

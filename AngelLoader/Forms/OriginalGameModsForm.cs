@@ -35,7 +35,6 @@ namespace AngelLoader.Forms
             {
                 OrigGameModsControl.ModsCheckList.SuspendDrawing();
 
-                // @MEM/@Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
                 OrigGameModsControl.ModsCheckList.ClearList();
 
                 (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
