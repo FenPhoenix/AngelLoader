@@ -1,7 +1,7 @@
 ﻿#define FenGen_GameSupportSource
 
 using System;
-using static AngelLoader.DifficultySupport;
+using AngelLoader.DataClasses;
 using static AngelLoader.FenGenAttributes;
 using static AngelLoader.Misc;
 

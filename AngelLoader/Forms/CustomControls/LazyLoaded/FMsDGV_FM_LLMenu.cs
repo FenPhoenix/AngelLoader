@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AngelLoader.DifficultySupport;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -30,7 +29,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private bool _scanFMMenuItemEnabled;
         private bool _convertAudioSubMenuEnabled;
         private int _rating = -1;
-        private Difficulty _difficultiesSelected = Difficulty.None;
+        private bool _finishedOnNormalChecked;
+        private bool _finishedOnHardChecked;
+        private bool _finishedOnExpertChecked;
+        private bool _finishedOnExtremeChecked;
         private bool _finishedOnUnknownChecked;
         private bool _webSearchMenuItemEnabled;
 
@@ -72,7 +74,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private ToolStripMenuItemCustom RatingMenuUnrated = null!;
         private ToolStripMenuItemCustom FinishedOnMenuItem = null!;
         private DarkContextMenu FinishedOnMenu = null!;
-        private ToolStripMenuItemCustom[] FinishedOnMenuItems = null!;
+        private ToolStripMenuItemCustom FinishedOnNormalMenuItem = null!;
+        private ToolStripMenuItemCustom FinishedOnHardMenuItem = null!;
+        private ToolStripMenuItemCustom FinishedOnExpertMenuItem = null!;
+        private ToolStripMenuItemCustom FinishedOnExtremeMenuItem = null!;
         private ToolStripMenuItemCustom FinishedOnUnknownMenuItem = null!;
         private ToolStripMenuItemCustom WebSearchMenuItem = null!;
 
@@ -108,14 +113,17 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed)
             {
-                for (int i = 0; i < SupportedDifficultyCount; i++)
-                {
-                    FinishedOnMenuItems[i].Checked = false;
-                }
+                FinishedOnNormalMenuItem.Checked = false;
+                FinishedOnHardMenuItem.Checked = false;
+                FinishedOnExpertMenuItem.Checked = false;
+                FinishedOnExtremeMenuItem.Checked = false;
             }
             else
             {
-                _difficultiesSelected = Difficulty.None;
+                _finishedOnNormalChecked = false;
+                _finishedOnHardChecked = false;
+                _finishedOnExpertChecked = false;
+                _finishedOnExtremeChecked = false;
             }
         }
 
@@ -133,6 +141,55 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (value) UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
+        private void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
+        {
+            if (value && !_constructed) _finishedOnUnknownChecked = false;
+
+            switch (difficulty)
+            {
+                case Difficulty.Normal:
+                    if (_constructed)
+                    {
+                        FinishedOnNormalMenuItem.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnNormalChecked = value;
+                    }
+                    break;
+                case Difficulty.Hard:
+                    if (_constructed)
+                    {
+                        FinishedOnHardMenuItem.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnHardChecked = value;
+                    }
+                    break;
+                case Difficulty.Expert:
+                    if (_constructed)
+                    {
+                        FinishedOnExpertMenuItem.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnExpertChecked = value;
+                    }
+                    break;
+                case Difficulty.Extreme:
+                    if (_constructed)
+                    {
+                        FinishedOnExtremeMenuItem.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnExtremeChecked = value;
+                    }
+                    break;
+            }
+        }
+
         #endregion
 
         #region Public methods
@@ -147,12 +204,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
             FinishedOnMenu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
-
-            FinishedOnMenuItems = new ToolStripMenuItemCustom[SupportedDifficultyCount];
-            for (int i = 0; i < FinishedOnMenuItems.Length; i++)
-            {
-                FinishedOnMenuItems[i] = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy };
-            }
 
             #endregion
 
@@ -196,8 +247,14 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 RatingMenuItem.DropDownItems.Add(new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy });
             }
 
-            FinishedOnMenu.Items.AddRange(FinishedOnMenuItems.Cast<ToolStripItem>().ToArray());
-            FinishedOnMenu.Items.Add(FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy });
+            FinishedOnMenu.Items.AddRange(new ToolStripItem[]
+            {
+                FinishedOnNormalMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
+                FinishedOnHardMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
+                FinishedOnExpertMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
+                FinishedOnExtremeMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
+                FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy }
+            });
 
             FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
             FinishedOnMenuItem.DropDown = FinishedOnMenu;
@@ -227,10 +284,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 item.CheckedChanged += RatingRCMenuItems_CheckedChanged;
             }
 
-            foreach (ToolStripMenuItemCustom item in FinishedOnMenuItem.DropDownItems)
-            {
-                item.Click += FinishedOnMenuItems_Click;
-            }
+            FinishedOnNormalMenuItem.Click += FinishedOnMenuItems_Click;
+            FinishedOnHardMenuItem.Click += FinishedOnMenuItems_Click;
+            FinishedOnExpertMenuItem.Click += FinishedOnMenuItems_Click;
+            FinishedOnExtremeMenuItem.Click += FinishedOnMenuItems_Click;
+            FinishedOnUnknownMenuItem.Click += FinishedOnMenuItems_Click;
             FinishedOnUnknownMenuItem.CheckedChanged += FinishedOnUnknownMenuItem_CheckedChanged;
 
             WebSearchMenuItem.Click += WebSearchMenuItem_Click;
@@ -266,12 +324,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             #region Set Finished On checked values
 
-            for (int i = 0; i < SupportedDifficultyCount; i++)
-            {
-                Difficulty difficulty = DifficultyIndexToDifficulty((DifficultyIndex)i);
-                FinishedOnMenuItems[i].Checked = _difficultiesSelected.HasFlagFast(difficulty);
-            }
-
+            FinishedOnNormalMenuItem.Checked = _finishedOnNormalChecked;
+            FinishedOnHardMenuItem.Checked = _finishedOnHardChecked;
+            FinishedOnExpertMenuItem.Checked = _finishedOnExpertChecked;
+            FinishedOnExtremeMenuItem.Checked = _finishedOnExtremeChecked;
             FinishedOnUnknownMenuItem.Checked = _finishedOnUnknownChecked;
 
             #endregion
@@ -635,22 +691,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
-        private void SetFinishedOnMenuItemChecked(DifficultyIndex difficultyIndex, bool value)
-        {
-            if (value && !_constructed) _finishedOnUnknownChecked = false;
-
-            if (_constructed)
-            {
-                FinishedOnMenuItems[(int)difficultyIndex].Checked = value;
-            }
-            else
-            {
-                var difficulty = DifficultyIndexToDifficulty(difficultyIndex);
-                if (value) { _difficultiesSelected |= difficulty; } else { _difficultiesSelected &= ~difficulty; }
-            }
-        }
-
-        internal void SetFinishedOnMenuItemsChecked(Difficulty difficulties, bool finishedOnUnknown)
+        internal void SetFinishedOnMenuItemsChecked(Difficulty difficulty, bool finishedOnUnknown)
         {
             if (finishedOnUnknown)
             {
@@ -659,25 +700,25 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             else
             {
                 // I don't have to disable events because I'm only wired up to Click, not Checked
-                for (int i = 0; i < SupportedDifficultyCount; i++)
-                {
-                    DifficultyIndex difficultyIndex = (DifficultyIndex)i;
-                    Difficulty difficulty = DifficultyIndexToDifficulty(difficultyIndex);
-                    SetFinishedOnMenuItemChecked(difficultyIndex, difficulties.HasFlagFast(difficulty));
-                }
+                SetFinishedOnMenuItemChecked(Difficulty.Normal, difficulty.HasFlagFast(Difficulty.Normal));
+                SetFinishedOnMenuItemChecked(Difficulty.Hard, difficulty.HasFlagFast(Difficulty.Hard));
+                SetFinishedOnMenuItemChecked(Difficulty.Expert, difficulty.HasFlagFast(Difficulty.Expert));
+                SetFinishedOnMenuItemChecked(Difficulty.Extreme, difficulty.HasFlagFast(Difficulty.Extreme));
                 SetFinishedOnUnknownMenuItemChecked(false);
             }
         }
 
+        // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
+        // Thief 3 difficulties: Easy, Normal, Hard, Expert
+        // SS2 difficulties: Easy, Normal, Hard, Impossible
         internal void SetGameSpecificFinishedOnMenuItemsText(Game game)
         {
             if (!_constructed) return;
 
-            for (int i = 0; i < SupportedDifficultyCount; i++)
-            {
-                Difficulty difficulty = DifficultyIndexToDifficulty((DifficultyIndex)i);
-                FinishedOnMenuItems[i].Text = GetLocalizedDifficultyName(game, difficulty);
-            }
+            FinishedOnNormalMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Normal);
+            FinishedOnHardMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Hard);
+            FinishedOnExpertMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Expert);
+            FinishedOnExtremeMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Extreme);
         }
 
         internal void ClearFinishedOnMenuItemChecks()
