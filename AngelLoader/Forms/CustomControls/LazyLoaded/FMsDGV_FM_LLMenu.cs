@@ -770,11 +770,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 if (_owner.FMsDGV.MultipleFMsSelected())
                 {
-                    await FMArchives.Delete(_owner.FMsDGV.GetSelectedFMs_InOrder_List());
+                    await FMArchives.DeleteMultiple(_owner.FMsDGV.GetSelectedFMs_InOrder_List());
                 }
                 else
                 {
-                    await FMArchives.Delete(_owner.FMsDGV.GetMainSelectedFM());
+                    await FMArchives.DeleteSingle(_owner.FMsDGV.GetMainSelectedFM());
                 }
             }
             else if (sender == DeleteFromDBMenuItem)
