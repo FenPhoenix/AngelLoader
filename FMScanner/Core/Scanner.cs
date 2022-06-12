@@ -325,14 +325,14 @@ namespace FMScanner
 
             if (tempPath.IsEmpty())
             {
-                Log(LogFile, nameof(ScanMany) + ": Argument is null or empty: " + nameof(tempPath), methodName: false);
+                Log(LogFile, "Argument is null or empty: " + nameof(tempPath), methodName: false);
                 throw new ArgumentException("Argument is null or empty.", nameof(tempPath));
             }
 
             if (missions == null) throw new ArgumentNullException(nameof(missions));
             if (missions.Count == 0 || (missions.Count == 1 && missions[0].Path.IsEmpty()))
             {
-                Log(LogFile, nameof(ScanMany) + ": No mission(s) specified. tempPath: " + tempPath, methodName: false);
+                Log(LogFile, "No mission(s) specified. tempPath: " + tempPath, methodName: false);
                 throw new ArgumentException("No mission(s) specified.", nameof(missions));
             }
 
@@ -599,7 +599,7 @@ namespace FMScanner
                     if (result.ErrorOccurred)
                     {
                         Log(LogFile,
-                            fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is 7z\r\n" +
+                            fm.Path + ": fm is 7z\r\n" +
                             "7z.exe path: " + _sevenZipExePath + "\r\n" +
                             result.ToString());
 
@@ -608,18 +608,18 @@ namespace FMScanner
                             fen7zResult: result,
                             ex: null,
                             errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                                       fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is 7z\r\n");
+                                       fm.Path + ": fm is 7z\r\n");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log(LogFile, fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction", ex);
+                    Log(LogFile, fm.Path + ": fm is 7z, exception in 7z.exe extraction", ex);
                     return UnsupportedZip(
                         archivePath: fm.Path,
                         fen7zResult: null,
                         ex: ex,
                         errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                                   fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is 7z, exception in 7z.exe extraction"
+                                   fm.Path + ": fm is 7z, exception in 7z.exe extraction"
                     );
                 }
 
@@ -659,8 +659,7 @@ namespace FMScanner
                         if (_archive.Entries.Count == 0)
                         {
                             Log(LogFile,
-                                fm.Path + ": " + nameof(ScanCurrentFM) +
-                                "(): fm is zip, no files in archive. Returning 'Unsupported' game type.");
+                                fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.");
                             return UnsupportedZip(fm.Path, null, null, "");
                         }
                     }
@@ -668,7 +667,7 @@ namespace FMScanner
                     {
                         // Invalid zip file, whatever, move on
                         Log(LogFile,
-                            fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is zip, exception in " +
+                            fm.Path + ": fm is zip, exception in " +
                             nameof(ZipArchiveFast) +
                             " construction or entries getting. Returning 'Unsupported' game type.", ex);
                         return UnsupportedZip(fm.Path, null, ex, "");
@@ -677,7 +676,7 @@ namespace FMScanner
                 else
                 {
                     Log(LogFile,
-                        fm.Path + ": " + nameof(ScanCurrentFM) + "(): " + nameof(_fmIsZip) +
+                        fm.Path + ": " + nameof(_fmIsZip) +
                         " == true, but extension was not .zip. Returning 'Unsupported' game type.");
                     return UnsupportedZip(fm.Path, null, null, "");
                 }
@@ -687,7 +686,7 @@ namespace FMScanner
                 if (!Directory.Exists(_fmWorkingPath))
                 {
                     Log(LogFile,
-                        fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is dir, but " + nameof(_fmWorkingPath) +
+                        fm.Path + ": fm is dir, but " + nameof(_fmWorkingPath) +
                         " (" + _fmWorkingPath + ") doesn't exist. Returning 'Unsupported' game type.");
                     return UnsupportedDir(null, null, "");
                 }
@@ -784,7 +783,7 @@ namespace FMScanner
             {
                 string ext = _fmIsZip ? "zip" : _fmIsSevenZip ? "7z" : "dir";
                 Log(LogFile,
-                    fm.Path + ": " + nameof(ScanCurrentFM) + "(): fm is " + ext + ", " +
+                    fm.Path + ": fm is " + ext + ", " +
                     nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.");
 
                 return _fmIsZip || _fmIsSevenZip ? UnsupportedZip(fm.Path, null, null, "") : UnsupportedDir(null, null, "");
@@ -1552,8 +1551,7 @@ namespace FMScanner
                     if (baseDirFiles.Count == 0)
                     {
                         Log(LogFile,
-                            fmPath + ": " + nameof(ReadAndCacheFMData) +
-                            "(): 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.");
+                            fmPath + ": 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.");
                         return false;
                     }
 
@@ -1604,8 +1602,7 @@ namespace FMScanner
                     if (baseDirFiles.Count == 0)
                     {
                         Log(LogFile,
-                            fmPath + ": " + nameof(ReadAndCacheFMData) +
-                            "(): 'fm is dir' codepath: No files in base dir. Returning false.");
+                            fmPath + ": 'fm is dir' codepath: No files in base dir. Returning false.");
                         return false;
                     }
 
@@ -1726,8 +1723,7 @@ namespace FMScanner
             if (misFiles.Count == 0)
             {
                 Log(LogFile,
-                    fmPath + ": " + nameof(ReadAndCacheFMData) +
-                    "(): No mis files in base dir. Returning false.");
+                    fmPath + ": No .mis files in base dir. Returning false.");
                 return false;
             }
 

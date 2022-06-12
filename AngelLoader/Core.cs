@@ -1820,7 +1820,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in " + nameof(ProcessStart_UseShellExecute) + ". Couldn't open help file.", ex);
+                Log("Couldn't open help file.", ex);
                 Dialogs.ShowError(LText.AlertMessages.Help_UnableToOpenHelpFile);
             }
         }

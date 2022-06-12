@@ -78,7 +78,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             catch (Exception ex)
             {
-                Logger.Log(nameof(RichTextBoxCustom) + ": Couldn't set dark mode to " + _darkModeEnabled, ex);
+                Logger.Log("Couldn't set dark mode to " + _darkModeEnabled, ex);
             }
             finally
             {

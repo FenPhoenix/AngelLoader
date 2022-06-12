@@ -176,7 +176,7 @@ namespace AngelLoader.Forms.CustomControls
             catch (Exception ex)
             {
                 // @BetterErrors(RTFBox/ChangeEncodingInternal())
-                Logger.Log(nameof(RichTextBoxCustom) + ": Couldn't set encoding", ex);
+                Logger.Log("Couldn't set encoding", ex);
                 return retEncoding;
             }
             finally
