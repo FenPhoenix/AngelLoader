@@ -444,6 +444,7 @@ namespace AngelLoader
 
             #region Fail on DarkLoader FM installed
 
+            // @DLDetect: Should we detect GarrettLoader too?
             if (GameConfigFiles.GameHasDarkLoaderFMInstalled(gameIndex))
             {
                 string dlExe = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
