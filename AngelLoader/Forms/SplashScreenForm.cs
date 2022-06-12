@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using AngelLoader.Properties;
@@ -40,6 +41,7 @@ namespace AngelLoader.Forms
         private Color _foreColorCached;
         private Color _backColorCached;
 
+        private string _message = "";
         private int _checkMessageWidth;
 
         #region Disposables
@@ -107,17 +109,24 @@ namespace AngelLoader.Forms
 
             // Must draw these after Show(), or they don't show up.
             // These will stay visible for the life of the form, due to our setup.
+            DrawMain();
+        }
+
+        private void DrawMain()
+        {
             _graphicsContext.G.DrawImage(_logoBitmap, 152, 48);
-            _graphicsContext.G.DrawImage(theme == VisualTheme.Dark ? Resources.About_Dark : Resources.About, 200, 48);
+            _graphicsContext.G.DrawImage(_theme == VisualTheme.Dark ? Resources.About_Dark : Resources.About, 200, 48);
             using var pen = new Pen(
-                theme == VisualTheme.Dark
+                _theme == VisualTheme.Dark
                     ? Color.FromArgb(81, 81, 81) // LightBorder
                     : SystemColors.ControlDark);
             _graphicsContext.G.DrawRectangle(pen, 0, 0, 647, 183);
         }
 
-        public void SetMessage(string message)
+        private void DrawMessage()
         {
+            if (_message.IsEmpty()) return;
+
             Brush bgColorBrush = _theme == VisualTheme.Dark
                 ? _fen_ControlBackgroundBrush
                 : SystemBrushes.Control;
@@ -131,7 +140,13 @@ namespace AngelLoader.Forms
                 TextFormatFlags.NoClipping |
                 TextFormatFlags.WordBreak;
 
-            TextRenderer.DrawText(_graphicsContext.G, message, _messageFont, _messageRect, _foreColorCached, _backColorCached, _messageTextFormatFlags);
+            TextRenderer.DrawText(_graphicsContext.G, _message, _messageFont, _messageRect, _foreColorCached, _backColorCached, _messageTextFormatFlags);
+        }
+
+        public void SetMessage(string message)
+        {
+            _message = message;
+            DrawMessage();
         }
 
         public void SetCheckMessageWidth(string message)
@@ -173,6 +188,32 @@ namespace AngelLoader.Forms
                 outlineBoxRect.Top + 3);
 
             _graphicsContext.G.SmoothingMode = oldSmoothingMode;
+        }
+
+        private bool _lockPainting;
+        public bool LockPainting(bool enabled) => _lockPainting = enabled;
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg
+                is Native.WM_PAINT
+                or Native.WM_NCPAINT
+                or Native.WM_ERASEBKGND
+                or Native.WM_SETREDRAW
+               )
+            {
+                // If a message box pops up over us, we're going to get a paint event and we'll lose everything
+                // we've painted. If we block the event, we won't lose what we've painted, but the message box
+                // will be invisible. So just redraw if we get a paint event, but allow it to be "locked" (disabled)
+                // during the threaded-access portion of the code for safety.
+                if (!_lockPainting)
+                {
+                    DrawMain();
+                    DrawMessage();
+                }
+            }
+
+            base.WndProc(ref m);
         }
 
         protected override void OnVisibleChanged(EventArgs e)

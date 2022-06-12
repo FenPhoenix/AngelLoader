@@ -32,6 +32,8 @@ namespace AngelLoader
             if (_splashScreenView.VisibleCached) _splashScreenView.SetCheckAtStoredMessageWidth();
         }
 
+        internal void LockPainting(bool enabled) => _splashScreenView.LockPainting(enabled);
+
         public void Dispose()
         {
             _splashScreenView.ProgrammaticClose();
