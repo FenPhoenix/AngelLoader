@@ -89,21 +89,21 @@ namespace AngelLoader.Forms
         /// <param name="message"></param>
         /// <param name="title"></param>
         /// <param name="icon"></param>
-        /// <param name="showDontAskAgain"></param>
         /// <param name="yes"></param>
         /// <param name="no"></param>
         /// <param name="cancel"></param>
+        /// <param name="checkBoxText"></param>
         /// <param name="defaultButton"></param>
         /// <returns></returns>
-        public (bool Cancel, bool Continue, bool DontAskAgain)
+        public (bool Cancel, bool Continue, bool CheckBoxChecked)
         AskToContinueWithCancelCustomStrings(
             string message,
             string title,
             MBoxIcon icon,
-            bool showDontAskAgain,
             string yes,
             string no,
             string cancel,
+            string? checkBoxText = null,
             MBoxButton defaultButton = MBoxButton.Yes) =>
             ((bool, bool, bool))InvokeIfViewExists(() =>
             {
@@ -114,7 +114,7 @@ namespace AngelLoader.Forms
                     noText: no,
                     cancelText: cancel,
                     defaultButton: defaultButton,
-                    checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
+                    checkBoxText: checkBoxText,
                     icon: GetIcon(icon));
 
                 DialogResult result = d.ShowDialogDark();

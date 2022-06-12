@@ -119,7 +119,6 @@ namespace AngelLoader
                 message: LText.FMDeletion.AskToUninstallFMFirst,
                 title: LText.AlertMessages.DeleteFMArchive,
                 icon: MBoxIcon.Warning,
-                showDontAskAgain: false,
                 yes: LText.AlertMessages.Uninstall,
                 no: LText.AlertMessages.LeaveInstalled,
                 cancel: LText.Global.Cancel
@@ -415,7 +414,6 @@ namespace AngelLoader
                     message: LText.FMDeletion.AskToUninstallFMFirst,
                     title: LText.AlertMessages.DeleteFMArchive,
                     icon: MBoxIcon.Warning,
-                    showDontAskAgain: false,
                     yes: LText.AlertMessages.Uninstall,
                     no: LText.AlertMessages.LeaveInstalled,
                     cancel: LText.Global.Cancel

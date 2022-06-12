@@ -1195,10 +1195,11 @@ namespace AngelLoader
                         message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                         title: LText.AlertMessages.Confirm,
                         icon: MBoxIcon.None,
-                        showDontAskAgain: true,
                         yes: LText.AlertMessages.BackUp,
                         no: LText.AlertMessages.DontBackUp,
-                        cancel: LText.Global.Cancel);
+                        cancel: LText.Global.Cancel,
+                        checkBoxText: LText.AlertMessages.DontAskAgain
+                    );
 
                 if (cancel) return false;
 
@@ -1269,7 +1270,6 @@ namespace AngelLoader
                             message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                             title: LText.AlertMessages.Warning,
                             icon: MBoxIcon.Warning,
-                            showDontAskAgain: false,
                             yes: LText.AlertMessages.Uninstall,
                             no: LText.Global.Skip,
                             cancel: LText.Global.Cancel,
