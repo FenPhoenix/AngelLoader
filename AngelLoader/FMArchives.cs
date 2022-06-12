@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define TEST_NO_DELETE_CACHE_DIR
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -244,13 +246,17 @@ namespace AngelLoader
                     foreach (var fm in fmToDeleteIniCopies)
                     {
                         FMDataIniList.Remove(fm);
+#if !TEST_NO_DELETE_CACHE_DIR
                         FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
+#endif
                     }
                 }
                 else
                 {
                     FMDataIniList.Remove(fmToDelete);
+#if !TEST_NO_DELETE_CACHE_DIR
                     FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
+#endif
                 }
             }
         }
@@ -488,14 +494,23 @@ namespace AngelLoader
         {
             int origCount = fms.Count;
 
-            for (int i = 0; i < fms.Count; i++)
+            var unavailableFMs = new List<FanMission>(fms.Count);
+
+            void MoveUnavailableFMsFromMainListToUnavailableList()
             {
-                if (fms[i].MarkedUnavailable)
+                for (int i = 0; i < fms.Count; i++)
                 {
-                    fms.RemoveAt(i);
-                    i--;
+                    FanMission fm = fms[i];
+                    if (fm.MarkedUnavailable)
+                    {
+                        unavailableFMs.Add(fm);
+                        fms.RemoveAt(i);
+                        i--;
+                    }
                 }
             }
+
+            MoveUnavailableFMsFromMainListToUnavailableList();
 
             if (fms.Count == 0)
             {
@@ -543,15 +558,16 @@ namespace AngelLoader
                 Core.View.SetWaitCursor(false);
             }
 
-            (bool accepted, _) = Core.View.ShowCustomDialog(
-                messageTop: LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
-                            LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
-                messageBottom: "",
+            // @DB: Localize and finalize
+            (bool accepted, bool deleteFromDB) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                message: LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
+                         LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
                 title: LText.AlertMessages.DeleteFMArchives,
                 icon: MBoxIcon.Warning,
-                okText: LText.FMDeletion.DeleteFMs_CertainMultiple,
-                cancelText: LText.Global.Cancel,
-                okIsDangerous: true);
+                yes: LText.FMDeletion.DeleteFMs_CertainMultiple,
+                no: LText.Global.Cancel,
+                checkBoxText: "Also delete FMs from database",
+                yesIsDangerous: true);
 
             if (!accepted) return;
 
@@ -591,14 +607,7 @@ namespace AngelLoader
 
                 // Even though we culled out the unavailable FMs already, Uninstall() could have marked some more
                 // of them unavailable if they didn't have an archive after being uninstalled.
-                for (int i = 0; i < fms.Count; i++)
-                {
-                    if (fms[i].MarkedUnavailable)
-                    {
-                        fms.RemoveAt(i);
-                        i--;
-                    }
-                }
+                MoveUnavailableFMsFromMainListToUnavailableList();
 
                 if (fms.Count == 0)
                 {
@@ -606,6 +615,8 @@ namespace AngelLoader
                     return;
                 }
             }
+
+            bool dbDeleteRefreshRequired = false;
 
             try
             {
@@ -637,20 +648,33 @@ namespace AngelLoader
                     }
                     finally
                     {
-                        bool markedUnavailable = await MarkUnavailableIfNeeded(fm);
-                        if (markedUnavailable)
+                        await MarkUnavailableIfNeeded(fm);
+                        if (fm.MarkedUnavailable)
                         {
-
+                            unavailableFMs.Add(fm);
                         }
                     }
 
                     if (_deleteCts.IsCancellationRequested) return;
                 }
+
+                if (deleteFromDB && unavailableFMs.Count > 0)
+                {
+                    DeleteFMsFromDB_Internal(unavailableFMs);
+                    dbDeleteRefreshRequired = true;
+                }
             }
             finally
             {
-                await Core.View.SortAndSetFilter(keepSelection: true);
                 Core.View.HideProgressBox();
+                if (dbDeleteRefreshRequired)
+                {
+                    await DeleteFromDBRefresh();
+                }
+                else
+                {
+                    await Core.View.SortAndSetFilter(keepSelection: true);
+                }
             }
         }
 
