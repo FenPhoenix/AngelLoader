@@ -730,6 +730,8 @@ namespace AngelLoader
             DictionaryI<InstDirValueData>[] perGameInstalledFMDirsItems,
             List<int> fmsViewListUnscanned)
         {
+            FMsViewList.Capacity = FMDataIniList.Count;
+
             bool?[] boolsList = new bool?[SupportedGameCount];
 
             static bool NotInPerGameList(FanMission fm, bool?[] notInList, DictionaryI<InstDirValueData>[] list, bool useBool)
