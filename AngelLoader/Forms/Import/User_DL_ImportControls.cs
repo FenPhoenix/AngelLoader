@@ -13,7 +13,7 @@ namespace AngelLoader.Forms
 #else
             InitializeComponentSlim();
 #endif
-            DarkLoaderIniTextBox.Text = Import.AutodetectDarkLoaderIni();
+            DarkLoaderIniTextBox.Text = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderIni);
         }
 
         internal string DarkLoaderIniText => DarkLoaderIniTextBox.Text;
@@ -34,7 +34,7 @@ namespace AngelLoader.Forms
             DarkLoaderIniTextBox.ReadOnly = AutodetectCheckBox.Checked;
             DarkLoaderIniBrowseButton.Enabled = !AutodetectCheckBox.Checked;
 
-            if (AutodetectCheckBox.Checked) DarkLoaderIniTextBox.Text = Import.AutodetectDarkLoaderIni();
+            if (AutodetectCheckBox.Checked) DarkLoaderIniTextBox.Text = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderIni);
         }
 
         internal void Localize()

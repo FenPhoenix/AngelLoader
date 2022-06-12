@@ -1083,47 +1083,38 @@ namespace AngelLoader
             return (Error.None, list);
         }
 
-        // @DLDetect: Should we run this on SetGameDataFromDisk()? Or on play maybe? Play might be more appropriate.
-        // Because that's when the user is going to care, cause that's when they're right about to get the wrong FM.
-        // (or an FM at all if they meant to play without)
-        internal static Game DarkLoaderFMInstallDetect()
+        internal static bool GameHasDarkLoaderFMInstalled(GameIndex gameIndex)
         {
-            Game ret = Game.Null;
+            // @GENGAMES(Thief 3 isn't supported by DarkLoader)
+            if (gameIndex == GameIndex.Thief3) return false;
 
-            for (int i = 0; i < SupportedGameCount; i++)
+            string gamePath = Config.GetGamePath(gameIndex);
+            if (!gamePath.IsEmpty() &&
+                TryCombineFilePathAndCheckExistence(gamePath, Paths.DarkLoaderDotCurrent, out string dlFile))
             {
-                GameIndex gameIndex = (GameIndex)i;
-
-                // @GENGAMES(Thief 3 isn't supported by DarkLoader)
-                if (gameIndex == GameIndex.Thief3) continue;
-
-                string gamePath = Config.GetGamePath(gameIndex);
-                if (gamePath.IsEmpty()) continue;
-                if (TryCombineFilePathAndCheckExistence(gamePath, Paths.DarkLoaderDotCurrent, out string dlFile))
+                try
                 {
-                    try
+                    using var sr = new StreamReader(dlFile);
+                    string? line1 = sr.ReadLine();
+                    string? line2 = sr.ReadLine();
+                    string? line3 = sr.ReadLine();
+                    if (line1 != null &&
+                        line2 != null &&
+                        line1.Trim() != "Original" &&
+                        line2.Trim() != "-1" &&
+                        line3 != null)
                     {
-                        using var sr = new StreamReader(dlFile);
-                        string? line1 = sr.ReadLine();
-                        string? line2 = sr.ReadLine();
-                        string? line3 = sr.ReadLine();
-                        if (line1 != null &&
-                            line2 != null &&
-                            line1.Trim() != "Original" &&
-                            line2.Trim() != "-1" &&
-                            line3 != null)
-                        {
-                            ret |= GameIndexToGame(gameIndex);
-                        }
+                        return true;
                     }
-                    catch
-                    {
-                        // ignore
-                    }
+                }
+                catch
+                {
+                    // ignore
+                    return false;
                 }
             }
 
-            return ret;
+            return false;
         }
 
         #region Helpers

@@ -442,6 +442,40 @@ namespace AngelLoader
 
             #endregion
 
+            #region Fail on DarkLoader FM installed
+
+            if (GameConfigFiles.GameHasDarkLoaderFMInstalled(gameIndex))
+            {
+                string dlExe = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
+
+                // @DLDetect: Localize and finalize
+                (bool cancel, _) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                    message: GetLocalizedGameNameColon(gameIndex) + "\r\n" +
+                             "AngelLoader has detected that this game currently has an FM installed with DarkLoader. " +
+                             "You should install the original game in DarkLoader before continuing, or you may encounter " +
+                             "problems with the wrong FM being loaded.",
+                    title: LText.AlertMessages.Alert,
+                    icon: MBoxIcon.Warning,
+                    yes: LText.Global.OK,
+                    no: !dlExe.IsEmpty() ? "Open DarkLoader now" : null,
+                    defaultButton: MBoxButton.Yes
+                );
+                if (cancel && !dlExe.IsEmpty())
+                {
+                    try
+                    {
+                        ProcessStart_UseShellExecute(dlExe);
+                    }
+                    catch
+                    {
+                        Core.Dialogs.ShowError("Unable to open DarkLoader.");
+                    }
+                }
+                return failed;
+            }
+
+            #endregion
+
             #region Exe: Fail if already running
 
             if (GameIsRunning(gameExe, checkAllGames: true))

@@ -30,7 +30,7 @@ namespace AngelLoader
 
         #region Public methods
 
-        internal static string AutodetectDarkLoaderIni()
+        internal static string AutodetectDarkLoaderFile(string fileName)
         {
             // Common locations. Don't go overboard and search the whole filesystem; that would take forever.
             string[] dlLocations =
@@ -50,24 +50,34 @@ namespace AngelLoader
                 return "";
             }
 
-            foreach (DriveInfo drive in drives)
+            try
             {
-                if (!drive.IsReady || drive.DriveType != DriveType.Fixed) continue;
-
-                try
+                string dlIni;
+                foreach (DriveInfo drive in drives)
                 {
+                    if (!drive.IsReady || drive.DriveType != DriveType.Fixed) continue;
+
                     foreach (string loc in dlLocations)
                     {
-                        if (TryCombineFilePathAndCheckExistence(drive.Name, loc, Paths.DarkLoaderIni, out string dlIni))
+                        if (TryCombineFilePathAndCheckExistence(drive.Name, loc, fileName, out dlIni))
                         {
                             return dlIni;
                         }
                     }
                 }
-                catch (Exception ex)
+
+                if (TryCombineFilePathAndCheckExistence(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                        "DarkLoader",
+                        fileName,
+                        out dlIni))
                 {
-                    Log("Exception in DarkLoader multi-drive search", ex);
+                    return dlIni;
                 }
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in DarkLoader multi-drive search", ex);
             }
 
             return "";
