@@ -354,6 +354,8 @@ namespace AngelLoader.DataClasses
             internal readonly string DeleteFMs = "Delete FM(s)";
             [FenGenComment("This one is for when you've already selected multiple FMs to delete, so we say \"FMs\" instead of \"FM(s)\".")]
             internal readonly string DeleteFMs_CertainMultiple = "Delete FMs";
+            internal readonly string DeleteFMs_AlsoDeleteFromDB_Single = "Also delete FM from database";
+            internal readonly string DeleteFMs_AlsoDeleteFromDB_Multiple = "Also delete FMs from database";
             [FenGenBlankLine]
             internal readonly string DeleteFromDB_AlertMessage1_Single = "The selected FM will be removed permanently from the database, and all of its data will be lost!";
             internal readonly string DeleteFromDB_AlertMessage1_Multiple = "The selected FMs will be removed permanently from the database, and all of their data will be lost!";

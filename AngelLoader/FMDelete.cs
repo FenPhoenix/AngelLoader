@@ -56,7 +56,6 @@ namespace AngelLoader
             await DeleteFromDBRefresh();
         }
 
-        // @DB: When deleting FMs, allow user to also delete them from the database
         private static void DeleteFMsFromDB_Internal(List<FanMission> fmsToDelete)
         {
             var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
@@ -148,8 +147,7 @@ namespace AngelLoader
         }
 
         /*
-        @DB(Delete from DB while deleting archive) - notes on the plan:
-        -Deal with if all are installed and have no archive available?
+        @DB(Delete from DB while deleting archive): Deal with if all are installed and have no archive available?
         */
         internal static async Task DeleteFMsFromDisk(List<FanMission> fms)
         {
@@ -221,7 +219,6 @@ namespace AngelLoader
                 Core.View.SetWaitCursor(false);
             }
 
-            // @DB: Localize and finalize
             (bool cancel, bool deleteFromDB) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                 message: single
                     ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + fms[0].Archive
@@ -231,7 +228,9 @@ namespace AngelLoader
                 icon: MBoxIcon.Warning,
                 yes: single ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs_CertainMultiple,
                 no: LText.Global.Cancel,
-                checkBoxText: "Also delete FM(s) from database",
+                checkBoxText: single
+                    ? LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Single
+                    : LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Multiple,
                 yesIsDangerous: true);
 
             if (cancel) return;
