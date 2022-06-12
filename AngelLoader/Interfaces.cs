@@ -144,7 +144,7 @@ namespace AngelLoader
     {
         bool AskToContinue(string message, string title, bool noIcon = false, MBoxButton defaultButton = MBoxButton.Yes);
         (bool Cancel, bool Continue, bool DontAskAgain) AskToContinueWithCancelCustomStrings(string message, string title, MBoxIcon icon, bool showDontAskAgain, string yes, string no, string cancel, MBoxButton defaultButton = MBoxButton.Yes);
-        (bool Cancel, bool DontAskAgain) AskToContinueYesNoCustomStrings(string message, string title, MBoxIcon icon, string? yes, string? no, bool yesIsDangerous = false, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
+        (bool Cancel, bool CheckBoxChecked) AskToContinueYesNoCustomStrings(string message, string title, MBoxIcon icon, string? yes, string? no, bool yesIsDangerous = false, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
         void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
         void ShowError_ViewOwned(string message);
         void ShowError(string message, bool showScannerLogFile = false);

@@ -137,7 +137,7 @@ namespace AngelLoader.Forms
         /// <param name="checkBoxText"></param>
         /// <param name="defaultButton"></param>
         /// <returns></returns>
-        public (bool Cancel, bool DontAskAgain)
+        public (bool Cancel, bool CheckBoxChecked)
         AskToContinueYesNoCustomStrings(
             string message,
             string title,
