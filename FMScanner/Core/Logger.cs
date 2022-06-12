@@ -8,6 +8,7 @@ using static AL_Common.Common;
 
 namespace FMScanner
 {
+    // @LOGGER(Scanner): We should get rid of this and use the main one, moved to AL_Common
     internal static class Logger
     {
         private static readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();

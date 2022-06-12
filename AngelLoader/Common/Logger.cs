@@ -10,6 +10,8 @@ using static AL_Common.Common;
 
 namespace AngelLoader
 {
+    // @LOGGER: We should move this into AL_Common and call it from the scanner too
+    // Since we're thread-safe, we shouldn't need the weird janky second log file.
     internal static class Logger
     {
         internal static void LogFMInstDirError(FanMission fm, string topMessage, Exception? ex = null)
