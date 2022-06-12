@@ -448,16 +448,13 @@ namespace AngelLoader
             {
                 string dlExe = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
 
-                // @DLDetect: Localize and finalize
                 (bool cancel, _) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: GetLocalizedGameNameColon(gameIndex) + "\r\n" +
-                             "AngelLoader has detected that this game currently has an FM installed with DarkLoader. " +
-                             "You should install the original game in DarkLoader before continuing, or you may encounter " +
-                             "problems with the wrong FM being loaded.",
+                             LText.AlertMessages.DarkLoader_InstalledFMFound,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.Warning,
                     yes: LText.Global.OK,
-                    no: !dlExe.IsEmpty() ? "Open DarkLoader now" : null,
+                    no: !dlExe.IsEmpty() ? LText.AlertMessages.DarkLoader_OpenNow : null,
                     defaultButton: MBoxButton.Yes
                 );
                 if (cancel && !dlExe.IsEmpty())

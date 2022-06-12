@@ -259,6 +259,9 @@ namespace AngelLoader.DataClasses
             internal readonly string Error_ViewLog = "View log";
             [FenGenBlankLine]
             internal readonly string FinishedOnUnknown_MultiFMChange = "All selected FMs' finished states are about to be removed and replaced with 'Unknown'. Are you sure you want to do this?";
+            [FenGenBlankLine]
+            internal readonly string DarkLoader_InstalledFMFound = "AngelLoader has detected that this game currently has an FM installed with DarkLoader. You should install the original game in DarkLoader before continuing, or you may encounter problems with the wrong FM being loaded.";
+            internal readonly string DarkLoader_OpenNow = "Open DarkLoader now";
         }
 
         // Working, subject to change
