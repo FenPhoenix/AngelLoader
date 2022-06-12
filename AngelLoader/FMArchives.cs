@@ -184,8 +184,7 @@ namespace AngelLoader
             });
         }
 
-        // @DB: When deleting FMs, allow user to also delete them from the database
-        internal static async Task DeleteFMsFromDB(List<FanMission> fmsToDelete, bool singleCall = true)
+        internal static async Task DeleteFMsFromDB(List<FanMission> fmsToDelete)
         {
             if (fmsToDelete.Count == 0) return;
             foreach (FanMission fm in fmsToDelete)
@@ -195,27 +194,31 @@ namespace AngelLoader
 
             bool single = fmsToDelete.Count == 1;
 
-            if (singleCall)
-            {
-                (bool cont, _) =
-                    Core.View.ShowCustomDialog(
-                        messageTop:
-                        (single
-                            ? LText.FMDeletion.DeleteFromDB_AlertMessage1_Single
-                            : LText.FMDeletion.DeleteFromDB_AlertMessage1_Multiple) +
-                        "\r\n\r\n" +
-                        (single
-                            ? LText.FMDeletion.DeleteFromDB_AlertMessage2_Single
-                            : LText.FMDeletion.DeleteFromDB_AlertMessage2_Multiple),
-                        messageBottom: "",
-                        title: LText.AlertMessages.Alert,
-                        icon: MBoxIcon.Warning,
-                        okText: LText.FMDeletion.DeleteFromDB_OKMessage,
-                        cancelText: LText.Global.Cancel,
-                        okIsDangerous: true);
-                if (!cont) return;
-            }
+            (bool cont, _) =
+                Core.View.ShowCustomDialog(
+                    messageTop:
+                    (single
+                        ? LText.FMDeletion.DeleteFromDB_AlertMessage1_Single
+                        : LText.FMDeletion.DeleteFromDB_AlertMessage1_Multiple) +
+                    "\r\n\r\n" +
+                    (single
+                        ? LText.FMDeletion.DeleteFromDB_AlertMessage2_Single
+                        : LText.FMDeletion.DeleteFromDB_AlertMessage2_Multiple),
+                    messageBottom: "",
+                    title: LText.AlertMessages.Alert,
+                    icon: MBoxIcon.Warning,
+                    okText: LText.FMDeletion.DeleteFromDB_OKMessage,
+                    cancelText: LText.Global.Cancel,
+                    okIsDangerous: true);
+            if (!cont) return;
 
+            DeleteFMsFromDB_Internal(fmsToDelete);
+            await DeleteFromDBRefresh();
+        }
+
+        // @DB: When deleting FMs, allow user to also delete them from the database
+        private static void DeleteFMsFromDB_Internal(List<FanMission> fmsToDelete)
+        {
             var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
             for (int i = 0; i < FMDataIniList.Count; i++)
             {
@@ -250,8 +253,6 @@ namespace AngelLoader
                     FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
                 }
             }
-
-            if (singleCall) await DeleteFromDBRefresh();
         }
 
         private static async Task DeleteFromDBRefresh()
@@ -476,6 +477,13 @@ namespace AngelLoader
             }
         }
 
+        /*
+        @DB(Delete from DB while deleting archive) - notes on the plan:
+        -We can't cull out the unavailable FMs anymore since we need to delete them if the users tells us to
+        -Deal with if all are installed and have no archive available?
+        -Can we really not combine these like we've done with every other previously-singular method? Surely we can.
+        -Remember to call the DB-delete-refresh if necessary instead of the lighter delete-only-archive refresh
+        */
         internal static async Task DeleteMultiple(List<FanMission> fms)
         {
             int origCount = fms.Count;
@@ -551,6 +559,7 @@ namespace AngelLoader
             // we'll just ask the user per-FM if we find any as we go. Sorry to stop your batch, but yeah.
 
             // This thing just tells you to uninstall the FMs to delete them, so it's correct functionality
+            // @DB: Should we just uninstall-as-delete all in this case? Seems more convenient
             if (installedNoArchiveCount == fms.Count)
             {
                 Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives);
@@ -620,7 +629,7 @@ namespace AngelLoader
                     try
                     {
                         Core.View.SetProgressBoxState_Single(
-                            percent: Common.GetPercentFromValue_Int(i + 1, fms.Count),
+                            percent: GetPercentFromValue_Int(i + 1, fms.Count),
                             message2: GetFMId(fm)
                         );
 
