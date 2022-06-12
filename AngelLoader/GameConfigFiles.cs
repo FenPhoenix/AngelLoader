@@ -1083,6 +1083,49 @@ namespace AngelLoader
             return (Error.None, list);
         }
 
+        // @DLDetect: Should we run this on SetGameDataFromDisk()? Or on play maybe? Play might be more appropriate.
+        // Because that's when the user is going to care, cause that's when they're right about to get the wrong FM.
+        // (or an FM at all if they meant to play without)
+        internal static Game DarkLoaderFMInstallDetect()
+        {
+            Game ret = Game.Null;
+
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gameIndex = (GameIndex)i;
+
+                // @GENGAMES(Thief 3 isn't supported by DarkLoader)
+                if (gameIndex == GameIndex.Thief3) continue;
+
+                string gamePath = Config.GetGamePath(gameIndex);
+                if (gamePath.IsEmpty()) continue;
+                if (TryCombineFilePathAndCheckExistence(gamePath, Paths.DarkLoaderDotCurrent, out string dlFile))
+                {
+                    try
+                    {
+                        using var sr = new StreamReader(dlFile);
+                        string? line1 = sr.ReadLine();
+                        string? line2 = sr.ReadLine();
+                        string? line3 = sr.ReadLine();
+                        if (line1 != null &&
+                            line2 != null &&
+                            line1.Trim() != "Original" &&
+                            line2.Trim() != "-1" &&
+                            line3 != null)
+                        {
+                            ret |= GameIndexToGame(gameIndex);
+                        }
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+            }
+
+            return ret;
+        }
+
         #region Helpers
 
         private static string RemoveLeadingSemicolons(string line)

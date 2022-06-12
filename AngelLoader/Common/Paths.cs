@@ -243,6 +243,10 @@ namespace AngelLoader
 
         #region Other loaders' files
 
+        // DarkLoader uses this to say whether an FM is installed, and we use it to detect this situation so we
+        // can tell the user to go uninstall it in DarkLoader before trying to play
+        internal const string DarkLoaderDotCurrent = "DarkLoader.Current";
+
         internal const string FMSelDll = "fmsel.dll";
 
         internal const string DarkLoaderIni = "DarkLoader.ini";
