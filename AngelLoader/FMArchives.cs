@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AL_Common.Common;
 using static AngelLoader.Logger;
@@ -65,6 +66,7 @@ namespace AngelLoader
         /// <param name="archivePaths"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
+        [PublicAPI]
         internal static string FindFirstMatch(string fmArchive, List<string>? archivePaths = null, CancellationToken? ct = null)
         {
             if (fmArchive.IsEmpty()) return "";
@@ -92,6 +94,7 @@ namespace AngelLoader
         /// <param name="fmArchive"></param>
         /// <param name="archivePaths"></param>
         /// <returns></returns>
+        [PublicAPI]
         internal static List<string> FindAllMatches(string fmArchive, List<string>? archivePaths = null)
         {
             if (fmArchive.IsEmpty()) return new List<string>();
@@ -111,25 +114,7 @@ namespace AngelLoader
             return list;
         }
 
-        private static (bool Cancel, bool Cont) ShowAskToUninstallFirstDialog(bool single)
-        {
-            (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
-                message: single
-                    ? LText.FMDeletion.AskToUninstallFMFirst
-                    : LText.FMDeletion.AskToUninstallFMFirst_Multiple,
-                title: single
-                    ? LText.AlertMessages.DeleteFMArchive
-                    : LText.AlertMessages.DeleteFMArchives,
-                icon: MBoxIcon.Warning,
-                yes: LText.AlertMessages.Uninstall,
-                no: LText.AlertMessages.LeaveInstalled,
-                cancel: LText.Global.Cancel
-            );
-
-            return (cancel, cont);
-        }
-
-        internal static (bool Success, List<string> FinalArchives)
+        private static (bool Success, List<string> FinalArchives)
         GetFinalArchives(List<string> archives)
         {
             var retFail = (false, new List<string>());
@@ -164,25 +149,6 @@ namespace AngelLoader
             }
 
             return (true, finalArchives);
-        }
-
-        private static async Task DoDeleteOperation(List<string> finalArchives)
-        {
-            await Task.Run(() =>
-            {
-                foreach (string archive in finalArchives)
-                {
-                    try
-                    {
-                        FileSystem.DeleteFile(archive, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Exception deleting archive '" + archive + "'", ex);
-                        Core.Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive);
-                    }
-                }
-            });
         }
 
         internal static async Task DeleteFMsFromDB(List<FanMission> fmsToDelete)
@@ -267,231 +233,11 @@ namespace AngelLoader
             await Core.RefreshFMsListFromDisk(selFM);
         }
 
-        internal static Task DeleteSingle(FanMission fm)
-        {
-            return DeleteMultiple(new List<FanMission> { fm });
-        }
-
-        internal static async Task DeleteSingle_Internal(FanMission fm)
-        {
-            if (fm.MarkedUnavailable)
-            {
-                const string message = "DeleteSingle(): " + nameof(fm) + " unavailable.";
-                Log(message, stackTrace: true);
-                Core.Dialogs.ShowError(message);
-                return;
-            }
-
-            List<string> archives;
-            try
-            {
-                Core.View.SetWaitCursor(true);
-
-                archives = FindAllMatches(fm.Archive);
-            }
-            finally
-            {
-                Core.View.SetWaitCursor(false);
-            }
-
-            (bool success, List<string> finalArchives) = GetFinalArchives(archives);
-            if (!success) return;
-
-            if (fm.Installed)
-            {
-                (bool cancel, bool cont) = ShowAskToUninstallFirstDialog(single: true);
-
-                if (cancel) return;
-
-                if (cont)
-                {
-                    if (!await FMInstallAndPlay.Uninstall(fm))
-                    {
-                        return;
-                    }
-                }
-            }
-
-            try
-            {
-                Core.View.ShowProgressBox_Single(
-                    message1: LText.ProgressBox.DeletingFMArchive,
-                    progressType: ProgressType.Indeterminate
-                );
-
-                await DoDeleteOperation(finalArchives);
-            }
-            finally
-            {
-                bool markedUnavailable = await MarkUnavailableIfNeeded(fm);
-
-                Core.View.HideProgressBox();
-
-                if (markedUnavailable)
-                {
-                    await Core.View.SortAndSetFilter(keepSelection: true);
-                }
-            }
-        }
-
-        private static async Task<bool> MarkUnavailableIfNeeded(FanMission fm)
-        {
-            var newArchives = await Task.Run(() => FindAllMatches(fm.Archive));
-            if (newArchives.Count == 0 && !fm.Installed)
-            {
-                fm.MarkedUnavailable = true;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Deletes <paramref name="fm"/>'s archive from disk, asking the user for confirmation first.
-        /// </summary>
-        /// <param name="fm"></param>
-        /// <param name="singleCall"></param>
-        /// <param name="percent"></param>
-        /// <returns></returns>
-        private static async Task DeleteInternal(FanMission fm, bool singleCall = true, int percent = -1)
-        {
-            if (fm.MarkedUnavailable)
-            {
-                string message = "Delete(" + nameof(singleCall) + " == " + singleCall + "): " + nameof(fm) + " unavailable.";
-                Log(message, stackTrace: true);
-                Core.Dialogs.ShowError(message);
-                return;
-            }
-
-            // Use wait cursor in blocking thread, rather than putting this on its own thread.
-            // The archive find operation _probably_ won't take long enough to warrant a progress box,
-            // and if it's quick then the progress box looks like an annoying flicker.
-            List<string> archives;
-            try
-            {
-                if (singleCall) Core.View.SetWaitCursor(true);
-
-                archives = FindAllMatches(fm.Archive);
-            }
-            finally
-            {
-                if (singleCall) Core.View.SetWaitCursor(false);
-            }
-
-            if (archives.Count == 0)
-            {
-                Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
-                return;
-            }
-
-            bool singleArchive = archives.Count == 1;
-
-            var finalArchives = new List<string>();
-
-            if (singleCall || !singleArchive)
-            {
-                (bool accepted, List<string> selectedItems) = Core.View.ShowCustomDialog(
-                    messageTop: singleArchive
-                        ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + archives[0]
-                        : LText.FMDeletion.DuplicateArchivesFound,
-                    messageBottom: "",
-                    title: LText.AlertMessages.DeleteFMArchive,
-                    icon: MBoxIcon.Warning,
-                    okText: singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
-                    cancelText: LText.Global.Cancel,
-                    okIsDangerous: true,
-                    choiceStrings: singleArchive ? null : archives.ToArray());
-
-                if (!accepted) return;
-
-                finalArchives.AddRange(singleArchive ? archives : selectedItems);
-            }
-            else
-            {
-                finalArchives.AddRange(archives);
-            }
-
-            if (singleCall && fm.Installed)
-            {
-                (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
-                    message: LText.FMDeletion.AskToUninstallFMFirst,
-                    title: LText.AlertMessages.DeleteFMArchive,
-                    icon: MBoxIcon.Warning,
-                    yes: LText.AlertMessages.Uninstall,
-                    no: LText.AlertMessages.LeaveInstalled,
-                    cancel: LText.Global.Cancel
-                );
-
-                if (cancel) return;
-
-                if (cont)
-                {
-                    bool canceled = !await FMInstallAndPlay.Uninstall(fm);
-                    if (canceled) return;
-                }
-            }
-
-            try
-            {
-                if (singleCall)
-                {
-                    Core.View.ShowProgressBox_Single(
-                        message1: LText.ProgressBox.DeletingFMArchive,
-                        progressType: ProgressType.Indeterminate
-                    );
-                }
-                else
-                {
-                    Core.View.SetProgressBoxState_Single(
-                        percent: percent > -1 ? percent : 0,
-                        message2: GetFMId(fm)
-                    );
-                }
-
-                await Task.Run(() =>
-                {
-                    foreach (string archive in finalArchives)
-                    {
-                        try
-                        {
-                            FileSystem.DeleteFile(archive, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log("Exception deleting archive '" + archive + "'", ex);
-                            Core.Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive);
-                        }
-                    }
-                });
-            }
-            finally
-            {
-                var newArchives = await Task.Run(() => FindAllMatches(fm.Archive));
-
-                if (singleCall)
-                {
-                    Core.View.HideProgressBox();
-                }
-
-                if (newArchives.Count == 0 && !fm.Installed)
-                {
-                    fm.MarkedUnavailable = true;
-                    if (singleCall)
-                    {
-                        await Core.View.SortAndSetFilter(keepSelection: true);
-                    }
-                }
-            }
-        }
+        internal static Task DeleteSingle(FanMission fm) => DeleteMultiple(new List<FanMission> { fm });
 
         /*
         @DB(Delete from DB while deleting archive) - notes on the plan:
-        -We can't cull out the unavailable FMs anymore since we need to delete them if the users tells us to
         -Deal with if all are installed and have no archive available?
-        -Can we really not combine these like we've done with every other previously-singular method? Surely we can.
-        -Remember to call the DB-delete-refresh if necessary instead of the lighter delete-only-archive refresh
         */
         internal static async Task DeleteMultiple(List<FanMission> fms)
         {
@@ -672,13 +418,28 @@ namespace AngelLoader
                             );
                         }
 
-                        await DoDeleteOperation(finalArchives);
+                        await Task.Run(() =>
+                        {
+                            foreach (string archive in finalArchives)
+                            {
+                                try
+                                {
+                                    FileSystem.DeleteFile(archive, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log("Exception deleting archive '" + archive + "'", ex);
+                                    Core.Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive);
+                                }
+                            }
+                        });
                     }
                     finally
                     {
-                        await MarkUnavailableIfNeeded(fm);
-                        if (fm.MarkedUnavailable)
+                        var newArchives = await Task.Run(() => FindAllMatches(fm.Archive));
+                        if (newArchives.Count == 0 && !fm.Installed)
                         {
+                            fm.MarkedUnavailable = true;
                             unavailableFMs.Add(fm);
                         }
                     }
