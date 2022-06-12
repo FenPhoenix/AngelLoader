@@ -768,18 +768,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == DeleteFMMenuItem)
             {
-                if (_owner.FMsDGV.MultipleFMsSelected())
-                {
-                    await FMArchives.DeleteMultiple(_owner.FMsDGV.GetSelectedFMs_InOrder_List());
-                }
-                else
-                {
-                    await FMArchives.DeleteSingle(_owner.FMsDGV.GetMainSelectedFM());
-                }
+                await FMDelete.DeleteFMsFromDisk(_owner.FMsDGV.GetSelectedFMs_InOrder_List());
             }
             else if (sender == DeleteFromDBMenuItem)
             {
-                await FMArchives.DeleteFMsFromDB(_owner.GetSelectedFMs_InOrder_List());
+                await FMDelete.DeleteFMsFromDB(_owner.GetSelectedFMs_InOrder_List());
             }
             else if (sender == OpenInDromEdMenuItem)
             {

@@ -2170,9 +2170,7 @@ namespace AngelLoader
                     return;
                 case 1:
                     FanMission fm = fms[0];
-                    await (fm.MarkedUnavailable
-                        ? FMArchives.DeleteFMsFromDB(fms)
-                        : FMArchives.DeleteSingle(fm));
+                    await (fm.MarkedUnavailable ? FMDelete.DeleteFMsFromDB(fms) : FMDelete.DeleteFMsFromDisk(fms));
                     break;
                 default:
                     bool allUnavailable = true;
@@ -2184,7 +2182,7 @@ namespace AngelLoader
                             break;
                         }
                     }
-                    await (allUnavailable ? FMArchives.DeleteFMsFromDB(fms) : FMArchives.DeleteMultiple(fms));
+                    await (allUnavailable ? FMDelete.DeleteFMsFromDB(fms) : FMDelete.DeleteFMsFromDisk(fms));
                     break;
             }
         }
