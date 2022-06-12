@@ -158,11 +158,11 @@ namespace AngelLoader
             fmsList.Clear();
 
             using var fs = File.OpenRead(fileName);
-            using var sw = new StreamReader(fs, Encoding.UTF8);
+            using var sr = new StreamReader(fs, Encoding.UTF8);
 
             bool fmsListIsEmpty = true;
 
-            while (sw.ReadLine() is { } line)
+            while (sr.ReadLine() is { } line)
             {
                 string lineTS = line.TrimStart();
 
