@@ -24,6 +24,7 @@ namespace AngelLoader.Forms
             string? yesText = null,
             string? noText = null,
             string? cancelText = null,
+            bool yesIsDangerous = false,
             string? checkBoxText = null,
             bool? checkBoxChecked = null,
             MBoxButton defaultButton = MBoxButton.Cancel)
@@ -68,6 +69,13 @@ namespace AngelLoader.Forms
 
             base.Text = title;
             MessageLabel.Text = message;
+
+            if (yesIsDangerous && yesButtonVisible)
+            {
+                YesButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+                YesButton.ImageAlign = ContentAlignment.MiddleCenter;
+                YesButton.Image = Images.RedExclamationMarkCircle;
+            }
 
             if (yesText != null) YesButton.Text = yesText;
             if (noText != null) NoButton.Text = noText;

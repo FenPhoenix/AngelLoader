@@ -102,7 +102,6 @@ namespace AngelLoader
                     message: LText.AlertMessages.AudioConversion_SomeSelectedFilesDoNotSupportConversion,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.None,
-                    showDontAskAgain: false,
                     yes: LText.Global.Continue,
                     no: LText.Global.Cancel,
                     defaultButton: MBoxButton.Yes

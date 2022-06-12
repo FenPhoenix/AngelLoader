@@ -86,7 +86,7 @@ namespace AngelLoader
                     message: message,
                     title: LText.AlertMessages.Confirm,
                     icon: MBoxIcon.None,
-                    showDontAskAgain: true,
+                    checkBoxText: LText.AlertMessages.DontAskAgain,
                     yes: LText.Global.PlayFM,
                     no: LText.Global.Cancel);
 
@@ -807,7 +807,7 @@ namespace AngelLoader
                           LText.AlertMessages.Install_ConfirmPlural_AfterNumber,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.None,
-                    showDontAskAgain: true,
+                    checkBoxText: LText.AlertMessages.DontAskAgain,
                     yes: single ? fromPlay ? LText.Global.PlayFM : LText.Global.InstallFM : LText.Global.InstallFMs,
                     no: LText.Global.Cancel,
                     defaultButton: MBoxButton.No);
@@ -1172,7 +1172,7 @@ namespace AngelLoader
                         : LText.AlertMessages.Uninstall_Confirm_Multiple,
                     title: LText.AlertMessages.Confirm,
                     icon: MBoxIcon.Warning,
-                    showDontAskAgain: true,
+                    checkBoxText: LText.AlertMessages.DontAskAgain,
                     yes: LText.AlertMessages.Uninstall,
                     no: LText.Global.Cancel);
 

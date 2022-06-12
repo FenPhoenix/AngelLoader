@@ -131,9 +131,10 @@ namespace AngelLoader.Forms
         /// <param name="message"></param>
         /// <param name="title"></param>
         /// <param name="icon"></param>
-        /// <param name="showDontAskAgain"></param>
         /// <param name="yes"></param>
         /// <param name="no"></param>
+        /// <param name="yesIsDangerous"></param>
+        /// <param name="checkBoxText"></param>
         /// <param name="defaultButton"></param>
         /// <returns></returns>
         public (bool Cancel, bool DontAskAgain)
@@ -141,9 +142,10 @@ namespace AngelLoader.Forms
             string message,
             string title,
             MBoxIcon icon,
-            bool showDontAskAgain,
             string? yes,
             string? no,
+            bool yesIsDangerous = false,
+            string? checkBoxText = null,
             MBoxButton defaultButton = MBoxButton.Yes) =>
             ((bool, bool))InvokeIfViewExists(() =>
             {
@@ -152,8 +154,9 @@ namespace AngelLoader.Forms
                     message: message,
                     yesText: yes,
                     noText: no,
+                    yesIsDangerous: yesIsDangerous,
                     defaultButton: defaultButton,
-                    checkBoxText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
+                    checkBoxText: checkBoxText,
                     icon: GetIcon(icon));
 
                 DialogResult result = d.ShowDialogDark();
