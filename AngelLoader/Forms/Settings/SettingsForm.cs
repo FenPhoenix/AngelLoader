@@ -17,9 +17,9 @@ using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
 using AngelLoader.Forms.WinFormsNative.Dialogs;
 using static AL_Common.Common;
+using static AL_Common.Logger;
 using static AngelLoader.Forms.Interfaces;
 using static AngelLoader.GameSupport;
-using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms

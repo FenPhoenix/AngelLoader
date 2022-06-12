@@ -8,7 +8,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using Microsoft.VisualBasic.FileIO;
 using static AL_Common.Common;
-using static AngelLoader.Logger;
+using static AL_Common.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader

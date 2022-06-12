@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AL_Common;
 using JetBrains.Annotations;
 using Microsoft.VisualBasic.FileIO;
-using static AngelLoader.Logger;
+using static AL_Common.Logger;
 using static AngelLoader.Misc;
 using SearchOption = System.IO.SearchOption;
 

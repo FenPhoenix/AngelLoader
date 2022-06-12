@@ -4,29 +4,19 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
-using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
-namespace AngelLoader
+namespace AL_Common
 {
     // @LOGGER: We should move this into AL_Common and call it from the scanner too
     // Since we're thread-safe, we shouldn't need the weird janky second log file.
-    internal static class Logger
+    public static class Logger
     {
-        internal static void LogFMInstDirError(FanMission fm, string topMessage, Exception? ex = null)
-        {
-            Log(topMessage + "\r\n" +
-                "FM game type: " + fm.Game + "\r\n" +
-                "FM archive name:" + fm.Archive + "\r\n" +
-                "FM installed name:" + fm.InstalledDir + "\r\n" +
-                (GameSupport.GameIsKnownAndSupported(fm.Game)
-                    ? "Base directory for installed FMs: " + Misc.Config.GetFMInstallPathUnsafe(fm.Game)
-                    : "Game type is not known or not supported.") +
-                (ex != null ? "\r\nException:\r\n" + ex : ""));
-        }
+        private static readonly ReaderWriterLockSlim _lock = new();
 
-        private static readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+        private static string _logFile = "";
+        public static void SetLogFile(string logFile) => _logFile = logFile;
 
         #region Interop
 
@@ -59,32 +49,14 @@ namespace AngelLoader
 
         #endregion
 
-        /// <summary>
-        /// A faster version without locking for running on startup.
-        /// </summary>
-        /// <param name="logFile"></param>
-        internal static void ClearLogFileStartup(string logFile = "")
+        private static void ClearLogFile()
         {
-            if (logFile.IsEmpty()) logFile = Paths.LogFile;
-
-            try
-            {
-                File.Delete(logFile);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-        }
-
-        private static void ClearLogFile(string logFile = "")
-        {
-            if (logFile.IsEmpty()) logFile = Paths.LogFile;
+            if (_logFile.IsEmpty()) return;
 
             try
             {
                 _lock.EnterWriteLock();
-                File.Delete(logFile);
+                File.Delete(_logFile);
             }
             catch (Exception ex)
             {
@@ -107,11 +79,13 @@ namespace AngelLoader
         /// A faster version without locking or unnecessary options for running on startup.
         /// </summary>
         /// <param name="message"></param>
-        internal static void LogStartup(string message)
+        public static void LogStartup(string message)
         {
+            if (_logFile.IsEmpty()) return;
+
             try
             {
-                using var sw = new StreamWriter(Paths.LogFile, append: false);
+                using var sw = new StreamWriter(_logFile, append: false);
                 sw.WriteLine(GetDateTimeStringFast() + " " + message + "\r\n");
             }
             catch (Exception logEx)
@@ -121,16 +95,18 @@ namespace AngelLoader
         }
 
         // TODO: Consider how to make the log not clear every startup and still have it be feasible for people to "post their log"
-        internal static void Log(
+        public static void Log(
             string message = "",
             Exception? ex = null,
             bool stackTrace = false,
             [CallerMemberName] string callerMemberName = "")
         {
+            if (_logFile.IsEmpty()) return;
+
             try
             {
                 _lock.EnterReadLock();
-                if (File.Exists(Paths.LogFile) && new FileInfo(Paths.LogFile).Length > ByteSize.MB * 50) ClearLogFile();
+                if (File.Exists(_logFile) && new FileInfo(_logFile).Length > ByteSize.MB * 50) ClearLogFile();
             }
             catch (Exception ex1)
             {
@@ -152,7 +128,7 @@ namespace AngelLoader
             {
                 _lock.EnterWriteLock();
 
-                using var sw = new StreamWriter(Paths.LogFile, append: true);
+                using var sw = new StreamWriter(_logFile, append: true);
 
                 string methodNameStr = callerMemberName + "\r\n";
                 sw.WriteLine(GetDateTimeStringFast() + " " + methodNameStr + message);

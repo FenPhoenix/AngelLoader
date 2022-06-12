@@ -8,8 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
+using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
-using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader

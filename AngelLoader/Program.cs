@@ -1,9 +1,10 @@
 ﻿//#define WPF
 
 using System;
+using System.IO;
 using System.Reflection;
 using Microsoft.VisualBasic.ApplicationServices;
-using static AngelLoader.Logger;
+using static AL_Common.Logger;
 
 namespace AngelLoader
 {
@@ -40,9 +41,18 @@ namespace AngelLoader
                 IViewEnvironment viewEnv = new Forms.FormsViewEnvironment();
 #else
 #endif
+                // IMPORTANT: Set this first thing or else we won't have a log file!
+                SetLogFile(Paths.LogFile);
 
-                // We need to clear this because FMScanner doesn't have a startup version
-                ClearLogFileStartup(Paths.ScannerLogFile);
+                // We use just the one file now
+                try
+                {
+                    File.Delete(Paths.ScannerLogFile_Old);
+                }
+                catch
+                {
+                    // ignore
+                }
 
                 // We don't need to clear this log because LogStartup says append: false
                 LogStartup(viewEnv.ProductVersion + " Started session");

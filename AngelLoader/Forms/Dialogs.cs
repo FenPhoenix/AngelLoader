@@ -173,23 +173,20 @@ namespace AngelLoader.Forms
         public void ShowError_ViewOwned(string message)
         {
             AssertR(FormsViewEnvironment.ViewCreated, nameof(FormsViewEnvironment) + "." + nameof(FormsViewEnvironment.ViewCreated) + " was false");
-            InvokeIfViewExists(() => ShowError_Internal(message, FormsViewEnvironment.ViewInternal, false));
+            InvokeIfViewExists(() => ShowError_Internal(message, FormsViewEnvironment.ViewInternal));
         }
 
         /// <summary>
         /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="showScannerLogFile"></param>
-        public void ShowError(string message, bool showScannerLogFile = false) =>
-            InvokeIfViewExists(() => ShowError_Internal(message, null, showScannerLogFile));
+        public void ShowError(string message) =>
+            InvokeIfViewExists(() => ShowError_Internal(message, null));
 
         // Private method, not invoked because all calls are
-        private static void ShowError_Internal(string message, IWin32Window? owner, bool showScannerLogFile)
+        private static void ShowError_Internal(string message, IWin32Window? owner)
         {
-            string logFile = showScannerLogFile ? Paths.ScannerLogFile : Paths.LogFile;
-
-            using var d = new DarkErrorDialog(message, logFile);
+            using var d = new DarkErrorDialog(message, Paths.LogFile);
             if (owner != null)
             {
                 d.ShowDialogDark(owner);

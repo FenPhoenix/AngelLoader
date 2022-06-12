@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
+using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
-using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader
@@ -186,7 +186,6 @@ namespace AngelLoader
                         using var scanner = new FMScanner.Scanner(Paths.SevenZipExe)
                         {
                             FullScanOptions = GetDefaultScanOptions(),
-                            LogFile = Paths.ScannerLogFile
                         };
                         fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, _scanCts.Token);
                     }
@@ -216,7 +215,7 @@ namespace AngelLoader
                             {
                                 // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
                                 // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
-                                Core.Dialogs.ShowError(ErrorText.ScanErrors, showScannerLogFile: true);
+                                Core.Dialogs.ShowError(ErrorText.ScanErrors);
                             }
                         }
                     }

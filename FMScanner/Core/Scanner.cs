@@ -29,7 +29,7 @@ using JetBrains.Annotations;
 using SevenZip;
 using static System.StringComparison;
 using static AL_Common.Common;
-using static FMScanner.Logger;
+using static AL_Common.Logger;
 
 namespace FMScanner
 {
@@ -325,14 +325,14 @@ namespace FMScanner
 
             if (tempPath.IsEmpty())
             {
-                Log(LogFile, "Argument is null or empty: " + nameof(tempPath));
+                Log("Argument is null or empty: " + nameof(tempPath));
                 throw new ArgumentException("Argument is null or empty.", nameof(tempPath));
             }
 
             if (missions == null) throw new ArgumentNullException(nameof(missions));
             if (missions.Count == 0 || (missions.Count == 1 && missions[0].Path.IsEmpty()))
             {
-                Log(LogFile, "No mission(s) specified. tempPath: " + tempPath);
+                Log("No mission(s) specified. tempPath: " + tempPath);
                 throw new ArgumentException("No mission(s) specified.", nameof(missions));
             }
 
@@ -378,7 +378,7 @@ namespace FMScanner
                         }
                         catch (Exception ex)
                         {
-                            Log(LogFile, missions[i].Path + ": Path.Combine error, paths are probably invalid", ex);
+                            Log(missions[i].Path + ": Path.Combine error, paths are probably invalid", ex);
                             scannedFMDataList.Add(new ScannedFMDataAndError());
                             nullAlreadyAdded = true;
                         }
@@ -428,7 +428,7 @@ namespace FMScanner
                         }
                         catch (Exception ex)
                         {
-                            Log(LogFile, missions[i].Path + ": Exception in FM scan", ex);
+                            Log(missions[i].Path + ": Exception in FM scan", ex);
                             scannedFMAndError.ScannedFMData = null;
                             scannedFMAndError.Exception = ex;
                             scannedFMAndError.ErrorInfo = missions[i].Path + ": Exception in FM scan";
@@ -598,8 +598,7 @@ namespace FMScanner
 
                     if (result.ErrorOccurred)
                     {
-                        Log(LogFile,
-                            fm.Path + ": fm is 7z\r\n" +
+                        Log(fm.Path + ": fm is 7z\r\n" +
                             "7z.exe path: " + _sevenZipExePath + "\r\n" +
                             result.ToString());
 
@@ -613,7 +612,7 @@ namespace FMScanner
                 }
                 catch (Exception ex)
                 {
-                    Log(LogFile, fm.Path + ": fm is 7z, exception in 7z.exe extraction", ex);
+                    Log(fm.Path + ": fm is 7z, exception in 7z.exe extraction", ex);
                     return UnsupportedZip(
                         archivePath: fm.Path,
                         fen7zResult: null,
@@ -658,16 +657,14 @@ namespace FMScanner
                         // thrown while loading them. If this passes, we're definitely good.
                         if (_archive.Entries.Count == 0)
                         {
-                            Log(LogFile,
-                                fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.");
+                            Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.");
                             return UnsupportedZip(fm.Path, null, null, "");
                         }
                     }
                     catch (Exception ex)
                     {
                         // Invalid zip file, whatever, move on
-                        Log(LogFile,
-                            fm.Path + ": fm is zip, exception in " +
+                        Log(fm.Path + ": fm is zip, exception in " +
                             nameof(ZipArchiveFast) +
                             " construction or entries getting. Returning 'Unsupported' game type.", ex);
                         return UnsupportedZip(fm.Path, null, ex, "");
@@ -675,8 +672,7 @@ namespace FMScanner
                 }
                 else
                 {
-                    Log(LogFile,
-                        fm.Path + ": " + nameof(_fmIsZip) +
+                    Log(fm.Path + ": " + nameof(_fmIsZip) +
                         " == true, but extension was not .zip. Returning 'Unsupported' game type.");
                     return UnsupportedZip(fm.Path, null, null, "");
                 }
@@ -685,8 +681,7 @@ namespace FMScanner
             {
                 if (!Directory.Exists(_fmWorkingPath))
                 {
-                    Log(LogFile,
-                        fm.Path + ": fm is dir, but " + nameof(_fmWorkingPath) +
+                    Log(fm.Path + ": fm is dir, but " + nameof(_fmWorkingPath) +
                         " (" + _fmWorkingPath + ") doesn't exist. Returning 'Unsupported' game type.");
                     return UnsupportedDir(null, null, "");
                 }
@@ -782,8 +777,7 @@ namespace FMScanner
             if (!success)
             {
                 string ext = _fmIsZip ? "zip" : _fmIsSevenZip ? "7z" : "dir";
-                Log(LogFile,
-                    fm.Path + ": fm is " + ext + ", " +
+                Log(fm.Path + ": fm is " + ext + ", " +
                     nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.");
 
                 return _fmIsZip || _fmIsSevenZip ? UnsupportedZip(fm.Path, null, null, "") : UnsupportedDir(null, null, "");
@@ -1185,14 +1179,14 @@ namespace FMScanner
                 }
                 catch (Exception ex)
                 {
-                    Log(LogFile, "Exception copying files to cache during scan", ex);
+                    Log("Exception copying files to cache during scan", ex);
                     try
                     {
-                        Directory.Delete(cachePath);
+                        DeleteDirectory(cachePath);
                     }
                     catch (Exception ex2)
                     {
-                        Log(LogFile, "Exception deleting cache path '" + cachePath + "' as part of exception handling for cache copy failure", ex2);
+                        Log("Exception deleting cache path '" + cachePath + "' as part of exception handling for cache copy failure", ex2);
                     }
                 }
             }
@@ -1550,8 +1544,7 @@ namespace FMScanner
                 {
                     if (baseDirFiles.Count == 0)
                     {
-                        Log(LogFile,
-                            fmPath + ": 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.");
+                        Log(fmPath + ": 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.");
                         return false;
                     }
 
@@ -1601,8 +1594,7 @@ namespace FMScanner
                 {
                     if (baseDirFiles.Count == 0)
                     {
-                        Log(LogFile,
-                            fmPath + ": 'fm is dir' codepath: No files in base dir. Returning false.");
+                        Log(fmPath + ": 'fm is dir' codepath: No files in base dir. Returning false.");
                         return false;
                     }
 
@@ -1722,8 +1714,7 @@ namespace FMScanner
 
             if (misFiles.Count == 0)
             {
-                Log(LogFile,
-                    fmPath + ": No .mis files in base dir. Returning false.");
+                Log(fmPath + ": No .mis files in base dir. Returning false.");
                 return false;
             }
 
@@ -3674,25 +3665,7 @@ namespace FMScanner
                 {
                     return;
                 }
-
-                foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.AllDirectories))
-                {
-                    new FileInfo(f).IsReadOnly = false;
-                }
-
-                foreach (string d in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.AllDirectories))
-                {
-                    _ = new DirectoryInfo(d) { Attributes = FileAttributes.Normal };
-                }
-
-                var ds = Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly);
-                for (int i = 0; i < ds.Length; i++)
-                {
-                    Directory.Delete(ds[i], true);
-                }
-
-                _ = new DirectoryInfo(_fmWorkingPath) { Attributes = FileAttributes.Normal };
-                Directory.Delete(_fmWorkingPath, recursive: true);
+                DeleteDirectory(_fmWorkingPath);
             }
             catch
             {
@@ -3701,6 +3674,32 @@ namespace FMScanner
         }
 
         #region Helpers
+
+        /// <summary>
+        /// Deletes a directory after first setting everything in it, and itself, to non-read-only.
+        /// </summary>
+        /// <param name="directory"></param>
+        private void DeleteDirectory(string directory)
+        {
+            foreach (string f in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                new FileInfo(f).IsReadOnly = false;
+            }
+
+            foreach (string d in Directory.GetDirectories(directory, "*", SearchOption.AllDirectories))
+            {
+                _ = new DirectoryInfo(d) { Attributes = FileAttributes.Normal };
+            }
+
+            var ds = Directory.GetDirectories(directory, "*", SearchOption.TopDirectoryOnly);
+            for (int i = 0; i < ds.Length; i++)
+            {
+                Directory.Delete(ds[i], true);
+            }
+
+            _ = new DirectoryInfo(directory) { Attributes = FileAttributes.Normal };
+            Directory.Delete(directory, recursive: true);
+        }
 
         #region Generic dir/file functions
 

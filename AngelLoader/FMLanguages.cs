@@ -4,9 +4,9 @@ using System.IO;
 using AngelLoader.DataClasses;
 using SevenZip;
 using static AL_Common.Common;
+using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.LanguageSupport;
-using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader

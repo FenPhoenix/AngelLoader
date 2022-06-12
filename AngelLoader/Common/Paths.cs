@@ -5,7 +5,7 @@ using System.Security;
 using System.Text;
 using Microsoft.Win32;
 using static AL_Common.Common;
-using static AngelLoader.Logger;
+using static AL_Common.Logger;
 
 namespace AngelLoader
 {
@@ -235,7 +235,8 @@ namespace AngelLoader
         #region Log files
 
         internal static readonly string LogFile = PathCombineFast_NoChecks(Startup, "AngelLoader_log.txt");
-        internal static readonly string ScannerLogFile = PathCombineFast_NoChecks(Startup, "FMScanner_log.txt");
+        // We only use this to delete it in new versions for cleanliness
+        internal static readonly string ScannerLogFile_Old = PathCombineFast_NoChecks(Startup, "FMScanner_log.txt");
 
         #endregion
 

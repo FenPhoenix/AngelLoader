@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 using static AL_Common.Common;
+using static AL_Common.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -176,7 +177,7 @@ namespace AngelLoader.Forms.CustomControls
             catch (Exception ex)
             {
                 // @BetterErrors(RTFBox/ChangeEncodingInternal())
-                Logger.Log("Couldn't set encoding", ex);
+                Log("Couldn't set encoding", ex);
                 return retEncoding;
             }
             finally

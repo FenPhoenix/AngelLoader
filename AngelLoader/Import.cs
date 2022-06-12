@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
 using FMScanner;
-using static AngelLoader.Logger;
+using static AL_Common.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader

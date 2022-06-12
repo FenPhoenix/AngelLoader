@@ -148,7 +148,7 @@ namespace AngelLoader
         (bool Cancel, bool CheckBoxChecked) AskToContinueYesNoCustomStrings(string message, string title, MBoxIcon icon, string? yes, string? no, bool yesIsDangerous = false, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
         void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
         void ShowError_ViewOwned(string message);
-        void ShowError(string message, bool showScannerLogFile = false);
+        void ShowError(string message);
         void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon);
     }
 

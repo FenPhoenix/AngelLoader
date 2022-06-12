@@ -9,9 +9,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
+using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.LanguageSupport;
-using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader

@@ -8,9 +8,9 @@ using System.Threading;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.LanguageSupport;
-using static AngelLoader.Logger;
 using static AngelLoader.NativeCommon;
 
 namespace AngelLoader
@@ -301,6 +301,19 @@ namespace AngelLoader
             }
 
             return new ZipArchive(File.OpenRead(fileName), ZipArchiveMode.Read, leaveOpen: false, enc);
+        }
+
+        internal static void LogFMInstDirError(FanMission fm, string topMessage, Exception? ex = null)
+        {
+            Log(
+                topMessage + "\r\n" +
+                "FM game type: " + fm.Game + "\r\n" +
+                "FM archive name:" + fm.Archive + "\r\n" +
+                "FM installed name:" + fm.InstalledDir + "\r\n" +
+                (GameIsKnownAndSupported(fm.Game)
+                    ? "Base directory for installed FMs: " + Config.GetFMInstallPathUnsafe(fm.Game)
+                    : "Game type is not known or not supported.") +
+                (ex != null ? "\r\nException:\r\n" + ex : ""));
         }
     }
 }

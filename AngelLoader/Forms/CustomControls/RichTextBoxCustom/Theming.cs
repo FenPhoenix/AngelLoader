@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
+using static AL_Common.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -78,7 +79,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             catch (Exception ex)
             {
-                Logger.Log("Couldn't set dark mode to " + _darkModeEnabled, ex);
+                Log("Couldn't set dark mode to " + _darkModeEnabled, ex);
             }
             finally
             {
