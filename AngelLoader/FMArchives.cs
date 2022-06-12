@@ -113,11 +113,15 @@ namespace AngelLoader
             return list;
         }
 
-        private static (bool Cancel, bool Cont) UninstallFirstDialog()
+        private static (bool Cancel, bool Cont) ShowAskToUninstallFirstDialog(bool single)
         {
             (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
-                message: LText.FMDeletion.AskToUninstallFMFirst,
-                title: LText.AlertMessages.DeleteFMArchive,
+                message: single
+                    ? LText.FMDeletion.AskToUninstallFMFirst
+                    : LText.FMDeletion.AskToUninstallFMFirst_Multiple,
+                title: single
+                    ? LText.AlertMessages.DeleteFMArchive
+                    : LText.AlertMessages.DeleteFMArchives,
                 icon: MBoxIcon.Warning,
                 yes: LText.AlertMessages.Uninstall,
                 no: LText.AlertMessages.LeaveInstalled,
@@ -294,7 +298,7 @@ namespace AngelLoader
 
             if (fm.Installed)
             {
-                (bool cancel, bool cont) = UninstallFirstDialog();
+                (bool cancel, bool cont) = ShowAskToUninstallFirstDialog(single: true);
 
                 if (cancel) return;
 
@@ -582,7 +586,7 @@ namespace AngelLoader
 
             if (installedCount > 0)
             {
-                (bool cancel, bool cont) = UninstallFirstDialog();
+                (bool cancel, bool cont) = ShowAskToUninstallFirstDialog(single: false);
 
                 if (cancel) return;
                 if (cont)
