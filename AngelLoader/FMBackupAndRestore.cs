@@ -51,7 +51,7 @@ namespace AngelLoader
         private const string _removeFileEq = "RemoveFile=";
         private const string _removeDirEq = "RemoveDir=";
 
-        // IMPORTANT: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
+        // IMPORTANT: @DIRSEP: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
         private static readonly Regex _ss2SaveDirsInZipRegex = new Regex(@"^save_[0123456789]{1,2}[/\\]",
             RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
