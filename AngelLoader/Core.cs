@@ -1,12 +1,37 @@
 ﻿//#define ENABLE_SAFE_README_IDENTICALITY_TEST
 
-/* NOTE: Core ideas:
- -We could have the stub be called back on game exit and use that to track game lifetime, for temp config var changes
-  But note we may have to handle no_unload_fmsel option - make sure we don't have stale values on SelectFM call?
- -@IO_SAFETY: Make a system where files get temp-copied and then if writes fail, we copy the old file back (FMSel does this)
-  For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
-  if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
-  every time we write
+/*
+NOTE: Core ideas:
+-We could have the stub be called back on game exit and use that to track game lifetime, for temp config var changes
+ But note we may have to handle no_unload_fmsel option - make sure we don't have stale values on SelectFM call?
+-@IO_SAFETY: Make a system where files get temp-copied and then if writes fail, we copy the old file back (FMSel does this)
+ For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
+ if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
+ every time we write
+
+@DLDetect(Detecting DarkLoader FM install):
+DL puts DarkLoader.Current file into game directory.
+
+When original is installed, the file looks like this:
+
+ Original
+-1
+
+When an FM is installed, it's like this (example):
+
+F:\FM pack\All\Fireflyv1aDE.zip
+19039219
+C:\Thief Games (no backup)\Thief2-DL-Test_Diff\miss21.mis
+C:\Thief Games (no backup)\Thief2-DL-Test_Diff\Fireflyv1.txt
+C:\Thief Games (no backup)\Thief2-DL-Test_Diff\firefly.gam
+
+etc.
+
+If an FM has file(s) that will overwrite original file(s), the original(s) are backed up in darkloader_backup.zip
+in the game directory. On restore, presumably it just deletes all the files listed in DarkLoader.Current and then
+restores the zip. Check this.
+
+We can therefore detect if a DarkLoader FM is installed and inform the user of what to do.
 */
 using System;
 using System.Collections.Generic;
