@@ -189,7 +189,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Uninstall_Confirm = "Are you sure you want to uninstall this FM?";
             internal readonly string Uninstall_Confirm_Multiple = "Are you sure you want to uninstall these FMs?";
             internal readonly string Uninstall_GameIsRunning = "Game is running; unable to uninstall FM. Please exit the game and then try again.";
-            internal readonly string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Saves and screenshots will be backed up, but any other data will not. Are you sure you want to uninstall this FM?";
+            internal readonly string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Saves and screenshots will be backed up if you have chosen to do so, but any other data will not. Are you sure you want to uninstall this FM?";
             internal readonly string Uninstall_BackupSavesAndScreenshots = "Back up saves and screenshots?";
             internal readonly string Uninstall_BackupAllData = "Back up all modified/added/removed files (including saves and screenshots)?";
             internal readonly string Uninstall_BackupChooseNoNote = "If you choose \"Don't back up\", then existing backups will remain, but they will not be updated.";

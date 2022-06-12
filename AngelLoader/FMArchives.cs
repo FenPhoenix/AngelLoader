@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
 using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AL_Common.Common;
 using static AngelLoader.Logger;
@@ -16,7 +15,6 @@ using SearchOption = System.IO.SearchOption;
 
 namespace AngelLoader
 {
-    [PublicAPI]
     internal static class FMArchives
     {
         private static CancellationTokenSource _deleteCts = new();
@@ -132,7 +130,7 @@ namespace AngelLoader
         }
 
         internal static (bool Success, List<string> FinalArchives)
-        GetFinalArchives(List<string> archives, bool singleCall)
+        GetFinalArchives(List<string> archives)
         {
             var retFail = (false, new List<string>());
 
@@ -144,12 +142,10 @@ namespace AngelLoader
 
             bool singleArchive = archives.Count == 1;
             var finalArchives = new List<string>();
-            if (singleCall || !singleArchive)
+            if (!singleArchive)
             {
                 (bool accepted, List<string> selectedItems) = Core.View.ShowCustomDialog(
-                    messageTop: singleArchive
-                        ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + archives[0]
-                        : LText.FMDeletion.DuplicateArchivesFound,
+                    messageTop: LText.FMDeletion.DuplicateArchivesFound,
                     messageBottom: "",
                     title: LText.AlertMessages.DeleteFMArchive,
                     icon: MBoxIcon.Warning,
@@ -271,7 +267,12 @@ namespace AngelLoader
             await Core.RefreshFMsListFromDisk(selFM);
         }
 
-        internal static async Task DeleteSingle(FanMission fm)
+        internal static Task DeleteSingle(FanMission fm)
+        {
+            return DeleteMultiple(new List<FanMission> { fm });
+        }
+
+        internal static async Task DeleteSingle_Internal(FanMission fm)
         {
             if (fm.MarkedUnavailable)
             {
@@ -293,7 +294,7 @@ namespace AngelLoader
                 Core.View.SetWaitCursor(false);
             }
 
-            (bool success, List<string> finalArchives) = GetFinalArchives(archives, singleCall: true);
+            (bool success, List<string> finalArchives) = GetFinalArchives(archives);
             if (!success) return;
 
             if (fm.Installed)
@@ -496,6 +497,8 @@ namespace AngelLoader
         {
             int origCount = fms.Count;
 
+            bool single = origCount == 1;
+
             var unavailableFMs = new List<FanMission>(fms.Count);
 
             void MoveUnavailableFMsFromMainListToUnavailableList()
@@ -561,17 +564,19 @@ namespace AngelLoader
             }
 
             // @DB: Localize and finalize
-            (bool accepted, bool deleteFromDB) = Core.Dialogs.AskToContinueYesNoCustomStrings(
-                message: LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
-                         LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
-                title: LText.AlertMessages.DeleteFMArchives,
+            (bool cancel, bool deleteFromDB) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                message: single
+                    ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + fms[0].Archive
+                    : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
+                      LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
+                title: single ? LText.AlertMessages.DeleteFMArchive : LText.AlertMessages.DeleteFMArchives,
                 icon: MBoxIcon.Warning,
-                yes: LText.FMDeletion.DeleteFMs_CertainMultiple,
+                yes: single ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs_CertainMultiple,
                 no: LText.Global.Cancel,
-                checkBoxText: "Also delete FMs from database",
+                checkBoxText: "Also delete FM(s) from database",
                 yesIsDangerous: true);
 
-            if (!accepted) return;
+            if (cancel) return;
 
             // Since multiple archives with the same name should be the rare case (nobody should be doing it),
             // we'll just ask the user per-FM if we find any as we go. Sorry to stop your batch, but yeah.
@@ -580,13 +585,26 @@ namespace AngelLoader
             // @DB: Should we just uninstall-as-delete all in this case? Seems more convenient
             if (installedNoArchiveCount == fms.Count)
             {
-                Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound_All, LText.AlertMessages.DeleteFMArchives);
+                Core.Dialogs.ShowAlert(
+                    single ? LText.FMDeletion.ArchiveNotFound : LText.FMDeletion.ArchiveNotFound_All,
+                    single ? LText.AlertMessages.DeleteFMArchive : LText.AlertMessages.DeleteFMArchives);
                 return;
             }
 
             if (installedCount > 0)
             {
-                (bool cancel, bool cont) = ShowAskToUninstallFirstDialog(single: false);
+                (cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
+                    message: single
+                        ? LText.FMDeletion.AskToUninstallFMFirst
+                        : LText.FMDeletion.AskToUninstallFMFirst_Multiple,
+                    title: single
+                        ? LText.AlertMessages.DeleteFMArchive
+                        : LText.AlertMessages.DeleteFMArchives,
+                    icon: MBoxIcon.Warning,
+                    yes: LText.AlertMessages.Uninstall,
+                    no: LText.AlertMessages.LeaveInstalled,
+                    cancel: LText.Global.Cancel
+                );
 
                 if (cancel) return;
                 if (cont)
@@ -623,12 +641,15 @@ namespace AngelLoader
             try
             {
                 _deleteCts = _deleteCts.Recreate();
-                Core.View.ShowProgressBox_Single(
-                    message1: LText.ProgressBox.DeletingFMArchives,
-                    progressType: ProgressType.Determinate,
-                    cancelMessage: LText.Global.Stop,
-                    cancelAction: CancelToken
-                );
+                if (!single)
+                {
+                    Core.View.ShowProgressBox_Single(
+                        message1: LText.ProgressBox.DeletingFMArchives,
+                        progressType: ProgressType.Determinate,
+                        cancelMessage: LText.Global.Stop,
+                        cancelAction: CancelToken
+                    );
+                }
 
                 for (int i = 0; i < fms.Count; i++)
                 {
@@ -636,15 +657,20 @@ namespace AngelLoader
 
                     var archives = FindAllMatches(fm.Archive);
 
-                    (bool success, List<string> finalArchives) = GetFinalArchives(archives, singleCall: false);
+                    (bool success, List<string> finalArchives) = GetFinalArchives(archives);
+                    // @DB: For multiple maybe we should just continue the loop?
+                    // But remember to set progress so we don't skip the progress set below
                     if (!success) return;
 
                     try
                     {
-                        Core.View.SetProgressBoxState_Single(
-                            percent: GetPercentFromValue_Int(i + 1, fms.Count),
-                            message2: GetFMId(fm)
-                        );
+                        if (!single)
+                        {
+                            Core.View.SetProgressBoxState_Single(
+                                percent: GetPercentFromValue_Int(i + 1, fms.Count),
+                                message2: GetFMId(fm)
+                            );
+                        }
 
                         await DoDeleteOperation(finalArchives);
                     }
@@ -668,7 +694,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.View.HideProgressBox();
+                if (!single) Core.View.HideProgressBox();
                 if (dbDeleteRefreshRequired)
                 {
                     await DeleteFromDBRefresh();
