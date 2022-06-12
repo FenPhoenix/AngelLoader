@@ -325,14 +325,14 @@ namespace FMScanner
 
             if (tempPath.IsEmpty())
             {
-                Log(LogFile, "Argument is null or empty: " + nameof(tempPath), methodName: false);
+                Log(LogFile, "Argument is null or empty: " + nameof(tempPath));
                 throw new ArgumentException("Argument is null or empty.", nameof(tempPath));
             }
 
             if (missions == null) throw new ArgumentNullException(nameof(missions));
             if (missions.Count == 0 || (missions.Count == 1 && missions[0].Path.IsEmpty()))
             {
-                Log(LogFile, "No mission(s) specified. tempPath: " + tempPath, methodName: false);
+                Log(LogFile, "No mission(s) specified. tempPath: " + tempPath);
                 throw new ArgumentException("No mission(s) specified.", nameof(missions));
             }
 

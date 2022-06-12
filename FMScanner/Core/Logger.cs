@@ -38,8 +38,11 @@ namespace FMScanner
             }
         }
 
-        internal static void Log(string logFile,
-            string message, Exception? ex = null, bool stackTrace = false, bool methodName = true,
+        internal static void Log(
+            string logFile,
+            string message,
+            Exception? ex = null,
+            bool stackTrace = false,
             [CallerMemberName] string callerMemberName = "")
         {
             if (logFile.IsEmpty()) return;
@@ -55,19 +58,27 @@ namespace FMScanner
             }
             finally
             {
-                _lock.ExitReadLock();
+                try
+                {
+                    _lock.ExitReadLock();
+                }
+                catch (Exception logEx)
+                {
+                    Debug.WriteLine(logEx);
+                }
             }
 
             try
             {
                 _lock.EnterWriteLock();
+
                 using var sw = new StreamWriter(logFile, append: true);
-                var st = new StackTrace(1);
-                string methodNameStr = methodName ? callerMemberName + "\r\n" : "";
+
+                string methodNameStr = callerMemberName + "\r\n";
                 sw.WriteLine(
                     DateTime.Now.ToString(CultureInfo.InvariantCulture) + " " +
                     methodNameStr + message);
-                if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + st);
+                if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
                 if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
                 sw.WriteLine();
             }
