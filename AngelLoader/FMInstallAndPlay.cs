@@ -1299,7 +1299,7 @@ namespace AngelLoader
 
                     bool markFMAsUnavailable = false;
 
-                    if (fmData.ArchivePath.IsEmpty())
+                    if (doEndTasks && fmData.ArchivePath.IsEmpty())
                     {
                         (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                             message: LText.AlertMessages.Uninstall_ArchiveNotFound,
