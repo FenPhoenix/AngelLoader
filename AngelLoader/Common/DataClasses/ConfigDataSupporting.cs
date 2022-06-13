@@ -233,7 +233,7 @@ namespace AngelLoader.DataClasses
         internal string Title = "";
         internal string Author = "";
         internal Game Games = Game.Null;
-        internal readonly TagsFilter Tags = new TagsFilter();
+        internal readonly TagsFilter Tags = new();
 
         #region Rating
 
@@ -316,9 +316,9 @@ namespace AngelLoader.DataClasses
 
     internal sealed class TagsFilter
     {
-        internal readonly FMCategoriesCollection AndTags = new FMCategoriesCollection();
-        internal readonly FMCategoriesCollection OrTags = new FMCategoriesCollection();
-        internal readonly FMCategoriesCollection NotTags = new FMCategoriesCollection();
+        internal readonly FMCategoriesCollection AndTags = new();
+        internal readonly FMCategoriesCollection OrTags = new();
+        internal readonly FMCategoriesCollection NotTags = new();
 
         internal void Clear()
         {
