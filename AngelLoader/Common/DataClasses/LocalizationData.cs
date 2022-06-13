@@ -5,12 +5,11 @@ using static AngelLoader.FenGenAttributes;
 
 namespace AngelLoader.DataClasses
 {
-    // NOTE(Localization - articles):
     // Articles can't really be localized because they need to apply to an FM's title and most are in English.
     // So I'm keeping the custom articles functionality just the way it is, that way another language's articles
     // can be added to the list.
 
-    // NOTE: Missing localized bits:
+    // @Localization: Missing localized bits:
     // -Hitches with localizability:
     //  -Date and rating forms are not set up for easy resizability of controls
 

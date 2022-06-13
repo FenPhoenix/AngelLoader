@@ -50,7 +50,7 @@ namespace AngelLoader
             string sevenZipDllLocation = Path.Combine(Paths.Startup, "7z.dll");
             if (!File.Exists(sevenZipDllLocation))
             {
-                // NOTE: Not localizable because we don't want to do anything until we've checked this, and getting
+                // Not localizable because we don't want to do anything until we've checked this, and getting
                 // the right language would mean trying to read multiple different files and whatever junk, and
                 // we don't want to add the potential for even more errors here.
                 Dialogs.ShowAlert_Stock(
@@ -61,7 +61,7 @@ namespace AngelLoader
                 Environment.Exit(-1);
             }
 
-            // NOTE: Calling this takes ~50ms, but fortunately if we don't call it then it just looks in the app
+            // Calling this takes ~50ms, but fortunately if we don't call it then it just looks in the app
             // startup path. So we just make sure we copy 7z.dll to anywhere that could be an app startup path
             // (so that includes our bin\x86\whatever dirs).
             //SevenZip.SevenZipBase.SetLibraryPath(sevenZipDllLocation);
@@ -1474,7 +1474,7 @@ namespace AngelLoader
                 {
                     safeReadmes.Sort(Comparers.FileNameNoExt);
 
-                    // NOTE(safe readme detector): Allocation every time, but leaving it in
+                    // Allocation every time, but leaving it in
                     // since this method will only be called the first time an FM is loaded. So it's not worth
                     // keeping this array around permanently.
                     foreach (string item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })

@@ -14,7 +14,7 @@ namespace AngelLoader.Forms.CustomControls
         private DarkControlState _buttonState = DarkControlState.Normal;
 
         // No TextAlign property, so leave constant
-        // NOTE: The Win10 classic-mode combobox doesn't use EndEllipses, it just cuts right off.
+        // The Win10 classic-mode combobox doesn't use EndEllipses, it just cuts right off.
         // Good or bad, that's the stock behavior, so let's match it.
         private const TextFormatFlags _textFormat =
             TextFormatFlags.Default |
@@ -381,7 +381,6 @@ namespace AngelLoader.Forms.CustomControls
             {
                 OnMouseLeave(EventArgs.Empty);
                 m.Result = (IntPtr)1;
-                // NOTE:
                 // If we return here, the ComboBox remains highlighted even when the mouse leaves.
                 // If we don't return here, the OnMouseLeave event gets fired twice. That's irritating, but in
                 // this particular case it's fine, it just hides the readme controls twice. But remember in case

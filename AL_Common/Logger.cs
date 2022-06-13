@@ -9,8 +9,6 @@ using static AL_Common.Common;
 
 namespace AL_Common
 {
-    // @LOGGER: We should move this into AL_Common and call it from the scanner too
-    // Since we're thread-safe, we shouldn't need the weird janky second log file.
     public static class Logger
     {
         private static readonly ReaderWriterLockSlim _lock = new();

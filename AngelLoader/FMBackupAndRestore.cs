@@ -21,8 +21,8 @@ namespace AngelLoader
     // @BetterErrors(Backup/restore): We really need to not be silent if there are problems here.
     // We could be in a messed-up state and the user won't know and we don't even try to fix it.
 
-    // NOTE: Zip quirk: LastWriteTime (and presumably any other metadata) must be set BEFORE opening the entry
-    //       for writing. Even if you put it after the using block, it throws. So always set this before writing!
+    // Zip quirk: LastWriteTime (and presumably any other metadata) must be set BEFORE opening the entry
+    // for writing. Even if you put it after the using block, it throws. So always set this before writing!
 
     internal static class FMBackupAndRestore
     {

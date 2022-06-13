@@ -79,7 +79,7 @@ namespace FenGen
         internal readonly List<string> LangTranslatedNames = new();
     }
 
-    // NOTE: Nasty global state that's really just here to avoid over-parameterization.
+    // Nasty global state that's really just here to avoid over-parameterization.
     internal static class Cache
     {
         #region Games

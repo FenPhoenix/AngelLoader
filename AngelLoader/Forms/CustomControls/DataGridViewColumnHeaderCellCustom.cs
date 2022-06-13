@@ -73,7 +73,7 @@ namespace AngelLoader.Forms.CustomControls
             // full-row select, but as I just said...!)
             // So, instead, we just toggle the underlying field of one of the properties it checks (SelectionMode)
             // while we paint. Thus we force the accursed thing to not paint itself blue. FINALLY.
-            // NOTE: In dark mode we don't have to do this because we're already custom drawing the headers then.
+            // In dark mode we don't have to do this because we're already custom drawing the headers then.
             if (rowIndex == -1 && !DarkModeEnabled && _reflectionSupported != false)
             {
                 // Do this here because DataGridView will still be null in the ctor. We only do it once app-wide
