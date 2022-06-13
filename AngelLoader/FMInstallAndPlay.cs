@@ -1302,6 +1302,9 @@ namespace AngelLoader
                     {
                         if (doEndTasks)
                         {
+                            // @DB: This shouldn't ask the user every FM for multiple
+                            // Because we tell the user to "simply uninstall" multiple FMs when they all have no
+                            // archive, and this is a crap UX for that
                             (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                                 message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                                 title: LText.AlertMessages.Warning,
