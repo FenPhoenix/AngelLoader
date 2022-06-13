@@ -100,9 +100,9 @@ namespace AngelLoader.Forms
             string message,
             string title,
             MBoxIcon icon,
-            string yes,
-            string no,
-            string cancel,
+            string? yes,
+            string? no,
+            string? cancel,
             string? checkBoxText = null,
             MBoxButton defaultButton = MBoxButton.Yes) =>
             ((bool, bool, bool))InvokeIfViewExists(() =>

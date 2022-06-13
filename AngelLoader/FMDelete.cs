@@ -150,27 +150,8 @@ namespace AngelLoader
 
         /*
         @DB: Deal with if all are installed and have no archive available?
-        
-        @DB(Refresh method deciding):
-        -If uninstall state is the only thing changing, we need to match the Uninstall behavior, ie. only refresh
-         the rows & installed-state relevant controls, and do NOT re-filter the list!
-        -Also, we should NOT refresh if nothing whatsoever has changed.
-
-        -Pass a bool to Uninstall that tells it not to run its own refreshes and not to close its own progress
-         box. BUT we have to make sure to close it ourselves it all cases!
-        
-        if we've removed any FM from the DB
-            Refresh from disk
-        else if we've caused any FM to change state such that it would be filtered out
-            Refresh list & keep selection
-        else if we've only changed install state
-            Refresh row & installed controls only
-        else if we've canceled before we've modified any FM's state, either in-memory or on-disk
-            return without refreshing
-
-        And make it so it doesn't jump to the middle of the list (will probably be handled by uninstall behavior
-        matching?)
         */
+        // * NIGHTMARE REALM *
         internal static async Task DeleteFMsFromDisk(List<FanMission> fms)
         {
             int origCount = fms.Count;
@@ -270,7 +251,9 @@ namespace AngelLoader
                 return;
             }
 
-            bool uninstMarkedAnFMUnavailable = false;
+            bool refreshRequired = false;
+            bool leaveAllInstalled = false;
+            bool deletedAtLeastOneFromDisk = false;
 
             if (installedCount > 0)
             {
@@ -283,7 +266,7 @@ namespace AngelLoader
                         : LText.AlertMessages.DeleteFMArchives,
                     icon: MBoxIcon.Warning,
                     yes: LText.AlertMessages.Uninstall,
-                    no: LText.AlertMessages.LeaveInstalled,
+                    no: deleteFromDB ? null : LText.AlertMessages.LeaveInstalled,
                     cancel: LText.Global.Cancel
                 );
 
@@ -300,13 +283,19 @@ namespace AngelLoader
                             i2++;
                         }
                     }
-                    (bool success, uninstMarkedAnFMUnavailable) = await FMInstallAndPlay.Uninstall(installedFMs);
+                    (bool success, bool uninstMarkedAnFMUnavailable) =
+                        await FMInstallAndPlay.Uninstall(installedFMs, doEndTasks: false);
                     if (!success)
                     {
                         Core.View.HideProgressBox();
                         await FMInstallAndPlay.DoUninstallEndTasks(uninstMarkedAnFMUnavailable);
                         return;
                     }
+                    refreshRequired = true;
+                }
+                else
+                {
+                    leaveAllInstalled = true;
                 }
 
                 // Even though we culled out the unavailable FMs already, Uninstall() could have marked some more
@@ -320,9 +309,6 @@ namespace AngelLoader
                     return;
                 }
             }
-
-            bool dbDeleteRefreshRequired = false;
-            bool deletedAtLeastOneFromDisk = false;
 
             try
             {
@@ -406,27 +392,17 @@ namespace AngelLoader
                 if (deleteFromDB && unavailableFMs.Count > 0)
                 {
                     DeleteFMsFromDB_Internal(unavailableFMs);
-                    dbDeleteRefreshRequired = true;
+                    refreshRequired = true;
                 }
             }
             finally
             {
                 Core.View.HideProgressBox();
-                if (dbDeleteRefreshRequired)
+                if (refreshRequired || (deletedAtLeastOneFromDisk && !leaveAllInstalled))
                 {
+                    // Just always do this because trying to determine the right "lighter" thing to do is
+                    // COMPLEXITY HELL. This always does what we want, idgaf if it involves a reload from disk.
                     await DeleteFromDBRefresh();
-                }
-                else if (uninstMarkedAnFMUnavailable && !deletedAtLeastOneFromDisk)
-                {
-                    Core.View.RefreshAllSelectedFMs_UpdateInstallState();
-                }
-                else if (deletedAtLeastOneFromDisk)
-                {
-                    var selFM = Core.FindNearestUnselectedFM(Core.View.GetMainSelectedRowIndex(), Core.View.GetRowCount());
-                    await Core.View.SortAndSetFilter(
-                        keepSelection: false,
-                        selectedFM: selFM
-                    );
                 }
             }
         }
