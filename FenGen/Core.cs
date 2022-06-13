@@ -72,11 +72,11 @@ namespace FenGen
         internal string Name = "";
         internal string StringToEnumDictName = "";
         internal string LanguageIndexName = "";
-        internal readonly List<string> LangEnumNames = new List<string>();
-        internal readonly List<string> LangIndexEnumNames = new List<string>();
-        internal readonly List<string> LangIndexEnumNamesLowercase = new List<string>();
-        internal readonly List<string> LangCodes = new List<string>();
-        internal readonly List<string> LangTranslatedNames = new List<string>();
+        internal readonly List<string> LangEnumNames = new();
+        internal readonly List<string> LangIndexEnumNames = new();
+        internal readonly List<string> LangIndexEnumNamesLowercase = new();
+        internal readonly List<string> LangCodes = new();
+        internal readonly List<string> LangTranslatedNames = new();
     }
 
     // NOTE: Nasty global state that's really just here to avoid over-parameterization.
@@ -195,7 +195,7 @@ namespace FenGen
         }
 
         private static readonly Dictionary<string, GenType>
-        _argToTaskMap = new Dictionary<string, GenType>
+        _argToTaskMap = new()
         {
             { "-fmd", GenType.FMData },
             { "-lang", GenType.Language },
