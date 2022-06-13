@@ -13,7 +13,7 @@ namespace FenGen
 {
     internal static partial class Misc
     {
-        private static readonly CSharpParseOptions _parseOptions = new CSharpParseOptions(
+        private static readonly CSharpParseOptions _parseOptions = new(
             languageVersion: LanguageVersion.Latest,
             documentationMode: DocumentationMode.None,
             SourceCodeKind.Regular);

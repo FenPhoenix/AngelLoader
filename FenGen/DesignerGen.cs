@@ -83,7 +83,7 @@ namespace FenGen
             internal string PropName = "";
             internal string OverrideLine = "";
             internal readonly SyntaxNode Node;
-            internal readonly List<string> Comments = new List<string>();
+            internal readonly List<string> Comments = new();
 
             internal NodeCustom(SyntaxNode node) => Node = node;
         }
