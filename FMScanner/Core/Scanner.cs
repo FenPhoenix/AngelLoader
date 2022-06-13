@@ -41,9 +41,6 @@ namespace FMScanner
 
         #region Public properties
 
-        [PublicAPI]
-        public string LogFile = "";
-
         /// <summary>
         /// Hack to support scanning two different sets of fields depending on a bool, you pass in "full" scan
         /// fields here and "non-full" fields in the Scan* methods, and mark each passed FM with a bool.
