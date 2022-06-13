@@ -710,7 +710,7 @@ namespace AL_Common
 
         #region Resettables
 
-        protected readonly ListFast<char> _keyword = new ListFast<char>(_keywordMaxLen);
+        protected readonly ListFast<char> _keyword = new(_keywordMaxLen);
 
         protected int _binaryCharsLeftToSkip;
         protected int _unicodeCharsLeftToSkip;
@@ -719,12 +719,12 @@ namespace AL_Common
 
         // Static - otherwise the color table parser instantiates this huge thing every RTF readme in dark mode!
         // Also it's readonly so it's thread-safe anyway.
-        protected static readonly SymbolDict Symbols = new SymbolDict();
+        protected static readonly SymbolDict Symbols = new();
 
         // Highest measured was 10
-        protected readonly ScopeStack _scopeStack = new ScopeStack();
+        protected readonly ScopeStack _scopeStack = new();
 
-        protected readonly Scope _currentScope = new Scope();
+        protected readonly Scope _currentScope = new();
 
         // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
         protected int _groupCount;
@@ -784,7 +784,7 @@ namespace AL_Common
         We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
         rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
         */
-        private readonly UnGetStack _unGetBuffer = new UnGetStack();
+        private readonly UnGetStack _unGetBuffer = new();
         private bool _unGetBufferEmpty = true;
 
         /// <summary>
