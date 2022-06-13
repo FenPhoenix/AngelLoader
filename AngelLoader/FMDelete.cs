@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using Microsoft.VisualBasic.FileIO;
@@ -270,6 +271,8 @@ namespace AngelLoader
                 return;
             }
 
+            bool uninstMarkedAnFMUnavailable = false;
+
             if (installedCount > 0)
             {
                 (cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
@@ -298,8 +301,11 @@ namespace AngelLoader
                             i2++;
                         }
                     }
-                    if (!await FMInstallAndPlay.Uninstall(installedFMs))
+                    (bool success, uninstMarkedAnFMUnavailable) = await FMInstallAndPlay.Uninstall(installedFMs);
+                    if (!success)
                     {
+                        Core.View.HideProgressBox();
+                        await FMInstallAndPlay.DoUninstallEndTasks(uninstMarkedAnFMUnavailable);
                         return;
                     }
                 }
@@ -308,14 +314,16 @@ namespace AngelLoader
                 // of them unavailable if they didn't have an archive after being uninstalled.
                 MoveUnavailableFMsFromMainListToUnavailableList();
 
-                if (fms.Count == 0)
+                if (fms.Count == 0 && !deleteFromDB)
                 {
+                    Core.View.HideProgressBox();
                     await Core.View.SortAndSetFilter(keepSelection: true);
                     return;
                 }
             }
 
             bool dbDeleteRefreshRequired = false;
+            bool deletedAtLeastOneFromDisk = false;
 
             try
             {
@@ -372,6 +380,7 @@ namespace AngelLoader
                             {
                                 try
                                 {
+                                    deletedAtLeastOneFromDisk = true;
                                     FileSystem.DeleteFile(archive, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
                                 }
                                 catch (Exception ex)
@@ -408,9 +417,17 @@ namespace AngelLoader
                 {
                     await DeleteFromDBRefresh();
                 }
-                else
+                else if (uninstMarkedAnFMUnavailable && !deletedAtLeastOneFromDisk)
                 {
-                    await Core.View.SortAndSetFilter(keepSelection: true);
+                    Core.View.RefreshAllSelectedFMs_UpdateInstallState();
+                }
+                else if (deletedAtLeastOneFromDisk)
+                {
+                    var selFM = Core.FindNearestUnselectedFM(Core.View.GetMainSelectedRowIndex(), Core.View.GetRowCount());
+                    await Core.View.SortAndSetFilter(
+                        keepSelection: false,
+                        selectedFM: selFM
+                    );
                 }
             }
         }

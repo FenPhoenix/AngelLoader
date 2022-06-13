@@ -1169,8 +1169,11 @@ namespace AngelLoader
 
         #region Uninstall
 
-        internal static async Task<bool> Uninstall(params FanMission[] fms)
+        internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
+        Uninstall(FanMission[] fms, bool doEndTasks = true)
         {
+            var fail = (false, false);
+
             var fmDataList = new FMData[fms.Length];
 
             bool single = fmDataList.Length == 1;
@@ -1185,7 +1188,7 @@ namespace AngelLoader
                 Core.View.SetWaitCursor(true);
 
                 bool success = await Task.Run(() => DoPreChecks(fms, fmDataList, install: false));
-                if (!success) return false;
+                if (!success) return fail;
             }
             finally
             {
@@ -1208,7 +1211,7 @@ namespace AngelLoader
                     yes: LText.AlertMessages.Uninstall,
                     no: LText.Global.Cancel);
 
-                if (cancel) return false;
+                if (cancel) return fail;
 
                 Config.ConfirmUninstall = !dontAskAgain;
             }
@@ -1233,7 +1236,7 @@ namespace AngelLoader
                         checkBoxText: LText.AlertMessages.DontAskAgain
                     );
 
-                if (cancel) return false;
+                if (cancel) return fail;
 
                 Config.BackupAlwaysAsk = !dontAskAgain;
                 doBackup = cont;
@@ -1271,7 +1274,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
-                    if (_uninstallCts.IsCancellationRequested) return false;
+                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
 
                     var fmData = fmDataList[i];
 
@@ -1292,7 +1295,7 @@ namespace AngelLoader
 
                     #endregion
 
-                    if (_uninstallCts.IsCancellationRequested) return false;
+                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
 
                     bool markFMAsUnavailable = false;
 
@@ -1307,7 +1310,7 @@ namespace AngelLoader
                             cancel: LText.Global.Cancel,
                             defaultButton: MBoxButton.No);
 
-                        if (cancel) return false;
+                        if (cancel) return (false, atLeastOneFMMarkedUnavailable);
                         if (!cont) continue;
                         markFMAsUnavailable = true;
                         atLeastOneFMMarkedUnavailable = true;
@@ -1330,7 +1333,7 @@ namespace AngelLoader
 
                     if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath);
 
-                    if (_uninstallCts.IsCancellationRequested) return false;
+                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
 
                     // TODO: Give the user the option to retry or something, if it's cause they have a file open
                     // Make option to open the folder in Explorer and delete it manually?
@@ -1366,27 +1369,35 @@ namespace AngelLoader
                         );
                     }
 
-                    if (_uninstallCts.IsCancellationRequested) return false;
+                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
                 }
             }
             finally
             {
                 Ini.WriteFullFMDataIni();
-                Core.View.HideProgressBox();
+                if (doEndTasks)
+                {
+                    Core.View.HideProgressBox();
 
-                // If any FMs are gone, refresh the list to remove them. Otherwise, don't refresh the list because
-                // then the FMs might move in the list if we're sorting by installed state.
-                if (atLeastOneFMMarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
-                {
-                    await Core.View.SortAndSetFilter(keepSelection: true);
-                }
-                else
-                {
-                    Core.View.RefreshAllSelectedFMs_UpdateInstallState();
+                    await DoUninstallEndTasks(atLeastOneFMMarkedUnavailable);
                 }
             }
 
-            return true;
+            return (true, atLeastOneFMMarkedUnavailable);
+        }
+
+        internal static async Task DoUninstallEndTasks(bool atLeastOneFMMarkedUnavailable)
+        {
+            // If any FMs are gone, refresh the list to remove them. Otherwise, don't refresh the list because
+            // then the FMs might move in the list if we're sorting by installed state.
+            if (atLeastOneFMMarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
+            {
+                await Core.View.SortAndSetFilter(keepSelection: true);
+            }
+            else
+            {
+                Core.View.RefreshAllSelectedFMs_UpdateInstallState();
+            }
         }
 
         private static bool DeleteFMInstalledDirectory(string path)
