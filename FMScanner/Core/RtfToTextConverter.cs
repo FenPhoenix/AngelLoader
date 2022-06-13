@@ -204,7 +204,7 @@ namespace FMScanner
         #region Font to Unicode conversion tables
 
         private readonly Dictionary<int, int>
-        _charSetToCodePage = new Dictionary<int, int>
+        _charSetToCodePage = new()
         {
             { 0, _windows1252 },    // "ANSI" (1252)
 
@@ -997,7 +997,7 @@ namespace FMScanner
 
         #region Resettables
 
-        private readonly Header _header = new Header();
+        private readonly Header _header = new();
 
         // FMs can have 100+ of these...
         // Highest measured was 131
@@ -1015,19 +1015,19 @@ namespace FMScanner
         private int _lastUsedFontWithCodePage42 = -1;
 
         // Highest measured was 56192
-        private readonly ListFast<char> _plainText = new ListFast<char>(ByteSize.KB * 60);
+        private readonly ListFast<char> _plainText = new(ByteSize.KB * 60);
 
         private const int _fldinstSymbolNumberMaxLen = 10;
-        private readonly ListFast<char> _fldinstSymbolNumber = new ListFast<char>(_fldinstSymbolNumberMaxLen);
+        private readonly ListFast<char> _fldinstSymbolNumber = new(_fldinstSymbolNumberMaxLen);
 
         private const int _fldinstSymbolFontNameMaxLen = 9;
-        private readonly ListFast<char> _fldinstSymbolFontName = new ListFast<char>(_fldinstSymbolFontNameMaxLen);
+        private readonly ListFast<char> _fldinstSymbolFontName = new(_fldinstSymbolFontNameMaxLen);
 
         // Highest measured was 17
-        private readonly ListFast<byte> _hexBuffer = new ListFast<byte>(20);
+        private readonly ListFast<byte> _hexBuffer = new(20);
 
         // Highest measured was 13
-        private readonly ListFast<char> _unicodeBuffer = new ListFast<char>(20);
+        private readonly ListFast<char> _unicodeBuffer = new(20);
 
         #endregion
 
@@ -1044,7 +1044,7 @@ namespace FMScanner
 
         // DON'T reset this. We want to build up a dictionary of encodings and amortize it over the entire list
         // of RTF files.
-        private readonly Dictionary<int, Encoding> _encodings = new Dictionary<int, Encoding>(31);
+        private readonly Dictionary<int, Encoding> _encodings = new(31);
 
         // Common ones explicitly stored to avoid even a dictionary lookup. Don't reset these either.
         private readonly Encoding _windows1252Encoding = Encoding.GetEncoding(_windows1252);
