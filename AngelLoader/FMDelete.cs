@@ -110,29 +110,31 @@ namespace AngelLoader
         #region Delete from disk
 
         private static (bool Success, List<string> FinalArchives)
-        GetFinalArchives(List<string> archives)
+        GetFinalArchives(List<string> archives, bool single)
         {
             var retFail = (false, new List<string>());
 
             if (archives.Count == 0)
             {
-                Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
+                if (single)
+                {
+                    Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
+                }
                 return retFail;
             }
 
-            bool singleArchive = archives.Count == 1;
             var finalArchives = new List<string>();
-            if (!singleArchive)
+            if (archives.Count > 1)
             {
                 (bool accepted, List<string> selectedItems) = Core.View.ShowCustomDialog(
                     messageTop: LText.FMDeletion.DuplicateArchivesFound,
                     messageBottom: "",
                     title: LText.AlertMessages.DeleteFMArchive,
                     icon: MBoxIcon.Warning,
-                    okText: singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
+                    okText: single ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
                     cancelText: LText.Global.Cancel,
                     okIsDangerous: true,
-                    choiceStrings: singleArchive ? null : archives.ToArray());
+                    choiceStrings: archives.ToArray());
 
                 if (!accepted) return retFail;
 
@@ -191,11 +193,11 @@ namespace AngelLoader
                 for (int i = 0; i < fms.Count; i++)
                 {
                     FanMission fm = fms[i];
-                    // PERF_TODO(Delete FindAllMatches): Delete(singular) re-finds the matches for each FM
-                    // We could almost just cache this set and pass it, except that if we have to run the
-                    // uninstaller, we could end up with fewer FMs in the list from removing archive-less ones
-                    // and then the matches list wouldn't match up anymore. We could get really clever and account
-                    // for that still, if we felt like the perf increase would be worth it, but for now, meh.
+                    // PERF_TODO(Delete FindAllMatches): The delete loop re-finds the matches for each FM
+                    // We could almost just cache this set, except that if we have to run the uninstaller, we
+                    // could end up with fewer FMs in the list from removing archive-less ones and then the
+                    // matches list wouldn't match up anymore. We could get really clever and account for that
+                    // still, if we felt like the perf increase would be worth it, but for now, meh.
                     var matches = FMArchives.FindAllMatches(fm.Archive, archivePaths);
                     if (matches.Count > 0)
                     {
@@ -314,10 +316,18 @@ namespace AngelLoader
 
                     var archives = FMArchives.FindAllMatches(fm.Archive);
 
-                    (bool success, List<string> finalArchives) = GetFinalArchives(archives);
-                    // @DB: For multiple maybe we should just continue the loop?
-                    // But remember to set progress so we don't skip the progress set below
-                    if (!success) return;
+                    (bool success, List<string> finalArchives) = GetFinalArchives(archives, single);
+                    if (!success)
+                    {
+                        if (single)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
 
                     try
                     {
