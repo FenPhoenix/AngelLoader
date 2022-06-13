@@ -35,7 +35,7 @@ namespace AngelLoader.Forms.WinFormsNative
         private const int COLOR_3DFACE = 15;
         private const int COLOR_GRAYTEXT = 17;
 
-        private static readonly Dictionary<IntPtr, ThemeRenderer> _themeRenderers = new Dictionary<IntPtr, ThemeRenderer>();
+        private static readonly Dictionary<IntPtr, ThemeRenderer> _themeRenderers = new();
 
         #region GetSysColor
 
