@@ -92,7 +92,7 @@ namespace AngelLoader.DataClasses
 
         #region Paths
 
-        internal readonly List<string> FMArchivePaths = new List<string>();
+        internal readonly List<string> FMArchivePaths = new();
         internal bool FMArchivePathsIncludeSubfolders;
 
         // NOTE: Backup path is currently required. Notes on potentially making it optional:
@@ -229,15 +229,15 @@ namespace AngelLoader.DataClasses
         internal GameOrganization GameOrganization = GameOrganization.OneList;
         internal GameIndex GameTab = GameIndex.Thief1;
 
-        internal readonly SelectedFM SelFM = new SelectedFM();
+        internal readonly SelectedFM SelFM = new();
 
-        internal readonly GameTabsState GameTabsState = new GameTabsState();
+        internal readonly GameTabsState GameTabsState = new();
 
         #endregion
 
         #region Filtering
 
-        internal readonly Filter Filter = new Filter();
+        internal readonly Filter Filter = new();
 
         internal readonly bool[] FilterControlVisibilities;
 
@@ -272,7 +272,7 @@ namespace AngelLoader.DataClasses
         }
 
         internal bool EnableArticles = true;
-        internal readonly List<string> Articles = new List<string> { "a", "an", "the" };
+        internal readonly List<string> Articles = new() { "a", "an", "the" };
         internal bool MoveArticlesToEnd = true;
 
         #endregion
@@ -282,7 +282,7 @@ namespace AngelLoader.DataClasses
         internal string Language = "English";
 
         // Session-only; don't write out
-        internal readonly DictionaryI<string> LanguageNames = new DictionaryI<string>();
+        internal readonly DictionaryI<string> LanguageNames = new();
 
         #endregion
 
@@ -323,7 +323,7 @@ namespace AngelLoader.DataClasses
 
         internal bool TopRightPanelCollapsed;
 
-        internal readonly TopRightTabsData TopRightTabsData = new TopRightTabsData();
+        internal readonly TopRightTabsData TopRightTabsData = new();
 
         #endregion
 
