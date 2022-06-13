@@ -319,7 +319,14 @@ namespace AngelLoader
             try
             {
                 _deleteCts = _deleteCts.Recreate();
-                if (!single)
+                if (single)
+                {
+                    Core.View.ShowProgressBox_Single(
+                        message1: LText.ProgressBox.DeletingFMArchive,
+                        progressType: ProgressType.Indeterminate
+                    );
+                }
+                else
                 {
                     Core.View.ShowProgressBox_Single(
                         message1: LText.ProgressBox.DeletingFMArchives,
@@ -384,7 +391,7 @@ namespace AngelLoader
                         }
                     }
 
-                    if (_deleteCts.IsCancellationRequested) return;
+                    if (!single && _deleteCts.IsCancellationRequested) return;
                 }
 
                 if (deleteFromDB && unavailableFMs.Count > 0)
@@ -395,7 +402,7 @@ namespace AngelLoader
             }
             finally
             {
-                if (!single) Core.View.HideProgressBox();
+                Core.View.HideProgressBox();
                 if (dbDeleteRefreshRequired)
                 {
                     await DeleteFromDBRefresh();

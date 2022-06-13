@@ -579,7 +579,7 @@ namespace AngelLoader.Forms
 
                         ConstructorInfo? cons = constructors[0];
 
-                        if (cons == null)
+                        if (cons == null!)
                         {
                             return SetFalse();
                         }

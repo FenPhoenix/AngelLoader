@@ -191,7 +191,7 @@ namespace AngelLoader.Forms
         }
 
         private bool _lockPainting;
-        public bool LockPainting(bool enabled) => _lockPainting = enabled;
+        public void LockPainting(bool enabled) => _lockPainting = enabled;
 
         protected override void WndProc(ref Message m)
         {

@@ -226,21 +226,21 @@ namespace AngelLoader
                 try
                 {
                     splashScreen.LockPainting(true);
-                    Exception? ex = null;
-                    using (Task findFMsTask = Task.Run(() => (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen)))
-                    {
-                        // Construct and init the view both right here, because they're both heavy operations and
-                        // we want them both to run in parallel with Find() to the greatest extent possible.
-                        View = ViewEnv.GetView();
-                        View.InitThreadable();
 
-                        findFMsTask.Wait();
-                        if (ex != null)
-                        {
-                            splashScreen.Hide();
-                            Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
-                            EnvironmentExitDoShutdownTasks(1);
-                        }
+                    Exception? ex = null;
+                    using Task findFMsTask = Task.Run(() => (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen));
+
+                    // Construct and init the view both right here, because they're both heavy operations and
+                    // we want them both to run in parallel with Find() to the greatest extent possible.
+                    View = ViewEnv.GetView();
+                    View.InitThreadable();
+
+                    findFMsTask.Wait();
+                    if (ex != null)
+                    {
+                        splashScreen.Hide();
+                        Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
+                        EnvironmentExitDoShutdownTasks(1);
                     }
                 }
                 finally
