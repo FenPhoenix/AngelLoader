@@ -1271,6 +1271,8 @@ namespace AngelLoader
                     );
                 }
 
+                bool skipUninstallWithNoArchiveWarning = false;
+
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
                     if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
@@ -1300,23 +1302,21 @@ namespace AngelLoader
 
                     if (fmData.ArchivePath.IsEmpty())
                     {
-                        if (doEndTasks)
+                        if (doEndTasks && !skipUninstallWithNoArchiveWarning)
                         {
-                            // @DB: This shouldn't ask the user every FM for multiple
-                            // Because we tell the user to "simply uninstall" multiple FMs when they all have no
-                            // archive, and this is a crap UX for that
-                            // Try a "Yes / Yes to all / Cancel" dialog
                             (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                                 message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                                 title: LText.AlertMessages.Warning,
                                 icon: MBoxIcon.Warning,
-                                yes: LText.AlertMessages.Uninstall,
+                                yes: single ? LText.AlertMessages.Uninstall : LText.AlertMessages.UninstallAll,
                                 no: LText.Global.Skip,
                                 cancel: LText.Global.Cancel,
                                 defaultButton: MBoxButton.No);
 
                             if (cancel) return (false, atLeastOneFMMarkedUnavailable);
                             if (!cont) continue;
+
+                            if (!single) skipUninstallWithNoArchiveWarning = true;
                         }
                         markFMAsUnavailable = true;
                         atLeastOneFMMarkedUnavailable = true;

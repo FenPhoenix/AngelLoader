@@ -155,6 +155,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Error = "Error";
             internal readonly string Confirm = "Confirm";
             internal readonly string Uninstall = "Uninstall";
+            internal readonly string UninstallAll = "Uninstall all";
             internal readonly string LeaveInstalled = "Leave installed";
             internal readonly string BackUp = "Back up";
             internal readonly string DontBackUp = "Don't back up";
