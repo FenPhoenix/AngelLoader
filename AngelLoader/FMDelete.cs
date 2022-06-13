@@ -156,7 +156,8 @@ namespace AngelLoader
          the rows & installed-state relevant controls, and do NOT re-filter the list!
         -Also, we should NOT refresh if nothing whatsoever has changed.
 
-        -Tell Uninstall not to run its own refreshes with a passed bool?
+        -Pass a bool to Uninstall that tells it not to run its own refreshes and not to close its own progress
+         box. BUT we have to make sure to close it ourselves it all cases!
         
         if we've removed any FM from the DB
             Refresh from disk
