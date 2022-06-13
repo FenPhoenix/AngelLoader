@@ -1299,19 +1299,22 @@ namespace AngelLoader
 
                     bool markFMAsUnavailable = false;
 
-                    if (doEndTasks && fmData.ArchivePath.IsEmpty())
+                    if (fmData.ArchivePath.IsEmpty())
                     {
-                        (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
-                            message: LText.AlertMessages.Uninstall_ArchiveNotFound,
-                            title: LText.AlertMessages.Warning,
-                            icon: MBoxIcon.Warning,
-                            yes: LText.AlertMessages.Uninstall,
-                            no: LText.Global.Skip,
-                            cancel: LText.Global.Cancel,
-                            defaultButton: MBoxButton.No);
+                        if (doEndTasks)
+                        {
+                            (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
+                                message: LText.AlertMessages.Uninstall_ArchiveNotFound,
+                                title: LText.AlertMessages.Warning,
+                                icon: MBoxIcon.Warning,
+                                yes: LText.AlertMessages.Uninstall,
+                                no: LText.Global.Skip,
+                                cancel: LText.Global.Cancel,
+                                defaultButton: MBoxButton.No);
 
-                        if (cancel) return (false, atLeastOneFMMarkedUnavailable);
-                        if (!cont) continue;
+                            if (cancel) return (false, atLeastOneFMMarkedUnavailable);
+                            if (!cont) continue;
+                        }
                         markFMAsUnavailable = true;
                         atLeastOneFMMarkedUnavailable = true;
                     }
