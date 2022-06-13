@@ -264,7 +264,7 @@ namespace AngelLoader.Forms
 
             static bool TryGetHWndFromMousePos(Message msg, out IntPtr result)
             {
-                Point pos = new Point(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
+                var pos = new Point(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
                 result = Native.WindowFromPoint(pos);
                 return result != IntPtr.Zero && Control.FromHandle(result) != null;
             }

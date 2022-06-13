@@ -15,7 +15,7 @@ namespace AngelLoader.Forms
         private const int _leftAreaWidth = 60;
         private const int _edgePadding = 21;
 
-        public readonly List<string> SelectedItems = new List<string>();
+        public readonly List<string> SelectedItems = new();
 
         public MessageBoxCustomForm(
             string messageTop,

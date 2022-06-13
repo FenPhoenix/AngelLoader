@@ -46,7 +46,7 @@ namespace FMScanner
         /// fields here and "non-full" fields in the Scan* methods, and mark each passed FM with a bool.
         /// </summary>
         [PublicAPI]
-        public ScanOptions FullScanOptions = new ScanOptions();
+        public ScanOptions FullScanOptions = new();
 
         #endregion
 
@@ -82,11 +82,11 @@ namespace FMScanner
 
         private readonly string _sevenZipExePath;
 
-        private readonly FileEncoding _fileEncoding = new FileEncoding();
+        private readonly FileEncoding _fileEncoding = new();
 
-        private readonly List<FileInfoCustom> _fmDirFileInfos = new List<FileInfoCustom>();
+        private readonly List<FileInfoCustom> _fmDirFileInfos = new();
 
-        private ScanOptions _scanOptions = new ScanOptions();
+        private ScanOptions _scanOptions = new();
 
         // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
         // fields as much as possible for performance.
@@ -99,9 +99,9 @@ namespace FMScanner
         private string _fmWorkingPath = "";
 
         // Guess I'll leave this one global for reasons
-        private readonly List<ReadmeInternal> _readmeFiles = new List<ReadmeInternal>();
+        private readonly List<ReadmeInternal> _readmeFiles = new();
 
-        private readonly TitlesStrNaturalNumericSort _titlesStrNaturalNumericSort = new TitlesStrNaturalNumericSort();
+        private readonly TitlesStrNaturalNumericSort _titlesStrNaturalNumericSort = new();
 
         private bool _ss2Fingerprinted;
 
@@ -158,7 +158,7 @@ namespace FMScanner
             /// </summary>
             internal bool Scan;
             internal string FileName = "";
-            internal readonly List<string> Lines = new List<string>();
+            internal readonly List<string> Lines = new();
             internal string Text = "";
 
             // For zips, we store this simple uint until we need it, only then do we expand it into a full DateTime

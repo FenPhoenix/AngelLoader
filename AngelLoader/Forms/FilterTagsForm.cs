@@ -12,7 +12,7 @@ namespace AngelLoader.Forms
     {
         private readonly Control[] _separatorPaintControls;
 
-        internal readonly TagsFilter TagsFilter = new TagsFilter();
+        internal readonly TagsFilter TagsFilter = new();
 
         internal FilterTagsForm(FMCategoriesCollection sourceTags, TagsFilter tagsFilter)
         {

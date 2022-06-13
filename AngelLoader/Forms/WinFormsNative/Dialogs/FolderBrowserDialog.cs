@@ -28,7 +28,7 @@ namespace AngelLoader.Forms.WinFormsNative.Dialogs
         /// <summary>
         /// Gets the selected directories. If <see cref="MultiSelect"/> is false, this will contain only one directory.
         /// </summary>
-        public readonly List<string> DirectoryNames = new List<string>();
+        public readonly List<string> DirectoryNames = new();
 
         /// <summary>
         /// Gets or sets a value that determines whether the user can select more than one file.

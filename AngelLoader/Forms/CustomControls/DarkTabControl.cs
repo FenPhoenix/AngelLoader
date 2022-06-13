@@ -31,7 +31,7 @@ namespace AngelLoader.Forms.CustomControls
         // Because of the lack of any clean and easy way to pass in an initial capacity value (we can't do it
         // through the constructor because that gets called in the Designer code-behind), let's just give it a
         // reasonable constant value and be done with it.
-        private readonly List<BackingTab> _backingTabList = new List<BackingTab>(10);
+        private readonly List<BackingTab> _backingTabList = new(10);
 
         private Font? _originalFont;
 
@@ -210,7 +210,7 @@ namespace AngelLoader.Forms.CustomControls
 
                             int leftMargin = tabRect.Width - textWidth;
 
-                            Point imgPoint = new Point(
+                            var imgPoint = new Point(
                                 tabRect.Left + 1 + ((leftMargin / 2) - (image.Width / 2)),
                                 focused ? 2 : 4
                             );

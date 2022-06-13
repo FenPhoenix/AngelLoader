@@ -33,7 +33,7 @@ namespace FMScanner
             bool scanDescription = false
 #endif
             ) =>
-            new ScanOptions
+            new()
             {
                 ScanTitle = scanTitle,
                 ScanAuthor = scanAuthor,
@@ -52,7 +52,7 @@ namespace FMScanner
 #endif
             };
 
-        internal ScanOptions DeepCopy() => new ScanOptions
+        internal ScanOptions DeepCopy() => new()
         {
             ScanTitle = ScanTitle,
             ScanAuthor = ScanAuthor,

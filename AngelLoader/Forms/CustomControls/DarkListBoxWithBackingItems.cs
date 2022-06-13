@@ -4,7 +4,7 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed class DarkListBoxWithBackingItems : DarkListBox, IListControlWithBackingItems
     {
-        public readonly List<string> BackingItems = new List<string>();
+        public readonly List<string> BackingItems = new();
 
         public void AddFullItem(string backingItem, string item)
         {

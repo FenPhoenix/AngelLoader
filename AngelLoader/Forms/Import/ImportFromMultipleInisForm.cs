@@ -7,7 +7,7 @@ namespace AngelLoader.Forms
 {
     public sealed partial class ImportFromMultipleInisForm : DarkFormBase
     {
-        internal readonly List<string> IniFiles = new List<string>(SupportedGameCount);
+        internal readonly List<string> IniFiles = new(SupportedGameCount);
         internal bool ImportTitle;
         internal bool ImportReleaseDate;
         internal bool ImportLastPlayed;

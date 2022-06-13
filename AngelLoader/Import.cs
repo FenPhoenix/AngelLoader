@@ -299,7 +299,7 @@ namespace AngelLoader
             //    darkGameSS2 = 4
             //}
 
-            Regex _darkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
+            var _darkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
 
             #endregion
 

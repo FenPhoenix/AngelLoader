@@ -38,15 +38,15 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        internal readonly SelectedFM CurrentSelFM = new SelectedFM();
+        internal readonly SelectedFM CurrentSelFM = new();
 
         // Only used if game tabs are enabled. It's used to save and restore per-tab selected FM, filters etc.
-        internal readonly GameTabsState GameTabsState = new GameTabsState();
+        internal readonly GameTabsState GameTabsState = new();
 
         #region Filter
 
-        internal readonly Filter Filter = new Filter();
-        internal readonly List<int> FilterShownIndexList = new List<int>();
+        internal readonly Filter Filter = new();
+        internal readonly List<int> FilterShownIndexList = new();
 
         #endregion
 

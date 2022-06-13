@@ -36,7 +36,7 @@ namespace AngelLoader.Forms.CustomControls
             base.Hide();
         }
 
-        public readonly List<string> BackingItems = new List<string>();
+        public readonly List<string> BackingItems = new();
 
         public void AddFullItem(string backingItem, string item)
         {
