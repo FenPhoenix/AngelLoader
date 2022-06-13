@@ -29,9 +29,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
         private ToolStripMenuItemCustom GameVersionsMenuItem = null!;
-#if false
-        private  ToolStripMenuItemCustom GlobalFMStatsMenuItem = null!;
-#endif
         private ToolStripMenuItemCustom ImportMenuItem = null!;
         internal ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
         internal ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
@@ -74,9 +71,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _menu.Items.AddRange(new ToolStripItem[]
             {
                 GameVersionsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy},
-#if false
-                GlobalFMStatsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy}
-#endif
                 new ToolStripSeparator { Tag = LoadType.Lazy },
                 ImportMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
                 new ToolStripSeparator { Tag = LoadType.Lazy },
@@ -100,9 +94,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             ScanAllFMsMenuItem.Enabled = _scanAllFMsMenuItemEnabled;
 
             GameVersionsMenuItem.Click += _owner.MainMenu_GameVersionsMenuItem_Click;
-#if false
-            GlobalFMStatsMenuItem.Click += _owner.GlobalFMStatsMenuItem_Click;
-#endif
+
             foreach (ToolStripMenuItemCustom item in ImportMenuItem.DropDown.Items)
             {
                 item.Click += _owner.ImportMenuItems_Click;
@@ -123,9 +115,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (!_constructed) return;
 
             GameVersionsMenuItem.Text = LText.MainMenu.GameVersions;
-#if false
-            GlobalFMStatsMenuItem.Text = LText.MainMenu.GlobalFMStats;
-#endif
             ImportMenuItem.Text = LText.MainMenu.Import;
             ScanAllFMsMenuItem.Text = LText.MainMenu.ScanAllFMs;
             SettingsMenuItem.Text = LText.MainButtons.Settings;

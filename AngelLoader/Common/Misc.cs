@@ -109,8 +109,6 @@ namespace AngelLoader
             internal static readonly string AppearanceSettings = "#settings_appearance_section";
             internal static readonly string OtherSettings = "#settings_other_section";
 
-            //internal static readonly string FMBackupPath = "#fm_backup_path";
-
             internal static readonly string MainWindow = "#main_window";
             internal static readonly string MissionList = "#mission_list";
             internal static readonly string ColumnHeaderContextMenu = "#column_header_context_menu";

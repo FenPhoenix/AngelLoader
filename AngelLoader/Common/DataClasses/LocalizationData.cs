@@ -31,7 +31,6 @@ namespace AngelLoader.DataClasses
         internal readonly MainMenu_Class MainMenu = new MainMenu_Class();
         internal readonly AboutWindow_Class AboutWindow = new AboutWindow_Class();
         internal readonly GameVersionsWindow_Class GameVersionsWindow = new GameVersionsWindow_Class();
-        //internal readonly GlobalFMStats_Class GlobalFMStats = new GlobalFMStats_Class();
         internal readonly FMDeletion_Class FMDeletion = new FMDeletion_Class();
         internal readonly Difficulties_Class Difficulties = new Difficulties_Class();
         internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
@@ -269,7 +268,6 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string MainMenuToolTip = "Main menu";
             internal readonly string GameVersions = "Game versions...";
-            //internal readonly string GlobalFMStats = "Global FM stats...";
             internal readonly string Import = "Import";
             internal readonly string ScanAllFMs = "Scan all FMs...";
             internal readonly string ViewHelpFile = "View help file";
@@ -313,25 +311,6 @@ namespace AngelLoader.DataClasses
                 "A version could not be found inside the .exe/.dll file.")]
             internal readonly string Error_GameVersionNotFound = "Version not found";
         }
-
-        /*
-        internal sealed class GlobalFMStats_Class
-        {
-            internal readonly string TitleText = "Global FM stats";
-            [FenGenComment(
-                "The number of FMs that are in the FMData.ini file.")]
-            internal readonly string FMsInDatabase = "FMs in database:";
-            [FenGenComment(
-                "The number of FMs that actually exist across all specified archive directories and installed FM directories.")]
-            internal readonly string AvailableFMs = "Available FMs:";
-            [FenGenComment(
-                "FMs that have not been scanned for game type.")]
-            internal readonly string Unscanned = "Unscanned:";
-            [FenGenComment(
-                "FMs that have been scanned and detected as \"unsupported game or non-FM archive\".")]
-            internal readonly string Unsupported = "Invalid or unsupported:";
-        }
-        */
 
         internal sealed class FMDeletion_Class
         {
