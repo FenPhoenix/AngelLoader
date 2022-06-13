@@ -149,7 +149,26 @@ namespace AngelLoader
         }
 
         /*
-        @DB(Delete from DB while deleting archive): Deal with if all are installed and have no archive available?
+        @DB: Deal with if all are installed and have no archive available?
+        
+        @DB(Refresh method deciding):
+        -If uninstall state is the only thing changing, we need to match the Uninstall behavior, ie. only refresh
+         the rows & installed-state relevant controls, and do NOT re-filter the list!
+        -Also, we should NOT refresh if nothing whatsoever has changed.
+
+        -Tell Uninstall not to run its own refreshes with a passed bool?
+        
+        if we've removed any FM from the DB
+            Refresh from disk
+        else if we've caused any FM to change state such that it would be filtered out
+            Refresh list & keep selection
+        else if we've only changed install state
+            Refresh row & installed controls only
+        else if we've canceled before we've modified any FM's state, either in-memory or on-disk
+            return without refreshing
+
+        And make it so it doesn't jump to the middle of the list (will probably be handled by uninstall behavior
+        matching?)
         */
         internal static async Task DeleteFMsFromDisk(List<FanMission> fms)
         {
