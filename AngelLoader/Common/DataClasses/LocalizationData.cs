@@ -22,37 +22,37 @@ namespace AngelLoader.DataClasses
         // -Strings must be inside the nested classes or they won't be picked up (that's the nature of ini files)
         // -Strings in here can be readonly because they're set via reflection.
 
-        internal readonly Meta_Class Meta = new Meta_Class();
-        internal readonly Global_Class Global = new Global_Class();
-        internal readonly SplashScreen_Class SplashScreen = new SplashScreen_Class();
-        internal readonly BrowseDialogs_Class BrowseDialogs = new BrowseDialogs_Class();
-        internal readonly AlertMessages_Class AlertMessages = new AlertMessages_Class();
-        internal readonly MainMenu_Class MainMenu = new MainMenu_Class();
-        internal readonly AboutWindow_Class AboutWindow = new AboutWindow_Class();
-        internal readonly GameVersionsWindow_Class GameVersionsWindow = new GameVersionsWindow_Class();
-        internal readonly FMDeletion_Class FMDeletion = new FMDeletion_Class();
-        internal readonly Difficulties_Class Difficulties = new Difficulties_Class();
-        internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
-        internal readonly FMsList_Class FMsList = new FMsList_Class();
-        internal readonly FMDetailsArea_Class FMDetailsArea = new FMDetailsArea_Class();
-        internal readonly StatisticsTab_Class StatisticsTab = new StatisticsTab_Class();
-        internal readonly EditFMTab_Class EditFMTab = new EditFMTab_Class();
-        internal readonly CommentTab_Class CommentTab = new CommentTab_Class();
-        internal readonly TagsTab_Class TagsTab = new TagsTab_Class();
-        internal readonly PatchTab_Class PatchTab = new PatchTab_Class();
-        internal readonly ModsTab_Class ModsTab = new ModsTab_Class();
-        internal readonly ReadmeArea_Class ReadmeArea = new ReadmeArea_Class();
-        internal readonly PlayOriginalGameMenu_Class PlayOriginalGameMenu = new PlayOriginalGameMenu_Class();
-        internal readonly MainButtons_Class MainButtons = new MainButtons_Class();
-        internal readonly ProgressBox_Class ProgressBox = new ProgressBox_Class();
-        internal readonly SettingsWindow_Class SettingsWindow = new SettingsWindow_Class();
-        internal readonly DateFilterBox_Class DateFilterBox = new DateFilterBox_Class();
-        internal readonly TagsFilterBox_Class TagsFilterBox = new TagsFilterBox_Class();
-        internal readonly RatingFilterBox_Class RatingFilterBox = new RatingFilterBox_Class();
-        internal readonly Importing_Class Importing = new Importing_Class();
-        internal readonly ScanAllFMsBox_Class ScanAllFMsBox = new ScanAllFMsBox_Class();
-        internal readonly CharacterEncoding_Class CharacterEncoding = new CharacterEncoding_Class();
-        internal readonly AddFMsToSet_Class AddFMsToSet = new AddFMsToSet_Class();
+        internal readonly Meta_Class Meta = new();
+        internal readonly Global_Class Global = new();
+        internal readonly SplashScreen_Class SplashScreen = new();
+        internal readonly BrowseDialogs_Class BrowseDialogs = new();
+        internal readonly AlertMessages_Class AlertMessages = new();
+        internal readonly MainMenu_Class MainMenu = new();
+        internal readonly AboutWindow_Class AboutWindow = new();
+        internal readonly GameVersionsWindow_Class GameVersionsWindow = new();
+        internal readonly FMDeletion_Class FMDeletion = new();
+        internal readonly Difficulties_Class Difficulties = new();
+        internal readonly FilterBar_Class FilterBar = new();
+        internal readonly FMsList_Class FMsList = new();
+        internal readonly FMDetailsArea_Class FMDetailsArea = new();
+        internal readonly StatisticsTab_Class StatisticsTab = new();
+        internal readonly EditFMTab_Class EditFMTab = new();
+        internal readonly CommentTab_Class CommentTab = new();
+        internal readonly TagsTab_Class TagsTab = new();
+        internal readonly PatchTab_Class PatchTab = new();
+        internal readonly ModsTab_Class ModsTab = new();
+        internal readonly ReadmeArea_Class ReadmeArea = new();
+        internal readonly PlayOriginalGameMenu_Class PlayOriginalGameMenu = new();
+        internal readonly MainButtons_Class MainButtons = new();
+        internal readonly ProgressBox_Class ProgressBox = new();
+        internal readonly SettingsWindow_Class SettingsWindow = new();
+        internal readonly DateFilterBox_Class DateFilterBox = new();
+        internal readonly TagsFilterBox_Class TagsFilterBox = new();
+        internal readonly RatingFilterBox_Class RatingFilterBox = new();
+        internal readonly Importing_Class Importing = new();
+        internal readonly ScanAllFMsBox_Class ScanAllFMsBox = new();
+        internal readonly CharacterEncoding_Class CharacterEncoding = new();
+        internal readonly AddFMsToSet_Class AddFMsToSet = new();
 
         internal sealed class Meta_Class
         {
