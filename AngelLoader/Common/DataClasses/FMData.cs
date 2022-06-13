@@ -50,7 +50,7 @@ namespace AngelLoader.DataClasses
 
         internal string Title = "";
         [FenGenListType("MultipleLines")]
-        internal readonly List<string> AltTitles = new List<string>();
+        internal readonly List<string> AltTitles = new();
 
         internal string Author = "";
 
@@ -68,7 +68,7 @@ namespace AngelLoader.DataClasses
         [FenGenReadmeEncoding]
         [FenGenDoNotSubstring]
         [FenGenIniName("ReadmeEncoding")]
-        internal readonly DictionaryI<int> ReadmeCodePages = new DictionaryI<int>();
+        internal readonly DictionaryI<int> ReadmeCodePages = new();
 
         [FenGenNumericEmpty(0)]
         [FenGenMaxDigits(20)]
@@ -80,8 +80,8 @@ namespace AngelLoader.DataClasses
         [FenGenMaxDigits(2)]
         internal int Rating { get => _rating; set => _rating = value.Clamp(-1, 10); }
 
-        internal readonly ExpandableDate ReleaseDate = new ExpandableDate();
-        internal readonly ExpandableDate LastPlayed = new ExpandableDate();
+        internal readonly ExpandableDate ReleaseDate = new();
+        internal readonly ExpandableDate LastPlayed = new();
 
         // We get this value for free when we get the FM archives and dirs on startup, but this value is fragile:
         // it updates whenever the user so much as moves the file or folder. We store it here to keep it permanent
@@ -126,7 +126,7 @@ namespace AngelLoader.DataClasses
         internal Language SelectedLang = Language.Default;
 
         [FenGenIgnore]
-        internal readonly FMCategoriesCollection Tags = new FMCategoriesCollection();
+        internal readonly FMCategoriesCollection Tags = new();
         internal string TagsString = "";
     }
 }
