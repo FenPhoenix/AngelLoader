@@ -72,9 +72,9 @@ namespace FMScanner.SimpleHelpers
 
         private bool _started;
         private bool _done;
-        private readonly Dictionary<string, int> _encodingFrequency = new Dictionary<string, int>(StringComparer.Ordinal);
-        private readonly Ude.CharsetDetector _ude = new Ude.CharsetDetector();
-        private readonly Ude.CharsetDetector _singleUde = new Ude.CharsetDetector();
+        private readonly Dictionary<string, int> _encodingFrequency = new(StringComparer.Ordinal);
+        private readonly Ude.CharsetDetector _ude = new();
+        private readonly Ude.CharsetDetector _singleUde = new();
         private string? _encodingName;
         // Stupid micro-optimization to reduce GC time
         private readonly byte[] _buffer = new byte[16 * 1024];
