@@ -291,7 +291,6 @@ namespace FenGen
                 Environment.GetCommandLineArgs()[0],
                 GetArg(GenType.FMData),
                 GetArg(GenType.LanguageAndAlsoCreateTestIni),
-                GetArg(GenType.EnableLangReflectionStyleGen),
                 GetArg(GenType.ExcludeResx),
                 //GetArg(GenType.RestoreResx),
                 GetArg(GenType.AddBuildDate),
