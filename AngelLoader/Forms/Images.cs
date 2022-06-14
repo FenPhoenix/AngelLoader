@@ -899,7 +899,7 @@ namespace AngelLoader.Forms
 
                 for (int ai = 1; ai < FMsList_FinishedOnIcons.Length; ai++)
                 {
-                    Bitmap canvas = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
+                    var canvas = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
                     Difficulty difficulty = (Difficulty)ai;
 
                     list.Clear();
@@ -1045,7 +1045,7 @@ namespace AngelLoader.Forms
 
         private static Bitmap CreateCalendarImage(bool lastPlayed, bool darkMode)
         {
-            Bitmap ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
+            var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
             using var g = Graphics.FromImage(ret);
 
             g.SmoothingMode = SmoothingMode.None;
@@ -1108,7 +1108,7 @@ namespace AngelLoader.Forms
 
         private static Bitmap CreateRatingExampleRectangle(bool darkMode)
         {
-            Bitmap ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
+            var ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
             using var g = Graphics.FromImage(ret);
             g.FillRectangle(darkMode ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White, 1, 1, 77, 21);
 
