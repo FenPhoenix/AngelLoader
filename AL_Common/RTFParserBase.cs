@@ -646,7 +646,8 @@ namespace AL_Common
             None,
             Symbol,
             Wingdings,
-            Webdings
+            Webdings,
+            Unset
         }
 
         protected enum RtfDestinationState

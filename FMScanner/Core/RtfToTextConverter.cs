@@ -182,18 +182,43 @@ namespace FMScanner
         private sealed class FontEntry
         {
             // Use only as many chars as we need - "Wingdings" is 9 chars and is the longest we need
-            private const int NameMaxLength = 9;
-
-            internal int? CodePage;
+            private const int _nameMaxLength = 9;
 
             // We need to store names in case we get codepage 42 nonsense, we need to know which font to translate
             // to Unicode (Wingdings, Webdings, or Symbol)
-            internal readonly char[] Name = new char[NameMaxLength];
-            internal int NameCharPos;
+            private readonly char[] _name = new char[_nameMaxLength];
+            private int _nameCharPos;
+
+            private bool _nameDone;
+
+            internal int? CodePage;
+
+            internal SymbolFont SymbolFont = SymbolFont.Unset;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal bool NameEquals(char[] array2)
+            {
+                if (_nameCharPos != array2.Length) return false;
+
+                for (int i = 0; i < _nameCharPos; i++)
+                {
+                    if (_name[i] != array2[i]) return false;
+                }
+
+                return true;
+            }
 
             internal void AppendNameChar(char c)
             {
-                if (NameCharPos < NameMaxLength) Name[NameCharPos++] = c;
+                if (!_nameDone && _nameCharPos < _nameMaxLength)
+                {
+                    if (c == ';')
+                    {
+                        _nameDone = true;
+                        return;
+                    }
+                    _name[_nameCharPos++] = c;
+                }
             }
         }
 
@@ -1561,28 +1586,27 @@ namespace FMScanner
                         }
                         else
                         {
-                            if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _wingdingsChars))
+                            switch (GetSymbolFontTypeFromFontEntry(fontEntry))
                             {
-                                GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChars);
-                            }
-                            else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _webdingsChars))
-                            {
-                                GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChars);
-                            }
-                            else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _symbolChars))
-                            {
-                                GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChars);
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    finalChars = enc?.GetChars(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknownCharArray;
-                                }
-                                catch
-                                {
-                                    finalChars = _unicodeUnknownCharArray;
-                                }
+                                case SymbolFont.Wingdings:
+                                    GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChars);
+                                    break;
+                                case SymbolFont.Webdings:
+                                    GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChars);
+                                    break;
+                                case SymbolFont.Symbol:
+                                    GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChars);
+                                    break;
+                                default:
+                                    try
+                                    {
+                                        finalChars = enc?.GetChars(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknownCharArray;
+                                    }
+                                    catch
+                                    {
+                                        finalChars = _unicodeUnknownCharArray;
+                                    }
+                                    break;
                             }
                         }
                     }
@@ -2114,14 +2138,19 @@ namespace FMScanner
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private SymbolFont GetSymbolFontTypeFromFontEntry(FontEntry fontEntry) =>
-              CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _symbolChars)
-            ? SymbolFont.Symbol
-            : CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _wingdingsChars)
-            ? SymbolFont.Wingdings
-            : CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _webdingsChars)
-            ? SymbolFont.Webdings
-            : SymbolFont.None;
+        private SymbolFont GetSymbolFontTypeFromFontEntry(FontEntry fontEntry)
+        {
+            if (fontEntry.SymbolFont == SymbolFont.Unset)
+            {
+                fontEntry.SymbolFont =
+                    fontEntry.NameEquals(_symbolChars) ? SymbolFont.Symbol :
+                    fontEntry.NameEquals(_wingdingsChars) ? SymbolFont.Wingdings :
+                    fontEntry.NameEquals(_webdingsChars) ? SymbolFont.Webdings :
+                    SymbolFont.None;
+            }
+
+            return fontEntry.SymbolFont;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out char[] finalChars)
@@ -2195,17 +2224,17 @@ namespace FMScanner
 
                 // We already know our code point is within bounds of the array, because the arrays also go from
                 // 0x20 - 0xFF, so no need to check.
-                if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _wingdingsChars))
+                switch (GetSymbolFontTypeFromFontEntry(fontEntry))
                 {
-                    codePoint = _wingdingsFontToUnicode[codePoint - 0x20];
-                }
-                else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _webdingsChars))
-                {
-                    codePoint = _webdingsFontToUnicode[codePoint - 0x20];
-                }
-                else if (CharSeqEqualUpTo(fontEntry.Name, fontEntry.NameCharPos, _symbolChars))
-                {
-                    codePoint = _symbolFontToUnicode[codePoint - 0x20];
+                    case SymbolFont.Wingdings:
+                        codePoint = _wingdingsFontToUnicode[codePoint - 0x20];
+                        break;
+                    case SymbolFont.Webdings:
+                        codePoint = _webdingsFontToUnicode[codePoint - 0x20];
+                        break;
+                    case SymbolFont.Symbol:
+                        codePoint = _symbolFontToUnicode[codePoint - 0x20];
+                        break;
                 }
             }
 
@@ -2253,20 +2282,6 @@ namespace FMScanner
                 result += chars.ItemsArray[i] - '0';
             }
             return result;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool CharSeqEqualUpTo(char[] array1, int len1, char[] array2)
-        {
-            int array2Len = array2.Length;
-            if (len1 < array2Len) return false;
-
-            for (int i0 = 0; i0 < array2Len; i0++)
-            {
-                if (array1[i0] != array2[i0]) return false;
-            }
-
-            return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
