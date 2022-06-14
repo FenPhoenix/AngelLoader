@@ -81,7 +81,7 @@ namespace AngelLoader.Forms
             this.GitHubLinkLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.GitHubLinkLabel.Location = new System.Drawing.Point(72, 68);
             this.GitHubLinkLabel.Name = "GitHubLinkLabel";
-            this.GitHubLinkLabel.Size = new System.Drawing.Size(269, 16);
+            this.GitHubLinkLabel.Size = new System.Drawing.Size(268, 16);
             this.GitHubLinkLabel.TabIndex = 3;
             this.GitHubLinkLabel.TabStop = true;
             this.GitHubLinkLabel.Text = "https://github.com/FenPhoenix/AngelLoader";
@@ -213,7 +213,6 @@ namespace AngelLoader.Forms
             // 
             // LogoTextPictureBox
             // 
-            this.LogoTextPictureBox.Image = global::AngelLoader.Properties.Resources.About;
             this.LogoTextPictureBox.InitialImage = null;
             this.LogoTextPictureBox.Location = new System.Drawing.Point(64, 16);
             this.LogoTextPictureBox.Name = "LogoTextPictureBox";

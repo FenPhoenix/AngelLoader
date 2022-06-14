@@ -159,7 +159,6 @@
             // 
             // LogoTextPictureBox
             // 
-            this.LogoTextPictureBox.Image = global::AngelLoader.Properties.Resources.About;
             this.LogoTextPictureBox.InitialImage = null;
             this.LogoTextPictureBox.Location = new System.Drawing.Point(64, 16);
             this.LogoTextPictureBox.Size = new System.Drawing.Size(290, 50);
