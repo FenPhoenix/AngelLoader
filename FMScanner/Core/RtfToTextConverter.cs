@@ -150,7 +150,7 @@ namespace FMScanner
 
             internal new bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
             {
-                if (key > _switchPoint)
+                if (key >= _switchPoint)
                 {
                     return base.TryGetValue(key, out value);
                 }
