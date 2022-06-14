@@ -71,7 +71,7 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(cab, LText.TagsFilterBox.ClearAllToolTip);
             }
 
-            // NOTE: These CANNOT be GrowAndShrink because we need to manually grow them here! (special case)
+            // IMPORTANT: These CANNOT be GrowAndShrink because we need to manually grow them here! (special case)
             AndButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAll);
             OrButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAny);
             NotButton.SetTextAutoSize(LText.TagsFilterBox.MoveToExclude);

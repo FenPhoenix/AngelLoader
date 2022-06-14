@@ -299,9 +299,9 @@ namespace AngelLoader
             // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts
             // where the background stays the old color but turns to our new color when portions of the readme
             // get painted (see Thork).
-            // NOTE: Thork's readme is actually just weirdly broken, the background is sometimes yellow but paints
-            // over with white even on classic mode. So oh well.
-            // NOTE: Do this BEFORE putting the dark background control word in, or else it will be overwritten too!
+            // Actually, Thork's readme is actually just weirdly broken, the background is sometimes yellow but
+            // paints over with white even on classic mode. So oh well.
+            // Do this BEFORE putting the dark background control word in, or else it will be overwritten too!
             ReplaceByteSequence(darkModeBytes, _background, _backgroundBlanked);
 
             // Insert our dark background definition at the end, so we override any other backgrounds that may be set.

@@ -14,13 +14,13 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    // NOTE: We still don't generate this, because complication yadda yadda.
+    // We still don't generate this, because complication yadda yadda.
     // But we use a game prefix detector that brings back the per-game automation at runtime, but way faster
     // than before. So we're only a little slower than full code generation, but way less error-prone than fully
     // manually written per-game duplicated code.
 
-    // NOTE: This file should have had sections from the start, but now that it got released without, we can't
-    // really change it without breaking compatibility. Oh well.
+    // This file should have had sections from the start, but now that it got released without, we can't really
+    // change it without breaking compatibility. Oh well.
 
     // A note about floats:
     // When storing and reading floats, it's imperative that we specify InvariantInfo. Otherwise the decimal
@@ -890,7 +890,7 @@ namespace AngelLoader
             // them in the next public release. So now I have to support reading them suffixed. But let's just
             // write them out prefixed from now on to nip this inconsistency in the bud. That way we don't have
             // to add suffix support to our prefix detector and slow it down with a weird edge case.
-            // NOTE that even if we add more games, we don't have to - and shouldn't - add them here.
+            // Note that even if we add more games, we don't have to - and shouldn't - add them here.
             // Because the old app versions that need these won't support the new games anyway, and the new app
             // versions that support the new games will also have the new prefixed format in the config.
             // Or else they'll be reading from an old config that won't have data for the new game(s) anyway.

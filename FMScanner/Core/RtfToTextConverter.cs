@@ -2205,7 +2205,7 @@ namespace FMScanner
             And, yes, that's last used, period, regardless of scope. So we track it globally. That's the official
             behavior, don't ask me.
 
-            NOTE: Verified, these 0xF020-0xF0FF chars can be represented either as negatives or as >32767 positives
+            Verified, these 0xF020-0xF0FF chars can be represented either as negatives or as >32767 positives
             (despite the spec saying that \uN must be signed int16). So we need to fall through to this section
             even if we did the above, because by adding 65536 we might now be in the 0xF020-0xF0FF range.
             */

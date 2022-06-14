@@ -2,7 +2,7 @@
 //#define FMScanner_FullCode
 #define Enable7zReadmeCacheCode
 
-// NOTE(nullable - Scanner - Main)
+// Null notes:
 // -Lists are nullable because we want to avoid allocating new Lists all over the place.
 // -Arrays are non-nullable because assigning them Array.Empty<T> is basically free.
 // -Strings are non-nullable because assigning them the empty string "" is basically free.
@@ -540,7 +540,7 @@ namespace FMScanner
                             // TODO: Calculate these exactly like they are on use (eg. only get the first title.str/titles.str etc.)
                             // That way we can shave a bit of time in theory.
 
-                            // NOTE: Always extract readmes no matter what, so our .7z caching is always correct.
+                            // Always extract readmes no matter what, so our .7z caching is always correct.
                             // Also maybe we would need to always extract them regardless for other reasons, but
                             // yeah.
                             if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
@@ -1289,7 +1289,7 @@ namespace FMScanner
             {
                 string lang = fmData.Languages[i];
 
-                // NOTE: This all depends on langs being lowercase!
+                // This all depends on langs being lowercase!
                 Debug.Assert(lang == lang.ToLowerInvariant(),
                             "lang != lang.ToLowerInvariant() - lang is not lowercase");
 
@@ -1620,7 +1620,6 @@ namespace FMScanner
 
                     if (SS2FingerprintRequiredAndNotDone() || _scanOptions.ScanCustomResources)
                     {
-                        // NOTE: Scanner: Dir: GetDirectories(fm base dir, "*", TopDirectoryOnly)
                         // I tried getting rid of this GetDirectories call, but it made things more complicated
                         // for SS2 fingerprinting and didn't result in a clear perf win. At least not warm. Meh.
                         var baseDirFolders = new List<string>();
@@ -2199,16 +2198,16 @@ namespace FMScanner
                     if (_fmIsZip)
                     {
                         /*
-                         NOTE: We used to copy the entire stream into memory here first, because we needed to
-                         seek. With the new custom RTF converter, we don't need to seek anymore.
+                        We used to copy the entire stream into memory here first, because we needed to seek.
+                        With the new custom RTF converter, we don't need to seek anymore.
 
-                         With the new converter, copying the stream to memory first results in the fastest
-                         performance, but slightly more memory use than the old RichTextBox method.
+                        With the new converter, copying the stream to memory first results in the fastest
+                        performance, but slightly more memory use than the old RichTextBox method.
 
-                         We've instead chosen to go with the buffered read here, which is slightly slower - but
-                         still vastly faster than the old RichTextBox-based converter - and saves a substantial
-                         amount of memory. Any other time I would choose ultimate speed, but RTF files can be
-                         extremely large (due to often containing images), so I'm erring on the side of caution.
+                        We've instead chosen to go with the buffered read here, which is slightly slower - but
+                        still vastly faster than the old RichTextBox-based converter - and saves a substantial
+                        amount of memory. Any other time I would choose ultimate speed, but RTF files can be
+                        extremely large (due to often containing images), so I'm erring on the side of caution.
                         */
                         readmeStream = _archive.OpenEntry(readmeEntry!);
                     }

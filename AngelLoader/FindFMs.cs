@@ -340,7 +340,7 @@ namespace AngelLoader
                         string f = files[fi];
                         // Do this first because it should be faster than a dictionary lookup
                         if (!f.ExtIsArchive()) continue;
-                        // NOTE: We do a ContainsKey check to keep behavior the same as previously. When we use
+                        // We do a ContainsKey check to keep behavior the same as previously. When we use
                         // dict[key] = value, it _replaces_ the value with the new one every time. What we want
                         // is for it to just not touch it at all if the key is already in there. This check does
                         // technically slow it down some, but the actual perf degradation is negligible. And we

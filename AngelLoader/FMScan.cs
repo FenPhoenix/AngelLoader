@@ -363,7 +363,7 @@ namespace AngelLoader
 
             var fmsToScan = new List<FanMission>(fmsViewListUnscanned.Count);
 
-            // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
+            // We use FMDataIniList index because that's the list that the indexes are pulled from!
             // (not FMsViewList)
             foreach (int index in fmsViewListUnscanned) fmsToScan.Add(FMDataIniList[index]);
             // Just in case

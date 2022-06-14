@@ -204,7 +204,7 @@ namespace AngelLoader.Forms
             #region Add pages
 
             PagePanel.Controls.Add(PathsPage);
-            // NOTE: We set DockStyle here so that it isn't set when we use the designer!
+            // We set DockStyle here so that it isn't set when we use the designer!
             PathsPage.Dock = DockStyle.Fill;
 
             if (startup)

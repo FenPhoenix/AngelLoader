@@ -559,8 +559,8 @@ namespace AngelLoader
 
             if (resetSelector)
             {
-                // NOTE: We're reading cam_mod.ini right here to grab these new values, that's why we're not
-                // calling the regular cam_mod.ini reader method. Don't panic.
+                // We're reading cam_mod.ini right here to grab these new values, that's why we're not calling
+                // the regular cam_mod.ini reader method. Don't panic.
 
                 // If the loader is now something other than us, then leave it be and don't change anything
                 var tempSelectorsList = new List<string>();

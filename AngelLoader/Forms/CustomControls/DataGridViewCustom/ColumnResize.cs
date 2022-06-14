@@ -119,13 +119,16 @@ namespace AngelLoader.Forms.CustomControls
                     return -1;
                 }
 
-                // When we're dragging a column divider, we always want to resize the column to the left of it.
-                // But the hit test will report the right-side column if our mouse is to the right of the divider
-                // when we start dragging, so in that case we need to use the column that's one to the left of
-                // the reported one.
-                // NOTE: I think ColumnResizeLeft means the resizable divider on the left side of the current
-                //       column. But if we're thinking of the divider itself, we're on the right side of it.
-                //       Just so I don't get confused again if I look at this in a few months.
+                /*
+                When we're dragging a column divider, we always want to resize the column to the left of it.
+                But the hit test will report the right-side column if our mouse is to the right of the divider
+                when we start dragging, so in that case we need to use the column that's one to the left of the
+                the reported one.
+
+                I think ColumnResizeLeft means the resizable divider on the left side of the current column. But
+                if we're thinking of the divider itself, we're on the right side of it. Just so I don't get
+                confused again if I look at this in a few months.
+                */
                 _columnToResize = hitTestType == ColumnResizeLeft
                     ? FindColumnIndexByDisplayIndex(Columns[ht.ColumnIndex].DisplayIndex - 1)
                     : ht.ColumnIndex;

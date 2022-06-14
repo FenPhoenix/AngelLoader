@@ -1,5 +1,5 @@
 ﻿/* NOTE: MainForm notes:
-NOTE: Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
+-Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
 in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
 Things to lazy load:
@@ -12,7 +12,7 @@ Things to lazy load:
 -If converting the whole app to Segoe UI, remember to change all MinimumSize (button min size "75,23" etc.)
 IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
-NOTE(MainForm Designer): The controls move positions because they're accounting for the scroll bar
+-The controls move positions because they're accounting for the scroll bar
 but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
 the scroll bar was).
 
@@ -523,7 +523,7 @@ namespace AngelLoader.Forms
                 // -We start up, rating column is set to text so this one hasn't been added yet, then we change
                 //  to image rating column. This gets added and has its header cell replaced with a custom one,
                 //  and does NOT have its text transferred over. It ends up with blank text.
-                //  NOTE! The text column avoids this issue solely because it gets added in the component init
+                //  Note! The text column avoids this issue solely because it gets added in the component init
                 //  method (therefore the OnColumnAdded() handler is run and it gets its header cell replaced
                 //  immediately). If we changed that, we would have to add this to the rating text column too!
                 HeaderCell = new DataGridViewColumnHeaderCellCustom(),
@@ -2084,7 +2084,7 @@ namespace AngelLoader.Forms
                     FilterByRatingButton.Checked = false;
                     Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
 
-                    // NOTE: Here is the line where the internal filter is cleared. It does in fact happen!
+                    // Here is the line where the internal filter is cleared. It does in fact happen!
                     FMsDGV.Filter.ClearAll(oneList);
                 }
                 finally

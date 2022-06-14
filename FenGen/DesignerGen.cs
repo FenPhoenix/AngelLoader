@@ -45,7 +45,6 @@ MainForm gen notes:
 
 [x] Panels: Size is removed when AutoSize=true, but should be kept for internal layout!
 
-NOTE:
 Things are getting combinatorial-explosive in here already, with all these different cases... It's not really
 future-proof (will likely break badly if normal but unaccounted-for UI things are done).
 We could just switch to a simple Text-and-Name remove, that'll cut down our bloat a lot and maybe we can just

@@ -1784,7 +1784,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    // @BetterErrors(OpenHelpFile redirect file write failure): This one isn't important enough to put a dialog
+                    // This one isn't important enough to put a dialog
                     Log("Exception writing temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
                     finalUri = helpFileUri;
                 }

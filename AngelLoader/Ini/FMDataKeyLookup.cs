@@ -9,7 +9,7 @@ namespace AngelLoader
         internal static class FMDataKeyLookup
         {
 #if CONVERSION_ENABLED
-            // NOTE: Make this more automated later! It's going to be a pain!
+            // TODO: Make this more automated later! It's going to be a pain!
             public static void ConvertSemiAuto()
             {
                 const string gperfFile = @"C:\temp2.txt";

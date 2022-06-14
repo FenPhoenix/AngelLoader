@@ -49,7 +49,7 @@ namespace AngelLoader
 
             // bForceLanguage gets set to something specific in every possible case, effectively meaning the
             // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
-            // NOTE: Although I'm using FMSel from ND 1.26 as a reference, ND 1.27's is exactly the same.
+            // Although I'm using FMSel from ND 1.26 as a reference, ND 1.27's is exactly the same.
             string fmInstPath = Path.Combine(Config.GetFMInstallPath(game), fmInstalledDir);
             if (!fmLanguage.IsEmpty())
             {
