@@ -1764,8 +1764,17 @@ namespace AngelLoader.Forms
 
         internal void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
         {
-            using var f = new GameVersionsForm();
-            f.ShowDialogDark(this);
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+
+                using var f = new GameVersionsForm();
+                f.ShowDialogDark(this);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
         }
 
         internal async void ImportMenuItems_Click(object sender, EventArgs e)
