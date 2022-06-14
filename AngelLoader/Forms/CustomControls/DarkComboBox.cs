@@ -98,7 +98,11 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) _buffer = null;
+            if (disposing)
+            {
+                _buffer?.Dispose();
+                _buffer = null;
+            }
 
             base.Dispose(disposing);
         }
@@ -228,7 +232,11 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
+
+            _buffer?.Dispose();
+            // Explicitly set null, because we only reinstantiate if null
             _buffer = null;
+
             InvalidateIfDark();
         }
 
