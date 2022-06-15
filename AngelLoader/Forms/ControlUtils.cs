@@ -204,7 +204,7 @@ namespace AngelLoader.Forms
                 stackCounter <= maxStackCount,
                 nameof(CreateAllControlsHandles) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
 
-            // Special-case the custom tab control, see control dictionary filler method for explanation
+            // Special-case the custom tab control, see control color filler method for explanation
             if (control is DarkTabControl dtc)
             {
                 var backingPages = dtc.BackingTabPages;
@@ -233,7 +233,7 @@ namespace AngelLoader.Forms
         {
             bool darkMode = theme == VisualTheme.Dark;
 
-            // @DarkModeNote(FillControlDict): Controls might change their colors after construct
+            // @DarkModeNote(FillControlColorList): Controls might change their colors after construct
             // Remember to handle this if new controls are added that this applies to.
             if (controlColors.Count == 0)
             {
