@@ -8,6 +8,15 @@ using AL_Common;
 
 namespace FMScanner.FastZipReader
 {
+    /*
+    Fen's note(@NET5 vs. Framework file I/O perf hack):
+    Wherever possible, we read instead of calling Seek or setting Position, because in Framework, that causes an
+    expensive system call to SetFilePointer(), whereas in .NET 6+ they reworked it to not have to do that.
+    Note that all the SetFilePointer() calls are in aggregate VERY expensive, so much so that reads are hugely
+    faster even with their overhead. But if we are ever able to move to .NET 6+, we should change all dummy reads
+    back to seeks.
+    */
+
     // All blocks.TryReadBlock do a check to see if signature is correct. Generic extra field is slightly different
     // all of the TryReadBlocks will throw if there are not enough bytes in the stream
 
@@ -340,11 +349,6 @@ namespace FMScanner.FastZipReader
             // bails out without reading all the way to the end of the ExtraField block. Thus we must force the
             // stream's position to the proper place.
 
-            // Fen's note: Original did a seek here, which for some reason is like 300x slower than a read, and
-            // also inexplicably causes ReadUInt32() to be 4x as slow and/or occur 4x as often(?!)
-            // Buffer alignments...? I dunno. Anyway. Speed.
-            // Also maybe not a good idea to use something that's faster when I don't know why it's faster.
-            // But my results are the same as the old method, so herpaderp.
             stream.AdvanceToPosition(endExtraFields + header.FileCommentLength, bundle);
 
             header.UncompressedSize = zip64.UncompressedSize ?? uncompressedSizeSmall;
