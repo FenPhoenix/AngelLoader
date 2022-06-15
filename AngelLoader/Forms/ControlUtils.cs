@@ -136,7 +136,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private static void FillControlDict(
+        private static void FillControlColorList(
             Control control,
             List<KeyValuePair<Control, ControlOriginalColors?>> controlColors,
             bool alsoCreateControlHandles,
@@ -161,7 +161,7 @@ namespace AngelLoader.Forms
 
             AssertR(
                 stackCounter <= maxStackCount,
-                nameof(FillControlDict) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
+                nameof(FillControlColorList) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
 
             // Our custom tab control is a special case in that we have the ability to show/hide tabs, which is
             // implemented by actually adding and removing the tab pages from the control and keeping them in a
@@ -174,14 +174,14 @@ namespace AngelLoader.Forms
                 var backingPages = dtc.BackingTabPages;
                 for (int i = 0; i < backingPages.Length; i++)
                 {
-                    FillControlDict(backingPages[i], controlColors, alsoCreateControlHandles, stackCounter);
+                    FillControlColorList(backingPages[i], controlColors, alsoCreateControlHandles, stackCounter);
                 }
             }
             else
             {
                 for (int i = 0; i < control.Controls.Count; i++)
                 {
-                    FillControlDict(control.Controls[i], controlColors, alsoCreateControlHandles, stackCounter);
+                    FillControlColorList(control.Controls[i], controlColors, alsoCreateControlHandles, stackCounter);
                 }
             }
         }
@@ -238,7 +238,7 @@ namespace AngelLoader.Forms
             if (controlColors.Count == 0)
             {
                 if (capacity >= 0) controlColors.Capacity = capacity;
-                FillControlDict(form, controlColors, alsoCreateControlHandles);
+                FillControlColorList(form, controlColors, alsoCreateControlHandles);
             }
 
             foreach (var item in controlColors)
