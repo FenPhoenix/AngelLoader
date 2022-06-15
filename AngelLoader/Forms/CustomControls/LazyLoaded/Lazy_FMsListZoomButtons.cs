@@ -48,7 +48,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (_constructed) return;
 
             // Insert them in reverse order so we always insert at 0
-            ResetZoomButton = new ToolStripButtonCustom { Tag = LoadType.Lazy };
+            ResetZoomButton = new ToolStripButtonCustom();
             _owner.RefreshAreaToolStrip.Items.Insert(0, ResetZoomButton);
             ResetZoomButton.AutoSize = false;
             ResetZoomButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
@@ -56,7 +56,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             ResetZoomButton.Size = new Size(25, 25);
             ResetZoomButton.Click += _owner.FMsListResetZoomButton_Click;
 
-            ZoomOutButton = new ToolStripButtonCustom { Tag = LoadType.Lazy };
+            ZoomOutButton = new ToolStripButtonCustom();
             _owner.RefreshAreaToolStrip.Items.Insert(0, ZoomOutButton);
             ZoomOutButton.AutoSize = false;
             ZoomOutButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
@@ -64,7 +64,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             ZoomOutButton.Size = new Size(25, 25);
             ZoomOutButton.Click += _owner.FMsListZoomOutButton_Click;
 
-            ZoomInButton = new ToolStripButtonCustom { Tag = LoadType.Lazy };
+            ZoomInButton = new ToolStripButtonCustom();
             _owner.RefreshAreaToolStrip.Items.Insert(0, ZoomInButton);
             ZoomInButton.AutoSize = false;
             ZoomInButton.DisplayStyle = ToolStripItemDisplayStyle.Image;

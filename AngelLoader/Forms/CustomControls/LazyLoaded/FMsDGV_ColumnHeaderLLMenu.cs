@@ -133,30 +133,30 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             _menu.Items.AddRange(new ToolStripItem[]
             {
-                    ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom{ Tag = LoadType.Lazy },
-                    ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    new ToolStripSeparator { Tag = LoadType.Lazy }
+                ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom(),
+                ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom(),
+                ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator()
             });
 
             #region Fill ColumnHeaderCheckBoxMenuItems array
 
             ColumnHeaderCheckBoxMenuItems = new[]
             {
-                    ShowGameMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowInstalledMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowTitleMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowArchiveMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowAuthorMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowSizeMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowRatingMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowFinishedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowLastPlayedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowDateAddedMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowDisabledModsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                    ShowCommentMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy }
-                };
+                ShowGameMenuItem = new ToolStripMenuItemCustom(),
+                ShowInstalledMenuItem = new ToolStripMenuItemCustom(),
+                ShowTitleMenuItem = new ToolStripMenuItemCustom(),
+                ShowArchiveMenuItem = new ToolStripMenuItemCustom(),
+                ShowAuthorMenuItem = new ToolStripMenuItemCustom(),
+                ShowSizeMenuItem = new ToolStripMenuItemCustom(),
+                ShowRatingMenuItem = new ToolStripMenuItemCustom(),
+                ShowFinishedMenuItem = new ToolStripMenuItemCustom(),
+                ShowReleaseDateMenuItem = new ToolStripMenuItemCustom(),
+                ShowLastPlayedMenuItem = new ToolStripMenuItemCustom(),
+                ShowDateAddedMenuItem = new ToolStripMenuItemCustom(),
+                ShowDisabledModsMenuItem = new ToolStripMenuItemCustom(),
+                ShowCommentMenuItem = new ToolStripMenuItemCustom()
+            };
 
             for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
             {

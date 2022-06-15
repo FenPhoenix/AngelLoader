@@ -30,7 +30,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     var menuItems = new ToolStripItem[TopRightTabsData.Count];
                     for (int i = 0; i < menuItems.Length; i++)
                     {
-                        menuItems[i] = new ToolStripMenuItemCustom { Tag = LoadType.Lazy };
+                        menuItems[i] = new ToolStripMenuItemCustom();
                     }
 
                     _menu.Items.AddRange(menuItems);

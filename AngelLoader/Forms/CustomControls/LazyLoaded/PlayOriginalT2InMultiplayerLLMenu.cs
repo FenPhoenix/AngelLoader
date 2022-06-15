@@ -48,8 +48,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             MenuItem = new ToolStripMenuItemCustom
             {
                 GameIndex = GameIndex.Thief2,
-                Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small(),
-                Tag = LoadType.Lazy
+                Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small()
             };
             MenuItem.Click += _owner.PlayT2InMultiplayerMenuItem_Click;
             _menu.Items.Add(MenuItem);

@@ -211,49 +211,49 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             _menu.Items.AddRange(new ToolStripItem[]
             {
-                PlayFMMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                PlayFMInMPMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                InstallUninstallMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                new ToolStripSeparator { Tag = LoadType.Lazy },
-                PinToTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy, Image = Images.Pin_16, Visible = false },
-                ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy, Image = Images.Unpin_16, Visible = false },
-                new ToolStripSeparator { Tag = LoadType.Lazy },
-                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16, Tag = LoadType.Lazy },
-                DeleteFromDBMenuItem = new ToolStripMenuItemCustom { Image = Images.DeleteFromDB, Tag = LoadType.Lazy },
-                OpenInDromEdSep = new ToolStripSeparator { Tag = LoadType.Lazy },
-                OpenInDromEdMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                OpenFMFolderSep = new ToolStripSeparator { Tag = LoadType.Lazy },
-                OpenFMFolderMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                new ToolStripSeparator { Tag = LoadType.Lazy },
-                ScanFMMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                ConvertAudioMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                new ToolStripSeparator { Tag = LoadType.Lazy },
-                RatingMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                FinishedOnMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                new ToolStripSeparator { Tag = LoadType.Lazy },
-                WebSearchMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy }
+                PlayFMMenuItem = new ToolStripMenuItemCustom(),
+                PlayFMInMPMenuItem = new ToolStripMenuItemCustom(),
+                InstallUninstallMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                PinToTopMenuItem = new ToolStripMenuItemCustom(),
+                ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Image = Images.Pin_16, Visible = false },
+                ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Image = Images.Unpin_16, Visible = false },
+                new ToolStripSeparator(),
+                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16 },
+                DeleteFromDBMenuItem = new ToolStripMenuItemCustom { Image = Images.DeleteFromDB },
+                OpenInDromEdSep = new ToolStripSeparator(),
+                OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
+                OpenFMFolderSep = new ToolStripSeparator(),
+                OpenFMFolderMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                ScanFMMenuItem = new ToolStripMenuItemCustom(),
+                ConvertAudioMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                RatingMenuItem = new ToolStripMenuItemCustom(),
+                FinishedOnMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                WebSearchMenuItem = new ToolStripMenuItemCustom()
             });
 
             ConvertAudioMenuItem.DropDownItems.AddRange(new ToolStripItem[]
             {
-                ConvertWAVsTo16BitMenuItem = new ToolStripMenuItemCustom{ Tag = LoadType.Lazy },
-                ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom{ Tag = LoadType.Lazy }
+                ConvertWAVsTo16BitMenuItem = new ToolStripMenuItemCustom(),
+                ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom()
             });
 
-            RatingMenuItem.DropDownItems.Add(RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy });
+            RatingMenuItem.DropDownItems.Add(RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true });
             for (int i = 0; i < 11; i++)
             {
-                RatingMenuItem.DropDownItems.Add(new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy });
+                RatingMenuItem.DropDownItems.Add(new ToolStripMenuItemCustom { CheckOnClick = true });
             }
 
             FinishedOnMenu.Items.AddRange(new ToolStripItem[]
             {
-                FinishedOnNormalMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
-                FinishedOnHardMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
-                FinishedOnExpertMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
-                FinishedOnExtremeMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy },
-                FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true, Tag = LoadType.Lazy }
+                FinishedOnNormalMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnHardMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnExpertMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnExtremeMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
+                FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true }
             });
 
             FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItemCustom>().ToArray());

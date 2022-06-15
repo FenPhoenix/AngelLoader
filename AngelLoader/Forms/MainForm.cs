@@ -3093,26 +3093,26 @@ namespace AngelLoader.Forms
 
                 if (item.Tags.Count == 0)
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(item.Category + ":") { Tag = LoadType.Lazy };
+                    var catItem = new ToolStripMenuItemWithBackingText(item.Category + ":");
                     catItem.Click += AddTagMenuEmptyItem_Click;
                     addTagMenuItems[i] = catItem;
                 }
                 else
                 {
-                    var catItem = new ToolStripMenuItemWithBackingText(item.Category) { Tag = LoadType.Lazy };
+                    var catItem = new ToolStripMenuItemWithBackingText(item.Category);
                     addTagMenuItems[i] = catItem;
 
                     if (item.Category != PresetTags.MiscCategory)
                     {
-                        var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory) { Tag = LoadType.Lazy };
+                        var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory);
                         customItem.Click += AddTagMenuCustomItem_Click;
                         catItem.DropDownItems.Add(customItem);
-                        catItem.DropDownItems.Add(new ToolStripSeparator { Tag = LoadType.Lazy });
+                        catItem.DropDownItems.Add(new ToolStripSeparator());
                     }
 
                     foreach (string tag in item.Tags)
                     {
-                        var tagItem = new ToolStripMenuItemWithBackingText(tag) { Tag = LoadType.Lazy };
+                        var tagItem = new ToolStripMenuItemWithBackingText(tag);
 
                         tagItem.Click += item.Category == PresetTags.MiscCategory
                             ? AddTagMenuMiscItem_Click

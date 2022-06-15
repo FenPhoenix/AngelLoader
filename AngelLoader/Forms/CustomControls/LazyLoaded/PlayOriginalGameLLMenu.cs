@@ -74,8 +74,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 GameMenuItems[i] = new ToolStripMenuItemCustom
                 {
                     GameIndex = gameIndex,
-                    Image = Images.GetPerGameImage(i).Primary.Small(),
-                    Tag = LoadType.Lazy
+                    Image = Images.GetPerGameImage(i).Primary.Small()
                 };
                 // @GENGAMES(T3 doesn't support mod management)
                 if (GameIsDark(gameIndex))
@@ -83,8 +82,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     ModMenuItems[modI] = new ToolStripMenuItemCustom
                     {
                         GameIndex = gameIndex,
-                        Image = Images.GetPerGameImage(i).Primary.Small(),
-                        Tag = LoadType.Lazy
+                        Image = Images.GetPerGameImage(i).Primary.Small()
                     };
                     modI++;
                 }
@@ -95,8 +93,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             Thief2MPMenuItem = new ToolStripMenuItemCustom
             {
                 GameIndex = GameIndex.Thief2,
-                Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small(),
-                Tag = LoadType.Lazy
+                Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small()
             };
             _menu.Items.Insert(2, Thief2MPMenuItem);
 
@@ -107,8 +104,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             ModsSubMenu = new ToolStripMenuItemCustom
             {
-                Image = Images.Mods_16,
-                Tag = LoadType.Lazy
+                Image = Images.Mods_16
             };
 
             _menu.Items.Add(new ToolStripSeparator());

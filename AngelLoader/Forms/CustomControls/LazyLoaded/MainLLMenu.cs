@@ -67,28 +67,28 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents());
             _menu.Items.AddRange(new ToolStripItem[]
             {
-                GameVersionsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy},
-                new ToolStripSeparator { Tag = LoadType.Lazy },
-                ImportMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                new ToolStripSeparator { Tag = LoadType.Lazy },
-                ScanAllFMsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy },
-                SettingsMenuItem = new ToolStripMenuItemCustom{ Tag = LoadType.Lazy },
-                new ToolStripSeparator { Tag = LoadType.Lazy },
-                ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1, Tag = LoadType.Lazy },
-                AboutMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy},
-                new ToolStripSeparator { Tag = LoadType.Lazy },
-                ExitMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.Alt | Keys.F4, Tag = LoadType.Lazy }
+                GameVersionsMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                ImportMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                ScanAllFMsMenuItem = new ToolStripMenuItemCustom(),
+                SettingsMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1 },
+                AboutMenuItem = new ToolStripMenuItemCustom(),
+                new ToolStripSeparator(),
+                ExitMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.Alt | Keys.F4 }
             });
 
             ImportMenuItem.DropDown.Items.AddRange(new ToolStripItem[]
             {
                 // Not localized because they consist solely of proper names! Don't remove these!
-                ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom("DarkLoader...") { Tag = LoadType.Lazy },
-                ImportFromFMSelMenuItem = new ToolStripMenuItemCustom("FMSel...") { Tag = LoadType.Lazy },
-                ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom("NewDarkLoader...") { Tag = LoadType.Lazy }
+                ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom("DarkLoader..."),
+                ImportFromFMSelMenuItem = new ToolStripMenuItemCustom("FMSel..."),
+                ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom("NewDarkLoader...")
             });
 
             ScanAllFMsMenuItem.Enabled = _scanAllFMsMenuItemEnabled;

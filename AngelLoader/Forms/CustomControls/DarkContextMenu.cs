@@ -42,11 +42,6 @@ namespace AngelLoader.Forms.CustomControls
 
         public void AddRange(ToolStripItem[] toolStripItems)
         {
-            for (int i = 0; i < toolStripItems.Length; i++)
-            {
-                toolStripItems[i].Tag = LoadType.Lazy;
-            }
-
             Items.AddRange(toolStripItems);
             RefreshDarkModeState();
         }
