@@ -114,15 +114,6 @@ namespace AngelLoader
         {
             var retFail = (false, new List<string>());
 
-            if (archives.Count == 0)
-            {
-                if (single)
-                {
-                    Core.Dialogs.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
-                }
-                return retFail;
-            }
-
             var finalArchives = new List<string>();
             if (archives.Count > 1)
             {
@@ -148,9 +139,6 @@ namespace AngelLoader
             return (true, finalArchives);
         }
 
-        /*
-        @DB: Deal with if all are installed and have no archive available?
-        */
         // * NIGHTMARE REALM *
         internal static async Task DeleteFMsFromDisk(List<FanMission> fms)
         {
@@ -184,42 +172,10 @@ namespace AngelLoader
                 return;
             }
 
-            int installedNoArchiveCount = 0;
             int installedCount = 0;
-            try
+            for (int i = 0; i < fms.Count; i++)
             {
-                Core.View.SetWaitCursor(true);
-
-                var archivePaths = FMArchives.GetFMArchivePaths();
-                for (int i = 0; i < fms.Count; i++)
-                {
-                    FanMission fm = fms[i];
-                    // PERF_TODO(Delete FindAllMatches): The delete loop re-finds the matches for each FM
-                    // We could almost just cache this set, except that if we have to run the uninstaller, we
-                    // could end up with fewer FMs in the list from removing archive-less ones and then the
-                    // matches list wouldn't match up anymore. We could get really clever and account for that
-                    // still, if we felt like the perf increase would be worth it, but for now, meh.
-                    var matches = FMArchives.FindAllMatches(fm.Archive, archivePaths);
-                    if (matches.Count > 0)
-                    {
-                        if (fm.Installed)
-                        {
-                            installedCount++;
-                        }
-                    }
-                    else
-                    {
-                        if (fm.Installed)
-                        {
-                            installedCount++;
-                            installedNoArchiveCount++;
-                        }
-                    }
-                }
-            }
-            finally
-            {
-                Core.View.SetWaitCursor(false);
+                if (fms[i].Installed) installedCount++;
             }
 
             (bool cancel, bool deleteFromDB) = Core.Dialogs.AskToContinueYesNoCustomStrings(
@@ -240,16 +196,6 @@ namespace AngelLoader
 
             // Since multiple archives with the same name should be the rare case (nobody should be doing it),
             // we'll just ask the user per-FM if we find any as we go. Sorry to stop your batch, but yeah.
-
-            // This thing just tells you to uninstall the FMs to delete them, so it's correct functionality
-            // @DB: Should we just uninstall-as-delete all in this case? Seems more convenient
-            if (installedNoArchiveCount == fms.Count)
-            {
-                Core.Dialogs.ShowAlert(
-                    single ? LText.FMDeletion.ArchiveNotFound : LText.FMDeletion.ArchiveNotFound_All,
-                    single ? LText.AlertMessages.DeleteFMArchive : LText.AlertMessages.DeleteFMArchives);
-                return;
-            }
 
             bool refreshRequired = false;
             bool leaveAllInstalled = false;
@@ -365,7 +311,6 @@ namespace AngelLoader
                             {
                                 try
                                 {
-                                    deletedAtLeastOneFromDisk = true;
                                     FileSystem.DeleteFile(archive, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
                                 }
                                 catch (Exception ex)
@@ -378,6 +323,9 @@ namespace AngelLoader
                     }
                     finally
                     {
+                        // Do this even if we had no archives, because we're still going to set it unavailable
+                        // so we need to refresh to remove it from the filtered list
+                        deletedAtLeastOneFromDisk = true;
                         var newArchives = await Task.Run(() => FMArchives.FindAllMatches(fm.Archive));
                         if (newArchives.Count == 0 && !fm.Installed)
                         {
