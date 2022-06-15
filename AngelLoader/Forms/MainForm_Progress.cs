@@ -49,19 +49,16 @@ namespace AngelLoader.Forms
         #region Show methods
 
         public void ShowProgressBox_Single(
-            bool? showCheckBox = null,
             string? message1 = null,
             string? message2 = null,
             ProgressType? progressType = null,
-            string? checkBoxMessage = null,
-            Action<bool>? checkBoxAction = null,
             string? cancelMessage = null,
             Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: true,
-                size: showCheckBox == true ? ProgressSizeMode.SingleWithCheck : ProgressSizeMode.Single,
+                size: ProgressSizeMode.Single,
                 mainMessage1: message1 ?? "",
                 mainMessage2: message2 ?? "",
                 mainPercent: 0,
@@ -69,28 +66,23 @@ namespace AngelLoader.Forms
                 subMessage: "",
                 subPercent: 0,
                 subProgressBarType: ProgressType.Determinate,
-                checkBoxMessage: checkBoxMessage ?? "",
-                checkChangedAction: checkBoxAction ?? NullBoolAction,
                 cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
                 cancelAction: cancelAction ?? NullAction);
         });
 
         public void ShowProgressBox_Double(
-            bool? showCheckBox = null,
             string? mainMessage1 = null,
             string? mainMessage2 = null,
             ProgressType? mainProgressType = null,
             string? subMessage = null,
             ProgressType? subProgressType = null,
-            string? checkBoxMessage = null,
-            Action<bool>? checkBoxAction = null,
             string? cancelMessage = null,
             Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: true,
-                size: showCheckBox == true ? ProgressSizeMode.DoubleWithCheck : ProgressSizeMode.Double,
+                size: ProgressSizeMode.Double,
                 mainMessage1: mainMessage1 ?? "",
                 mainMessage2: mainMessage2 ?? "",
                 mainPercent: 0,
@@ -98,8 +90,6 @@ namespace AngelLoader.Forms
                 subMessage: subMessage ?? "",
                 subPercent: 0,
                 subProgressBarType: subProgressType ?? ProgressPanel.DefaultProgressType,
-                checkBoxMessage: checkBoxMessage ?? "",
-                checkChangedAction: checkBoxAction ?? NullBoolAction,
                 cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
                 cancelAction: cancelAction ?? NullAction);
         });
@@ -111,25 +101,17 @@ namespace AngelLoader.Forms
 
         public void SetProgressBoxState_Single(
             bool? visible = null,
-            bool? showCheckBox = null,
             string? message1 = null,
             string? message2 = null,
             int? percent = null,
             ProgressType? progressType = null,
-            string? checkBoxMessage = null,
-            Action<bool>? checkBoxAction = null,
             string? cancelMessage = null,
             Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: visible,
-                size: showCheckBox switch
-                {
-                    true => ProgressSizeMode.SingleWithCheck,
-                    false => ProgressSizeMode.Single,
-                    _ => null
-                },
+                size: ProgressSizeMode.Single,
                 mainMessage1: message1,
                 mainMessage2: message2,
                 mainPercent: percent,
@@ -137,15 +119,12 @@ namespace AngelLoader.Forms
                 subMessage: "",
                 subPercent: 0,
                 subProgressBarType: ProgressType.Determinate,
-                checkBoxMessage: checkBoxMessage,
-                checkChangedAction: checkBoxAction,
                 cancelButtonMessage: cancelMessage,
                 cancelAction: cancelAction);
         });
 
         public void SetProgressBoxState_Double(
             bool? visible = null,
-            bool? showCheckBox = null,
             string? mainMessage1 = null,
             string? mainMessage2 = null,
             int? mainPercent = null,
@@ -153,20 +132,13 @@ namespace AngelLoader.Forms
             string? subMessage = null,
             int? subPercent = null,
             ProgressType? subProgressType = null,
-            string? checkBoxMessage = null,
-            Action<bool>? checkBoxAction = null,
             string? cancelMessage = null,
             Action? cancelAction = null) => Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: visible,
-                size: showCheckBox switch
-                {
-                    true => ProgressSizeMode.DoubleWithCheck,
-                    false => ProgressSizeMode.Double,
-                    _ => null
-                },
+                size: ProgressSizeMode.Double,
                 mainMessage1: mainMessage1,
                 mainMessage2: mainMessage2,
                 mainPercent: mainPercent,
@@ -174,8 +146,6 @@ namespace AngelLoader.Forms
                 subMessage: subMessage,
                 subPercent: subPercent,
                 subProgressBarType: subProgressType,
-                checkBoxMessage: checkBoxMessage,
-                checkChangedAction: checkBoxAction,
                 cancelButtonMessage: cancelMessage,
                 cancelAction: cancelAction);
         });
@@ -193,8 +163,6 @@ namespace AngelLoader.Forms
                 subMessage: null,
                 subPercent: null,
                 subProgressBarType: null,
-                checkBoxMessage: null,
-                checkChangedAction: null,
                 cancelButtonMessage: null,
                 cancelAction: null);
         });
@@ -209,8 +177,6 @@ namespace AngelLoader.Forms
             string? subMessage = null,
             int? subPercent = null,
             ProgressType? subProgressType = null,
-            string? checkBoxMessage = null,
-            Action<bool>? checkBoxAction = null,
             string? cancelMessage = null,
             Action? cancelAction = null) =>
             Invoke(() =>
@@ -226,8 +192,6 @@ namespace AngelLoader.Forms
                     subMessage: subMessage,
                     subPercent: subPercent,
                     subProgressBarType: subProgressType,
-                    checkBoxMessage: checkBoxMessage,
-                    checkChangedAction: checkBoxAction,
                     cancelButtonMessage: cancelMessage,
                     cancelAction: cancelAction);
             });

@@ -18,9 +18,7 @@ namespace AngelLoader.Forms.CustomControls
         internal const ProgressType DefaultProgressType = ProgressType.Determinate;
 
         private const int regularHeight = 128;
-        private const int regularHeightWithCheck = regularHeight + 32;
         private const int extendedHeight = 192;
-        private const int extendedHeightWithCheck = extendedHeight + 32;
 
         #endregion
 
@@ -31,7 +29,6 @@ namespace AngelLoader.Forms.CustomControls
         private ProgressSizeMode _sizeModeMode = _defaultSizeMode;
 
         private Action _cancelAction = NullAction;
-        private Action<bool> _checkChangedAction = NullBoolAction;
 
         #endregion
 
@@ -79,8 +76,6 @@ namespace AngelLoader.Forms.CustomControls
                 SubPercentLabel.BackColor = back;
                 SubPercentLabel.ForeColor = fore;
                 SubProgressBar.DarkModeEnabled = _darkModeEnabled;
-
-                MainCheckBox.DarkModeEnabled = _darkModeEnabled;
             }
         }
 
@@ -108,24 +103,11 @@ namespace AngelLoader.Forms.CustomControls
             if (!forceChange && sizeMode == _sizeModeMode) return;
 
             bool doubleSize = sizeMode == ProgressSizeMode.Double;
-            bool checkBoxShown = sizeMode is ProgressSizeMode.SingleWithCheck or ProgressSizeMode.DoubleWithCheck;
 
-            Size = Size with
-            {
-                Height = sizeMode switch
-                {
-                    ProgressSizeMode.Single => regularHeight,
-                    ProgressSizeMode.SingleWithCheck => regularHeightWithCheck,
-                    ProgressSizeMode.Double => extendedHeight,
-                    _ => extendedHeightWithCheck
-                }
-            };
+            Size = Size with { Height = sizeMode == ProgressSizeMode.Double ? extendedHeight : regularHeight };
             SubMessageLabel.Visible = doubleSize;
             SubPercentLabel.Visible = doubleSize;
             SubProgressBar.Visible = doubleSize;
-
-            MainCheckBox.Visible = checkBoxShown;
-            if (!checkBoxShown) _checkChangedAction = NullBoolAction;
 
             this.CenterHV(_owner!, clientSize: true);
 
@@ -191,11 +173,6 @@ namespace AngelLoader.Forms.CustomControls
             SubProgressBar.Value = 0;
             SubProgressBar.Style = ProgressBarStyle.Blocks;
 
-            MainCheckBox.Hide();
-            _checkChangedAction = NullBoolAction;
-            // Only set the checked state AFTER setting the null action, otherwise we'll trigger the action!
-            MainCheckBox.Checked = false;
-
             // Necessary so when we show again we can see that text is blank and put the default, otherwise we
             // could have a scenario where we set non-default, hide, then show again without specifying the text,
             // and then it checks for empty and finds false, so it doesn't set the default and keeps whatever was
@@ -222,8 +199,6 @@ namespace AngelLoader.Forms.CustomControls
         /// <param name="subMessage"></param>
         /// <param name="subPercent"></param>
         /// <param name="subProgressBarType"></param>
-        /// <param name="checkBoxMessage"></param>
-        /// <param name="checkChangedAction"></param>
         /// <param name="cancelButtonMessage"></param>
         /// <param name="cancelAction">Pass <see cref="T:NullAction"/> to hide the cancel button.</param>
         internal void SetState(
@@ -236,8 +211,6 @@ namespace AngelLoader.Forms.CustomControls
             string? subMessage,
             int? subPercent,
             ProgressType? subProgressBarType,
-            string? checkBoxMessage,
-            Action<bool>? checkChangedAction,
             string? cancelButtonMessage,
             Action? cancelAction)
         {
@@ -283,16 +256,6 @@ namespace AngelLoader.Forms.CustomControls
                     SubPercentLabel.Text = "";
                 }
             }
-            if (checkBoxMessage != null)
-            {
-                MainCheckBox.Text = checkBoxMessage;
-                MainCheckBox.CenterH(this);
-            }
-            if (checkChangedAction != null)
-            {
-                _checkChangedAction = checkChangedAction;
-                MainCheckBox.Visible = checkChangedAction != NullBoolAction;
-            }
             if (cancelButtonMessage != null)
             {
                 SetCancelButtonText(cancelButtonMessage);
@@ -328,11 +291,6 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         #endregion
-
-        private void MainCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (_checkChangedAction != NullBoolAction) _checkChangedAction.Invoke(MainCheckBox.Checked);
-        }
 
         private void ProgressCancelButton_Click(object sender, EventArgs e)
         {

@@ -38,7 +38,6 @@ namespace AngelLoader.Forms.CustomControls
             this.SubProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
             this.SubMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.SubPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.MainCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.SuspendLayout();
             // 
             // Cancel_Button
@@ -46,7 +45,7 @@ namespace AngelLoader.Forms.CustomControls
             this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Cancel_Button.Location = new System.Drawing.Point(168, 184);
+            this.Cancel_Button.Location = new System.Drawing.Point(168, 152);
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(88, 23);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -115,24 +114,11 @@ namespace AngelLoader.Forms.CustomControls
             this.SubPercentLabel.Text = "%";
             this.SubPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // MainCheckBox
-            // 
-            this.MainCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.MainCheckBox.AutoSize = true;
-            this.MainCheckBox.Location = new System.Drawing.Point(176, 152);
-            this.MainCheckBox.Name = "MainCheckBox";
-            this.MainCheckBox.Size = new System.Drawing.Size(74, 17);
-            this.MainCheckBox.TabIndex = 8;
-            this.MainCheckBox.Text = "Checkbox";
-            this.MainCheckBox.UseVisualStyleBackColor = true;
-            this.MainCheckBox.CheckedChanged += new System.EventHandler(this.MainCheckBox_CheckedChanged);
-            // 
             // ProgressPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Controls.Add(this.MainCheckBox);
             this.Controls.Add(this.SubProgressBar);
             this.Controls.Add(this.Cancel_Button);
             this.Controls.Add(this.SubPercentLabel);
@@ -142,7 +128,7 @@ namespace AngelLoader.Forms.CustomControls
             this.Controls.Add(this.SubMessageLabel);
             this.Controls.Add(this.MainMessage2Label);
             this.Name = "ProgressPanel";
-            this.Size = new System.Drawing.Size(424, 224);
+            this.Size = new System.Drawing.Size(424, 192);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -158,6 +144,5 @@ namespace AngelLoader.Forms.CustomControls
         private DarkProgressBar SubProgressBar;
         private DarkLabel SubMessageLabel;
         private DarkLabel SubPercentLabel;
-        private DarkCheckBox MainCheckBox;
     }
 }
