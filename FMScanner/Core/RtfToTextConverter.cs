@@ -1476,7 +1476,7 @@ namespace FMScanner
 
             _hexBuffer.ClearFast();
 
-            // Quick-n-dirty goto for now. TODO: Make this better or something
+            // Quick-n-dirty goto for now.
             restartButDontClearBuffer:
 
             b = (byte)(b << 4);

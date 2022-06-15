@@ -792,7 +792,7 @@ namespace AngelLoader
             // Fix: we can have duplicate archive names if the installed dir is different, so cull them
             // out of the view list at least.
             // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
-            // TODO: We shouldn't have duplicate archives, but importing might add different installed dirs...
+            // We shouldn't have duplicate archives, but importing might add different installed dirs...
             var viewListHash = new HashSetI(FMsViewList.Count);
             for (int i = 0; i < FMsViewList.Count; i++)
             {

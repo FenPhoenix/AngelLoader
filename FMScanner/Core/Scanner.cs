@@ -3177,7 +3177,6 @@ namespace FMScanner
         }
 #endif
 
-        // TODO: Add all missing languages, and implement language detection for non-folder-specified FMs
         private (List<string> Langs, bool EnglishIsUncertain)
         GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
                      List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)

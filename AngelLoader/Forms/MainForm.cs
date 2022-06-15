@@ -5336,7 +5336,6 @@ namespace AngelLoader.Forms
 
         public void SetWaitCursor(bool value) => Cursor = value ? Cursors.WaitCursor : Cursors.Default;
 
-        // TODO: This is a crappy way to do it, make a proper "logical visibility" layer for these
         private void SetReadmeControlZPosition(bool front)
         {
             if (front)
