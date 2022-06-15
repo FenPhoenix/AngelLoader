@@ -67,7 +67,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents());
+            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
             _menu.Items.AddRange(new ToolStripItem[]
             {
                 GameVersionsMenuItem = new ToolStripMenuItemCustom { Tag = LoadType.Lazy},
