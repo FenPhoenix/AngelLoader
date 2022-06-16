@@ -67,6 +67,7 @@ div.headerElements:before {
       <li><a href="#fm_context_menu">FM context menu</a></li>
       <li><a href="#fm_details">FM details area</a></li>
       <li><a href="#drag_fm_to_add">Adding FMs by dragging them onto the main window</a></li>
+      <li><a href="#deleting_fms">Deleting FMs</a></li>
     </ul>
   </li>
   <li>
@@ -170,8 +171,8 @@ Here you can choose to filter your FM list by game, title, author, release date,
 <h4><img src="images/Show_Unsupported.png" style="vertical-align:bottom" /> <a name="show_unsupported" />Show FMs marked as "unsupported game or non-FM archive"</h4>
 This allows archives marked as Unknown (<img src="images/red_circle_question_mark_21.png" />) (archives that were rejected as not being FMs) to be displayed in the list. If support for new games is added in the future, you can use this to show previously unsupported FMs so you can re-scan them individually if you wish.
 
-<h4><img src="images/Show_Unavailable.png" style="vertical-align:bottom" /> <a name="show_unsupported" /> Show unavailable FMs</h4>
-This allows you to see FMs that are in the database, but cannot be found on disk.
+<h4><img src="images/Show_Unavailable.png" style="vertical-align:bottom" /> <a name="show_unsupported" /> Show only unavailable FMs</h4>
+This allows you to see FMs that are in the database, but cannot be found on disk. This is useful when you want to clean old FMs out of the database.
 
 <h4><img src="images/FilterShowRecentAtTop.png" style="vertical-align:bottom" /> <a name="show_recent_at_top" />Show recently added FMs at the top of the list</h4>
 This will cause recently added FMs to be highlighted and displayed at the top of the list. This makes it easier to find FMs that you've just downloaded, for example. The number of days to consider an FM "recent" can be changed in the <a href="#settings_days_recent">Settings window</a>. The default is 15 days.
@@ -268,7 +269,7 @@ Double-click the size grip to the right of a column to auto-size that column to 
 <p><b>Right-click</b> on an FM to bring up the <a href="#fm_context_menu">FM context menu</a>.</p>
 <p><b>Double-click</b> on a mission or press <b>Enter</b> when a mission is selected to play that mission. By default you will be asked for confirmation in this case; see <a href="#settings_play_on_dc_or_enter_ask">Play FM on double-click / Enter</a>.</p>
 
-Press the <b>Delete</b> key while one or more FMs are selected to delete their archives from disk. You will be asked for confirmation first. If one or more selected FMs are installed, you will be asked if you want to uninstall them before deleting their archives.
+<p>Press the <b>Delete</b> key while one or more FMs are selected to <a href="#deleting_fms">delete them</a>.</p>
 
 <p>You can zoom the FMs list either with the zoom buttons on the top bar, or with <code>Ctrl++</code>,<code>Ctrl+-</code>, and <code>Ctrl+0</code>, or with Ctrl+mousewheel.
 
@@ -351,8 +352,8 @@ If the currently selected FM(s) are not installed, this will install them; other
 <h4>Pin to top / Unpin from top</h4>
 You can choose to pin FMs to the top of list so that they will always remain there regardless of sorting or filtering. When an FM is pinned, this option will unpin it instead. When multiple FMs are selected, there will be two separate options, Pin and Unpin.
 
-<h4>Delete FM archive(s)</h4>
-This will allow you to delete one or more FMs' archives from disk. You can also press the <b>Delete</b> key while the FMs list is focused to achieve the same thing. In both cases, you will be asked for confirmation first. If one or more selected FMs are installed, you will be asked if you want to uninstall them before deleting their archives.
+<h4>Delete FM(s)</h4>
+This will allow you to delete one or more FMs. See <a href="#deleting_fms">Deleting FMs</a>. If the selected FM(s) are available on disk, then you'll be able to delete them from disk and optionally from the database. If the selected FM(s) are unavailable on disk, then you will only be able to delete them from the database.
 
 <h4>Open FM in DromEd</h4>
 This item will only appear if DromEd.exe (or ShockEd.exe for System Shock 2) was found in the game directory. Clicking it will open the currently selected FM in DromEd or ShockEd, installing it first if necessary.<br>
@@ -464,7 +465,21 @@ The <b>Enable all</b> button will enable all mods, including those marked "impor
 
 In addition to the traditional method of moving new FM archives into one of your archive folders and refreshing the FMs list, you can also add them by dragging the new archive(s) onto AngelLoader's main window. The archive(s) will be copied into your archives folder and the list automatically refreshed. You can then delete the original archive(s) if you wish.
 <p/>
-If you have multiple archive folders, you will be asked which one you want to copy the dragged archive(s) to.
+If you have multiple archive folders, you will be asked which one you want to copy the dragged archive(s) to.<p/>
+
+<hr>
+
+<h2><a name="deleting_fms" />Deleting FMs</h2>
+
+Deleting an FM can have different meanings:
+
+<ul>
+<li>Deleting the archive file.</li>
+<li>Deleting the installed folder (uninstalling).</li>
+<li>Deleting the FM's entry from the database.</li>
+</ul>
+
+When you choose to delete an FM, you will be asked for confirmation on which applicable action(s) you want to perform. Deleting the archive and the installed folder will still leave the FM in the database. Deleting it from the database will completely remove all data (including comments and tags, etc.), so be careful.<p/>
 
 <hr>
 
