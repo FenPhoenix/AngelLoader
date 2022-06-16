@@ -460,16 +460,17 @@ namespace AngelLoader
             {
                 string dlExe = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
 
-                (bool cancel, _) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                (bool cancel, bool openDL, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                     message: GetLocalizedGameNameColon(gameIndex) + "\r\n" +
                              LText.AlertMessages.DarkLoader_InstalledFMFound,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.Warning,
-                    yes: LText.Global.OK,
-                    no: !dlExe.IsEmpty() ? LText.AlertMessages.DarkLoader_OpenNow : null,
-                    defaultButton: MBoxButton.Yes
+                    yes: !dlExe.IsEmpty() ? LText.AlertMessages.DarkLoader_OpenNow : null,
+                    no: LText.Global.ContinueAnyway,
+                    cancel: LText.Global.Cancel,
+                    defaultButton: !dlExe.IsEmpty() ? MBoxButton.Yes : MBoxButton.Cancel
                 );
-                if (cancel && !dlExe.IsEmpty())
+                if (openDL && !dlExe.IsEmpty())
                 {
                     try
                     {
@@ -479,8 +480,12 @@ namespace AngelLoader
                     {
                         Core.Dialogs.ShowError("Unable to open DarkLoader.");
                     }
+                    return failed;
                 }
-                return failed;
+                else if (cancel)
+                {
+                    return failed;
+                }
             }
 
             #endregion

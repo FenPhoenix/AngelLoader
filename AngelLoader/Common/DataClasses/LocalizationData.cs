@@ -69,6 +69,8 @@ namespace AngelLoader.DataClasses
             internal readonly string Cancel = "Cancel";
             internal readonly string Stop = "Stop";
             internal readonly string Continue = "Continue";
+            [FenGenComment("If you continue, something undesirable may happen, but you can if you want")]
+            internal readonly string ContinueAnyway = "Continue anyway";
             internal readonly string Yes = "Yes";
             internal readonly string No = "No";
             internal readonly string Skip = "Skip";
