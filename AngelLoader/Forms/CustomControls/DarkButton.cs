@@ -22,8 +22,6 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Field Region
 
-        private bool _leftMouseButtonDown;
-
         private DarkButtonStyle _style = DarkButtonStyle.Normal;
 
         private DarkControlState _buttonState = DarkControlState.Normal;
@@ -222,7 +220,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (_spacePressed) return;
 
-            SetButtonState(e.Button == MouseButtons.Left && _leftMouseButtonDown && ClientRectangle.Contains(e.Location)
+            SetButtonState(e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location)
                 ? DarkControlState.Pressed
                 : DarkControlState.Hover);
         }
@@ -234,8 +232,6 @@ namespace AngelLoader.Forms.CustomControls
             if (!_darkModeEnabled) return;
 
             if (e.Button != MouseButtons.Left) return;
-
-            _leftMouseButtonDown = true;
 
             if (!ClientRectangle.Contains(e.Location)) return;
 
@@ -249,8 +245,6 @@ namespace AngelLoader.Forms.CustomControls
             if (!_darkModeEnabled) return;
 
             if (e.Button != MouseButtons.Left) return;
-
-            _leftMouseButtonDown = false;
 
             if (_spacePressed) return;
 
