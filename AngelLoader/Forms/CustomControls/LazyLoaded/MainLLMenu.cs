@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
@@ -85,10 +86,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             ImportMenuItem.DropDown.Items.AddRange(new ToolStripItem[]
             {
-                // Not localized because they consist solely of proper names! Don't remove these!
-                ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom("DarkLoader..."),
-                ImportFromFMSelMenuItem = new ToolStripMenuItemCustom("FMSel..."),
-                ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom("NewDarkLoader...")
+                ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom(NonLocalizableText.DarkLoaderEllipses),
+                ImportFromFMSelMenuItem = new ToolStripMenuItemCustom(NonLocalizableText.FMSelEllipses),
+                ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom(NonLocalizableText.NewDarkLoaderEllipses)
             });
 
             ScanAllFMsMenuItem.Enabled = _scanAllFMsMenuItemEnabled;

@@ -328,29 +328,17 @@ namespace AngelLoader.Forms
         private System.Windows.Forms.FlowLayoutPanel OKFlowLayoutPanel;
         private AngelLoader.Forms.CustomControls.DarkButton OKButton;
         private AngelLoader.Forms.CustomControls.DarkLabel AngelLoaderUsesLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel GitHubLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel SevenZipLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel SevenZipSharpLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel FFmpegLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel FFmpegDotNetLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel SimpleHelpersDotNetLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel UdeNetStandardLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel OokiiDialogsLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel NetCore3SysIOCompLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private AngelLoader.Forms.CustomControls.DarkLinkLabel DarkUILinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private CustomControls.DarkLinkLabel EasyHookLinkLabel;
-        [FenGenAttributes.FenGenDoNotRemoveText]
         private CustomControls.DarkLinkLabel OpenSansLinkLabel;
     }
 }
