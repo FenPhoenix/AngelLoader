@@ -31,6 +31,8 @@ behavior that comes part and parcel with what should be a simple #$@!ing propert
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
 */
 
+//#define SAVE_NON_AERO_SNAPPED_BOUNDS
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1045,27 +1047,45 @@ namespace AngelLoader.Forms
                     So... force it not to with some p/invoke and reflection crap.
 
                     This fixes:
-                    -Snapped position was saved to config file so on the next startup we'd end up with snapped
-                     bounds.
                     -When snapping, maximizing, then restoring, we would end up with snapped bounds instead of
                      the last un-snapped bounds.
+                    -Snapped position was saved to config file so on the next startup we'd end up with snapped
+                     bounds. (but see notes below)
+
+                    Some apps save the un-snapped bounds (and thus restore to un-snapped bounds on next start).
+                    Notepad and Notepad++ both do; Discord, Firefox, Reaper, Agent Ransack, FileSeek don't...
+                    It seems most apps don't.
+                    We might conceivably have people who like AL to always come up snapped, and not doing so
+                    might annoy them.
+                    So let's disable it for now, to behave like most other apps.
                     */
 
+#if !SAVE_NON_AERO_SNAPPED_BOUNDS
+                    _nominalWindowSize = Size;
+                    _nominalWindowLocation = Location;
+#endif
                     if (Native.TryGetRealWindowBounds(this, out Rectangle rect))
                     {
-                        _nominalWindowSize = new Size(rect.Width, rect.Height);
-                        _nominalWindowLocation = new Point(rect.Left, rect.Top);
+                        var unsnappedLocation = new Point(rect.Left, rect.Top);
+                        var unsnappedSize = new Size(rect.Width, rect.Height);
+
+#if SAVE_NON_AERO_SNAPPED_BOUNDS
+                        _nominalWindowLocation = unsnappedLocation;
+                        _nominalWindowSize = unsnappedSize;
+#endif
 
                         if (nominalWasMaximized)
                         {
-                            ControlUtils.SetAeroSnapRestoreHackValues(this, _nominalWindowLocation, _nominalWindowSize);
+                            ControlUtils.SetAeroSnapRestoreHackValues(this, unsnappedLocation, unsnappedSize);
                         }
                     }
+#if SAVE_NON_AERO_SNAPPED_BOUNDS
                     else
                     {
                         _nominalWindowSize = Size;
                         _nominalWindowLocation = Location;
                     }
+#endif
                 }
             }
 
