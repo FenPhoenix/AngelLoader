@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Versioning;
@@ -6,13 +7,14 @@ using AL_Common;
 
 namespace AngelLoader.DataClasses
 {
+    [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
     internal static class NonLocalizableText
     {
-        internal const string DarkLoaderEllipses = "DarkLoader...";
-        internal const string FMSelEllipses = "FMSel...";
-        internal const string NewDarkLoaderEllipses = "NewDarkLoader...";
+        internal static readonly string DarkLoaderEllipses = "DarkLoader...";
+        internal static readonly string FMSelEllipses = "FMSel...";
+        internal static readonly string NewDarkLoaderEllipses = "NewDarkLoader...";
 
-        internal const string License =
+        internal static readonly string License =
             "MIT License\r\n\r\n" +
             "Copyright (c) 2018-2022 Brian Tobin (FenPhoenix)\r\n\r\n" +
             "Permission is hereby granted, free of charge, to any person obtaining a copy " +
@@ -64,39 +66,39 @@ namespace AngelLoader.DataClasses
             return ret;
         }
 
-        internal const string AL_GitHub_Link = "https://github.com/FenPhoenix/AngelLoader";
+        internal static readonly string AL_GitHub_Link = "https://github.com/FenPhoenix/AngelLoader";
 
-        internal const string SevenZip_Link_Text = "7-Zip";
-        internal const string SevenZip_Link = "https://www.7-zip.org/";
+        internal static readonly string SevenZip_Link_Text = "7-Zip";
+        internal static readonly string SevenZip_Link = "https://www.7-zip.org/";
 
-        internal const string SevenZipSharp_Link_Text = "SquidBox.SevenZipSharp";
-        internal const string SevenZipSharp_Link = "https://github.com/squid-box/SevenZipSharp";
+        internal static readonly string SevenZipSharp_Link_Text = "SquidBox.SevenZipSharp";
+        internal static readonly string SevenZipSharp_Link = "https://github.com/squid-box/SevenZipSharp";
 
-        internal const string FFmpeg_Link_Text = "ffmpeg";
-        internal const string FFmpeg_Link = "https://ffmpeg.org/";
+        internal static readonly string FFmpeg_Link_Text = "ffmpeg";
+        internal static readonly string FFmpeg_Link = "https://ffmpeg.org/";
 
-        internal const string FFmpegDotNet_Link_Text = "FFmpeg.NET";
-        internal const string FFmpegDotNet_Link = "https://github.com/cmxl/FFmpeg.NET";
+        internal static readonly string FFmpegDotNet_Link_Text = "FFmpeg.NET";
+        internal static readonly string FFmpegDotNet_Link = "https://github.com/cmxl/FFmpeg.NET";
 
-        internal const string SimpleHelpersDotNet_Link_Text = "SimpleHelpers.Net";
-        internal const string SimpleHelpersDotNet_Link = "https://github.com/khalidsalomao/SimpleHelpers.Net/";
+        internal static readonly string SimpleHelpersDotNet_Link_Text = "SimpleHelpers.Net";
+        internal static readonly string SimpleHelpersDotNet_Link = "https://github.com/khalidsalomao/SimpleHelpers.Net/";
 
-        internal const string UdeNetStandard_Link_Text = "Ude.NetStandard";
-        internal const string UdeNetStandard_Link = "https://github.com/yinyue200/ude";
+        internal static readonly string UdeNetStandard_Link_Text = "Ude.NetStandard";
+        internal static readonly string UdeNetStandard_Link = "https://github.com/yinyue200/ude";
 
-        internal const string OokiiDialogs_Link_Text = "Ookii Dialogs";
-        internal const string OokiiDialogs_Link = "https://github.com/augustoproiete/ookii-dialogs-winforms";
+        internal static readonly string OokiiDialogs_Link_Text = "Ookii Dialogs";
+        internal static readonly string OokiiDialogs_Link = "https://github.com/augustoproiete/ookii-dialogs-winforms";
 
-        internal const string netCore3SysIOComp_Link_Text = ".NET Core 3 System.IO.Compression";
-        internal const string NetCore3SysIOComp_Link = "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression";
+        internal static readonly string netCore3SysIOComp_Link_Text = ".NET Core 3 System.IO.Compression";
+        internal static readonly string NetCore3SysIOComp_Link = "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression";
 
-        internal const string DarkUI_Link_Text = "DarkUI";
-        internal const string DarkUI_Link = "https://github.com/RobinPerris/DarkUI";
+        internal static readonly string DarkUI_Link_Text = "DarkUI";
+        internal static readonly string DarkUI_Link = "https://github.com/RobinPerris/DarkUI";
 
-        internal const string EasyHook_Link_Text = "EasyHook";
-        internal const string EasyHook_Link = "https://github.com/EasyHook/EasyHook";
+        internal static readonly string EasyHook_Link_Text = "EasyHook";
+        internal static readonly string EasyHook_Link = "https://github.com/EasyHook/EasyHook";
 
-        internal const string OpenSans_Link_Text = "Open Sans";
-        internal const string OpenSans_Link = "https://fonts.google.com/specimen/Open+Sans";
+        internal static readonly string OpenSans_Link_Text = "Open Sans";
+        internal static readonly string OpenSans_Link = "https://fonts.google.com/specimen/Open+Sans";
     }
 }
