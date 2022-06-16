@@ -13,6 +13,9 @@ namespace AngelLoader.Forms.CustomControls
         private Color? _origForeColor;
         private Color? _origBackColor;
 
+        private static bool? _setStyleMethodReflectable;
+        private static MethodInfo? _setStyleMethod;
+
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
@@ -62,23 +65,28 @@ namespace AngelLoader.Forms.CustomControls
                 try
                 {
                     // Prevent flickering, only if our assembly has reflection permission
-                    MethodInfo? method = Controls[0].GetType().GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance);
-                    if (method != null)
+                    if (_setStyleMethodReflectable == null)
+                    {
+                        _setStyleMethod = Controls[0].GetType().GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance);
+                        _setStyleMethodReflectable = _setStyleMethod != null;
+                    }
+                    if (_setStyleMethodReflectable == true)
                     {
                         if (_darkModeEnabled)
                         {
-                            method.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true });
+                            _setStyleMethod!.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true });
                         }
                         else
                         {
-                            method.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint, true });
-                            method.Invoke(Controls[0], new object[] { ControlStyles.DoubleBuffer, false });
+                            _setStyleMethod!.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint, true });
+                            _setStyleMethod!.Invoke(Controls[0], new object[] { ControlStyles.DoubleBuffer, false });
                         }
                     }
                 }
                 catch
                 {
                     // Oh well...
+                    _setStyleMethodReflectable = false;
                 }
             }
         }

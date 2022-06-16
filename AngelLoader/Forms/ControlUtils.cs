@@ -724,10 +724,7 @@ namespace AngelLoader.Forms
                     _restoredWindowBoundsField = typeof(Form).GetField("restoredWindowBounds", bFlags);
                     _restoredWindowBoundsSpecifiedField = typeof(Form).GetField("restoredWindowBoundsSpecified", bFlags);
 
-                    if (_restoredWindowBoundsField != null && _restoredWindowBoundsSpecifiedField != null)
-                    {
-                        _restoredHackReflectable = true;
-                    }
+                    _restoredHackReflectable = _restoredWindowBoundsField != null && _restoredWindowBoundsSpecifiedField != null;
                 }
 
                 if (_restoredHackReflectable == true)
