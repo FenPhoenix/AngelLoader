@@ -701,5 +701,47 @@ namespace AngelLoader.Forms
 
             cancelButton.Location = cancelButton.Location with { X = okButton.Right + 8 };
         }
+
+        #region Aero Snap window restore hack
+
+        private static bool? _restoredHackReflectable;
+
+        private static FieldInfo? _restoredWindowBoundsField;
+        private static FieldInfo? _restoredWindowBoundsSpecifiedField;
+
+        // This is part of the Aero Snap restore hack; it just stops the form from growing by Size - ClientSize
+        // every time it gets restored.
+        internal static void SetAeroSnapRestoreHackValues(Form form, Point nominalWindowLocation, Size nominalWindowSize)
+        {
+            if (_restoredHackReflectable == false) return;
+
+            try
+            {
+                if (_restoredHackReflectable == null)
+                {
+                    const BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
+                    _restoredWindowBoundsField = typeof(Form).GetField("restoredWindowBounds", bFlags);
+                    _restoredWindowBoundsSpecifiedField = typeof(Form).GetField("restoredWindowBoundsSpecified", bFlags);
+
+                    if (_restoredWindowBoundsField != null && _restoredWindowBoundsSpecifiedField != null)
+                    {
+                        _restoredHackReflectable = true;
+                    }
+                }
+
+                if (_restoredHackReflectable == true)
+                {
+                    _restoredWindowBoundsField!.SetValue(form, new Rectangle(nominalWindowLocation, nominalWindowSize));
+                    _restoredWindowBoundsSpecifiedField!.SetValue(form, BoundsSpecified.None);
+                }
+            }
+            catch
+            {
+                _restoredHackReflectable = false;
+            }
+        }
+
+        #endregion
     }
 }

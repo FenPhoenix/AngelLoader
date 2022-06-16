@@ -1028,14 +1028,44 @@ namespace AngelLoader.Forms
 
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
-            // TODO: Make it so window docking doesn't count as changing the normal window dimensions
             if (WindowState != FormWindowState.Minimized)
             {
+                bool nominalWasMaximized = _nominalWindowState == FormWindowState.Maximized;
+
                 _nominalWindowState = WindowState;
+
                 if (WindowState != FormWindowState.Maximized)
                 {
-                    _nominalWindowSize = Size;
-                    _nominalWindowLocation = Location;
+                    /*
+                    Native Win32 apps restore their un-Aero-Snapped size/position automatically, but WinForms
+                    decides it's way better to save the snapped bounds as the new bounds. It does it completely
+                    and entirely on purpose too. In fact, when you snap a window, maximize it, then restore it,
+                    the window DOES go back to its un-snapped bounds briefly, but then WinForms puts it right
+                    back to its snapped position in blatant defiance of the way every other kind of app works.
+                    So... force it not to with some p/invoke and reflection crap.
+
+                    This fixes:
+                    -Snapped position was saved to config file so on the next startup we'd end up with snapped
+                     bounds.
+                    -When snapping, maximizing, then restoring, we would end up with snapped bounds instead of
+                     the last un-snapped bounds.
+                    */
+
+                    if (Native.TryGetRealWindowBounds(this, out Rectangle rect))
+                    {
+                        _nominalWindowSize = new Size(rect.Width, rect.Height);
+                        _nominalWindowLocation = new Point(rect.Left, rect.Top);
+
+                        if (nominalWasMaximized)
+                        {
+                            ControlUtils.SetAeroSnapRestoreHackValues(this, _nominalWindowLocation, _nominalWindowSize);
+                        }
+                    }
+                    else
+                    {
+                        _nominalWindowSize = Size;
+                        _nominalWindowLocation = Location;
+                    }
                 }
             }
 

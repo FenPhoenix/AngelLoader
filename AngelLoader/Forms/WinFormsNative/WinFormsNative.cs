@@ -662,5 +662,87 @@ namespace AngelLoader.Forms.WinFormsNative
         }
 
         #endregion
+
+        #region Aero Snap window restore hack
+
+        /// <summary>
+        /// Contains information about the placement of a window on the screen.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        [PublicAPI]
+        private struct WINDOWPLACEMENT
+        {
+            /// <summary>
+            /// The length of the structure, in bytes. Before calling the GetWindowPlacement or SetWindowPlacement functions, set this member to sizeof(WINDOWPLACEMENT).
+            /// <para>
+            /// GetWindowPlacement and SetWindowPlacement fail if this member is not set correctly.
+            /// </para>
+            /// </summary>
+            internal uint Length;
+
+            /// <summary>
+            /// Specifies flags that control the position of the minimized window and the method by which the window is restored.
+            /// </summary>
+            internal readonly uint Flags;
+
+            /// <summary>
+            /// The current show state of the window.
+            /// </summary>
+            internal readonly uint ShowCmd;
+
+            /// <summary>
+            /// The coordinates of the window's upper-left corner when the window is minimized.
+            /// </summary>
+            internal readonly POINT MinPosition;
+
+            /// <summary>
+            /// The coordinates of the window's upper-left corner when the window is maximized.
+            /// </summary>
+            internal readonly POINT MaxPosition;
+
+            /// <summary>
+            /// The window's coordinates when the window is in the restored position.
+            /// </summary>
+            internal readonly RECT NormalPosition;
+
+            /// <summary>
+            /// Gets the default (empty) value.
+            /// </summary>
+            internal static WINDOWPLACEMENT Default
+            {
+                get
+                {
+                    WINDOWPLACEMENT result = new();
+                    result.Length = (uint)Marshal.SizeOf(result);
+                    return result;
+                }
+            }
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+
+        internal static bool TryGetRealWindowBounds(Form form, out Rectangle rect)
+        {
+            var wp = WINDOWPLACEMENT.Default;
+            bool success = GetWindowPlacement(form.Handle, ref wp);
+            if (success)
+            {
+                rect = Rectangle.FromLTRB(
+                    wp.NormalPosition.left,
+                    wp.NormalPosition.top,
+                    wp.NormalPosition.right,
+                    wp.NormalPosition.bottom);
+                return true;
+            }
+            else
+            {
+                rect = Rectangle.Empty;
+                return false;
+            }
+
+            #endregion
+        }
     }
 }
