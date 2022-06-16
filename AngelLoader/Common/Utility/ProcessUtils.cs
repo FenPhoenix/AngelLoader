@@ -12,16 +12,7 @@ namespace AngelLoader
         // and I think sometimes we want it true because there are behavioral differences and some things only
         // work with it true or false. I can't remember the details at the moment but yeah.
 
-        /// <summary>
-        /// Starts a process resource by specifying the name of a document or application file and associates the resource with a new <see cref="T:System.Diagnostics.Process" /> component.
-        /// <para>
-        /// *Use this for Framework and Core compatibility: Core has UseShellExecute off by default (but we want it on).
-        /// </para>
-        /// </summary>
-        /// <param name="fileName">The name of a document or application file to run in the process.</param>
-        /// <exception cref="T:System.ComponentModel.Win32Exception">An error occurred when opening the associated file.</exception>
-        /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
-        /// <exception cref="T:System.IO.FileNotFoundException">The PATH environment variable has a string containing quotes.</exception>
+        /// <inheritdoc cref="Process.Start(string)"/>
         [PublicAPI]
         internal static void ProcessStart_UseShellExecute(string fileName)
         {
