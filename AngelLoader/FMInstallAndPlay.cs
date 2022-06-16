@@ -442,6 +442,18 @@ namespace AngelLoader
 
             #endregion
 
+            #region Exe: Fail if already running
+
+            if (GameIsRunning(gameExe, checkAllGames: true))
+            {
+                Core.Dialogs.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
+                return failed;
+            }
+
+            #endregion
+
+            // Put this AFTER running check, because the user might go into DarkLoader and have it mess with the
+            // files in the game dir, and we don't want the game running if they do that.
             #region Fail on DarkLoader FM installed
 
             if (GameConfigFiles.GameHasDarkLoaderFMInstalled(gameIndex))
@@ -468,16 +480,6 @@ namespace AngelLoader
                         Core.Dialogs.ShowError("Unable to open DarkLoader.");
                     }
                 }
-                return failed;
-            }
-
-            #endregion
-
-            #region Exe: Fail if already running
-
-            if (GameIsRunning(gameExe, checkAllGames: true))
-            {
-                Core.Dialogs.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
                 return failed;
             }
 
