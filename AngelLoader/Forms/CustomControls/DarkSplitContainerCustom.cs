@@ -23,8 +23,8 @@ namespace AngelLoader.Forms.CustomControls
         private float _storedSplitterPercent;
         private float SplitterPercent
         {
-            get => SplitterDistance / (float)(IsMain() ? Height : Width);
-            set => SplitterDistance = (int)Math.Round(value * (IsMain() ? Height : Width));
+            get => SplitterDistance / (float)(IsMain ? Height : Width);
+            set => SplitterDistance = (int)Math.Round(value * (IsMain ? Height : Width));
         }
 
         // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
@@ -86,26 +86,13 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        // @R#_FALSE_POSITIVE note (SplitContainerCustom):
-        // The Pure attribute is used so that calls to this method don't cause ReSharper to invalidate null checks
-        // and assume the checked-for members might have been set null again by this method.
-        // 2020-07-12:
-        // I think what's happening is that when fields are non-readonly because they have to be initialized
-        // somewhere other than the constructor (because of lazy-loading), then when R# sees that a method is
-        // called between their initialization and them being accessed, it can't know for sure that that method
-        // doesn't change the member back to null (halting problem?).
-        // But, the null warning goes away if you use a property rather than a method call, even though they're
-        // the same under the hood. R# might be scanning properties because it assumes they won't do anything
-        // heavy, but doesn't make that assumption about methods?
-        // (The field in question here is the nullable, non-readonly sibling SplitContainer)
-        [Pure]
-        private bool IsMain() => Orientation == Orientation.Horizontal;
+        private bool IsMain => Orientation == Orientation.Horizontal;
 
         public DarkSplitContainerCustom()
         {
             AutoScaleMode = AutoScaleMode.Dpi;
             DoubleBuffered = true;
-            _storedCollapsiblePanelMinSize = IsMain() ? Panel1MinSize : Panel2MinSize;
+            _storedCollapsiblePanelMinSize = IsMain ? Panel1MinSize : Panel2MinSize;
         }
 
         #region Public methods
@@ -116,7 +103,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void SetFullScreen(bool enabled, bool suspendResume = true)
         {
-            if (IsMain())
+            if (IsMain)
             {
                 if (enabled)
                 {
@@ -178,7 +165,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void SetSplitterPercent(float percent, bool suspendResume = true)
         {
-            if (FullScreen && !IsMain())
+            if (FullScreen && !IsMain)
             {
                 // Don't un-collapse top-right panel
                 _storedSplitterPercent = percent;
@@ -202,13 +189,13 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ResetSplitterPercent()
         {
-            if (!IsMain() && FullScreen)
+            if (!IsMain && FullScreen)
             {
                 _storedSplitterPercent = Defaults.TopSplitterPercent;
             }
             else
             {
-                SplitterPercent = IsMain() ? Defaults.MainSplitterPercent : Defaults.TopSplitterPercent;
+                SplitterPercent = IsMain ? Defaults.MainSplitterPercent : Defaults.TopSplitterPercent;
             }
         }
 
@@ -231,7 +218,7 @@ namespace AngelLoader.Forms.CustomControls
             base.OnSizeChanged(e);
             if (FullScreen)
             {
-                SplitterDistance = IsMain() ? CollapsedSize : Width - CollapsedSize;
+                SplitterDistance = IsMain ? CollapsedSize : Width - CollapsedSize;
             }
         }
 
@@ -247,8 +234,8 @@ namespace AngelLoader.Forms.CustomControls
 
             if (e.Button == MouseButtons.Left &&
                 (Cursor.Current == Cursors.SizeAll ||
-                 (IsMain() && Cursor.Current == Cursors.HSplit) ||
-                 (!IsMain() && Cursor.Current == Cursors.VSplit)))
+                 (IsMain && Cursor.Current == Cursors.HSplit) ||
+                 (!IsMain && Cursor.Current == Cursors.VSplit)))
             {
                 _originalDistance = SplitterDistance;
                 if (MouseOverCrossSection) _sibling!._originalDistance = _sibling.SplitterDistance;
@@ -290,11 +277,11 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!IsSplitterFixed && _sibling != null)
             {
-                int sibCursorPos = IsMain()
+                int sibCursorPos = IsMain
                     ? _sibling.Panel1.PointToClient_Fast(Native.GetCursorPosition_Fast()).X
                     : _sibling.Panel1.PointToClient_Fast(Native.GetCursorPosition_Fast()).Y;
 
-                int sibSplitterPos = IsMain()
+                int sibSplitterPos = IsMain
                     ? _sibling.Panel1.Width
                     : _sibling.Panel1.Height;
 
@@ -318,14 +305,14 @@ namespace AngelLoader.Forms.CustomControls
                     if (MouseOverCrossSection) Cursor.Current = Cursors.SizeAll;
 
                     // SuspendDrawing() / ResumeDrawing() reduces visual artifacts
-                    int axis = IsMain() ? e.Y : e.X;
+                    int axis = IsMain ? e.Y : e.X;
 
                     // Things need to happen in different orders depending on who we are, in order to avoid
                     // flickering. We could also Suspend/Resume them one at a time, but that's perceptibly
                     // laggier.
                     if (MouseOverCrossSection)
                     {
-                        if (IsMain())
+                        if (IsMain)
                         {
                             _sibling!.SuspendDrawing();
                             this.SuspendDrawing();
@@ -347,7 +334,7 @@ namespace AngelLoader.Forms.CustomControls
 
                     if (MouseOverCrossSection)
                     {
-                        if (IsMain())
+                        if (IsMain)
                         {
                             _sibling!.ResumeDrawing();
                             this.ResumeDrawing();
