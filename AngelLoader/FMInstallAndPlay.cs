@@ -407,7 +407,7 @@ namespace AngelLoader
         }
 
         private static (bool Success, string GameExe, string GamePath)
-        CheckAndReturnFinalGameExeAndGamePath(GameIndex gameIndex, bool playingOriginalGame, bool playMP = false)
+        CheckAndReturnFinalGameExeAndGamePath(GameIndex gameIndex, bool playingOriginalGame, bool playMP)
         {
             var failed = (Success: false, GameExe: "", GamePath: "");
 
