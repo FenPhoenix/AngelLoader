@@ -48,53 +48,18 @@ namespace AngelLoader.Forms
         /// <param name="yes"></param>
         /// <param name="no"></param>
         /// <param name="cancel"></param>
-        /// <param name="checkBoxText"></param>
-        /// <param name="defaultButton"></param>
-        /// <returns></returns>
-        public (MBoxButton ButtonPressed, bool CheckBoxChecked)
-        AskToContinueYesNoCancel(
-            string message,
-            string title,
-            MBoxIcon icon,
-            string? yes,
-            string? no,
-            string? cancel,
-            string? checkBoxText = null,
-            MBoxButton defaultButton = MBoxButton.Yes) =>
-            ((MBoxButton, bool))InvokeIfViewExists(() =>
-            {
-                using var d = new DarkTaskDialog(
-                    title: title,
-                    message: message,
-                    yesText: yes,
-                    noText: no,
-                    cancelText: cancel,
-                    defaultButton: defaultButton,
-                    checkBoxText: checkBoxText,
-                    icon: GetIcon(icon));
-
-                return (DialogResultToMBoxButton(d.ShowDialogDark()), d.IsVerificationChecked);
-            });
-
-        /// <summary>
-        /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="title"></param>
-        /// <param name="icon"></param>
-        /// <param name="yes"></param>
-        /// <param name="no"></param>
         /// <param name="yesIsDangerous"></param>
         /// <param name="checkBoxText"></param>
         /// <param name="defaultButton"></param>
         /// <returns></returns>
         public (MBoxButton ButtonPressed, bool CheckBoxChecked)
-        AskToContinueYesNo(
+        ShowMultiChoiceDialog(
             string message,
             string title,
             MBoxIcon icon,
             string? yes,
             string? no,
+            string? cancel = null,
             bool yesIsDangerous = false,
             string? checkBoxText = null,
             MBoxButton defaultButton = MBoxButton.Yes) =>
@@ -105,6 +70,7 @@ namespace AngelLoader.Forms
                     message: message,
                     yesText: yes,
                     noText: no,
+                    cancelText: cancel,
                     yesIsDangerous: yesIsDangerous,
                     defaultButton: defaultButton,
                     checkBoxText: checkBoxText,

@@ -98,7 +98,7 @@ namespace AngelLoader
 
             if (anyInapplicable)
             {
-                (MBoxButton result, _) = Core.Dialogs.AskToContinueYesNo(
+                (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
                     message: LText.AlertMessages.AudioConversion_SomeSelectedFilesDoNotSupportConversion,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.None,

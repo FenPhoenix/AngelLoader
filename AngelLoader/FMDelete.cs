@@ -178,7 +178,7 @@ namespace AngelLoader
                 if (fms[i].Installed) installedCount++;
             }
 
-            (MBoxButton result, bool deleteFromDB) = Core.Dialogs.AskToContinueYesNo(
+            (MBoxButton result, bool deleteFromDB) = Core.Dialogs.ShowMultiChoiceDialog(
                 message: single
                     ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + fms[0].Archive
                     : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
@@ -203,7 +203,7 @@ namespace AngelLoader
 
             if (installedCount > 0)
             {
-                (result, _) = Core.Dialogs.AskToContinueYesNoCancel(
+                (result, _) = Core.Dialogs.ShowMultiChoiceDialog(
                     message: single
                         ? LText.FMDeletion.AskToUninstallFMFirst
                         : LText.FMDeletion.AskToUninstallFMFirst_Multiple,

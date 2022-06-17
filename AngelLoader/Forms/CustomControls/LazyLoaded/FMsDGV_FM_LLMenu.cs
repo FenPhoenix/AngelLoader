@@ -837,7 +837,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 senderItem == FinishedOnUnknownMenuItem &&
                 FinishedOnUnknownMenuItem.Checked)
             {
-                (MBoxButton result, _) = Core.Dialogs.AskToContinueYesNo(
+                (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
                     message: LText.AlertMessages.FinishedOnUnknown_MultiFMChange,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.None,
