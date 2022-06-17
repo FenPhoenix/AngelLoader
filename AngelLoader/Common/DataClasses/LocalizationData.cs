@@ -260,7 +260,7 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string FinishedOnUnknown_MultiFMChange = "All selected FMs' finished states are about to be removed and replaced with 'Unknown'. Are you sure you want to do this?";
             [FenGenBlankLine]
-            internal readonly string DarkLoader_InstalledFMFound = "AngelLoader has detected that this game currently has an FM installed with DarkLoader. You should install the original game in DarkLoader before continuing, or you may encounter problems with the wrong FM being loaded.";
+            internal readonly string DarkLoader_InstalledFMFound = "AngelLoader has detected that this game has an FM installed with DarkLoader. You should install the original game in DarkLoader before continuing, or you may encounter problems with the wrong FM being loaded.";
             internal readonly string DarkLoader_OpenNow = "Open DarkLoader now";
         }
 
@@ -429,8 +429,8 @@ namespace AngelLoader.DataClasses
             internal readonly string FMMenu_PlayFM_Multiplayer = "Play FM (multiplayer)";
             internal readonly string FMMenu_PinFM = "Pin to top";
             internal readonly string FMMenu_UnpinFM = "Unpin from top";
-            internal readonly string FMMenu_DeleteFM = "Delete FM archive";
-            internal readonly string FMMenu_DeleteFMs = "Delete FM archives";
+            internal readonly string FMMenu_DeleteFM = "Delete FM archive...";
+            internal readonly string FMMenu_DeleteFMs = "Delete FM archives...";
             internal readonly string FMMenu_DeleteFMFromDB = "Delete FM from database...";
             internal readonly string FMMenu_DeleteFMsFromDB = "Delete FMs from database...";
             internal readonly string FMMenu_OpenInDromEd = "Open FM in DromEd";
