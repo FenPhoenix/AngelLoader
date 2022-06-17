@@ -142,7 +142,6 @@ namespace FMScanner
         public int FMNumber;
         public int FMsTotal;
         public int Percent;
-        public bool Finished;
     }
 
     [PublicAPI]

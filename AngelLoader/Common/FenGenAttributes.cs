@@ -21,18 +21,6 @@ namespace AngelLoader
         // -Conditionals are literals instead of a constant, because a constant would add something to the exe
         //  but we don't want anything extra at all.
 
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal sealed class FenGenReadmeEncodingAttribute : Attribute { }
-
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal sealed class FenGenDoNotSubstringAttribute : Attribute { }
-
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-        internal sealed class FenGenFlagsSingleAssignment : Attribute { }
-
         #region Serialization
 
         [Conditional("compile_FenGen_attributes")]
@@ -122,6 +110,18 @@ namespace AngelLoader
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal sealed class FenGenReadmeEncodingAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal sealed class FenGenDoNotSubstringAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+        internal sealed class FenGenFlagsSingleAssignment : Attribute { }
 
         #endregion
 
@@ -229,18 +229,6 @@ namespace AngelLoader
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
         internal sealed class FenGenBuildDateDestClassAttribute : Attribute { }
-
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Field)]
-        internal sealed class FenGenDoNotRemoveTextAttribute : Attribute { }
-
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Field)]
-        internal sealed class FenGenDoNotRemoveHeaderTextAttribute : Attribute { }
-
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Field)]
-        internal sealed class FenGenDoNotRemoveToolTipTextAttribute : Attribute { }
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field)]
