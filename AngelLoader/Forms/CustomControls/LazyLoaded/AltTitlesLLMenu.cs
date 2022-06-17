@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
@@ -44,13 +43,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
 
             _constructed = true;
-        }
-
-        internal void AddRange(ToolStripItem[] items)
-        {
-            Construct();
-
-            _menu.AddRange(items);
         }
 
         internal void ClearItems()

@@ -640,8 +640,6 @@ namespace AngelLoader
                 (
                     fm,
                     fmArchivePath,
-                    gameExe,
-                    gameName,
                     instBasePath
                 );
 
@@ -723,16 +721,12 @@ namespace AngelLoader
         {
             internal readonly FanMission FM;
             internal readonly string ArchivePath;
-            internal readonly string GameExe;
-            internal readonly string GameName;
             internal readonly string InstBasePath;
 
-            public FMData(FanMission fm, string archivePath, string gameExe, string gameName, string instBasePath)
+            public FMData(FanMission fm, string archivePath, string instBasePath)
             {
                 FM = fm;
                 ArchivePath = archivePath;
-                GameExe = gameExe;
-                GameName = gameName;
                 InstBasePath = instBasePath;
             }
         }

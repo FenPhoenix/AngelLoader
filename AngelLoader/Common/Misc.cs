@@ -69,7 +69,6 @@ namespace AngelLoader
         }
 
         public static readonly Action NullAction = () => { };
-        public static readonly Action<bool> NullBoolAction = _ => { };
 
         public enum ImportType
         {

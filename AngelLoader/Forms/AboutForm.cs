@@ -1,8 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Globalization;
-using System.Reflection;
-using System.Runtime.Versioning;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
