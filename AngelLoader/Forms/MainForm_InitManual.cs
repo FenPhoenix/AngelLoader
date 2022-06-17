@@ -1541,7 +1541,6 @@ namespace AngelLoader.Forms
             ModsTabPage.ResumeLayout(false);
             ModsTabPage.PerformLayout();
             ResumeLayout(false);
-            //OnSizeChanged(EventArgs.Empty);
         }
     }
 }
