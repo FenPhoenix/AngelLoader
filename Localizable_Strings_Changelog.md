@@ -2,7 +2,15 @@
 
 #### NOTE! In English.ini, all lines beginning with ; are merely comments to assist the translator and are not required to be translated themselves.
 
+If you want to update a translation from several versions back and don't want to go through the changes one by one, you can diff the old and new files yourself using a tool like [WinMerge](https://winmerge.org/downloads/).
+
 ## List of localization-related changes by version
+
+### v1.6.4:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.6.2_1.6.4.html)
+
+#### [AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.6.2_1.6.4.html)
 
 ### v1.6.3:
 
