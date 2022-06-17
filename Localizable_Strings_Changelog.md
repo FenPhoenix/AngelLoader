@@ -6,11 +6,13 @@ If you want to update a translation from several versions back and don't want to
 
 ## List of localization-related changes by version
 
-### v1.6.4:
+### ~~v1.6.4:~~
 
-#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.6.2_1.6.4.html)
+*2022-06-16: GitHub pages is being a #$@#% and is not building the site and thus these links are dead even though the files are there. Please wait a while for v1.6.4*
 
-#### [AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.6.2_1.6.4.html)
+#### ~~[English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.6.2_1.6.4.html)~~
+
+#### ~~[AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.6.2_1.6.4.html)~~
 
 ### v1.6.3:
 
