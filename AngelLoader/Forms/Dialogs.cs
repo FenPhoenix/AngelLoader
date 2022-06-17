@@ -95,7 +95,7 @@ namespace AngelLoader.Forms
         /// <param name="checkBoxText"></param>
         /// <param name="defaultButton"></param>
         /// <returns></returns>
-        public (bool Cancel, bool Continue, bool CheckBoxChecked)
+        public (MBoxButton ButtonPressed, bool CheckBoxChecked)
         AskToContinueWithCancelCustomStrings(
             string message,
             string title,
@@ -105,7 +105,7 @@ namespace AngelLoader.Forms
             string? cancel,
             string? checkBoxText = null,
             MBoxButton defaultButton = MBoxButton.Yes) =>
-            ((bool, bool, bool))InvokeIfViewExists(() =>
+            ((MBoxButton, bool))InvokeIfViewExists(() =>
             {
                 using var d = new DarkTaskDialog(
                     title: title,
@@ -117,12 +117,7 @@ namespace AngelLoader.Forms
                     checkBoxText: checkBoxText,
                     icon: GetIcon(icon));
 
-                DialogResult result = d.ShowDialogDark();
-
-                bool canceled = result == DialogResult.Cancel;
-                bool cont = result == DialogResult.Yes;
-                bool dontAskAgain = d.IsVerificationChecked;
-                return (canceled, cont, dontAskAgain);
+                return (DialogResultToMBoxButton(d.ShowDialogDark()), d.IsVerificationChecked);
             });
 
         /// <summary>
@@ -137,7 +132,7 @@ namespace AngelLoader.Forms
         /// <param name="checkBoxText"></param>
         /// <param name="defaultButton"></param>
         /// <returns></returns>
-        public (bool Cancel, bool CheckBoxChecked)
+        public (MBoxButton ButtonPressed, bool CheckBoxChecked)
         AskToContinueYesNoCustomStrings(
             string message,
             string title,
@@ -147,7 +142,7 @@ namespace AngelLoader.Forms
             bool yesIsDangerous = false,
             string? checkBoxText = null,
             MBoxButton defaultButton = MBoxButton.Yes) =>
-            ((bool, bool))InvokeIfViewExists(() =>
+            ((MBoxButton, bool))InvokeIfViewExists(() =>
             {
                 using var d = new DarkTaskDialog(
                     title: title,
@@ -159,11 +154,7 @@ namespace AngelLoader.Forms
                     checkBoxText: checkBoxText,
                     icon: GetIcon(icon));
 
-                DialogResult result = d.ShowDialogDark();
-
-                bool cancel = result != DialogResult.Yes;
-                bool dontAskAgain = d.IsVerificationChecked;
-                return (cancel, dontAskAgain);
+                return (DialogResultToMBoxButton(d.ShowDialogDark()), d.IsVerificationChecked);
             });
 
         /// <summary>

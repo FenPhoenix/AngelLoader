@@ -98,7 +98,7 @@ namespace AngelLoader
 
             if (anyInapplicable)
             {
-                (bool cancel, _) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                (MBoxButton result, _) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: LText.AlertMessages.AudioConversion_SomeSelectedFilesDoNotSupportConversion,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.None,
@@ -106,7 +106,7 @@ namespace AngelLoader
                     no: LText.Global.Cancel,
                     defaultButton: MBoxButton.Yes
                 );
-                if (cancel) return;
+                if (result == MBoxButton.No) return;
             }
 
             if (!ChecksPassed(fms)) return;

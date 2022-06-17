@@ -82,7 +82,7 @@ namespace AngelLoader
                                fm.Author + "\r\n";
                 }
 
-                (bool cancel, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: message,
                     title: LText.AlertMessages.Confirm,
                     icon: MBoxIcon.None,
@@ -90,7 +90,7 @@ namespace AngelLoader
                     yes: LText.Global.PlayFM,
                     no: LText.Global.Cancel);
 
-                if (cancel) return;
+                if (result == MBoxButton.No) return;
 
                 Config.ConfirmPlayOnDCOrEnter = !dontAskAgain;
             }
@@ -460,7 +460,7 @@ namespace AngelLoader
             {
                 string dlExe = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
 
-                (bool cancel, bool openDL, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
+                (MBoxButton result, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                     message: GetLocalizedGameNameColon(gameIndex) + "\r\n" +
                              LText.AlertMessages.DarkLoader_InstalledFMFound,
                     title: LText.AlertMessages.Alert,
@@ -470,7 +470,7 @@ namespace AngelLoader
                     cancel: LText.Global.Cancel,
                     defaultButton: !dlExe.IsEmpty() ? MBoxButton.Yes : MBoxButton.Cancel
                 );
-                if (openDL && !dlExe.IsEmpty())
+                if (result == MBoxButton.Yes && !dlExe.IsEmpty())
                 {
                     try
                     {
@@ -482,7 +482,7 @@ namespace AngelLoader
                     }
                     return failed;
                 }
-                else if (cancel)
+                else if (result == MBoxButton.Cancel)
                 {
                     return failed;
                 }
@@ -829,7 +829,7 @@ namespace AngelLoader
                 (Config.ConfirmBeforeInstall == ConfirmBeforeInstall.Always ||
                 (!single && Config.ConfirmBeforeInstall == ConfirmBeforeInstall.OnlyForMultiple)))
             {
-                (bool cancel, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: single
                         ? fromPlay
                             ? LText.AlertMessages.Play_InstallAndPlayConfirmMessage
@@ -843,7 +843,7 @@ namespace AngelLoader
                     yes: single ? fromPlay ? LText.Global.PlayFM : LText.Global.InstallFM : LText.Global.InstallFMs,
                     no: LText.Global.Cancel,
                     defaultButton: MBoxButton.No);
-                if (cancel) return false;
+                if (result == MBoxButton.No) return false;
 
                 if (dontAskAgain) Config.ConfirmBeforeInstall = ConfirmBeforeInstall.Never;
             }
@@ -1201,7 +1201,7 @@ namespace AngelLoader
 
             if (Config.ConfirmUninstall)
             {
-                (bool cancel, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                     message: single
                         ? LText.AlertMessages.Uninstall_Confirm
                         : LText.AlertMessages.Uninstall_Confirm_Multiple,
@@ -1211,7 +1211,7 @@ namespace AngelLoader
                     yes: LText.AlertMessages.Uninstall,
                     no: LText.Global.Cancel);
 
-                if (cancel) return fail;
+                if (result == MBoxButton.No) return fail;
 
                 Config.ConfirmUninstall = !dontAskAgain;
             }
@@ -1225,7 +1225,7 @@ namespace AngelLoader
                 string message = Config.BackupFMData == BackupFMData.SavesAndScreensOnly
                     ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                     : LText.AlertMessages.Uninstall_BackupAllData;
-                (bool cancel, bool cont, bool dontAskAgain) =
+                (MBoxButton result, bool dontAskAgain) =
                     Core.Dialogs.AskToContinueWithCancelCustomStrings(
                         message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                         title: LText.AlertMessages.Confirm,
@@ -1236,10 +1236,10 @@ namespace AngelLoader
                         checkBoxText: LText.AlertMessages.DontAskAgain
                     );
 
-                if (cancel) return fail;
+                if (result == MBoxButton.Cancel) return fail;
 
                 Config.BackupAlwaysAsk = !dontAskAgain;
-                doBackup = cont;
+                doBackup = result == MBoxButton.Yes;
             }
             else
             {
@@ -1305,7 +1305,7 @@ namespace AngelLoader
                     {
                         if (doEndTasks && !skipUninstallWithNoArchiveWarning)
                         {
-                            (bool cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
+                            (MBoxButton result, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                                 message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                                 title: LText.AlertMessages.Warning,
                                 icon: MBoxIcon.Warning,
@@ -1314,8 +1314,8 @@ namespace AngelLoader
                                 cancel: LText.Global.Cancel,
                                 defaultButton: MBoxButton.No);
 
-                            if (cancel) return (false, atLeastOneFMMarkedUnavailable);
-                            if (!cont) continue;
+                            if (result == MBoxButton.Cancel) return (false, atLeastOneFMMarkedUnavailable);
+                            if (result == MBoxButton.No) continue;
 
                             if (!single) skipUninstallWithNoArchiveWarning = true;
                         }

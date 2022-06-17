@@ -354,6 +354,13 @@ namespace AngelLoader.Forms
             _ => MessageBoxButtons.OK
         };
 
+        internal static MBoxButton DialogResultToMBoxButton(DialogResult dialogResult) => dialogResult switch
+        {
+            DialogResult.Yes => MBoxButton.Yes,
+            DialogResult.No => MBoxButton.No,
+            _ => MBoxButton.Cancel
+        };
+
         internal static void SetMessageBoxIcon(PictureBox pictureBox, MessageBoxIcon icon)
         {
             var sii = new Native.SHSTOCKICONINFO();

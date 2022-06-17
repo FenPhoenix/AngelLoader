@@ -178,7 +178,7 @@ namespace AngelLoader
                 if (fms[i].Installed) installedCount++;
             }
 
-            (bool cancel, bool deleteFromDB) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+            (MBoxButton result, bool deleteFromDB) = Core.Dialogs.AskToContinueYesNoCustomStrings(
                 message: single
                     ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + fms[0].Archive
                     : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
@@ -192,7 +192,7 @@ namespace AngelLoader
                     : LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Multiple,
                 yesIsDangerous: true);
 
-            if (cancel) return;
+            if (result == MBoxButton.No) return;
 
             // Since multiple archives with the same name should be the rare case (nobody should be doing it),
             // we'll just ask the user per-FM if we find any as we go. Sorry to stop your batch, but yeah.
@@ -203,7 +203,7 @@ namespace AngelLoader
 
             if (installedCount > 0)
             {
-                (cancel, bool cont, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
+                (result, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
                     message: single
                         ? LText.FMDeletion.AskToUninstallFMFirst
                         : LText.FMDeletion.AskToUninstallFMFirst_Multiple,
@@ -216,8 +216,8 @@ namespace AngelLoader
                     cancel: LText.Global.Cancel
                 );
 
-                if (cancel) return;
-                if (cont)
+                if (result == MBoxButton.Cancel) return;
+                if (result == MBoxButton.Yes)
                 {
                     FanMission[] installedFMs = new FanMission[installedCount];
                     for (int i = 0, i2 = 0; i < fms.Count; i++)
