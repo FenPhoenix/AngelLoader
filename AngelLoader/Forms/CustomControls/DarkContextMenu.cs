@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Windows.Forms;
 using JetBrains.Annotations;
-using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
