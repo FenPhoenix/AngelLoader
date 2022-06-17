@@ -1090,8 +1090,8 @@ namespace AngelLoader.Forms
                             var unsnappedSize = new Size(rect.Width, rect.Height);
 
 #if SAVE_NON_AERO_SNAPPED_BOUNDS
-                        _nominalWindowLocation = unsnappedLocation;
-                        _nominalWindowSize = unsnappedSize;
+                            _nominalWindowLocation = unsnappedLocation;
+                            _nominalWindowSize = unsnappedSize;
 #endif
 
                             if (nominalWasMaximized)
@@ -1100,11 +1100,11 @@ namespace AngelLoader.Forms
                             }
                         }
 #if SAVE_NON_AERO_SNAPPED_BOUNDS
-                    else
-                    {
-                        _nominalWindowSize = Size;
-                        _nominalWindowLocation = Location;
-                    }
+                        else
+                        {
+                            _nominalWindowSize = Size;
+                            _nominalWindowLocation = Location;
+                        }
 #endif
                     }
                 }
