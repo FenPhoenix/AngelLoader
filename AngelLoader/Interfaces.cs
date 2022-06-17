@@ -143,9 +143,8 @@ namespace AngelLoader
 
     public interface IDialogs
     {
-        bool AskToContinue(string message, string title, bool noIcon = false, MBoxButton defaultButton = MBoxButton.Yes);
-        (MBoxButton ButtonPressed, bool CheckBoxChecked) AskToContinueWithCancelCustomStrings(string message, string title, MBoxIcon icon, string? yes, string? no, string? cancel, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
-        (MBoxButton ButtonPressed, bool CheckBoxChecked) AskToContinueYesNoCustomStrings(string message, string title, MBoxIcon icon, string? yes, string? no, bool yesIsDangerous = false, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
+        (MBoxButton ButtonPressed, bool CheckBoxChecked) AskToContinueYesNoCancel(string message, string title, MBoxIcon icon, string? yes, string? no, string? cancel, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
+        (MBoxButton ButtonPressed, bool CheckBoxChecked) AskToContinueYesNo(string message, string title, MBoxIcon icon, string? yes, string? no, bool yesIsDangerous = false, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
         void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
         void ShowError_ViewOwned(string message);
         void ShowError(string message);

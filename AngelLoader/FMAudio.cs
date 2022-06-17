@@ -98,7 +98,7 @@ namespace AngelLoader
 
             if (anyInapplicable)
             {
-                (MBoxButton result, _) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                (MBoxButton result, _) = Core.Dialogs.AskToContinueYesNo(
                     message: LText.AlertMessages.AudioConversion_SomeSelectedFilesDoNotSupportConversion,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.None,

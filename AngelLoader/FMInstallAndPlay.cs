@@ -82,7 +82,7 @@ namespace AngelLoader
                                fm.Author + "\r\n";
                 }
 
-                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNo(
                     message: message,
                     title: LText.AlertMessages.Confirm,
                     icon: MBoxIcon.None,
@@ -460,7 +460,7 @@ namespace AngelLoader
             {
                 string dlExe = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
 
-                (MBoxButton result, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
+                (MBoxButton result, _) = Core.Dialogs.AskToContinueYesNoCancel(
                     message: GetLocalizedGameNameColon(gameIndex) + "\r\n" +
                              LText.AlertMessages.DarkLoader_InstalledFMFound,
                     title: LText.AlertMessages.Alert,
@@ -829,7 +829,7 @@ namespace AngelLoader
                 (Config.ConfirmBeforeInstall == ConfirmBeforeInstall.Always ||
                 (!single && Config.ConfirmBeforeInstall == ConfirmBeforeInstall.OnlyForMultiple)))
             {
-                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNo(
                     message: single
                         ? fromPlay
                             ? LText.AlertMessages.Play_InstallAndPlayConfirmMessage
@@ -1201,7 +1201,7 @@ namespace AngelLoader
 
             if (Config.ConfirmUninstall)
             {
-                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNoCustomStrings(
+                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.AskToContinueYesNo(
                     message: single
                         ? LText.AlertMessages.Uninstall_Confirm
                         : LText.AlertMessages.Uninstall_Confirm_Multiple,
@@ -1226,7 +1226,7 @@ namespace AngelLoader
                     ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                     : LText.AlertMessages.Uninstall_BackupAllData;
                 (MBoxButton result, bool dontAskAgain) =
-                    Core.Dialogs.AskToContinueWithCancelCustomStrings(
+                    Core.Dialogs.AskToContinueYesNoCancel(
                         message: message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                         title: LText.AlertMessages.Confirm,
                         icon: MBoxIcon.None,
@@ -1305,7 +1305,7 @@ namespace AngelLoader
                     {
                         if (doEndTasks && !skipUninstallWithNoArchiveWarning)
                         {
-                            (MBoxButton result, _) = Core.Dialogs.AskToContinueWithCancelCustomStrings(
+                            (MBoxButton result, _) = Core.Dialogs.AskToContinueYesNoCancel(
                                 message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                                 title: LText.AlertMessages.Warning,
                                 icon: MBoxIcon.Warning,

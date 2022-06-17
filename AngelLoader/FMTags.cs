@@ -59,8 +59,14 @@ namespace AngelLoader
 
                 // TODO: These messageboxes are annoying, but they prevent accidental deletion.
                 // Figure out something better.
-                bool cont = Core.Dialogs.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
-                if (!cont) return false;
+                (MBoxButton result, _) = Core.Dialogs.AskToContinueYesNo(
+                    message: LText.TagsTab.AskRemoveCategory,
+                    title: LText.TagsTab.TabText,
+                    icon: MBoxIcon.None,
+                    yes: LText.Global.Yes,
+                    no: LText.Global.No
+                );
+                if (result == MBoxButton.No) return false;
 
                 if (fm.Tags.ContainsKey(catText))
                 {
@@ -73,8 +79,14 @@ namespace AngelLoader
             {
                 if (tagText.IsWhiteSpace()) return false;
 
-                bool cont = Core.Dialogs.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
-                if (!cont) return false;
+                (MBoxButton result, _) = Core.Dialogs.AskToContinueYesNo(
+                    message: LText.TagsTab.AskRemoveTag,
+                    title: LText.TagsTab.TabText,
+                    icon: MBoxIcon.None,
+                    yes: LText.Global.Yes,
+                    no: LText.Global.No
+                );
+                if (result == MBoxButton.No) return false;
 
                 if (fm.Tags.TryGetValue(catText, out FMTagsCollection tagsList) &&
                     tagsList.Contains(tagText))

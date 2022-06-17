@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
-using static AngelLoader.Misc;
 using static AngelLoader.Forms.ControlUtils;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
@@ -44,50 +44,6 @@ namespace AngelLoader.Forms
         /// </summary>
         /// <param name="message"></param>
         /// <param name="title"></param>
-        /// <param name="noIcon"></param>
-        /// <param name="defaultButton"></param>
-        /// <returns></returns>
-        public bool
-        AskToContinue(
-            string message,
-            string title,
-            bool noIcon = false,
-            MBoxButton defaultButton = MBoxButton.Yes) =>
-            (bool)InvokeIfViewExists(() =>
-            {
-                if (Config.DarkMode)
-                {
-                    using var d = new DarkTaskDialog(
-                        message: message,
-                        title: title,
-                        icon: noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning,
-                        yesText: LText.Global.Yes,
-                        noText: LText.Global.No,
-                        defaultButton: defaultButton);
-                    return d.ShowDialogDark() == DialogResult.Yes;
-                }
-                else
-                {
-                    var mbDefaultButton = defaultButton switch
-                    {
-                        MBoxButton.Yes => MessageBoxDefaultButton.Button1,
-                        _ => MessageBoxDefaultButton.Button2
-                    };
-
-                    return MessageBox.Show(
-                        message,
-                        title,
-                        MessageBoxButtons.YesNo,
-                        noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning,
-                        mbDefaultButton) == DialogResult.Yes;
-                }
-            });
-
-        /// <summary>
-        /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="title"></param>
         /// <param name="icon"></param>
         /// <param name="yes"></param>
         /// <param name="no"></param>
@@ -96,7 +52,7 @@ namespace AngelLoader.Forms
         /// <param name="defaultButton"></param>
         /// <returns></returns>
         public (MBoxButton ButtonPressed, bool CheckBoxChecked)
-        AskToContinueWithCancelCustomStrings(
+        AskToContinueYesNoCancel(
             string message,
             string title,
             MBoxIcon icon,
@@ -133,7 +89,7 @@ namespace AngelLoader.Forms
         /// <param name="defaultButton"></param>
         /// <returns></returns>
         public (MBoxButton ButtonPressed, bool CheckBoxChecked)
-        AskToContinueYesNoCustomStrings(
+        AskToContinueYesNo(
             string message,
             string title,
             MBoxIcon icon,
