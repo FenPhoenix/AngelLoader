@@ -358,6 +358,9 @@ namespace AngelLoader.Forms
 
                 if (CursorOutsideAddTagsDropDownArea() || ViewBlocked) return BlockMessage;
 
+                Control? control = Control.FromHandle(Native.WindowFromPoint(Native.GetCursorPosition_Fast()));
+                if (control is DarkContextMenu) return PassMessageOn;
+
                 ShowReadmeControls(CursorOverReadmeArea());
             }
             else if (m.Msg is
