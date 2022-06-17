@@ -721,8 +721,8 @@ namespace AngelLoader.Forms
                 {
                     const BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
-                    _restoredWindowBoundsField = typeof(Form).GetField("restoredWindowBounds", bFlags);
-                    _restoredWindowBoundsSpecifiedField = typeof(Form).GetField("restoredWindowBoundsSpecified", bFlags);
+                    _restoredWindowBoundsField = typeof(Form).GetField(WinFormsReflection.Form_RestoredWindowBounds, bFlags);
+                    _restoredWindowBoundsSpecifiedField = typeof(Form).GetField(WinFormsReflection.Form_RestoredWindowBoundsSpecified, bFlags);
 
                     _restoredHackReflectable = _restoredWindowBoundsField != null && _restoredWindowBoundsSpecifiedField != null;
                 }

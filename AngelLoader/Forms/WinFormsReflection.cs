@@ -22,5 +22,20 @@
 #else
             "_toolTip";
 #endif
+
+        // @NET5: These ones seem to be the same currently (as of .NET 6.0.x)
+        internal const string Form_RestoredWindowBounds =
+#if NETFRAMEWORK
+            "restoredWindowBounds";
+#else
+            "restoredWindowBounds";
+#endif
+
+        internal const string Form_RestoredWindowBoundsSpecified =
+#if NETFRAMEWORK
+            "restoredWindowBoundsSpecified";
+#else
+            "restoredWindowBoundsSpecified";
+#endif
     }
 }
