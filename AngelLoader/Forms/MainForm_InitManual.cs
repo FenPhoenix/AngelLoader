@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
@@ -1541,6 +1542,7 @@ namespace AngelLoader.Forms
             ModsTabPage.ResumeLayout(false);
             ModsTabPage.PerformLayout();
             ResumeLayout(false);
+            //OnSizeChanged(EventArgs.Empty);
         }
     }
 }

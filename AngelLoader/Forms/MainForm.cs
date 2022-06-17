@@ -61,6 +61,9 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
+        // Stupid hack for if event handlers need to know
+        private bool _startupState = true;
+
         private ISplashScreen_Safe? _splashScreen;
 
         /// <summary>
@@ -991,6 +994,8 @@ namespace AngelLoader.Forms
         {
             base.Show();
             _splashScreen?.Hide();
+
+            _startupState = false;
         }
 
         public void ShowOnly()
@@ -1030,55 +1035,70 @@ namespace AngelLoader.Forms
 
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
-            if (WindowState != FormWindowState.Minimized)
+            // Prevent unpleasant visual garbage drawing in the window on startup if we do the full thing
+            if (_startupState)
             {
-                bool nominalWasMaximized = _nominalWindowState == FormWindowState.Maximized;
-
-                _nominalWindowState = WindowState;
-
-                if (WindowState != FormWindowState.Maximized)
+                if (WindowState != FormWindowState.Minimized)
                 {
-                    /*
-                    Native Win32 apps restore their un-Aero-Snapped size/position automatically, but WinForms
-                    decides it's way better to save the snapped bounds as the new bounds. It does it completely
-                    and entirely on purpose too. In fact, when you snap a window, maximize it, then restore it,
-                    the window DOES go back to its un-snapped bounds briefly, but then WinForms puts it right
-                    back to its snapped position in blatant defiance of the way every other kind of app works.
-                    So... force it not to with some p/invoke and reflection crap.
+                    _nominalWindowState = WindowState;
+                    if (WindowState != FormWindowState.Maximized)
+                    {
+                        _nominalWindowSize = Size;
+                        _nominalWindowLocation = Location;
+                    }
+                }
+            }
+            else
+            {
+                if (WindowState != FormWindowState.Minimized)
+                {
+                    bool nominalWasMaximized = _nominalWindowState == FormWindowState.Maximized;
 
-                    This fixes:
-                    -When snapping, maximizing, then restoring, we would end up with snapped bounds instead of
-                     the last un-snapped bounds.
-                    -Snapped position was saved to config file so on the next startup we'd end up with snapped
-                     bounds. (but see notes below)
+                    _nominalWindowState = WindowState;
 
-                    Some apps save the un-snapped bounds (and thus restore to un-snapped bounds on next start).
-                    Notepad and Notepad++ both do; Discord, Firefox, Reaper, Agent Ransack, FileSeek don't...
-                    It seems most apps don't.
-                    We might conceivably have people who like AL to always come up snapped, and not doing so
-                    might annoy them.
-                    So let's disable it for now, to behave like most other apps.
-                    */
+                    if (WindowState != FormWindowState.Maximized)
+                    {
+                        /*
+                        Native Win32 apps restore their un-Aero-Snapped size/position automatically, but WinForms
+                        decides it's way better to save the snapped bounds as the new bounds. It does it completely
+                        and entirely on purpose too. In fact, when you snap a window, maximize it, then restore it,
+                        the window DOES go back to its un-snapped bounds briefly, but then WinForms puts it right
+                        back to its snapped position in blatant defiance of the way every other kind of app works.
+                        So... force it not to with some p/invoke and reflection crap.
+
+                        This fixes:
+                        -When snapping, maximizing, then restoring, we would end up with snapped bounds instead of
+                         the last un-snapped bounds.
+                        -Snapped position was saved to config file so on the next startup we'd end up with snapped
+                         bounds. (but see notes below)
+
+                        Some apps save the un-snapped bounds (and thus restore to un-snapped bounds on next start).
+                        Notepad and Notepad++ both do; Discord, Firefox, Reaper, Agent Ransack, FileSeek don't...
+                        It seems most apps don't.
+                        We might conceivably have people who like AL to always come up snapped, and not doing so
+                        might annoy them.
+                        So let's disable it for now, to behave like most other apps.
+                        */
 
 #if !SAVE_NON_AERO_SNAPPED_BOUNDS
-                    _nominalWindowSize = Size;
-                    _nominalWindowLocation = Location;
+                        _nominalWindowSize = Size;
+                        _nominalWindowLocation = Location;
 #endif
-                    if (Native.TryGetRealWindowBounds(this, out Rectangle rect))
-                    {
-                        var unsnappedLocation = new Point(rect.Left, rect.Top);
-                        var unsnappedSize = new Size(rect.Width, rect.Height);
+                        if (Native.TryGetRealWindowBounds(this, out Rectangle rect))
+                        {
+                            var unsnappedLocation = new Point(rect.Left, rect.Top);
+                            var unsnappedSize = new Size(rect.Width, rect.Height);
 
 #if SAVE_NON_AERO_SNAPPED_BOUNDS
                         _nominalWindowLocation = unsnappedLocation;
                         _nominalWindowSize = unsnappedSize;
 #endif
 
-                        if (nominalWasMaximized)
-                        {
-                            ControlUtils.SetAeroSnapRestoreHackValues(this, unsnappedLocation, unsnappedSize);
+                            if (nominalWasMaximized)
+                            {
+                                ControlUtils.SetAeroSnapRestoreHackValues(this, unsnappedLocation, unsnappedSize);
+                            }
                         }
-                    }
 #if SAVE_NON_AERO_SNAPPED_BOUNDS
                     else
                     {
@@ -1086,6 +1106,7 @@ namespace AngelLoader.Forms
                         _nominalWindowLocation = Location;
                     }
 #endif
+                    }
                 }
             }
 
