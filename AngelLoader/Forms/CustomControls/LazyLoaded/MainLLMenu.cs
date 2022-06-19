@@ -33,11 +33,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private ToolStripMenuItemCustom ImportMenuItem = null!;
         internal ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
         internal ToolStripMenuItemCustom ImportFromFMSelMenuItem = null!;
-        [UsedImplicitly]
-        // It's an implicit "else" case, but let's keep it just for consistency
-#pragma warning disable IDE0052 // Remove unread private members
         internal ToolStripMenuItemCustom ImportFromNewDarkLoaderMenuItem = null!;
-#pragma warning restore IDE0052 // Remove unread private members
 
         internal ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
 
