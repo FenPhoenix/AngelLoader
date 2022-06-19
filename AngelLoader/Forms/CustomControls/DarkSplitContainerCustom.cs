@@ -103,63 +103,64 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void SetFullScreen(bool enabled, bool suspendResume = true)
         {
-            if (IsMain)
+            try
             {
-                if (enabled)
+                if (suspendResume) this.SuspendDrawing();
+
+                if (IsMain)
                 {
-                    if (suspendResume) this.SuspendDrawing();
-                    IsSplitterFixed = true;
-                    _storedCollapsiblePanelMinSize = Panel1MinSize;
-                    _storedSplitterPercent = SplitterPercent;
-                    Panel1MinSize = CollapsedSize;
-                    _sibling!.Hide();
-                    SplitterDistance = CollapsedSize;
-                    FullScreen = true;
-                    if (suspendResume) this.ResumeDrawing();
+                    if (enabled)
+                    {
+                        IsSplitterFixed = true;
+                        _storedCollapsiblePanelMinSize = Panel1MinSize;
+                        _storedSplitterPercent = SplitterPercent;
+                        Panel1MinSize = CollapsedSize;
+                        _sibling!.Hide();
+                        SplitterDistance = CollapsedSize;
+                        FullScreen = true;
+                    }
+                    else
+                    {
+                        SplitterPercent = _storedSplitterPercent;
+                        Panel1MinSize = _storedCollapsiblePanelMinSize;
+                        _sibling!.Show();
+                        FullScreen = false;
+                        IsSplitterFixed = false;
+                    }
                 }
                 else
                 {
-                    if (suspendResume) this.SuspendDrawing();
-                    SplitterPercent = _storedSplitterPercent;
-                    Panel1MinSize = _storedCollapsiblePanelMinSize;
-                    _sibling!.Show();
-                    FullScreen = false;
-                    IsSplitterFixed = false;
-                    if (suspendResume) this.ResumeDrawing();
+                    if (enabled)
+                    {
+                        IsSplitterFixed = true;
+                        _storedCollapsiblePanelMinSize = Panel2MinSize;
+                        _storedSplitterPercent = SplitterPercent;
+                        Panel2MinSize = CollapsedSize;
+                        SplitterDistance = Width - CollapsedSize;
+                        FullScreen = true;
+                        // Colossal hack (hiding dark tab control prevents white line on side)
+                        foreach (Control control in Panel2.Controls)
+                        {
+                            if (control is DarkTabControl) control.Hide();
+                        }
+                    }
+                    else
+                    {
+                        SplitterPercent = _storedSplitterPercent;
+                        Panel2MinSize = _storedCollapsiblePanelMinSize;
+                        FullScreen = false;
+                        IsSplitterFixed = false;
+                        // Colossal hack (hiding dark tab control prevents white line on side)
+                        foreach (Control control in Panel2.Controls)
+                        {
+                            if (control is DarkTabControl) control.Show();
+                        }
+                    }
                 }
             }
-            else
+            finally
             {
-                if (enabled)
-                {
-                    if (suspendResume) this.SuspendDrawing();
-                    IsSplitterFixed = true;
-                    _storedCollapsiblePanelMinSize = Panel2MinSize;
-                    _storedSplitterPercent = SplitterPercent;
-                    Panel2MinSize = CollapsedSize;
-                    SplitterDistance = Width - CollapsedSize;
-                    FullScreen = true;
-                    // Colossal hack (hiding dark tab control prevents white line on side)
-                    foreach (Control control in Panel2.Controls)
-                    {
-                        if (control is DarkTabControl) control.Hide();
-                    }
-                    if (suspendResume) this.ResumeDrawing();
-                }
-                else
-                {
-                    if (suspendResume) this.SuspendDrawing();
-                    SplitterPercent = _storedSplitterPercent;
-                    Panel2MinSize = _storedCollapsiblePanelMinSize;
-                    FullScreen = false;
-                    IsSplitterFixed = false;
-                    // Colossal hack (hiding dark tab control prevents white line on side)
-                    foreach (Control control in Panel2.Controls)
-                    {
-                        if (control is DarkTabControl) control.Show();
-                    }
-                    if (suspendResume) this.ResumeDrawing();
-                }
+                if (suspendResume) this.ResumeDrawing();
             }
         }
 

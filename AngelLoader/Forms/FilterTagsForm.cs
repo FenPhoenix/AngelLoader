@@ -144,13 +144,19 @@ namespace AngelLoader.Forms
                 tags == TagsFilter.OrTags ? OrTreeView :
                 NotTreeView;
 
-            tv.SuspendDrawing();
-            tv.Nodes.Clear();
+            try
+            {
+                tv.SuspendDrawing();
+                tv.Nodes.Clear();
 
-            ControlUtils.FillTreeViewFromTags_Sorted(tv, tags);
+                ControlUtils.FillTreeViewFromTags_Sorted(tv, tags);
 
-            tv.ExpandAll();
-            tv.ResumeDrawing();
+                tv.ExpandAll();
+            }
+            finally
+            {
+                tv.ResumeDrawing();
+            }
 
             CheckTagInAny();
         }

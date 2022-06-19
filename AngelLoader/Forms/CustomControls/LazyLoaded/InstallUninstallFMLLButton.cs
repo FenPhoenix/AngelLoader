@@ -75,31 +75,36 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             // Special-case this button to always be the width of the longer of the two localized strings for
             // "Install" and "Uninstall" so it doesn't resize when its text changes. (visual nicety)
-            Button.SuspendDrawing();
-
-            // Have to call this to get its layout working
-            Button.Show();
-
-            (string Text, int Length)[] stringsAndLengths =
+            try
             {
-                (LText.Global.UninstallFMs, TextRenderer.MeasureText(LText.Global.UninstallFMs, Button.Font).Width),
-                (LText.Global.UninstallFM, TextRenderer.MeasureText(LText.Global.UninstallFM, Button.Font).Width),
-                (LText.Global.InstallFMs, TextRenderer.MeasureText(LText.Global.InstallFMs, Button.Font).Width),
-                (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.InstallFM, Button.Font).Width)
-            };
+                Button.SuspendDrawing();
 
-            stringsAndLengths = stringsAndLengths.OrderByDescending(x => x.Length).ToArray();
+                // Have to call this to get its layout working
+                Button.Show();
 
-            string longestString = stringsAndLengths[0].Text;
+                (string Text, int Length)[] stringsAndLengths =
+                {
+                    (LText.Global.UninstallFMs, TextRenderer.MeasureText(LText.Global.UninstallFMs, Button.Font).Width),
+                    (LText.Global.UninstallFM, TextRenderer.MeasureText(LText.Global.UninstallFM, Button.Font).Width),
+                    (LText.Global.InstallFMs, TextRenderer.MeasureText(LText.Global.InstallFMs, Button.Font).Width),
+                    (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.InstallFM, Button.Font).Width)
+                };
 
-            // Special case autosize text-set: can't be GrowAndShrink
-            Button.SetTextAutoSize(longestString);
+                stringsAndLengths = stringsAndLengths.OrderByDescending(x => x.Length).ToArray();
 
-            if (!startup) SetButtonText(SayInstallState);
+                string longestString = stringsAndLengths[0].Text;
 
-            if (Button.Visible && Config.HideUninstallButton) Button.Hide();
+                // Special case autosize text-set: can't be GrowAndShrink
+                Button.SetTextAutoSize(longestString);
 
-            Button.ResumeDrawing();
+                if (!startup) SetButtonText(SayInstallState);
+
+                if (Button.Visible && Config.HideUninstallButton) Button.Hide();
+            }
+            finally
+            {
+                Button.ResumeDrawing();
+            }
 
             #endregion
         }

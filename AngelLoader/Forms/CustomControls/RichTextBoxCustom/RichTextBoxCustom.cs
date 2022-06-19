@@ -235,13 +235,18 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ResetZoomFactor()
         {
-            this.SuspendDrawing();
+            try
+            {
+                this.SuspendDrawing();
 
-            // We have to set another value first, or it won't take.
-            ZoomFactor = 1.1f;
-            ZoomFactor = 1.0f;
-
-            this.ResumeDrawing();
+                // We have to set another value first, or it won't take.
+                ZoomFactor = 1.1f;
+                ZoomFactor = 1.0f;
+            }
+            finally
+            {
+                this.ResumeDrawing();
+            }
         }
 
         #endregion
