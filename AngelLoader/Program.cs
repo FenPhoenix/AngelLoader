@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using AngelLoader.DataClasses;
 using Microsoft.VisualBasic.ApplicationServices;
 using static AL_Common.Logger;
 
@@ -63,7 +64,7 @@ namespace AngelLoader
                 {
                     if (e.Exception.TargetSite.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())
                     {
-                        Log("Exception thrown", e.Exception);
+                        Log(ErrorText.Ex + "thrown", e.Exception);
                     }
                 };
 

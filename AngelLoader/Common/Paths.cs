@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using AngelLoader.DataClasses;
 using Microsoft.Win32;
 using static AL_Common.Common;
 using static AL_Common.Logger;
@@ -151,7 +152,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception setting temp path subtree to all non-readonly.\r\n" +
+                    Log(ErrorText.Ex + "setting temp path subtree to all non-readonly.\r\n" +
                         "path was: " + path, ex);
                 }
 
@@ -162,7 +163,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception clearing temp path " + path, ex);
+                    Log(ErrorText.Ex + "clearing temp path " + path, ex);
                 }
             }
             else
@@ -173,7 +174,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception creating temp path " + path, ex);
+                    Log(ErrorText.Ex + "creating temp path " + path, ex);
                 }
             }
         }

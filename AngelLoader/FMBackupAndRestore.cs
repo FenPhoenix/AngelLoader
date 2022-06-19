@@ -373,7 +373,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception in zip archive create and/or write (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", ex);
+                    Log(ErrorText.Ex + "in zip archive create and/or write (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", ex);
                 }
             });
         }
@@ -704,7 +704,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log("Exception in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
+                            Log(ErrorText.Ex + "in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
                         }
                     }
                 }
@@ -775,7 +775,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log("Exception in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
+                            Log(ErrorText.Ex + "in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
                         }
                     }
                 }

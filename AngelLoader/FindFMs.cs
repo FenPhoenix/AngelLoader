@@ -266,7 +266,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception reading FM data ini", ex);
+                    Log(ErrorText.ExRead + Paths.FMDataIni, ex);
                     if (startup)
                     {
                         throw;
@@ -315,7 +315,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log("Exception getting directories in " + instPath, ex);
+                        Log(ErrorText.Ex + "getting directories in " + instPath, ex);
                     }
                 }
             }
@@ -357,7 +357,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception getting files in " + archivePaths[ai], ex);
+                    Log(ErrorText.Ex + "getting files in " + archivePaths[ai], ex);
                 }
             }
 
@@ -678,7 +678,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception reading " + fmselInf, ex);
+                Log(ErrorText.ExRead + fmselInf, ex);
                 return null;
             }
 
@@ -721,7 +721,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in creating or overwriting" + path, ex);
+                Log(ErrorText.Ex + "in creating or overwriting" + path, ex);
             }
         }
 

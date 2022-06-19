@@ -1281,7 +1281,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception getting DML files for " + fm.InstalledDir + ", game: " + fm.Game, ex);
+                Log(ErrorText.Ex + "getting DML files for " + fm.InstalledDir + ", game: " + fm.Game, ex);
                 return (false, new List<string>());
             }
         }
@@ -1653,7 +1653,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception trying to open FM folder " + fmDir, ex);
+                Log(ErrorText.Ex + "trying to open FM folder " + fmDir, ex);
                 Dialogs.ShowError(ErrorText.UnableToOpenFMFolder);
             }
         }
@@ -1733,7 +1733,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception opening HTML readme " + fm.SelectedReadme, ex);
+                Log(ErrorText.Ex + "opening HTML readme " + fm.SelectedReadme, ex);
                 Dialogs.ShowError(ErrorText.UnableToOpenHTMLReadme);
                 return;
             }
@@ -1746,7 +1746,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception opening HTML readme " + path, ex);
+                    Log(ErrorText.Ex + "opening HTML readme " + path, ex);
                     Dialogs.ShowError(ErrorText.UnableToOpenHTMLReadme);
                 }
             }
@@ -1794,7 +1794,7 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     // This one isn't important enough to put a dialog
-                    Log("Exception writing temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
+                    Log(ErrorText.ExWrite + "temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
                     finalUri = helpFileUri;
                 }
             }
@@ -1910,7 +1910,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception trying to detect game editor exe", ex);
+                Log(ErrorText.Ex + "trying to detect game editor exe", ex);
             }
 
 #if false

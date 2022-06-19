@@ -46,7 +46,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in GetDrives()", ex);
+                Log(ErrorText.Ex + "in GetDrives()", ex);
                 return "";
             }
 
@@ -77,7 +77,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in DarkLoader multi-drive search", ex);
+                Log(ErrorText.Ex + "in DarkLoader multi-drive search", ex);
             }
 
             return "";
@@ -234,7 +234,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception in " + importType + " import", ex);
+                    Log(ErrorText.Ex + "in " + importType + " import", ex);
 
                     if (importType == ImportType.DarkLoader)
                     {
@@ -386,7 +386,7 @@ namespace AngelLoader
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log("Exception in DarkLoader archive dir file enumeration", ex);
+                                        Log(ErrorText.Ex + "in DarkLoader archive dir file enumeration", ex);
                                     }
                                 }
 
@@ -757,7 +757,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log("Exception in NewDarkLoader archive dir file enumeration", ex);
+                            Log(ErrorText.Ex + "in NewDarkLoader archive dir file enumeration", ex);
                         }
 
                         while (i < lines.Length - 1)

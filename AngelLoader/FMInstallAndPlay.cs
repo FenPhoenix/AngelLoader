@@ -50,9 +50,10 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log("Game is unknown or unsupported for FM " + GetFMId(fm) + "\r\n" +
-                    "fm.Game was: " + fm.Game, stackTrace: true);
-                Core.Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
+                Log(ErrorText.FMGameU + "\r\n" +
+                    "FM: " + GetFMId(fm) + "\r\n" +
+                    "FM game was: " + fm.Game, stackTrace: true);
+                Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
                 return;
             }
 
@@ -63,7 +64,7 @@ namespace AngelLoader
                 Log("playMP was true, but fm.Game was not Thief 2.\r\n" +
                     "fm: " + GetFMId(fm) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
-                Core.Dialogs.ShowError(ErrorText.MultiplayerForNonThief2);
+                Core.Dialogs.ShowError(ErrorText.MPForNonT2);
                 return;
             }
 
@@ -171,7 +172,7 @@ namespace AngelLoader
             {
                 Log("Game is unknown or unsupported for FM " + GetFMId(fm) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
-                Core.Dialogs.ShowError(ErrorText.FMGameTypeUnknownOrUnsupported);
+                Core.Dialogs.ShowError(ErrorText.FMGameU);
                 return false;
             }
 
@@ -239,10 +240,10 @@ namespace AngelLoader
                 // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
                 if (!GameIsDark(fm.Game))
                 {
-                    Log("FM game type is not a Dark Engine game.\r\n" +
+                    Log(ErrorText.FMGameNotDark + "\r\n" +
                         "FM: " + GetFMId(fm) + "\r\n" +
                         "fm.Game was: " + fm.Game, stackTrace: true);
-                    Core.Dialogs.ShowError(ErrorText.FMGameTypeIsNotDark);
+                    Core.Dialogs.ShowError(ErrorText.FMGameNotDark);
                     return false;
                 }
 
@@ -375,8 +376,8 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception writing stub file '" + Paths.StubFileName + "'\r\n" +
-                    (fm == null ? "Original game" : "FM"), ex);
+                Log(ErrorText.ExWrite + "stub file '" + Paths.StubFileName + "'\r\n" +
+                                     (fm == null ? "Original game" : "FM"), ex);
                 Core.Dialogs.ShowError("Unable to write stub comm file. " +
                                        (fm == null
                                            ? "Game may not start correctly."
@@ -399,7 +400,7 @@ namespace AngelLoader
             {
                 // @BetterErrors(FMInstallAndPlay/StartExe()):
                 // Use more specific messages depending on the exception
-                Log("Exception starting " + exe + "\r\n" +
+                Log(ErrorText.Ex + "starting " + exe + "\r\n" +
                     "workingPath: " + workingPath + "\r\n" +
                     "args: " + args, ex);
                 Core.Dialogs.ShowError(ErrorText.UnableToStartExecutable + "\r\n\r\n" + exe);
@@ -584,7 +585,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception trying to generate missflag.str file for an FM that needs it", ex);
+                    Log(ErrorText.Ex + "trying to generate missflag.str file for an FM that needs it", ex);
                     Core.Dialogs.ShowError("Failed trying to generate a missflag.str file for the following FM:\r\n\r\n" +
                                            GetFMId(fm) + "\r\n\r\n" +
                                            "The FM will probably not be able to play its mission(s).");
@@ -592,7 +593,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception trying to generate missflag.str file", ex);
+                Log(ErrorText.Ex + "trying to generate missflag.str file", ex);
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
             }
@@ -615,11 +616,10 @@ namespace AngelLoader
 
                 if (!GameIsKnownAndSupported(fm.Game))
                 {
-                    Log("FM game type is unknown or unsupported.\r\n" +
+                    Log(ErrorText.FMGameU + "\r\n" +
                         "FM: " + GetFMId(fm) + "\r\n" +
-                        "FM game was: " + fm.Game);
-                    Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" +
-                                           ErrorText.FMGameTypeUnknownOrUnsupported);
+                        "FM game was: " + fm.Game, stackTrace: true);
+                    Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
                     return false;
                 }
 
@@ -967,7 +967,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log("Exception in audio conversion", ex);
+                            Log(ErrorText.Ex + "in audio conversion", ex);
                         }
                     }
 
@@ -1073,7 +1073,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
+                Log(ErrorText.Ex + "while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
                 Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
                 return (false, true);
             }

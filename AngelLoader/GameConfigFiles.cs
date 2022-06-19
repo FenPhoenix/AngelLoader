@@ -74,7 +74,7 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     // @BetterErrors(GetInfoFromCamModIni()/CreateAndReturnFMsPath())
-                    Log("Exception creating FM installed base dir", ex);
+                    Log(ErrorText.Ex + "creating FM installed base dir", ex);
                 }
 
                 return fmsPath;
@@ -306,7 +306,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception trying to unset temp config values\r\n" +
+                    Log(ErrorText.Ex + "trying to unset temp config values\r\n" +
                         "GameIndex: " + gameIndex + "\r\n" +
                         "GameExe: " + gameExe,
                         ex);
@@ -354,7 +354,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception reading " + fileName + " for " + gamePath, ex);
+                    Log(ErrorText.ExRead + fileName + " for " + gamePath, ex);
                     return;
                 }
 
@@ -394,7 +394,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception writing " + fileName + " for " + gamePath, ex);
+                    Log(ErrorText.ExWrite + fileName + " for " + gamePath, ex);
                     // ReSharper disable once RedundantJumpStatement
                     return; // Explicit for clarity of intent
                 }
@@ -422,7 +422,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception reading " + Paths.CamCfg + " for " + gamePath, ex);
+                Log(ErrorText.ExRead + Paths.CamCfg + " for " + gamePath, ex);
                 return;
             }
 
@@ -448,7 +448,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception writing " + Paths.CamCfg + " for " + gamePath, ex);
+                Log(ErrorText.ExWrite + Paths.CamCfg + " for " + gamePath, ex);
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
             }
@@ -551,7 +551,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception reading " + Paths.CamModIni + " for " + Config.GetGameExe(game), ex);
+                Log(ErrorText.ExRead + Paths.CamModIni + " for " + Config.GetGameExe(game), ex);
                 return false;
             }
 
@@ -718,7 +718,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception writing " + Paths.CamModIni + " for " + Config.GetGameExe(game), ex);
+                Log(ErrorText.ExWrite + Paths.CamModIni + " for " + Config.GetGameExe(game), ex);
                 return false;
             }
 
@@ -1001,7 +1001,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception reading " + camModIni + "\r\n" +
+                Log(ErrorText.ExRead + camModIni + "\r\n" +
                     "Game: " + gameIndex, ex);
                 // @BetterErrors(GetGameMods): Should we show the dialog?
                 //Dialogs.ShowError(nameof(GetGameMods) + "():" +

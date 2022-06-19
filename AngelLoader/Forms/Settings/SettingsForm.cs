@@ -1632,7 +1632,7 @@ namespace AngelLoader.Forms
             }
             catch (Exception ex)
             {
-                Log("Exception in language reading", ex);
+                Log(ErrorText.Ex + "in language reading", ex);
             }
 
             try

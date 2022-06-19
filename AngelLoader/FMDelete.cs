@@ -315,7 +315,7 @@ namespace AngelLoader
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log("Exception deleting archive '" + archive + "'", ex);
+                                    Log(ErrorText.Ex + "deleting archive '" + archive + "'", ex);
                                     Core.Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive);
                                 }
                             }

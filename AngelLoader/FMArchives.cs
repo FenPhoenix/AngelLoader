@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using Microsoft.VisualBasic.FileIO;
 using static AL_Common.Logger;
@@ -215,7 +216,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log("Exception copying archive '" + file + "' to '" + destDir, ex);
+                        Log(ErrorText.Ex + "copying archive '" + file + "' to '" + destDir, ex);
                         Core.Dialogs.ShowError(
                             LText.AlertMessages.AddFM_UnableToCopyFMArchive + "\r\n\r\n" +
                             LText.AlertMessages.AddFM_FMArchiveFile + file + "\r\n\r\n" +

@@ -4798,7 +4798,7 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
             bool installShouldBeEnabled = allSelectedAreSameInstalledState &&
-                                          ((multiSelected && !noneAreAvailable) || allAreSupportedAndAvailable);
+                                          ((multiSelected && !noneAreAvailable && allAreKnownAndSupported) || allAreSupportedAndAvailable);
 
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(installShouldBeEnabled);
             InstallUninstallFMLLButton.SetEnabled(installShouldBeEnabled);

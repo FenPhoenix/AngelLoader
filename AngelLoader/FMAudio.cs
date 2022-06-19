@@ -295,7 +295,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log("Exception in file conversion", ex);
+                        Log(ErrorText.Ex + "in file conversion", ex);
                     }
                 }
                 else
@@ -329,7 +329,7 @@ namespace AngelLoader
                             }
                             catch (Exception ex)
                             {
-                                Log("Exception during file enumeration of " + fmSndPath, ex);
+                                Log(ErrorText.Ex + "during file enumeration of " + fmSndPath, ex);
                                 return;
                             }
 
@@ -347,7 +347,7 @@ namespace AngelLoader
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log("Exception in FFmpeg convert", ex);
+                                    Log(ErrorText.Ex + "in FFmpeg convert", ex);
                                 }
 
                                 if (Canceled(ct)) return;
@@ -358,7 +358,7 @@ namespace AngelLoader
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log("Exception in deleting file " + f, ex);
+                                    Log(ErrorText.Ex + "in deleting file " + f, ex);
                                 }
 
                                 if (Canceled(ct)) return;
@@ -367,7 +367,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log("Exception in file conversion", ex);
+                        Log(ErrorText.Ex + "in file conversion", ex);
                     }
                 }
             });

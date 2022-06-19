@@ -115,7 +115,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception trying to detect language folders in installed dir for fm '" +
+                    Log(ErrorText.Ex + "trying to detect language folders in installed dir for fm '" +
                         fm.Archive + "' (inst dir '" + fm.InstalledDir + "')", ex);
                     fm.LangsScanned = false;
                     return;
@@ -129,7 +129,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception trying to detect language folders in archive for fm '" +
+                    Log(ErrorText.Ex + "trying to detect language folders in archive for fm '" +
                         fm.Archive + "' (inst dir '" + fm.InstalledDir + "')", ex);
                     fm.LangsScanned = false;
                     return;

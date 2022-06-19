@@ -64,7 +64,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception clearing files in FM cache for " + fm.Archive + " / " + fm.InstalledDir, ex);
+                    Log(ErrorText.Ex + "clearing files in FM cache for " + fm.Archive + " / " + fm.InstalledDir, ex);
                 }
             }
         }
@@ -337,7 +337,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in zip extract to cache", ex);
+                Log(ErrorText.Ex + "in zip extract to cache", ex);
             }
         }
 
@@ -410,7 +410,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception in 7z extract to cache", ex);
+                Log(ErrorText.Ex + "in 7z extract to cache", ex);
             }
             finally
             {

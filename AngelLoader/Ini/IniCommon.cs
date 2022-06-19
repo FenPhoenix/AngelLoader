@@ -138,7 +138,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception writing FM data ini", ex);
+                Log(ErrorText.ExWrite + Paths.FMDataIni, ex);
             }
             finally
             {
@@ -148,7 +148,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception exiting " + nameof(_fmDataIniRWLock), ex);
+                    Log(ErrorText.Ex + "exiting " + nameof(_fmDataIniRWLock), ex);
                 }
             }
         }
@@ -220,7 +220,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception exiting " + nameof(_configIniRWLock), ex);
+                    Log(ErrorText.Ex + "exiting " + nameof(_configIniRWLock), ex);
                 }
             }
         }
