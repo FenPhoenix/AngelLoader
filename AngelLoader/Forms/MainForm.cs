@@ -4056,10 +4056,10 @@ namespace AngelLoader.Forms
             #endregion
         }
 
-        private void SetTopRightTabsMultiSelectBlockerPanel(bool visible)
+        private void SetTopRightBlockerVisible()
         {
             // Always make sure the blocker is covering up the enabled changed work, to prevent flicker of it
-            if (visible)
+            if (FMsDGV.MultipleFMsSelected())
             {
                 TopRightMultiSelectBlockerPanel.Visible = true;
                 if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = false;
@@ -4070,8 +4070,6 @@ namespace AngelLoader.Forms
                 TopRightMultiSelectBlockerPanel.Visible = false;
             }
         }
-
-        private void SetTopRightBlockerVisible() => SetTopRightTabsMultiSelectBlockerPanel(FMsDGV.MultipleFMsSelected());
 
         private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
