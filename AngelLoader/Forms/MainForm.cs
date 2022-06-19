@@ -2353,7 +2353,6 @@ namespace AngelLoader.Forms
 
                 await Import.ImportFrom(importType);
             }
-
             else
             {
                 bool senderIsTextBox = sender == FilterTitleTextBox ||
