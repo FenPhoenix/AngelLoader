@@ -58,7 +58,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             Button.MinimumSize = new Size(0, 36);
             Button.TabIndex = 58;
             Button.UseVisualStyleBackColor = true;
-            Button.Click += _owner.InstallUninstall_Play_Buttons_Click;
+            Button.Click += _owner.Async_EventHandler_Main;
             Button.PaintCustom += _owner.InstallUninstall_Play_Buttons_Paint;
 
             Button.Enabled = _enabled;

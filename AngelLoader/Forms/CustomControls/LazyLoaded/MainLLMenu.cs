@@ -39,9 +39,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         internal ToolStripMenuItemCustom ImportFromNewDarkLoaderMenuItem = null!;
 #pragma warning restore IDE0052 // Remove unread private members
 
-        private ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
+        internal ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
 
-        private ToolStripMenuItemCustom SettingsMenuItem = null!;
+        internal ToolStripMenuItemCustom SettingsMenuItem = null!;
 
         private ToolStripMenuItemCustom ViewHelpFileMenuItem = null!;
         private ToolStripMenuItemCustom AboutMenuItem = null!;
@@ -97,10 +97,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             foreach (ToolStripMenuItemCustom item in ImportMenuItem.DropDown.Items)
             {
-                item.Click += _owner.ImportMenuItems_Click;
+                item.Click += _owner.Async_EventHandler_Main;
             }
-            ScanAllFMsMenuItem.Click += _owner.ScanAllFMsMenuItem_Click;
-            SettingsMenuItem.Click += _owner.Settings_Click;
+            ScanAllFMsMenuItem.Click += _owner.Async_EventHandler_Main;
+            SettingsMenuItem.Click += _owner.Async_EventHandler_Main;
             ViewHelpFileMenuItem.Click += _owner.ViewHelpFileMenuItem_Click;
             AboutMenuItem.Click += _owner.AboutMenuItem_Click;
             ExitMenuItem.Click += _owner.Exit_Click;

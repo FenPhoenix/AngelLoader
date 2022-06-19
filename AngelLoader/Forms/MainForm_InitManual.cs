@@ -219,7 +219,7 @@ namespace AngelLoader.Forms
             SettingsButton.TabIndex = 62;
             SettingsButton.UseVisualStyleBackColor = true;
             SettingsButton.PaintCustom += SettingsButton_Paint;
-            SettingsButton.Click += Settings_Click;
+            SettingsButton.Click += Async_EventHandler_Main;
             // 
             // BottomLeftButtonsFLP
             // 
@@ -242,7 +242,7 @@ namespace AngelLoader.Forms
             PlayFMButton.TabIndex = 56;
             PlayFMButton.UseVisualStyleBackColor = true;
             PlayFMButton.PaintCustom += PlayFMButton_Paint;
-            PlayFMButton.Click += InstallUninstall_Play_Buttons_Click;
+            PlayFMButton.Click += Async_EventHandler_Main;
             // 
             // PlayOriginalFLP
             // 
@@ -537,7 +537,7 @@ namespace AngelLoader.Forms
             FilterByThief1Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByThief1Button.Margin = new Padding(1, 0, 0, 0);
             FilterByThief1Button.Size = new Size(25, 25);
-            FilterByThief1Button.Click += Filters_Changed;
+            FilterByThief1Button.Click += Async_EventHandler_Main;
             // 
             // FilterByThief2Button
             // 
@@ -546,7 +546,7 @@ namespace AngelLoader.Forms
             FilterByThief2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByThief2Button.Margin = new Padding(0);
             FilterByThief2Button.Size = new Size(25, 25);
-            FilterByThief2Button.Click += Filters_Changed;
+            FilterByThief2Button.Click += Async_EventHandler_Main;
             // 
             // FilterByThief3Button
             // 
@@ -555,7 +555,7 @@ namespace AngelLoader.Forms
             FilterByThief3Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByThief3Button.Margin = new Padding(0);
             FilterByThief3Button.Size = new Size(25, 25);
-            FilterByThief3Button.Click += Filters_Changed;
+            FilterByThief3Button.Click += Async_EventHandler_Main;
             // 
             // FilterBySS2Button
             // 
@@ -564,7 +564,7 @@ namespace AngelLoader.Forms
             FilterBySS2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterBySS2Button.Margin = new Padding(0, 0, 2, 0);
             FilterBySS2Button.Size = new Size(25, 25);
-            FilterBySS2Button.Click += Filters_Changed;
+            FilterBySS2Button.Click += Async_EventHandler_Main;
             // 
             // GameFilterControlsShowHideButtonToolStrip
             // 
@@ -598,7 +598,7 @@ namespace AngelLoader.Forms
             // 
             FilterTitleTextBox.Size = new Size(144, 20);
             FilterTitleTextBox.TabIndex = 6;
-            FilterTitleTextBox.TextChanged += Filters_Changed;
+            FilterTitleTextBox.TextChanged += Async_EventHandler_Main;
             // 
             // FilterAuthorLabel
             // 
@@ -610,7 +610,7 @@ namespace AngelLoader.Forms
             // 
             FilterAuthorTextBox.Size = new Size(144, 20);
             FilterAuthorTextBox.TabIndex = 8;
-            FilterAuthorTextBox.TextChanged += Filters_Changed;
+            FilterAuthorTextBox.TextChanged += Async_EventHandler_Main;
             // 
             // FilterIconButtonsToolStrip
             // 
@@ -667,7 +667,7 @@ namespace AngelLoader.Forms
             FilterByFinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByFinishedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByFinishedButton.Size = new Size(25, 25);
-            FilterByFinishedButton.Click += Filters_Changed;
+            FilterByFinishedButton.Click += Async_EventHandler_Main;
             // 
             // FilterByUnfinishedButton
             // 
@@ -676,7 +676,7 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByUnfinishedButton.Margin = new Padding(0);
             FilterByUnfinishedButton.Size = new Size(25, 25);
-            FilterByUnfinishedButton.Click += Filters_Changed;
+            FilterByUnfinishedButton.Click += Async_EventHandler_Main;
             // 
             // FilterByRatingButton
             // 
@@ -694,7 +694,7 @@ namespace AngelLoader.Forms
             FilterShowUnsupportedButton.Image = Resources.Show_Unsupported;
             FilterShowUnsupportedButton.Margin = new Padding(6, 0, 0, 0);
             FilterShowUnsupportedButton.Size = new Size(25, 25);
-            FilterShowUnsupportedButton.Click += Filters_Changed;
+            FilterShowUnsupportedButton.Click += Async_EventHandler_Main;
             // 
             // FilterShowUnavailableButton
             // 
@@ -704,7 +704,7 @@ namespace AngelLoader.Forms
             FilterShowUnavailableButton.Image = Resources.Show_Unavailable;
             FilterShowUnavailableButton.Margin = new Padding(0);
             FilterShowUnavailableButton.Size = new Size(25, 25);
-            FilterShowUnavailableButton.Click += Filters_Changed;
+            FilterShowUnavailableButton.Click += Async_EventHandler_Main;
             // 
             // FilterShowRecentAtTopButton
             // 
@@ -713,7 +713,7 @@ namespace AngelLoader.Forms
             FilterShowRecentAtTopButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterShowRecentAtTopButton.Margin = new Padding(6, 0, 2, 0);
             FilterShowRecentAtTopButton.Size = new Size(25, 25);
-            FilterShowRecentAtTopButton.Click += Filters_Changed;
+            FilterShowRecentAtTopButton.Click += Async_EventHandler_Main;
             // 
             // FilterControlsShowHideButton
             // 
@@ -749,7 +749,7 @@ namespace AngelLoader.Forms
             RefreshFromDiskButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             RefreshFromDiskButton.Margin = new Padding(0);
             RefreshFromDiskButton.Size = new Size(25, 25);
-            RefreshFromDiskButton.Click += Filters_Changed;
+            RefreshFromDiskButton.Click += Async_EventHandler_Main;
             RefreshFromDiskButton.Margin = new Padding(6, 0, 0, 0);
             // 
             // RefreshFiltersButton
@@ -758,7 +758,7 @@ namespace AngelLoader.Forms
             RefreshFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             RefreshFiltersButton.Margin = new Padding(0);
             RefreshFiltersButton.Size = new Size(25, 25);
-            RefreshFiltersButton.Click += Filters_Changed;
+            RefreshFiltersButton.Click += Async_EventHandler_Main;
             // 
             // ClearFiltersButton
             // 
@@ -766,7 +766,7 @@ namespace AngelLoader.Forms
             ClearFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             ClearFiltersButton.Margin = new Padding(0, 0, 9, 1);
             ClearFiltersButton.Size = new Size(25, 25);
-            ClearFiltersButton.Click += Filters_Changed;
+            ClearFiltersButton.Click += Async_EventHandler_Main;
             // 
             // ResetLayoutButton
             // 

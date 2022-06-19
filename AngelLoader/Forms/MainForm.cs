@@ -1852,20 +1852,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal async void ImportMenuItems_Click(object sender, EventArgs e)
-        {
-            ImportType importType =
-                  sender == MainLLMenu.ImportFromDarkLoaderMenuItem
-                ? ImportType.DarkLoader
-                : sender == MainLLMenu.ImportFromFMSelMenuItem
-                ? ImportType.FMSel
-                : ImportType.NewDarkLoader;
-
-            await Import.ImportFrom(importType);
-        }
-
-        internal async void ScanAllFMsMenuItem_Click(object sender, EventArgs e) => await FMScan.ScanAllFMs();
-
         internal void ViewHelpFileMenuItem_Click(object sender, EventArgs e) => Core.OpenHelpFile();
 
         internal void AboutMenuItem_Click(object sender, EventArgs e)
@@ -2325,12 +2311,49 @@ namespace AngelLoader.Forms
         }
 
         // A ton of things in one event handler to cut down on async/awaits
-        private async void Filters_Changed(object sender, EventArgs e)
+        internal async void Async_EventHandler_Main(object sender, EventArgs e)
         {
             if (sender == RefreshFromDiskButton)
             {
                 await Core.RefreshFMsListFromDisk();
             }
+            else if (sender == SettingsButton || sender.EqualsIfNotNull(MainLLMenu.SettingsMenuItem))
+            {
+                try
+                {
+                    Cursor = Cursors.WaitCursor;
+
+                    await Core.OpenSettings();
+                }
+                finally
+                {
+                    Cursor = Cursors.Default;
+                }
+            }
+            else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
+            {
+                await FMInstallAndPlay.InstallOrUninstall(GetSelectedFMs_InOrder());
+            }
+            else if (sender == PlayFMButton)
+            {
+                await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetMainSelectedFM());
+            }
+            else if (sender.EqualsIfNotNull(MainLLMenu.ScanAllFMsMenuItem))
+            {
+                await FMScan.ScanAllFMs();
+            }
+            else if (sender.EqualsIfNotNull(MainLLMenu.ImportFromDarkLoaderMenuItem) ||
+                     sender.EqualsIfNotNull(MainLLMenu.ImportFromFMSelMenuItem) ||
+                     sender.EqualsIfNotNull(MainLLMenu.ImportFromNewDarkLoaderMenuItem))
+            {
+                ImportType importType =
+                    sender.EqualsIfNotNull(MainLLMenu.ImportFromDarkLoaderMenuItem) ? ImportType.DarkLoader :
+                    sender.EqualsIfNotNull(MainLLMenu.ImportFromFMSelMenuItem) ? ImportType.FMSel :
+                    ImportType.NewDarkLoader;
+
+                await Import.ImportFrom(importType);
+            }
+
             else
             {
                 bool senderIsTextBox = sender == FilterTitleTextBox ||
@@ -4054,20 +4077,13 @@ namespace AngelLoader.Forms
         {
             if (FMsDGV.SuppressSelectionEvent) return;
 
-            // We don't need this because there's another check in ChangeSelection(), but we can avoid running
-            // the async machinery with this.
             if (EventsDisabled) return;
 
             // Don't run selection logic for extra selected rows, to prevent a possible cascade of heavy operations
             // from being run during multi-select (scanning, caching, who knows what)
             if (FMsDGV.MultipleFMsSelected()) return;
 
-            await ChangeSelection(FMsDGV.MainSelectedRow?.Index ?? -1);
-        }
-
-        private async Task ChangeSelection(int index = -1)
-        {
-            if (EventsDisabled) return;
+            int index = FMsDGV.MainSelectedRow?.Index ?? -1;
 
             if (index > -1 && _displayedFM == GetFMFromIndex(index))
             {
@@ -4384,18 +4400,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal async void InstallUninstall_Play_Buttons_Click(object sender, EventArgs e)
-        {
-            if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
-            {
-                await FMInstallAndPlay.InstallOrUninstall(GetSelectedFMs_InOrder());
-            }
-            else if (sender == PlayFMButton)
-            {
-                await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetMainSelectedFM());
-            }
-        }
-
         #region Play original game
 
         // @GENGAMES (Play original game controls): Begin
@@ -4532,20 +4536,6 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Right side
-
-        internal async void Settings_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Cursor = Cursors.WaitCursor;
-
-                await Core.OpenSettings();
-            }
-            finally
-            {
-                Cursor = Cursors.Default;
-            }
-        }
 
         public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
 

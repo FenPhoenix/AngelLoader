@@ -250,7 +250,7 @@
             this.SettingsButton.Text = "Settings...";
             this.SettingsButton.UseVisualStyleBackColor = true;
             this.SettingsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.SettingsButton_Paint);
-            this.SettingsButton.Click += new System.EventHandler(this.Settings_Click);
+            this.SettingsButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // BottomLeftButtonsFLP
             // 
@@ -279,7 +279,7 @@
             this.PlayFMButton.Text = "Play FM";
             this.PlayFMButton.UseVisualStyleBackColor = true;
             this.PlayFMButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayFMButton_Paint);
-            this.PlayFMButton.Click += new System.EventHandler(this.InstallUninstall_Play_Buttons_Click);
+            this.PlayFMButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // PlayOriginalFLP
             // 
@@ -656,7 +656,7 @@
             this.FilterByThief1Button.Name = "FilterByThief1Button";
             this.FilterByThief1Button.Size = new System.Drawing.Size(25, 25);
             this.FilterByThief1Button.ToolTipText = "Thief 1";
-            this.FilterByThief1Button.Click += new System.EventHandler(this.Filters_Changed);
+            this.FilterByThief1Button.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterByThief2Button
             // 
@@ -669,7 +669,7 @@
             this.FilterByThief2Button.Name = "FilterByThief2Button";
             this.FilterByThief2Button.Size = new System.Drawing.Size(25, 25);
             this.FilterByThief2Button.ToolTipText = "Thief 2";
-            this.FilterByThief2Button.Click += new System.EventHandler(this.Filters_Changed);
+            this.FilterByThief2Button.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterByThief3Button
             // 
@@ -682,7 +682,7 @@
             this.FilterByThief3Button.Name = "FilterByThief3Button";
             this.FilterByThief3Button.Size = new System.Drawing.Size(25, 25);
             this.FilterByThief3Button.ToolTipText = "Thief 3";
-            this.FilterByThief3Button.Click += new System.EventHandler(this.Filters_Changed);
+            this.FilterByThief3Button.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterBySS2Button
             // 
@@ -695,7 +695,7 @@
             this.FilterBySS2Button.Name = "FilterBySS2Button";
             this.FilterBySS2Button.Size = new System.Drawing.Size(25, 25);
             this.FilterBySS2Button.ToolTipText = "System Shock 2";
-            this.FilterBySS2Button.Click += new System.EventHandler(this.Filters_Changed);
+            this.FilterBySS2Button.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // GameFilterControlsShowHideButtonToolStrip
             // 
@@ -740,7 +740,7 @@
             this.FilterTitleTextBox.Name = "FilterTitleTextBox";
             this.FilterTitleTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterTitleTextBox.TabIndex = 6;
-            this.FilterTitleTextBox.TextChanged += new System.EventHandler(this.Filters_Changed);
+            this.FilterTitleTextBox.TextChanged += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterAuthorLabel
             // 
@@ -758,7 +758,7 @@
             this.FilterAuthorTextBox.Name = "FilterAuthorTextBox";
             this.FilterAuthorTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterAuthorTextBox.TabIndex = 8;
-            this.FilterAuthorTextBox.TextChanged += new System.EventHandler(this.Filters_Changed);
+            this.FilterAuthorTextBox.TextChanged += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterIconButtonsToolStrip
             // 
@@ -839,7 +839,7 @@
             this.FilterByFinishedButton.Name = "FilterByFinishedButton";
             this.FilterByFinishedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByFinishedButton.ToolTipText = "Finished";
-            this.FilterByFinishedButton.Click += new System.EventHandler(this.Filters_Changed);
+            this.FilterByFinishedButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterByUnfinishedButton
             // 
@@ -853,7 +853,7 @@
             this.FilterByUnfinishedButton.Name = "FilterByUnfinishedButton";
             this.FilterByUnfinishedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByUnfinishedButton.ToolTipText = "Unfinished";
-            this.FilterByUnfinishedButton.Click += new System.EventHandler(this.Filters_Changed);
+            this.FilterByUnfinishedButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterByRatingButton
             // 
@@ -880,7 +880,7 @@
             this.FilterShowUnsupportedButton.Name = "FilterShowUnsupportedButton";
             this.FilterShowUnsupportedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterShowUnsupportedButton.ToolTipText = "Show FMs marked as \"unsupported game or non-FM archive\"";
-            this.FilterShowUnsupportedButton.Click += new System.EventHandler(this.Filters_Changed);
+            this.FilterShowUnsupportedButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterShowUnavailableButton
             // 
@@ -893,7 +893,7 @@
             this.FilterShowUnavailableButton.Name = "FilterShowUnavailableButton";
             this.FilterShowUnavailableButton.Size = new System.Drawing.Size(25, 25);
             this.FilterShowUnavailableButton.ToolTipText = "Show unavailable FMs";
-            this.FilterShowUnavailableButton.Click += new System.EventHandler(this.Filters_Changed);
+            this.FilterShowUnavailableButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterShowRecentAtTopButton
             // 
@@ -906,7 +906,7 @@
             this.FilterShowRecentAtTopButton.Name = "FilterShowRecentAtTopButton";
             this.FilterShowRecentAtTopButton.Size = new System.Drawing.Size(25, 25);
             this.FilterShowRecentAtTopButton.ToolTipText = "Show recent at top";
-            this.FilterShowRecentAtTopButton.Click += new System.EventHandler(this.Filters_Changed);
+            this.FilterShowRecentAtTopButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // FilterControlsShowHideButton
             // 
@@ -951,7 +951,7 @@
             this.RefreshFromDiskButton.Name = "RefreshFromDiskButton";
             this.RefreshFromDiskButton.Size = new System.Drawing.Size(25, 25);
             this.RefreshFromDiskButton.ToolTipText = "Refresh from disk";
-            this.RefreshFromDiskButton.Click += new System.EventHandler(this.Filters_Changed);
+            this.RefreshFromDiskButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // RefreshFiltersButton
             // 
@@ -964,7 +964,7 @@
             this.RefreshFiltersButton.Name = "RefreshFiltersButton";
             this.RefreshFiltersButton.Size = new System.Drawing.Size(25, 25);
             this.RefreshFiltersButton.ToolTipText = "Refresh filtered list";
-            this.RefreshFiltersButton.Click += new System.EventHandler(this.Filters_Changed);
+            this.RefreshFiltersButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // ClearFiltersButton
             // 
@@ -977,7 +977,7 @@
             this.ClearFiltersButton.Name = "ClearFiltersButton";
             this.ClearFiltersButton.Size = new System.Drawing.Size(25, 25);
             this.ClearFiltersButton.ToolTipText = "Clear filters";
-            this.ClearFiltersButton.Click += new System.EventHandler(this.Filters_Changed);
+            this.ClearFiltersButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // ResetLayoutButton
             // 
