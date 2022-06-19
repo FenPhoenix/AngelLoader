@@ -125,7 +125,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             #region Instantiation
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
 
             #endregion
 
@@ -181,6 +181,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             #endregion
 
             _menu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
+
+            _menu.DarkModeEnabled = _darkModeEnabled;
 
             _constructed = true;
 

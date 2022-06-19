@@ -202,8 +202,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             #region Instantiation
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
-            FinishedOnMenu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
+            FinishedOnMenu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
 
             #endregion
 
@@ -331,6 +331,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             FinishedOnUnknownMenuItem.Checked = _finishedOnUnknownChecked;
 
             #endregion
+
+            _menu.DarkModeEnabled = _darkModeEnabled;
+            FinishedOnMenu.DarkModeEnabled = _darkModeEnabled;
 
             _constructed = true;
 

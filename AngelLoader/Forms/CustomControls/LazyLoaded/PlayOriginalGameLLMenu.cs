@@ -66,7 +66,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
 
             for (int i = 0, modI = 0; i < SupportedGameCount; i++)
             {
@@ -117,6 +117,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 item.Click += _owner.PlayOriginalGameModMenuItem_Click;
             }
+
+            _menu.DarkModeEnabled = _darkModeEnabled;
 
             _constructed = true;
 

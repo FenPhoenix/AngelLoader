@@ -60,7 +60,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             // TODO: Component LazyLoaded tags are ignored because only Controls are checked in the dictionary filler.
             // Also, they sometimes need their own tags anyway like here.
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
             _menu.Items.AddRange(new ToolStripItem[]
             {
                 TitleMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Title },
@@ -84,6 +84,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
 
             _menu.SetPreventCloseOnClickItems(_menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
+
+            _menu.DarkModeEnabled = _darkModeEnabled;
 
             _constructed = true;
 

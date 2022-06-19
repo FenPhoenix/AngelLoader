@@ -1,9 +1,10 @@
-﻿using JetBrains.Annotations;
+﻿using System.Windows.Forms;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class AltTitlesLLMenu
+    internal sealed class DynamicItemsLLMenu
     {
         private bool _constructed;
 
@@ -19,11 +20,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
-        internal AltTitlesLLMenu(MainForm owner) => _owner = owner;
+        internal DynamicItemsLLMenu(MainForm owner) => _owner = owner;
 
         private bool _darkModeEnabled;
         [PublicAPI]
-        internal bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             get => _darkModeEnabled;
             set
@@ -40,15 +41,21 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu.DarkModeEnabled = _darkModeEnabled;
 
             _constructed = true;
+
+            // Just to keep things in a known state (clearing items also removes their event hookups, which is
+            // convenient)
+            _menu.Closed += (_, _) => Menu.Items.Clear();
         }
 
-        internal void ClearItems()
+        internal void ClearAndFillMenu(ToolStripItem[] items)
         {
-            if (!_constructed) return;
-            _menu.Items.Clear();
+            Menu.Items.Clear();
+            Menu.Items.AddRange(items);
+            Menu.RefreshDarkModeState();
         }
     }
 }

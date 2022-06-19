@@ -44,7 +44,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
             MenuItem = new ToolStripMenuItemCustom
             {
                 GameIndex = GameIndex.Thief2,
@@ -52,6 +52,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             };
             MenuItem.Click += _owner.PlayT2InMultiplayerMenuItem_Click;
             _menu.Items.Add(MenuItem);
+
+            _menu.DarkModeEnabled = _darkModeEnabled;
 
             _constructed = true;
 

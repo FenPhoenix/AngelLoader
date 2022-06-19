@@ -23,7 +23,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 {
                     #region Instantiation and hookup events
 
-                    _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+                    _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
 
                     // Can't use InitializedArray() because the menu wants the array to be of a base type even though the
                     // items will be of a derived type, to avoid the stupid covariance warning
@@ -49,7 +49,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                     _menu.SetPreventCloseOnClickItems(_menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
 
+                    _menu.DarkModeEnabled = _darkModeEnabled;
+
                     _constructed = true;
+
                     Localize();
                 }
 

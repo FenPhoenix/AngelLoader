@@ -27,37 +27,11 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Constructors
 
-        public DarkContextMenu() => RefreshDarkModeState();
-
-        public DarkContextMenu(IContainer container) : base(container) => RefreshDarkModeState();
-
-        public DarkContextMenu(bool darkModeEnabled) => DarkModeEnabled = darkModeEnabled;
-
-        public DarkContextMenu(bool darkModeEnabled, IContainer container) : base(container) => DarkModeEnabled = darkModeEnabled;
+        public DarkContextMenu(IContainer container) : base(container) { }
 
         #endregion
 
         internal void SetPreventCloseOnClickItems(params ToolStripMenuItemCustom[] items) => _preventCloseItems = items;
-
-        public void AddRange(ToolStripItem[] toolStripItems)
-        {
-            Items.AddRange(toolStripItems);
-            RefreshDarkModeState();
-        }
-
-        /*
-        // Disabled until needed
-        public void AddRange(ToolStripItemCollection toolStripItems)
-        {
-            for (int i = 0; i < toolStripItems.Count; i++)
-            {
-                toolStripItems[i].Tag = LoadType.Lazy;
-            }
-
-            Items.AddRange(toolStripItems);
-            RefreshDarkModeState();
-        }
-        */
 
         protected override void OnItemClicked(ToolStripItemClickedEventArgs e)
         {
@@ -81,7 +55,7 @@ namespace AngelLoader.Forms.CustomControls
             base.OnClosing(e);
         }
 
-        private void RefreshDarkModeState()
+        internal void RefreshDarkModeState()
         {
             void SetMenuTheme(ToolStripDropDown menu)
             {

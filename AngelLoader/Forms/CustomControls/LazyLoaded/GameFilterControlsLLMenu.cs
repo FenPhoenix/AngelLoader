@@ -45,7 +45,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
@@ -61,6 +61,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
 
             _menu.SetPreventCloseOnClickItems(_menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
+
+            _menu.DarkModeEnabled = _darkModeEnabled;
 
             _constructed = true;
 

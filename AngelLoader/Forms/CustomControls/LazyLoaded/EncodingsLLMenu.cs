@@ -112,7 +112,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            _menu = new DarkContextMenu(_darkModeEnabled, _owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
 
             #region Item init
 
@@ -399,6 +399,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 menuItem.Checked = true;
             }
+
+            _menu.DarkModeEnabled = _darkModeEnabled;
 
             _constructed = true;
 

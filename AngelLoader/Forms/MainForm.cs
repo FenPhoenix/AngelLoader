@@ -150,8 +150,8 @@ namespace AngelLoader.Forms
         #region Lazy-loaded controls
 
         private readonly AddTagLLDropDown AddTagLLDropDown;
-        private readonly AddTagLLMenu AddTagLLMenu;
-        private readonly AltTitlesLLMenu AltTitlesLLMenu;
+        private readonly DynamicItemsLLMenu AddTagLLMenu;
+        private readonly DynamicItemsLLMenu AltTitlesLLMenu;
         private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
         private readonly EncodingsLLMenu EncodingsLLMenu;
         private readonly ExitLLButton ExitLLButton;
@@ -503,8 +503,8 @@ namespace AngelLoader.Forms
             #region Lazy-loaded controls
 
             AddTagLLDropDown = new AddTagLLDropDown(this);
-            AddTagLLMenu = new AddTagLLMenu(this);
-            AltTitlesLLMenu = new AltTitlesLLMenu(this);
+            AddTagLLMenu = new DynamicItemsLLMenu(this);
+            AltTitlesLLMenu = new DynamicItemsLLMenu(this);
             ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this);
             EncodingsLLMenu = new EncodingsLLMenu(this);
             ExitLLButton = new ExitLLButton(this);
@@ -3158,8 +3158,6 @@ namespace AngelLoader.Forms
         {
             GlobalTags.SortAndMoveMiscToEnd();
 
-            AddTagLLMenu.Menu.Items.Clear();
-
             var addTagMenuItems = new ToolStripItem[GlobalTags.Count];
             for (int i = 0; i < GlobalTags.Count; i++)
             {
@@ -3197,7 +3195,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            AddTagLLMenu.AddRange(addTagMenuItems);
+            AddTagLLMenu.ClearAndFillMenu(addTagMenuItems);
 
             ShowMenu(AddTagLLMenu.Menu, AddTagFromListButton, MenuPos.LeftDown);
         }
@@ -3226,15 +3224,6 @@ namespace AngelLoader.Forms
         private void AddTagMenuMiscItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText);
 
         private void AddTagMenuEmptyItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText + " ");
-
-        // Just to keep things in a known state (clearing items also removes their event hookups, which is
-        // convenient)
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void AddTagMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
-        {
-            // This handler will only be hooked up after construction, so we don't need to call Construct()
-            AddTagLLMenu.Menu.Items.Clear();
-        }
 
         #endregion
 
@@ -4593,8 +4582,6 @@ namespace AngelLoader.Forms
 
                 #region Edit FM tab
 
-                AltTitlesLLMenu.ClearItems();
-
                 EditFMRatingComboBox.SelectedIndex = 0;
 
                 EditFMLanguageComboBox.ClearFullItems();
@@ -5246,8 +5233,6 @@ namespace AngelLoader.Forms
 
         private void FillAltTitlesMenu(List<string> fmAltTitles)
         {
-            AltTitlesLLMenu.ClearItems();
-
             if (fmAltTitles.Count > 0)
             {
                 var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
@@ -5258,9 +5243,7 @@ namespace AngelLoader.Forms
                     altTitlesMenuItems[i] = item;
                 }
 
-                AltTitlesLLMenu.Menu.Items.AddRange(altTitlesMenuItems);
-
-                EditFMAltTitlesArrowButton.Enabled = true;
+                AltTitlesLLMenu.ClearAndFillMenu(altTitlesMenuItems);
             }
         }
 
