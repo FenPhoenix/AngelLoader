@@ -41,6 +41,7 @@ namespace AngelLoader.Forms.CustomControls
                     ? SystemColors.Window
                     : SystemColors.Control;
             }
+
             // Needed to prevent background color sticking when unchecked sometimes
             Refresh();
         }
@@ -60,10 +61,18 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        // This is to handle keyboard "clicks"
         protected override void OnClick(EventArgs e)
         {
             Checked = true;
             base.OnClick(e);
+        }
+
+        // This is for mouse use, to give a snappier experience, we change on MouseDown
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left) Checked = true;
+            base.OnMouseDown(e);
         }
 
         protected override void OnPaint(PaintEventArgs e)

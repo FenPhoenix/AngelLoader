@@ -114,8 +114,6 @@
             this.OtherRadioButton.TabIndex = 2;
             this.OtherRadioButton.UseVisualStyleBackColor = true;
             this.OtherRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
-            this.OtherRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.OtherRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SectionButtons_MouseDown);
             // 
             // AppearanceRadioButton
             // 
@@ -132,8 +130,6 @@
             this.AppearanceRadioButton.TabIndex = 1;
             this.AppearanceRadioButton.UseVisualStyleBackColor = true;
             this.AppearanceRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
-            this.AppearanceRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.AppearanceRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SectionButtons_MouseDown);
             // 
             // PathsRadioButton
             // 
@@ -150,8 +146,6 @@
             this.PathsRadioButton.TabIndex = 0;
             this.PathsRadioButton.UseVisualStyleBackColor = true;
             this.PathsRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
-            this.PathsRadioButton.Click += new System.EventHandler(this.PageRadioButtons_Click);
-            this.PathsRadioButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SectionButtons_MouseDown);
             // 
             // PagePanel
             // 

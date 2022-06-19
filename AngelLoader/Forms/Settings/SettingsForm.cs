@@ -1171,15 +1171,6 @@ namespace AngelLoader.Forms
 
         #region Page selection handler
 
-        // This is to handle keyboard "clicks"
-        private void PageRadioButtons_Click(object sender, EventArgs e) => ((DarkRadioButtonCustom)sender).Checked = true;
-
-        // This is for mouse use, to give a snappier experience, we change on MouseDown
-        private void SectionButtons_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left) ((DarkRadioButtonCustom)sender).Checked = true;
-        }
-
         private void PathsRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
