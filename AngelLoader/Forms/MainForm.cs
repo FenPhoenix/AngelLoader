@@ -2889,7 +2889,19 @@ namespace AngelLoader.Forms
 
         private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
         {
-            FillAltTitlesMenu(FMsDGV.GetMainSelectedFM().AltTitles);
+            var fmAltTitles = FMsDGV.GetMainSelectedFM().AltTitles;
+            if (fmAltTitles.Count == 0) return;
+
+            var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
+            for (int i = 0; i < fmAltTitles.Count; i++)
+            {
+                var item = new ToolStripMenuItemCustom(fmAltTitles[i]);
+                item.Click += EditFMAltTitlesMenuItems_Click;
+                altTitlesMenuItems[i] = item;
+            }
+
+            AltTitlesLLMenu.ClearAndFillMenu(altTitlesMenuItems);
+
             ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesArrowButton, MenuPos.BottomLeft);
         }
 
@@ -5230,22 +5242,6 @@ namespace AngelLoader.Forms
         }
 
         public void SetSelectedEncoding(Encoding encoding) => EncodingsLLMenu.SetEncodingMenuItemChecked(encoding);
-
-        private void FillAltTitlesMenu(List<string> fmAltTitles)
-        {
-            if (fmAltTitles.Count > 0)
-            {
-                var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
-                for (int i = 0; i < fmAltTitles.Count; i++)
-                {
-                    var item = new ToolStripMenuItemCustom(fmAltTitles[i]);
-                    item.Click += EditFMAltTitlesMenuItems_Click;
-                    altTitlesMenuItems[i] = item;
-                }
-
-                AltTitlesLLMenu.ClearAndFillMenu(altTitlesMenuItems);
-            }
-        }
 
         public void DisplayFMTags(FMCategoriesCollection fmTags)
         {
