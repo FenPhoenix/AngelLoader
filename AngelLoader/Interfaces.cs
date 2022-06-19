@@ -148,6 +148,7 @@ namespace AngelLoader
         void ShowError(string message);
         void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
         void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon);
+        (bool Accepted, List<string> SelectedItems) ShowListDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[] choiceStrings, bool multiSelectionAllowed);
     }
 
     public interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler
@@ -416,8 +417,6 @@ namespace AngelLoader
         #region Dialogs
 
         (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow();
-
-        (bool Accepted, List<string> SelectedItems) ShowCustomDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[]? choiceStrings = null, bool multiSelectionAllowed = true);
 
         (bool Accepted, string IniFile, bool ImportFMData, bool ImportTitle, bool ImportSize, bool ImportComment, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportFinishedOn, bool ImportSaves) ShowDarkLoaderImportWindow();
 

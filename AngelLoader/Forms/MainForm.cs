@@ -5654,34 +5654,6 @@ namespace AngelLoader.Forms
             return (f.ShowDialogDark(this) == DialogResult.OK, f.ScanOptions, f.NoneSelected);
         }
 
-        public (bool Accepted, List<string> SelectedItems)
-        ShowCustomDialog(
-            string messageTop,
-            string messageBottom,
-            string title,
-            MBoxIcon icon,
-            string okText,
-            string cancelText,
-            bool okIsDangerous,
-            string[]? choiceStrings = null,
-            bool multiSelectionAllowed = true)
-        {
-            using var f = new MessageBoxCustomForm(
-                messageTop: messageTop,
-                messageBottom: messageBottom,
-                title: title,
-                icon: ControlUtils.GetIcon(icon),
-                okText: okText,
-                cancelText: cancelText,
-                okIsDangerous: okIsDangerous,
-                choiceStrings: choiceStrings,
-                multiSelectionAllowed: multiSelectionAllowed
-            );
-
-            // Just always show with us as the owner, because we sometimes hard require it
-            return (f.ShowDialogDark(this) == DialogResult.OK, f.SelectedItems);
-        }
-
         public (bool Accepted,
             string IniFile,
             bool ImportFMData,

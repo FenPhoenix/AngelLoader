@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Windows.Forms;
 using static AngelLoader.Forms.ControlUtils;
 using static AngelLoader.Misc;
 
@@ -76,7 +77,52 @@ namespace AngelLoader.Forms
                     checkBoxText: checkBoxText,
                     icon: GetIcon(icon));
 
-                return (DialogResultToMBoxButton(d.ShowDialogDark()), d.IsVerificationChecked);
+                DialogResult result = FormsViewEnvironment.ViewCreated
+                    ? d.ShowDialogDark(FormsViewEnvironment.ViewInternal)
+                    : d.ShowDialogDark();
+
+                return (DialogResultToMBoxButton(result), d.IsVerificationChecked);
+            });
+
+        public (bool Accepted, List<string> SelectedItems)
+        ShowListDialog(
+            string messageTop,
+            string messageBottom,
+            string title,
+            MBoxIcon icon,
+            string okText,
+            string cancelText,
+            bool okIsDangerous,
+            string[] choiceStrings,
+            bool multiSelectionAllowed) =>
+            ((bool, List<string>))InvokeIfViewExists(() =>
+            {
+                using var d = new MessageBoxCustomForm(
+                    messageTop: messageTop,
+                    messageBottom: messageBottom,
+                    title: title,
+                    icon: GetIcon(icon),
+                    okText: okText,
+                    cancelText: cancelText,
+                    okIsDangerous: okIsDangerous,
+                    choiceStrings: choiceStrings,
+                    multiSelectionAllowed: multiSelectionAllowed
+                );
+
+                /*
+                Just always show with us as the owner, because we sometimes hard require it
+
+                From the archive add method:
+
+                "We need to show with explicit owner because otherwise we get in a "halfway" state where
+                the dialog is modal, but it can be made to be underneath the main window and then you
+                can never get back to it again and have to kill the app through Task Manager."
+                */
+                DialogResult result = FormsViewEnvironment.ViewCreated
+                    ? d.ShowDialogDark(FormsViewEnvironment.ViewInternal)
+                    : d.ShowDialogDark();
+
+                return (result == DialogResult.OK, d.SelectedItems);
             });
 
         /// <summary>

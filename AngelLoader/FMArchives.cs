@@ -175,38 +175,29 @@ namespace AngelLoader
 
                 if (!singleArchivePath)
                 {
-                    bool result = (bool)Core.View.Invoke(new Func<bool>(() =>
-                    {
-                        // We need to show with explicit owner because otherwise we get in a "halfway" state where
-                        // the dialog is modal, but it can be made to be underneath the main window and then you
-                        // can never get back to it again and have to kill the app through Task Manager.
-                        (bool accepted, List<string> selectedItems) = Core.View.ShowCustomDialog(
-                            messageTop:
-                            (singleArchive
-                                ? LText.AddFMsToSet.AddFM_Dialog_AskMessage
-                                : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + "\r\n\r\n" + archivesLines + "\r\n\r\n" +
-                            (singleArchive
-                                ? LText.AddFMsToSet.AddFM_Dialog_ChooseArchiveDir
-                                : LText.AddFMsToSet.AddFMs_Dialog_ChooseArchiveDir),
-                            messageBottom: "",
-                            title: singleArchive
-                                ? LText.AddFMsToSet.AddFM_DialogTitle
-                                : LText.AddFMsToSet.AddFMs_DialogTitle,
-                            icon: MBoxIcon.None,
-                            okText: LText.AddFMsToSet.AddFM_Add,
-                            cancelText: LText.Global.Cancel,
-                            okIsDangerous: false,
-                            choiceStrings: Config.FMArchivePaths.ToArray(),
-                            multiSelectionAllowed: false);
 
-                        if (!accepted) return false;
+                    (bool accepted, List<string> selectedItems) = Core.Dialogs.ShowListDialog(
+                        messageTop:
+                        (singleArchive
+                            ? LText.AddFMsToSet.AddFM_Dialog_AskMessage
+                            : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + "\r\n\r\n" + archivesLines + "\r\n\r\n" +
+                        (singleArchive
+                            ? LText.AddFMsToSet.AddFM_Dialog_ChooseArchiveDir
+                            : LText.AddFMsToSet.AddFMs_Dialog_ChooseArchiveDir),
+                        messageBottom: "",
+                        title: singleArchive
+                            ? LText.AddFMsToSet.AddFM_DialogTitle
+                            : LText.AddFMsToSet.AddFMs_DialogTitle,
+                        icon: MBoxIcon.None,
+                        okText: LText.AddFMsToSet.AddFM_Add,
+                        cancelText: LText.Global.Cancel,
+                        okIsDangerous: false,
+                        choiceStrings: Config.FMArchivePaths.ToArray(),
+                        multiSelectionAllowed: false);
 
-                        destDir = selectedItems[0];
+                    if (!accepted) return false;
 
-                        return true;
-                    }));
-
-                    if (!result) return false;
+                    destDir = selectedItems[0];
                 }
                 else
                 {

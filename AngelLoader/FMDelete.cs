@@ -34,9 +34,9 @@ namespace AngelLoader
 
             bool single = fmsToDelete.Count == 1;
 
-            (bool cont, _) =
-                Core.View.ShowCustomDialog(
-                    messageTop:
+            (MBoxButton result, _) =
+                Core.Dialogs.ShowMultiChoiceDialog(
+                    message:
                     (single
                         ? LText.FMDeletion.DeleteFromDB_AlertMessage1_Single
                         : LText.FMDeletion.DeleteFromDB_AlertMessage1_Multiple) +
@@ -44,13 +44,12 @@ namespace AngelLoader
                     (single
                         ? LText.FMDeletion.DeleteFromDB_AlertMessage2_Single
                         : LText.FMDeletion.DeleteFromDB_AlertMessage2_Multiple),
-                    messageBottom: "",
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.Warning,
-                    okText: LText.FMDeletion.DeleteFromDB_OKMessage,
-                    cancelText: LText.Global.Cancel,
-                    okIsDangerous: true);
-            if (!cont) return;
+                    yes: LText.FMDeletion.DeleteFromDB_OKMessage,
+                    no: LText.Global.Cancel,
+                    yesIsDangerous: true);
+            if (result == MBoxButton.No) return;
 
             DeleteFMsFromDB_Internal(fmsToDelete);
             await DeleteFromDBRefresh();
@@ -117,7 +116,7 @@ namespace AngelLoader
             var finalArchives = new List<string>();
             if (archives.Count > 1)
             {
-                (bool accepted, List<string> selectedItems) = Core.View.ShowCustomDialog(
+                (bool accepted, List<string> selectedItems) = Core.Dialogs.ShowListDialog(
                     messageTop: LText.FMDeletion.DuplicateArchivesFound,
                     messageBottom: "",
                     title: LText.AlertMessages.DeleteFMArchive,
@@ -125,7 +124,8 @@ namespace AngelLoader
                     okText: single ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
                     cancelText: LText.Global.Cancel,
                     okIsDangerous: true,
-                    choiceStrings: archives.ToArray());
+                    choiceStrings: archives.ToArray(),
+                    multiSelectionAllowed: true);
 
                 if (!accepted) return retFail;
 
