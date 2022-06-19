@@ -54,6 +54,7 @@ namespace AngelLoader
             Cancel
         }
 
+        // IMPORTANT: Don't change the order, they're used as indices!
         public enum Zoom { In, Out, Reset }
 
         public enum ProgressSizeMode

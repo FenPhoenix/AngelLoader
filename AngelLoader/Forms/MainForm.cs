@@ -113,6 +113,7 @@ namespace AngelLoader.Forms
 
         private enum KeepSel { False, True, TrueNearest }
 
+        // IMPORTANT: Don't change the order of the first three, they're used as indices!
         private enum ZoomFMsDGVType
         {
             ZoomIn,
@@ -2317,11 +2318,11 @@ namespace AngelLoader.Forms
 
         #region Filter bar right-hand controls
 
-        internal void FMsListZoomInButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
-
-        internal void FMsListZoomOutButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
-
-        internal void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
+        internal void FMsListZoomButtons_Click(object sender, EventArgs e)
+        {
+            ZoomFMsDGVType zoomType = (ZoomFMsDGVType)Array.IndexOf(Lazy_FMsListZoomButtons.Buttons, (ToolStripButtonCustom)sender);
+            ZoomFMsDGV(zoomType);
+        }
 
         // A ton of things in one event handler to cut down on async/awaits
         private async void Filters_Changed(object sender, EventArgs e)

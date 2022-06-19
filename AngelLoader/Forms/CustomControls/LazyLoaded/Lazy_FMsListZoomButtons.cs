@@ -10,9 +10,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private readonly MainForm _owner;
 
         private bool _constructed;
-        private ToolStripButtonCustom ZoomInButton = null!;
-        private ToolStripButtonCustom ZoomOutButton = null!;
-        private ToolStripButtonCustom ResetZoomButton = null!;
+
+        internal readonly ToolStripButtonCustom[] Buttons = new ToolStripButtonCustom[3];
 
         private bool _darkModeEnabled;
         [PublicAPI]
@@ -23,10 +22,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                if (_constructed)
-                {
-                    RegenerateButtonImages();
-                }
+                if (!_constructed) return;
+
+                RegenerateButtonImages();
             }
         }
 
@@ -34,13 +32,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private void RegenerateButtonImages()
         {
-            ZoomInButton.Image?.Dispose();
-            ZoomOutButton.Image?.Dispose();
-            ResetZoomButton.Image?.Dispose();
-
-            ZoomInButton.Image = Images.GetZoomImage(ZoomInButton.ContentRectangle, Zoom.In, regenerate: true);
-            ZoomOutButton.Image = Images.GetZoomImage(ZoomOutButton.ContentRectangle, Zoom.Out, regenerate: true);
-            ResetZoomButton.Image = Images.GetZoomImage(ResetZoomButton.ContentRectangle, Zoom.Reset, regenerate: true);
+            for (int i = 0; i < 3; i++)
+            {
+                Buttons[i].Image?.Dispose();
+                Buttons[i].Image = Images.GetZoomImage(Buttons[i].ContentRectangle, (Zoom)i, regenerate: true);
+            }
         }
 
         private void Construct()
@@ -48,29 +44,17 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             if (_constructed) return;
 
             // Insert them in reverse order so we always insert at 0
-            ResetZoomButton = new ToolStripButtonCustom();
-            _owner.RefreshAreaToolStrip.Items.Insert(0, ResetZoomButton);
-            ResetZoomButton.AutoSize = false;
-            ResetZoomButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            ResetZoomButton.Margin = new Padding(0);
-            ResetZoomButton.Size = new Size(25, 25);
-            ResetZoomButton.Click += _owner.FMsListResetZoomButton_Click;
-
-            ZoomOutButton = new ToolStripButtonCustom();
-            _owner.RefreshAreaToolStrip.Items.Insert(0, ZoomOutButton);
-            ZoomOutButton.AutoSize = false;
-            ZoomOutButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            ZoomOutButton.Margin = new Padding(0);
-            ZoomOutButton.Size = new Size(25, 25);
-            ZoomOutButton.Click += _owner.FMsListZoomOutButton_Click;
-
-            ZoomInButton = new ToolStripButtonCustom();
-            _owner.RefreshAreaToolStrip.Items.Insert(0, ZoomInButton);
-            ZoomInButton.AutoSize = false;
-            ZoomInButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            ZoomInButton.Margin = new Padding(2, 0, 0, 0);
-            ZoomInButton.Size = new Size(25, 25);
-            ZoomInButton.Click += _owner.FMsListZoomInButton_Click;
+            for (int i = 2; i >= 0; i--)
+            {
+                var button = new ToolStripButtonCustom();
+                Buttons[i] = button;
+                _owner.RefreshAreaToolStrip.Items.Insert(0, button);
+                button.AutoSize = false;
+                button.DisplayStyle = ToolStripItemDisplayStyle.Image;
+                button.Margin = new Padding(0);
+                button.Size = new Size(25, 25);
+                button.Click += _owner.FMsListZoomButtons_Click;
+            }
 
             RegenerateButtonImages();
 
@@ -83,9 +67,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (!_constructed) return;
 
-            ZoomInButton.ToolTipText = LText.Global.ZoomIn;
-            ZoomOutButton.ToolTipText = LText.Global.ZoomOut;
-            ResetZoomButton.ToolTipText = LText.Global.ResetZoom;
+            Buttons[0].ToolTipText = LText.Global.ZoomIn;
+            Buttons[1].ToolTipText = LText.Global.ZoomOut;
+            Buttons[2].ToolTipText = LText.Global.ResetZoom;
         }
 
         internal void SetVisible(bool enabled)
@@ -94,17 +78,19 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 Construct();
 
-                ZoomInButton.Visible = true;
-                ZoomOutButton.Visible = true;
-                ResetZoomButton.Visible = true;
+                for (int i = 0; i < 3; i++)
+                {
+                    Buttons[i].Visible = true;
+                }
             }
             else
             {
                 if (!_constructed) return;
 
-                ZoomInButton.Visible = false;
-                ZoomOutButton.Visible = false;
-                ResetZoomButton.Visible = false;
+                for (int i = 0; i < 3; i++)
+                {
+                    Buttons[i].Visible = false;
+                }
             }
         }
     }
