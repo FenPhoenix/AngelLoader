@@ -982,7 +982,8 @@ namespace AngelLoader.Forms
             {
                 loc.X = Defaults.MainWindowLocation.X;
             }
-            if (loc.Y < bounds.Top - (Height - minVisible) || loc.Y > bounds.Bottom - minVisible)
+            // Don't let it go any amount past the top of the screen, because that's where the title bar is
+            if (loc.Y < bounds.Top || loc.Y > bounds.Bottom - minVisible)
             {
                 loc.Y = Defaults.MainWindowLocation.Y;
             }
