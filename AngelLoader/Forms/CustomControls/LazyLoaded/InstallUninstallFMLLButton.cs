@@ -10,11 +10,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
     {
         private readonly MainForm _owner;
 
-        internal bool Constructed { get; private set; }
+        private bool _constructed;
 
         private bool _enabled;
 
-        internal bool SayInstallState { get; private set; }
+        private bool _sayInstall;
 
         internal DarkButton Button = null!;
 
@@ -27,7 +27,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
-                if (!Constructed) return;
+                if (!_constructed) return;
 
                 Button.DarkModeEnabled = value;
             }
@@ -35,52 +35,18 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal InstallUninstallFMLLButton(MainForm owner) => _owner = owner;
 
-        internal void Construct()
+        internal void Localize()
         {
-            if (Constructed) return;
-
-            var container = _owner.BottomLeftButtonsFLP;
-
-            // This Visible = false must be being ignored?
-            // Otherwise, it's impossible that this would work, because we construct but only explicitly call
-            // Show() in OpenSettings()...
-            // 2020-12-30: No, it's because we call Localize() and that calls Show().
-            Button = new DarkButton { Visible = false, Tag = LoadType.Lazy };
-
-            container.Controls.Add(Button);
-            container.Controls.SetChildIndex(Button, 2);
-
-            Button.AutoSize = true;
-            Button.AutoSizeMode = AutoSizeMode.GrowOnly;
-            Button.DarkModeEnabled = _darkModeEnabled;
-            Button.Margin = new Padding(6, 3, 0, 3);
-            Button.Padding = new Padding(30, 0, 6, 0);
-            Button.MinimumSize = new Size(0, 36);
-            Button.TabIndex = 58;
-            Button.UseVisualStyleBackColor = true;
-            Button.Click += _owner.Async_EventHandler_Main;
-            Button.PaintCustom += _owner.InstallUninstall_Play_Buttons_Paint;
-
-            Button.Enabled = _enabled;
-            SetSayInstallState(SayInstallState);
-
-            Constructed = true;
-        }
-
-        internal void Localize(bool startup)
-        {
-            if (!Constructed) return;
-
-            #region Install / Uninstall FM button
+            if (!_constructed) return;
 
             // Special-case this button to always be the width of the longer of the two localized strings for
             // "Install" and "Uninstall" so it doesn't resize when its text changes. (visual nicety)
             try
             {
-                Button.SuspendDrawing();
-
-                // Have to call this to get its layout working
-                Button.Show();
+                if (Button.Visible)
+                {
+                    Button.SuspendDrawing();
+                }
 
                 (string Text, int Length)[] stringsAndLengths =
                 {
@@ -97,56 +63,99 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 // Special case autosize text-set: can't be GrowAndShrink
                 Button.SetTextAutoSize(longestString);
 
-                if (!startup) SetButtonText(SayInstallState);
-
-                if (Button.Visible && Config.HideUninstallButton) Button.Hide();
+                SetSayInstall(_sayInstall);
             }
             finally
             {
-                Button.ResumeDrawing();
+                if (Button.Visible)
+                {
+                    Button.ResumeDrawing();
+                }
             }
-
-            #endregion
         }
 
         internal void SetSayInstall(bool value)
         {
-            if (Constructed) SetSayInstallState(value);
-            SayInstallState = value;
+            if (_constructed)
+            {
+                bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
+
+                // Special-cased; don't autosize this one
+                Button.Text =
+                    value
+                        ? multiSelected
+                            ? LText.Global.InstallFMs
+                            : LText.Global.InstallFM
+                        : multiSelected
+                            ? LText.Global.UninstallFMs
+                            : LText.Global.UninstallFM;
+                Button.Invalidate();
+            }
+            _sayInstall = value;
         }
 
         internal void SetEnabled(bool value)
         {
-            if (Constructed) Button.Enabled = value;
-            _enabled = value;
+            if (_constructed)
+            {
+                Button.Enabled = value;
+            }
+            else
+            {
+                _enabled = value;
+            }
         }
 
-        internal void Show() => Button.Show();
-
-        internal void Hide()
+        internal void SetVisible(bool enabled)
         {
-            if (Constructed) Button.Hide();
+            if (enabled)
+            {
+                if (!_constructed)
+                {
+                    var container = _owner.BottomLeftButtonsFLP;
+
+                    Button = new DarkButton { Tag = LoadType.Lazy };
+
+                    container.Controls.Add(Button);
+                    container.Controls.SetChildIndex(Button, 2);
+
+                    Button.AutoSize = true;
+                    Button.AutoSizeMode = AutoSizeMode.GrowOnly;
+                    Button.DarkModeEnabled = _darkModeEnabled;
+                    Button.Margin = new Padding(6, 3, 0, 3);
+                    Button.Padding = new Padding(30, 0, 6, 0);
+                    Button.MinimumSize = new Size(0, 36);
+                    Button.TabIndex = 58;
+                    Button.UseVisualStyleBackColor = true;
+                    Button.Click += _owner.Async_EventHandler_Main;
+                    Button.PaintCustom += InstallUninstallButton_Paint;
+
+                    Button.Enabled = _enabled;
+
+                    _constructed = true;
+                }
+
+                Button.Show();
+                // We have to always localize here because that sets our max fixed width
+                Localize();
+            }
+            else
+            {
+                if (_constructed) Button.Hide();
+            }
         }
 
-        private void SetButtonText(bool installState)
+        private void InstallUninstallButton_Paint(object sender, PaintEventArgs e)
         {
-            bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
+            bool enabled = Button.Enabled;
 
-            // Special-cased; don't autosize this one
-            Button.Text =
-                installState
-                    ? multiSelected
-                        ? LText.Global.InstallFMs
-                        : LText.Global.InstallFM
-                    : multiSelected
-                        ? LText.Global.UninstallFMs
-                        : LText.Global.UninstallFM;
-        }
-
-        private void SetSayInstallState(bool value)
-        {
-            SetButtonText(value);
-            Button.Invalidate();
+            Images.PaintBitmapButton(
+                button: Button,
+                e: e,
+                img: _sayInstall
+                    ? enabled ? Images.Install_24 : Images.GetDisabledImage(Images.Install_24)
+                    : enabled ? Images.Uninstall_24 : Images.GetDisabledImage(Images.Uninstall_24),
+                x: 10);
         }
     }
 }

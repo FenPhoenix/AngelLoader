@@ -900,10 +900,7 @@ namespace AngelLoader.Forms
 
             SetPlayOriginalGameControlsState();
 
-            // This button is a weird special case (see its class) so we just construct it here and it will be
-            // shown when localized.
-            // TODO (inst/uninst button): We might be able to wrangle this into something cleaner nonetheless.
-            if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct();
+            if (!Config.HideUninstallButton) InstallUninstallFMLLButton.SetVisible(true);
             if (!Config.HideExitButton) ExitLLButton.SetVisible(true);
 
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
@@ -1703,7 +1700,7 @@ namespace AngelLoader.Forms
                 PlayOriginalGameLLMenu.Localize();
                 PlayOriginalT2InMultiplayerLLMenu.Localize();
 
-                InstallUninstallFMLLButton.Localize(startup);
+                InstallUninstallFMLLButton.Localize();
 
                 WebSearchButton.Text = LText.MainButtons.WebSearch;
 
@@ -4381,22 +4378,7 @@ namespace AngelLoader.Forms
 
         #region Install/Play buttons
 
-        public void ShowInstallUninstallButton(bool enabled)
-        {
-            if (enabled)
-            {
-                if (!InstallUninstallFMLLButton.Constructed)
-                {
-                    InstallUninstallFMLLButton.Construct();
-                    InstallUninstallFMLLButton.Localize(false);
-                }
-                InstallUninstallFMLLButton.Show();
-            }
-            else
-            {
-                InstallUninstallFMLLButton.Hide();
-            }
-        }
+        public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMLLButton.SetVisible(enabled);
 
         #region Play original game
 
@@ -5323,21 +5305,6 @@ namespace AngelLoader.Forms
             Image image = Images.GetPerGameImage(button.GameIndex).Primary.Large(button.Enabled);
 
             Images.PaintBitmapButton(button, e, image, x: 8);
-        }
-
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void InstallUninstall_Play_Buttons_Paint(object sender, PaintEventArgs e)
-        {
-            DarkButton button = InstallUninstallFMLLButton.Button;
-            bool enabled = button.Enabled;
-
-            Images.PaintBitmapButton(
-                button,
-                e,
-                InstallUninstallFMLLButton.SayInstallState
-                    ? enabled ? Images.Install_24 : Images.GetDisabledImage(Images.Install_24)
-                    : enabled ? Images.Uninstall_24 : Images.GetDisabledImage(Images.Uninstall_24),
-                10);
         }
 
         private void SettingsButton_Paint(object sender, PaintEventArgs e) => Images.PaintBitmapButton(
