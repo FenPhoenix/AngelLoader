@@ -175,7 +175,6 @@ namespace AngelLoader
 
                 if (!singleArchivePath)
                 {
-
                     (bool accepted, List<string> selectedItems) = Core.Dialogs.ShowListDialog(
                         messageTop:
                         (singleArchive
