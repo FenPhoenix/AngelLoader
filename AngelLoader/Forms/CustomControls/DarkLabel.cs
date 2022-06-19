@@ -9,10 +9,14 @@ namespace AngelLoader.Forms.CustomControls
     {
         public DarkLabel() => UseMnemonic = false;
 
+#if DEBUG
+
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new bool UseMnemonic { get => base.UseMnemonic; set => base.UseMnemonic = value; }
+
+#endif
 
         [PublicAPI]
         [Browsable(false)]

@@ -56,6 +56,8 @@ namespace AngelLoader.Forms.CustomControls
         [DefaultValue(false)]
         public bool FireMouseLeaveOnLeaveWindow { get; set; }
 
+#if DEBUG
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [PublicAPI]
@@ -75,6 +77,8 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [PublicAPI]
         public new ComboBoxStyle DropDownStyle { get; set; }
+
+#endif
 
         public DarkComboBox()
         {

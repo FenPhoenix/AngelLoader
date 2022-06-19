@@ -34,6 +34,8 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+#if DEBUG
+
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -43,6 +45,8 @@ namespace AngelLoader.Forms.CustomControls
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new TreeViewDrawMode DrawMode { get; set; }
+
+#endif
 
         public DarkTreeView()
         {

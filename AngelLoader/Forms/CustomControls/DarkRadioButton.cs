@@ -24,6 +24,8 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Property Region
 
+#if DEBUG
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new Appearance Appearance => base.Appearance;
@@ -79,6 +81,8 @@ namespace AngelLoader.Forms.CustomControls
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new bool UseCompatibleTextRendering => false;
+
+#endif
 
         #endregion
 

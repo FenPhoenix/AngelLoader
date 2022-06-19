@@ -91,6 +91,8 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+#if DEBUG
+
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -100,6 +102,8 @@ namespace AngelLoader.Forms.CustomControls
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new Color BackColor { get; set; }
+
+#endif
 
         private bool _mouseDown;
 

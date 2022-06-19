@@ -32,6 +32,8 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color? DarkModeForeColor { get; set; }
 
+#if DEBUG
+
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -40,6 +42,8 @@ namespace AngelLoader.Forms.CustomControls
             get => base.UseMnemonic;
             set => base.UseMnemonic = value;
         }
+
+#endif
 
         private bool _darkModeEnabled;
         [PublicAPI]

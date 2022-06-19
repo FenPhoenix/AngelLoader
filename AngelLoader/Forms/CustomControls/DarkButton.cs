@@ -51,6 +51,8 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public GameSupport.GameIndex GameIndex { get; set; } = GameSupport.GameIndex.Thief1;
 
+#if DEBUG
+
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -59,6 +61,8 @@ namespace AngelLoader.Forms.CustomControls
             get => base.UseMnemonic;
             set => base.UseMnemonic = value;
         }
+
+#endif
 
         [PublicAPI]
         [Browsable(false)]
