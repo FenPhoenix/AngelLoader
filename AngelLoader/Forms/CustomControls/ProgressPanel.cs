@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
@@ -228,8 +229,10 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (mainPercent != null)
             {
-                MainPercentLabel.Text = mainPercent + "%";
-                SetProgressBarValue(MainProgressBar, (int)mainPercent, updateTaskbar: true);
+                int percent = ((int)mainPercent).Clamp(0, 100);
+
+                MainPercentLabel.Text = NonLocalizableText.PercentStrings[percent];
+                SetProgressBarValue(MainProgressBar, percent, updateTaskbar: true);
             }
             if (mainProgressBarType != null)
             {
@@ -245,8 +248,10 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (subPercent != null)
             {
-                SubPercentLabel.Text = subPercent + "%";
-                SetProgressBarValue(SubProgressBar, (int)subPercent, updateTaskbar: false);
+                int percent = ((int)subPercent).Clamp(0, 100);
+
+                SubPercentLabel.Text = NonLocalizableText.PercentStrings[percent];
+                SetProgressBarValue(SubProgressBar, percent, updateTaskbar: false);
             }
             if (subProgressBarType != null)
             {

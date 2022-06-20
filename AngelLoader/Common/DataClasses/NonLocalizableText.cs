@@ -100,5 +100,22 @@ namespace AngelLoader.DataClasses
 
         internal static readonly string OpenSans_Link_Text = "Open Sans";
         internal static readonly string OpenSans_Link = "https://fonts.google.com/specimen/Open+Sans";
+
+        private static string[]? _percentStrings;
+        internal static string[] PercentStrings
+        {
+            get
+            {
+                if (_percentStrings == null)
+                {
+                    _percentStrings = new string[101];
+                    for (int i = 0; i < 101; i++)
+                    {
+                        _percentStrings[i] = i + "%";
+                    }
+                }
+                return _percentStrings;
+            }
+        }
     }
 }
