@@ -22,10 +22,14 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+#if DEBUG
+
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override ImageLayout BackgroundImageLayout { get; set; }
+
+#endif
 
         protected override void OnPaint(PaintEventArgs e)
         {
