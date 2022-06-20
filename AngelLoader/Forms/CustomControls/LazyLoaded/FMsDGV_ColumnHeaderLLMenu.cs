@@ -136,15 +136,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 item.CheckOnClick = true;
                 item.Tag = (Column)i;
                 item.Checked = _columnCheckedStates[i];
+                item.Click += CheckBoxMenuItems_Click;
+                _menu.Items.Add(item);
             }
 
             #endregion
-
-            foreach (var item in ColumnHeaderCheckBoxMenuItems)
-            {
-                _menu.Items.Add(item);
-                item.Click += CheckBoxMenuItems_Click;
-            }
 
             ResetColumnVisibilityMenuItem.Click += ResetColumnVisibilityMenuItem_Click;
             ResetAllColumnWidthsMenuItem.Click += ResetAllColumnWidthsMenuItem_Click;
