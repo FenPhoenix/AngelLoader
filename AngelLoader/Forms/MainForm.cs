@@ -5221,21 +5221,7 @@ namespace AngelLoader.Forms
 
         public void DisplayFMTags(FMCategoriesCollection fmTags)
         {
-            try
-            {
-                TagsTreeView.SuspendDrawing();
-                TagsTreeView.Nodes.Clear();
-
-                if (fmTags.Count == 0) return;
-
-                ControlUtils.FillTreeViewFromTags_Sorted(TagsTreeView, fmTags);
-
-                TagsTreeView.ExpandAll();
-            }
-            finally
-            {
-                TagsTreeView.ResumeDrawing();
-            }
+            ControlUtils.FillTreeViewFromTags_Sorted(TagsTreeView, fmTags);
         }
 
         #endregion

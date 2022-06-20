@@ -30,20 +30,7 @@ namespace AngelLoader.Forms
 
             Localize();
 
-            var tv = OriginTreeView;
-            try
-            {
-                tv.BeginUpdate();
-
-                ControlUtils.FillTreeViewFromTags_Sorted(tv, sourceTags);
-
-                tv.ExpandAll();
-                tv.SelectedNode = tv.Nodes[0];
-            }
-            finally
-            {
-                tv.EndUpdate();
-            }
+            ControlUtils.FillTreeViewFromTags_Sorted(OriginTreeView, sourceTags, selectFirst: true);
 
             if (TagsFilter.AndTags.Count > 0) FillTreeView(TagsFilter.AndTags);
             if (TagsFilter.OrTags.Count > 0) FillTreeView(TagsFilter.OrTags);
@@ -144,19 +131,7 @@ namespace AngelLoader.Forms
                 tags == TagsFilter.OrTags ? OrTreeView :
                 NotTreeView;
 
-            try
-            {
-                tv.SuspendDrawing();
-                tv.Nodes.Clear();
-
-                ControlUtils.FillTreeViewFromTags_Sorted(tv, tags);
-
-                tv.ExpandAll();
-            }
-            finally
-            {
-                tv.ResumeDrawing();
-            }
+            ControlUtils.FillTreeViewFromTags_Sorted(tv, tags);
 
             CheckTagInAny();
         }
