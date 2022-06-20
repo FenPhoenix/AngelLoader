@@ -70,24 +70,16 @@ namespace AngelLoader.Forms.CustomControls
         public CheckItem[] CheckItems = Array.Empty<CheckItem>();
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new Color BackColor { get; set; } = SystemColors.Window;
+        public new Color BackColor = SystemColors.Window;
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new Color ForeColor { get; set; } = SystemColors.ControlText;
+        public new Color ForeColor = SystemColors.ControlText;
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color DarkModeBackColor { get; set; } = DarkColors.Fen_ControlBackground;
+        public Color DarkModeBackColor = DarkColors.Fen_ControlBackground;
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color DarkModeForeColor { get; set; } = DarkColors.LightText;
+        public Color DarkModeForeColor = DarkColors.LightText;
 
         private bool _darkModeEnabled;
         [PublicAPI]

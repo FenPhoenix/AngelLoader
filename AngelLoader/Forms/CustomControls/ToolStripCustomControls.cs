@@ -106,9 +106,7 @@ namespace AngelLoader.Forms.CustomControls
         /// If this component represents a game in some way, you can set its <see cref="GameSupport.GameIndex"/> here.
         /// </summary>
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public GameSupport.GameIndex GameIndex { get; set; } = GameSupport.GameIndex.Thief1;
+        public GameSupport.GameIndex GameIndex = GameSupport.GameIndex.Thief1;
 
         public ToolStripMenuItemCustom() { }
 

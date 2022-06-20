@@ -24,14 +24,10 @@ namespace AngelLoader.Forms.CustomControls
         public bool DarkModeEnabled { get; set; }
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? DarkModeForeColor { get; set; }
+        public Color? DarkModeForeColor;
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? DarkModeBackColor { get; set; }
+        public Color? DarkModeBackColor;
 
         protected override void OnPaint(PaintEventArgs e)
         {

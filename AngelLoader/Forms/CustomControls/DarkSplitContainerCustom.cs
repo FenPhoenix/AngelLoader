@@ -81,8 +81,8 @@ namespace AngelLoader.Forms.CustomControls
         internal bool FullScreen { get; private set; }
         internal int CollapsedSize = 0;
 
-        internal Color Panel1DarkBackColor { get; set; } = DarkColors.Fen_ControlBackground;
-        internal Color Panel2DarkBackColor { get; set; } = DarkColors.Fen_ControlBackground;
+        internal Color Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
+        internal Color Panel2DarkBackColor = DarkColors.Fen_ControlBackground;
 
         #endregion
 

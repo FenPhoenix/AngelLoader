@@ -23,14 +23,10 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? DarkModeBackColor { get; set; }
+        public Color? DarkModeBackColor;
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? DarkModeForeColor { get; set; }
+        public Color? DarkModeForeColor;
 
 #if DEBUG
 

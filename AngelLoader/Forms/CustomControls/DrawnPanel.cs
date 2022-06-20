@@ -11,13 +11,10 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class DrawnPanel : Panel, IDarkable
     {
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color DrawnBackColor { get; set; } = SystemColors.Control;
+
+        public Color DrawnBackColor = SystemColors.Control;
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color DarkModeDrawnBackColor { get; set; } = DarkColors.Fen_ControlBackground;
+        public Color DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground;
 
         [PublicAPI]
         [Browsable(false)]

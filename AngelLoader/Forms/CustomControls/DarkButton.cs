@@ -47,9 +47,7 @@ namespace AngelLoader.Forms.CustomControls
         /// If this control represents a game in some way, you can set its <see cref="GameSupport.GameIndex"/> here.
         /// </summary>
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public GameSupport.GameIndex GameIndex { get; set; } = GameSupport.GameIndex.Thief1;
+        public GameSupport.GameIndex GameIndex = GameSupport.GameIndex.Thief1;
 
 #if DEBUG
 
@@ -65,19 +63,13 @@ namespace AngelLoader.Forms.CustomControls
 #endif
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? DarkModeBackColor { get; set; }
+        public Color? DarkModeBackColor;
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? DarkModeHoverColor { get; set; }
+        public Color? DarkModeHoverColor;
 
         [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? DarkModePressedColor { get; set; }
+        public Color? DarkModePressedColor;
 
         [PublicAPI]
         public new string Text
