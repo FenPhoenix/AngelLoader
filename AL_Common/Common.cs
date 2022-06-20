@@ -441,6 +441,9 @@ namespace AL_Common
         public static bool IsDirSep(this char character) => character is '/' or '\\';
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
 
         // Note: We hardcode '/' and '\' for now because we can get paths from archive files too, where the dir
@@ -706,18 +709,6 @@ namespace AL_Common
         /// <param name="second"></param>
         /// <returns></returns>
         public static bool PathEqualsI_Dir(this string first, string second) => first.TrimEnd(CA_BS_FS).PathEqualsI(second.TrimEnd(CA_BS_FS));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
-
-        #region Disabled until needed
-
-        /*
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
-        */
-
-        #endregion
 
         #endregion
 

@@ -505,6 +505,7 @@ namespace AngelLoader
                                         // Reject malformed and/or maliciously formed paths - we're going to
                                         // delete these files, and we don't want to delete anything outside
                                         // the FM folder
+                                        // @DIRSEP: Relative, no UNC paths can occur here (and if they do it's wrong and we'll reject them anyway)
                                         !val.StartsWithDirSep() &&
                                         !val.Contains(':') &&
                                         // @DIRSEP: Critical: Check both / and \ here because we have no dirsep-agnostic string.Contains()
@@ -532,7 +533,7 @@ namespace AngelLoader
 
                                 if (fn.PathEqualsI(Paths.FMSelInf) ||
                                     fn.PathEqualsI(_startMisSav) ||
-                                    (fn.Length > 0 && fn[fn.Length - 1].IsDirSep()) ||
+                                    fn.EndsWithDirSep() ||
                                     fileExcludes.PathContainsI(fn))
                                 {
                                     continue;
@@ -668,7 +669,7 @@ namespace AngelLoader
 
                     if (efn.PathEqualsI(Paths.FMSelInf) ||
                         efn.PathEqualsI(_startMisSav) ||
-                        (efn.Length > 0 && efn[efn.Length - 1].IsDirSep()) ||
+                        efn.EndsWithDirSep() ||
                         IsSaveOrScreenshot(efn, game))
                     {
                         continue;
@@ -746,7 +747,7 @@ namespace AngelLoader
                     if (efn.PathEqualsI(Paths.FMSelInf) ||
                         efn.PathEqualsI(_startMisSav) ||
                         // IsDirectory has been unreliable in the past, so check manually here too
-                        entry.IsDirectory || (efn.Length > 0 && efn[efn.Length - 1].IsDirSep()) ||
+                        entry.IsDirectory || efn.EndsWithDirSep() ||
                         IsSaveOrScreenshot(efn, game))
                     {
                         continue;
