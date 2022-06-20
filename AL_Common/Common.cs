@@ -373,9 +373,21 @@ namespace AL_Common
 
         public static string ToForwardSlashes(this string value) => value.Replace('\\', '/');
 
+        public static string ToForwardSlashes_Net(this string value)
+        {
+            return value.StartsWith(@"\\") ? @"\\" + value.Substring(2).ToForwardSlashes() : value.ToForwardSlashes();
+        }
+
         public static string ToBackSlashes(this string value) => value.Replace('/', '\\');
 
         public static string ToSystemDirSeps(this string value) => value.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+
+        public static string ToSystemDirSeps_Net(this string value)
+        {
+            return value.StartsWith(@"\\") ? @"\\" + value.Substring(2).ToSystemDirSeps() : value.ToSystemDirSeps();
+        }
+
+        public static string MakeUNCPath(string path) => path.StartsWith(@"\\") ? @"\\?\UNC\" + path.Substring(2) : @"\\?\" + path;
 
         #endregion
 

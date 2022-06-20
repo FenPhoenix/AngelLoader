@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
+using static AL_Common.Common;
 using static AL_Common.FastIO_Native;
 
 namespace FMScanner
@@ -59,12 +60,12 @@ namespace FMScanner
 
             // Search the base directory first, and only then search subdirectories.
 
-            string pathC = @"\\?\" + path + "\\";
+            string searchPath = MakeUNCPath(path) + "\\";
 
             foreach (string p in searchPatterns)
             {
                 using SafeSearchHandle findHandle = FindFirstFileExW(
-                    pathC + p,
+                    searchPath + p,
                     FINDEX_INFO_LEVELS.FindExInfoBasic,
                     out findData,
                     FINDEX_SEARCH_OPS.FindExSearchNameMatch,
@@ -94,7 +95,7 @@ namespace FMScanner
             }
 
             using (SafeSearchHandle findHandle = FindFirstFileExW(
-                pathC + "*",
+                searchPath + "*",
                 FINDEX_INFO_LEVELS.FindExInfoBasic,
                 out findData,
                 FINDEX_SEARCH_OPS.FindExSearchNameMatch,

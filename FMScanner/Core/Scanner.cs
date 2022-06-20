@@ -3198,7 +3198,7 @@ namespace FMScanner
                     {
                         NameAndIndex df = dirFiles[dfIndex];
                         // Directory separator agnostic & keeping perf reasonably high
-                        string dfName = df.Name.Replace('\\', '/');
+                        string dfName = df.Name.ToForwardSlashes();
 
                         // We say HasFileExtension() because we only want to count lang dirs that have files in them
                         if (dfName.HasFileExtension() &&

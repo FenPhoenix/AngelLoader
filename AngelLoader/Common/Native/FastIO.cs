@@ -135,7 +135,7 @@ namespace AngelLoader
             //const int ERROR_REM_NOT_LIST = 0x33;
             //const int ERROR_BAD_NETPATH = 0x35;
 
-            string searchPath = (path.StartsWith(@"\\") ? @"\\?\UNC\" + path.Substring(2) : @"\\?\" + path) + "\\" + searchPattern;
+            string searchPath = MakeUNCPath(path) + "\\" + searchPattern;
 
             using var findHandle = FindFirstFileExW(searchPath,
                 FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATAW findData,
@@ -163,7 +163,7 @@ namespace AngelLoader
                     string fullName = returnFullPaths
                         // Exception could occur here
                         // @DIRSEP: Matching behavior of GetFiles()? Is it? Or does it just return whatever it gets from Windows?
-                        ? Path.Combine(path, findData.cFileName).ToSystemDirSeps()
+                        ? Path.Combine(path, findData.cFileName).ToSystemDirSeps_Net()
                         : findData.cFileName;
 
                     ret.Add(fullName);
@@ -212,10 +212,10 @@ namespace AngelLoader
 
             // Search the base directory first, and only then search subdirectories.
 
-            string pathC = @"\\?\" + path + "\\*";
+            string searchPath = MakeUNCPath(path) + "\\*";
 
             using SafeSearchHandle findHandle = FindFirstFileEx(
-                pathC,
+                searchPath,
                 FINDEX_INFO_LEVELS.FindExInfoBasic,
                 out findData,
                 FINDEX_SEARCH_OPS.FindExSearchNameMatch,
@@ -262,7 +262,8 @@ namespace AngelLoader
         {
             path = NormalizeAndCheckPath(path, pathIsKnownValid: true);
 
-            using var findHandle = FindFirstFileExW(@"\\?\" + path + "\\*",
+            string searchPath = MakeUNCPath(path) + "\\*";
+            using var findHandle = FindFirstFileExW(searchPath,
                 FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATAW findData,
                 FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
 

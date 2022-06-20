@@ -36,7 +36,7 @@ namespace AngelLoader
                             string dir = dirs[di];
                             if (!dir.GetDirNameFast().EqualsI(".fix") &&
                                 // @DIRSEP: '/' conversion due to string.ContainsI()
-                                !dir.ToForwardSlashes().ContainsI("/.fix/"))
+                                !dir.ToForwardSlashes_Net().ContainsI("/.fix/"))
                             {
                                 paths.Add(dir);
                             }

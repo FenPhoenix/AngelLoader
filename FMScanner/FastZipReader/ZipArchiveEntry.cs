@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
+using AL_Common;
 using JetBrains.Annotations;
 
 namespace FMScanner.FastZipReader
@@ -69,7 +70,7 @@ namespace FMScanner.FastZipReader
 
             // Sacrifice a slight amount of time for safety. Zips entry names are emphatically NOT supposed to
             // have backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
-            FullName = cd.Filename != null ? Encoding.UTF8.GetString(cd.Filename).Replace('\\', '/') : "";
+            FullName = cd.Filename != null ? Encoding.UTF8.GetString(cd.Filename).ToForwardSlashes() : "";
             // Lazy-load Name so we don't preemptively do a ton of Substring() calls when we don't need to.
         }
 
