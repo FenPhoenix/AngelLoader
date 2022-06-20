@@ -395,7 +395,8 @@ namespace AngelLoader.Forms.CustomControls
                 case Native.WM_RBUTTONDOWN:
                 case Native.WM_RBUTTONUP:
                 case Native.WM_RBUTTONDBLCLK:
-                case Native.WM_LBUTTONUP:
+                // Let MouseUp through for the tags dropdown!
+                //case Native.WM_LBUTTONUP:
                 case Native.WM_LBUTTONDBLCLK:
                     break;
                 case Native.WM_NCPAINT:

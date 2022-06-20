@@ -9,7 +9,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
     internal sealed class AddTagLLDropDown
     {
-        internal bool Constructed { get; private set; }
+        private bool _constructed;
 
         private readonly MainForm _owner;
 
@@ -33,7 +33,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 if (_darkModeEnabled == value) return;
                 _darkModeEnabled = value;
 
-                if (!Constructed) return;
+                if (!_constructed) return;
 
                 _listBox.DarkModeEnabled = _darkModeEnabled;
             }
@@ -43,7 +43,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private void Construct()
         {
-            if (Constructed) return;
+            if (_constructed) return;
 
             _listBox = new DarkListBox { Tag = LoadType.Lazy };
             _owner.EverythingPanel.Controls.Add(_listBox);
@@ -56,7 +56,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _listBox.Leave += _owner.AddTagTextBoxOrListBox_Leave;
             _listBox.MouseUp += _owner.AddTagListBox_MouseUp;
 
-            Constructed = true;
+            _constructed = true;
         }
 
         internal void SetItemsAndShow(List<string> list)
@@ -76,12 +76,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _listBox.Show();
         }
 
-        internal bool Visible => Constructed && _listBox.Visible;
-        internal bool Focused => Constructed && _listBox.Focused;
+        internal bool Visible => _constructed && _listBox.Visible;
+        internal bool Focused => _constructed && _listBox.Focused;
 
         internal void HideAndClear()
         {
-            if (!Constructed) return;
+            if (!_constructed) return;
 
             _listBox.Hide();
             _listBox.Items.Clear();
