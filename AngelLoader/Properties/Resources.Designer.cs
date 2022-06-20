@@ -93,16 +93,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap CharacterEncodingLetter_Dark {
-            get {
-                object obj = ResourceManager.GetObject("CharacterEncodingLetter_Dark", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap CharacterEncodingLetter_Dark_Disabled {
             get {
                 object obj = ResourceManager.GetObject("CharacterEncodingLetter_Dark_Disabled", resourceCulture);
@@ -116,16 +106,6 @@ namespace AngelLoader.Properties {
         internal static System.Drawing.Bitmap ClearFilters {
             get {
                 object obj = ResourceManager.GetObject("ClearFilters", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ClearFilters_Dark {
-            get {
-                object obj = ResourceManager.GetObject("ClearFilters_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -243,29 +223,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Mods_16_dark {
-            get {
-                object obj = ResourceManager.GetObject("Mods_16_dark", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Pin_16 {
             get {
                 object obj = ResourceManager.GetObject("Pin_16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Pin_16_Dark {
-            get {
-                object obj = ResourceManager.GetObject("Pin_16_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -323,29 +283,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Refresh_Dark {
-            get {
-                object obj = ResourceManager.GetObject("Refresh_Dark", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap RefreshFilters {
             get {
                 object obj = ResourceManager.GetObject("RefreshFilters", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap RefreshFilters_Dark {
-            get {
-                object obj = ResourceManager.GetObject("RefreshFilters_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -546,16 +486,6 @@ namespace AngelLoader.Properties {
         internal static System.Drawing.Bitmap Unpin_16 {
             get {
                 object obj = ResourceManager.GetObject("Unpin_16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Unpin_16_Dark {
-            get {
-                object obj = ResourceManager.GetObject("Unpin_16_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

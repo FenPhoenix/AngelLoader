@@ -187,9 +187,6 @@
   <data name="About" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\about.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Refresh_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\refresh_darkmode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Shock2_16_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\shock2_16_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -220,23 +217,14 @@
   <data name="FilterShowRecentAtTop_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\filtershowrecentattop_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ClearFilters_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\filtericons\clearfilters_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="FilterByTags_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\filterbytagsdark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="RefreshFilters" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\refresh_filters_21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="RefreshFilters_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\refresh_filters_21_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="CharacterEncodingLetter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\characterencodingletter.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="CharacterEncodingLetter_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\characterencodingletter_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CharacterEncodingLetter_Dark_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\characterencodingletter_dark_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -247,20 +235,11 @@
   <data name="Pin_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\pin_light_mode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Pin_16_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\pin_dark_mode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Unpin_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\unpin_light_mode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Unpin_16_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\unpin_dark_mode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Mods_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\mods_16_light.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Mods_16_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\mods_16_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Delete_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\delete_16_light_2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

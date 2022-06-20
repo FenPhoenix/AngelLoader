@@ -782,14 +782,14 @@ namespace AngelLoader.Forms
         private static Bitmap? _refreshFilters_Dark;
         public static Bitmap RefreshFilters =>
             DarkModeEnabled
-                ? _refreshFilters_Dark ??= Resources.RefreshFilters_Dark
+                ? _refreshFilters_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.RefreshFilters)
                 : _refreshFilters ??= Resources.RefreshFilters;
 
         private static Bitmap? _clearFilters;
         private static Bitmap? _clearFilters_Dark;
         public static Bitmap ClearFilters =>
             DarkModeEnabled
-                ? _clearFilters_Dark ??= Resources.ClearFilters_Dark
+                ? _clearFilters_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.ClearFilters)
                 : _clearFilters ??= Resources.ClearFilters;
 
         #endregion
@@ -800,7 +800,7 @@ namespace AngelLoader.Forms
         private static Image? _charEncLetter_Dark;
         private static Image CharEncLetter =>
             DarkModeEnabled
-                ? _charEncLetter_Dark ??= Resources.CharacterEncodingLetter_Dark
+                ? _charEncLetter_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharacterEncodingLetter)
                 : _charEncLetter ??= Resources.CharacterEncodingLetter;
 
         // Don't use the auto-disabled-colored-image dictionary for this, because we have a custom disabled image
@@ -906,14 +906,14 @@ namespace AngelLoader.Forms
         private static Bitmap? _pin_16_Dark;
         public static Bitmap Pin_16 =>
             DarkModeEnabled
-                ? _pin_16_Dark ??= Resources.Pin_16_Dark
+                ? _pin_16_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Pin_16)
                 : _pin_16 ??= Resources.Pin_16;
 
         private static Bitmap? _unpin_16;
         private static Bitmap? _unpin_16_Dark;
         public static Bitmap Unpin_16 =>
             DarkModeEnabled
-                ? _unpin_16_Dark ??= Resources.Unpin_16_Dark
+                ? _unpin_16_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Unpin_16)
                 : _unpin_16 ??= Resources.Unpin_16;
 
         private static Bitmap? _trash_16;
@@ -938,7 +938,7 @@ namespace AngelLoader.Forms
         private static Bitmap? _mods_16_Dark;
         public static Bitmap Mods_16 =>
             DarkModeEnabled
-                ? _mods_16_Dark ??= Resources.Mods_16_dark
+                ? _mods_16_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Mods_16)
                 : _mods_16 ??= Resources.Mods_16;
 
         private static Bitmap? _redExclamationMarkCircle;
@@ -952,7 +952,7 @@ namespace AngelLoader.Forms
         private static Bitmap? _refresh_Dark;
         public static Bitmap Refresh =>
             DarkModeEnabled
-                ? _refresh_Dark ??= Resources.Refresh_Dark
+                ? _refresh_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Refresh)
                 : _refresh ??= Resources.Refresh;
 
         #endregion
