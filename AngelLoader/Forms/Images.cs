@@ -26,6 +26,105 @@ namespace AngelLoader.Forms
         public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
     }
 
+    public static class DarkModeImageConversion
+    {
+        private static ColorMatrix MultiplyColorMatrix(float[][] matrix1, float[][] matrix2)
+        {
+            const int length = 5;
+            float[][] newColorMatrix = new float[length][];
+            for (int index = 0; index < length; ++index)
+            {
+                newColorMatrix[index] = new float[length];
+            }
+
+            float[] numArray1 = new float[length];
+            for (int index1 = 0; index1 < length; ++index1)
+            {
+                for (int index2 = 0; index2 < length; ++index2)
+                {
+                    numArray1[index2] = matrix1[index2][index1];
+                }
+
+                for (int index3 = 0; index3 < length; ++index3)
+                {
+                    float[] numArray2 = matrix2[index3];
+                    float num = 0.0f;
+                    for (int index4 = 0; index4 < length; ++index4)
+                    {
+                        num += numArray2[index4] * numArray1[index4];
+                    }
+
+                    newColorMatrix[index3][index1] = num;
+                }
+            }
+
+            return new ColorMatrix(newColorMatrix);
+        }
+
+        private static ColorMatrix? _darkModeMultiplyColorMatrix;
+        private static ColorMatrix DarkModeMultiplyColorMatrix =>
+            _darkModeMultiplyColorMatrix ??= MultiplyColorMatrix(new float[5][]
+            {
+                #region Original ToolStripRenderer.CreateDisabledImage version for reference
+
+                //var disabledImageColorMatrix = MultiplyColorMatrix(new float[5][]
+                //{
+                //    new float[5] { 1f, 0.0f, 0.0f, 0.0f, 0.0f },
+                //    new float[5] { 0.0f, 1f, 0.0f, 0.0f, 0.0f },
+                //    new float[5] { 0.0f, 0.0f, 1f, 0.0f, 0.0f },
+                //    new float[5] { 0.0f, 0.0f, 0.0f, 0.7f, 0.0f },
+                //    new float[5]
+                //}, new float[5][]
+                //{
+                //    new float[5] { 0.2125f, 0.2125f, 0.2125f, 0.0f, 0.0f },
+                //    new float[5] { 0.2577f, 0.2577f, 0.2577f, 0.0f, 0.0f },
+                //    new float[5] { 0.0361f, 0.0361f, 0.0361f, 0.0f, 0.0f },
+                //    new float[5] { 0.0f, 0.0f, 0.0f, 1f, 0.0f },
+                //    new float[5] { 0.38f, 0.38f, 0.38f, 0.0f, 1f }
+                //});
+
+                #endregion
+
+                new float[5] { 1f, 0.0f, 0.0f, 0.0f, 0.0f },
+                new float[5] { 0.0f, 1f, 0.0f, 0.0f, 0.0f },
+                new float[5] { 0.0f, 0.0f, 1f, 0.0f, 0.0f },
+                new float[5] { 0.0f, 0.0f, 0.0f, 0.8425f, 0.0f },
+                new float[5]
+            }, new float[5][]
+            {
+                new float[5] { 0.2125f, 0.2125f, 0.2125f, 0.0f, 0.0f },
+                new float[5] { 0.2577f, 0.2577f, 0.2577f, 0.0f, 0.0f },
+                new float[5] { 0.0361f, 0.0361f, 0.0361f, 0.0f, 0.0f },
+                new float[5] { 0.0f, 0.0f, 0.0f, 1f, 0.0f },
+                new float[5] { 0.99f, 0.99f, 0.99f, 0.0f, 1f }
+            });
+
+        public static Bitmap CreateDarkModeVersion(Bitmap normalImage)
+        {
+            using var imgAttrib = new ImageAttributes();
+
+            imgAttrib.ClearColorKey();
+            imgAttrib.SetColorMatrix(DarkModeMultiplyColorMatrix);
+
+            Size size = normalImage.Size;
+
+            var darkModeImage = new Bitmap(size.Width, size.Height);
+
+            using Graphics graphics = Graphics.FromImage(darkModeImage);
+            graphics.DrawImage(
+                normalImage,
+                new Rectangle(0, 0, size.Width, size.Height),
+                0,
+                0,
+                size.Width,
+                size.Height,
+                GraphicsUnit.Pixel,
+                imgAttrib);
+
+            return darkModeImage;
+        }
+    }
+
     public static class Images
     {
         public static bool DarkModeEnabled;

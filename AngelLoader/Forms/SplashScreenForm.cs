@@ -115,11 +115,18 @@ namespace AngelLoader.Forms
         private void DrawMain()
         {
             _graphicsContext.G.DrawImage(_logoBitmap, 152, 48);
-            _graphicsContext.G.DrawImage(_theme == VisualTheme.Dark ? Resources.About_Dark : Resources.About, 200, 48);
+
+            _graphicsContext.G.DrawImage(
+                _theme == VisualTheme.Dark
+                    ? DarkModeImageConversion.CreateDarkModeVersion(Resources.About)
+                    : Resources.About,
+                200, 48);
+
             using var pen = new Pen(
                 _theme == VisualTheme.Dark
                     ? Color.FromArgb(81, 81, 81) // LightBorder
                     : SystemColors.ControlDark);
+
             _graphicsContext.G.DrawRectangle(pen, 0, 0, 647, 183);
         }
 
