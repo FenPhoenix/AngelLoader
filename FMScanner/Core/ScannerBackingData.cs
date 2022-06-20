@@ -134,7 +134,7 @@ namespace FMScanner
         private readonly char[] CA_Hyphen = { '-' };
         private readonly char[] CA_DoubleQuote = { '\"' };
         private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
-        private readonly char[] CA_DataSeparators = { ' ', '-', '/' };
+        private readonly char[] CA_DateSeparators = { ' ', '-', '/' };
         private readonly string[] SA_CRLF = { "\r\n" };
         private readonly string[] CRLF_CR_LF = { "\r\n", "\r", "\n" };
         private readonly string[] SA_DoubleSpaces = { "  " };
